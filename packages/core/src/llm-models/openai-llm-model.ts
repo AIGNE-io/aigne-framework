@@ -14,7 +14,7 @@ import {
 } from "../llm-model";
 import { isNonNullable } from "../utils/is-non-nullable";
 
-export class OpenAILLMModel extends LLMModel {
+export class OpenaiLLMModel extends LLMModel {
   constructor(
     public config: {
       apiKey: string;

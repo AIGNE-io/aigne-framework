@@ -1,6 +1,6 @@
 {
   "name": "aigne-framework",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "",
   "private": true,
   "keywords": [],
@@ -10,7 +10,7 @@
     "lint": "biome check --write",
     "build": "pnpm build:libs",
     "clean": "pnpm -r run clean",
-    "build:libs": "pnpm --workspace-concurrency=2 -F @aigne/* build",
+    "build:libs": "pnpm -F @aigne/* build",
     "bump-version": "zx scripts/bump-version.mjs",
     "update:deps": "npx -y taze latest -r -w -n '/blocklet|abtnode|arcblock|ocap|did-space|nft-studio/' && pnpm install && pnpm dedupe",
     "test": "pnpm -r run test",

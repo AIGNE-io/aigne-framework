@@ -1,0 +1,42 @@
+name: CI
+
+env:
+  NODE_OPTIONS: '--max_old_space_size=6144'
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build libs
+        run: pnpm build:libs
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/runtime",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "AIGNE core library",
   "publishConfig": {
     "access": "public"
@@ -15,7 +15,9 @@
     "aigne-cli": "./lib/cjs/cmd/aigne-cli.js"
   },
   "files": [
-    "lib",
+    "lib/cjs",
+    "lib/dts",
+    "lib/esm",
     "LICENSE",
     "package.json",
     "README.md",
@@ -28,10 +30,7 @@
     "url": "git+https://github.com/blocklet/ai-studio.git"
   },
   "scripts": {
-    "build": "run-p build:*",
-    "build:cjs": "tsc --module commonjs --outDir lib/cjs",
-    "build:esm": "tsc --module es2022 --outDir lib/esm",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outDir lib/types",
+    "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib",
     "test": "bun test",
     "prepublishOnly": "run-s clean build"

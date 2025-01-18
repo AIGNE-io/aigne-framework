@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "AIGNE core library",
   "publishConfig": {
     "access": "public"
@@ -10,17 +10,21 @@
   "license": "ISC",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
-  "types": "./lib/types/index.d.js",
-  "files": ["lib", "LICENSE", "package.json", "README.md", "tsconfig.json"],
+  "types": "./lib/dts/index.d.ts",
+  "files": [
+    "lib/cjs",
+    "lib/dts",
+    "lib/esm",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/blocklet/ai-studio.git"
   },
   "scripts": {
-    "build": "run-p build:*",
-    "build:cjs": "tsc --module commonjs --outDir lib/cjs",
-    "build:esm": "tsc --module es2022 --outDir lib/esm",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outDir lib/types",
+    "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib",
     "prepublishOnly": "run-s clean build",
     "test": "bun test"

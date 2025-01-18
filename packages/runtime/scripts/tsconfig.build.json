@@ -1,0 +1,19 @@
+{
+  "files": [],
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "../src",
+    "noEmit": false,
+    "paths": {}
+  },
+  "include": ["../src"],
+  "references": [
+    { "path": "../../core/scripts/tsconfig.build.json" },
+    { "path": "../../agent-v1/scripts/tsconfig.build.json" },
+    { "path": "../../memory/scripts/tsconfig.build.json" },
+    { "path": "./tsconfig.build.cjs.json" },
+    { "path": "./tsconfig.build.esm.json" },
+    { "path": "./tsconfig.build.dts.json" }
+  ]
+}

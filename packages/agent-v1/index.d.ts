@@ -1,1 +1,1 @@
-export * from "./lib/types/index";
+export * from "./lib/dts/index";

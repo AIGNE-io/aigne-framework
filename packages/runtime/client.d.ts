@@ -1,1 +1,1 @@
-export * from "./lib/types/client";
+export * from "./lib/dts/client";

@@ -1,1 +1,1 @@
-export * from "./lib/types/middleware";
+export * from "./lib/dts/middleware";

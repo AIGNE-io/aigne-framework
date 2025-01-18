@@ -3,7 +3,9 @@
   "compilerOptions": {
     "noEmit": false,
     "paths": {
-      "@aigne/core": ["../core/src"]
+      "@aigne/core": ["../core/src"],
+      "@aigne/agent-v1": ["../agent-v1/src"],
+      "@aigne/memory": ["../memory/src"]
     }
   },
   "include": ["src/**/*"]

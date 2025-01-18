@@ -37,7 +37,11 @@
     "tsyringe": "^4.8.0",
     "ufo": "^1.5.4"
   },
+  "peerDependencies": {
+    "@google/generative-ai": "^0.21.0"
+  },
   "devDependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@tsconfig/recommended": "^1.0.8",
     "@types/bun": "^1.1.17",
     "@types/lodash": "^4.17.14",

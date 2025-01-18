@@ -10,6 +10,7 @@ export * from "./function-runner";
 export * from "./llm-agent";
 export * from "./llm-decision-agent";
 export * from "./llm-model";
+export * from "./llm-models/gemini-llm-model";
 export * from "./local-function-agent";
 export * from "./memorable";
 export * from "./open-api-agent";

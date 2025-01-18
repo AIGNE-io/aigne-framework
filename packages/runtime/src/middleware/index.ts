@@ -6,10 +6,10 @@ import { Router } from "express";
 import Joi from "joi";
 
 import logger from "../logger";
-import type { Runtime } from "../runtime";
+import type { AIGNERuntime } from "../runtime";
 import { runAgentWithStreaming } from "./agent";
 
-export function createMiddleware(runtime: Runtime): Router {
+export function createMiddleware(runtime: AIGNERuntime): Router {
   const router = Router();
 
   const runAgentPayloadSchema = Joi.object<{

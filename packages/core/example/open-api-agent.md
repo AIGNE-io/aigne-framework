@@ -47,3 +47,40 @@ const result = await agent.run({id: '1', message: 'hello', key: 'value'})
   body: undefined
 }
 ```
+
+## Use With Auth
+
+```typescript
+import {OpenAPIAgent} from '@aigne/core'
+import {Runtime} from '@aigne/runtime'
+
+const agent = OpenAPIAgent.create({
+  context: new Runtime(),
+  inputs: {
+    id: {
+      type: 'string',
+      required: true,
+      in: 'path',
+    },
+    message: {
+      type: 'string',
+      in: 'query',
+    },
+    key: {
+      type: 'string',
+      in: 'header',
+    },
+  },
+  outputs: {
+    $text: {type: 'string', required: true},
+  },
+  url: 'https://api.example.com/test/{id}',
+  method: 'get',
+  auth: {
+    type: 'basic',
+    token: '123456',
+  },
+})
+
+const result = await agent.run({id: '1', message: 'hello', key: 'value'})
+```

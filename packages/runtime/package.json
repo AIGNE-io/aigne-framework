@@ -1,0 +1,96 @@
+{
+  "name": "@aigne/runtime",
+  "version": "1.0.0",
+  "description": "AIGNE core library",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/blocklet/ai-studio#readme",
+  "license": "ISC",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./index.d.js",
+  "bin": {
+    "aigne-cli": "./lib/cjs/cmd/aigne-cli.js"
+  },
+  "files": [
+    "lib",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "./*.js",
+    "./*.cjs",
+    "./*.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blocklet/ai-studio.git"
+  },
+  "scripts": {
+    "build": "run-p build:*",
+    "build:cjs": "tsc --module commonjs --outDir lib/cjs",
+    "build:esm": "tsc --module es2022 --outDir lib/esm",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir lib/types",
+    "clean": "rimraf lib",
+    "test": "bun test",
+    "prepublishOnly": "run-s clean build"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs",
+      "types": "./index.d.ts"
+    },
+    "./client": {
+      "import": "./client.js",
+      "require": "./client.cjs",
+      "types": "./client.d.ts"
+    },
+    "./middleware": {
+      "import": "./middleware.js",
+      "require": "./middleware.cjs",
+      "types": "./middleware.d.ts"
+    },
+    "./cmd": {
+      "import": "./cmd.js",
+      "require": "./cmd.cjs",
+      "types": "./cmd.d.ts"
+    }
+  },
+  "dependencies": {
+    "@aigne/agent-v1": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@blocklet/ai-kit": "^0.1.66",
+    "@blocklet/js-sdk": "^1.16.37",
+    "@blocklet/quickjs": "^0.4.210",
+    "@blocklet/sdk": "^1.16.37",
+    "commander": "^13.0.0",
+    "compression": "^1.7.5",
+    "eventsource-parser": "^3.0.0",
+    "express": "^4.21.2",
+    "fs-extra": "^11.3.0",
+    "glob": "^11.0.1",
+    "immer": "^10.1.1",
+    "joi": "^17.13.3",
+    "lodash": "^4.17.21",
+    "nanoid": "^5.0.9",
+    "prettier": "^3.4.2",
+    "tsyringe": "^4.8.0",
+    "typescript": "^5.7.3",
+    "ufo": "^1.5.4",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@aryzing/bun-mock-fetch": "^0.2.2",
+    "@types/bun": "^1.1.17",
+    "@types/compression": "^1.7.5",
+    "@types/express": "^5.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/lodash": "^4.17.14",
+    "core-js": "^3.40.0",
+    "npm-run-all": "^4.1.5",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1"
+  }
+}

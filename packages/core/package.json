@@ -1,0 +1,46 @@
+{
+  "name": "@aigne/core",
+  "version": "1.0.0",
+  "description": "AIGNE core library",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/blocklet/ai-studio#readme",
+  "license": "ISC",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.js",
+  "files": ["lib", "LICENSE", "package.json", "README.md", "tsconfig.json"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blocklet/ai-studio.git"
+  },
+  "scripts": {
+    "build": "run-p build:*",
+    "build:cjs": "tsc --module commonjs --outDir lib/cjs",
+    "build:esm": "tsc --module es2022 --outDir lib/esm",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir lib/types",
+    "clean": "rimraf lib",
+    "prepublishOnly": "run-s clean build",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@types/mustache": "^4.2.5",
+    "lodash": "^4.17.21",
+    "mustache": "^4.2.0",
+    "nanoid": "^5.0.9",
+    "tsyringe": "^4.8.0",
+    "ufo": "^1.5.4"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.8",
+    "@types/bun": "^1.1.17",
+    "@types/lodash": "^4.17.14",
+    "core-js": "^3.40.0",
+    "npm-run-all": "^4.1.5",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  }
+}

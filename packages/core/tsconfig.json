@@ -1,10 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "noEmit": false,
-    "paths": {
-      "@aigne/core": ["../core/src"]
-    }
-  },
-  "include": ["src/**/*"]
+  "compilerOptions": {}
 }

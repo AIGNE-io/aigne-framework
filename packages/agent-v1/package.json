@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agent-v1",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "AIGNE agent v1 compatible with AIGNE Framework",
   "publishConfig": {
     "access": "public"
@@ -12,7 +12,9 @@
   "module": "./index.js",
   "types": "./index.d.js",
   "files": [
-    "lib",
+    "lib/cjs",
+    "lib/dts",
+    "lib/esm",
     "LICENSE",
     "package.json",
     "README.md",
@@ -25,10 +27,7 @@
     "url": "git+https://github.com/blocklet/ai-studio.git"
   },
   "scripts": {
-    "build": "run-p build:*",
-    "build:cjs": "tsc --module commonjs --outDir lib/cjs",
-    "build:esm": "tsc --module es2022 --outDir lib/esm",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outDir lib/types",
+    "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib",
     "prepublishOnly": "run-s clean build"
   },

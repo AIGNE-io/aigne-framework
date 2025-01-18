@@ -1,1 +1,1 @@
-export * from "./lib/types/cmd";
+export * from "./lib/dts/cmd";

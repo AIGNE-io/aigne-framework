@@ -1,7 +1,7 @@
 name: CI
 
 env:
-  NODE_OPTIONS: '--max_old_space_size=6144'
+  NODE_OPTIONS: "--max_old_space_size=6144"
 
 on:
   pull_request:
@@ -9,8 +9,10 @@ on:
       - main
 
 jobs:
-  Deploy:
+  lint_and_test:
     runs-on: ubuntu-latest
+
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
       - name: Checkout repo
@@ -31,9 +33,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-
-      - name: Build libs
-        run: pnpm build:libs
 
       - name: Lint
         run: pnpm lint

@@ -8,9 +8,9 @@ import {
 } from "@aigne/core";
 
 import type { ProjectDefinition } from "../runtime";
+import { DEFAULT_RUNTIME_ID } from "../utils/constants";
 import { Agent } from "./agent";
 import { getRunnableDefinition } from "./api/runtime";
-const DEFAULT_RUNTIME_ID = "default-runtime";
 export interface RuntimeOptions {
   id?: string;
 

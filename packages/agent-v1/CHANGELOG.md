@@ -1,3 +1,7 @@
+## 1.0.5 (2025-1-19)
+
+- fix: set default runtime id
+
 ## 1.0.4 (2025-1-19)
 
 - chore: rename OpenAILLMModel to OpenaiLLMModel

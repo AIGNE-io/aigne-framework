@@ -19,6 +19,8 @@ import { BlockletAPIAgent } from "../provider/blocklet-api-agent";
 import { BlockletLLMModel } from "../provider/blocklet-llm-model";
 import { QuickJSRunner } from "../provider/quickjs-runner";
 
+import { DEFAULT_RUNTIME_ID } from "../constants";
+
 export interface ProjectDefinition {
   id: string;
   name?: string;
@@ -78,13 +80,13 @@ export class AIGNERuntime<
   constructor(options: AIGNERuntimeOptions<Agents, State> = {}) {
     super({
       ...options,
-      id: options.id || options.projectDefinition?.id,
-      name: options.name || options.projectDefinition?.name,
+      id: options?.id || options?.projectDefinition?.id || DEFAULT_RUNTIME_ID,
+      name: options?.name || options?.projectDefinition?.name,
     });
 
     OrderedRecord.push(
       this.inner.runnableDefinitions,
-      ...OrderedRecord.toArray(options.projectDefinition?.runnables),
+      ...OrderedRecord.toArray(options?.projectDefinition?.runnables),
     );
 
     this.inner.container.register("blocklet_api_agent", {

@@ -7,10 +7,10 @@ import {
   isNonNullable,
 } from "@aigne/core";
 
+import { DEFAULT_RUNTIME_ID } from "../constants";
 import type { ProjectDefinition } from "../runtime";
 import { Agent } from "./agent";
 import { getRunnableDefinition } from "./api/runtime";
-
 export interface RuntimeOptions {
   id?: string;
 
@@ -23,13 +23,14 @@ export class Runtime<
   Config extends ContextConfig = ContextConfig,
 > implements Context<State>
 {
-  constructor(public readonly options: RuntimeOptions) {
-    const id = options.id || options.projectDefinition?.id;
+  constructor(public readonly options?: RuntimeOptions) {
+    const id =
+      options?.id || options?.projectDefinition?.id || DEFAULT_RUNTIME_ID;
     if (!id) throw new Error("Runtime id is required");
     this.id = id;
 
     this.agents = Object.fromEntries(
-      OrderedRecord.map(options.projectDefinition?.runnables, (agent) => {
+      OrderedRecord.map(options?.projectDefinition?.runnables, (agent) => {
         if (!agent.name) return null;
 
         return [agent.name, new Agent(this, agent)];

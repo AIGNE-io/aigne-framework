@@ -16,7 +16,7 @@ export interface BaseAuthConfig {
 
 export interface CustomAuthConfig {
   type: "custom";
-  getValue: () => Promise<AuthResult> | AuthResult;
+  auth: () => Promise<AuthResult> | AuthResult;
 }
 
 export type AuthConfig = BaseAuthConfig | CustomAuthConfig;

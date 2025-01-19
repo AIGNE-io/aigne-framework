@@ -1,43 +1,43 @@
-import "./utils/bun-polyfill";
-import "core-js";
-import "reflect-metadata";
+import './utils/bun-polyfill'
+import 'core-js'
+import 'reflect-metadata'
 
-import { LLMAgent, OpenaiLLMModel, Runtime } from "@aigne/core";
+import {LLMAgent, OpenaiLLMModel, Runtime} from '@aigne/core'
 
-const apiKey = process.env.OPENAI_API_KEY;
+const apiKey = process.env.OPENAI_API_KEY
 if (!apiKey) {
-  throw new Error("process.env.OPENAI_API_KEY is required");
+  throw new Error('process.env.OPENAI_API_KEY is required')
 }
 
 const agent = LLMAgent.create({
   context: new Runtime({
     llmModel: new OpenaiLLMModel({
-      model: "gpt-4o-mini",
+      model: 'gpt-4o-mini',
       apiKey,
     }),
   }),
   inputs: {
     question: {
-      type: "string",
+      type: 'string',
       required: true,
     },
   },
   outputs: {
     $text: {
-      type: "string",
+      type: 'string',
       required: true,
     },
   },
   messages: [
     {
-      role: "user",
-      content: "{{question}}",
+      role: 'user',
+      content: '{{question}}',
     },
   ],
-});
+})
 
-const result = await agent.run({ question: "hello" }, { stream: true });
+const result = await agent.run({question: 'hello'}, {stream: true})
 
 for await (const message of result) {
-  process.stdout.write(message.$text || "");
+  process.stdout.write(message.$text || '')
 }

@@ -10,7 +10,7 @@ import {
 import type { ProjectDefinition } from "../runtime";
 import { Agent } from "./agent";
 import { getRunnableDefinition } from "./api/runtime";
-
+const DEFAULT_RUNTIME_ID = "default-runtime";
 export interface RuntimeOptions {
   id?: string;
 
@@ -25,7 +25,7 @@ export class Runtime<
 {
   constructor(public readonly options?: RuntimeOptions) {
     const id =
-      options?.id || options?.projectDefinition?.id || "default-runtime";
+      options?.id || options?.projectDefinition?.id || DEFAULT_RUNTIME_ID;
     if (!id) throw new Error("Runtime id is required");
     this.id = id;
 

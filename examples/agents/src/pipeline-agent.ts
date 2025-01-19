@@ -1,30 +1,30 @@
-import 'core-js'
-import 'reflect-metadata'
+import "core-js";
+import "reflect-metadata";
 
-import {PipelineAgent, LocalFunctionAgent, Runtime} from '@aigne/core'
+import { LocalFunctionAgent, PipelineAgent, Runtime } from "@aigne/core";
 
-const context = new Runtime()
+const context = new Runtime();
 
 const agent = PipelineAgent.create({
   context,
   inputs: {
     question: {
-      type: 'string',
+      type: "string",
       required: true,
     },
   },
   outputs: {
     $text: {
-      type: 'string',
+      type: "string",
       required: true,
-      fromVariable: 'step1',
-      fromVariablePropPath: ['$text'],
+      fromVariable: "step1",
+      fromVariablePropPath: ["$text"],
     },
     result: {
-      type: 'number',
+      type: "number",
       required: true,
-      fromVariable: 'step2',
-      fromVariablePropPath: ['length'],
+      fromVariable: "step2",
+      fromVariablePropPath: ["length"],
     },
   },
   processes: {
@@ -33,23 +33,23 @@ const agent = PipelineAgent.create({
         context,
         inputs: {
           question: {
-            type: 'string',
+            type: "string",
             required: true,
           },
         },
         outputs: {
           $text: {
-            type: 'string',
+            type: "string",
             required: true,
           },
         },
-        function: async ({question}) => {
-          return {$text: `step1: ${question}`}
+        function: async ({ question }) => {
+          return { $text: `step1: ${question}` };
         },
       }),
       input: {
         question: {
-          fromVariable: 'question',
+          fromVariable: "question",
         },
       },
     },
@@ -58,30 +58,30 @@ const agent = PipelineAgent.create({
         context,
         inputs: {
           str: {
-            type: 'string',
+            type: "string",
             required: true,
           },
         },
         outputs: {
           length: {
-            type: 'number',
+            type: "number",
             required: true,
           },
         },
-        function: async ({str}) => {
-          return {length: str.length}
+        function: async ({ str }) => {
+          return { length: str.length };
         },
       }),
       input: {
         str: {
-          fromVariable: 'step1',
-          fromVariablePropPath: ['$text'],
+          fromVariable: "step1",
+          fromVariablePropPath: ["$text"],
         },
       },
     },
   },
-})
+});
 
-const result = await agent.run({question: 'hello'})
+const result = await agent.run({ question: "hello" });
 
-console.log(result)
+console.log(result);

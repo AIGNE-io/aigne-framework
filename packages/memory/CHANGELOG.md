@@ -1,3 +1,10 @@
+## 1.0.4 (2025-1-19)
+
+- chore: rename OpenAILLMModel to OpenaiLLMModel
+- feat: add OpenAILLMModel support
+- feat: add GeminiLLMModel support
+- chore: add examples project with a local function agent example
+
 ## 1.0.3 (2025-1-19)
 
 - fix: enable es module interop for cjs bundle

@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { Command, program } from "commander";
 import { existsSync, writeFileSync } from "fs-extra";
 
-import { Runtime } from "../runtime";
+import { AIGNERuntime } from "../runtime";
 import { generateWrapperCode } from "./utils/generate-wrapper-code";
 
 program
@@ -17,7 +17,7 @@ program
           throw new Error(`Invalid project path: ${project}`);
         }
         (async () => {
-          const runtime = await Runtime.load({ path: project });
+          const runtime = await AIGNERuntime.load({ path: project });
           const files = await generateWrapperCode(
             runtime.options.projectDefinition!,
           );

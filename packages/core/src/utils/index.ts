@@ -6,5 +6,6 @@ export * from "./nullable";
 export * from "./omit";
 export * from "./open-api-parameter";
 export * from "./ordered-map";
+export * from "./partial";
 export * from "./stream-utils";
 export * from "./union";

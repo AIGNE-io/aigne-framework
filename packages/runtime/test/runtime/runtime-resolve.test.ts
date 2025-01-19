@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
 import { LocalFunctionAgent } from "@aigne/core";
 
-import { Runtime } from "../../src";
+import { AIGNERuntime } from "../../src";
 
 test("Runtime.resolve from a runnable", async () => {
-  const runtime = new Runtime({});
+  const runtime = new AIGNERuntime({});
 
   const agent = LocalFunctionAgent.create({
     name: "test",
@@ -31,7 +31,7 @@ test("Runtime.resolve from a runnable", async () => {
 });
 
 test("Runtime.resolve from a runnable definition", async () => {
-  const runtime = new Runtime({});
+  const runtime = new AIGNERuntime({});
 
   const agent = LocalFunctionAgent.create({
     name: "test",

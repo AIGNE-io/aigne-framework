@@ -1,0 +1,15 @@
+{
+  "name": "@aigne-examples/agents",
+  "version": "1.0.0",
+  "description": "A collection of example agents demonstrating the capabilities of the Aigne framework.",
+  "private": true,
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aigne/core": "workspace:^",
+    "@aigne/memory": "workspace:^",
+    "@aigne/runtime": "workspace:^"
+  }
+}

@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
 import { LocalFunctionAgent, OrderedRecord, TYPES } from "@aigne/core";
 
-import { Runtime } from "../../src";
+import { AIGNERuntime } from "../../src";
 
 test("Runtime.copy", async () => {
-  const runtime = new Runtime({
+  const runtime = new AIGNERuntime({
     id: "test",
     name: "test",
     projectDefinition: {
@@ -25,17 +25,17 @@ test("Runtime.copy", async () => {
 
   const copy: typeof runtime = runtime.copy({ state: { userId: "foo" } });
 
-  expect(copy.inner).toBe(runtime.inner);
+  expect(copy["inner"]).toBe(runtime["inner"]);
 
   expect(copy.id).toBe(runtime.id);
-  expect(copy.name).toEqual(runtime.name);
+  expect(copy.name).toEqual(runtime.name!);
 
   expect(runtime.state).toEqual({});
   expect(copy.state).toEqual({ userId: "foo" });
 });
 
 test("Runtime.copy.resolve should resolve with new state and config", async () => {
-  const runtime = new Runtime({
+  const runtime = new AIGNERuntime({
     id: "test",
     name: "test",
     projectDefinition: {
@@ -81,7 +81,7 @@ test("Runtime.copy.resolve should resolve with new state and config", async () =
     },
   });
 
-  expect(copy.resolveDependency<Runtime>(TYPES.context)).toBe(copy);
+  expect(copy.resolveDependency<AIGNERuntime>(TYPES.context)).toBe(copy);
 
   expect(await copy.resolve(agent.id).then((a) => a.run({}))).toEqual({
     state: { userId: "foo" },

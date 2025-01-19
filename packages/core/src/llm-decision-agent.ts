@@ -78,7 +78,6 @@ export class LLMDecisionAgent<
     }
 
     const {toolCalls} = await model.run(llmInputs)
-    console.log(toolCalls)
 
     // TODO: support run multiple calls
 

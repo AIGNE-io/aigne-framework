@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import {
   type Content,
   FunctionCallingMode,
@@ -36,17 +37,13 @@ export class GeminiLLMModel extends LLMModel {
 
   private model: GenerativeModel;
 
-  async fetch(input: LLMModelInputs) {
-    return await this.model.generateContentStream({
+  async *process(input: LLMModelInputs) {
+    const res = await this.model.generateContentStream({
       contents: await contentsFromInputMessages(input.messages),
       tools: toolsFromInputTools(input.tools),
       toolConfig: toolConfigFromInputToolChoice(input.toolChoice),
       generationConfig: generationConfigFromInput(input),
     });
-  }
-
-  async *process(input: LLMModelInputs) {
-    const res = await this.fetch(input);
 
     const toolCalls: LLMModelOutputs["toolCalls"] = [];
 

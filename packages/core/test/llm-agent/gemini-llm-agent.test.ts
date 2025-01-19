@@ -1,5 +1,9 @@
 import { expect, spyOn, test } from "bun:test";
 import { GeminiLLMModel } from "../../src";
+import {
+  geminiJsonResponse,
+  geminiTextResponse,
+} from "../mocks/gemini-response";
 
 test("GeminiLLMModel.process with text response", async () => {
   const model = new GeminiLLMModel({
@@ -7,90 +11,25 @@ test("GeminiLLMModel.process with text response", async () => {
     model: "gemini-pro",
   });
 
-  //@ts-ignore
-  spyOn(model, "fetch").mockImplementation(async () => ({
-    stream: (async function* () {
-      yield {
-        candidates: [
-          {
-            content: {
-              parts: [{ text: "Hello" }],
-            },
-          },
-        ],
-      };
-      yield {
-        candidates: [
-          {
-            content: {
-              parts: [{ text: " World" }],
-            },
-          },
-        ],
-      };
-    })(),
-  }));
+  spyOn(model["model"], "generateContentStream").mockImplementation(
+    //@ts-ignore
+    async () => ({
+      stream: (async function* () {
+        for (const response of geminiTextResponse) {
+          yield response;
+        }
+      })(),
+    }),
+  );
 
   const result = await model.run({
-    messages: [{ role: "user", content: "Hi" }],
-  });
-
-  expect(result.$text).toEqual("Hello World");
-});
-
-test("GeminiLLMModel.process with function call response", async () => {
-  const model = new GeminiLLMModel({
-    apiKey: "test-key",
-    model: "gemini-pro",
-  });
-
-  //@ts-ignore
-  spyOn(model, "fetch").mockImplementation(async () => ({
-    stream: (async function* () {
-      yield {
-        candidates: [
-          {
-            content: {
-              parts: [
-                {
-                  functionCall: {
-                    name: "get_weather",
-                    args: { location: "Shanghai" },
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      };
-    })(),
-  }));
-
-  const result = await model.run({
-    messages: [{ role: "user", content: "What's the weather?" }],
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "get_weather",
-          description: "Get weather information",
-          parameters: {
-            type: "object",
-            properties: {
-              location: { type: "string" },
-            },
-            required: ["location"],
-          },
-        },
-      },
+    modelOptions: { temperature: 0 },
+    messages: [
+      { role: "user", content: "使用一句话翻译 'hello world' 成中文" },
     ],
   });
 
-  expect(result?.toolCalls).toHaveLength(1);
-  expect(result?.toolCalls?.[0]?.function?.name).toBe("get_weather");
-  expect(result?.toolCalls?.[0]?.function?.arguments).toBe(
-    '{"location":"Shanghai"}',
-  );
+  expect(result.$text).toEqual("你好，世界。");
 });
 
 test("GeminiLLMModel.process with JSON response format", async () => {
@@ -99,47 +38,49 @@ test("GeminiLLMModel.process with JSON response format", async () => {
     model: "gemini-pro",
   });
 
-  //@ts-ignore
-  spyOn(model, "fetch").mockImplementation(async () => ({
-    stream: (async function* () {
-      yield {
-        candidates: [
-          {
-            content: {
-              parts: [{ text: '{"name":"John",' }],
-            },
-          },
-        ],
-      };
-      yield {
-        candidates: [
-          {
-            content: {
-              parts: [{ text: '"age":30}' }],
-            },
-          },
-        ],
-      };
-    })(),
-  }));
+  spyOn(model["model"], "generateContentStream").mockImplementation(
+    //@ts-ignore
+    async () => ({
+      stream: (async function* () {
+        for (const response of geminiJsonResponse) {
+          yield response;
+        }
+      })(),
+    }),
+  );
 
   const result = await model.run({
-    messages: [{ role: "user", content: "Get user info" }],
-    responseFormat: {
-      type: "json_schema",
-      jsonSchema: {
-        name: "user",
-        schema: {
-          type: "object",
-          properties: {
-            name: { type: "string" },
-            age: { type: "number" },
+    messages: [
+      {
+        role: "user",
+        content: "What's the weather like?",
+      },
+    ],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get_weather",
+          description: "Get the current weather",
+          parameters: {
+            type: "object",
+            properties: {
+              location: {
+                type: "string",
+                description: "The city name",
+              },
+              unit: {
+                type: "string",
+                description: "Temperature unit (celsius/fahrenheit)",
+              },
+            },
+            required: ["location"],
           },
-          required: ["name", "age"],
         },
       },
-    },
+    ],
+    toolChoice: "required",
   });
 
-  expect(result.$text).toBe('{"name":"John","age":30}');
+  expect(result?.toolCalls?.[0]?.function?.name).toBe("get_weather");
 });

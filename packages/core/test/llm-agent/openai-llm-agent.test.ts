@@ -10,6 +10,7 @@ test("OpenaiLLMModel.process with text response", async () => {
   });
 
   spyOn(model["client"]["chat"]["completions"], "create").mockImplementation(
+    //@ts-ignore
     async function* () {
       for (const response of llmTextResponse) {
         yield response;
@@ -33,6 +34,7 @@ test("OpenaiLLMModel.process with JSON response format", async () => {
   });
 
   spyOn(model["client"]["chat"]["completions"], "create").mockImplementation(
+    //@ts-ignore
     async function* () {
       for (const response of llmJsonResponse) {
         yield response;

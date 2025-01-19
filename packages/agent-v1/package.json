@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agent-v1",
-  "version": "1.0.6",
+  "version": "1.0.7-beta.1",
   "description": "AIGNE agent v1 compatible with AIGNE Framework",
   "publishConfig": {
     "access": "public"

@@ -44,7 +44,7 @@ async function getAuthParams(auth?: AuthConfig): Promise<AuthResult> {
   if (!auth) return {};
 
   if (auth.type === "custom") {
-    return await auth.getValue();
+    return await auth.auth();
   }
 
   const { type, key, token } = auth;

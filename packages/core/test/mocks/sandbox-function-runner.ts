@@ -1,18 +1,20 @@
 import {
   type ContextState,
-  FunctionRunner,
-  type FunctionRunnerInput,
   type MemoryItemWithScore,
   type RunnableResponseChunk,
-} from "@aigne/core";
+  SandboxFunctionRunner,
+  type SandboxFunctionRunnerInput,
+} from "../../src";
 
-export class MockFunctionRunner<
+export class MockSandboxFunctionRunner<
   I extends { [name: string]: any } = {},
   O extends { [name: string]: any } = {},
   Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
-> extends FunctionRunner<I, O, Memories, State> {
-  override async *process(input: FunctionRunnerInput<I, Memories, State>) {
+> extends SandboxFunctionRunner<I, O, Memories, State> {
+  override async *process(
+    input: SandboxFunctionRunnerInput<I, Memories, State>,
+  ) {
     const args = { ...input.input, ...input.memories, $context: input.context };
 
     const argKeys = Object.keys(args);

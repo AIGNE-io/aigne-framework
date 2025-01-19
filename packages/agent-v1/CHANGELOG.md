@@ -1,3 +1,8 @@
+## 1.0.6 (2025-1-20)
+
+- chore: add streaming case for function agent
+- refactor: rename LocalFunctionAgent to FunctionAgent
+
 ## 1.0.5 (2025-1-19)
 
 - fix: set default runtime id

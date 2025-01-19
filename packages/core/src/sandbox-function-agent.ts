@@ -14,14 +14,11 @@ import {
   toRunnableMemories,
 } from "./definitions/memory";
 import type { MemorableSearchOutput, MemoryItemWithScore } from "./memorable";
-import type {
-  RunnableDefinition,
-  RunnableResponse,
-  RunnableResponseChunk,
-} from "./runnable";
+import type { RunnableDefinition } from "./runnable";
+import type { SandboxFunctionRunner } from "./sandbox-function-runner";
 
 @injectable()
-export class LocalFunctionAgent<
+export class SandboxFunctionAgent<
   I extends { [name: string]: any } = {},
   O extends { [name: string]: any } = {},
   Memories extends { [name: string]: MemoryItemWithScore[] } = {},
@@ -31,59 +28,41 @@ export class LocalFunctionAgent<
 
   constructor(
     @inject(TYPES.definition)
-    public override definition: LocalFunctionAgentDefinition<
-      I,
-      O,
-      Memories,
-      State
-    >,
+    public override definition: SandboxFunctionAgentDefinition,
     @inject(TYPES.context) context?: Context<State>,
+    @inject(TYPES.sandboxFunctionRunner)
+    public runner?: SandboxFunctionRunner<I, O, Memories, State>,
   ) {
     super(definition, context);
+    this.runner ??= context?.resolveDependency(TYPES.sandboxFunctionRunner);
   }
 
   async process(input: I, options: AgentProcessOptions<Memories>) {
     const {
-      definition: { function: func },
+      definition: { language, code, ...definition },
+      runner,
       context,
     } = this;
 
-    if (!func) throw new Error("Function is required");
+    if (!runner) throw new Error("Sandbox function runner is required");
+    if (!code) throw new Error("Code is required");
     if (!context) throw new Error("Context is required");
 
-    return await func(input, { context, memories: options.memories });
+    return await runner.run(
+      {
+        name: definition.name || definition.id,
+        language,
+        code,
+        input,
+        memories: options.memories,
+        context: { state: context.state },
+      },
+      { stream: true },
+    );
   }
 }
 
-export interface LocalFunctionAgentDefinition<
-  I extends { [name: string]: any },
-  O extends { [name: string]: any },
-  Memories extends { [name: string]: MemoryItemWithScore[] },
-  State extends ContextState,
-> extends RunnableDefinition {
-  type: "local_function_agent";
-
-  function?: LocalFunctionFuncType<I, O, Memories, State>;
-}
-
-export type LocalFunctionFuncType<
-  I extends { [name: string]: any },
-  O extends { [name: string]: any },
-  Memories extends { [name: string]: MemoryItemWithScore[] },
-  State extends ContextState,
-> = (
-  input: I,
-  options: {
-    memories: Memories;
-    context: Context<State>;
-  },
-) =>
-  | Promise<
-      RunnableResponse<O> | AsyncGenerator<RunnableResponseChunk<O>, void>
-    >
-  | AsyncGenerator<RunnableResponseChunk<O>, void>;
-
-export interface CreateLocalFunctionAgentOptions<
+export interface CreateSandboxFunctionAgentOptions<
   I extends { [name: string]: DataTypeSchema },
   O extends { [name: string]: DataTypeSchema },
   Memories extends { [name: string]: CreateRunnableMemory<I> },
@@ -99,15 +78,12 @@ export interface CreateLocalFunctionAgentOptions<
 
   memories?: Memories;
 
-  function?: LocalFunctionFuncType<
-    SchemaMapType<I>,
-    SchemaMapType<O>,
-    { [key in keyof Memories]: MemorableSearchOutput<Memories[key]["memory"]> },
-    State
-  >;
+  language?: string;
+
+  code: string;
 }
 
-function create<
+export function create<
   I extends { [name: string]: DataTypeSchema },
   O extends { [name: string]: DataTypeSchema },
   Memories extends { [name: string]: CreateRunnableMemory<I> },
@@ -115,29 +91,44 @@ function create<
 >({
   context,
   ...options
-}: CreateLocalFunctionAgentOptions<I, O, Memories, State>): LocalFunctionAgent<
+}: CreateSandboxFunctionAgentOptions<
+  I,
+  O,
+  Memories,
+  State
+>): SandboxFunctionAgent<
   SchemaMapType<I>,
   SchemaMapType<O>,
-  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> },
+  {
+    [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]>;
+  },
   State
 > {
   const agentId = options.name || nanoid();
 
   const inputs = schemaToDataType(options.inputs);
   const outputs = schemaToDataType(options.outputs);
+  const memories = toRunnableMemories(agentId, inputs, options.memories ?? {});
 
-  const memories = toRunnableMemories(agentId, inputs, options.memories || {});
-
-  return new LocalFunctionAgent(
+  return new SandboxFunctionAgent(
     {
       id: agentId,
       name: options.name,
-      type: "local_function_agent",
+      type: "sandbox_function_agent",
       inputs,
       outputs,
       memories,
-      function: options.function,
+      language: options.language,
+      code: options.code,
     },
     context,
   );
+}
+
+export interface SandboxFunctionAgentDefinition extends RunnableDefinition {
+  type: "sandbox_function_agent";
+
+  language?: string;
+
+  code?: string;
 }

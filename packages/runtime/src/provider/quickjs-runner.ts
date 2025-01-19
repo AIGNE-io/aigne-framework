@@ -1,13 +1,18 @@
 import crypto from "node:crypto";
 
-import { FunctionRunner, type FunctionRunnerInput } from "@aigne/core";
+import {
+  SandboxFunctionRunner,
+  type SandboxFunctionRunnerInput,
+} from "@aigne/core";
 import { Sandbox } from "@blocklet/quickjs/sandbox";
 import { call, getComponentMountPoint } from "@blocklet/sdk/lib/component";
 import config from "@blocklet/sdk/lib/config";
 import pick from "lodash/pick";
+import { injectable } from "tsyringe";
 
-export class QuickJSRunner extends FunctionRunner {
-  async process(input: FunctionRunnerInput) {
+@injectable()
+export class QuickJSRunner extends SandboxFunctionRunner {
+  async process(input: SandboxFunctionRunnerInput) {
     if (
       input.language &&
       input.language !== "javascript" &&

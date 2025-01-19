@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
+import { nanoid } from "nanoid";
 
-import { FunctionAgent, type MemoryItemWithScore } from "../../src";
-import { MockContext } from "../mocks/context";
+import { FunctionAgent, type MemoryItemWithScore, Runtime } from "../../src";
 import { MockMemory } from "../mocks/memory";
 
 const memory: MemoryItemWithScore = {
@@ -16,12 +16,12 @@ const memory: MemoryItemWithScore = {
 test("FunctionAgent.run with memory", async () => {
   const history = new MockMemory();
 
-  spyOn(history, "search").mockImplementation(async () => {
+  const search = spyOn(history, "search").mockImplementation(async () => {
     return { results: [memory] };
   });
 
   const agent = FunctionAgent.create({
-    context: new MockContext(),
+    context: new Runtime(),
     inputs: {
       question: {
         type: "string",
@@ -34,7 +34,7 @@ test("FunctionAgent.run with memory", async () => {
         required: true,
       },
       memories: {
-        type: "array",
+        type: "object",
         required: true,
       },
     },
@@ -43,28 +43,67 @@ test("FunctionAgent.run with memory", async () => {
         memory: history,
       },
     },
-    code: `\
-yield { $text: 'ECHO: ' }
-yield { $text: \`\${question} \` }
-yield { delta: { memories: history } };
-`,
+    function: async ({ question }, { memories }) => {
+      return { $text: `ECHO: ${question}`, memories };
+    },
   });
 
-  const reader = (
-    await agent.run({ question: "hello" }, { stream: true })
-  ).getReader();
+  const result = await agent.run({ question: "hello" });
+  expect(result).toEqual({
+    $text: "ECHO: hello",
+    memories: { history: [memory] },
+  });
 
-  expect(await reader.read()).toEqual({
-    value: { $text: "ECHO: " },
-    done: false,
+  expect(search).toHaveBeenCalledWith(
+    "question hello",
+    expect.objectContaining({}),
+  );
+});
+
+test("FunctionAgent.run with custom memory options", async () => {
+  const userId = nanoid();
+
+  const history = new MockMemory();
+
+  const search = spyOn(history, "search").mockImplementation(async () => {
+    return { results: [memory] };
   });
-  expect(await reader.read()).toEqual({
-    value: { $text: "hello " },
-    done: false,
+
+  const agent = FunctionAgent.create({
+    context: new Runtime({ state: { userId } }),
+    inputs: {
+      question: {
+        type: "string",
+        required: true,
+      },
+    },
+    outputs: {
+      $text: {
+        type: "string",
+        required: true,
+      },
+    },
+    memories: {
+      history: {
+        memory: history,
+        query: {
+          fromVariable: "question",
+        },
+        options: {
+          k: 20,
+        },
+      },
+    },
+    function: async ({ question }) => {
+      return { $text: `ECHO: ${question}` };
+    },
   });
-  expect(await reader.read()).toEqual({
-    value: { delta: { memories: [memory] } },
-    done: false,
-  });
-  expect(await reader.read()).toEqual({ value: undefined, done: true });
+
+  const result = await agent.run({ question: "hello" });
+  expect(result).toEqual({ $text: "ECHO: hello" });
+
+  expect(search).toHaveBeenCalledWith(
+    "hello",
+    expect.objectContaining({ k: 20, userId }),
+  );
 });

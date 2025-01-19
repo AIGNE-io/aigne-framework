@@ -1,17 +1,11 @@
 import { expect, test } from "bun:test";
-import { FunctionAgent, OrderedRecord, TYPES } from "@aigne/core";
 
-import { AIGNERuntime } from "../../src";
+import { FunctionAgent, Runtime, TYPES } from "../../src";
 
 test("Runtime.copy", async () => {
-  const runtime = new AIGNERuntime({
+  const runtime = new Runtime({
     id: "test",
     name: "test",
-    projectDefinition: {
-      id: "test",
-      name: "test",
-      runnables: OrderedRecord.fromArray([]),
-    },
     config: {
       llmModel: {
         default: {
@@ -35,14 +29,9 @@ test("Runtime.copy", async () => {
 });
 
 test("Runtime.copy.resolve should resolve with new state and config", async () => {
-  const runtime = new AIGNERuntime({
+  const runtime = new Runtime({
     id: "test",
     name: "test",
-    projectDefinition: {
-      id: "test",
-      name: "test",
-      runnables: OrderedRecord.fromArray([]),
-    },
     state: {},
     config: {},
   });
@@ -64,6 +53,8 @@ test("Runtime.copy.resolve should resolve with new state and config", async () =
     },
   });
 
+  console.log("agent", agent);
+
   expect(await agent.run({})).toEqual({ state: {}, config: {} });
   expect(await runtime.resolve(agent.id).then((a) => a.run({}))).toEqual({
     state: {},
@@ -81,7 +72,7 @@ test("Runtime.copy.resolve should resolve with new state and config", async () =
     },
   });
 
-  expect(copy.resolveDependency<AIGNERuntime>(TYPES.context)).toBe(copy);
+  expect(copy.resolveDependency<Runtime>(TYPES.context)).toBe(copy);
 
   expect(await copy.resolve(agent.id).then((a) => a.run({}))).toEqual({
     state: { userId: "foo" },

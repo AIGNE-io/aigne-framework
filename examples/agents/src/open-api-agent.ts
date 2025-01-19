@@ -4,9 +4,10 @@ import "reflect-metadata";
 import { OpenAPIAgent, Runtime } from "@aigne/core";
 
 const context = new Runtime();
-// eg: https://open-meteo.com/
+
 const agent = OpenAPIAgent.create({
   context,
+  name: "weather_forecast",
   inputs: {
     version: {
       type: "string",
@@ -21,30 +22,45 @@ const agent = OpenAPIAgent.create({
       type: "number",
       in: "query",
     },
-    current: {
-      type: "string",
-      in: "query",
-    },
-    hourly: {
-      type: "string",
-      in: "query",
-    },
   },
   outputs: {
-    $text: {
-      type: "string",
+    current_units: {
+      type: "object",
       required: true,
+      properties: {
+        time: {
+          type: "string",
+          required: true,
+        },
+        temperature_2m: {
+          type: "string",
+          required: true,
+        },
+      },
+    },
+    current: {
+      type: "object",
+      required: true,
+      properties: {
+        time: {
+          type: "string",
+          required: true,
+        },
+        temperature_2m: {
+          type: "number",
+          required: true,
+        },
+      },
     },
   },
-  url: "https://api.open-meteo.com/{version}/forecast",
+  url: "https://api.open-meteo.com/{version}/forecast?current=temperature_2m",
   method: "get",
 });
 
 const result = await agent.run({
   version: "v1",
-  latitude: 52.52,
-  longitude: 13.41,
-  current: "temperature_2m",
-  hourly: "temperature_2m",
+  latitude: 24.8797,
+  longitude: 102.8332,
 });
+
 console.log(result);

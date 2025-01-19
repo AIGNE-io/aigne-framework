@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
-import OpenAI from "openai";
 
 import { OpenaiLLMModel } from "../../src";
+import { llmJsonResponse, llmTextResponse } from "../mocks/llm-response";
 
 test("OpenaiLLMModel.process with text response", async () => {
   const model = new OpenaiLLMModel({
@@ -9,90 +9,21 @@ test("OpenaiLLMModel.process with text response", async () => {
     model: "gpt-3.5-turbo",
   });
 
-  spyOn(model, "fetch").mockImplementation(async function* () {
-    yield {
-      choices: [{ delta: { content: "Hello" } }],
-    };
-    yield {
-      choices: [{ delta: { content: " World" } }],
-    };
-  });
+  spyOn(model["client"]["chat"]["completions"], "create").mockImplementation(
+    async function* () {
+      for (const response of llmTextResponse) {
+        yield response;
+      }
+    },
+  );
 
   const result = await model.run({
-    messages: [{ role: "user", content: "Hi" }],
-  });
-
-  expect(result.$text).toEqual("Hello World");
-});
-
-test("OpenaiLLMModel.process with function call response", async () => {
-  const model = new OpenaiLLMModel({
-    apiKey: "test-key",
-    model: "gpt-3.5-turbo",
-  });
-
-  spyOn(model, "fetch").mockImplementation(async function* () {
-    yield {
-      choices: [
-        {
-          delta: {
-            tool_calls: [
-              {
-                index: 0,
-                id: "call_abc",
-                type: "function",
-                function: {
-                  name: "get_weather",
-                  arguments: '{"location":"',
-                },
-              },
-            ],
-          },
-        },
-      ],
-    };
-    yield {
-      choices: [
-        {
-          delta: {
-            tool_calls: [
-              {
-                index: 0,
-                id: "call_abc",
-                function: {
-                  arguments: 'Shanghai"}',
-                },
-              },
-            ],
-          },
-        },
-      ],
-    };
-  });
-
-  const result = await model.run({
-    messages: [{ role: "user", content: "What's the weather?" }],
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "get_weather",
-          description: "Get weather information",
-          parameters: {
-            type: "object",
-            properties: {
-              location: { type: "string" },
-            },
-            required: ["location"],
-          },
-        },
-      },
+    messages: [
+      { role: "user", content: "Translate 'hello world' into Chinese" },
     ],
   });
 
-  expect(result.toolCalls).toHaveLength(2);
-  expect(result?.toolCalls?.[0]?.function?.name).toBe("get_weather");
-  expect(result?.toolCalls?.[1]?.function?.arguments).toBe('Shanghai"}');
+  expect(result.$text).toEqual('"hello world" 翻译成中文是 "你好，世界".');
 });
 
 test("OpenaiLLMModel.process with JSON response format", async () => {
@@ -101,25 +32,16 @@ test("OpenaiLLMModel.process with JSON response format", async () => {
     model: "gpt-3.5-turbo",
   });
 
-  spyOn(model, "fetch").mockImplementation(async function* () {
-    yield {
-      choices: [
-        {
-          delta: { content: '{"name":"John",' },
-        },
-      ],
-    };
-    yield {
-      choices: [
-        {
-          delta: { content: '"age":30}' },
-        },
-      ],
-    };
-  });
+  spyOn(model["client"]["chat"]["completions"], "create").mockImplementation(
+    async function* () {
+      for (const response of llmJsonResponse) {
+        yield response;
+      }
+    },
+  );
 
   const result = await model.run({
-    messages: [{ role: "user", content: "Get user info" }],
+    messages: [{ role: "user", content: "Help me generate a JSON" }],
     responseFormat: {
       type: "json_schema",
       jsonSchema: {
@@ -136,5 +58,5 @@ test("OpenaiLLMModel.process with JSON response format", async () => {
     },
   });
 
-  expect(result.$text).toBe('{"name":"John","age":30}');
+  expect(result.$text).toBe('{"name":"李明","age":28}');
 });

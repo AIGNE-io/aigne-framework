@@ -3,7 +3,7 @@ import type { Context, ContextState } from "./context";
 import type { MemoryItemWithScore } from "./memorable";
 import { OrderedRecord } from "./utils";
 
-export interface FunctionRunnerInput<
+export interface SandboxFunctionRunnerInput<
   I extends { [name: string]: any } = {},
   Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
@@ -16,23 +16,23 @@ export interface FunctionRunnerInput<
   context: Pick<Context<State>, "state">;
 }
 
-export type FunctionRunnerOutput<O> = O;
+export type SandboxFunctionRunnerOutput<O> = O;
 
-export abstract class FunctionRunner<
+export abstract class SandboxFunctionRunner<
   I extends { [name: string]: any } = {},
   O extends { [name: string]: any } = {},
   Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
 > extends Agent<
-  FunctionRunnerInput<I, Memories, State>,
-  FunctionRunnerOutput<O>
+  SandboxFunctionRunnerInput<I, Memories, State>,
+  SandboxFunctionRunnerOutput<O>
 > {
   constructor(context?: Context) {
     super(
       {
-        id: "function_runner",
-        type: "function_runner",
-        name: "Function Runner",
+        id: "sandbox_function_runner",
+        type: "sandbox_function_runner",
+        name: "Sandbox Function Runner",
         description: "Run a function",
         inputs: OrderedRecord.fromArray([
           { id: "name", name: "name", type: "string", required: true },

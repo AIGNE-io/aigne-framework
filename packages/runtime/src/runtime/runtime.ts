@@ -106,8 +106,8 @@ export class AIGNERuntime<
     }
 
     this.inner.registerDependency(
-      TYPES.functionRunner,
-      options.functionRunner || QuickJSRunner,
+      TYPES.sandboxFunctionRunner,
+      options.sandboxFunctionRunner || QuickJSRunner,
     );
     this.inner.registerDependency(
       TYPES.llmModel,

@@ -1,10 +1,8 @@
 import { expect, test } from "bun:test";
-import { FunctionAgent } from "@aigne/core";
-
-import { AIGNERuntime } from "../../src";
+import { FunctionAgent, Runtime } from "../../src";
 
 test("Runtime.resolve from a runnable", async () => {
-  const runtime = new AIGNERuntime({});
+  const runtime = new Runtime({});
 
   const agent = FunctionAgent.create({
     name: "test",
@@ -31,7 +29,7 @@ test("Runtime.resolve from a runnable", async () => {
 });
 
 test("Runtime.resolve from a runnable definition", async () => {
-  const runtime = new AIGNERuntime({});
+  const runtime = new Runtime({});
 
   const agent = FunctionAgent.create({
     name: "test",

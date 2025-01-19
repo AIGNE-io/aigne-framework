@@ -1,13 +1,12 @@
 import { expect, spyOn, test } from "bun:test";
 
-import { LLMAgent } from "../../src";
-import { MockContext } from "../mocks/context";
+import { LLMAgent, Runtime } from "../../src";
 import { MockLLMModel } from "../mocks/llm-model";
 
 test("LLMAgent.run", async () => {
   const llmModel = new MockLLMModel();
 
-  const context = new MockContext({ llmModel });
+  const context = new Runtime({ llmModel });
 
   const agent = LLMAgent.create({
     context,

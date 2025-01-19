@@ -1,13 +1,13 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import { mockFetch } from "@aryzing/bun-mock-fetch";
 
+import { Runtime } from "@aigne/core";
 import { BlockletAPIAgent } from "../../src/provider/blocklet-api-agent";
 import {
   BlockletOpenAPIResponse,
   openAPITestInputs,
   openAPITestOutputs,
 } from "../mocks/blocklet-open-api";
-import { MockContext } from "../mocks/context";
 
 const appUrl = "https://api.example.com";
 
@@ -28,7 +28,7 @@ const apiId = testAPI.get["x-id"];
 
 test("BlockletAPIAgent.run with get method", async () => {
   const agent = BlockletAPIAgent.create({
-    context: new MockContext({ state: { loginToken: "test_login_token" } }),
+    context: new Runtime({ state: { loginToken: "test_login_token" } }),
     inputs: openAPITestInputs,
     outputs: openAPITestOutputs,
     apiId,

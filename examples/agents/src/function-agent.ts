@@ -1,9 +1,9 @@
 import "core-js";
 import "reflect-metadata";
 
-import { LocalFunctionAgent, Runtime } from "@aigne/core";
+import { FunctionAgent, Runtime } from "@aigne/core";
 
-const agent = LocalFunctionAgent.create({
+const agent = FunctionAgent.create({
   context: new Runtime(),
   inputs: {
     question: {

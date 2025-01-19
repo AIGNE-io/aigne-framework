@@ -1,10 +1,9 @@
 import { expect, test } from "bun:test";
 
-import { LocalFunctionAgent, PipelineAgent } from "../../src";
-import { MockContext } from "../mocks/context";
+import { FunctionAgent, PipelineAgent, Runtime } from "../../src";
 
 test("PipelineAgent.run with streaming response", async () => {
-  const context = new MockContext({});
+  const context = new Runtime({});
 
   const agent = PipelineAgent.create({
     context,
@@ -30,7 +29,7 @@ test("PipelineAgent.run with streaming response", async () => {
     },
     processes: {
       case1: {
-        runnable: LocalFunctionAgent.create({
+        runnable: FunctionAgent.create({
           context,
           inputs: {
             question: {
@@ -57,7 +56,7 @@ test("PipelineAgent.run with streaming response", async () => {
         },
       },
       case2: {
-        runnable: LocalFunctionAgent.create({
+        runnable: FunctionAgent.create({
           context,
           inputs: {
             str: {

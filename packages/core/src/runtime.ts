@@ -6,14 +6,14 @@ import type { constructor as Constructor } from "tsyringe/dist/typings/types";
 import { TYPES } from "./constants";
 import type { Context, ContextState } from "./context";
 import { FunctionAgent } from "./function-agent";
-import type { FunctionRunner } from "./function-runner";
 import { LLMAgent } from "./llm-agent";
 import { LLMDecisionAgent } from "./llm-decision-agent";
 import type { LLMModel, LLMModelConfiguration } from "./llm-model";
-import { LocalFunctionAgent } from "./local-function-agent";
 import { OpenAPIAgent } from "./open-api-agent";
 import { PipelineAgent } from "./pipeline-agent";
 import { Runnable, type RunnableDefinition } from "./runnable";
+import { SandboxFunctionAgent } from "./sandbox-function-agent";
+import type { SandboxFunctionRunner } from "./sandbox-function-runner";
 import { OrderedRecord } from "./utils/ordered-map";
 import type { DeepPartial } from "./utils/partial";
 
@@ -37,7 +37,9 @@ export interface RuntimeOptions<
 
   llmModel?: LLMModel | Constructor<LLMModel>;
 
-  functionRunner?: FunctionRunner | Constructor<FunctionRunner>;
+  sandboxFunctionRunner?:
+    | SandboxFunctionRunner
+    | Constructor<SandboxFunctionRunner>;
 }
 
 @injectable()
@@ -170,17 +172,22 @@ class RuntimeInner<
 
     this.container.register("pipeline_agent", { useClass: PipelineAgent });
     this.container.register("llm_agent", { useClass: LLMAgent });
-    this.container.register("function_agent", { useClass: FunctionAgent });
+    this.container.register("sandbox_function_agent", {
+      useClass: SandboxFunctionAgent,
+    });
     this.container.register("llm_decision_agent", {
       useClass: LLMDecisionAgent,
     });
-    this.container.register("local_function_agent", {
-      useClass: LocalFunctionAgent,
+    this.container.register("function_agent", {
+      useClass: FunctionAgent,
     });
     this.container.register("open_api_agent", { useClass: OpenAPIAgent });
 
-    if (options.functionRunner)
-      this.registerDependency(TYPES.functionRunner, options.functionRunner);
+    if (options.sandboxFunctionRunner)
+      this.registerDependency(
+        TYPES.sandboxFunctionRunner,
+        options.sandboxFunctionRunner,
+      );
     if (options.llmModel)
       this.registerDependency(TYPES.llmModel, options.llmModel);
   }

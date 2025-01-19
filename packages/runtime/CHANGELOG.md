@@ -1,3 +1,7 @@
+## 1.0.3 (2025-1-19)
+
+- fix: enable es module interop for cjs bundle
+
 ## 1.0.2 (2025-1-18)
 
 - chore: enable typescript composite to improve build experience

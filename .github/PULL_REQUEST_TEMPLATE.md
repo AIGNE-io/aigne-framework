@@ -35,4 +35,4 @@
 - [ ] This change adds dependencies, and they are placed in dependencies and devDependencies
 - [ ] This change includes adding or updating npm dependencies, and it does not result in multiple versions of the same dependency [check the diff of pnpm-lock.yaml]
 - [ ] I have updated ArcBlock dependencies to the latest version: `pnpm update:deps`
-- [ ] (Before merging to master) Successfully ran pnpm dev, pnpm bundle, pnpm bump-version## 关联 Issue
+- [ ] (Before merging to master) Successfully ran pnpm dev, pnpm bundle, pnpm bump-version

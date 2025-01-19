@@ -13,6 +13,7 @@
     // "verbatimModuleSyntax": true,
     "noEmit": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
 
     // Best practices
     "strict": true,

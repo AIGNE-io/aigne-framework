@@ -83,4 +83,5 @@ test("GeminiLLMModel.process with JSON response format", async () => {
   });
 
   expect(result?.toolCalls?.[0]?.function?.name).toBe("get_weather");
+  expect(result.$text).toBeUndefined();
 });

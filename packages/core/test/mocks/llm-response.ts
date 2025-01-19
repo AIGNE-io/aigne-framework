@@ -507,3 +507,178 @@ export const llmJsonResponse = [
     ],
   },
 ];
+
+export const llmToolCallResponse = [
+  {
+    id: "chatcmpl-ArNkAVsv50LgxaScBGQG4ouBOFlII",
+    object: "chat.completion.chunk",
+    created: 1737286018,
+    model: "gpt-4o-mini-2024-07-18",
+    service_tier: "default",
+    system_fingerprint: "fp_72ed7ab54c",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          role: "assistant",
+          content: null,
+          tool_calls: [
+            {
+              index: 0,
+              id: "call_8CmGxEUoRertEYvi1XtZatau",
+              type: "function",
+              function: {
+                name: "get_weather",
+                arguments: "",
+              },
+            },
+          ],
+          refusal: null,
+        },
+        logprobs: null,
+        finish_reason: null,
+      },
+    ],
+  },
+  {
+    id: "chatcmpl-ArNkAVsv50LgxaScBGQG4ouBOFlII",
+    object: "chat.completion.chunk",
+    created: 1737286018,
+    model: "gpt-4o-mini-2024-07-18",
+    service_tier: "default",
+    system_fingerprint: "fp_72ed7ab54c",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          tool_calls: [
+            {
+              index: 0,
+              function: {
+                arguments: '{"',
+              },
+            },
+          ],
+        },
+        logprobs: null,
+        finish_reason: null,
+      },
+    ],
+  },
+  {
+    id: "chatcmpl-ArNkAVsv50LgxaScBGQG4ouBOFlII",
+    object: "chat.completion.chunk",
+    created: 1737286018,
+    model: "gpt-4o-mini-2024-07-18",
+    service_tier: "default",
+    system_fingerprint: "fp_72ed7ab54c",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          tool_calls: [
+            {
+              index: 0,
+              function: {
+                arguments: "location",
+              },
+            },
+          ],
+        },
+        logprobs: null,
+        finish_reason: null,
+      },
+    ],
+  },
+  {
+    id: "chatcmpl-ArNkAVsv50LgxaScBGQG4ouBOFlII",
+    object: "chat.completion.chunk",
+    created: 1737286018,
+    model: "gpt-4o-mini-2024-07-18",
+    service_tier: "default",
+    system_fingerprint: "fp_72ed7ab54c",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          tool_calls: [
+            {
+              index: 0,
+              function: {
+                arguments: '":"',
+              },
+            },
+          ],
+        },
+        logprobs: null,
+        finish_reason: null,
+      },
+    ],
+  },
+  {
+    id: "chatcmpl-ArNkAVsv50LgxaScBGQG4ouBOFlII",
+    object: "chat.completion.chunk",
+    created: 1737286018,
+    model: "gpt-4o-mini-2024-07-18",
+    service_tier: "default",
+    system_fingerprint: "fp_72ed7ab54c",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          tool_calls: [
+            {
+              index: 0,
+              function: {
+                arguments: "current",
+              },
+            },
+          ],
+        },
+        logprobs: null,
+        finish_reason: null,
+      },
+    ],
+  },
+  {
+    id: "chatcmpl-ArNkAVsv50LgxaScBGQG4ouBOFlII",
+    object: "chat.completion.chunk",
+    created: 1737286018,
+    model: "gpt-4o-mini-2024-07-18",
+    service_tier: "default",
+    system_fingerprint: "fp_72ed7ab54c",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          tool_calls: [
+            {
+              index: 0,
+              function: {
+                arguments: '"}',
+              },
+            },
+          ],
+        },
+        logprobs: null,
+        finish_reason: null,
+      },
+    ],
+  },
+  {
+    id: "chatcmpl-ArNkAVsv50LgxaScBGQG4ouBOFlII",
+    object: "chat.completion.chunk",
+    created: 1737286018,
+    model: "gpt-4o-mini-2024-07-18",
+    service_tier: "default",
+    system_fingerprint: "fp_72ed7ab54c",
+    choices: [
+      {
+        index: 0,
+        delta: {},
+        logprobs: null,
+        finish_reason: "tool_calls",
+      },
+    ],
+  },
+];

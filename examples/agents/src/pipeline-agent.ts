@@ -1,7 +1,7 @@
 import "core-js";
 import "reflect-metadata";
 
-import { LocalFunctionAgent, PipelineAgent, Runtime } from "@aigne/core";
+import { FunctionAgent, PipelineAgent, Runtime } from "@aigne/core";
 
 const context = new Runtime();
 
@@ -29,7 +29,7 @@ const agent = PipelineAgent.create({
   },
   processes: {
     step1: {
-      runnable: LocalFunctionAgent.create({
+      runnable: FunctionAgent.create({
         context,
         inputs: {
           question: {
@@ -54,7 +54,7 @@ const agent = PipelineAgent.create({
       },
     },
     step2: {
-      runnable: LocalFunctionAgent.create({
+      runnable: FunctionAgent.create({
         context,
         inputs: {
           str: {

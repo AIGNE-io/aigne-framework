@@ -1,9 +1,11 @@
+import "./utils/bun-polyfill";
 import "core-js";
 import "reflect-metadata";
 
 import {
+  FunctionAgent,
+  LLMAgent,
   LLMDecisionAgent,
-  LocalFunctionAgent,
   OpenaiLLMModel,
   Runtime,
 } from "@aigne/core";
@@ -14,84 +16,71 @@ if (!apiKey) {
 }
 
 const context = new Runtime({
-  llmModel: new OpenaiLLMModel({ model: "gpt-4o", apiKey }),
+  llmModel: new OpenaiLLMModel({
+    model: "gpt-4o-mini",
+    apiKey,
+  }),
 });
 
-const agent = LLMDecisionAgent.create({
+const currentTime = FunctionAgent.create({
   context,
-  modelOptions: {
-    model: "gpt-4o",
-    temperature: 0,
+  name: "currentTime",
+  inputs: {},
+  outputs: {
+    $text: {
+      type: "string",
+      required: true,
+    },
+  },
+  function: async () => {
+    return {
+      $text: `The current time is ${new Date().toLocaleTimeString()}`,
+    };
+  },
+});
+
+const llmAgent = LLMAgent.create({
+  context,
+  inputs: {
+    question: {
+      type: "string",
+      required: true,
+    },
+  },
+  outputs: {
+    $text: {
+      type: "string",
+      required: true,
+    },
   },
   messages: [
     {
       role: "user",
-      content: `\
-You are a professional question classifier. Please classify the question and choose the right case to answer it
+      content: "{{question}}",
+    },
+  ],
+});
 
-## User's question
-{{question}}`,
+const decision = LLMDecisionAgent.create({
+  context,
+  messages: [
+    {
+      role: "user",
+      content: "{{question}}",
     },
   ],
   cases: {
-    getName: {
-      description: "get name",
-      runnable: LocalFunctionAgent.create({
-        context,
-        inputs: {
-          question: {
-            type: "string",
-            required: true,
-          },
-        },
-        outputs: {
-          $text: {
-            type: "string",
-            required: true,
-          },
-          name: {
-            type: "string",
-            required: true,
-          },
-        },
-        function: async ({ question }) => {
-          return {
-            $text: `ECHO: ${question}`,
-            name: question,
-          };
-        },
-      }),
+    chatBot: {
+      description: "Chat with the chat bot",
+      runnable: llmAgent,
     },
-    getAge: {
-      description: "get age",
-      runnable: LocalFunctionAgent.create({
-        context,
-        inputs: {
-          question: {
-            type: "string",
-            required: true,
-          },
-        },
-        outputs: {
-          $text: {
-            type: "string",
-            required: true,
-          },
-          age: {
-            type: "number",
-            required: true,
-          },
-        },
-        function: async ({ question }) => {
-          return {
-            $text: `ECHO: ${question}`,
-            age: question.length,
-          };
-        },
-      }),
+    currentTime: {
+      description: "Get the current time",
+      runnable: currentTime,
     },
   },
 });
 
-const result = await agent.run({ question: "my name is tom" });
-console.log(result);
+console.log(await decision.run({ question: "What time is it?" }));
+
+console.log(await decision.run({ question: "Hello, I am Bob" }));

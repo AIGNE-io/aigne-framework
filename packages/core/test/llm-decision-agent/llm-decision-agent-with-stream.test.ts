@@ -1,13 +1,12 @@
 import { expect, spyOn, test } from "bun:test";
 
-import { LLMDecisionAgent, LocalFunctionAgent } from "../../src";
-import { MockContext } from "../mocks/context";
+import { FunctionAgent, LLMDecisionAgent, Runtime } from "../../src";
 import { MockLLMModel } from "../mocks/llm-model";
 
 test("LLMDecisionAgent.run with streaming response", async () => {
   const llmModel = new MockLLMModel();
 
-  const context = new MockContext({ llmModel });
+  const context = new Runtime({ llmModel });
 
   const agent = LLMDecisionAgent.create({
     context,
@@ -15,7 +14,7 @@ test("LLMDecisionAgent.run with streaming response", async () => {
     cases: {
       case1: {
         description: "Case 1",
-        runnable: LocalFunctionAgent.create({
+        runnable: FunctionAgent.create({
           context,
           inputs: {
             question: {

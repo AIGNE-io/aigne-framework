@@ -5,64 +5,64 @@ import {
   OrderedRecord,
   type Runnable,
   isNonNullable,
-} from "@aigne/core";
+} from '@aigne/core'
 
-import type { ProjectDefinition } from "../runtime";
-import { Agent } from "./agent";
-import { getRunnableDefinition } from "./api/runtime";
+import type {ProjectDefinition} from '../runtime'
+import {Agent} from './agent'
+import {getRunnableDefinition} from './api/runtime'
 
 export interface RuntimeOptions {
-  id?: string;
+  id?: string
 
-  projectDefinition?: ProjectDefinition;
+  projectDefinition?: ProjectDefinition
 }
 
 export class Runtime<
-  Agents extends { [name: string]: Runnable } = {},
+  Agents extends {[name: string]: Runnable} = {},
   State extends ContextState = ContextState,
   Config extends ContextConfig = ContextConfig,
 > implements Context<State>
 {
-  constructor(public readonly options: RuntimeOptions) {
-    const id = options.id || options.projectDefinition?.id;
-    if (!id) throw new Error("Runtime id is required");
-    this.id = id;
+  constructor(public readonly options?: RuntimeOptions) {
+    const id = options?.id || options?.projectDefinition?.id || 'default-runtime'
+    if (!id) throw new Error('Runtime id is required')
+    this.id = id
 
     this.agents = Object.fromEntries(
-      OrderedRecord.map(options.projectDefinition?.runnables, (agent) => {
-        if (!agent.name) return null;
+      OrderedRecord.map(options?.projectDefinition?.runnables, agent => {
+        if (!agent.name) return null
 
-        return [agent.name, new Agent(this, agent)];
-      }).filter(isNonNullable),
-    );
+        return [agent.name, new Agent(this, agent)]
+      }).filter(isNonNullable)
+    )
   }
 
-  id: string;
+  id: string
 
   get state(): State {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.')
   }
 
   get config(): Config {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.')
   }
 
-  agents: Agents;
+  agents: Agents
 
   register(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.')
   }
 
   async resolve<T extends Runnable>(id: string): Promise<T> {
     const definition = await getRunnableDefinition({
       projectId: this.id,
       agentId: id,
-    });
+    })
 
-    return new Agent(this, definition) as unknown as T;
+    return new Agent(this, definition) as unknown as T
   }
 
   resolveDependency<T>(): T {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.')
   }
 }

@@ -19,7 +19,7 @@ import { BlockletAPIAgent } from "../provider/blocklet-api-agent";
 import { BlockletLLMModel } from "../provider/blocklet-llm-model";
 import { QuickJSRunner } from "../provider/quickjs-runner";
 
-import { DEFAULT_RUNTIME_ID } from "../utils/constants";
+import { DEFAULT_RUNTIME_ID } from "../constants";
 
 export interface ProjectDefinition {
   id: string;

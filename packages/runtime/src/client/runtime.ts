@@ -7,8 +7,8 @@ import {
   isNonNullable,
 } from "@aigne/core";
 
+import { DEFAULT_RUNTIME_ID } from "../constants";
 import type { ProjectDefinition } from "../runtime";
-import { DEFAULT_RUNTIME_ID } from "../utils/constants";
 import { Agent } from "./agent";
 import { getRunnableDefinition } from "./api/runtime";
 export interface RuntimeOptions {

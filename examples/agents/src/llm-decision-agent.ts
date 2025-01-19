@@ -22,10 +22,6 @@ const agent = LLMDecisionAgent.create({
       content: `\
 You are a professional question classifier. Please classify the question and choose the right case to answer it
 
-## Cases
-- getName: get name
-- getAge: get age
-
 ## User's question
 {{question}}`,
     },
@@ -46,9 +42,16 @@ You are a professional question classifier. Please classify the question and cho
             type: 'string',
             required: true,
           },
+          name: {
+            type: 'string',
+            required: true,
+          },
         },
         function: async ({question}) => {
-          return {$text: `ECHO: ${question}`, name: question}
+          return {
+            $text: `ECHO: ${question}`,
+            name: question,
+          }
         },
       }),
     },
@@ -63,13 +66,20 @@ You are a professional question classifier. Please classify the question and cho
           },
         },
         outputs: {
-          length: {
+          $text: {
+            type: 'string',
+            required: true,
+          },
+          age: {
             type: 'number',
             required: true,
           },
         },
         function: async ({question}) => {
-          return {length: question.length}
+          return {
+            $text: `ECHO: ${question}`,
+            age: question.length,
+          }
         },
       }),
     },

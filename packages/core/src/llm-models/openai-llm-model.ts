@@ -25,8 +25,8 @@ export class OpenaiLLMModel extends LLMModel {
 
   private client: OpenAI;
 
-  async *process(input: LLMModelInputs) {
-    const res = await this.client.chat.completions.create({
+  async fetch(input: LLMModelInputs) {
+    return await this.client.chat.completions.create({
       model: this.config.model,
       temperature: input.modelOptions?.temperature,
       top_p: input.modelOptions?.topP,
@@ -49,6 +49,10 @@ export class OpenaiLLMModel extends LLMModel {
           : undefined,
       stream: true,
     });
+  }
+
+  async *process(input: LLMModelInputs) {
+    const res = await this.fetch(input);
 
     const toolCalls: LLMModelOutputs["toolCalls"] = [];
 

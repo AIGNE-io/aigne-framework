@@ -13,17 +13,16 @@ import {
 import { isNonNullable } from "../utils/is-non-nullable";
 
 export class OpenaiLLMModel extends LLMModel {
-  constructor(
-    public config: {
-      apiKey: string;
-      model: string;
-    },
-  ) {
+  constructor(private config: { apiKey: string; model: string }) {
     super();
     this.client = new OpenAI({ apiKey: this.config.apiKey });
   }
 
   private client: OpenAI;
+
+  setApiKey(apiKey: string) {
+    this.client = new OpenAI({ apiKey });
+  }
 
   async *process(input: LLMModelInputs) {
     const res = await this.client.chat.completions.create({

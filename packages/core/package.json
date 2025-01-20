@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.0.7-beta.1",
+  "version": "1.0.7",
   "description": "AIGNE core library",
   "publishConfig": {
     "access": "public"
@@ -35,20 +35,20 @@
     "mustache": "^4.2.0",
     "nanoid": "^5.0.9",
     "tsyringe": "^4.8.0",
-    "ufo": "^1.5.4"
+    "ufo": "^1.5.4",
+    "openai": "^4.79.1",
+    "@google/generative-ai": "^0.21.0"
   },
   "peerDependencies": {
     "@google/generative-ai": "^0.21.0",
     "openai": "^4.79.1"
   },
   "devDependencies": {
-    "@google/generative-ai": "^0.21.0",
     "@tsconfig/recommended": "^1.0.8",
     "@types/bun": "^1.1.17",
     "@types/lodash": "^4.17.14",
     "core-js": "^3.40.0",
     "npm-run-all": "^4.1.5",
-    "openai": "^4.79.1",
     "reflect-metadata": "^0.2.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.7.3"

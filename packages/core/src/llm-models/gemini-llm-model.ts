@@ -21,12 +21,7 @@ import {
 import { isNonNullable } from "../utils/is-non-nullable";
 
 export class GeminiLLMModel extends LLMModel {
-  constructor(
-    public config: {
-      apiKey: string;
-      model: string;
-    },
-  ) {
+  constructor(private config: { apiKey: string; model: string }) {
     super();
     this.client = new GoogleGenerativeAI(this.config.apiKey);
     this.model = this.client.getGenerativeModel({ model: this.config.model });
@@ -35,6 +30,11 @@ export class GeminiLLMModel extends LLMModel {
   private client: GoogleGenerativeAI;
 
   private model: GenerativeModel;
+
+  setApiKey(apiKey: string) {
+    this.client = new GoogleGenerativeAI(apiKey);
+    this.model = this.client.getGenerativeModel({ model: this.config.model });
+  }
 
   async *process(input: LLMModelInputs) {
     const res = await this.model.generateContentStream({

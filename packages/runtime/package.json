@@ -1,6 +1,6 @@
 {
   "name": "@aigne/runtime",
-  "version": "1.0.7-beta.1",
+  "version": "1.0.7",
   "description": "AIGNE core library",
   "publishConfig": {
     "access": "public"

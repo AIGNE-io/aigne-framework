@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agent-v1",
-  "version": "1.0.8",
+  "version": "1.0.7",
   "description": "AIGNE agent v1 compatible with AIGNE Framework",
   "publishConfig": {
     "access": "public"
@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@tsconfig/recommended": "^1.0.8",
+    "@tsconfig/recommended": "^1.0.7",
     "@types/compression": "^1.7.5",
     "@types/express": "^5.0.0",
     "@types/fs-extra": "^11.0.4",

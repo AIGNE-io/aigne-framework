@@ -1,6 +1,6 @@
-## 1.0.8 (2025-1-20)
+## 1.0.7 (2025-1-20)
 
-- chore: support set api key
+- chore: add `setApiKey` api for gemini/openai llm model
 
 ## 1.0.6 (2025-1-20)
 

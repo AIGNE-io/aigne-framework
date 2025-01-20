@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.0.8",
+  "version": "1.0.7",
   "description": "AIGNE core library",
   "publishConfig": {
     "access": "public"
@@ -44,7 +44,7 @@
     "openai": "^4.79.1"
   },
   "devDependencies": {
-    "@tsconfig/recommended": "^1.0.8",
+    "@tsconfig/recommended": "^1.0.7",
     "@types/bun": "^1.1.17",
     "@types/lodash": "^4.17.14",
     "core-js": "^3.40.0",

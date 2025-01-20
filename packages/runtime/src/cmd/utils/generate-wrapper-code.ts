@@ -70,13 +70,13 @@ export default function middleware() {
 
   const client = `\
 import { ProjectDefinition } from '@aigne/runtime';
-import { Agent, AIGNERuntime } from '@aigne/runtime/client';
+import { Agent, Runtime } from '@aigne/runtime/client';
 
 const projectDefinition: ProjectDefinition = ${JSON.stringify(sanitizeProjectDefinition(project), null, 2)};
 
 ${generateAgentsInterface(project.runnables, "Agent")}
 
-export default new AIGNERuntime<Agents>({
+export default new Runtime<Agents>({
   projectDefinition,
 });
 `;

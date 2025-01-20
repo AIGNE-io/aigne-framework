@@ -53,25 +53,27 @@ export class OpenaiLLMModel extends LLMModel {
 
     for await (const chunk of res) {
       const choice = chunk.choices?.[0];
-      const calls = choice?.delta.tool_calls?.map((i) => ({
-        id: i.id || nanoid(),
-        type: "function" as const,
-        function: {
-          name: i.function?.name,
-          arguments: i.function?.arguments,
-        },
-      }));
 
-      if (calls?.length) {
-        toolCalls.push(...calls);
+      if (choice?.delta.tool_calls?.length) {
+        for (const call of choice.delta.tool_calls) {
+          const tool = toolCalls[call.index] ?? { id: call.id || nanoid() };
+          toolCalls[call.index] = tool;
+
+          if (call.type) tool.type = call.type;
+
+          tool.function ??= {};
+          tool.function.name =
+            (tool.function.name || "") + (call.function?.name || "");
+          tool.function.arguments = (tool.function.arguments || "").concat(
+            call.function?.arguments || "",
+          );
+        }
       }
 
-      yield {
-        $text: choice?.delta.content || undefined,
-
-        delta: { toolCalls },
-      };
+      if (choice?.delta.content) yield { $text: choice.delta.content };
     }
+
+    yield { delta: { toolCalls } };
   }
 }
 

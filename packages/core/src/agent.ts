@@ -18,6 +18,7 @@ import {
   renderMessage,
   runnableResponseStreamToObject,
 } from "./utils";
+import type { BindAgentInputs, BoundAgent } from "./utils/runnable-type";
 
 export interface AgentProcessOptions<
   Memories extends { [name: string]: MemoryItemWithScore[] },
@@ -179,4 +180,19 @@ export abstract class Agent<
         RunnableResponse<O> | AsyncGenerator<RunnableResponseChunk<O>, void>
       >
     | AsyncGenerator<RunnableResponseChunk<O>, void>;
+
+  /**
+   * Bind some inputs to the agent, used for process of `PipelineAgent` or case of `LLMDecisionAgent`.
+   * @param options The bind options.
+   * @returns The bound agent.
+   */
+  bind<Input extends BindAgentInputs<typeof this>>(options: {
+    description?: string;
+    input?: Input;
+  }): BoundAgent<typeof this, Readonly<Input>> {
+    return {
+      ...options,
+      runnable: this,
+    };
+  }
 }

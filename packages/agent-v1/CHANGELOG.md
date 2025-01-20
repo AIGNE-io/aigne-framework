@@ -1,3 +1,7 @@
+## 1.0.10 (2025-1-21)
+
+- feat: support auto generate case parameter by LLM for decision agent
+
 ## 1.0.9 (2025-1-20)
 
 ## 1.0.8 (2025-1-20)

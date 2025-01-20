@@ -61,6 +61,29 @@ const llmAgent = LLMAgent.create({
   ],
 });
 
+const plusAgent = FunctionAgent.create({
+  context,
+  inputs: {
+    a: {
+      type: "number",
+      required: true,
+    },
+    b: {
+      type: "number",
+      required: true,
+    },
+  },
+  outputs: {
+    result: {
+      type: "number",
+      required: true,
+    },
+  },
+  function: async ({ a, b }) => {
+    return { result: a + b };
+  },
+});
+
 const decision = LLMDecisionAgent.create({
   context,
   messages: [
@@ -70,17 +93,24 @@ const decision = LLMDecisionAgent.create({
     },
   ],
   cases: {
-    chatBot: {
+    chatBot: llmAgent.bind({
       description: "Chat with the chat bot",
-      runnable: llmAgent,
-    },
-    currentTime: {
+    }),
+    currentTime: currentTime.bind({
       description: "Get the current time",
-      runnable: currentTime,
-    },
+    }),
+    plus: plusAgent.bind({
+      description: "Add two numbers",
+      input: {
+        a: { from: "ai" },
+        b: { from: "ai" },
+      },
+    }),
   },
 });
 
-console.log(await decision.run({ question: "What time is it?" }));
+console.log(await decision.run({ question: "What time is it?" })); // Output: { $text: "The current time is 12:00:00 PM" }
 
-console.log(await decision.run({ question: "Hello, I am Bob" }));
+console.log(await decision.run({ question: "Hello, I am Bob" })); // Output: { $text: "Hello Bob" }
+
+console.log(await decision.run({ question: "1 + 2 = ?" })); // Output: { result: 3 }

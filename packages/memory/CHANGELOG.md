@@ -1,3 +1,7 @@
+## 1.0.9 (2025-1-20)
+
+- chore: alias Runtime as AIGNERuntime from @aigne/core/client
+
 ## 1.0.8 (2025-1-20)
 
 - fix: generate-wrapper-code runtime client export

@@ -11,19 +11,19 @@ import { DEFAULT_RUNTIME_ID } from "../constants";
 import type { ProjectDefinition } from "../runtime";
 import { Agent } from "./agent";
 import { getRunnableDefinition } from "./api/runtime";
-export interface RuntimeOptions {
+export interface AIGNERuntimeOptions {
   id?: string;
 
   projectDefinition?: ProjectDefinition;
 }
 
-export class Runtime<
+export class AIGNERuntime<
   Agents extends { [name: string]: Runnable } = {},
   State extends ContextState = ContextState,
   Config extends ContextConfig = ContextConfig,
 > implements Context<State>
 {
-  constructor(public readonly options?: RuntimeOptions) {
+  constructor(public readonly options?: AIGNERuntimeOptions) {
     const id =
       options?.id || options?.projectDefinition?.id || DEFAULT_RUNTIME_ID;
     if (!id) throw new Error("Runtime id is required");

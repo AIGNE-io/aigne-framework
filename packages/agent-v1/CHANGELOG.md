@@ -1,3 +1,5 @@
+## 1.0.9 (2025-1-20)
+
 ## 1.0.8 (2025-1-20)
 
 - fix: generate-wrapper-code runtime client export

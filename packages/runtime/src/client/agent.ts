@@ -8,7 +8,7 @@ import {
 import { joinURL } from "ufo";
 
 import { fetchApi } from "./api/api";
-import type { Runtime } from "./runtime";
+import type { AIGNERuntime } from "./runtime";
 import {
   EventSourceParserStream,
   RunnableStreamParser,
@@ -19,7 +19,7 @@ export class Agent<I extends {} = {}, O extends {} = {}> extends Runnable<
   O
 > {
   constructor(
-    private runtime: Runtime,
+    private runtime: AIGNERuntime,
     definition: RunnableDefinition,
   ) {
     super(definition);

@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@tsconfig/recommended": "^1.0.7",
+    "@tsconfig/recommended": "^1.0.8",
     "@types/compression": "^1.7.5",
     "@types/express": "^5.0.0",
     "@types/fs-extra": "^11.0.4",

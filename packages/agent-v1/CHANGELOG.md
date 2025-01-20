@@ -1,3 +1,7 @@
+## 1.0.8 (2025-1-20)
+
+- fix: generate-wrapper-code runtime client export
+
 ## 1.0.7 (2025-1-20)
 
 - chore: add `setApiKey` api for gemini/openai llm model

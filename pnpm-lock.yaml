@@ -51,8 +51,8 @@ importers:
         specifier: ^1.16.37
         version: 1.16.37
       '@blocklet/quickjs':
-        specifier: ^0.4.210
-        version: 0.4.210(encoding@0.1.13)
+        specifier: ^0.4.213
+        version: 0.4.213(encoding@0.1.13)
       '@blocklet/sdk':
         specifier: ^1.16.37
         version: 1.16.37(encoding@0.1.13)
@@ -297,8 +297,8 @@ importers:
         specifier: ^1.16.37
         version: 1.16.37
       '@blocklet/quickjs':
-        specifier: ^0.4.210
-        version: 0.4.210(encoding@0.1.13)
+        specifier: ^0.4.213
+        version: 0.4.213(encoding@0.1.13)
       '@blocklet/sdk':
         specifier: ^1.16.37
         version: 1.16.37(encoding@0.1.13)
@@ -733,8 +733,8 @@ packages:
   '@blocklet/payment-types@1.17.7':
     resolution: {integrity: sha512-Z0j6XuhDMbLHaSuVz54gi6M6MXd/+vgzZcFrJqkB54IMntuZdhOokQMLgzNjcdc/WPcdjyHnr1bPOF4GLYvPGw==}
 
-  '@blocklet/quickjs@0.4.210':
-    resolution: {integrity: sha512-SmClByFcC3jvWjVlYTJS0oEg7g+e+EafUjL2360QNvBqT1rVLdjD2faaYA0L54si+eIxLbcSpnyF6I1KydeQpw==}
+  '@blocklet/quickjs@0.4.213':
+    resolution: {integrity: sha512-oVEcLfEq8dAVhFaqLPyLrd2XAYwQ4IiPcKjd1nDjGgcWyjLMZi2YnA1fnqrp4qanNyLnKCgtlOVwuwcc0yjLIg==}
 
   '@blocklet/sdk@1.16.37':
     resolution: {integrity: sha512-4jPY//wAff4vRQI5+yN5m8MPsSc6dqvoU+EeD84K6ADUqJa6fpONbJzvnj/713iuJKQLUqSsYHCwDa+LUXRODA==}
@@ -7135,7 +7135,7 @@ snapshots:
 
   '@blocklet/payment-types@1.17.7': {}
 
-  '@blocklet/quickjs@0.4.210(encoding@0.1.13)':
+  '@blocklet/quickjs@0.4.213(encoding@0.1.13)':
     dependencies:
       '@blocklet/sdk': 1.16.37(encoding@0.1.13)
       dayjs: 1.11.13

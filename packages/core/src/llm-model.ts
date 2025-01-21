@@ -107,6 +107,7 @@ export abstract class LLMModel extends Agent<LLMModelInputs, LLMModelOutputs> {
 }
 
 export interface LLMModelConfiguration {
+  fallback: Partial<LLMModelOptions>[];
   default?: Partial<LLMModelOptions>;
   override?: Partial<LLMModelOptions>;
 }

@@ -142,7 +142,7 @@ export class BlockletLLMModel extends LLMModel {
       }
     }
 
-    // 检查是否所有模型都在冷却中
+    // TODO: 检查是否所有模型都在冷却中, 如果都是在冷却中，如何处理？？
     const allInCooldown = models
       .filter((cfg) => !!cfg?.model)
       .every((cfg) => this.isModelInCooldown(cfg?.model!));

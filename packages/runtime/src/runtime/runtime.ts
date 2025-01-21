@@ -78,7 +78,6 @@ export class AIGNERuntime<
   }
 
   constructor(options: AIGNERuntimeOptions<Agents, State> = {}) {
-    console.log("init---------");
     super({
       ...options,
       id: options?.id || options?.projectDefinition?.id || DEFAULT_RUNTIME_ID,

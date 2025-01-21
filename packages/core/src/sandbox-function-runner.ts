@@ -1,17 +1,19 @@
-import { Agent } from "./agent";
+import { Agent, type AgentDefinition } from "./agent";
 import type { Context, ContextState } from "./context";
 import type { MemoryItemWithScore } from "./memorable";
 import { OrderedRecord } from "./utils";
 
 export interface SandboxFunctionRunnerInput<
   I extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
+  Preloads extends { [name: string]: any } = {},
+  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
 > {
   name: string;
   language?: string;
   code: string;
   input: I;
+  preloads: Preloads;
   memories: Memories;
   context: Pick<Context<State>, "state">;
 }
@@ -21,10 +23,11 @@ export type SandboxFunctionRunnerOutput<O> = O;
 export abstract class SandboxFunctionRunner<
   I extends { [name: string]: any } = {},
   O extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
+  Preloads extends { [name: string]: any } = {},
+  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
 > extends Agent<
-  SandboxFunctionRunnerInput<I, Memories, State>,
+  SandboxFunctionRunnerInput<I, State, Preloads, Memories>,
   SandboxFunctionRunnerOutput<O>
 > {
   constructor(context?: Context) {
@@ -39,6 +42,7 @@ export abstract class SandboxFunctionRunner<
           { id: "language", name: "language", type: "string" },
           { id: "code", name: "code", type: "string", required: true },
           { id: "input", name: "input", type: "object", required: true },
+          { id: "preloads", name: "preloads", type: "object", required: true },
           { id: "memories", name: "memories", type: "object", required: true },
           { id: "context", name: "context", type: "object", required: true },
         ]),

@@ -1,13 +1,24 @@
 import { nanoid } from "nanoid";
 import { inject, injectable } from "tsyringe";
 
-import { Agent, type AgentProcessOptions } from "./agent";
+import {
+  Agent,
+  type AgentDefinition,
+  type AgentProcessInput,
+  type AgentProcessOptions,
+} from "./agent";
 import { TYPES } from "./constants";
 import type { Context, ContextState } from "./context";
 import {
   type CreateRunnableMemory,
   toRunnableMemories,
 } from "./definitions/memory";
+import type {
+  BindAgentInput,
+  BoundAgent,
+  OmitBoundAgentInput,
+  PreloadCreator,
+} from "./definitions/preload";
 import type { CreateLLMAgentOptions, LLMAgentDefinition } from "./llm-agent";
 import type { LLMModel, LLMModelInputs } from "./llm-model";
 import type { MemorableSearchOutput, MemoryItemWithScore } from "./memorable";
@@ -19,11 +30,8 @@ import {
 } from "./utils";
 import { prepareMessages } from "./utils/message-utils";
 import type {
-  BindAgentInput,
-  BoundAgent,
   ExtractRunnableInputTypeIntersection,
   ExtractRunnableOutputType,
-  OmitBoundAgentInput,
 } from "./utils/runnable-type";
 import { outputsToJsonSchema } from "./utils/structured-output-schema";
 
@@ -31,9 +39,10 @@ import { outputsToJsonSchema } from "./utils/structured-output-schema";
 export class LLMDecisionAgent<
   I extends { [name: string]: any } = {},
   O extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
-> extends Agent<I, O, Memories, State> {
+  Preloads extends { [name: string]: any } = {},
+  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+> extends Agent<I, O, State, Preloads, Memories> {
   static create = create;
 
   constructor(
@@ -47,7 +56,10 @@ export class LLMDecisionAgent<
     this.model ??= context?.resolveDependency(TYPES.llmModel);
   }
 
-  async process(input: I, options: AgentProcessOptions<Memories>) {
+  async process(
+    input: AgentProcessInput<I, Preloads, Memories>,
+    options: AgentProcessOptions<Preloads, Memories>,
+  ) {
     const { definition, context, model } = this;
     if (!model) throw new Error("LLM model is required");
     if (!context) throw new Error("Context is required");
@@ -137,6 +149,8 @@ function create<
   Case extends BoundAgent,
   I extends ExtractRunnableInputTypeIntersection<Case["runnable"]>,
   O extends ExtractRunnableOutputType<Case["runnable"]>,
+  State extends ContextState,
+  Preloads extends { [name: string]: PreloadCreator<I> },
   Memories extends {
     [name: string]: CreateRunnableMemory<I> & {
       /**
@@ -148,12 +162,11 @@ function create<
       primary?: boolean;
     };
   },
-  State extends ContextState,
 >({
   context,
   ...options
 }: Pick<
-  CreateLLMAgentOptions<I, O, Memories, State>,
+  CreateLLMAgentOptions<I, O, State, Preloads, Memories>,
   "name" | "memories" | "messages" | "modelOptions"
 > & {
   context: Context<State>;
@@ -161,8 +174,13 @@ function create<
 }): LLMDecisionAgent<
   OmitBoundAgentInput<Case, "ai">,
   ExtractRunnableOutputType<Case["runnable"]>,
-  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> },
-  State
+  State,
+  {
+    [name in keyof Preloads]: ExtractRunnableOutputType<
+      ReturnType<Preloads[name]>["runnable"]
+    >;
+  },
+  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> }
 > {
   const agentId = options.name || nanoid();
 
@@ -244,7 +262,7 @@ function create<
 }
 
 export interface LLMDecisionAgentDefinition
-  extends RunnableDefinition,
+  extends AgentDefinition,
     Pick<LLMAgentDefinition, "modelOptions" | "messages" | "primaryMemoryId"> {
   type: "llm_decision_agent";
 

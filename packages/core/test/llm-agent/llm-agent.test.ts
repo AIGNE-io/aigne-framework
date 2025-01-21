@@ -1,6 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 
-import { LLMAgent, Runtime } from "../../src";
+import { FunctionAgent, LLMAgent, Runtime } from "../../src";
 import { MockLLMModel } from "../mocks/llm-model";
 
 test("LLMAgent.run", async () => {
@@ -8,10 +8,37 @@ test("LLMAgent.run", async () => {
 
   const context = new Runtime({ llmModel });
 
+  const weatherAgent = FunctionAgent.create({
+    context,
+    name: "time",
+    inputs: {
+      city: {
+        type: "string",
+        required: true,
+      },
+      date: {
+        type: "string",
+      },
+    },
+    outputs: {
+      city: {
+        type: "string",
+        required: true,
+      },
+      temperature: {
+        type: "number",
+        required: true,
+      },
+    },
+    function: async ({ city }) => {
+      return { city, temperature: 20 };
+    },
+  });
+
   const agent = LLMAgent.create({
     context,
     inputs: {
-      question: {
+      city: {
         type: "string",
         required: true,
       },
@@ -19,24 +46,49 @@ test("LLMAgent.run", async () => {
         type: "string",
       },
     },
+    preloads: {
+      weather: (preload) =>
+        preload(weatherAgent, {
+          city: { from: "input", fromInput: "city" },
+        }),
+    },
+    // TODO: add memories case
+    messages: [
+      {
+        role: "system",
+        content:
+          "the weather in {{city}} is {{weather.temperature}} degrees\nyou have to reply in {{language}}",
+      },
+      { role: "user", content: "what is the weather in {{city}}" },
+    ],
     outputs: {
       $text: {
         type: "string",
         required: true,
       },
     },
-    messages: [{ role: "user", content: "reply {{question}} in {{language}}" }],
   });
 
-  spyOn(llmModel, "process").mockImplementation(async function* (input) {
-    yield { $text: `ECHO: ${input.messages[0]?.content}` };
+  const process = spyOn(llmModel, "process").mockImplementation(
+    async function* (input) {
+      yield { $text: "the weather in Beijing is 20 degrees" };
+    },
+  );
+
+  expect(await agent.run({ city: "Beijing", language: "English" })).toEqual({
+    $text: "the weather in Beijing is 20 degrees",
   });
 
-  expect(await agent.run({ question: "hello" })).toEqual({
-    $text: "ECHO: reply hello in ",
-  });
-
-  expect(await agent.run({ question: "hello", language: "Chinese" })).toEqual({
-    $text: "ECHO: reply hello in Chinese",
-  });
+  expect(process.mock.calls[0]?.[0]).toEqual(
+    expect.objectContaining({
+      messages: [
+        {
+          role: "system",
+          content:
+            "the weather in Beijing is 20 degrees\nyou have to reply in English",
+        },
+        { role: "user", content: "what is the weather in Beijing" },
+      ],
+    }),
+  );
 });

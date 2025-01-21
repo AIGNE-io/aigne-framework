@@ -27,9 +27,9 @@ import { formatOpenAPIRequest } from "./utils/open-api-parameter";
 export class OpenAPIAgent<
   I extends { [name: string]: any } = {},
   O extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
-> extends Agent<I, O, Memories, State> {
+  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+> extends Agent<I, O, State, {}, Memories> {
   static create = create;
 
   constructor(
@@ -96,16 +96,16 @@ export interface CreateOpenAPIAgentOptions<
 function create<
   I extends { [name: string]: OpenAPIDataTypeSchema },
   O extends { [name: string]: DataTypeSchema },
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
   State extends ContextState,
+  Memories extends { [name: string]: CreateRunnableMemory<I> },
 >({
   context,
   ...options
 }: CreateOpenAPIAgentOptions<I, O, Memories, State>): OpenAPIAgent<
   SchemaMapType<I>,
   SchemaMapType<O>,
-  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> },
-  State
+  State,
+  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> }
 > {
   const agentId = options.id || options.name || nanoid();
 

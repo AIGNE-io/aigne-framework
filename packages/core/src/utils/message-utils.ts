@@ -71,15 +71,11 @@ export function prepareMessages(
   input: { [name: string]: any },
   memories: { [name: string]: MemoryItemWithScore[] },
 ) {
-  const variables = { ...input, ...memories };
-
   const originalMessages = OrderedRecord.toArray(definition.messages).map(
     ({ role, content }): LLMModelInputMessage => ({
       role,
       content:
-        typeof content === "string"
-          ? renderMessage(content, variables)
-          : content,
+        typeof content === "string" ? renderMessage(content, input) : content,
     }),
   );
   if (!originalMessages.length) throw new Error("Messages are required");

@@ -13,49 +13,100 @@ const memory: MemoryItemWithScore = {
   metadata: {},
 };
 
-test("FunctionAgent.run with memory", async () => {
+test("FunctionAgent.run with preloads and memories", async () => {
+  const context = new Runtime();
+
   const history = new MockMemory();
 
   const search = spyOn(history, "search").mockImplementation(async () => {
     return { results: [memory] };
   });
 
+  const weatherAgent = FunctionAgent.create({
+    context,
+    name: "time",
+    inputs: {
+      city: {
+        type: "string",
+        required: true,
+      },
+      date: {
+        type: "string",
+      },
+    },
+    outputs: {
+      city: {
+        type: "string",
+        required: true,
+      },
+      temperature: {
+        type: "number",
+        required: true,
+      },
+    },
+    function: async ({ city }) => {
+      return { city, temperature: 20 };
+    },
+  });
+
   const agent = FunctionAgent.create({
-    context: new Runtime(),
+    context,
     inputs: {
       question: {
         type: "string",
         required: true,
       },
     },
-    outputs: {
-      $text: {
-        type: "string",
-        required: true,
-      },
-      memories: {
-        type: "object",
-        required: true,
-      },
+    preloads: {
+      weather: (preload) =>
+        preload(weatherAgent, {
+          city: { from: "input", fromInput: "question" },
+          date: { from: "input", fromInput: "question" },
+        }),
     },
     memories: {
       history: {
         memory: history,
       },
     },
-    function: async ({ question }, { memories }) => {
-      return { $text: `ECHO: ${question}`, memories };
+    function: async ({ question, weather, history }) => {
+      return { $text: `ECHO: ${question}`, history, weather };
+    },
+    outputs: {
+      $text: {
+        type: "string",
+        required: true,
+      },
+      weather: {
+        type: "object",
+        required: true,
+        properties: {
+          city: {
+            type: "string",
+            required: true,
+          },
+          temperature: {
+            type: "number",
+            required: true,
+          },
+        },
+      },
+      history: {
+        type: "array",
+        required: true,
+      },
     },
   });
 
-  const result = await agent.run({ question: "hello" });
+  const result = await agent.run({ question: "Beijing" });
   expect(result).toEqual({
-    $text: "ECHO: hello",
-    memories: { history: [memory] },
+    $text: "ECHO: Beijing",
+    history: [memory],
+    weather: { city: "Beijing", temperature: 20 },
   });
 
   expect(search).toHaveBeenCalledWith(
-    "question hello",
+    "question Beijing",
     expect.objectContaining({}),
   );
 });

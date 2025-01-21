@@ -1,7 +1,12 @@
 import { nanoid } from "nanoid";
 import { inject, injectable } from "tsyringe";
 
-import { Agent, type AgentProcessOptions } from "./agent";
+import {
+  Agent,
+  type AgentDefinition,
+  type AgentProcessInput,
+  type AgentProcessOptions,
+} from "./agent";
 import { TYPES } from "./constants";
 import type { Context, ContextState } from "./context";
 import {
@@ -13,31 +18,42 @@ import {
   type CreateRunnableMemory,
   toRunnableMemories,
 } from "./definitions/memory";
+import {
+  type PreloadCreator,
+  preloadCreatorsToPreloads,
+} from "./definitions/preload";
 import type { MemorableSearchOutput, MemoryItemWithScore } from "./memorable";
-import type {
-  RunnableDefinition,
-  RunnableResponse,
-  RunnableResponseChunk,
-} from "./runnable";
+import type { RunnableResponse, RunnableResponseChunk } from "./runnable";
+import type { ExtractRunnableOutputType } from "./utils/runnable-type";
 
 @injectable()
 export class FunctionAgent<
   I extends { [name: string]: any } = {},
   O extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
-> extends Agent<I, O, Memories, State> {
+  Preloads extends { [name: string]: any } = {},
+  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+> extends Agent<I, O, State, Preloads, Memories> {
   static create = create;
 
   constructor(
     @inject(TYPES.definition)
-    public override definition: FunctionAgentDefinition<I, O, Memories, State>,
+    public override definition: FunctionAgentDefinition<
+      I,
+      O,
+      State,
+      Preloads,
+      Memories
+    >,
     @inject(TYPES.context) context?: Context<State>,
   ) {
     super(definition, context);
   }
 
-  async process(input: I, options: AgentProcessOptions<Memories>) {
+  async process(
+    input: AgentProcessInput<I, Preloads, Memories>,
+    options: AgentProcessOptions<Preloads, Memories>,
+  ) {
     const {
       definition: { function: func },
       context,
@@ -46,32 +62,35 @@ export class FunctionAgent<
     if (!func) throw new Error("Function is required");
     if (!context) throw new Error("Context is required");
 
-    return await func(input, { context, memories: options.memories });
+    return await func(input, { ...options, context });
   }
 }
 
 export interface FunctionAgentDefinition<
   I extends { [name: string]: any },
   O extends { [name: string]: any },
-  Memories extends { [name: string]: MemoryItemWithScore[] },
   State extends ContextState,
-> extends RunnableDefinition {
+  Preloads extends { [name: string]: any },
+  Memories extends { [name: string]: MemoryItemWithScore[] },
+> extends AgentDefinition {
   type: "function_agent";
 
-  function?: FunctionFuncType<I, O, Memories, State>;
+  function?: FunctionFuncType<I, O, State, Preloads, Memories>;
 }
 
 export type FunctionFuncType<
   I extends { [name: string]: any },
   O extends { [name: string]: any },
-  Memories extends { [name: string]: MemoryItemWithScore[] },
   State extends ContextState,
+  Preloads extends { [name: string]: any },
+  Memories extends { [name: string]: MemoryItemWithScore[] },
 > = (
-  input: I,
-  options: {
-    memories: Memories;
-    context: Context<State>;
+  input: I & {
+    [name in keyof Preloads]: Preloads[name];
+  } & {
+    [name in keyof Memories]: Memories[name];
   },
+  options: { context: Context<State>; preloads: Preloads; memories: Memories },
 ) =>
   | Promise<
       RunnableResponse<O> | AsyncGenerator<RunnableResponseChunk<O>, void>
@@ -81,8 +100,9 @@ export type FunctionFuncType<
 export interface CreateFunctionAgentOptions<
   I extends { [name: string]: DataTypeSchema },
   O extends { [name: string]: DataTypeSchema },
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
   State extends ContextState,
+  Preloads extends { [name: string]: PreloadCreator<I> },
+  Memories extends { [name: string]: CreateRunnableMemory<I> },
 > {
   context?: Context<State>;
 
@@ -92,34 +112,49 @@ export interface CreateFunctionAgentOptions<
 
   outputs: O;
 
+  preloads?: Preloads;
+
   memories?: Memories;
 
   function?: FunctionFuncType<
     SchemaMapType<I>,
     SchemaMapType<O>,
-    { [key in keyof Memories]: MemorableSearchOutput<Memories[key]["memory"]> },
-    State
+    State,
+    {
+      [name in keyof Preloads]: ExtractRunnableOutputType<
+        ReturnType<Preloads[name]>["runnable"]
+      >;
+    },
+    { [key in keyof Memories]: MemorableSearchOutput<Memories[key]["memory"]> }
   >;
 }
 
 function create<
   I extends { [name: string]: DataTypeSchema },
   O extends { [name: string]: DataTypeSchema },
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
   State extends ContextState,
+  Preloads extends { [name: string]: PreloadCreator<I> },
+  Memories extends { [name: string]: CreateRunnableMemory<I> },
 >({
   context,
   ...options
-}: CreateFunctionAgentOptions<I, O, Memories, State>): FunctionAgent<
+}: CreateFunctionAgentOptions<I, O, State, Preloads, Memories>): FunctionAgent<
   SchemaMapType<I>,
   SchemaMapType<O>,
-  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> },
-  State
+  State,
+  {
+    [name in keyof Preloads]: ExtractRunnableOutputType<
+      ReturnType<Preloads[name]>["runnable"]
+    >;
+  },
+  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> }
 > {
   const agentId = options.name || nanoid();
 
   const inputs = schemaToDataType(options.inputs);
   const outputs = schemaToDataType(options.outputs);
+
+  const preloads = preloadCreatorsToPreloads(inputs, options.preloads);
 
   const memories = toRunnableMemories(agentId, inputs, options.memories || {});
 
@@ -130,6 +165,7 @@ function create<
       type: "function_agent",
       inputs,
       outputs,
+      preloads,
       memories,
       function: options.function,
     },

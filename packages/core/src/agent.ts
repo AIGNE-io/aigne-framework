@@ -1,9 +1,15 @@
 import type { Context, ContextState } from "./context";
+import type {
+  BindAgentInput,
+  BindAgentInputs,
+  BoundAgent,
+} from "./definitions/preload";
 import logger from "./logger";
 import type { MemoryItemWithScore, MemoryMessage } from "./memorable";
 import {
   type RunOptions,
   Runnable,
+  type RunnableDefinition,
   type RunnableMemory,
   type RunnableResponse,
   type RunnableResponseChunk,
@@ -18,20 +24,35 @@ import {
   renderMessage,
   runnableResponseStreamToObject,
 } from "./utils";
-import type { BindAgentInputs, BoundAgent } from "./utils/runnable-type";
 
-export interface AgentProcessOptions<
-  Memories extends { [name: string]: MemoryItemWithScore[] },
-> {
+export type AgentProcessOptions<
+  Preloads extends { [name: string]: any } = {},
+  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+> = {
+  preloads: Preloads;
   memories: Memories;
-}
+};
+
+export type AgentProcessInput<I, Preloads, Memories> = I & {
+  [name in keyof Preloads]: Preloads[name];
+} & {
+  [name in keyof Memories]: Memories[name];
+};
 
 export abstract class Agent<
   I extends { [key: string]: any } = {},
   O extends { [key: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
+  Preloads extends { [name: string]: any } = {},
+  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
 > extends Runnable<I, O, State> {
+  constructor(
+    public definition: AgentDefinition,
+    public context?: Context<State>,
+  ) {
+    super(definition, context);
+  }
+
   private async getMemoryQuery(
     input: I,
     query: RunnableMemory["query"],
@@ -59,9 +80,13 @@ export abstract class Agent<
    * @param context The AIGNE context.
    * @returns A dictionary of memories, where the key is the memory id or name and the value is an array of memory items.
    */
-  protected async loadMemories(input: I, context?: Context): Promise<Memories> {
-    const { memories } = this.definition;
-    const { userId, sessionId } = context?.state ?? {};
+  protected async loadMemories(input: I): Promise<Memories> {
+    const {
+      definition: { memories },
+      context: {
+        state: { userId, sessionId } = {},
+      } = {},
+    } = this;
 
     return Object.fromEntries(
       (
@@ -112,6 +137,50 @@ export abstract class Agent<
     );
   }
 
+  protected async loadPreloads(input: I): Promise<Preloads> {
+    const {
+      context,
+      definition: { preloads },
+    } = this;
+    if (!preloads?.$indexes.length) return {} as Preloads;
+    if (!context) throw new Error("Context is required");
+
+    return Object.fromEntries(
+      await Promise.all(
+        OrderedRecord.map(preloads, async (preload) => {
+          if (!preload.runnable?.id)
+            throw new Error("Runnable id in preload is required");
+
+          const runnable = await context.resolve(preload.runnable.id);
+
+          const runnableInput = Object.fromEntries(
+            OrderedRecord.map(runnable.definition.inputs, (i) => {
+              if (!i.name) return null;
+
+              const bind = preload.input?.[i.id];
+              if (!bind) return null;
+
+              if (bind.from !== "input")
+                throw new Error(`Unsupported bind from ${bind.from}`);
+
+              const from = this.definition.inputs[bind.fromInput];
+              if (!from) throw new Error(`Input ${bind.fromInput} not found`);
+
+              if (!from.name) return null;
+              const v = input[from.name];
+
+              return [i.name, v];
+            }).filter(isNonNullable),
+          );
+
+          const result = await runnable.run(runnableInput);
+
+          return [preload.id, result];
+        }),
+      ),
+    );
+  }
+
   async run(
     input: I,
     options: RunOptions & { stream: true },
@@ -122,9 +191,13 @@ export abstract class Agent<
       input,
     });
 
-    const memories = await this.loadMemories(input, this.context);
+    const preloads = await this.loadPreloads(input);
+    const memories = await this.loadMemories(input);
 
-    const processResult = await this.process(input, { ...options, memories });
+    const processResult = await this.process(
+      { ...input, ...preloads, ...memories },
+      { preloads, memories },
+    );
 
     if (options?.stream) {
       const stream =
@@ -173,8 +246,8 @@ export abstract class Agent<
   }
 
   abstract process(
-    input: I,
-    options: AgentProcessOptions<Memories>,
+    input: AgentProcessInput<I, Preloads, Memories>,
+    options: AgentProcessOptions,
   ):
     | Promise<
         RunnableResponse<O> | AsyncGenerator<RunnableResponseChunk<O>, void>
@@ -186,13 +259,29 @@ export abstract class Agent<
    * @param options The bind options.
    * @returns The bound agent.
    */
-  bind<Input extends BindAgentInputs<typeof this>>(options: {
+  bind<Input extends BindAgentInputs<{}, typeof this>>(options: {
     description?: string;
     input?: Input;
-  }): BoundAgent<typeof this, Readonly<Input>> {
+  }): BoundAgent<{}, typeof this, Readonly<Input>> {
     return {
       ...options,
       runnable: this,
     };
   }
+}
+
+export interface AgentDefinition extends RunnableDefinition {
+  preloads?: OrderedRecord<Preload>;
+}
+
+export interface Preload {
+  id: string;
+
+  name?: string;
+
+  runnable?: {
+    id: string;
+  };
+
+  input?: { [inputId: string]: BindAgentInput };
 }

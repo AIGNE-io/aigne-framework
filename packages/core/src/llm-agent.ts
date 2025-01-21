@@ -1,7 +1,12 @@
 import { nanoid } from "nanoid";
 import { inject, injectable } from "tsyringe";
 
-import { Agent, type AgentProcessOptions } from "./agent";
+import {
+  Agent,
+  type AgentDefinition,
+  type AgentProcessInput,
+  type AgentProcessOptions,
+} from "./agent";
 import { StreamTextOutputName, TYPES } from "./constants";
 import type { Context, ContextState } from "./context";
 import {
@@ -13,25 +18,30 @@ import {
   type CreateRunnableMemory,
   toRunnableMemories,
 } from "./definitions/memory";
+import {
+  type PreloadCreator,
+  preloadCreatorsToPreloads,
+} from "./definitions/preload";
 import type {
   LLMModel,
   LLMModelInputMessage,
   LLMModelInputs,
 } from "./llm-model";
 import type { MemorableSearchOutput, MemoryItemWithScore } from "./memorable";
-import type { RunnableDefinition } from "./runnable";
 import { prepareMessages } from "./utils/message-utils";
 import { renderMessage } from "./utils/mustache-utils";
 import { OrderedRecord } from "./utils/ordered-map";
+import type { ExtractRunnableOutputType } from "./utils/runnable-type";
 import { outputsToJsonSchema } from "./utils/structured-output-schema";
 
 @injectable()
 export class LLMAgent<
   I extends { [name: string]: any } = {},
   O extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
-> extends Agent<I, O, Memories, State> {
+  Preloads extends { [name: string]: any } = {},
+  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+> extends Agent<I, O, State, Preloads, Memories> {
   static create = create;
 
   constructor(
@@ -43,7 +53,10 @@ export class LLMAgent<
     this.model ??= context?.resolveDependency(TYPES.llmModel);
   }
 
-  async *process(input: I, options: AgentProcessOptions<Memories>) {
+  async *process(
+    input: AgentProcessInput<I, Preloads, Memories>,
+    options: AgentProcessOptions,
+  ) {
     const { definition, model } = this;
     if (!model) throw new Error("LLM model is required");
 
@@ -120,7 +133,7 @@ export class LLMAgent<
   }
 }
 
-export interface LLMAgentDefinition extends RunnableDefinition {
+export interface LLMAgentDefinition extends AgentDefinition {
   type: "llm_agent";
 
   primaryMemoryId?: string;
@@ -130,14 +143,16 @@ export interface LLMAgentDefinition extends RunnableDefinition {
   modelOptions?: LLMModelInputs["modelOptions"];
 }
 
+// TODO: extract common options for agent creation to a common interface
 /**
  * Options to create LLMAgent.
  */
 export interface CreateLLMAgentOptions<
   I extends { [name: string]: DataTypeSchema },
   O extends { [name: string]: DataTypeSchema },
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
   State extends ContextState,
+  Preloads extends { [name: string]: PreloadCreator<I> },
+  Memories extends { [name: string]: CreateRunnableMemory<I> },
 > {
   context?: Context<State>;
 
@@ -155,6 +170,11 @@ export interface CreateLLMAgentOptions<
    * Output variables for this agent.
    */
   outputs: O;
+
+  /**
+   * Preload runnables before running this agent. the preloaded data are available in the agent as input variables.
+   */
+  preloads?: Preloads;
 
   /**
    * Memories to be used in this agent.
@@ -180,6 +200,8 @@ export interface CreateLLMAgentOptions<
 function create<
   I extends { [name: string]: DataTypeSchema },
   O extends { [name: string]: DataTypeSchema },
+  State extends ContextState,
+  Preloads extends { [name: string]: PreloadCreator<I> },
   Memories extends {
     [name: string]: CreateRunnableMemory<I> & {
       /**
@@ -191,20 +213,26 @@ function create<
       primary?: boolean;
     };
   },
-  State extends ContextState,
 >({
   context,
   ...options
-}: CreateLLMAgentOptions<I, O, Memories, State>): LLMAgent<
+}: CreateLLMAgentOptions<I, O, State, Preloads, Memories>): LLMAgent<
   SchemaMapType<I>,
   SchemaMapType<O>,
-  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> },
-  State
+  State,
+  {
+    [name in keyof Preloads]: ExtractRunnableOutputType<
+      ReturnType<Preloads[name]>["runnable"]
+    >;
+  },
+  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> }
 > {
   const agentId = options.name || nanoid();
 
   const inputs = schemaToDataType(options.inputs);
   const outputs = schemaToDataType(options.outputs);
+
+  const preloads = preloadCreatorsToPreloads(inputs, options.preloads);
 
   const memories = toRunnableMemories(agentId, inputs, options.memories ?? {});
   const primaryMemoryNames = Object.entries(options.memories ?? {})
@@ -230,6 +258,7 @@ function create<
       type: "llm_agent",
       inputs,
       outputs,
+      preloads,
       primaryMemoryId: primaryMemoryNames?.at(0),
       memories,
       modelOptions: options.modelOptions,

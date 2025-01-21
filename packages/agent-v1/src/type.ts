@@ -2,8 +2,8 @@ import {
   type DataType,
   OrderedRecord,
   type RunnableDefinition,
-  type RunnableInput,
-  type RunnableOutput,
+  type RunnableInputType,
+  type RunnableOutputType,
   StreamTextOutputName,
   isPropsNonNullable,
 } from "@aigne/core";
@@ -26,7 +26,7 @@ export function agentV1ToRunnableDefinition(
         }))
         .filter((i): i is typeof i & { type: DataType["type"] } =>
           ["string", "number", "boolean", "object", "array"].includes(i.type),
-        ) as RunnableInput[],
+        ) as RunnableInputType[],
     ),
     outputs: OrderedRecord.fromArray(
       (agent.outputVariables ?? [])
@@ -41,7 +41,7 @@ export function agentV1ToRunnableDefinition(
           name: v.name,
           type: v.type,
           required: v.required,
-        })) as RunnableOutput[],
+        })) as RunnableOutputType[],
     ),
   };
 }

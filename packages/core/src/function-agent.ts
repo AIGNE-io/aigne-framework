@@ -1,43 +1,61 @@
 import { nanoid } from "nanoid";
 import { inject, injectable } from "tsyringe";
 
-import { Agent, type AgentProcessOptions } from "./agent";
+import {
+  Agent,
+  type AgentDefinition,
+  type AgentMemories,
+  type AgentPreloads,
+  type AgentProcessInput,
+  type AgentProcessOptions,
+  type CreateAgentInputSchema,
+  type CreateAgentMemoriesSchema,
+  type CreateAgentMemoriesType,
+  type CreateAgentOptions,
+  type CreateAgentOutputSchema,
+  type CreateAgentPreloadsSchema,
+  type CreateAgentPreloadsType,
+} from "./agent";
 import { TYPES } from "./constants";
 import type { Context, ContextState } from "./context";
-import {
-  type DataTypeSchema,
-  type SchemaMapType,
-  schemaToDataType,
-} from "./definitions/data-type-schema";
-import {
-  type CreateRunnableMemory,
-  toRunnableMemories,
-} from "./definitions/memory";
-import type { MemorableSearchOutput, MemoryItemWithScore } from "./memorable";
+import { type SchemaToType, schemaToDataType } from "./definitions/data-schema";
+import { toRunnableMemories } from "./definitions/memory";
+import { preloadCreatorsToPreloads } from "./definitions/preload";
 import type {
-  RunnableDefinition,
+  RunnableInput,
+  RunnableOutput,
   RunnableResponse,
   RunnableResponseChunk,
 } from "./runnable";
 
 @injectable()
 export class FunctionAgent<
-  I extends { [name: string]: any } = {},
-  O extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+  I extends RunnableInput = RunnableInput,
+  O extends RunnableOutput = RunnableOutput,
   State extends ContextState = ContextState,
-> extends Agent<I, O, Memories, State> {
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
+> extends Agent<I, O, State, Preloads, Memories> {
   static create = create;
 
   constructor(
     @inject(TYPES.definition)
-    public override definition: FunctionAgentDefinition<I, O, Memories, State>,
+    public override definition: FunctionAgentDefinition<
+      I,
+      O,
+      State,
+      Preloads,
+      Memories
+    >,
     @inject(TYPES.context) context?: Context<State>,
   ) {
     super(definition, context);
   }
 
-  async process(input: I, options: AgentProcessOptions<Memories>) {
+  async process(
+    input: AgentProcessInput<I, Preloads, Memories>,
+    options: AgentProcessOptions<Preloads, Memories>,
+  ) {
     const {
       definition: { function: func },
       context,
@@ -46,80 +64,66 @@ export class FunctionAgent<
     if (!func) throw new Error("Function is required");
     if (!context) throw new Error("Context is required");
 
-    return await func(input, { context, memories: options.memories });
+    return await func(input, { ...options, context });
   }
 }
 
 export interface FunctionAgentDefinition<
-  I extends { [name: string]: any },
-  O extends { [name: string]: any },
-  Memories extends { [name: string]: MemoryItemWithScore[] },
+  I extends RunnableInput,
+  O extends RunnableOutput,
   State extends ContextState,
-> extends RunnableDefinition {
+  Preloads extends AgentPreloads,
+  Memories extends AgentMemories,
+> extends AgentDefinition {
   type: "function_agent";
 
-  function?: FunctionFuncType<I, O, Memories, State>;
+  function?: FunctionFuncType<I, O, State, Preloads, Memories>;
 }
 
 export type FunctionFuncType<
-  I extends { [name: string]: any },
-  O extends { [name: string]: any },
-  Memories extends { [name: string]: MemoryItemWithScore[] },
+  I extends RunnableInput,
+  O extends RunnableOutput,
   State extends ContextState,
+  Preloads extends AgentPreloads,
+  Memories extends AgentMemories,
 > = (
-  input: I,
-  options: {
-    memories: Memories;
-    context: Context<State>;
-  },
+  input: AgentProcessInput<I, Preloads, Memories>,
+  options: { context: Context<State>; preloads: Preloads; memories: Memories },
 ) =>
   | Promise<
       RunnableResponse<O> | AsyncGenerator<RunnableResponseChunk<O>, void>
     >
   | AsyncGenerator<RunnableResponseChunk<O>, void>;
 
-export interface CreateFunctionAgentOptions<
-  I extends { [name: string]: DataTypeSchema },
-  O extends { [name: string]: DataTypeSchema },
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
-  State extends ContextState,
-> {
-  context?: Context<State>;
-
-  name?: string;
-
-  inputs: I;
-
-  outputs: O;
-
-  memories?: Memories;
-
-  function?: FunctionFuncType<
-    SchemaMapType<I>,
-    SchemaMapType<O>,
-    { [key in keyof Memories]: MemorableSearchOutput<Memories[key]["memory"]> },
-    State
-  >;
-}
-
 function create<
-  I extends { [name: string]: DataTypeSchema },
-  O extends { [name: string]: DataTypeSchema },
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
+  I extends CreateAgentInputSchema,
+  O extends CreateAgentOutputSchema,
   State extends ContextState,
->({
-  context,
-  ...options
-}: CreateFunctionAgentOptions<I, O, Memories, State>): FunctionAgent<
-  SchemaMapType<I>,
-  SchemaMapType<O>,
-  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> },
-  State
+  Preloads extends CreateAgentPreloadsSchema<I>,
+  Memories extends CreateAgentMemoriesSchema<I>,
+>(
+  options: CreateAgentOptions<I, O, State, Preloads, Memories> & {
+    function?: FunctionFuncType<
+      SchemaToType<I>,
+      SchemaToType<O>,
+      State,
+      CreateAgentPreloadsType<I, Preloads>,
+      CreateAgentMemoriesType<I, Memories>
+    >;
+  },
+): FunctionAgent<
+  SchemaToType<I>,
+  SchemaToType<O>,
+  State,
+  CreateAgentPreloadsType<I, Preloads>,
+  CreateAgentMemoriesType<I, Memories>
 > {
   const agentId = options.name || nanoid();
 
   const inputs = schemaToDataType(options.inputs);
   const outputs = schemaToDataType(options.outputs);
+
+  const preloads = preloadCreatorsToPreloads(inputs, options.preloads);
 
   const memories = toRunnableMemories(agentId, inputs, options.memories || {});
 
@@ -130,9 +134,10 @@ function create<
       type: "function_agent",
       inputs,
       outputs,
+      preloads,
       memories,
       function: options.function,
     },
-    context,
+    options.context,
   );
 }

@@ -1,30 +1,39 @@
-import { Agent } from "./agent";
+import {
+  Agent,
+  type AgentDefinition,
+  type AgentMemories,
+  type AgentPreloads,
+} from "./agent";
 import type { Context, ContextState } from "./context";
 import type { MemoryItemWithScore } from "./memorable";
+import type { RunnableInput, RunnableOutput } from "./runnable";
 import { OrderedRecord } from "./utils";
 
-export interface SandboxFunctionRunnerInput<
-  I extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+export type SandboxFunctionRunnerInput<
+  Input extends RunnableInput = RunnableInput,
   State extends ContextState = ContextState,
-> {
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
+> = {
   name: string;
   language?: string;
   code: string;
-  input: I;
+  input: Input;
+  preloads: Preloads;
   memories: Memories;
   context: Pick<Context<State>, "state">;
-}
+};
 
-export type SandboxFunctionRunnerOutput<O> = O;
+export type SandboxFunctionRunnerOutput<Output extends RunnableOutput> = Output;
 
 export abstract class SandboxFunctionRunner<
-  I extends { [name: string]: any } = {},
-  O extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+  I extends RunnableInput = RunnableInput,
+  O extends RunnableOutput = RunnableOutput,
   State extends ContextState = ContextState,
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
 > extends Agent<
-  SandboxFunctionRunnerInput<I, Memories, State>,
+  SandboxFunctionRunnerInput<I, State, Preloads, Memories>,
   SandboxFunctionRunnerOutput<O>
 > {
   constructor(context?: Context) {
@@ -39,6 +48,7 @@ export abstract class SandboxFunctionRunner<
           { id: "language", name: "language", type: "string" },
           { id: "code", name: "code", type: "string", required: true },
           { id: "input", name: "input", type: "object", required: true },
+          { id: "preloads", name: "preloads", type: "object", required: true },
           { id: "memories", name: "memories", type: "object", required: true },
           { id: "context", name: "context", type: "object", required: true },
         ]),

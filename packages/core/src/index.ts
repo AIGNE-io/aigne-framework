@@ -2,7 +2,7 @@ export * from "./agent";
 export * from "./constants";
 export * from "./context";
 export * from "./definitions/data-type";
-export * from "./definitions/data-type-schema";
+export * from "./definitions/data-schema";
 export * from "./definitions/memory";
 export * from "./definitions/open-api";
 export * from "./function-agent";

@@ -4,7 +4,7 @@ import { OrderedRecord } from "./utils";
 
 export type Role = "system" | "user" | "assistant" | "tool";
 
-export interface LLMModelInputs {
+export type LLMModelInputs = {
   messages: LLMModelInputMessage[];
 
   responseFormat?:
@@ -28,7 +28,7 @@ export interface LLMModelInputs {
     | { type: "function"; function: { name: string; description?: string } };
 
   modelOptions?: LLMModelOptions;
-}
+};
 
 export interface LLMModelInputMessage {
   role: Role;
@@ -69,7 +69,7 @@ export interface LLMModelOptions {
   presencePenalty?: number;
 }
 
-export interface LLMModelOutputs {
+export type LLMModelOutputs = {
   $text?: string | null;
   toolCalls?: {
     id?: string;
@@ -79,7 +79,7 @@ export interface LLMModelOutputs {
       arguments?: string;
     };
   }[];
-}
+};
 
 export abstract class LLMModel extends Agent<LLMModelInputs, LLMModelOutputs> {
   constructor(context?: Context) {

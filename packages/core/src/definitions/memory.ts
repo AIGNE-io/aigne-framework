@@ -1,12 +1,30 @@
 import { nanoid } from "nanoid";
 
 import type { Memorable } from "../memorable";
-import type { RunnableInput, RunnableMemory } from "../runnable";
+import type { RunnableInputType } from "../runnable";
 import { OrderedRecord } from "../utils";
-import type { DataTypeSchema } from "./data-type-schema";
+import type { DataSchema } from "./data-schema";
+
+export interface AgentMemory {
+  id: string;
+
+  name?: string;
+
+  memory?: Memorable<unknown>;
+
+  query?: {
+    from: "variable";
+    fromVariableId?: string;
+    fromVariablePropPath?: string[];
+  };
+
+  options?: {
+    k?: number;
+  };
+}
 
 export interface CreateRunnableMemory<
-  I extends { [key: string]: DataTypeSchema } = {},
+  I extends { [key: string]: DataSchema } = {},
 > {
   /**
    * Memory instance to query/store memory.
@@ -43,10 +61,10 @@ export interface CreateRunnableMemory<
 
 export function toRunnableMemories<I extends {}>(
   agentName: string,
-  inputs: OrderedRecord<RunnableInput>,
+  inputs: OrderedRecord<RunnableInputType>,
   memories: { [name: string]: CreateRunnableMemory<I> },
-): OrderedRecord<RunnableMemory> {
-  return OrderedRecord.fromArray<RunnableMemory>(
+): OrderedRecord<AgentMemory> {
+  return OrderedRecord.fromArray<AgentMemory>(
     Object.entries(memories).map(([name, { memory, query, options }]) => {
       const queryFromVariable = query?.fromVariable
         ? OrderedRecord.find(inputs, (j) => j.name === query.fromVariable)

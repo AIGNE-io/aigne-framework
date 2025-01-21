@@ -2,7 +2,7 @@ import "sqlite3";
 
 import { Sequelize } from "sequelize";
 
-import logger from "../logger";
+import { logger } from "@aigne/core";
 
 export function initSequelize(path: string) {
 	const sequelize = new Sequelize(path, {

@@ -1,29 +1,37 @@
 import { nanoid } from "nanoid";
 import { inject, injectable } from "tsyringe";
 
-import { Agent, type AgentProcessOptions } from "./agent";
+import {
+  Agent,
+  type AgentDefinition,
+  type AgentMemories,
+  type AgentPreloads,
+  type AgentProcessInput,
+  type AgentProcessOptions,
+  type CreateAgentInputSchema,
+  type CreateAgentMemoriesSchema,
+  type CreateAgentMemoriesType,
+  type CreateAgentOptions,
+  type CreateAgentOutputSchema,
+  type CreateAgentPreloadsSchema,
+  type CreateAgentPreloadsType,
+} from "./agent";
 import { TYPES } from "./constants";
 import type { Context, ContextState } from "./context";
-import {
-  type DataTypeSchema,
-  type SchemaMapType,
-  schemaToDataType,
-} from "./definitions/data-type-schema";
-import {
-  type CreateRunnableMemory,
-  toRunnableMemories,
-} from "./definitions/memory";
-import type { MemorableSearchOutput, MemoryItemWithScore } from "./memorable";
-import type { RunnableDefinition } from "./runnable";
+import { type SchemaToType, schemaToDataType } from "./definitions/data-schema";
+import { toRunnableMemories } from "./definitions/memory";
+import { preloadCreatorsToPreloads } from "./definitions/preload";
+import type { RunnableInput, RunnableOutput } from "./runnable";
 import type { SandboxFunctionRunner } from "./sandbox-function-runner";
 
 @injectable()
 export class SandboxFunctionAgent<
-  I extends { [name: string]: any } = {},
-  O extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+  I extends RunnableInput = RunnableInput,
+  O extends RunnableOutput = RunnableOutput,
   State extends ContextState = ContextState,
-> extends Agent<I, O, Memories, State> {
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
+> extends Agent<I, O, State, Preloads, Memories> {
   static create = create;
 
   constructor(
@@ -31,13 +39,16 @@ export class SandboxFunctionAgent<
     public override definition: SandboxFunctionAgentDefinition,
     @inject(TYPES.context) context?: Context<State>,
     @inject(TYPES.sandboxFunctionRunner)
-    public runner?: SandboxFunctionRunner<I, O, Memories, State>,
+    public runner?: SandboxFunctionRunner<I, O, State, Preloads, Memories>,
   ) {
     super(definition, context);
     this.runner ??= context?.resolveDependency(TYPES.sandboxFunctionRunner);
   }
 
-  async process(input: I, options: AgentProcessOptions<Memories>) {
+  async process(
+    input: AgentProcessInput<I, Preloads, Memories>,
+    options: AgentProcessOptions<Preloads, Memories>,
+  ) {
     const {
       definition: { language, code, ...definition },
       runner,
@@ -54,6 +65,7 @@ export class SandboxFunctionAgent<
         language,
         code,
         input,
+        preloads: options.preloads,
         memories: options.memories,
         context: { state: context.state },
       },
@@ -62,52 +74,29 @@ export class SandboxFunctionAgent<
   }
 }
 
-export interface CreateSandboxFunctionAgentOptions<
-  I extends { [name: string]: DataTypeSchema },
-  O extends { [name: string]: DataTypeSchema },
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
-  State extends ContextState,
-> {
-  context?: Context<State>;
-
-  name?: string;
-
-  inputs: I;
-
-  outputs: O;
-
-  memories?: Memories;
-
-  language?: string;
-
-  code: string;
-}
-
 export function create<
-  I extends { [name: string]: DataTypeSchema },
-  O extends { [name: string]: DataTypeSchema },
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
+  I extends CreateAgentInputSchema,
+  O extends CreateAgentOutputSchema,
   State extends ContextState,
->({
-  context,
-  ...options
-}: CreateSandboxFunctionAgentOptions<
-  I,
-  O,
-  Memories,
-  State
->): SandboxFunctionAgent<
-  SchemaMapType<I>,
-  SchemaMapType<O>,
-  {
-    [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]>;
+  Preloads extends CreateAgentPreloadsSchema<I>,
+  Memories extends CreateAgentMemoriesSchema<I>,
+>(
+  options: CreateAgentOptions<I, O, State, Preloads, Memories> & {
+    language?: string;
+    code: string;
   },
-  State
+): SandboxFunctionAgent<
+  SchemaToType<I>,
+  SchemaToType<O>,
+  State,
+  CreateAgentPreloadsType<I, Preloads>,
+  CreateAgentMemoriesType<I, Memories>
 > {
   const agentId = options.name || nanoid();
 
   const inputs = schemaToDataType(options.inputs);
   const outputs = schemaToDataType(options.outputs);
+  const preloads = preloadCreatorsToPreloads(inputs, options.preloads);
   const memories = toRunnableMemories(agentId, inputs, options.memories ?? {});
 
   return new SandboxFunctionAgent(
@@ -117,15 +106,16 @@ export function create<
       type: "sandbox_function_agent",
       inputs,
       outputs,
+      preloads,
       memories,
       language: options.language,
       code: options.code,
     },
-    context,
+    options.context,
   );
 }
 
-export interface SandboxFunctionAgentDefinition extends RunnableDefinition {
+export interface SandboxFunctionAgentDefinition extends AgentDefinition {
   type: "sandbox_function_agent";
 
   language?: string;

@@ -1,7 +1,7 @@
 import omit from "lodash/omit";
 
 import type { LLMAgentDefinition } from "../llm-agent";
-import type { LLMModelInputMessage } from "../llm-model";
+import type { LLMModelInputMessage, Role } from "../llm-model";
 import type { MemoryItemWithScore } from "../memorable";
 import { isNonNullable } from "./is-non-nullable";
 import { renderMessage } from "./mustache-utils";
@@ -38,8 +38,10 @@ export function memoriesToMessages(
   const primaryMemory = primary
     .map((i) => {
       const content = renderMessage("{{memory}}", { memory: i.memory }).trim();
-      const role = ["user", "assistant"].includes(i.metadata.role)
-        ? i.metadata.role
+      const role = ["user", "assistant"].includes(
+        (i.metadata as { role: Role }).role,
+      )
+        ? (i.metadata.role as Role)
         : undefined;
 
       if (!role || !content) return null;
@@ -68,18 +70,14 @@ export function prepareMessages(
     LLMAgentDefinition,
     "messages" | "memories" | "primaryMemoryId"
   >,
-  input: { [name: string]: any },
+  input: { [name: string]: unknown },
   memories: { [name: string]: MemoryItemWithScore[] },
 ) {
-  const variables = { ...input, ...memories };
-
   const originalMessages = OrderedRecord.toArray(definition.messages).map(
     ({ role, content }): LLMModelInputMessage => ({
       role,
       content:
-        typeof content === "string"
-          ? renderMessage(content, variables)
-          : content,
+        typeof content === "string" ? renderMessage(content, input) : content,
     }),
   );
   if (!originalMessages.length) throw new Error("Messages are required");

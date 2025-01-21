@@ -6,6 +6,7 @@ import {
   type RunOptions,
   type RunnableResponse,
   type RunnableResponseStream,
+  logger,
   objectToRunnableResponseStream,
 } from "@aigne/core";
 import { mkdir, writeFile } from "fs-extra";
@@ -13,7 +14,6 @@ import { joinURL } from "ufo";
 import { stringify } from "yaml";
 
 import nextId from "../lib/next-id";
-import logger from "../logger";
 import { SearchKitRetriever } from "../retriever/search-kit";
 import { DefaultHistoryStore } from "../store/default-history-store";
 import { loadConfig } from "./config";
@@ -81,7 +81,7 @@ export class Memory<
 
     const { userId, sessionId, metadata = {} } = options ?? {};
 
-    const [actions] = await Promise.all([
+    const [{ actions }] = await Promise.all([
       this.runner.run({ ...options, messages, customData: { retriever } }),
 
       historyStore.addMessage({ userId, sessionId, messages, metadata }),

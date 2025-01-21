@@ -1,6 +1,6 @@
 import { agentV1ToRunnableDefinition, getAdapter } from "@aigne/agent-v1";
 import type { Context, Runnable } from "@aigne/core";
-import { LLMModel, type LLMModelInputs, TYPES } from "@aigne/core";
+import { LLMModel, type LLMModelInputs, TYPES, logger } from "@aigne/core";
 import {
   type ChatCompletionChunk,
   type ChatCompletionInput,
@@ -10,7 +10,6 @@ import {
 } from "@blocklet/ai-kit/api/types/chat";
 import { inject, injectable } from "tsyringe";
 
-import logger from "../logger";
 import { getDefaultValue } from "../utils/default-value";
 
 const defaultLLMModel = "gpt-4o-mini";
@@ -58,12 +57,15 @@ export class BlockletLLMModel extends LLMModel {
       if (adapter) {
         const runnable = await this.context.resolve<
           Runnable<
-            ChatCompletionInput,
+            ChatCompletionInput & Record<string, any>,
             { $llmResponseStream: ReadableStream<ChatCompletionResponse> }
           >
         >(agentV1ToRunnableDefinition(adapter.agent));
-        stream = (await runnable.run(chatInput, { stream: false }))
-          .$llmResponseStream;
+        stream = (
+          await runnable.run(chatInput, {
+            stream: false,
+          })
+        ).$llmResponseStream;
       }
     }
 

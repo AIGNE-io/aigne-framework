@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { nanoid } from "nanoid";
 
-import { Runtime, SandboxFunctionAgent } from "../../src";
+import { FunctionAgent, Runtime, SandboxFunctionAgent } from "../../src";
 import { MockSandboxFunctionRunner } from "../mocks/sandbox-function-runner";
 
 test("SandboxFunctionAgent.run", async () => {
@@ -12,26 +12,64 @@ test("SandboxFunctionAgent.run", async () => {
     sandboxFunctionRunner: MockSandboxFunctionRunner,
   });
 
+  const weatherAgent = FunctionAgent.create({
+    context,
+    name: "time",
+    inputs: {
+      city: {
+        type: "string",
+        required: true,
+      },
+      date: {
+        type: "string",
+      },
+    },
+    outputs: {
+      city: {
+        type: "string",
+        required: true,
+      },
+      temperature: {
+        type: "number",
+        required: true,
+      },
+    },
+    function: async ({ city }) => {
+      return { city, temperature: 20 };
+    },
+  });
+
   const agent = SandboxFunctionAgent.create({
     context,
     inputs: {
-      question: {
+      city: {
         type: "string",
         required: true,
       },
     },
+    preloads: {
+      weather: (preload) =>
+        preload(weatherAgent, {
+          city: { from: "input", fromInput: "city" },
+        }),
+    },
+    code: `\
+return { $text: \`ECHO: \${city} \${$context.state.userId}\`, weather };
+`,
     outputs: {
       $text: {
         type: "string",
         required: true,
       },
+      weather: {
+        type: "object",
+        required: true,
+      },
     },
-    code: `\
-return { $text: \`ECHO: \${question} \${$context.state.userId}\` };
-`,
   });
 
-  expect(await agent.run({ question: "hello" })).toEqual({
-    $text: `ECHO: hello ${userId}`,
+  expect(await agent.run({ city: "Beijing" })).toEqual({
+    $text: `ECHO: Beijing ${userId}`,
+    weather: { city: "Beijing", temperature: 20 },
   });
 });

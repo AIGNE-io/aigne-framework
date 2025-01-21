@@ -15,7 +15,7 @@ import {
 } from "../../src";
 
 export class MockMemory<
-  T,
+  T extends string = string,
   I extends MemoryActions<T> = MemoryActions<T>,
 > extends Memorable<T> {
   override runner?: MemoryRunner<T, undefined> | undefined;

@@ -16,7 +16,7 @@ import { Memory } from "../core/memory";
 import type { HistoryStore, Retriever } from "../core/type";
 import nextId from "../lib/next-id";
 
-export type ChatHistoryRunnerOutput = MemoryActionItem<string>[];
+export type ChatHistoryRunnerOutput = { actions: MemoryActionItem<string>[] };
 
 export class ChatHistoryRunner extends MemoryRunner<string> {
   constructor() {
@@ -37,17 +37,19 @@ export class ChatHistoryRunner extends MemoryRunner<string> {
   ): Promise<RunnableResponse<ChatHistoryRunnerOutput>> {
     const { messages } = input;
 
-    const result: ChatHistoryRunnerOutput = messages.map((message) => {
-      return {
-        id: nextId(),
-        event: "add",
-        memory:
-          typeof message.content === "string"
-            ? message.content
-            : JSON.stringify(message.content),
-        metadata: { role: message.role },
-      };
-    });
+    const result: ChatHistoryRunnerOutput = {
+      actions: messages.map((message) => {
+        return {
+          id: nextId(),
+          event: "add",
+          memory:
+            typeof message.content === "string"
+              ? message.content
+              : JSON.stringify(message.content),
+          metadata: { role: message.role },
+        };
+      }),
+    };
 
     return options?.stream ? objectToRunnableResponseStream(result) : result;
   }

@@ -1,3 +1,7 @@
+## 1.0.11 (2025-1-22)
+
+- feat: add preloads support for builtin agents
+
 ## 1.0.10 (2025-1-21)
 
 - feat: support auto generate case parameter by LLM for decision agent

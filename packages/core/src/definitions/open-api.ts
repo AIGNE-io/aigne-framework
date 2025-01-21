@@ -1,5 +1,5 @@
+import type { DataSchema } from "./data-schema";
 import type { DataType } from "./data-type";
-import type { DataTypeSchema } from "./data-type-schema";
 
 export interface BaseAuthConfig {
   type: "bearer" | "basic";
@@ -42,7 +42,7 @@ export type ParameterLocation = "path" | "query" | "body" | "header" | "cookie";
 
 export type OpenAPIDataType = DataType & { in?: ParameterLocation };
 
-export type OpenAPIDataTypeSchema = DataTypeSchema & { in?: ParameterLocation };
+export type OpenAPIDataTypeSchema = DataSchema & { in?: ParameterLocation };
 
 export type FetchRequest = {
   url: string;
@@ -55,5 +55,5 @@ export type FetchRequest = {
 
   cookies?: Record<string, string>;
 
-  body?: Record<string, any>;
+  body?: Record<string, unknown>;
 };

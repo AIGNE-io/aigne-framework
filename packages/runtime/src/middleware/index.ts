@@ -5,7 +5,7 @@ import compression from "compression";
 import { Router } from "express";
 import Joi from "joi";
 
-import logger from "../logger";
+import { logger } from "@aigne/core";
 import type { AIGNERuntime } from "../runtime";
 import { runAgentWithStreaming } from "./agent";
 

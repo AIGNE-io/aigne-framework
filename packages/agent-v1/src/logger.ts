@@ -1,3 +1,3 @@
-const logger = console;
+import { logger } from "@aigne/core";
 
 export default logger;

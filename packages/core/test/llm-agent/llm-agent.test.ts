@@ -52,7 +52,6 @@ test("LLMAgent.run", async () => {
           city: { from: "input", fromInput: "city" },
         }),
     },
-    // TODO: add memories case
     messages: [
       {
         role: "system",

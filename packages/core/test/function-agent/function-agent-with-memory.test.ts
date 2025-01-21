@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { FunctionAgent, type MemoryItemWithScore, Runtime } from "../../src";
 import { MockMemory } from "../mocks/memory";
 
-const memory: MemoryItemWithScore = {
+const memory: MemoryItemWithScore<string> = {
   id: "123",
   score: 0.5,
   createdAt: new Date().toISOString(),
@@ -16,7 +16,7 @@ const memory: MemoryItemWithScore = {
 test("FunctionAgent.run with preloads and memories", async () => {
   const context = new Runtime();
 
-  const history = new MockMemory();
+  const history = new MockMemory(context);
 
   const search = spyOn(history, "search").mockImplementation(async () => {
     return { results: [memory] };
@@ -113,15 +113,16 @@ test("FunctionAgent.run with preloads and memories", async () => {
 
 test("FunctionAgent.run with custom memory options", async () => {
   const userId = nanoid();
+  const context = new Runtime({ state: { userId } });
 
-  const history = new MockMemory();
+  const history = new MockMemory(context);
 
   const search = spyOn(history, "search").mockImplementation(async () => {
     return { results: [memory] };
   });
 
   const agent = FunctionAgent.create({
-    context: new Runtime({ state: { userId } }),
+    context,
     inputs: {
       question: {
         type: "string",

@@ -1,12 +1,11 @@
 import { camelCase, startCase } from "lodash";
 
+import type { Context } from "./context";
 import type { LLMModelInputMessage } from "./llm-model";
 import { Runnable } from "./runnable";
 import { OrderedRecord } from "./utils";
 
-export interface MemoryMetadata {
-  [key: string]: any;
-}
+export type MemoryMetadata = Record<string, unknown>;
 
 export type MemoryActionItem<T> =
   | { event: "add"; id: string; memory: T; metadata?: MemoryMetadata }
@@ -30,7 +29,7 @@ export interface MemoryItem<T> {
   metadata: MemoryMetadata;
 }
 
-export interface MemoryItemWithScore<T = any> extends MemoryItem<T> {
+export interface MemoryItemWithScore<T = unknown> extends MemoryItem<T> {
   score: number;
 }
 
@@ -118,14 +117,14 @@ export type MemoryActions<T> =
   | {
       action: "delete";
       inputs: {
-        filter: string | string[] | Record<string, any>;
+        filter: string | string[] | Record<string, unknown>;
       };
-      outputs: {};
+      outputs: { [name: string]: never };
     }
   | {
       action: "reset";
-      inputs: {};
-      outputs: {};
+      inputs: { [name: string]: never };
+      outputs: { [name: string]: never };
     };
 
 export interface SortItem {
@@ -139,14 +138,17 @@ export abstract class Memorable<T, C = undefined> extends Runnable<
   MemoryActions<T>,
   MemoryActions<T>["outputs"]
 > {
-  constructor() {
-    super({
-      id: "memory",
-      type: "memory",
-      name: "Memory",
-      inputs: OrderedRecord.fromArray([]),
-      outputs: OrderedRecord.fromArray([]),
-    });
+  constructor(context?: Context) {
+    super(
+      {
+        id: "memory",
+        type: "memory",
+        name: "Memory",
+        inputs: OrderedRecord.fromArray([]),
+        outputs: OrderedRecord.fromArray([]),
+      },
+      context,
+    );
   }
 
   abstract runner?: MemoryRunner<T, C>;
@@ -207,18 +209,22 @@ export abstract class Memorable<T, C = undefined> extends Runnable<
   abstract reset(): Promise<void>;
 }
 
-export interface MemoryRunnerInput<C = undefined> {
+export type MemoryRunnerInput<C = undefined> = {
   messages: MemoryMessage[];
   userId?: string;
   sessionId?: string;
   metadata?: MemoryMetadata;
   filter?: MemoryMetadata;
   customData: C;
-}
+};
+
+export type MemoryRunnerOutput<T> = {
+  actions: MemoryActionItem<T>[];
+};
 
 export abstract class MemoryRunner<T, C = undefined> extends Runnable<
   MemoryRunnerInput<C>,
-  MemoryActionItem<T>[]
+  MemoryRunnerOutput<T>
 > {
   constructor(name: string) {
     const id = `${camelCase(name)}_runner`;
@@ -234,6 +240,6 @@ export abstract class MemoryRunner<T, C = undefined> extends Runnable<
   }
 }
 
-export type MemorableSearchOutput<T extends Memorable<any>> = Awaited<
+export type MemorableSearchOutput<T extends Memorable<unknown>> = Awaited<
   ReturnType<T["search"]>
 >["results"];

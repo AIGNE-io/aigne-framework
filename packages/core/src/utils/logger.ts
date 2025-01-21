@@ -18,6 +18,4 @@ function createLogger(logger: Logger, level: LogLevel = logLevel()): Logger {
   };
 }
 
-const logger = createLogger(console);
-
-export default logger;
+export const logger = createLogger(console);

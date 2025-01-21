@@ -53,8 +53,6 @@ test("Runtime.copy.resolve should resolve with new state and config", async () =
     },
   });
 
-  console.log("agent", agent);
-
   expect(await agent.run({})).toEqual({ state: {}, config: {} });
   expect(await runtime.resolve(agent.id).then((a) => a.run({}))).toEqual({
     state: {},

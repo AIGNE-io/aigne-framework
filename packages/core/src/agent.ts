@@ -1,16 +1,24 @@
 import type { Context, ContextState } from "./context";
+import type { DataSchema } from "./definitions/data-schema";
+import type { AgentMemory, CreateRunnableMemory } from "./definitions/memory";
 import type {
-  BindAgentInput,
+  AgentPreload,
   BindAgentInputs,
   BoundAgent,
+  PreloadCreator,
 } from "./definitions/preload";
-import logger from "./logger";
-import type { MemoryItemWithScore, MemoryMessage } from "./memorable";
+import type {
+  Memorable,
+  MemorableSearchOutput,
+  MemoryItemWithScore,
+  MemoryMessage,
+} from "./memorable";
 import {
   type RunOptions,
   Runnable,
   type RunnableDefinition,
-  type RunnableMemory,
+  type RunnableInput,
+  type RunnableOutput,
   type RunnableResponse,
   type RunnableResponseChunk,
   type RunnableResponseStream,
@@ -24,27 +32,19 @@ import {
   renderMessage,
   runnableResponseStreamToObject,
 } from "./utils";
+import { logger } from "./utils/logger";
+import type { ExtractRunnableOutputType } from "./utils/runnable-type";
 
-export type AgentProcessOptions<
-  Preloads extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
-> = {
-  preloads: Preloads;
-  memories: Memories;
-};
+export type AgentPreloads = Record<string, unknown>;
 
-export type AgentProcessInput<I, Preloads, Memories> = I & {
-  [name in keyof Preloads]: Preloads[name];
-} & {
-  [name in keyof Memories]: Memories[name];
-};
+export type AgentMemories = Record<string, MemoryItemWithScore[]>;
 
 export abstract class Agent<
-  I extends { [key: string]: any } = {},
-  O extends { [key: string]: any } = {},
+  I extends RunnableInput = RunnableInput,
+  O extends RunnableOutput = RunnableOutput,
   State extends ContextState = ContextState,
-  Preloads extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
 > extends Runnable<I, O, State> {
   constructor(
     public definition: AgentDefinition,
@@ -55,7 +55,7 @@ export abstract class Agent<
 
   private async getMemoryQuery(
     input: I,
-    query: RunnableMemory["query"],
+    query: AgentMemory["query"],
   ): Promise<string> {
     if (query?.from === "variable") {
       const i = OrderedRecord.find(
@@ -65,7 +65,7 @@ export abstract class Agent<
       if (!i)
         throw new Error(`Input variable ${query.fromVariableId} not found`);
 
-      const value = input[i.name!];
+      const value = i.name ? input[i.name] : undefined;
       return renderMessage("{{value}}", { value });
     }
 
@@ -83,10 +83,12 @@ export abstract class Agent<
   protected async loadMemories(input: I): Promise<Memories> {
     const {
       definition: { memories },
-      context: {
-        state: { userId, sessionId } = {},
-      } = {},
+      context,
     } = this;
+    if (!memories?.$indexes.length) return {} as Memories;
+    if (!context) throw new Error("Context is required");
+
+    const { userId, sessionId } = context.state;
 
     return Object.fromEntries(
       (
@@ -122,8 +124,12 @@ export abstract class Agent<
    * @param messages Messages to be added to memories.
    */
   protected async updateMemories(messages: MemoryMessage[]): Promise<void> {
-    const { memories } = this.definition;
-    const { userId, sessionId } = this.context?.state ?? {};
+    const {
+      context,
+      definition: { memories },
+    } = this;
+    if (!context) throw new Error("Context is required");
+    const { userId, sessionId } = context.state ?? {};
 
     await Promise.all(
       OrderedRecord.map(memories, async ({ memory }) => {
@@ -259,10 +265,12 @@ export abstract class Agent<
    * @param options The bind options.
    * @returns The bound agent.
    */
-  bind<Input extends BindAgentInputs<{}, typeof this>>(options: {
+  bind<
+    Input extends BindAgentInputs<Record<string, never>, typeof this>,
+  >(options: {
     description?: string;
     input?: Input;
-  }): BoundAgent<{}, typeof this, Readonly<Input>> {
+  }): BoundAgent<Record<string, never>, typeof this, Readonly<Input>> {
     return {
       ...options,
       runnable: this,
@@ -270,18 +278,90 @@ export abstract class Agent<
   }
 }
 
+export type AgentProcessOptions<
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
+> = {
+  preloads: Preloads;
+  memories: Memories;
+};
+
+export type AgentProcessInput<
+  I extends RunnableInput,
+  Preloads extends AgentPreloads,
+  Memories extends AgentMemories,
+> = I & Preloads & Memories;
+
 export interface AgentDefinition extends RunnableDefinition {
-  preloads?: OrderedRecord<Preload>;
+  preloads?: OrderedRecord<AgentPreload>;
+
+  memories?: OrderedRecord<AgentMemory>;
 }
 
-export interface Preload {
-  id: string;
+export type CreateAgentInputSchema = Record<string, DataSchema>;
 
+export type CreateAgentOutputSchema<
+  Extra extends Record<string, unknown> = Record<string, unknown>,
+> = Record<string, DataSchema & Extra>;
+
+export type CreateAgentPreloadsSchema<I extends CreateAgentInputSchema> =
+  Record<string, PreloadCreator<I>>;
+
+export type CreateAgentPreloadsType<
+  I extends CreateAgentInputSchema,
+  Preloads extends CreateAgentPreloadsSchema<I>,
+> = {
+  [name in keyof Preloads]: ExtractRunnableOutputType<
+    ReturnType<Preloads[name]>["runnable"]
+  >;
+};
+
+export type CreateAgentMemoriesSchema<
+  I extends CreateAgentInputSchema,
+  Extras extends Record<string, unknown> = Record<string, unknown>,
+> = Record<string, CreateRunnableMemory<I> & Extras>;
+
+export type CreateAgentMemoriesType<
+  I extends CreateAgentInputSchema,
+  Memories extends CreateAgentMemoriesSchema<I, Record<string, unknown>>,
+> = {
+  [key in keyof Memories]: MemorableSearchOutput<Memories[key]["memory"]>;
+};
+
+/**
+ * Common options to create Agent.
+ */
+export interface CreateAgentOptions<
+  I extends CreateAgentInputSchema,
+  O extends CreateAgentOutputSchema,
+  State extends ContextState,
+  Preloads extends CreateAgentPreloadsSchema<I>,
+  Memories extends CreateAgentMemoriesSchema<I, Record<string, unknown>>,
+> {
+  context?: Context<State>;
+
+  /**
+   * Agent name, used to identify the agent.
+   */
   name?: string;
 
-  runnable?: {
-    id: string;
-  };
+  /**
+   * Input variables for this agent.
+   */
+  inputs: I;
 
-  input?: { [inputId: string]: BindAgentInput };
+  /**
+   * Output variables for this agent.
+   */
+  outputs: O;
+
+  /**
+   * Preload runnables before running this agent. the preloaded data are available in the agent as input variables.
+   */
+  preloads?: Preloads;
+
+  /**
+   * Memories to be used in this agent.
+   */
+  memories?: Memories;
 }

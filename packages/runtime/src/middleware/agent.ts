@@ -1,7 +1,5 @@
-import type { Runnable } from "@aigne/core";
+import { type Runnable, logger } from "@aigne/core";
 import type { Response } from "express";
-
-import logger from "../logger";
 
 export async function runAgentWithStreaming<T extends { [key: string]: any }>(
   res: Response,

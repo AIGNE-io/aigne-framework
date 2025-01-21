@@ -2,39 +2,48 @@ import { get, isNil } from "lodash";
 import { nanoid } from "nanoid";
 import { inject, injectable } from "tsyringe";
 
-import { Agent, type AgentProcessOptions } from "./agent";
+import {
+  Agent,
+  type AgentDefinition,
+  type AgentMemories,
+  type AgentPreloads,
+  type AgentProcessInput,
+  type AgentProcessOptions,
+  type CreateAgentInputSchema,
+  type CreateAgentMemoriesSchema,
+  type CreateAgentMemoriesType,
+  type CreateAgentOptions,
+  type CreateAgentOutputSchema,
+  type CreateAgentPreloadsSchema,
+  type CreateAgentPreloadsType,
+} from "./agent";
 import { StreamTextOutputName, TYPES } from "./constants";
 import type { Context, ContextState } from "./context";
+import { type SchemaToType, schemaToDataType } from "./definitions/data-schema";
 import type { DataType } from "./definitions/data-type";
-import {
-  type DataTypeSchema,
-  type SchemaMapType,
-  schemaToDataType,
-} from "./definitions/data-type-schema";
-import {
-  type CreateRunnableMemory,
-  toRunnableMemories,
-} from "./definitions/memory";
-import logger from "./logger";
-import type { MemorableSearchOutput, MemoryItemWithScore } from "./memorable";
+import { toRunnableMemories } from "./definitions/memory";
+import { preloadCreatorsToPreloads } from "./definitions/preload";
 import type {
   Runnable,
-  RunnableDefinition,
+  RunnableInput,
   RunnableOutput,
+  RunnableOutputType,
   RunnableResponseDelta,
 } from "./runnable";
 import { isNonNullable } from "./utils/is-non-nullable";
+import { logger } from "./utils/logger";
 import type { MakeNullablePropertyOptional } from "./utils/nullable";
 import { OrderedRecord } from "./utils/ordered-map";
 import type { ExtractRunnableInputType } from "./utils/runnable-type";
 
 @injectable()
 export class PipelineAgent<
-  I extends { [key: string]: any } = {},
-  O extends { [name: string]: any } = {},
+  I extends RunnableInput = RunnableInput,
+  O extends RunnableOutput = RunnableOutput,
   State extends ContextState = ContextState,
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
-> extends Agent<I, O, State, {}, Memories> {
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
+> extends Agent<I, O, State, AgentPreloads, Memories> {
   static create = create;
 
   constructor(
@@ -45,7 +54,10 @@ export class PipelineAgent<
     super(definition, context);
   }
 
-  async process(input: I, options: AgentProcessOptions<{}, Memories>) {
+  async process(
+    input: AgentProcessInput<I, Preloads, Memories>,
+    options: AgentProcessOptions<Preloads, Memories>,
+  ) {
     const { definition, context } = this;
     if (!context) throw new Error("Context is required");
 
@@ -59,7 +71,7 @@ export class PipelineAgent<
       async start(controller) {
         try {
           // NOTE: 将 input 转换为 variables，其中 key 为 inputId，value 为 input 的值
-          const variables: { [processId: string]: any } = {
+          const variables: { [processId: string]: unknown } = {
             ...options.memories,
             ...Object.fromEntries(
               OrderedRecord.map(definition.inputs, (i) => {
@@ -198,8 +210,8 @@ type VariableWithPropPath = {
 export type PipelineAgentProcessParameter<
   // I extends { [name: string]: DataTypeSchema },
   // _Processes extends { [name: string]: PipelineAgentProcessParameter<I> } = {},
-  R extends Runnable = any,
-  RI extends { [name: string]: DataTypeSchema } = ExtractRunnableInputType<R>,
+  R extends Runnable = Runnable,
+  RI extends RunnableInput = ExtractRunnableInputType<R>,
 > = {
   runnable: R;
   input: MakeNullablePropertyOptional<{
@@ -208,40 +220,30 @@ export type PipelineAgentProcessParameter<
 };
 
 function create<
-  I extends { [name: string]: DataTypeSchema },
-  O extends {
-    [name: string]: DataTypeSchema & {
-      fromVariable: string;
-      fromVariablePropPath?: string[];
-    };
-  },
+  I extends CreateAgentInputSchema,
+  O extends CreateAgentOutputSchema<{
+    fromVariable: string;
+    fromVariablePropPath?: string[];
+  }>,
   State extends ContextState,
-  Memories extends { [name: string]: CreateRunnableMemory<I> },
+  Preloads extends CreateAgentPreloadsSchema<I>,
+  Memories extends CreateAgentMemoriesSchema<I>,
   Processes extends { [name: string]: PipelineAgentProcessParameter },
->({
-  context,
-  ...options
-}: {
-  context: Context<State>;
-
-  name?: string;
-
-  inputs: I;
-
-  outputs: O;
-
-  memories?: Memories;
-
-  processes: Processes;
-}): PipelineAgent<
-  SchemaMapType<I>,
-  SchemaMapType<O>,
+>(
+  options: CreateAgentOptions<I, O, State, Preloads, Memories> & {
+    processes: Processes;
+  },
+): PipelineAgent<
+  SchemaToType<I>,
+  SchemaToType<O>,
   State,
-  { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> }
+  CreateAgentPreloadsType<I, Preloads>,
+  CreateAgentMemoriesType<I, Memories>
 > {
   const agentId = options.name || nanoid();
   const inputs = schemaToDataType(options.inputs);
 
+  const preloads = preloadCreatorsToPreloads(inputs, options.preloads);
   const memories = toRunnableMemories(agentId, inputs, options.memories || {});
 
   const processes: OrderedRecord<PipelineAgentProcess> =
@@ -321,15 +323,16 @@ function create<
       name: options.name,
       type: "pipeline_agent",
       inputs,
+      preloads,
       memories,
       outputs,
       processes,
     },
-    context,
+    options.context,
   );
 }
 
-export interface PipelineAgentDefinition extends RunnableDefinition {
+export interface PipelineAgentDefinition extends AgentDefinition {
   type: "pipeline_agent";
 
   processes?: OrderedRecord<PipelineAgentProcess>;
@@ -337,7 +340,7 @@ export interface PipelineAgentDefinition extends RunnableDefinition {
   outputs: OrderedRecord<PipelineAgentOutput>;
 }
 
-export type PipelineAgentOutput = RunnableOutput & {
+export type PipelineAgentOutput = RunnableOutputType & {
   from: "variable";
   fromVariableId?: string;
   fromVariablePropPath?: (string | number)[];

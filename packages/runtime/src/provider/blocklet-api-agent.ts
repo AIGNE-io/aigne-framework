@@ -12,13 +12,13 @@ import type {
   Context,
   ContextState,
   CreateRunnableMemory,
-  DataTypeSchema,
+  DataSchema,
   FetchRequest,
   HTTPMethod,
   OpenAPIDataType,
   OpenAPIDataTypeSchema,
   OrderedRecord,
-  SchemaMapType,
+  SchemaToType,
 } from "@aigne/core";
 import { getComponentMountPoint } from "@blocklet/sdk/lib/component";
 import config from "@blocklet/sdk/lib/config";
@@ -97,7 +97,7 @@ export interface BlockletAgentDefinition extends RunnableDefinition {
 
 export interface CreateBlockletAgentOptions<
   I extends { [name: string]: OpenAPIDataTypeSchema },
-  O extends { [name: string]: DataTypeSchema },
+  O extends { [name: string]: DataSchema },
   State extends ContextState,
   Memories extends { [name: string]: CreateRunnableMemory<I> },
 > {
@@ -118,15 +118,15 @@ export interface CreateBlockletAgentOptions<
 
 function create<
   I extends { [name: string]: OpenAPIDataTypeSchema },
-  O extends { [name: string]: DataTypeSchema },
+  O extends { [name: string]: DataSchema },
   State extends ContextState,
   Memories extends { [name: string]: CreateRunnableMemory<I> },
 >({
   context,
   ...options
 }: CreateBlockletAgentOptions<I, O, State, Memories>): BlockletAPIAgent<
-  SchemaMapType<I>,
-  SchemaMapType<O>,
+  SchemaToType<I>,
+  SchemaToType<O>,
   State,
   { [name in keyof Memories]: MemorableSearchOutput<Memories[name]["memory"]> }
 > {

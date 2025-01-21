@@ -6,6 +6,7 @@ import {
   type RunOptions,
   type RunnableResponse,
   type RunnableResponseStream,
+  logger,
   objectToRunnableResponseStream,
 } from "@aigne/core";
 import { uniqBy } from "lodash";
@@ -13,14 +14,15 @@ import { uniqBy } from "lodash";
 import type { Retriever } from "../core/type";
 import { getUpdateMemoryMessages } from "../lib/prompts";
 import { getFactRetrievalMessages, parseMessages } from "../lib/utils";
-import logger from "../logger";
 
 export type ShortTermMemoryRunnerCustomData = { retriever: Retriever<string> };
 
 export type ShortTermMemoryRunnerInput =
   MemoryRunnerInput<ShortTermMemoryRunnerCustomData>;
 
-export type ShortTermMemoryRunnerOutput = MemoryActionItem<string>[];
+export type ShortTermMemoryRunnerOutput = {
+  actions: MemoryActionItem<string>[];
+};
 
 export class ShortTermMemoryRunner extends MemoryRunner<
   string,
@@ -178,12 +180,16 @@ export class ShortTermMemoryRunner extends MemoryRunner<
       }[];
     } = JSON.parse(newMemoriesWithActions.$text);
 
-    return result.memory.map<ShortTermMemoryRunnerOutput[number]>((m) => ({
-      id: tempUuidMapping[m.id],
-      memory: m.text,
-      oldMemory: m.oldMemory ?? undefined,
-      event: m.event.toLowerCase() as any,
-    }));
+    return {
+      actions: result.memory.map<
+        ShortTermMemoryRunnerOutput["actions"][number]
+      >((m) => ({
+        id: tempUuidMapping[m.id],
+        memory: m.text,
+        oldMemory: m.oldMemory ?? undefined,
+        event: m.event.toLowerCase() as any,
+      })),
+    };
   }
 
   async run(

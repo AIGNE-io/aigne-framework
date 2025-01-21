@@ -41,7 +41,6 @@ return async function* ({${argKeys.join(", ")}}) {
 
     for (;;) {
       const chunk = await gen.next();
-      console.log("chunk", chunk);
 
       if (chunk.value) {
         if (chunk.value instanceof ReadableStream) {

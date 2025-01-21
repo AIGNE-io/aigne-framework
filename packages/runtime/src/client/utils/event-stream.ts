@@ -3,10 +3,9 @@ import {
   type RunnableResponseChunkWithError,
   isRunnableResponseDelta,
   isRunnableResponseError,
+  logger,
 } from "@aigne/core";
 import { createParser } from "eventsource-parser";
-
-import logger from "../../logger";
 
 export class EventSourceParserStream<T> extends TransformStream<any, T> {
   constructor() {

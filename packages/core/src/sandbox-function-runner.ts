@@ -1,31 +1,37 @@
-import { Agent, type AgentDefinition } from "./agent";
+import {
+  Agent,
+  type AgentDefinition,
+  type AgentMemories,
+  type AgentPreloads,
+} from "./agent";
 import type { Context, ContextState } from "./context";
 import type { MemoryItemWithScore } from "./memorable";
+import type { RunnableInput, RunnableOutput } from "./runnable";
 import { OrderedRecord } from "./utils";
 
-export interface SandboxFunctionRunnerInput<
-  I extends { [name: string]: any } = {},
+export type SandboxFunctionRunnerInput<
+  Input extends RunnableInput = RunnableInput,
   State extends ContextState = ContextState,
-  Preloads extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
-> {
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
+> = {
   name: string;
   language?: string;
   code: string;
-  input: I;
+  input: Input;
   preloads: Preloads;
   memories: Memories;
   context: Pick<Context<State>, "state">;
-}
+};
 
-export type SandboxFunctionRunnerOutput<O> = O;
+export type SandboxFunctionRunnerOutput<Output extends RunnableOutput> = Output;
 
 export abstract class SandboxFunctionRunner<
-  I extends { [name: string]: any } = {},
-  O extends { [name: string]: any } = {},
+  I extends RunnableInput = RunnableInput,
+  O extends RunnableOutput = RunnableOutput,
   State extends ContextState = ContextState,
-  Preloads extends { [name: string]: any } = {},
-  Memories extends { [name: string]: MemoryItemWithScore[] } = {},
+  Preloads extends AgentPreloads = AgentPreloads,
+  Memories extends AgentMemories = AgentMemories,
 > extends Agent<
   SandboxFunctionRunnerInput<I, State, Preloads, Memories>,
   SandboxFunctionRunnerOutput<O>

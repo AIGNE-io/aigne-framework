@@ -1,4 +1,4 @@
-import { type MemorySortOptions, isNonNullable } from "@aigne/core";
+import { type MemorySortOptions, isNonNullable, logger } from "@aigne/core";
 import omit from "lodash/omit";
 import { LRUCache } from "lru-cache";
 
@@ -7,7 +7,6 @@ import type {
   VectorStoreDocument,
   VectorStoreSearchOptions,
 } from "../core/type";
-import logger from "../logger";
 
 import type {
   DocumentOptions,

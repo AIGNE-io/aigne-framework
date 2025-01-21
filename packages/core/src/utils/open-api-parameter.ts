@@ -6,8 +6,8 @@ import type {
   FetchRequest,
   HTTPMethod,
 } from "../definitions/open-api";
-import logger from "../logger";
 import type { OpenAPIAgentDefinition } from "../open-api-agent";
+import { logger } from "./logger";
 import { OrderedRecord } from "./ordered-map";
 
 export async function formatOpenAPIRequest(

@@ -1,13 +1,15 @@
 import omitBy from "lodash/omitBy";
 
-import type { RunnableOutput } from "../runnable";
+import type { RunnableOutputType } from "../runnable";
 import { isNonNullable } from "./is-non-nullable";
 import type { OmitPropsFromUnion } from "./omit";
 import { OrderedRecord } from "./ordered-map";
 
-export function outputsToJsonSchema(outputs: OrderedRecord<RunnableOutput>) {
+export function outputsToJsonSchema(
+  outputs: OrderedRecord<RunnableOutputType>,
+) {
   const outputToSchema = (
-    output: OmitPropsFromUnion<RunnableOutput, "id">,
+    output: OmitPropsFromUnion<RunnableOutputType, "id">,
   ): object => {
     const properties =
       output.type === "object" && output.properties?.$indexes.length

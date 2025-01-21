@@ -1,6 +1,7 @@
 export * from "./fetch";
 export * from "./fetch-open-api";
 export * from "./is-non-nullable";
+export * from "./logger";
 export * from "./mustache-utils";
 export * from "./nullable";
 export * from "./omit";

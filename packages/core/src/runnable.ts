@@ -1,6 +1,5 @@
 import type { Context, ContextState } from "./context";
 import type { DataType } from "./definitions/data-type";
-import type { Memorable } from "./memorable";
 import { OrderedRecord } from "./utils/ordered-map";
 
 export interface RunOptions {
@@ -9,9 +8,13 @@ export interface RunOptions {
 
 export type RunnableResponse<T> = T | RunnableResponseStream<T>;
 
+export type RunnableInput = Record<string, any>;
+
+export type RunnableOutput = Record<string, any>;
+
 export abstract class Runnable<
-  I extends { [name: string]: any } = {},
-  O extends { [name: string]: any } = {},
+  I extends RunnableInput = RunnableInput,
+  O extends RunnableOutput = RunnableOutput,
   State extends ContextState = ContextState,
 > {
   constructor(
@@ -57,34 +60,14 @@ export interface RunnableDefinition {
 
   description?: string;
 
-  memories?: OrderedRecord<RunnableMemory>;
+  inputs: OrderedRecord<RunnableInputType>;
 
-  inputs: OrderedRecord<RunnableInput>;
-
-  outputs: OrderedRecord<RunnableOutput>;
+  outputs: OrderedRecord<RunnableOutputType>;
 }
 
-export interface RunnableMemory {
-  id: string;
+export type RunnableInputType = DataType;
 
-  name?: string;
-
-  memory?: Memorable<any>;
-
-  query?: {
-    from: "variable";
-    fromVariableId?: string;
-    fromVariablePropPath?: string[];
-  };
-
-  options?: {
-    k?: number;
-  };
-}
-
-export type RunnableInput = DataType;
-
-export type RunnableOutput = DataType;
+export type RunnableOutputType = DataType;
 
 export interface RunnableResponseDelta<T> {
   $text?: string;

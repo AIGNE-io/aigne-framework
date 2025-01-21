@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 
-import type { SchemaMapType } from "../../src";
+import type { SchemaToType } from "../../src";
 
 test("DataTypeSchema nested object definitions", async () => {
   type Type = {
@@ -27,7 +27,7 @@ test("DataTypeSchema nested object definitions", async () => {
     };
   };
 
-  type Schema = SchemaMapType<{
+  type Schema = SchemaToType<{
     array0: {
       type: "array";
       items: {

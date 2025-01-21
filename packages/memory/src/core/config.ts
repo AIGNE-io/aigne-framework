@@ -2,7 +2,7 @@ import { pathExists, readFile } from "fs-extra";
 import Joi from "joi";
 import { parse } from "yaml";
 
-import logger from "../logger";
+import { logger } from "@aigne/core";
 
 export interface MemoryConfig {
   id: string;

@@ -1,8 +1,14 @@
-import type { Context, Runnable } from "@aigne/core";
+import type { Assistant } from "@aigne/agent-v1";
 import {
-  parseIdentity,
-  stringifyIdentity,
-} from "@blocklet/ai-runtime/common/aid";
+  AssistantResponseType,
+  RuntimeOutputVariable,
+} from "@aigne/agent-v1/types";
+import type { Context, Runnable } from "@aigne/core";
+import { CustomComponentRenderer } from "@blocklet/pages-kit/components";
+import { nanoid } from "nanoid";
+import { useMemo } from "react";
+import { Helmet } from "react-helmet";
+import { parseIdentity, stringifyIdentity } from "../ai-runtime/aid";
 import {
   type AIGNEApiContextValue,
   type Message,
@@ -10,16 +16,7 @@ import {
   ScrollView,
   useAgent,
   useAppearances,
-} from "@blocklet/ai-runtime/front";
-import {
-  type Assistant,
-  AssistantResponseType,
-  RuntimeOutputVariable,
-} from "@blocklet/ai-runtime/types";
-import { CustomComponentRenderer } from "@blocklet/pages-kit/components";
-import { nanoid } from "nanoid";
-import { useMemo } from "react";
-import { Helmet } from "react-helmet";
+} from "./ai-runtime";
 
 export function AIGNERuntimeView(props: {
   context: Context;
@@ -88,116 +85,121 @@ function useApiProps(
     agentId: agent.id,
   });
 
-  return {
-    async getAgent({ aid }) {
-      const { agentId } = parseIdentity(aid, { rejectWhenError: true });
-      const agent = (await context.resolve(agentId))
-        .definition as any as Assistant;
+  return useMemo(
+    () => ({
+      async getAgent({ aid }) {
+        const { agentId } = parseIdentity(aid, { rejectWhenError: true });
+        const agent = (await context.resolve(agentId))
+          .definition as any as Assistant;
 
-      const profile = agent.outputVariables?.find(
-        (i) => i.name === RuntimeOutputVariable.profile,
-      );
+        const profile = agent.outputVariables?.find(
+          (i) => i.name === RuntimeOutputVariable.profile,
+        );
 
-      if (profile?.initialValue) {
-        // TODO: set url to aigne project avatar url
-        // @ts-ignore
-        profile.initialValue.avatar =
-          "https://team.arcblock.io/.well-known/service/blocklet/logo-rect?hash=ce7b0ff";
-      }
+        if (profile?.initialValue) {
+          // TODO: set url to aigne project avatar url
+          // @ts-ignore
+          profile.initialValue.avatar =
+            "https://team.arcblock.io/.well-known/service/blocklet/logo-rect?hash=ce7b0ff";
+        }
 
-      return {
-        ...agent,
-        project: {
-          ...(context as any).options?.projectDefinition!,
-        },
-        config: {
-          secrets: [],
-        },
-      };
-    },
-    async getSessions() {
-      return {
-        sessions: [
-          {
-            id: sessionId,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            projectId: context.id,
-            agentId: agent.id,
+        return {
+          ...agent,
+          project: {
+            ...(context as any).options?.projectDefinition!,
           },
-        ],
-      };
-    },
-    async getSession({ sessionId }) {
-      return {
-        id: sessionId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        projectId: context.id,
-        agentId: agent.id,
-      };
-    },
-    async getMessages({
-      sessionId,
-      limit,
-      before,
-      after,
-      orderDirection = "desc",
-    }) {
-      const results =
-        (
-          await context.historyManager?.filter({
-            agentId: agent.id,
-            sessionId,
-            k: limit,
-            sort: { field: "createdAt", direction: orderDirection },
-          })
-        )?.results ?? [];
-
-      const messages: Message[] = results.map((i) => ({
-        id: i.id,
-        aid,
-        agentId: agent.id,
+          config: {
+            secrets: [],
+          },
+        };
+      },
+      async getSessions() {
+        return {
+          sessions: [
+            {
+              id: sessionId,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              projectId: context.id,
+              agentId: agent.id,
+            },
+          ],
+        };
+      },
+      async getSession({ sessionId }) {
+        return {
+          id: sessionId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          projectId: context.id,
+          agentId: agent.id,
+        };
+      },
+      async getMessages({
         sessionId,
-        createdAt: i.createdAt,
-        updatedAt: i.updatedAt,
-        inputs: i.memory.input,
-        outputs: i.memory.output,
-      }));
+        limit,
+        before,
+        after,
+        orderDirection = "desc",
+      }) {
+        const results =
+          (
+            await context.historyManager?.filter({
+              agentId: agent.id,
+              sessionId,
+              k: limit,
+              sort: { field: "createdAt", direction: orderDirection },
+            })
+          )?.results ?? [];
 
-      return {
-        messages,
-      };
-    },
-    async runAgent({ aid, inputs = {}, responseType }) {
-      const { agentId } = parseIdentity(aid, { rejectWhenError: true });
-      const agent = await context.resolve(agentId);
-      if (responseType !== "stream") return agent.run(inputs) as any;
+        const messages: Message[] = results.map((i) => ({
+          id: i.id,
+          aid,
+          agentId: agent.id,
+          sessionId,
+          createdAt: i.createdAt,
+          updatedAt: i.updatedAt,
+          inputs: i.memory.input,
+          outputs: {
+            objects: [i.memory.output],
+          },
+        }));
 
-      const stream = await agent.run(inputs, { stream: true });
-      const messageId = nanoid();
-      const taskId = nanoid();
+        return {
+          messages,
+        };
+      },
+      async runAgent({ aid, inputs = {}, responseType }) {
+        const { agentId } = parseIdentity(aid, { rejectWhenError: true });
+        const agent = await context.resolve(agentId);
+        if (responseType !== "stream") return agent.run(inputs) as any;
 
-      return new ReadableStream({
-        async start(controller) {
-          try {
-            for await (const chunk of stream) {
-              controller.enqueue({
-                type: AssistantResponseType.CHUNK,
-                taskId,
-                messageId,
-                sessionId,
-                assistantId: agentId,
-                delta: { content: chunk.$text, object: chunk.delta },
-              });
+        const stream = await agent.run(inputs, { stream: true });
+        const messageId = nanoid();
+        const taskId = nanoid();
+
+        return new ReadableStream({
+          async start(controller) {
+            try {
+              for await (const chunk of stream as any) {
+                controller.enqueue({
+                  type: AssistantResponseType.CHUNK,
+                  taskId,
+                  messageId,
+                  sessionId,
+                  assistantId: agentId,
+                  delta: { content: chunk.$text, object: chunk.delta },
+                });
+              }
+            } catch (error) {
+              controller.error(error);
+            } finally {
+              controller.close();
             }
-          } catch (error) {
-            controller.error(error);
-          } finally {
-            controller.close();
-          }
-        },
-      });
-    },
-  };
+          },
+        });
+      },
+    }),
+    [aid, context, agent.id],
+  );
 }

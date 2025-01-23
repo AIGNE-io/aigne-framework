@@ -17,6 +17,7 @@ import { type Agent as Assistant, AssistantResponseType } from "./types";
 import { nextId } from "./utils/task-id";
 
 export * from "./type";
+export * from "./types";
 export * from "./resource-blocklet";
 
 @injectable()

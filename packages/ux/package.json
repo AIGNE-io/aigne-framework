@@ -1,6 +1,6 @@
 {
   "name": "@aigne/ux",
-  "version": "1.0.12-beta.6",
+  "version": "1.0.12-beta.18",
   "description": "AIGNE ux library",
   "publishConfig": {
     "access": "public"
@@ -39,10 +39,22 @@
     }
   },
   "dependencies": {
+    "@aigne/agent-v1": "workspace:^",
     "@aigne/core": "workspace:^",
-    "@blocklet/ai-runtime": "^0.4.213",
+    "@arcblock/did-connect": "^2.11.30",
+    "@arcblock/ux": "^2.11.30",
+    "@blocklet/pages-kit": "^0.3.33",
+    "@iconify/react": "^5.2.0",
+    "@mui/icons-material": "^5.16.14",
+    "@mui/lab": "^5.0.0-alpha.175",
+    "@mui/material": "^5.16.14",
+    "js-base64": "^3.7.7",
     "nanoid": "^5.0.9",
-    "react-helmet": "^6.1.0"
+    "react-helmet": "^6.1.0",
+    "react-markdown": "^9.0.3",
+    "remark-gfm": "^4.0.0",
+    "ufo": "^1.5.4",
+    "zustand": "^4.5.6"
   },
   "devDependencies": {
     "@types/react-helmet": "^6.1.11",

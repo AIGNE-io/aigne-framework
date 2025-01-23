@@ -8,7 +8,6 @@ import type {
   PreloadCreator,
 } from "./definitions/preload";
 import type {
-  Memorable,
   MemorableSearchOutput,
   MemoryItemWithScore,
   MemoryMessage,
@@ -220,6 +219,7 @@ export abstract class Agent<
         logger.debug(`AIGNE core: run agent ${this.name || this.id} success`, {
           result,
         });
+        await this.addHistory({ input, output: result });
         await this.onResult(result);
       });
     }
@@ -237,9 +237,21 @@ export abstract class Agent<
 
     // TODO: validate result against outputs schema
 
+    await this.addHistory({ input, output: result });
     await this.onResult(result);
 
     return result;
+  }
+
+  private async addHistory({ input, output }: { input: I; output: O }) {
+    await this.context?.historyManager?.create(
+      { input, output },
+      {
+        userId: this.context?.state.userId,
+        sessionId: this.context?.state.sessionId,
+        agentId: this.id,
+      },
+    );
   }
 
   /**

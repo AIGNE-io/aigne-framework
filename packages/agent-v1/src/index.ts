@@ -1,12 +1,5 @@
 import type { Context, RunnableDefinition } from "@aigne/core";
-import {
-  type LLMModel,
-  type RunOptions,
-  Runnable,
-  type RunnableResponse,
-  type RunnableResponseStream,
-  TYPES,
-} from "@aigne/core";
+import { Agent, type LLMModel, TYPES } from "@aigne/core";
 import type { ChatCompletionResponse } from "@blocklet/ai-kit/api/types/index";
 import { inject, injectable } from "tsyringe";
 
@@ -20,17 +13,14 @@ import { defaultImageModel, getSupportedImagesModels } from "./common";
 import { parseIdentity, stringifyIdentity } from "./common/aid";
 import { RuntimeExecutor } from "./executor";
 import { resourceManager } from "./resource-blocklet";
-import { type Agent, AssistantResponseType } from "./types";
+import { type Agent as Assistant, AssistantResponseType } from "./types";
 import { nextId } from "./utils/task-id";
 
 export * from "./type";
 export * from "./resource-blocklet";
 
 @injectable()
-export class AgentV1<I extends {} = {}, O extends {} = {}> extends Runnable<
-  I,
-  O
-> {
+export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
   constructor(
     @inject(TYPES.definition) public override definition: RunnableDefinition,
     @inject(TYPES.context) context: Context,
@@ -39,12 +29,7 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Runnable<
     super(definition, context);
   }
 
-  async run(
-    inputs: I,
-    options: RunOptions & { stream: true },
-  ): Promise<RunnableResponseStream<O>>;
-  async run(inputs: I, options?: RunOptions & { stream?: boolean }): Promise<O>;
-  async run(inputs: I, options?: RunOptions): Promise<RunnableResponse<O>> {
+  async process(inputs: I) {
     const { imageGenerations } = await import("@blocklet/ai-kit/api/call");
 
     const taskId = nextId();
@@ -155,7 +140,9 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Runnable<
                 };
               }
             } else if (identity.projectId === project.id) {
-              const a = project.runnables?.[identity.agentId] as any as Agent;
+              const a = project.runnables?.[
+                identity.agentId
+              ] as any as Assistant;
               if (a) {
                 agent = {
                   ...a,
@@ -211,31 +198,27 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Runnable<
       return executor.execute();
     };
 
-    if (options?.stream) {
-      return new ReadableStream({
-        async start(controller) {
-          try {
-            const result = await execute((e) => {
-              if (e.type === AssistantResponseType.CHUNK) {
-                const { content, object } = e.delta;
+    return new ReadableStream({
+      async start(controller) {
+        try {
+          const result = await execute((e) => {
+            if (e.type === AssistantResponseType.CHUNK) {
+              const { content, object } = e.delta;
 
-                controller.enqueue({
-                  $text: content || undefined,
-                  delta: object as any,
-                });
-              }
-            });
+              controller.enqueue({
+                $text: content || undefined,
+                delta: object as any,
+              });
+            }
+          });
 
-            controller.enqueue({ delta: result });
-          } catch (error) {
-            controller.error(error);
-          }
+          controller.enqueue({ delta: result });
+        } catch (error) {
+          controller.error(error);
+        }
 
-          controller.close();
-        },
-      });
-    }
-
-    return execute(() => {});
+        controller.close();
+      },
+    });
   }
 }

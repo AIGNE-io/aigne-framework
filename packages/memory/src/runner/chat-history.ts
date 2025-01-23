@@ -3,6 +3,7 @@ import {
   type MemoryActions,
   MemoryRunner,
   type MemoryRunnerInput,
+  type MemoryRunnerOutput,
   type RunOptions,
   type RunnableResponse,
   type RunnableResponseStream,
@@ -23,21 +24,10 @@ export class ChatHistoryRunner extends MemoryRunner<string> {
     super("chat_history");
   }
 
-  async run(
-    input: MemoryRunnerInput,
-    options: RunOptions & { stream: true },
-  ): Promise<RunnableResponseStream<ChatHistoryRunnerOutput>>;
-  async run(
-    input: MemoryRunnerInput,
-    options?: RunOptions & { stream?: false },
-  ): Promise<ChatHistoryRunnerOutput>;
-  async run(
-    input: MemoryRunnerInput,
-    options?: RunOptions,
-  ): Promise<RunnableResponse<ChatHistoryRunnerOutput>> {
+  async process(input: MemoryRunnerInput) {
     const { messages } = input;
 
-    const result: ChatHistoryRunnerOutput = {
+    return <MemoryRunnerOutput<string>>{
       actions: messages.map((message) => {
         return {
           id: nextId(),
@@ -50,8 +40,6 @@ export class ChatHistoryRunner extends MemoryRunner<string> {
         };
       }),
     };
-
-    return options?.stream ? objectToRunnableResponseStream(result) : result;
   }
 }
 

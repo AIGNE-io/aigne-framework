@@ -22,6 +22,8 @@ export interface Message
 
   sessionId?: string;
 
+  agentId?: string;
+
   messages: MemoryMessage[];
 
   metadata: MemoryMetadata;
@@ -48,6 +50,9 @@ export function initMessageModel(sequelize: Sequelize) {
         type: DataTypes.STRING,
       },
       sessionId: {
+        type: DataTypes.STRING,
+      },
+      agentId: {
         type: DataTypes.STRING,
       },
       messages: {

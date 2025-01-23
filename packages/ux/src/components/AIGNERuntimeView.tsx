@@ -5,6 +5,7 @@ import {
 } from "@blocklet/ai-runtime/common/aid";
 import {
   type AIGNEApiContextValue,
+  type Message,
   RuntimeProvider,
   ScrollView,
   useAgent,
@@ -82,6 +83,11 @@ function useApiProps(
 ): Partial<AIGNEApiContextValue> {
   const sessionId = "default-session";
 
+  const aid = stringifyIdentity({
+    projectId: context.id,
+    agentId: agent.id,
+  });
+
   return {
     async getAgent({ aid }) {
       const { agentId } = parseIdentity(aid, { rejectWhenError: true });
@@ -131,10 +137,36 @@ function useApiProps(
         agentId: agent.id,
       };
     },
-    async getMessages({ sessionId }) {
+    async getMessages({
+      sessionId,
+      limit,
+      before,
+      after,
+      orderDirection = "desc",
+    }) {
+      const results =
+        (
+          await context.historyManager?.filter({
+            agentId: agent.id,
+            sessionId,
+            k: limit,
+            sort: { field: "createdAt", direction: orderDirection },
+          })
+        )?.results ?? [];
+
+      const messages: Message[] = results.map((i) => ({
+        id: i.id,
+        aid,
+        agentId: agent.id,
+        sessionId,
+        createdAt: i.createdAt,
+        updatedAt: i.updatedAt,
+        inputs: i.memory.input,
+        outputs: i.memory.output,
+      }));
+
       return {
-        // TODO: fetch messages from aigne runtime
-        messages: [],
+        messages,
       };
     },
     async runAgent({ aid, inputs = {}, responseType }) {

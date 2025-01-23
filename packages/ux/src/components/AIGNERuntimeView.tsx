@@ -1,8 +1,14 @@
-import type { Context, Runnable } from "@aigne/core";
 import {
-  parseIdentity,
-  stringifyIdentity,
-} from "@blocklet/ai-runtime/common/aid";
+  type Assistant,
+  AssistantResponseType,
+  RuntimeOutputVariable,
+} from "@aigne/agent-v1";
+import type { Context, Runnable } from "@aigne/core";
+import { CustomComponentRenderer } from "@blocklet/pages-kit/components";
+import { nanoid } from "nanoid";
+import { useMemo } from "react";
+import { Helmet } from "react-helmet";
+import { parseIdentity, stringifyIdentity } from "../ai-runtime/aid";
 import {
   type AIGNEApiContextValue,
   type Message,
@@ -10,16 +16,7 @@ import {
   ScrollView,
   useAgent,
   useAppearances,
-} from "@blocklet/ai-runtime/front";
-import {
-  type Assistant,
-  AssistantResponseType,
-  RuntimeOutputVariable,
-} from "@blocklet/ai-runtime/types";
-import { CustomComponentRenderer } from "@blocklet/pages-kit/components";
-import { nanoid } from "nanoid";
-import { useMemo } from "react";
-import { Helmet } from "react-helmet";
+} from "./ai-runtime";
 
 export function AIGNERuntimeView(props: {
   context: Context;
@@ -181,7 +178,7 @@ function useApiProps(
       return new ReadableStream({
         async start(controller) {
           try {
-            for await (const chunk of stream) {
+            for await (const chunk of stream as any) {
               controller.enqueue({
                 type: AssistantResponseType.CHUNK,
                 taskId,

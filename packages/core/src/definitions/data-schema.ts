@@ -105,9 +105,9 @@ type SchemaTypeInner<T extends DataSchema> = T extends DataSchemaString
             >;
           }>
         : T extends DataSchemaArray
-          ? Extract<T["items"], null | undefined> extends null | undefined
-            ? SchemaType<{ type: "object" }>[]
-            : SchemaType<NonNullable<T["items"]>>[]
+          ? Extract<T["items"], null | undefined> extends never
+            ? SchemaType<NonNullable<T["items"]>>[]
+            : SchemaType<{ type: "object" }>[]
           : never;
 
 type SchemaType<T extends DataSchema> = T["required"] extends true

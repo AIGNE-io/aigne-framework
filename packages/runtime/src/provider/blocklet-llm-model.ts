@@ -60,7 +60,12 @@ export class BlockletLLMModel extends LLMModel {
             ChatCompletionInput & Record<string, any>,
             { $llmResponseStream: ReadableStream<ChatCompletionResponse> }
           >
-        >(agentV1ToRunnableDefinition(adapter.agent));
+        >({
+          ...agentV1ToRunnableDefinition(adapter.agent),
+          // @ts-ignore
+          blockletDid: adapter.blockletDid,
+          projectId: adapter.projectId,
+        });
         stream = (
           await runnable.run(chatInput, {
             stream: false,

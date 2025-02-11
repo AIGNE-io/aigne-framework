@@ -135,6 +135,7 @@ function sanitizeProjectDefinition(
   project: ProjectDefinition,
 ): ProjectDefinition {
   return {
+    blockletDid: project.blockletDid,
     id: project.id,
     name: project.name,
     description: project.description,

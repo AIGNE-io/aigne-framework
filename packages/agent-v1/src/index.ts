@@ -12,6 +12,7 @@ import {
 import {
   type CallAI,
   type CallAIImage,
+  type GetAgentOptions,
   type GetAgentResult,
   type RunAssistantCallback,
   RuntimeExecutor,
@@ -32,7 +33,11 @@ export * from "./resource-blocklet";
 @injectable()
 export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
   constructor(
-    @inject(TYPES.definition) public override definition: RunnableDefinition,
+    @inject(TYPES.definition)
+    public override definition: RunnableDefinition & {
+      blockletDid?: string;
+      projectId?: string;
+    },
     @inject(TYPES.context) context: Context,
     @inject(TYPES.llmModel) private llmModel: LLMModel,
   ) {
@@ -114,6 +119,66 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
     const { definition } = this;
     if (!definition) throw new Error("No such agent");
 
+    const getAgent = async (options: GetAgentOptions) => {
+      const identity = parseIdentity(options.aid, {
+        rejectWhenError: true,
+      });
+
+      let agent: GetAgentResult | undefined;
+
+      if (identity.blockletDid) {
+        const { blockletDid, projectId, agentId } = identity;
+
+        const res = await resourceManager.getAgent({
+          blockletDid,
+          projectId,
+          agentId,
+        });
+
+        if (res) {
+          agent = {
+            ...res.agent,
+            project: res.project,
+            identity: {
+              blockletDid,
+              projectId,
+              agentId,
+              aid: stringifyIdentity({ blockletDid, projectId, agentId }),
+            },
+          };
+        }
+      } else if (identity.projectId === project.id) {
+        const a = project.runnables?.[identity.agentId] as any as Assistant;
+        if (a) {
+          agent = {
+            ...a,
+            project,
+            identity: {
+              projectId: project.id,
+              agentId: a.id,
+              aid: stringifyIdentity({
+                projectId: project.id,
+                agentId: a.id,
+              }),
+            },
+          };
+        }
+      }
+
+      if (options.rejectOnEmpty && !agent) throw new Error("No such agent");
+
+      return agent!;
+    };
+
+    const agent = await getAgent({
+      aid: stringifyIdentity({
+        blockletDid: definition.blockletDid || project.blockletDid,
+        projectId: definition.projectId || project.id,
+        agentId: definition.id,
+      }),
+      rejectOnEmpty: true,
+    });
+
     const execute = (callback: RunAssistantCallback) => {
       const executor = new RuntimeExecutor(
         {
@@ -122,65 +187,21 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
           callAI,
           callAIImage,
           getMemoryVariables: async (options) => {
+            if (options.blockletDid) {
+              const p = await resourceManager.getProject({
+                blockletDid: options.blockletDid,
+                projectId: options.projectId,
+              });
+              return p?.memory.variables ?? [];
+            }
+
             if (options.projectId === project.id) return project.memories ?? [];
             logger.warn(
               "Unsupported to get memory variables from other projects",
             );
             return [];
           },
-          getAgent: async (options) => {
-            const identity = parseIdentity(options.aid, {
-              rejectWhenError: true,
-            });
-
-            let agent: GetAgentResult | undefined;
-
-            if (identity.blockletDid) {
-              const { blockletDid, projectId, agentId } = identity;
-
-              const res = await resourceManager.getAgent({
-                blockletDid,
-                projectId,
-                agentId,
-              });
-
-              if (res) {
-                agent = {
-                  ...res.agent,
-                  project: res.project,
-                  identity: {
-                    blockletDid,
-                    projectId,
-                    agentId,
-                    aid: stringifyIdentity({ blockletDid, projectId, agentId }),
-                  },
-                };
-              }
-            } else if (identity.projectId === project.id) {
-              const a = project.runnables?.[
-                identity.agentId
-              ] as any as Assistant;
-              if (a) {
-                agent = {
-                  ...a,
-                  project,
-                  identity: {
-                    projectId: project.id,
-                    agentId: a.id,
-                    aid: stringifyIdentity({
-                      projectId: project.id,
-                      agentId: a.id,
-                    }),
-                  },
-                };
-              }
-            }
-
-            if (options.rejectOnEmpty && !agent)
-              throw new Error("No such agent");
-
-            return agent!;
-          },
+          getAgent,
           entryProjectId: project.id,
           sessionId: project.id,
           messageId,
@@ -196,19 +217,7 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
             throw new Error("Not implemented");
           },
         },
-        // TODO:
-        {
-          ...definition,
-          identity: {
-            projectId: project.id,
-            agentId: definition.id,
-            aid: stringifyIdentity({
-              projectId: project.id,
-              agentId: definition.id,
-            }),
-          },
-          project,
-        } as any,
+        agent,
         {
           inputs,
           taskId,
@@ -221,14 +230,19 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
     return new ReadableStream({
       async start(controller) {
         try {
+          let mainTaskId: string | undefined;
+
           const result = await execute((e) => {
             if (e.type === AssistantResponseType.CHUNK) {
-              const { content, object } = e.delta;
+              mainTaskId ||= e.taskId;
+              if (e.taskId === mainTaskId) {
+                const { content, object } = e.delta;
 
-              controller.enqueue({
-                $text: content || undefined,
-                delta: object as any,
-              });
+                controller.enqueue({
+                  $text: content || undefined,
+                  delta: object as any,
+                });
+              }
             }
           });
 

@@ -8,7 +8,9 @@ import {
   isPropsNonNullable,
 } from "@aigne/core";
 
-import type { Assistant } from "./types";
+import type { Assistant } from "@blocklet/ai-runtime/types";
+
+export * from "@blocklet/ai-runtime/types";
 
 export function agentV1ToRunnableDefinition(
   agent: Assistant,

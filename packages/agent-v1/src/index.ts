@@ -1,22 +1,31 @@
 import type { Context, RunnableDefinition } from "@aigne/core";
 import { Agent, type LLMModel, TYPES } from "@aigne/core";
 import type { ChatCompletionResponse } from "@blocklet/ai-kit/api/types/index";
+import {
+  defaultImageModel,
+  getSupportedImagesModels,
+} from "@blocklet/ai-runtime/common";
+import {
+  parseIdentity,
+  stringifyIdentity,
+} from "@blocklet/ai-runtime/common/aid";
+import {
+  type CallAI,
+  type CallAIImage,
+  type GetAgentResult,
+  type RunAssistantCallback,
+  RuntimeExecutor,
+  nextTaskId,
+} from "@blocklet/ai-runtime/core";
+import {
+  type Assistant,
+  AssistantResponseType,
+} from "@blocklet/ai-runtime/types";
 import { inject, injectable } from "tsyringe";
-
-import type {
-  CallAI,
-  CallAIImage,
-  GetAgentResult,
-  RunAssistantCallback,
-} from "./assistant/type";
-import { defaultImageModel, getSupportedImagesModels } from "./common";
-import { parseIdentity, stringifyIdentity } from "./common/aid";
-import { RuntimeExecutor } from "./executor";
+import logger from "./logger";
 import { resourceManager } from "./resource-blocklet";
-import { type Agent as Assistant, AssistantResponseType } from "./types";
-import { nextId } from "./utils/task-id";
 
-export * from "./type";
+export * from "@blocklet/ai-runtime/core";
 export * from "./types";
 export * from "./resource-blocklet";
 
@@ -33,17 +42,22 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
   async process(inputs: I) {
     const { imageGenerations } = await import("@blocklet/ai-kit/api/call");
 
-    const taskId = nextId();
-    const messageId = nextId();
+    const taskId = nextTaskId();
+    const messageId = nextTaskId();
     const { llmModel } = this;
 
     const callAI: CallAI = async ({ input }) => {
       return new ReadableStream<ChatCompletionResponse>({
         async start(controller) {
           try {
+            const { responseFormat } = input;
+
             const stream = await llmModel.run(
               {
                 messages: input.messages,
+                responseFormat: responseFormat as any,
+                tools: input.tools,
+                toolChoice: input.toolChoice,
                 modelOptions: {
                   model: input.model,
                   temperature: input.temperature,
@@ -107,9 +121,11 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
           callback,
           callAI,
           callAIImage,
-          getMemoryVariables: async () => {
-            // if (options.projectId === project.id) return project.memories ?? [];
-            // logger.warn('Unsupported to get memory variables from other projects');
+          getMemoryVariables: async (options) => {
+            if (options.projectId === project.id) return project.memories ?? [];
+            logger.warn(
+              "Unsupported to get memory variables from other projects",
+            );
             return [];
           },
           getAgent: async (options) => {
@@ -175,6 +191,9 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
           },
           setCache: async () => {
             // TODO: implement cache
+          },
+          getSecret(args) {
+            throw new Error("Not implemented");
           },
         },
         // TODO:

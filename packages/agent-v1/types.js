@@ -1,1 +1,1 @@
-export * from "./lib/esm/types/index";
+export * from "./lib/esm/types";

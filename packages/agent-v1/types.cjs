@@ -1,1 +1,1 @@
-module.exports = require("./lib/cjs/types/index");
+module.exports = require("./lib/cjs/types");

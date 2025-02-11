@@ -1,4 +1,4 @@
-import { ResourceManager } from "./common/resource-manager";
+import { ResourceManager } from "@blocklet/ai-runtime/common/resource-manager";
 import type { SelectParameter } from "./types";
 
 export const resourceManager = new ResourceManager();

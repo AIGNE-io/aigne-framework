@@ -1,6 +1,6 @@
 {
   "name": "@aigne/ux",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "AIGNE ux library",
   "publishConfig": {
     "access": "public"

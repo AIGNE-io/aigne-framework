@@ -1,3 +1,8 @@
+## 1.0.12 (2025-2-18)
+
+- feat: add ux package
+- chore: pass user info to agent runtime
+
 ## 1.0.11 (2025-1-22)
 
 - feat: add preloads support for builtin agents

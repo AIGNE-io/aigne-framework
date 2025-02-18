@@ -1,6 +1,6 @@
 {
   "name": "@aigne/runtime",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "AIGNE core library",
   "publishConfig": {
     "access": "public"
@@ -60,6 +60,7 @@
   "dependencies": {
     "@aigne/agent-v1": "workspace:^",
     "@aigne/core": "workspace:^",
+    "@aigne/ux": "workspace:^",
     "@blocklet/ai-kit": "^0.1.66",
     "@blocklet/js-sdk": "^1.16.37",
     "@blocklet/quickjs": "^0.4.213",

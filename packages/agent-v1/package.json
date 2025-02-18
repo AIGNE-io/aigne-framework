@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agent-v1",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "AIGNE agent v1 compatible with AIGNE Framework",
   "publishConfig": {
     "access": "public"
@@ -36,12 +36,18 @@
       "import": "./index.js",
       "require": "./index.cjs",
       "types": "./index.d.ts"
+    },
+    "./types": {
+      "import": "./types.js",
+      "require": "./types.cjs",
+      "types": "./types.d.ts"
     }
   },
   "dependencies": {
     "@abtnode/client": "^1.16.37",
     "@aigne/core": "workspace:^",
     "@blocklet/ai-kit": "^0.1.66",
+    "@blocklet/ai-runtime": "^0.4.221",
     "@blocklet/js-sdk": "^1.16.37",
     "@blocklet/quickjs": "^0.4.213",
     "@blocklet/sdk": "^1.16.37",

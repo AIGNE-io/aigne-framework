@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["DOM"],
+    "paths": {
+      "@aigne/core": ["../core/src"],
+      "@aigne/agent-v1": ["../agent-v1/src"]
+    }
+  }
+}

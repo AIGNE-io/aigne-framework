@@ -54,6 +54,7 @@ export interface MessageHistory {
   updatedAt: Date;
   userId?: string;
   sessionId?: string;
+  agentId?: string;
   messages: MemoryMessage[];
   metadata: MemoryMetadata;
 }

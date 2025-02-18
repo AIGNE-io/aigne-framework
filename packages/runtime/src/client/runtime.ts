@@ -2,6 +2,7 @@ import {
   type Context,
   type ContextConfig,
   type ContextState,
+  type Memorable,
   OrderedRecord,
   type Runnable,
   isNonNullable,
@@ -10,7 +11,7 @@ import {
 import { DEFAULT_RUNTIME_ID } from "../constants";
 import type { ProjectDefinition } from "../runtime";
 import { Agent } from "./agent";
-import { getRunnableDefinition } from "./api/runtime";
+import { getRunnableDefinition, getRunnableHistories } from "./api/runtime";
 export interface AIGNERuntimeOptions {
   id?: string;
 
@@ -36,9 +37,25 @@ export class AIGNERuntime<
         return [agent.name, new Agent(this, agent)];
       }).filter(isNonNullable),
     );
+
+    this.historyManager = {
+      async filter({ agentId, ...options } = {}) {
+        if (!agentId) {
+          throw new Error("Unsupported get histories without agentId");
+        }
+
+        return await getRunnableHistories({
+          projectId: id,
+          agentId,
+          options,
+        });
+      },
+    } as Memorable<{ input: object; output: object }>; // TODO: implement other methods
   }
 
   id: string;
+
+  historyManager: Memorable<{ input: object; output: object }>;
 
   get state(): State {
     throw new Error("Method not implemented.");

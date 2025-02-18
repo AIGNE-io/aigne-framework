@@ -18,6 +18,8 @@ export interface VectorHistory
 
   sessionId?: string;
 
+  agentId?: string;
+
   createdAt: string;
 
   updatedAt: string;
@@ -41,6 +43,9 @@ export function initVectorHistoryModel(sequelize: Sequelize) {
         type: DataTypes.STRING,
       },
       sessionId: {
+        type: DataTypes.STRING,
+      },
+      agentId: {
         type: DataTypes.STRING,
       },
       createdAt: {

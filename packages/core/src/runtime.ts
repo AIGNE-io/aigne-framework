@@ -9,6 +9,7 @@ import { FunctionAgent } from "./function-agent";
 import { LLMAgent } from "./llm-agent";
 import { LLMDecisionAgent } from "./llm-decision-agent";
 import type { LLMModel, LLMModelConfiguration } from "./llm-model";
+import type { Memorable } from "./memorable";
 import { OpenAPIAgent } from "./open-api-agent";
 import { PipelineAgent } from "./pipeline-agent";
 import { Runnable, type RunnableDefinition } from "./runnable";
@@ -34,6 +35,8 @@ export interface RuntimeOptions<
   state?: State;
 
   agents?: Agents;
+
+  historyManager?: Memorable<{ input: object; output: object }>;
 
   llmModel?: LLMModel | Constructor<LLMModel>;
 
@@ -73,6 +76,10 @@ export class Runtime<
 
   get name() {
     return this.inner.name;
+  }
+
+  get historyManager() {
+    return this.inner.options.historyManager;
   }
 
   config: RuntimeConfiguration;

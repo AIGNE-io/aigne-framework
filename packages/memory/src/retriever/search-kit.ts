@@ -24,6 +24,7 @@ const fields = [
   "updatedAt",
   "userId",
   "sessionId",
+  "agentId",
   "memory",
   "metadata",
 ];
@@ -33,6 +34,7 @@ const searchableAttributes = [
   "updatedAt",
   "userId",
   "sessionId",
+  "agentId",
   "memory",
   "metadata",
 ];
@@ -42,6 +44,7 @@ const filterableAttributes = [
   "updatedAt",
   "userId",
   "sessionId",
+  "agentId",
   "memory",
   "metadata",
 ];
@@ -51,6 +54,7 @@ const sortableAttributes = [
   "updatedAt",
   "userId",
   "sessionId",
+  "agentId",
   "memory",
   "metadata",
 ];

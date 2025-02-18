@@ -1,0 +1,68 @@
+{
+  "name": "@aigne/ux",
+  "version": "1.0.12",
+  "description": "AIGNE ux library",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/blocklet/ai-studio#readme",
+  "license": "ISC",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./index.d.js",
+  "files": [
+    "lib/cjs",
+    "lib/dts",
+    "lib/esm",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "./*.js",
+    "./*.cjs",
+    "./*.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blocklet/ai-studio.git"
+  },
+  "scripts": {
+    "build": "tsc --build scripts/tsconfig.build.json",
+    "clean": "rimraf lib",
+    "prepublishOnly": "run-s clean build"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs",
+      "types": "./index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@aigne/agent-v1": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@arcblock/did-connect": "^2.11.30",
+    "@arcblock/ux": "^2.11.30",
+    "@blocklet/pages-kit": "^0.3.33",
+    "@iconify/react": "^5.2.0",
+    "@mui/icons-material": "^5.16.14",
+    "@mui/lab": "^5.0.0-alpha.175",
+    "@mui/material": "^5.16.14",
+    "js-base64": "^3.7.7",
+    "nanoid": "^5.0.9",
+    "react-helmet": "^6.1.0",
+    "react-markdown": "^9.0.3",
+    "remark-gfm": "^4.0.0",
+    "ufo": "^1.5.4",
+    "zustand": "^4.5.6"
+  },
+  "devDependencies": {
+    "@types/react-helmet": "^6.1.11",
+    "npm-run-all": "^4.1.5",
+    "react": "^19.0.0",
+    "rimraf": "^6.0.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

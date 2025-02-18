@@ -22,6 +22,7 @@ import { QuickJSRunner } from "../provider/quickjs-runner";
 import { DEFAULT_RUNTIME_ID } from "../constants";
 
 export interface ProjectDefinition {
+  blockletDid?: string;
   id: string;
   name?: string;
   description?: string;

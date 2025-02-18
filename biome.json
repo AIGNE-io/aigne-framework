@@ -42,18 +42,27 @@
   },
   "overrides": [
     {
-      "include": ["packages/agent-v1/**"],
+      "include": ["packages/agent-v1/**", "packages/ux/src/ai-runtime/**"],
       "linter": {
         "rules": {
           "suspicious": {
             "noImplicitAnyLet": "off",
-            "noThenProperty": "off"
+            "noThenProperty": "off",
+            "noArrayIndexKey": "off",
+            "noConfusingVoidType": "off"
           },
           "performance": {
             "noAccumulatingSpread": "off"
           },
           "complexity": {
             "noForEach": "off"
+          },
+          "correctness": {
+            "useExhaustiveDependencies": "off",
+            "useJsxKeyInIterable": "off"
+          },
+          "a11y": {
+            "noSvgWithoutTitle": "off"
           }
         }
       }

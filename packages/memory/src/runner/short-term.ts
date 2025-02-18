@@ -3,11 +3,7 @@ import {
   type MemoryActionItem,
   MemoryRunner,
   type MemoryRunnerInput,
-  type RunOptions,
-  type RunnableResponse,
-  type RunnableResponseStream,
   logger,
-  objectToRunnableResponseStream,
 } from "@aigne/core";
 import { uniqBy } from "lodash";
 
@@ -32,7 +28,7 @@ export class ShortTermMemoryRunner extends MemoryRunner<
     super("short_term_memory");
   }
 
-  private async _run(
+  async process(
     input: ShortTermMemoryRunnerInput,
   ): Promise<ShortTermMemoryRunnerOutput> {
     const { messages, filter } = input;
@@ -190,22 +186,5 @@ export class ShortTermMemoryRunner extends MemoryRunner<
         event: m.event.toLowerCase() as any,
       })),
     };
-  }
-
-  async run(
-    input: ShortTermMemoryRunnerInput,
-    options: RunOptions & { stream: true },
-  ): Promise<RunnableResponseStream<ShortTermMemoryRunnerOutput>>;
-  async run(
-    input: ShortTermMemoryRunnerInput,
-    options?: RunOptions & { stream?: false },
-  ): Promise<ShortTermMemoryRunnerOutput>;
-  async run(
-    input: ShortTermMemoryRunnerInput,
-    options?: RunOptions,
-  ): Promise<RunnableResponse<ShortTermMemoryRunnerOutput>> {
-    const result = await this._run(input);
-
-    return options?.stream ? objectToRunnableResponseStream(result) : result;
   }
 }

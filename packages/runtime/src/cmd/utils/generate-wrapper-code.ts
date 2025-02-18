@@ -10,7 +10,11 @@ import { formatCode } from "../../utils/prettier";
 
 export async function generateWrapperCode(project: ProjectDefinition) {
   // TODO: 考虑中文和其他语言情况
-  const packageName = `@aigne-project/${(project.name || project.id).toLowerCase().replaceAll(/[^a-z0-9]/g, "_")}`;
+  const projectName = (project.name || project.id)
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]/g, "_");
+
+  const packageName = `@aigne-project/${projectName}`;
 
   const packageJson = JSON.stringify(
     {
@@ -22,6 +26,7 @@ export async function generateWrapperCode(project: ProjectDefinition) {
       dependencies: {
         "@aigne/core": "latest",
         "@aigne/runtime": "latest",
+        "@aigne/ux": "latest",
       },
       exports: {
         ".": {
@@ -53,9 +58,11 @@ const projectDefinition: ProjectDefinition = ${JSON.stringify(project, null, 2)}
 
 ${generateAgentsInterface(project.runnables, "Runnable")}
 
-export default new AIGNERuntime<Agents>({
+const ${projectName} = new AIGNERuntime<Agents>({
   projectDefinition,
 });
+
+export default ${projectName}
 `;
 
   const middleware = `\
@@ -63,22 +70,25 @@ import { createMiddleware } from '@aigne/runtime/middleware';
 
 import runtime from ${JSON.stringify(packageName)};
 
-export default function middleware() {
+export default function ${projectName}() {
   return createMiddleware(runtime);
 }
 `;
 
   const client = `\
-import { ProjectDefinition } from '@aigne/runtime';
+import type { ProjectDefinition } from '@aigne/runtime';
 import { Agent, AIGNERuntime } from '@aigne/runtime/client';
+import { AIGNERuntimeView } from '@aigne/ux';
 
 const projectDefinition: ProjectDefinition = ${JSON.stringify(sanitizeProjectDefinition(project), null, 2)};
 
 ${generateAgentsInterface(project.runnables, "Agent")}
 
-export default new AIGNERuntime<Agents>({
+const ${projectName} = new AIGNERuntime<Agents>({
   projectDefinition,
 });
+
+export default ${projectName}
 `;
 
   const tsFiles = [
@@ -125,6 +135,7 @@ function sanitizeProjectDefinition(
   project: ProjectDefinition,
 ): ProjectDefinition {
   return {
+    blockletDid: project.blockletDid,
     id: project.id,
     name: project.name,
     description: project.description,

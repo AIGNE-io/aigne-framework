@@ -19,7 +19,7 @@ import { DefaultHistoryStore } from "../store/default-history-store";
 import { loadConfig } from "./config";
 import type { HistoryStore, Retriever, VectorStoreDocument } from "./type";
 
-type MemoryRunnerCustomData<T> = { retriever: Retriever<T> } | undefined;
+type MemoryRunnerCustomData<T> = { retriever: Retriever<T> };
 
 export class Memory<
   T,
@@ -79,12 +79,18 @@ export class Memory<
 
     const { retriever, historyStore } = await this.init;
 
-    const { userId, sessionId, metadata = {} } = options ?? {};
+    const { userId, sessionId, agentId, metadata = {} } = options ?? {};
 
     const [{ actions }] = await Promise.all([
       this.runner.run({ ...options, messages, customData: { retriever } }),
 
-      historyStore.addMessage({ userId, sessionId, messages, metadata }),
+      historyStore.addMessage({
+        userId,
+        sessionId,
+        agentId,
+        messages,
+        metadata,
+      }),
     ]);
 
     logger.debug("Extract memory actions", { actions });
@@ -97,6 +103,7 @@ export class Memory<
           const memory = await this.createMemory({
             userId,
             sessionId,
+            agentId,
             memory: action.memory,
             metadata: { ...metadata, ...action.metadata },
           });
@@ -114,6 +121,7 @@ export class Memory<
             id: action.id,
             userId,
             sessionId,
+            agentId,
             memory: action.memory,
             metadata: { ...metadata, ...action.metadata },
           });
@@ -164,6 +172,7 @@ export class Memory<
       ...options?.filter,
       ...(options?.userId ? { userId: options.userId } : {}),
       ...(options?.sessionId ? { sessionId: options.sessionId } : {}),
+      ...(options?.agentId ? { agentId: options.agentId } : {}),
     };
 
     const memories = await retriever.searchWithScore(query, options?.k || 100, {
@@ -188,6 +197,7 @@ export class Memory<
       ...options?.filter,
       ...(options?.userId ? { userId: options.userId } : {}),
       ...(options?.sessionId ? { sessionId: options.sessionId } : {}),
+      ...(options?.agentId ? { agentId: options.agentId } : {}),
     };
 
     const results = await retriever.list(options?.k || 1, {
@@ -301,12 +311,13 @@ export class Memory<
     const memoryId = nextId();
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
-    const { userId, sessionId, memory, metadata } = params;
+    const { userId, sessionId, agentId, memory, metadata } = params;
 
     const document: VectorStoreDocument<T> = {
       id: memoryId,
       userId,
       sessionId,
+      agentId,
       createdAt,
       updatedAt,
       memory,

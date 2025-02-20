@@ -231,12 +231,9 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
     return new ReadableStream({
       async start(controller) {
         try {
-          let mainTaskId: string | undefined;
-
           const result = await execute((e) => {
             if (e.type === AssistantResponseType.CHUNK) {
-              mainTaskId ||= e.taskId;
-              if (e.taskId === mainTaskId) {
+              if (e.taskId === taskId) {
                 const { content, object } = e.delta;
 
                 controller.enqueue({

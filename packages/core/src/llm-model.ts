@@ -34,7 +34,7 @@ export interface LLMModelInputMessage {
   role: Role;
 
   // complex content only supported for role === 'user'
-  content:
+  content?:
     | string
     | (
         | { type: "text"; text: string }

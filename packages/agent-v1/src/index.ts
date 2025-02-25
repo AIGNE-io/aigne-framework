@@ -9,6 +9,7 @@ import {
   parseIdentity,
   stringifyIdentity,
 } from "@blocklet/ai-runtime/common/aid";
+import { getMcpResources } from "@blocklet/ai-runtime/common/mcp";
 import {
   type CallAI,
   type CallAIImage,
@@ -129,23 +130,42 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
       if (identity.blockletDid) {
         const { blockletDid, projectId, agentId } = identity;
 
-        const res = await resourceManager.getAgent({
-          blockletDid,
-          projectId,
-          agentId,
-        });
+        if (projectId.startsWith("mcp_")) {
+          const a = (await getMcpResources({ blockletDid })).find(
+            (i) => i.id === agentId,
+          );
 
-        if (res) {
-          agent = {
-            ...res.agent,
-            project: res.project,
-            identity: {
-              blockletDid,
-              projectId,
-              agentId,
-              aid: stringifyIdentity({ blockletDid, projectId, agentId }),
-            },
-          };
+          if (a) {
+            agent = {
+              ...a,
+              identity: { blockletDid, projectId, agentId, aid: options.aid },
+              project: {
+                id: `mcp_${blockletDid}`,
+                name: a.mcp?.blocklet.name,
+                createdBy: a.createdBy,
+                updatedBy: a.updatedBy,
+              },
+            };
+          }
+        } else {
+          const res = await resourceManager.getAgent({
+            blockletDid,
+            projectId,
+            agentId,
+          });
+
+          if (res) {
+            agent = {
+              ...res.agent,
+              project: res.project,
+              identity: {
+                blockletDid,
+                projectId,
+                agentId,
+                aid: stringifyIdentity({ blockletDid, projectId, agentId }),
+              },
+            };
+          }
         }
       } else if (identity.projectId === project.id) {
         const a = project.runnables?.[identity.agentId] as any as Assistant;

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/memory",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "AIGNE Memory library",
   "publishConfig": {
     "access": "public"
@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@aigne/core": "workspace:^",
-    "@blocklet/search-kit-js": "^0.2.23",
+    "@blocklet/search-kit-js": "^0.2.24",
     "fs-extra": "^11.3.0",
     "joi": "^17.13.3",
     "lodash": "^4.17.21",

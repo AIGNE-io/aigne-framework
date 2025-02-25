@@ -1,3 +1,7 @@
+## 1.0.15 (2025-2-25)
+
+- feat: support MCP servers
+
 ## 1.0.13 (2025-2-18)
 
 - chore: update deps

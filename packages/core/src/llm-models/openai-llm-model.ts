@@ -86,7 +86,7 @@ async function contentsFromInputMessages(
       typeof i.content === "string"
         ? i.content
         : (i.content
-            .map((c) => {
+            ?.map((c) => {
               if (c.type === "text") {
                 return { type: "text" as const, text: c.text };
               }

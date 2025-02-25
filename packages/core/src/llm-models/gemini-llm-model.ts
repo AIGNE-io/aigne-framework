@@ -114,7 +114,10 @@ async function contentsFromInputMessages(
 }
 
 async function resolveContent(
-  content: Exclude<LLMModelInputMessage["content"], "string">[number],
+  content: Exclude<
+    LLMModelInputMessage["content"],
+    "string" | undefined
+  >[number],
 ): Promise<Part | undefined> {
   if (typeof content === "string") return { text: content };
 

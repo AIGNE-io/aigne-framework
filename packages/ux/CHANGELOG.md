@@ -1,3 +1,7 @@
+## 1.0.16 (2025-2-26)
+
+- chore: add cache for agent runtime
+
 ## 1.0.15 (2025-2-25)
 
 - feat: support MCP servers

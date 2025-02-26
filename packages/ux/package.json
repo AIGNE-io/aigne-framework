@@ -1,6 +1,6 @@
 {
   "name": "@aigne/ux",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "AIGNE ux library",
   "publishConfig": {
     "access": "public"
@@ -43,7 +43,7 @@
     "@aigne/core": "workspace:^",
     "@arcblock/did-connect": "^2.11.48",
     "@arcblock/ux": "^2.11.48",
-    "@blocklet/pages-kit": "^0.4.11",
+    "@blocklet/pages-kit": "^0.4.12",
     "@iconify/react": "^5.2.0",
     "@mui/icons-material": "^5.16.14",
     "@mui/lab": "^5.0.0-alpha.175",

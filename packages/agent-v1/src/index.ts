@@ -1,5 +1,7 @@
-import type { Context, RunnableDefinition } from "@aigne/core";
+import { join } from "node:path";
+import type { Context, Runnable, RunnableDefinition } from "@aigne/core";
 import { Agent, type LLMModel, TYPES } from "@aigne/core";
+import { Memory } from "@aigne/memory";
 import type { ChatCompletionResponse } from "@blocklet/ai-kit/api/types/index";
 import {
   defaultImageModel,
@@ -22,14 +24,26 @@ import {
 import {
   type Assistant,
   AssistantResponseType,
+  type ImageAssistant,
+  RuntimeOutputVariable,
 } from "@blocklet/ai-runtime/types";
+import config from "@blocklet/sdk/lib/config";
 import { inject, injectable } from "tsyringe";
+import { uploadImageToImageBin } from "./image-bin";
 import logger from "./logger";
-import { resourceManager } from "./resource-blocklet";
+import { getAdapter, resourceManager } from "./resource-blocklet";
+import { agentV1ToRunnableDefinition } from "./types";
 
 export * from "@blocklet/ai-runtime/core";
 export * from "./types";
 export * from "./resource-blocklet";
+
+const cacheMemory = new Memory<{
+  inputs: Record<string, any>;
+  outputs: Record<string, any>;
+}>({
+  path: join(config.env.dataDir, "agents-cache"),
+});
 
 @injectable()
 export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
@@ -92,12 +106,51 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
       });
     };
 
-    // TODO: use imageGenerationModel instead of callAIImage
-    const callAIImage: CallAIImage = async ({ assistant, input }) => {
-      const imageAssistant = assistant.type === "image" ? assistant : undefined;
+    const callAIImage: CallAIImage = async ({ input }) => {
+      const adapter = await getAdapter(
+        "image-generation",
+        input.model || defaultImageModel,
+      );
+      if (adapter) {
+        if (adapter) {
+          if (!this.context) throw new Error("No context");
+          const runnable = await this.context.resolve<
+            Runnable<
+              Record<string, any>,
+              { [RuntimeOutputVariable.images]: { url: string }[] }
+            >
+          >({
+            ...agentV1ToRunnableDefinition(adapter.agent),
+            // @ts-ignore
+            blockletDid: adapter.blockletDid,
+            projectId: adapter.projectId,
+          });
+          const result = await runnable.run(input, {
+            stream: false,
+          });
+
+          const uploadImages = await Promise.all(
+            result[RuntimeOutputVariable.images].map(
+              async (data: { url: string }) => ({
+                url: (
+                  await uploadImageToImageBin({
+                    filename: `AI Generate ${Date.now()}.png`,
+                    data,
+                    userId: this.context?.state.userId,
+                  })
+                ).url,
+              }),
+            ),
+          );
+
+          return { data: uploadImages };
+        }
+      }
+
       const supportImages = await getSupportedImagesModels();
       const imageModel = supportImages.find(
-        (i) => i.model === (imageAssistant?.model || defaultImageModel),
+        (i) =>
+          i.model === ((agent as ImageAssistant)?.model || defaultImageModel),
       );
 
       const model = {
@@ -107,11 +160,24 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
         style: input.style || imageModel?.styleDefault,
         size: input.size || imageModel?.sizeDefault,
       };
+
       return imageGenerations({
         ...input,
         ...model,
-        responseFormat: "url",
-      }) as any;
+        responseFormat: "b64_json",
+      }).then(async (res) => ({
+        data: await Promise.all(
+          res.data.map(async (item) => ({
+            url: (
+              await uploadImageToImageBin({
+                filename: `AI Generate ${Date.now()}.png`,
+                data: item,
+                userId: this.context?.state.userId,
+              })
+            ).url,
+          })),
+        ),
+      }));
     };
 
     // TODO: don't use any
@@ -227,12 +293,20 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
           messageId,
           user: this.context?.state.user as any,
           clientTime: new Date().toISOString(),
-          queryCache: async () => {
-            // TODO: implement cache
-            return null;
+          queryCache: async ({ aid, cacheKey }) => {
+            const { agentId } = parseIdentity(aid, { rejectWhenError: true });
+            const result = await cacheMemory.filter({
+              filter: { "metadata.key": cacheKey },
+              agentId,
+            });
+            return result.results.at(0)?.memory || null;
           },
-          setCache: async () => {
-            // TODO: implement cache
+          setCache: async ({ aid, cacheKey, inputs, outputs }) => {
+            const { agentId } = parseIdentity(aid, { rejectWhenError: true });
+            await cacheMemory.create(
+              { inputs, outputs },
+              { metadata: { key: cacheKey }, agentId },
+            );
           },
           getSecret(args) {
             throw new Error("Not implemented");

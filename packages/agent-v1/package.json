@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agent-v1",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "AIGNE agent v1 compatible with AIGNE Framework",
   "publishConfig": {
     "access": "public"
@@ -44,13 +44,15 @@
     }
   },
   "dependencies": {
-    "@abtnode/client": "^1.16.38",
+    "@abtnode/client": "^1.16.39",
     "@aigne/core": "workspace:^",
+    "@aigne/memory": "workspace:^",
     "@blocklet/ai-kit": "^0.1.71",
-    "@blocklet/ai-runtime": "^0.4.239",
-    "@blocklet/js-sdk": "^1.16.38",
-    "@blocklet/quickjs": "^0.4.239",
-    "@blocklet/sdk": "^1.16.38",
+    "@blocklet/ai-runtime": "^0.4.240",
+    "@blocklet/js-sdk": "^1.16.39",
+    "@blocklet/quickjs": "^0.4.240",
+    "@blocklet/sdk": "^1.16.39",
+    "@blocklet/uploader-server": "^0.1.85",
     "axios": "^1.7.9",
     "commander": "^13.0.0",
     "compression": "^1.7.5",

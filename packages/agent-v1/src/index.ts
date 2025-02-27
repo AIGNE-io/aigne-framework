@@ -1,6 +1,17 @@
 import { join } from "node:path";
-import type { Context, Runnable, RunnableDefinition } from "@aigne/core";
-import { Agent, type LLMModel, TYPES } from "@aigne/core";
+import type {
+  Context,
+  Runnable,
+  RunnableDefinition,
+  RunnableResponseChunk,
+  RunnableResponseProgress,
+} from "@aigne/core";
+import {
+  Agent,
+  type LLMModel,
+  TYPES,
+  isRunnableResponseDelta,
+} from "@aigne/core";
 import { Memory } from "@aigne/memory";
 import type { ChatCompletionResponse } from "@blocklet/ai-kit/api/types/index";
 import {
@@ -90,12 +101,14 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
             );
 
             for await (const chunk of stream) {
-              controller.enqueue({
-                delta: {
-                  content: chunk.$text,
-                  toolCalls: chunk.delta?.toolCalls,
-                },
-              });
+              if (isRunnableResponseDelta(chunk)) {
+                controller.enqueue({
+                  delta: {
+                    content: chunk.$text,
+                    toolCalls: chunk.delta?.toolCalls,
+                  },
+                });
+              }
             }
           } catch (error) {
             controller.error(error);
@@ -322,7 +335,7 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
       return executor.execute();
     };
 
-    return new ReadableStream({
+    return new ReadableStream<RunnableResponseChunk<any>>({
       async start(controller) {
         try {
           const result = await execute((e) => {
@@ -335,6 +348,12 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
                   delta: object as any,
                 });
               }
+            }
+
+            if (e.type === AssistantResponseType.PROGRESS) {
+              const progress: RunnableResponseProgress = { progress: e };
+
+              controller.enqueue(progress);
             }
           });
 

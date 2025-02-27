@@ -42,6 +42,11 @@ export class RunnableStreamParser<O> extends TransformStream<
   constructor() {
     super({
       transform: (chunk, controller) => {
+        if (isRunnableResponseError(chunk)) {
+          controller.error(new Error(chunk.error.message));
+          return;
+        }
+
         if (isRunnableResponseDelta(chunk)) {
           if (typeof chunk.$text === "string" && chunk.$text) {
             this.$text += chunk.$text;
@@ -52,11 +57,11 @@ export class RunnableStreamParser<O> extends TransformStream<
             { $text: this.$text || undefined },
             chunk.delta,
           );
-
           controller.enqueue({ ...chunk, delta: { ...this.delta } });
-        } else if (isRunnableResponseError(chunk)) {
-          controller.error(new Error(chunk.error.message));
+          return;
         }
+
+        controller.enqueue(chunk);
       },
     });
   }

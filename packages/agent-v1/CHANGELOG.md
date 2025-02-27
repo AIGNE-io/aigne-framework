@@ -1,3 +1,7 @@
+## 1.0.17 (2025-2-28)
+
+- feat: respond running progress of agent
+
 ## 1.0.16 (2025-2-26)
 
 - chore: add cache for agent runtime

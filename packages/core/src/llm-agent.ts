@@ -26,7 +26,11 @@ import type {
   LLMModelInputMessage,
   LLMModelInputs,
 } from "./llm-model";
-import type { RunnableInput, RunnableOutput } from "./runnable";
+import {
+  type RunnableInput,
+  type RunnableOutput,
+  isRunnableResponseDelta,
+} from "./runnable";
 import { prepareMessages } from "./utils/message-utils";
 import { renderMessage } from "./utils/mustache-utils";
 import { OrderedRecord } from "./utils/ordered-map";
@@ -77,8 +81,10 @@ export class LLMAgent<
     );
     if (hasTextOutput) {
       for await (const chunk of await this.runWithTextOutput(llmInputs)) {
-        $text += chunk.$text || "";
-        yield { $text: chunk.$text };
+        if (isRunnableResponseDelta(chunk)) {
+          $text += chunk.$text || "";
+          yield { $text: chunk.$text };
+        }
       }
     }
 

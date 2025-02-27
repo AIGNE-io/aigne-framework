@@ -74,6 +74,27 @@ export interface RunnableResponseDelta<T> {
   delta?: Partial<T>;
 }
 
+export interface RunnableResponseProgress {
+  progress: {
+    taskId: string;
+    time: string;
+    agent: {
+      id: string;
+      name?: string;
+      description?: string;
+    };
+    payload:
+      | {
+          type: "start";
+          input: { [key: string]: any };
+        }
+      | {
+          type: "end";
+          output: { [key: string]: any };
+        };
+  };
+}
+
 export interface RunnableResponseError {
   error: {
     message: string;
@@ -82,7 +103,9 @@ export interface RunnableResponseError {
 
 // NOTE: 不要把 RunnableResponseError 放在 RunnableResponseChunk 中，因为 error chunk 仅在 http 传输过程中使用，
 // 而 client 中的 runnable 框架应该自动识别 error chunk 并抛出异常
-export type RunnableResponseChunk<T> = RunnableResponseDelta<T>;
+export type RunnableResponseChunk<T> =
+  | RunnableResponseDelta<T>
+  | RunnableResponseProgress;
 
 export type RunnableResponseChunkWithError<T> =
   | RunnableResponseChunk<T>
@@ -91,13 +114,22 @@ export type RunnableResponseChunkWithError<T> =
 export function isRunnableResponseDelta<T>(
   chunk: RunnableResponseChunkWithError<T>,
 ): chunk is RunnableResponseDelta<T> {
-  return "$text" in chunk || "delta" in chunk;
+  return (
+    ("$text" in chunk && typeof chunk.$text === "string") ||
+    ("delta" in chunk && typeof chunk.delta === "object")
+  );
+}
+
+export function isRunnableResponseProgress<T>(
+  chunk: RunnableResponseChunkWithError<T>,
+): chunk is RunnableResponseProgress {
+  return "progress" in chunk && typeof chunk.progress === "object";
 }
 
 export function isRunnableResponseError<T>(
   chunk: RunnableResponseChunkWithError<T>,
 ): chunk is RunnableResponseError {
-  return "error" in chunk;
+  return "error" in chunk && typeof chunk.error === "object";
 }
 
 export type RunnableResponseStream<T> = ReadableStream<

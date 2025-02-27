@@ -61,9 +61,9 @@ export async function extractOutputsFromRunnableOutput<
           let $text = "";
 
           for await (const value of output) {
-            if (isRunnableResponseDelta(value)) {
-              controller.enqueue(value);
+            controller.enqueue(value);
 
+            if (isRunnableResponseDelta(value)) {
               $text += value.$text || "";
               Object.assign(result, value.delta);
             }

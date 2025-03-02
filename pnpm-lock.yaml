@@ -35,6 +35,9 @@ importers:
       '@aigne/runtime':
         specifier: workspace:^
         version: link:../../packages/runtime
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
 
   packages/agent-v1:
     dependencies:
@@ -204,6 +207,15 @@ importers:
       ufo:
         specifier: ^1.5.4
         version: 1.5.4
+      z-schema:
+        specifier: ^6.0.2
+        version: 6.0.2
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
+      zod-to-json-schema:
+        specifier: ^3.24.3
+        version: 3.24.3(zod@3.24.2)
     devDependencies:
       '@tsconfig/recommended':
         specifier: ^1.0.8
@@ -3271,6 +3283,10 @@ packages:
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
+
+  commander@11.1.0:
+    resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
+    engines: {node: '>=16'}
 
   commander@13.0.0:
     resolution: {integrity: sha512-oPYleIY8wmTVzkvQq10AEok6YcTC4sRUBl8F9gVuwchGVUCTbl/vhLTaQqutuuySYOsu8YTgV+OxKc/8Yvx+mQ==}
@@ -8503,6 +8519,11 @@ packages:
     engines: {node: '>=8.0.0'}
     hasBin: true
 
+  z-schema@6.0.2:
+    resolution: {integrity: sha512-9fQb2ZhpMD0ZQXYw0ll5ya6uLQm3Xtt4DXY2RV3QO1QVI4ihSzSWirlgkDsMgGg4qK0EV4tLOJgRSH2bn0cbIw==}
+    engines: {node: '>=16.0.0'}
+    hasBin: true
+
   zip-stream@6.0.1:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
@@ -13711,6 +13732,9 @@ snapshots:
   comma-separated-tokens@1.0.8: {}
 
   comma-separated-tokens@2.0.3: {}
+
+  commander@11.1.0:
+    optional: true
 
   commander@13.0.0: {}
 
@@ -19950,6 +19974,14 @@ snapshots:
       validator: 13.12.0
     optionalDependencies:
       commander: 9.5.0
+
+  z-schema@6.0.2:
+    dependencies:
+      lodash.get: 4.4.2
+      lodash.isequal: 4.5.0
+      validator: 13.12.0
+    optionalDependencies:
+      commander: 11.1.0
 
   zip-stream@6.0.1:
     dependencies:

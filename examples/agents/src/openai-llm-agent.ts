@@ -2,14 +2,14 @@ import "./utils/bun-polyfill";
 import "core-js";
 import "reflect-metadata";
 
-import { LLMAgent, OpenaiLLMModel, Runtime } from "@aigne/core";
+import { AIAgent, OpenaiLLMModel, Runtime } from "@aigne/core";
 
 const apiKey = process.env.OPENAI_API_KEY;
 if (!apiKey) {
   throw new Error("process.env.OPENAI_API_KEY is required");
 }
 
-const agent = LLMAgent.create({
+const agent = AIAgent.create({
   context: new Runtime({
     llmModel: new OpenaiLLMModel({
       model: "gpt-4o-mini",

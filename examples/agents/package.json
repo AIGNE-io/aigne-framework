@@ -10,6 +10,7 @@
   "dependencies": {
     "@aigne/core": "workspace:^",
     "@aigne/memory": "workspace:^",
-    "@aigne/runtime": "workspace:^"
+    "@aigne/runtime": "workspace:^",
+    "zod": "^3.24.2"
   }
 }

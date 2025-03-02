@@ -3,8 +3,8 @@ import "core-js";
 import "reflect-metadata";
 
 import {
+  AIAgent,
   FunctionAgent,
-  LLMAgent,
   LLMDecisionAgent,
   OpenaiLLMModel,
   Runtime,
@@ -39,7 +39,7 @@ const currentTime = FunctionAgent.create({
   },
 });
 
-const llmAgent = LLMAgent.create({
+const llmAgent = AIAgent.create({
   context,
   inputs: {
     question: {

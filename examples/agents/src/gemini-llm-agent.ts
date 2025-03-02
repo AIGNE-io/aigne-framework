@@ -2,7 +2,7 @@ import "./utils/bun-polyfill";
 import "core-js";
 import "reflect-metadata";
 
-import { GeminiLLMModel, LLMAgent, Runtime } from "@aigne/core";
+import { AIAgent, GeminiLLMModel, Runtime } from "@aigne/core";
 
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
@@ -16,7 +16,7 @@ const context = new Runtime({
   }),
 });
 
-const agent = LLMAgent.create({
+const agent = AIAgent.create({
   context,
   inputs: {
     question: {

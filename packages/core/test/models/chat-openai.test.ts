@@ -8,7 +8,7 @@ test("ChatModelOpenAI.run", async () => {
     model: DEFAULT_CHAT_MODEL,
   });
 
-  const result = await model.run({
+  const result = await model.call({
     messages: ChatMessagesTemplate.from("Hello, I'am Bob").format(),
   });
 

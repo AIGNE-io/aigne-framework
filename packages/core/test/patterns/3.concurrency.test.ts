@@ -1,15 +1,10 @@
 import { expect, test } from "bun:test";
-import {
-  AIAgent,
-  ChatMessagesTemplate,
-  ChatModelOpenAI,
-  Runtime,
-} from "../../src";
-import { DEFAULT_CHAT_MODEL } from "../env";
+import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "../../src";
+import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
 
 test("Patterns - Concurrency", async () => {
   const model = new ChatModelOpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
+    apiKey: OPENAI_API_KEY,
     model: DEFAULT_CHAT_MODEL,
   });
 
@@ -31,9 +26,10 @@ Product description:
     outputKey: "audience",
   });
 
-  const result = await new Runtime().run(
+  const result = await new ExecutionEngine({ model }).runParallel(
     { product: "AIGNE is a No-code Generative AI Apps Engine" },
-    [featureExtractor, audienceAnalyzer],
+    featureExtractor,
+    audienceAnalyzer,
   );
 
   expect(result).toEqual({

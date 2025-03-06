@@ -14,3 +14,8 @@ export function isPropsNonNullable<T, K extends keyof T>(
     return true;
   };
 }
+
+export function orArrayToArray<T>(value?: T | T[]): T[] {
+  if (isNil(value)) return [];
+  return Array.isArray(value) ? value : [value];
+}

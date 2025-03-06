@@ -6,11 +6,11 @@ import type {
 } from "openai/resources";
 import { isNonNullable } from "../utils/type-utils";
 import {
-  type ChatInput,
-  type ChatInputTool,
-  type ChatMessage,
   ChatModel,
-  type ChatOutput,
+  type ChatModelInput,
+  type ChatModelInputMessage,
+  type ChatModelInputTool,
+  type ChatModelOutput,
   type Role,
 } from "./chat";
 
@@ -22,7 +22,7 @@ export class ChatModelOpenAI extends ChatModel {
 
   private client: OpenAI;
 
-  async process(input: ChatInput): Promise<ChatOutput> {
+  async process(input: ChatModelInput): Promise<ChatModelOutput> {
     const res = await this.client.chat.completions.create({
       model: this.config.model,
       temperature: input.modelOptions?.temperature,
@@ -48,7 +48,7 @@ export class ChatModelOpenAI extends ChatModel {
     });
 
     let text = "";
-    const toolCalls: (NonNullable<ChatOutput["toolCalls"]>[number] & {
+    const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
       args: string;
     })[] = [];
 
@@ -75,7 +75,7 @@ export class ChatModelOpenAI extends ChatModel {
       if (choice?.delta.content) text += choice.delta.content;
     }
 
-    const result: ChatOutput = { text };
+    const result: ChatModelOutput = { text };
 
     if (input.responseFormat?.type === "json_schema") {
       result.json = JSON.parse(text);
@@ -100,7 +100,7 @@ const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
 } as const;
 
 async function contentsFromInputMessages(
-  messages: ChatMessage[],
+  messages: ChatModelInputMessage[],
 ): Promise<ChatCompletionMessageParam[]> {
   return messages.map((i) => ({
     role: ROLE_MAP[i.role] as any,
@@ -120,12 +120,19 @@ async function contentsFromInputMessages(
               }
             })
             .filter(isNonNullable) as any),
+    tool_calls: i.toolCalls?.map((i) => ({
+      ...i,
+      function: {
+        ...i.function,
+        arguments: JSON.stringify(i.function.arguments),
+      },
+    })),
     tool_call_id: i.toolCallId,
   }));
 }
 
 function toolsFromInputTools(
-  tools?: ChatInputTool[],
+  tools?: ChatModelInputTool[],
 ): ChatCompletionTool[] | undefined {
   return tools?.length
     ? tools.map((i) => ({

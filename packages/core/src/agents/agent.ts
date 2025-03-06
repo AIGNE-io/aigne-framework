@@ -1,7 +1,6 @@
-import { omit } from "lodash";
-import type { ZodType } from "zod";
-import type { ChatModel } from "../models/chat";
-import type { Runtime } from "../runtime";
+import EventEmitter from "node:events";
+import { type ZodObject, z } from "zod";
+import type { Context } from "../execution-engine/context";
 import { logger } from "../utils/logger";
 import { type TransferAgentOutput, transferAgentOutputKey } from "./types";
 
@@ -11,45 +10,73 @@ export type AgentOutput = Record<string, unknown> &
   Partial<TransferAgentOutput>;
 
 export interface AgentOptions {
+  subscribeTopic?: string | string[];
+
+  publishTopic?: string | string[];
+
   name?: string;
 
-  inputSchema?: ZodType;
+  description?: string;
 
-  outputSchema?: ZodType;
-}
+  inputSchema?: ZodObject<any>;
 
-export interface AgentRunOptions {
-  runtime?: Runtime;
-  model?: ChatModel;
+  outputSchema?: ZodObject<any>;
+
+  tools?: Agent[];
+
+  skills?: Agent[];
 }
 
 export abstract class Agent<
   I extends AgentInput = AgentInput,
   O extends AgentOutput = AgentOutput,
-> {
-  constructor(public options: AgentOptions) {}
+> extends EventEmitter {
+  constructor(options: AgentOptions) {
+    super();
 
-  async run(input: I, options?: AgentRunOptions): Promise<O> {
-    const i = this.options.inputSchema
-      ? this.options.inputSchema.parse(input)
-      : input;
-
-    logger.debug(`Agent ${this.constructor.name} start`, i);
-
-    const output = await this.process(i, options);
-
-    const result = this.options.outputSchema
-      ? this.options.outputSchema.parse(output)
-      : output;
-
-    logger.debug(`Agent ${this.constructor.name} end`, {
-      ...result,
-      [transferAgentOutputKey]:
-        result[transferAgentOutputKey]?.agent?.options?.name,
-    });
-
-    return result;
+    this.name = options.name || this.constructor.name;
+    this.description = options.description;
+    this.inputSchema = options.inputSchema || z.object({});
+    this.outputSchema = options.outputSchema || z.object({});
+    this.subscribeTopic = options.subscribeTopic;
+    this.publishTopic = options.publishTopic;
+    this.tools = options.tools || [];
+    this.skills = options.skills || [];
   }
 
-  abstract process(input: I, options?: AgentRunOptions): Promise<O>;
+  name: string;
+
+  description?: string;
+
+  inputSchema: ZodObject<any>;
+
+  outputSchema: ZodObject<any>;
+
+  subscribeTopic?: string | string[];
+
+  publishTopic?: string | string[];
+
+  tools: Agent[];
+
+  skills: Agent[];
+
+  async call(input: I, context?: Context): Promise<O> {
+    const parsedInput = this.inputSchema.passthrough().parse(input) as I;
+
+    logger.debug(`Agent ${this.constructor.name} start`, parsedInput);
+
+    const output = await this.process(parsedInput, context);
+
+    const parsedOutput = this.outputSchema.passthrough().parse(output) as O;
+
+    logger.debug(`Agent ${this.constructor.name} end`, {
+      ...parsedOutput,
+      [transferAgentOutputKey]:
+        parsedOutput[transferAgentOutputKey]?.agent?.name,
+    });
+
+    return parsedOutput;
+  }
+
+  abstract process(input: I, context?: Context): Promise<O>;
 }

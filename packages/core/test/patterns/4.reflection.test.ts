@@ -1,21 +1,21 @@
 import { expect, test } from "bun:test";
 import { z } from "zod";
+import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "../../src";
 import {
-  AIAgent,
-  ChatMessagesTemplate,
-  ChatModelOpenAI,
-  Runtime,
-} from "../../src";
-import { DEFAULT_CHAT_MODEL } from "../env";
+  UserInput,
+  UserOutput,
+} from "../../src/execution-engine/message-queue";
+import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
 
 test("Patterns - Concurrency", async () => {
   const model = new ChatModelOpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
+    apiKey: OPENAI_API_KEY,
     model: DEFAULT_CHAT_MODEL,
   });
 
   const coder = AIAgent.from({
-    model,
+    subscribeTopic: [UserInput, "rewrite_request"],
+    publishTopic: "review_request",
     instructions: `\
 You are a proficient coder. You write code to solve problems.
 Work with the reviewer to improve your code.
@@ -33,9 +33,6 @@ Code: <Your code>
 
 Previous review result:
 {{feedback}}
-
-User question:
-{{question}}
 `,
     outputSchema: z.object({
       code: z.string().describe("Your code"),
@@ -43,7 +40,8 @@ User question:
   });
 
   const reviewer = AIAgent.from({
-    model,
+    subscribeTopic: "review_request",
+    publishTopic: "review_result",
     instructions: `\
 You are a code reviewer. You focus on correctness, efficiency and safety of the code.
 
@@ -71,13 +69,27 @@ Please review the code. If previous feedback was provided, see if it was address
     }),
   });
 
-  const result = await new Runtime().runWithReview(
+  const engine = new ExecutionEngine({
+    model,
+    agents: [coder, reviewer],
+  });
+
+  const result = await engine.runLoop(
     {
       question:
         "Write a function to find the sum of all even numbers in a list.",
     },
-    coder,
-    reviewer,
+    {
+      subscribe: {
+        review_result: (output) => {
+          if (output.approval) {
+            engine.publish(UserOutput, output);
+          } else {
+            engine.publish("rewrite_request", output);
+          }
+        },
+      },
+    },
   );
 
   expect(result).toEqual({

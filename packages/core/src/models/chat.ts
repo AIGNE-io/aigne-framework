@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Agent, type AgentInput, type AgentOutput } from "../agents/agent";
 
-export abstract class ChatModel extends Agent<ChatInput, ChatOutput> {
+export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor() {
     super({
       inputSchema: z.object({
@@ -52,35 +52,21 @@ export abstract class ChatModel extends Agent<ChatInput, ChatOutput> {
   }
 }
 
-export interface ChatInput extends AgentInput {
-  messages: ChatMessage[];
+export interface ChatModelInput extends AgentInput {
+  messages: ChatModelInputMessage[];
 
-  responseFormat?:
-    | { type: "text" }
-    | {
-        type: "json_schema";
-        jsonSchema: {
-          name: string;
-          description?: string;
-          schema: object;
-          strict?: boolean;
-        };
-      };
+  responseFormat?: ChatModelInputResponseFormat;
 
-  tools?: ChatInputTool[];
+  tools?: ChatModelInputTool[];
 
-  toolChoice?:
-    | "auto"
-    | "none"
-    | "required"
-    | { type: "function"; function: { name: string; description?: string } };
+  toolChoice?: ChatModelInputToolChoice;
 
-  modelOptions?: LLMModelOptions;
+  modelOptions?: ChatModelOptions;
 }
 
 export type Role = "system" | "user" | "agent" | "tool";
 
-export interface ChatMessage {
+export interface ChatModelInputMessage {
   role: Role;
 
   content?:
@@ -96,7 +82,19 @@ export interface ChatMessage {
   toolCallId?: string;
 }
 
-export interface ChatInputTool {
+export type ChatModelInputResponseFormat =
+  | { type: "text" }
+  | {
+      type: "json_schema";
+      jsonSchema: {
+        name: string;
+        description?: string;
+        schema: object;
+        strict?: boolean;
+      };
+    };
+
+export interface ChatModelInputTool {
   type: "function";
   function: {
     name: string;
@@ -105,7 +103,13 @@ export interface ChatInputTool {
   };
 }
 
-export interface LLMModelOptions {
+export type ChatModelInputToolChoice =
+  | "auto"
+  | "none"
+  | "required"
+  | { type: "function"; function: { name: string; description?: string } };
+
+export interface ChatModelOptions {
   model?: string;
   temperature?: number;
   topP?: number;
@@ -113,15 +117,17 @@ export interface LLMModelOptions {
   presencePenalty?: number;
 }
 
-export interface ChatOutput extends AgentOutput {
+export interface ChatModelOutput extends AgentOutput {
   text?: string;
   json?: object;
-  toolCalls?: {
-    id: string;
-    type: "function";
-    function: {
-      name: string;
-      arguments: AgentInput;
-    };
-  }[];
+  toolCalls?: ChatModelOutputToolCall[];
+}
+
+export interface ChatModelOutputToolCall {
+  id: string;
+  type: "function";
+  function: {
+    name: string;
+    arguments: AgentInput;
+  };
 }

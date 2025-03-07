@@ -1,20 +1,19 @@
-import { expect, test } from "bun:test";
-import { z } from "zod";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "../../src";
+import { expect, spyOn, test } from "bun:test";
 import {
-  UserInput,
-  UserOutput,
-} from "../../src/execution-engine/message-queue";
-import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
+  AIAgent,
+  ChatModelOpenAI,
+  type ChatModelOutput,
+  ExecutionEngine,
+  UserInputTopic,
+  UserOutputTopic,
+} from "@aigne/core";
+import { z } from "zod";
 
 test("Patterns - Concurrency", async () => {
-  const model = new ChatModelOpenAI({
-    apiKey: OPENAI_API_KEY,
-    model: DEFAULT_CHAT_MODEL,
-  });
+  const model = new ChatModelOpenAI();
 
   const coder = AIAgent.from({
-    subscribeTopic: [UserInput, "rewrite_request"],
+    subscribeTopic: [UserInputTopic, "rewrite_request"],
     publishTopic: "review_request",
     instructions: `\
 You are a proficient coder. You write code to solve problems.
@@ -33,6 +32,9 @@ Code: <Your code>
 
 Previous review result:
 {{feedback}}
+
+User's question:
+{{question}}
 `,
     outputSchema: z.object({
       code: z.string().describe("Your code"),
@@ -41,7 +43,8 @@ Previous review result:
 
   const reviewer = AIAgent.from({
     subscribeTopic: "review_request",
-    publishTopic: "review_result",
+    publishTopic: (output) =>
+      output.approval ? UserOutputTopic : "rewrite_request",
     instructions: `\
 You are a code reviewer. You focus on correctness, efficiency and safety of the code.
 
@@ -67,32 +70,62 @@ Please review the code. If previous feedback was provided, see if it was address
           .describe("Your comments on suggested changes"),
       }),
     }),
+    outputIncludeInput: true,
   });
+
+  const mockModelResults: ChatModelOutput[] = [
+    {
+      json: {
+        code: "def sum_even(lst):\n    return sum(x for x in lst if x % 3 == 0)",
+      },
+    },
+    {
+      json: {
+        approval: false,
+        feedback: {
+          correctness: "Incorrect",
+          efficiency: "Optimized",
+          safety: "Safe",
+          suggested_changes: "None",
+        },
+      },
+    },
+    {
+      json: {
+        code: "def sum_even(lst):\n    return sum(x for x in lst if x % 2 == 0)",
+      },
+    },
+    {
+      json: {
+        approval: true,
+        feedback: {
+          correctness: "Correct",
+          efficiency: "Optimized",
+          safety: "Safe",
+          suggested_changes: "None",
+        },
+      },
+    },
+  ] as const;
+
+  let modelCallCount = 0;
+  const modelProcess = spyOn(model, "process").mockImplementation(
+    async () => mockModelResults[modelCallCount++] ?? {},
+  );
 
   const engine = new ExecutionEngine({
     model,
     agents: [coder, reviewer],
   });
 
-  const result = await engine.runLoop(
-    {
-      question:
-        "Write a function to find the sum of all even numbers in a list.",
-    },
-    {
-      subscribe: {
-        review_result: (output) => {
-          if (output.approval) {
-            engine.publish(UserOutput, output);
-          } else {
-            engine.publish("rewrite_request", output);
-          }
-        },
-      },
-    },
-  );
+  const result = await engine.runLoop({
+    question: "Write a function to find the sum of all even numbers in a list.",
+  });
+
+  expect(modelProcess).toHaveBeenCalledTimes(mockModelResults.length);
 
   expect(result).toEqual({
-    code: expect.stringContaining(""),
+    ...mockModelResults[3]!.json,
+    ...mockModelResults[2]!.json,
   });
 });

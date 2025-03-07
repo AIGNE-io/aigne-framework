@@ -14,17 +14,26 @@ import {
   type Role,
 } from "./chat";
 
+const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
+
 export class ChatModelOpenAI extends ChatModel {
-  constructor(public config: { apiKey: string; model: string }) {
+  constructor(public config?: { apiKey: string; model: string }) {
     super();
-    this.client = new OpenAI({ apiKey: this.config.apiKey });
   }
 
-  private client: OpenAI;
+  private _client?: OpenAI;
+
+  private get client() {
+    if (!this.config?.apiKey)
+      throw new Error("Api Key is required for ChatModelOpenAI");
+
+    this._client ??= new OpenAI({ apiKey: this.config.apiKey });
+    return this._client;
+  }
 
   async process(input: ChatModelInput): Promise<ChatModelOutput> {
     const res = await this.client.chat.completions.create({
-      model: this.config.model,
+      model: this.config?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
       temperature: input.modelOptions?.temperature,
       top_p: input.modelOptions?.topP,
       frequency_penalty: input.modelOptions?.frequencyPenalty,
@@ -128,6 +137,7 @@ async function contentsFromInputMessages(
       },
     })),
     tool_call_id: i.toolCallId,
+    name: i.name,
   }));
 }
 

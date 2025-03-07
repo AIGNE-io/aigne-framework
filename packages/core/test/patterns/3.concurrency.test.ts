@@ -1,12 +1,8 @@
-import { expect, test } from "bun:test";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "../../src";
-import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
+import { expect, spyOn, test } from "bun:test";
+import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core";
 
 test("Patterns - Concurrency", async () => {
-  const model = new ChatModelOpenAI({
-    apiKey: OPENAI_API_KEY,
-    model: DEFAULT_CHAT_MODEL,
-  });
+  const model = new ChatModelOpenAI();
 
   const featureExtractor = AIAgent.from({
     instructions: `\
@@ -26,14 +22,35 @@ Product description:
     outputKey: "audience",
   });
 
-  const result = await new ExecutionEngine({ model }).runParallel(
+  const engine = new ExecutionEngine({ model });
+
+  spyOn(model, "process").mockImplementation(async (input) => {
+    const messages = JSON.stringify(input.messages);
+
+    if (messages.includes("You are a product analyst")) {
+      return {
+        text: "Extracted features: AIGNE is a No-code Generative AI Apps Engine",
+      };
+    }
+
+    if (messages.includes("You are a market researcher")) {
+      return {
+        text: "Audience: AIGNE is a No-code Generative AI Apps Engine",
+      };
+    }
+
+    return {};
+  });
+
+  const result = await engine.runParallel(
     { product: "AIGNE is a No-code Generative AI Apps Engine" },
     featureExtractor,
     audienceAnalyzer,
   );
 
   expect(result).toEqual({
-    features: expect.stringContaining(""),
-    audience: expect.stringContaining(""),
+    features:
+      "Extracted features: AIGNE is a No-code Generative AI Apps Engine",
+    audience: "Audience: AIGNE is a No-code Generative AI Apps Engine",
   });
 });

@@ -1,4 +1,5 @@
 import EventEmitter from "node:events";
+import { nanoid } from "nanoid";
 import {
   Agent,
   type AgentInput,
@@ -7,9 +8,10 @@ import {
 } from "../agents/agent";
 import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types";
 import type { ChatModel } from "../models/chat";
+import { addMessagesToInput } from "../prompt/prompt-builder";
 import { orArrayToArray } from "../utils/type-utils";
 import type { Context } from "./context";
-import { MessageQueue, UserInput, UserOutput } from "./message-queue";
+import { MessageQueue, UserInputTopic, UserOutputTopic } from "./message-queue";
 
 export interface ExecutionEngineOptions {
   model?: ChatModel;
@@ -52,7 +54,12 @@ export class ExecutionEngine extends EventEmitter implements Context {
         try {
           const { output } = await this.callAgent(input, agent);
 
-          for (const topic of orArrayToArray(agent.publishTopic)) {
+          const topics =
+            typeof agent.publishTopic === "function"
+              ? await agent.publishTopic(output)
+              : agent.publishTopic;
+
+          for (const topic of orArrayToArray(topics)) {
             this.publish(topic, output);
           }
         } catch (error) {
@@ -118,7 +125,7 @@ export class ExecutionEngine extends EventEmitter implements Context {
       subscribe: { [topic: string]: (message: AgentOutput) => void };
     },
   ) {
-    this.publish(UserInput, input);
+    this.publish(UserInputTopic, input);
 
     const subscriptions = Object.entries(options?.subscribe || {});
 
@@ -128,7 +135,7 @@ export class ExecutionEngine extends EventEmitter implements Context {
 
     // TODO: 处理超时、错误、无限循环等情况
     const result = await new Promise((resolve) => {
-      this.messageQueue.on(UserOutput, (result) => resolve(result));
+      this.messageQueue.on(UserOutputTopic, (result) => resolve(result));
     });
 
     for (const [topic, listener] of subscriptions) {
@@ -175,6 +182,35 @@ export class ExecutionEngine extends EventEmitter implements Context {
     for (;;) {
       output = await activeAgent.call(input, this);
       if (isTransferAgentOutput(output)) {
+        // TODO: 不要修改原始对象，可能被外部丢弃
+        const transferToolCallId = nanoid();
+        Object.assign(
+          input,
+          addMessagesToInput(input, [
+            {
+              role: "agent",
+              name: agent.name,
+              toolCalls: [
+                {
+                  id: transferToolCallId,
+                  type: "function",
+                  function: {
+                    name: "transfer_to_agent",
+                    arguments: {
+                      to: output[transferAgentOutputKey].agent.name,
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              role: "tool",
+              toolCallId: transferToolCallId,
+              content: `Transferred to ${output[transferAgentOutputKey].agent.name}. Adopt persona immediately.`,
+            },
+          ]),
+        );
+
         activeAgent = output[transferAgentOutputKey].agent;
       } else {
         break;

@@ -15,8 +15,40 @@ import {
   PromptTemplate,
   SystemMessageTemplate,
   UserMessageTemplate,
+  parseChatMessages,
 } from "./template";
 import { DEFAULT_INSTRUCTIONS_TEMPLATE } from "./templates/instructions";
+
+export const USER_INPUT_MESSAGE_KEY = "$user_input_message";
+
+export function userInput(message: string | object) {
+  return { [USER_INPUT_MESSAGE_KEY]: message };
+}
+
+export function addMessagesToInput(
+  input: AgentInput,
+  messages: ChatModelInputMessage[],
+) {
+  const originalUserInputMessages = input[USER_INPUT_MESSAGE_KEY];
+
+  const newMessages: ChatModelInputMessage[] = [];
+
+  if (typeof originalUserInputMessages === "string") {
+    newMessages.push({ role: "user", content: originalUserInputMessages });
+  } else {
+    const messages = parseChatMessages(originalUserInputMessages);
+    if (messages) newMessages.push(...messages);
+    else
+      newMessages.push({
+        role: "user",
+        content: JSON.stringify(originalUserInputMessages),
+      });
+  }
+
+  newMessages.push(...messages);
+
+  return { ...input, [USER_INPUT_MESSAGE_KEY]: newMessages };
+}
 
 export interface PromptBuilderBuildOptions {
   context?: Context;
@@ -27,11 +59,8 @@ export interface PromptBuilderBuildOptions {
 
 export class PromptBuilder {
   async build(options: PromptBuilderBuildOptions): Promise<ChatModelInput> {
-    const { model, agent } = options;
-
     return {
       messages: this.buildMessages(options),
-      model: model || agent.model,
       responseFormat: this.buildResponseFormat(options),
       ...this.buildTools(options),
     };
@@ -53,9 +82,18 @@ export class PromptBuilder {
       ),
     );
 
-    // TODO: input 中可能包含变量和用户输入的问题
-    // 需要从 input 中提取出用户输入的消息，而不是整个 input 对象
-    template.messages.push(UserMessageTemplate.from(JSON.stringify(input)));
+    const userInputMessage = input[USER_INPUT_MESSAGE_KEY];
+    if (typeof userInputMessage === "string") {
+      template.messages.push(UserMessageTemplate.from(userInputMessage));
+    } else if (userInputMessage) {
+      const messages = parseChatMessages(userInputMessage);
+
+      if (messages) template.messages.push(...messages);
+      else
+        template.messages.push(
+          UserMessageTemplate.from(JSON.stringify(userInputMessage)),
+        );
+    }
 
     return template.format(input);
   }

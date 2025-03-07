@@ -80,6 +80,8 @@ export interface ChatModelInputMessage {
   }[];
 
   toolCallId?: string;
+
+  name?: string;
 }
 
 export type ChatModelInputResponseFormat =

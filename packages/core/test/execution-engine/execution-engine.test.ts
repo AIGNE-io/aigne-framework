@@ -1,16 +1,15 @@
 import { expect, test } from "bun:test";
-import { ExecutionEngine, FunctionAgent } from "@aigne/core";
 import {
-  UserInput,
-  UserOutput,
-} from "../../src/execution-engine/message-queue";
+  ExecutionEngine,
+  FunctionAgent,
+  UserInputTopic,
+  UserOutputTopic,
+} from "@aigne/core";
 
 test("ExecutionEngine.run", async () => {
-  const plus = FunctionAgent.from({
-    fn: ({ a, b }: { a: number; b: number }) => ({
-      sum: a + b,
-    }),
-  });
+  const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
+    sum: a + b,
+  }));
 
   const engine = new ExecutionEngine();
 
@@ -21,22 +20,14 @@ test("ExecutionEngine.run", async () => {
 
 test("ExecutionEngine.runLoop", async () => {
   const plusOne = FunctionAgent.from({
-    subscribeTopic: [UserInput, "review_result"],
-    fn: (input: { num: number; approval?: string }, context) => {
-      if (input.approval === "approve") {
-        context?.publish(UserOutput, input);
-        return input;
-      }
-
-      const result = { num: input.num + 1 };
-      context?.publish("review_request", result);
-      return result;
-    },
+    subscribeTopic: [UserInputTopic, "revise"],
+    publishTopic: "review_request",
+    fn: (input: { num: number }) => ({ num: input.num + 1 }),
   });
 
   const reviewer = FunctionAgent.from({
     subscribeTopic: "review_request",
-    publishTopic: "review_result",
+    publishTopic: (output) => (output.num > 10 ? UserOutputTopic : "revise"),
     fn: ({ num }: { num: number }) => {
       return {
         num,

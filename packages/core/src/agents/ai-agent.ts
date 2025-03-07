@@ -16,7 +16,10 @@ import {
 
 const DEFAULT_OUTPUT_KEY = "text";
 
-export interface AIAgentOptions extends AgentOptions {
+export interface AIAgentOptions<
+  I extends AgentInput = AgentInput,
+  O extends AgentOutput = AgentOutput,
+> extends AgentOptions<I, O> {
   model?: ChatModel;
   instructions?: string;
   outputKey?: string;
@@ -27,12 +30,12 @@ export class AIAgent<
   O extends AgentOutput = AgentOutput,
 > extends Agent<I, O> {
   static from<I extends AgentInput, O extends AgentOutput>(
-    options: AIAgentOptions,
+    options: AIAgentOptions<I, O>,
   ): AIAgent<I, O> {
     return new AIAgent(options);
   }
 
-  constructor(options: AIAgentOptions) {
+  constructor(options: AIAgentOptions<I, O>) {
     super(options);
 
     this.model = options.model;
@@ -98,7 +101,7 @@ export class AIAgent<
 
           modelInput.messages.push(
             ...executedToolCalls.map(({ call, output }) =>
-              ToolMessageTemplate.from(call.id, output).format(),
+              ToolMessageTemplate.from(output, call.id).format(),
             ),
           );
 

@@ -1,7 +1,7 @@
 import { EventEmitter } from "node:events";
 
-export const UserInput = "UserInput";
+export const UserInputTopic = "UserInputTopic";
 
-export const UserOutput = "UserOutput";
+export const UserOutputTopic = "UserOutputTopic";
 
 export class MessageQueue extends EventEmitter {}

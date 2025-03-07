@@ -1,12 +1,8 @@
-import { expect, test } from "bun:test";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "../../src";
-import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
+import { expect, spyOn, test } from "bun:test";
+import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core";
 
 test("Patterns - Sequential", async () => {
-  const model = new ChatModelOpenAI({
-    apiKey: OPENAI_API_KEY,
-    model: DEFAULT_CHAT_MODEL,
-  });
+  const model = new ChatModelOpenAI();
 
   const conceptExtractor = AIAgent.from({
     instructions: `\
@@ -41,7 +37,26 @@ Draft copy:
     outputKey: "content",
   });
 
-  const result = await new ExecutionEngine({ model }).run(
+  const mockModelResults = [
+    {
+      text: "Generated Concept: AIGNE is a No-code Generative AI Apps Engine",
+    },
+    {
+      text: "Generated Draft: AIGNE is a No-code Generative AI Apps Engine",
+    },
+    {
+      text: "Formatted Content: AIGNE is a No-code Generative AI Apps Engine",
+    },
+  ] as const;
+
+  let modelCallCount = 0;
+  spyOn(model, "process").mockImplementation(
+    async () => mockModelResults[modelCallCount++] ?? {},
+  );
+
+  const engine = new ExecutionEngine({ model });
+
+  const result = await engine.run(
     { product: "AIGNE is a No-code Generative AI Apps Engine" },
     conceptExtractor,
     writer,
@@ -49,8 +64,8 @@ Draft copy:
   );
 
   expect(result).toEqual({
-    concept: expect.stringContaining(""),
-    draft: expect.stringContaining(""),
-    content: expect.stringContaining(""),
+    concept: mockModelResults[0].text,
+    draft: mockModelResults[1].text,
+    content: mockModelResults[2].text,
   });
 });

@@ -1,46 +1,48 @@
 classDiagram
     class PromptBuilderBuildOptions {
-        +Agent agent
         +Context context
+        +Agent agent
         +object input
+        +ChatModel model
     }
 
-    PromptBuilder <|.. PromptBuilderBuildOptions
-    class PromptBuilder {
-        +build(PromptBuilderBuildOptions options) Prompt
-    }
-
-    Prompt <|.. PromptBuilder
     class Prompt {
         +List~object~ messages
         +List~Agent~ tools
-        +ChatModel model
-        +object context
+        +object toolChoice
         +object responseFormat
+    }
+
+    PromptBuilder ..> PromptBuilderBuildOptions: dependency
+    PromptBuilder ..> Prompt: dependency
+    class PromptBuilder {
+        +build(PromptBuilderBuildOptions options) Prompt
     }
 
     class Model {
         +call(Prompt input) object*
     }
 
-    ChatModel --|> Model
+    ChatModel --|> Model: inheritance
     class ChatModel {
     }
 
-    ImageModel --|> Model
+    ImageModel --|> Model: inheritance
     class ImageModel {
     }
 
-    Agent --|> EventEmitter
+    Agent --|> EventEmitter: inheritance
     class Agent {
         +string name
         +string description
         +object inputSchema
         +object outputSchema
+        +List~string~ inputTopic
+        +List~string~ nextTopic
         +List~Agent~ tools
-        +List~Agent~ _skills?
         +Map~string, Agent~ skills
 
+        +call(string input, Context context) object
         +call(object input, Context context) object
 
         +process(object input, Context context) object*
@@ -48,33 +50,36 @@ classDiagram
         -verifyOutput() void
     }
 
-    AIAgent --|> Agent
-    AIAgent *.. PromptBuilder
+    AIAgent --|> Agent: inheritance
+    AIAgent *.. PromptBuilder: composition
     class AIAgent {
-        +PromptBuilder promptBuilder
         +ChatModel model
+        +string instructions
+        +string outputKey
+        +object toolChoice
+        +PromptBuilder promptBuilder
     }
 
-    ImageAgent --|> Agent
-    ImageAgent *.. PromptBuilder
+    ImageAgent --|> Agent: inheritance
+    ImageAgent *.. PromptBuilder: composition
     class ImageAgent {
         +ImageModel model
         +string instructions
         +PromptBuilder promptBuilder
     }
 
-    FunctionAgent --|> Agent
+    FunctionAgent --|> Agent: inheritance
     class FunctionAgent {
         +Function fn
     }
 
-    RPCAgent --|> Agent
+    RPCAgent --|> Agent: inheritance
     class RPCAgent {
         +string url
     }
 
-    MCPAgent --|> Agent
-    MCPAgent *.. MCPClient
+    MCPAgent --|> Agent: inheritance
+    MCPAgent *.. MCPClient: composition
     class MCPAgent {
         +MCPClient client
     }
@@ -83,12 +88,10 @@ classDiagram
     }
 
     class Message {
-        +string id
-        +string agentId
         +object output
     }
 
-    MessageQueue <|.. Message
+    MessageQueue ..> Message: dependency
     class MessageQueue {
         +publish(string topic, Message message) void
         +subscribe(string topic, Function callback) void
@@ -102,18 +105,20 @@ classDiagram
         +object output
     }
 
-    Context *.. ChatModel
-    Context *.. ImageModel
-    Context --|> MessageQueue
-    Context <|.. History
+    Context *.. ChatModel: composition
+    Context *.. ImageModel: composition
+    Context --|> MessageQueue: inheritance
+    Context ..> History: dependency
     class Context {
         +ChatModel model
         +ImageModel imageModel
         +List~Agent~ tools
-        +object state
 
         +getHistories(string agentId, int limit) List~History~
         +addHistory(History history) void
+        +publish(string topic, Message message) void
+        +subscribe(string topic, Function callback) void
+        +unsubscribe(string topic, Function callback) void
     }
 
     class EventEmitter {
@@ -121,10 +126,22 @@ classDiagram
         +emit(): void
     }
 
-    ExecutionEngine --|> Context
-    ExecutionEngine --|> EventEmitter
+    UserAgent --|> Agent: inheritance
+    class UserAgent {
+    }
+
+    class ExecutionEngineRunOptions {
+        +boolean concurrency
+    }
+
+    ExecutionEngine --|> Context: inheritance
+    ExecutionEngine --|> EventEmitter: inheritance
+    ExecutionEngine ..> UserAgent: dependency
+    ExecutionEngine ..> ExecutionEngineRunOptions: dependency
     class ExecutionEngine {
-        +run(object input, Agent agent)
-        +run(object input, Agent agent, Agent agent)
-        +run(object input, Agent agent, Agent agent, ...)
+        +run(Agent agent) UserAgent
+        +run(string input) object
+        +run(object input) object
+        +run(object input, Agent ...agents) object
+        +run(object input, ExecutionEngineRunOptions options, Agent ...agents) object
     }

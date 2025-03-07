@@ -46,15 +46,13 @@ export class ExecutionEngine extends EventEmitter implements Context {
   }
 
   private attachAgentSubscriptions(agent: Agent) {
-    for (const topic of orArrayToArray(agent.subscribeTopic)) {
+    for (const topic of orArrayToArray(agent.inputTopic)) {
       const listener = async (input: AgentInput) => {
         try {
           const { output } = await this.callAgent(input, agent);
 
           const topics =
-            typeof agent.publishTopic === "function"
-              ? await agent.publishTopic(output)
-              : agent.publishTopic;
+            typeof agent.nextTopic === "function" ? await agent.nextTopic(output) : agent.nextTopic;
 
           for (const topic of orArrayToArray(topics)) {
             this.publish(topic, output);

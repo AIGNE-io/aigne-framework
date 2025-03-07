@@ -50,9 +50,9 @@ export abstract class Agent<
     this.description = options.description;
     this.inputSchema = options.inputSchema || z.object({});
     this.outputSchema = options.outputSchema || z.object({});
-    this.outputIncludeInput = options.includeInputInOutput;
-    this.subscribeTopic = options.inputTopic;
-    this.publishTopic = options.nextTopic;
+    this.includeInputInOutput = options.includeInputInOutput;
+    this.inputTopic = options.inputTopic;
+    this.nextTopic = options.nextTopic;
     this.tools = (options.tools ?? []).map((tool) => {
       if (typeof tool === "function") {
         return FunctionAgent.from({ name: tool.name, fn: tool });
@@ -70,11 +70,11 @@ export abstract class Agent<
 
   outputSchema: ZodObject<any>;
 
-  outputIncludeInput?: boolean;
+  includeInputInOutput?: boolean;
 
-  subscribeTopic?: SubscribeTopic;
+  inputTopic?: SubscribeTopic;
 
-  publishTopic?: PublishTopic<any>;
+  nextTopic?: PublishTopic<any>;
 
   tools: Agent[];
 
@@ -91,7 +91,7 @@ export abstract class Agent<
 
     const parsedOutput = this.outputSchema.passthrough().parse(output) as O;
 
-    const finalOutput = this.outputIncludeInput
+    const finalOutput = this.includeInputInOutput
       ? { ...parsedInput, ...parsedOutput }
       : parsedOutput;
 

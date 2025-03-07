@@ -3,55 +3,205 @@
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 
-
 ## What is AIGNE Framework
 
 AIGNE Framework is a functional AI application development framework designed to simplify and accelerate the process of building modern applications. It combines functional programming features, powerful artificial intelligence capabilities, and modular design principles to help developers easily create scalable solutions. AIGNE Framework is also deeply integrated with the Blocklet ecosystem, providing developers with a wealth of tools and resources.
 
+## Class Definitions
+
+```mermaid
+classDiagram
+    class PromptBuilderBuildOptions {
+        +Context context
+        +Agent agent
+        +object input
+        +ChatModel model
+    }
+
+    class Prompt {
+        +List~object~ messages
+        +List~Agent~ tools
+        +object toolChoice
+        +object responseFormat
+    }
+
+    PromptBuilder ..> PromptBuilderBuildOptions: dependency
+    PromptBuilder ..> Prompt: dependency
+    class PromptBuilder {
+        +build(PromptBuilderBuildOptions options) Prompt
+    }
+
+    class Model {
+        +call(Prompt input) object*
+    }
+
+    ChatModel --|> Model: inheritance
+    class ChatModel {
+    }
+
+    ImageModel --|> Model: inheritance
+    class ImageModel {
+    }
+
+    Agent --|> EventEmitter: inheritance
+    class Agent {
+        +string name
+        +string description
+        +object inputSchema
+        +object outputSchema
+        +List~string~ inputTopic
+        +List~string~ nextTopic
+        +List~Agent~ tools
+        +Map~string, Agent~ skills
+
+        +call(string input, Context context) object
+        +call(object input, Context context) object
+
+        +process(object input, Context context) object*
+        -verifyInput() void
+        -verifyOutput() void
+    }
+
+    AIAgent --|> Agent: inheritance
+    AIAgent *.. PromptBuilder: composition
+    class AIAgent {
+        +ChatModel model
+        +string instructions
+        +string outputKey
+        +object toolChoice
+        +PromptBuilder promptBuilder
+    }
+
+    ImageAgent --|> Agent: inheritance
+    ImageAgent *.. PromptBuilder: composition
+    class ImageAgent {
+        +ImageModel model
+        +string instructions
+        +PromptBuilder promptBuilder
+    }
+
+    FunctionAgent --|> Agent: inheritance
+    class FunctionAgent {
+        +Function fn
+    }
+
+    RPCAgent --|> Agent: inheritance
+    class RPCAgent {
+        +string url
+    }
+
+    MCPAgent --|> Agent: inheritance
+    MCPAgent *.. MCPClient: composition
+    class MCPAgent {
+        +MCPClient client
+    }
+
+    class MCPClient {
+    }
+
+    class Message {
+        +object output
+    }
+
+    MessageQueue ..> Message: dependency
+    class MessageQueue {
+        +publish(string topic, Message message) void
+        +subscribe(string topic, Function callback) void
+        +unsubscribe(string topic, Function callback) void
+    }
+
+    class History {
+        +string id
+        +string agentId
+        +object input
+        +object output
+    }
+
+    Context *.. ChatModel: composition
+    Context *.. ImageModel: composition
+    Context --|> MessageQueue: inheritance
+    Context ..> History: dependency
+    class Context {
+        +ChatModel model
+        +ImageModel imageModel
+        +List~Agent~ tools
+
+        +getHistories(string agentId, int limit) List~History~
+        +addHistory(History history) void
+        +publish(string topic, Message message) void
+        +subscribe(string topic, Function callback) void
+        +unsubscribe(string topic, Function callback) void
+    }
+
+    class EventEmitter {
+        +on(): void
+        +emit(): void
+    }
+
+    UserAgent --|> Agent: inheritance
+    class UserAgent {
+    }
+
+    class ExecutionEngineRunOptions {
+        +boolean concurrency
+    }
+
+    ExecutionEngine --|> Context: inheritance
+    ExecutionEngine --|> EventEmitter: inheritance
+    ExecutionEngine ..> UserAgent: dependency
+    ExecutionEngine ..> ExecutionEngineRunOptions: dependency
+    class ExecutionEngine {
+        +run(Agent agent) UserAgent
+        +run(string input) object
+        +run(object input) object
+        +run(object input, Agent ...agents) object
+        +run(object input, ExecutionEngineRunOptions options, Agent ...agents) object
+    }
+
+```
+
 ## Usage
 
 ```ts
-const agent = LLMAgent.create({
-  context: new Runtime({
-    llmModel: new OpenaiLLMModel({
-      model: "gpt-4o-mini",
-      apiKey: "YOUR_OPENAI_API_KEY",
-    }),
-  }),
-  inputs: {
-    question: {
-      type: "string",
-      required: true,
-    },
-  },
-  outputs: {
-    $text: {
-      type: "string",
-      required: true,
-    },
-  },
-  messages: [
-    {
-      role: "user",
-      content: "{{question}}",
-    },
-  ],
+import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core";
+import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
+
+const model = new ChatModelOpenAI({
+  apiKey: OPENAI_API_KEY,
+  model: DEFAULT_CHAT_MODEL,
 });
 
-const result = await agent.run({ question: "hello" }, { stream: true });
-
-for await (const message of result) {
-  console.log(message.$text);
+function transferToAgentB() {
+  return agentB;
 }
 
-// Output:
-// Hello,
-// how
-// can
-// I
-// help
-// you
-// today?
+function transferToAgentA() {
+  return agentA;
+}
+
+const agentA = AIAgent.from({
+  name: "AgentA",
+  instructions: "You are a helpful agent.",
+  outputKey: "A",
+  tools: [transferToAgentB],
+});
+
+const agentB = AIAgent.from({
+  name: "AgentB",
+  instructions: "Only speak in Haikus.",
+  outputKey: "B",
+  tools: [transferToAgentA],
+});
+
+const engine = new ExecutionEngine({ model });
+
+const userAgent = await engine.run(agentA);
+
+const response = await userAgent.run("transfer to agent b");
+// output
+// {
+//   B: "Agent B awaits here,  \nIn haikus I shall speak now,  \nWhat do you seek, friend?",
+// }
 ```
 
 ## Packages

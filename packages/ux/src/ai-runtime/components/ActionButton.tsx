@@ -65,8 +65,7 @@ export default function ActionButton({
       <span>
         <LoadingButton
           startIcon={
-            realIcon &&
-            (typeof realIcon === "string" ? <Icon icon={realIcon} /> : realIcon)
+            realIcon && (typeof realIcon === "string" ? <Icon icon={realIcon} /> : realIcon)
           }
           loadingPosition={realIcon ? "start" : undefined}
           {...props}

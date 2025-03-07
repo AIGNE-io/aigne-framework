@@ -33,9 +33,7 @@ export class ChatHistoryRunner extends MemoryRunner<string> {
           id: nextId(),
           event: "add",
           memory:
-            typeof message.content === "string"
-              ? message.content
-              : JSON.stringify(message.content),
+            typeof message.content === "string" ? message.content : JSON.stringify(message.content),
           metadata: { role: message.role },
         };
       }),
@@ -56,17 +54,11 @@ export class ChatHistory extends Memory<string> {
   }
 
   async search(
-    query: Extract<
-      MemoryActions<string>,
-      { action: "search" }
-    >["inputs"]["query"],
+    query: Extract<MemoryActions<string>, { action: "search" }>["inputs"]["query"],
     {
       k = 10,
       ...options
-    }: Extract<
-      MemoryActions<string>,
-      { action: "search" }
-    >["inputs"]["options"] = {},
+    }: Extract<MemoryActions<string>, { action: "search" }>["inputs"]["options"] = {},
   ): Promise<Extract<MemoryActions<string>, { action: "search" }>["outputs"]> {
     return {
       results: await Promise.all([

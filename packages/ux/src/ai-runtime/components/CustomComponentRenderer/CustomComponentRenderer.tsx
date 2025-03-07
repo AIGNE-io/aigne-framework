@@ -19,9 +19,7 @@ export default function CustomComponentRenderer({
 } & ComponentProps<typeof CustomComponentRendererOriginal>) {
   const openSettings = useDebug((s) => s.open);
   const selected = useDebug((s) => "id" in output && output.id === s.outputId);
-  const hovered = useDebug(
-    (s) => "id" in output && output.id === s.hoverOutputId,
-  );
+  const hovered = useDebug((s) => "id" in output && output.id === s.hoverOutputId);
   const setTabId = useDebug((s) => s.setTabId);
 
   if (!openSettings) return <CustomComponentRendererOriginal {...props} />;
@@ -36,19 +34,15 @@ export default function CustomComponentRenderer({
         e.stopPropagation();
         setTabId?.("");
       }}
-      className={cx(
-        "ai-runtime-custom-component-renderer",
-        (hovered || selected) && "selected",
-      )}
+      className={cx("ai-runtime-custom-component-renderer", (hovered || selected) && "selected")}
       sx={{
         position: "relative",
         "> .settings": { display: "none" },
-        "&.selected,:not(:has(.ai-runtime-custom-component-renderer:hover)):hover":
-          {
-            outline: 1,
-            outlineColor: "primary.main",
-            outlineOffset: -1,
-          },
+        "&.selected,:not(:has(.ai-runtime-custom-component-renderer:hover)):hover": {
+          outline: 1,
+          outlineColor: "primary.main",
+          outlineOffset: -1,
+        },
         ":not(:has(.ai-runtime-custom-component-renderer:hover)):hover": {
           "> .settings": { display: "block" },
         },

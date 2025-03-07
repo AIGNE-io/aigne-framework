@@ -71,11 +71,7 @@ export default function V0Input({
   const form = useForm({ defaultValues: defaultForm });
 
   useEffect(() => {
-    if (
-      autoFillLastForm &&
-      !form.formState.isSubmitted &&
-      !form.formState.isSubmitting
-    ) {
+    if (autoFillLastForm && !form.formState.isSubmitted && !form.formState.isSubmitting) {
       form.reset(chatMode ? omit(defaultForm, "question") : defaultForm);
     }
   }, [defaultForm, autoFillLastForm, form, chatMode]);
@@ -146,10 +142,7 @@ export default function V0Input({
       <Form
         id="v0-input"
         component="form"
-        className={cx(
-          "form",
-          `label-position-${inlineLabel ? "start" : "top"}`,
-        )}
+        className={cx("form", `label-position-${inlineLabel ? "start" : "top"}`)}
         onSubmit={form.handleSubmit(onSubmit)}
       >
         {parameters?.map((parameter, index) => {
@@ -163,32 +156,26 @@ export default function V0Input({
                 rules={{
                   required,
                   min:
-                    parameter.type === "number" &&
-                    typeof parameter.min === "number"
+                    parameter.type === "number" && typeof parameter.min === "number"
                       ? { value: parameter.min, message: "" }
                       : undefined,
                   max:
-                    parameter.type === "number" &&
-                    typeof parameter.max === "number"
+                    parameter.type === "number" && typeof parameter.max === "number"
                       ? { value: parameter.max, message: "" }
                       : undefined,
                   minLength:
-                    parameter.type === "string" &&
-                    typeof parameter.minLength === "number"
+                    parameter.type === "string" && typeof parameter.minLength === "number"
                       ? { value: parameter.minLength, message: "" }
                       : undefined,
                   maxLength:
-                    parameter.type === "string" &&
-                    typeof parameter.maxLength === "number"
+                    parameter.type === "string" && typeof parameter.maxLength === "number"
                       ? { value: parameter.maxLength, message: "" }
                       : undefined,
                 }}
                 render={({ field, fieldState }) => {
                   return (
                     <Stack className="form-item">
-                      {parameter.label && (
-                        <FormLabel>{parameter.label}</FormLabel>
-                      )}
+                      {parameter.label && <FormLabel>{parameter.label}</FormLabel>}
 
                       <AgentInputField
                         inputRef={field.ref}
@@ -198,19 +185,11 @@ export default function V0Input({
                         fullWidth
                         label={undefined}
                         parameter={parameter}
-                        maxRows={
-                          !parameter?.type || parameter?.type === "string"
-                            ? 5
-                            : undefined
-                        }
+                        maxRows={!parameter?.type || parameter?.type === "string" ? 5 : undefined}
                         value={field.value || ""}
-                        onChange={(value) =>
-                          field.onChange({ target: { value } })
-                        }
+                        onChange={(value) => field.onChange({ target: { value } })}
                         error={Boolean(fieldState.error)}
-                        helperText={
-                          fieldState.error?.message || parameter?.helper
-                        }
+                        helperText={fieldState.error?.message || parameter?.helper}
                         InputProps={
                           parameter.key === "question" && submitInQuestionField
                             ? {
@@ -245,9 +224,7 @@ export default function V0Input({
           );
         })}
 
-        {!(
-          submitInQuestionField && parameters?.some((i) => i.key === "question")
-        ) && (
+        {!(submitInQuestionField && parameters?.some((i) => i.key === "question")) && (
           <LoadingButton
             type="submit"
             variant="contained"
@@ -285,10 +262,7 @@ function useInitialFormValues() {
     }
 
     return Object.fromEntries(
-      agent.parameters?.map((parameter) => [
-        parameter.key,
-        parameter.defaultValue,
-      ]) ?? [],
+      agent.parameters?.map((parameter) => [parameter.key, parameter.defaultValue]) ?? [],
     );
   }, [lastInputs, agent]);
 }

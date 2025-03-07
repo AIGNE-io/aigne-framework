@@ -1,8 +1,6 @@
 import { DataTypes, type QueryInterface } from "sequelize";
 
-export const up = async ({
-  context: queryInterface,
-}: { context: QueryInterface }) => {
+export const up = async ({ context: queryInterface }: { context: QueryInterface }) => {
   await queryInterface.createTable("Histories", {
     id: {
       type: DataTypes.STRING,
@@ -67,9 +65,7 @@ export const up = async ({
   });
 };
 
-export const down = async ({
-  context: queryInterface,
-}: { context: QueryInterface }) => {
+export const down = async ({ context: queryInterface }: { context: QueryInterface }) => {
   await queryInterface.dropTable("Histories");
   await queryInterface.dropTable("Messages");
 };

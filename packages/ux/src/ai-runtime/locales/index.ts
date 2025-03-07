@@ -60,10 +60,8 @@ export const translations = {
   Pricing: {price} ABT/Message
 
   Subscribe now to unlock more possibilities!`,
-    requireNewSubscriptionFooter:
-      "You need to subscribe to access this feature:",
-    thanksForSubscription:
-      "Thanks for subscribing, now you can start enjoying it!",
+    requireNewSubscriptionFooter: "You need to subscribe to access this feature:",
+    thanksForSubscription: "Thanks for subscribing, now you can start enjoying it!",
     requireLogin: `Thank you for using our service!
 
   In order to use our service properly, please click below to log in now!
@@ -98,13 +96,10 @@ export const translations = {
     loadMore: "Load More",
     v0: {
       title: "Mock 0",
-      description:
-        "Mock 0 is an AI-based code tool that can help you generate code quickly.",
-      noData:
-        "No conversation information yet, click the button below to start generating!",
+      description: "Mock 0 is an AI-based code tool that can help you generate code quickly.",
+      noData: "No conversation information yet, click the button below to start generating!",
       deleteSessionTitle: "Delete Conversation Information",
-      deleteSessionTip:
-        "Are you sure you want to delete this Conversation Information?",
+      deleteSessionTip: "Are you sure you want to delete this Conversation Information?",
       propertiesSetting: "Properties Setting",
       propertiesSettingTip:
         "This function is used for debugging components and does not affect the final code",
@@ -117,8 +112,7 @@ export const translations = {
       showSlider: "Show Versions",
       retryTip: "Agent not enough power, please try again later...",
       retry: "Try Again",
-      errorCodeTip:
-        "Agent found some syntax errors in the code, and want to try again...",
+      errorCodeTip: "Agent found some syntax errors in the code, and want to try again...",
     },
     settings: "Settings",
     setup: "Setup",
@@ -222,18 +216,15 @@ export const translations = {
     loadMore: "加载更多",
     v0: {
       title: "Mock 0",
-      description:
-        "Mock 0 是一个基于人工智能的代码工具，可以帮助您快速生成代码。",
+      description: "Mock 0 是一个基于人工智能的代码工具，可以帮助您快速生成代码。",
       noData: "暂无生成记录，点击下方按钮开始生成吧！",
       deleteSessionTitle: "删除生成记录",
       deleteSessionTip: "确定要删除此生成记录吗？",
       propertiesSetting: "属性设置",
       propertiesSettingTip: "此功能用于调试组件，不影响最终代码",
-      cannotSetPropertiesTip:
-        "解析 PROPERTIES_SCHEMA 失败，此代码无法进行属性设置",
+      cannotSetPropertiesTip: "解析 PROPERTIES_SCHEMA 失败，此代码无法进行属性设置",
       codePreview: "代码预览",
-      codePreviewTip:
-        "以下是代码预览，您可以查看生成的代码，目前还不支持编辑。",
+      codePreviewTip: "以下是代码预览，您可以查看生成的代码，目前还不支持编辑。",
       hideSlider: "隐藏版本历史",
       showSlider: "显示版本历史",
       retryTip: "Agent 算力不足，请稍后重试...",

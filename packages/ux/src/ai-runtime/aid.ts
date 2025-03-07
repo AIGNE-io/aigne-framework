@@ -7,10 +7,7 @@ export interface Identity {
   agentId: string;
 }
 
-export function parseIdentity(
-  aid: string,
-  options: { rejectWhenError: true },
-): Identity;
+export function parseIdentity(aid: string, options: { rejectWhenError: true }): Identity;
 export function parseIdentity(
   aid: string,
   options?: { rejectWhenError?: false },
@@ -45,8 +42,7 @@ export function parseIdentity(
       agentId,
     };
 
-  if (options?.rejectWhenError)
-    throw new Error(`Invalid assistant identity ${aid}`);
+  if (options?.rejectWhenError) throw new Error(`Invalid assistant identity ${aid}`);
 
   return undefined;
 }
@@ -66,7 +62,5 @@ export function stringifyIdentity({
     throw new Error("Invalid aid fragments");
   }
 
-  return Base64.encodeURI(
-    [blockletDid || "", projectId, projectRef || "", agentId].join("/"),
-  );
+  return Base64.encodeURI([blockletDid || "", projectId, projectRef || "", agentId].join("/"));
 }

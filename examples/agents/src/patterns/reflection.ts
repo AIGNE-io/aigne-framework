@@ -14,8 +14,8 @@ const model = new ChatModelOpenAI({
 });
 
 const coder = AIAgent.from({
-  subscribeTopic: [UserInputTopic, "rewrite_request"],
-  publishTopic: "review_request",
+  inputTopic: [UserInputTopic, "rewrite_request"],
+  nextTopic: "review_request",
   instructions: `\
 You are a proficient coder. You write code to solve problems.
 Work with the reviewer to improve your code.
@@ -43,9 +43,8 @@ User's question:
 });
 
 const reviewer = AIAgent.from({
-  subscribeTopic: "review_request",
-  publishTopic: (output) =>
-    output.approval ? UserOutputTopic : "rewrite_request",
+  inputTopic: "review_request",
+  nextTopic: (output) => (output.approval ? UserOutputTopic : "rewrite_request"),
   instructions: `\
 You are a code reviewer. You focus on correctness, efficiency and safety of the code.
 
@@ -66,12 +65,10 @@ Please review the code. If previous feedback was provided, see if it was address
       correctness: z.string().describe("Your comments on correctness"),
       efficiency: z.string().describe("Your comments on efficiency"),
       safety: z.string().describe("Your comments on safety"),
-      suggested_changes: z
-        .string()
-        .describe("Your comments on suggested changes"),
+      suggested_changes: z.string().describe("Your comments on suggested changes"),
     }),
   }),
-  outputIncludeInput: true,
+  includeInputInOutput: true,
 });
 
 const engine = new ExecutionEngine({

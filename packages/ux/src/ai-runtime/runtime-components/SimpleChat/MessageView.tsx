@@ -4,10 +4,7 @@ import { Suspense, memo } from "react";
 
 import type { SimpleChatPreferences } from ".";
 import { getAssetUrl } from "../../api/asset";
-import {
-  AgentErrorBoundary,
-  AgentErrorView,
-} from "../../components/AgentErrorBoundary";
+import { AgentErrorBoundary, AgentErrorView } from "../../components/AgentErrorBoundary";
 import CustomComponentRenderer from "../../components/CustomComponentRenderer/CustomComponentRenderer";
 import UserInfo from "../../components/UserInfo";
 import { useComponentPreferences } from "../../contexts/ComponentPreferences";
@@ -50,11 +47,7 @@ const MessageView = memo(({ message }: { message: MessageItem }) => {
   return (
     <CurrentAgentProvider aid={message.aid}>
       <CurrentMessageProvider message={message}>
-        <Stack
-          gap={2}
-          className="message-item"
-          data-testid={`message-${message.id}`}
-        >
+        <Stack gap={2} className="message-item" data-testid={`message-${message.id}`}>
           {!hideUserInputs && (
             <Box>
               <UserInfo
@@ -121,11 +114,7 @@ export function MessageBodyContainer({
   return (
     <Box
       {...props}
-      className={cx(
-        props.className,
-        "message-content",
-        `${messageRole}-message-content`,
-      )}
+      className={cx(props.className, "message-content", `${messageRole}-message-content`)}
       sx={
         hasBg
           ? {

@@ -2,19 +2,13 @@ import { Stack, Typography, type TypographyProps } from "@mui/material";
 
 import OutputFieldContainer from "../../components/OutputFieldContainer";
 import { useCurrentAgent } from "../../contexts/CurrentAgent";
-import {
-  useCurrentMessage,
-  useCurrentMessageOutput,
-} from "../../contexts/CurrentMessage";
+import { useCurrentMessage, useCurrentMessageOutput } from "../../contexts/CurrentMessage";
 import { useSession } from "../../contexts/Session";
 
 export type SuggestedQuestionsViewPropValue = Array<{ question: string }>;
 
-export default function SuggestedQuestionsView({
-  onlyLastMessage,
-}: { onlyLastMessage?: boolean }) {
-  const { outputValue, output } =
-    useCurrentMessageOutput<SuggestedQuestionsViewPropValue>();
+export default function SuggestedQuestionsView({ onlyLastMessage }: { onlyLastMessage?: boolean }) {
+  const { outputValue, output } = useCurrentMessageOutput<SuggestedQuestionsViewPropValue>();
 
   const { message } = useCurrentMessage({ optional: true }) ?? {};
   const { lastMessageId, runAgent } = useSession((s) => ({
@@ -25,8 +19,7 @@ export default function SuggestedQuestionsView({
 
   const { aid } = useCurrentAgent();
 
-  if (!message || (!isLastMessage && onlyLastMessage) || !outputValue.length)
-    return null;
+  if (!message || (!isLastMessage && onlyLastMessage) || !outputValue.length) return null;
 
   return (
     <OutputFieldContainer output={output}>

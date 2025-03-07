@@ -13,24 +13,18 @@ import { getFactRetrievalMessages, parseMessages } from "../lib/utils";
 
 export type ShortTermMemoryRunnerCustomData = { retriever: Retriever<string> };
 
-export type ShortTermMemoryRunnerInput =
-  MemoryRunnerInput<ShortTermMemoryRunnerCustomData>;
+export type ShortTermMemoryRunnerInput = MemoryRunnerInput<ShortTermMemoryRunnerCustomData>;
 
 export type ShortTermMemoryRunnerOutput = {
   actions: MemoryActionItem<string>[];
 };
 
-export class ShortTermMemoryRunner extends MemoryRunner<
-  string,
-  ShortTermMemoryRunnerCustomData
-> {
+export class ShortTermMemoryRunner extends MemoryRunner<string, ShortTermMemoryRunnerCustomData> {
   constructor(public llmModel: LLMModel) {
     super("short_term_memory");
   }
 
-  async process(
-    input: ShortTermMemoryRunnerInput,
-  ): Promise<ShortTermMemoryRunnerOutput> {
+  async process(input: ShortTermMemoryRunnerInput): Promise<ShortTermMemoryRunnerOutput> {
     const { messages, filter } = input;
 
     const retriever = input.customData?.retriever;
@@ -110,10 +104,7 @@ export class ShortTermMemoryRunner extends MemoryRunner<
       }
     });
 
-    const funcCallingPrompt = getUpdateMemoryMessages(
-      retrievedOldMemories,
-      newRetrievedFacts,
-    );
+    const funcCallingPrompt = getUpdateMemoryMessages(retrievedOldMemories, newRetrievedFacts);
 
     const newMemoriesWithActions = await this.llmModel.run({
       modelOptions: {
@@ -177,9 +168,7 @@ export class ShortTermMemoryRunner extends MemoryRunner<
     } = JSON.parse(newMemoriesWithActions.$text);
 
     return {
-      actions: result.memory.map<
-        ShortTermMemoryRunnerOutput["actions"][number]
-      >((m) => ({
+      actions: result.memory.map<ShortTermMemoryRunnerOutput["actions"][number]>((m) => ({
         id: tempUuidMapping[m.id],
         memory: m.text,
         oldMemory: m.oldMemory ?? undefined,

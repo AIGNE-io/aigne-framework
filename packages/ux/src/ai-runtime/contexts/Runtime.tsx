@@ -24,18 +24,13 @@ export const RuntimeProvider = ({
   debug?: boolean;
   ApiProps?: Partial<AIGNEApiContextValue>;
 }) => {
-  const projectId = useMemo(
-    () => parseIdentity(aid, { rejectWhenError: true }).projectId,
-    [aid],
-  );
+  const projectId = useMemo(() => parseIdentity(aid, { rejectWhenError: true }).projectId, [aid]);
 
   return (
     <EntryAgentProvider aid={aid} working={working}>
       <AIGNEApiProvider
         working={({ aid }) =>
-          parseIdentity(aid, { rejectWhenError: true }).projectId === projectId
-            ? working
-            : false
+          parseIdentity(aid, { rejectWhenError: true }).projectId === projectId ? working : false
         }
         debug={debug}
         {...ApiProps}
@@ -61,9 +56,7 @@ function RuntimeView({ children }: { children?: ReactNode }) {
     currentSessionId,
     setCurrentSessionId,
     reload: reloadSessions,
-  } = useSessions((s) =>
-    pick(s, "currentSessionId", "reload", "setCurrentSessionId"),
-  );
+  } = useSessions((s) => pick(s, "currentSessionId", "reload", "setCurrentSessionId"));
 
   const onNewSession = async (sessionId: string) => {
     setCurrentSessionId(sessionId);

@@ -26,12 +26,8 @@ export class BlockletLLMModel extends LLMModel {
     const config = this.context?.config.llmModel;
 
     const model =
-      getDefaultValue(
-        "model",
-        config?.override,
-        input.modelOptions,
-        config?.default,
-      ) || defaultLLMModel;
+      getDefaultValue("model", config?.override, input.modelOptions, config?.default) ||
+      defaultLLMModel;
 
     const chatInput: ChatCompletionInput = {
       ...input.modelOptions,

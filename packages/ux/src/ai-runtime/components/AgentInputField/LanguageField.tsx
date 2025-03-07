@@ -45,9 +45,7 @@ const LanguageField = forwardRef<
 >(({ readOnly, parameter, onChange, ...props }, ref) => {
   const { locale } = useLocaleContext();
 
-  const value = props?.value
-    ? languages.find((o) => o.en === props.value)
-    : null;
+  const value = props?.value ? languages.find((o) => o.en === props.value) : null;
 
   return (
     <Autocomplete

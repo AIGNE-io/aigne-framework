@@ -10,10 +10,7 @@ export default function DrawerOpenCloseIcon({
       direction="row"
       position="relative"
       {...props}
-      className={cx(
-        props.className,
-        `drawer-open-close-icon-${arrowDirection || "up"}`,
-      )}
+      className={cx(props.className, `drawer-open-close-icon-${arrowDirection || "up"}`)}
       sx={{
         p: 1,
         cursor: "pointer",

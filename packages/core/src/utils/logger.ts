@@ -10,10 +10,7 @@ function createLogger(logger: Logger, level: LogLevel = logLevel()): Logger {
   return {
     debug: level === "debug" ? logger.debug : () => {},
     info: level === "debug" || level === "info" ? logger.info : () => {},
-    warn:
-      level === "debug" || level === "info" || level === "warn"
-        ? logger.warn
-        : () => {},
+    warn: level === "debug" || level === "info" || level === "warn" ? logger.warn : () => {},
     error: logger.error,
   };
 }

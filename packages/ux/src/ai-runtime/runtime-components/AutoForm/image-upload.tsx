@@ -19,11 +19,7 @@ interface ImageUploadProps {
 
 const MAX_IMAGE_FILES = window.blocklet?.preferences?.maxImageCount || 1;
 
-export function ImageUpload({
-  control,
-  parameter,
-  isInInput,
-}: ImageUploadProps) {
+export function ImageUpload({ control, parameter, isInInput }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { t } = useLocaleContext();
@@ -55,9 +51,9 @@ export function ImageUpload({
                 value: parameter.multiple
                   ? [
                       ...urls,
-                      ...(
-                        (response.uploads || []) as unknown as { url: string }[]
-                      ).map((upload) => upload.url),
+                      ...((response.uploads || []) as unknown as { url: string }[]).map(
+                        (upload) => upload.url,
+                      ),
                     ]
                   : response.uploads[0]?.url,
               },
@@ -68,9 +64,7 @@ export function ImageUpload({
           }
         };
 
-        const list = (
-          Array.isArray(field.value) ? field.value : [field.value]
-        ).filter(Boolean);
+        const list = (Array.isArray(field.value) ? field.value : [field.value]).filter(Boolean);
         return (
           <>
             <input
@@ -121,11 +115,7 @@ interface ImagePreviewProps {
   onRemove: (index: number) => void;
 }
 
-export function ImagePreview({
-  value,
-  parameter,
-  onRemove,
-}: ImagePreviewProps) {
+export function ImagePreview({ value, parameter, onRemove }: ImagePreviewProps) {
   const list = (Array.isArray(value) ? value : [value]).filter(Boolean);
   if (!list.length || !parameter) return null;
 

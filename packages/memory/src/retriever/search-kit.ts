@@ -2,18 +2,9 @@ import { type MemorySortOptions, isNonNullable, logger } from "@aigne/core";
 import omit from "lodash/omit";
 import { LRUCache } from "lru-cache";
 
-import type {
-  Retriever,
-  VectorStoreDocument,
-  VectorStoreSearchOptions,
-} from "../core/type";
+import type { Retriever, VectorStoreDocument, VectorStoreSearchOptions } from "../core/type";
 
-import type {
-  DocumentOptions,
-  Embedders,
-  Hit,
-  Index,
-} from "@blocklet/search-kit-js";
+import type { DocumentOptions, Embedders, Hit, Index } from "@blocklet/search-kit-js";
 import { DefaultVectorHistoryStore } from "../store/default-vector-history-store";
 
 type SearchKit = typeof import("@blocklet/search-kit-js");
@@ -58,14 +49,7 @@ const sortableAttributes = [
   "memory",
   "metadata",
 ];
-const rankingRules = [
-  "sort",
-  "exactness",
-  "words",
-  "typo",
-  "proximity",
-  "attribute",
-];
+const rankingRules = ["sort", "exactness", "words", "typo", "proximity", "attribute"];
 const POST_SETTING = {
   searchableAttributes,
   filterableAttributes,
@@ -177,10 +161,7 @@ export class SearchKitRetriever<T> implements Retriever<T> {
     primaryKey: "id",
   };
 
-  private async initIndexFromHistory(
-    index: Index<VectorStoreDocument<T>>,
-    { size = 2000 } = {},
-  ) {
+  private async initIndexFromHistory(index: Index<VectorStoreDocument<T>>, { size = 2000 } = {}) {
     // TODO: 分页处理，避免一次性查询过多数据
     const list = await this.historyStore.findAll({});
 
@@ -190,10 +171,7 @@ export class SearchKitRetriever<T> implements Retriever<T> {
     }
   }
 
-  private async waitForTask(
-    uid: number,
-    { timeOutMs = 1000 * 60 * 10, intervalMs = 1000 } = {},
-  ) {
+  private async waitForTask(uid: number, { timeOutMs = 1000 * 60 * 10, intervalMs = 1000 } = {}) {
     return this.client.waitForTask(uid, { timeOutMs, intervalMs });
   }
 
@@ -208,10 +186,7 @@ export class SearchKitRetriever<T> implements Retriever<T> {
       logger.error("Error adding origin content", e);
     });
 
-    const result = await (await this.index).updateDocuments(
-      [document],
-      this.options,
-    );
+    const result = await (await this.index).updateDocuments([document], this.options);
     await this.waitForTask(result.taskUid);
   }
 
@@ -226,20 +201,14 @@ export class SearchKitRetriever<T> implements Retriever<T> {
     const ids = memories.map((i) => i.id);
 
     const result = await (await this.index).deleteDocuments(ids);
-    await Promise.all([
-      this.historyStore.delete({ id: ids }),
-      this.waitForTask(result.taskUid),
-    ]);
+    await Promise.all([this.historyStore.delete({ id: ids }), this.waitForTask(result.taskUid)]);
 
     return memories;
   }
 
   async reset(): Promise<void> {
     const result = await (await this.index).deleteAllDocuments();
-    await Promise.all([
-      this.waitForTask(result.taskUid),
-      this.historyStore.reset(),
-    ]);
+    await Promise.all([this.waitForTask(result.taskUid), this.historyStore.reset()]);
   }
 
   async update(document: VectorStoreDocument<T>): Promise<void> {
@@ -247,18 +216,13 @@ export class SearchKitRetriever<T> implements Retriever<T> {
       logger.error("Error updating origin content", e);
     });
 
-    const result = await (await this.index).updateDocuments(
-      [document],
-      this.options,
-    );
+    const result = await (await this.index).updateDocuments([document], this.options);
     await this.waitForTask(result.taskUid);
   }
 
   private getSort(sort?: MemorySortOptions) {
     if (!sort) return undefined;
-    return (Array.isArray(sort) ? sort : [sort]).map(
-      (i) => `${i.field}:${i.direction}`,
-    );
+    return (Array.isArray(sort) ? sort : [sort]).map((i) => `${i.field}:${i.direction}`);
   }
 
   private getFilter(filter?: Record<string, any>) {
@@ -277,10 +241,7 @@ export class SearchKitRetriever<T> implements Retriever<T> {
       : undefined;
   }
 
-  async list(
-    k: number,
-    options?: VectorStoreSearchOptions,
-  ): Promise<VectorStoreDocument<T>[]> {
+  async list(k: number, options?: VectorStoreSearchOptions): Promise<VectorStoreDocument<T>[]> {
     return this.search("", k, options);
   }
 
@@ -330,9 +291,7 @@ export class SearchKitRetriever<T> implements Retriever<T> {
     return result.map(this.formatMemoryItem);
   }
 
-  private formatMemoryItem(
-    item: Hit<VectorStoreDocument<T>>,
-  ): VectorStoreDocument<T> {
+  private formatMemoryItem(item: Hit<VectorStoreDocument<T>>): VectorStoreDocument<T> {
     return omit(item, [
       "_formatted",
       "_matchesPosition",

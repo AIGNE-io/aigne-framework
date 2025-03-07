@@ -1,13 +1,5 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import {
-  Alert,
-  Box,
-  type DialogProps,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, type DialogProps, Stack, Switch, TextField, Typography } from "@mui/material";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
 import ConfirmDialog from "./ConfirmDialog";
@@ -66,90 +58,87 @@ const FieldComponentMap = {
   [key: string]: FileItemProps;
 };
 
-const PropertiesSetting = forwardRef(
-  (props: PropertiesSettingProps, ref: any) => {
-    const { t, locale } = useLocaleContext();
-    const ConfirmDialogRef = useRef<any>(null);
-    const valuesRef = useRef({});
-    const openParamsRef = useRef<OpenParamsRefProps>({});
+const PropertiesSetting = forwardRef((props: PropertiesSettingProps, ref: any) => {
+  const { t, locale } = useLocaleContext();
+  const ConfirmDialogRef = useRef<any>(null);
+  const valuesRef = useRef({});
+  const openParamsRef = useRef<OpenParamsRefProps>({});
 
-    const open = (params: OpenParamsRefProps) => {
-      if (!ConfirmDialogRef?.current) return;
+  const open = (params: OpenParamsRefProps) => {
+    if (!ConfirmDialogRef?.current) return;
 
-      openParamsRef.current = params;
+    openParamsRef.current = params;
 
-      ConfirmDialogRef.current.open({
-        title: t("v0.propertiesSetting"),
-        children: (
-          <Box>
-            <Alert severity="info" sx={{ mb: 2 }}>
-              {t("v0.propertiesSettingTip")}
-            </Alert>
-            <Stack spacing={2}>
-              {params?.schema?.map((item) => {
-                const { id, key, type, locales } = item;
-                const { Filed, extraProps } = (FieldComponentMap[type] ||
-                  FieldComponentMap.string) as FileItemProps;
-                const currentLocale = locales?.[locale] || locales?.en;
+    ConfirmDialogRef.current.open({
+      title: t("v0.propertiesSetting"),
+      children: (
+        <Box>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            {t("v0.propertiesSettingTip")}
+          </Alert>
+          <Stack spacing={2}>
+            {params?.schema?.map((item) => {
+              const { id, key, type, locales } = item;
+              const { Filed, extraProps } = (FieldComponentMap[type] ||
+                FieldComponentMap.string) as FileItemProps;
+              const currentLocale = locales?.[locale] || locales?.en;
 
-                return (
-                  <Box key={id}>
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        mb: 0.5,
-                      }}
-                    >
-                      {currentLocale?.name}
-                    </Typography>
-                    <Filed
-                      fullWidth
-                      variant="outlined"
-                      defaultValue={
-                        openParamsRef?.current?.defaultValues?.[key] ||
-                        currentLocale?.defaultValue
-                      }
-                      size="small"
-                      onChange={(e: any) => {
-                        // update value
-                        valuesRef.current = {
-                          ...valuesRef.current,
-                          [key]: e.target.value,
-                        };
-                      }}
-                      {...extraProps}
-                    />
-                  </Box>
-                );
-              })}
-            </Stack>
-          </Box>
-        ),
-        onConfirm: () => {
-          params?.onSubmit?.(getValues());
-        },
-        onCancel: () => {},
-      });
+              return (
+                <Box key={id}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      mb: 0.5,
+                    }}
+                  >
+                    {currentLocale?.name}
+                  </Typography>
+                  <Filed
+                    fullWidth
+                    variant="outlined"
+                    defaultValue={
+                      openParamsRef?.current?.defaultValues?.[key] || currentLocale?.defaultValue
+                    }
+                    size="small"
+                    onChange={(e: any) => {
+                      // update value
+                      valuesRef.current = {
+                        ...valuesRef.current,
+                        [key]: e.target.value,
+                      };
+                    }}
+                    {...extraProps}
+                  />
+                </Box>
+              );
+            })}
+          </Stack>
+        </Box>
+      ),
+      onConfirm: () => {
+        params?.onSubmit?.(getValues());
+      },
+      onCancel: () => {},
+    });
+  };
+
+  const getValues = () => {
+    return {
+      ...openParamsRef?.current?.defaultValues,
+      ...valuesRef.current,
     };
+  };
 
-    const getValues = () => {
-      return {
-        ...openParamsRef?.current?.defaultValues,
-        ...valuesRef.current,
-      };
-    };
+  useImperativeHandle(ref, () => ({
+    open,
+    getValues,
+  }));
 
-    useImperativeHandle(ref, () => ({
-      open,
-      getValues,
-    }));
+  useEffect(() => {
+    valuesRef.current = {};
+  }, [locale]);
 
-    useEffect(() => {
-      valuesRef.current = {};
-    }, [locale]);
-
-    return <ConfirmDialog ref={ConfirmDialogRef} {...props} />;
-  },
-);
+  return <ConfirmDialog ref={ConfirmDialogRef} {...props} />;
+});
 
 export default PropertiesSetting;

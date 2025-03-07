@@ -39,10 +39,7 @@ export function useHeaderMenu() {
                 }}
                 menus={[
                   hasSettings && isAdmin && (
-                    <MenuItem
-                      key="settings"
-                      onClick={() => settingsDialogState.getState().open()}
-                    >
+                    <MenuItem key="settings" onClick={() => settingsDialogState.getState().open()}>
                       <ListItemIcon>
                         <Icon icon="tabler:settings" />
                       </ListItemIcon>
@@ -50,10 +47,7 @@ export function useHeaderMenu() {
                     </MenuItem>
                   ),
 
-                  <LoadingMenuItem
-                    key="clearSession"
-                    onClick={async () => clearSession()}
-                  >
+                  <LoadingMenuItem key="clearSession" onClick={async () => clearSession()}>
                     <ListItemIcon>
                       <Icon icon="mingcute:broom-line" />
                     </ListItemIcon>

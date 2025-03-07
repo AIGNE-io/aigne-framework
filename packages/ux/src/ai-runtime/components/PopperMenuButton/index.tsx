@@ -10,20 +10,14 @@ import {
   type PopperProps,
   listItemIconClasses,
 } from "@mui/material";
-import {
-  bindPopper,
-  bindTrigger,
-  usePopupState,
-} from "material-ui-popup-state/hooks";
+import { bindPopper, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import React, { type ReactNode, isValidElement } from "react";
 
 export default function PopperMenuButton({
   PopperProps,
   menus,
   ...props
-}: { PopperProps: Omit<PopperProps, "open">; menus?: ReactNode } & BoxProps<
-  typeof Button
->) {
+}: { PopperProps: Omit<PopperProps, "open">; menus?: ReactNode } & BoxProps<typeof Button>) {
   const state = usePopupState({ variant: "popper" });
 
   return (

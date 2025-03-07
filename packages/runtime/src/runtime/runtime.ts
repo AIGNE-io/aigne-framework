@@ -56,9 +56,7 @@ export class AIGNERuntime<
     const project = parse((await readFile(projectFilePath)).toString());
     // TODO: validate parsed project
 
-    const agentFilePaths = await glob(
-      join(options.path, "prompts", "**/*.yaml"),
-    );
+    const agentFilePaths = await glob(join(options.path, "prompts", "**/*.yaml"));
     const runnables = await Promise.all(
       agentFilePaths.map(async (filename) => {
         const agent = parse((await readFile(filename)).toString());
@@ -112,10 +110,7 @@ export class AIGNERuntime<
       TYPES.sandboxFunctionRunner,
       options.sandboxFunctionRunner || QuickJSRunner,
     );
-    this.inner.registerDependency(
-      TYPES.llmModel,
-      options.llmModel || BlockletLLMModel,
-    );
+    this.inner.registerDependency(TYPES.llmModel, options.llmModel || BlockletLLMModel);
   }
 
   get options(): AIGNERuntimeOptions<Agents, State> {

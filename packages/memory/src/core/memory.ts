@@ -21,10 +21,10 @@ import type { HistoryStore, Retriever, VectorStoreDocument } from "./type";
 
 type MemoryRunnerCustomData<T> = { retriever: Retriever<T> };
 
-export class Memory<
+export class Memory<T, I extends MemoryActions<T> = MemoryActions<T>> extends Memorable<
   T,
-  I extends MemoryActions<T> = MemoryActions<T>,
-> extends Memorable<T, MemoryRunnerCustomData<T>> {
+  MemoryRunnerCustomData<T>
+> {
   constructor(
     public options: {
       path: string;
@@ -56,11 +56,9 @@ export class Memory<
       await mkdir(path, { recursive: true });
       await writeFile(configPath, stringify(config));
 
-      const historyStore =
-        this.options.historyStore ?? DefaultHistoryStore.load<T>({ path });
+      const historyStore = this.options.historyStore ?? DefaultHistoryStore.load<T>({ path });
       const retriever =
-        this.options.retriever ??
-        SearchKitRetriever.load<T>({ id: config.id, path });
+        this.options.retriever ?? SearchKitRetriever.load<T>({ id: config.id, path });
 
       return { retriever, historyStore };
     })();
@@ -69,10 +67,7 @@ export class Memory<
   }
 
   async add(
-    messages: Extract<
-      MemoryActions<T>,
-      { action: "add" }
-    >["inputs"]["messages"],
+    messages: Extract<MemoryActions<T>, { action: "add" }>["inputs"]["messages"],
     options?: Extract<MemoryActions<T>, { action: "add" }>["inputs"]["options"],
   ): Promise<Extract<MemoryActions<T>, { action: "add" }>["outputs"]> {
     if (!this.runner) throw new Error("Runner is not defined");
@@ -161,10 +156,7 @@ export class Memory<
 
   async search(
     query: Extract<MemoryActions<T>, { action: "search" }>["inputs"]["query"],
-    options?: Extract<
-      MemoryActions<T>,
-      { action: "search" }
-    >["inputs"]["options"],
+    options?: Extract<MemoryActions<T>, { action: "search" }>["inputs"]["options"],
   ): Promise<Extract<MemoryActions<T>, { action: "search" }>["outputs"]> {
     const { retriever } = await this.init;
 
@@ -186,10 +178,7 @@ export class Memory<
   }
 
   async filter(
-    options: Extract<
-      MemoryActions<T>,
-      { action: "filter" }
-    >["inputs"]["options"],
+    options: Extract<MemoryActions<T>, { action: "filter" }>["inputs"]["options"],
   ): Promise<Extract<MemoryActions<T>, { action: "filter" }>["outputs"]> {
     const { retriever } = await this.init;
 
@@ -209,10 +198,7 @@ export class Memory<
   }
 
   async get(
-    memoryId: Extract<
-      MemoryActions<T>,
-      { action: "get" }
-    >["inputs"]["memoryId"],
+    memoryId: Extract<MemoryActions<T>, { action: "get" }>["inputs"]["memoryId"],
   ): Promise<Extract<MemoryActions<T>, { action: "get" }>["outputs"]> {
     const { retriever } = await this.init;
 
@@ -223,10 +209,7 @@ export class Memory<
 
   async create(
     memory: Extract<MemoryActions<T>, { action: "create" }>["inputs"]["memory"],
-    options?: Extract<
-      MemoryActions<T>,
-      { action: "create" }
-    >["inputs"]["options"],
+    options?: Extract<MemoryActions<T>, { action: "create" }>["inputs"]["options"],
   ): Promise<Extract<MemoryActions<T>, { action: "create" }>["outputs"]> {
     const result = await this.createMemory({
       ...options,
@@ -237,10 +220,7 @@ export class Memory<
   }
 
   async update(
-    memoryId: Extract<
-      MemoryActions<T>,
-      { action: "update" }
-    >["inputs"]["memoryId"],
+    memoryId: Extract<MemoryActions<T>, { action: "update" }>["inputs"]["memoryId"],
     memory: T,
   ): Promise<Extract<MemoryActions<T>, { action: "update" }>["outputs"]> {
     const result = await this.updateMemory({ id: memoryId, memory });
@@ -248,10 +228,7 @@ export class Memory<
   }
 
   async delete(
-    memoryId: Extract<
-      MemoryActions<T>,
-      { action: "delete" }
-    >["inputs"]["filter"],
+    memoryId: Extract<MemoryActions<T>, { action: "delete" }>["inputs"]["filter"],
   ): Promise<Extract<MemoryActions<T>, { action: "delete" }>["outputs"]> {
     await this.deleteMemory(memoryId);
     return {};
@@ -290,14 +267,8 @@ export class Memory<
     input: I,
     options: RunOptions & { stream: true },
   ): Promise<RunnableResponseStream<I["outputs"]>>;
-  async run(
-    input: I,
-    options?: RunOptions & { stream?: false },
-  ): Promise<I["outputs"]>;
-  async run(
-    input: I,
-    options?: RunOptions,
-  ): Promise<RunnableResponse<I["outputs"]>> {
+  async run(input: I, options?: RunOptions & { stream?: false }): Promise<I["outputs"]>;
+  async run(input: I, options?: RunOptions): Promise<RunnableResponse<I["outputs"]>> {
     const result = await this._run(input);
 
     return options?.stream ? objectToRunnableResponseStream(result) : result;
@@ -336,9 +307,7 @@ export class Memory<
     return document;
   }
 
-  private async updateMemory(
-    params: Partial<VectorStoreDocument<T>> & { id: string },
-  ) {
+  private async updateMemory(params: Partial<VectorStoreDocument<T>> & { id: string }) {
     const { retriever, historyStore } = await this.init;
 
     const originalMemory = await retriever.get(params.id);
@@ -365,9 +334,7 @@ export class Memory<
     return newMemory;
   }
 
-  private async deleteMemory(
-    memoryIdOrFilter: string | string[] | { [key: string]: any },
-  ) {
+  private async deleteMemory(memoryIdOrFilter: string | string[] | { [key: string]: any }) {
     const { retriever, historyStore } = await this.init;
 
     const memories = await retriever.delete(memoryIdOrFilter);

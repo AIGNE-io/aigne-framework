@@ -1,17 +1,9 @@
 import type { MemoryMetadata } from "@aigne/core";
-import {
-  DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
-  Model,
-} from "sequelize";
+import { DataTypes, type InferAttributes, type InferCreationAttributes, Model } from "sequelize";
 import type { ModelStatic, Sequelize } from "sequelize";
 
 export interface VectorHistory
-  extends Model<
-    InferAttributes<VectorHistory>,
-    InferCreationAttributes<VectorHistory>
-  > {
+  extends Model<InferAttributes<VectorHistory>, InferCreationAttributes<VectorHistory>> {
   id: string;
 
   userId?: string;
@@ -30,9 +22,7 @@ export interface VectorHistory
 }
 
 export function initVectorHistoryModel(sequelize: Sequelize) {
-  return (
-    class VectorHistory extends Model {} as ModelStatic<VectorHistory>
-  ).init(
+  return (class VectorHistory extends Model {} as ModelStatic<VectorHistory>).init(
     {
       id: {
         type: DataTypes.STRING,

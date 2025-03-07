@@ -12,10 +12,7 @@ import { type ReactNode, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 import OutputFieldContainer from "../../components/OutputFieldContainer";
-import {
-  useCurrentMessage,
-  useCurrentMessageOutput,
-} from "../../contexts/CurrentMessage";
+import { useCurrentMessage, useCurrentMessageOutput } from "../../contexts/CurrentMessage";
 
 export type GoogleSearchSourcesViewPropValue =
   | Array<{
@@ -30,8 +27,7 @@ export type GoogleSearchSourcesViewPropValue =
 const COLLAPSE_SIZE = 3;
 
 export default function GoogleSearchSourcesView() {
-  const { outputValue, output } =
-    useCurrentMessageOutput<GoogleSearchSourcesViewPropValue>();
+  const { outputValue, output } = useCurrentMessageOutput<GoogleSearchSourcesViewPropValue>();
 
   const { message } = useCurrentMessage({ optional: true }) ?? {};
   const [showAll, setShowAll] = useState(false);
@@ -43,10 +39,7 @@ export default function GoogleSearchSourcesView() {
   const list = outputValue || [];
   const itemsToShow = showAll
     ? list
-    : list.slice(
-        0,
-        list.length > COLLAPSE_SIZE ? COLLAPSE_SIZE - 1 : COLLAPSE_SIZE,
-      );
+    : list.slice(0, list.length > COLLAPSE_SIZE ? COLLAPSE_SIZE - 1 : COLLAPSE_SIZE);
 
   return (
     <OutputFieldContainer output={output}>
@@ -86,9 +79,7 @@ export default function GoogleSearchSourcesView() {
   );
 }
 
-function ItemView({
-  item,
-}: { item: NonNullable<GoogleSearchSourcesViewPropValue>[number] }) {
+function ItemView({ item }: { item: NonNullable<GoogleSearchSourcesViewPropValue>[number] }) {
   return (
     <ItemContainer
       title={`${item.title} - ${item.source}`}
@@ -113,9 +104,7 @@ function MoreItemView({
   return (
     <Card sx={{ height: "100px", cursor: "pointer" }} onClick={onMore}>
       <Stack sx={{ py: 1.5, px: 2, gap: 1, height: "100%" }}>
-        <Box
-          sx={{ display: "flex", flexWrap: "wrap", gap: "7px", flexGrow: 1 }}
-        >
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: "7px", flexGrow: 1 }}>
           {current.map((item) => {
             return (
               <Box key={item.link} width={18} height={18}>
@@ -183,12 +172,7 @@ function ItemContainer({
             </Typography>
           </Box>
 
-          <Stack
-            flexDirection="row"
-            alignItems="center"
-            gap={1}
-            overflow="hidden"
-          >
+          <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden">
             <Box width={18} height={18}>
               {favicon}
             </Box>

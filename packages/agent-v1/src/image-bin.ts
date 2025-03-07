@@ -11,16 +11,14 @@ export async function uploadImageToImageBin({
   userId,
 }: {
   filename: string;
-  data:
-    | { url: string; b64Json?: undefined }
-    | { url?: undefined; b64Json: string };
+  data: { url: string; b64Json?: undefined } | { url?: undefined; b64Json: string };
   userId?: string;
 }) {
   const base64 =
     typeof data.url === "string"
-      ? Buffer.from(
-          (await axios.get(data.url, { responseType: "arraybuffer" })).data,
-        ).toString("base64")
+      ? Buffer.from((await axios.get(data.url, { responseType: "arraybuffer" })).data).toString(
+          "base64",
+        )
       : data.b64Json;
 
   const { data: result } = await uploadToMediaKit({

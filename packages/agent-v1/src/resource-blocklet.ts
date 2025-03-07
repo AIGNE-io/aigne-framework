@@ -3,10 +3,7 @@ import type { SelectParameter } from "./types";
 
 export const resourceManager = new ResourceManager();
 
-export async function getAdapter(
-  type: "llm" | "image-generation",
-  model: string,
-) {
+export async function getAdapter(type: "llm" | "image-generation", model: string) {
   const projects = await resourceManager.getProjects({
     type: type === "image-generation" ? "aigc-adapter" : "llm-adapter",
   });
@@ -24,10 +21,7 @@ export async function getAdapter(
       (x) =>
         x.agent.public &&
         x.agent.parameters
-          ?.find(
-            (x): x is SelectParameter =>
-              x.type === "select" && x.key === "model",
-          )
+          ?.find((x): x is SelectParameter => x.type === "select" && x.key === "model")
           ?.options?.find((x) => x.label === model || x.value === model),
     )[0];
 }

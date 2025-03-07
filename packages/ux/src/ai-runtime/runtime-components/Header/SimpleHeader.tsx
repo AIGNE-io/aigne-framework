@@ -1,10 +1,5 @@
 import { cx } from "@emotion/css";
-import {
-  Stack,
-  type StackProps,
-  Typography,
-  type TypographyProps,
-} from "@mui/material";
+import { Stack, type StackProps, Typography, type TypographyProps } from "@mui/material";
 import Balancer, { Provider } from "react-wrap-balancer";
 
 import { useEntryAgent } from "../../contexts/EntryAgent";

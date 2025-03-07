@@ -1,11 +1,6 @@
 import EventEmitter from "node:events";
 import { nanoid } from "nanoid";
-import {
-  Agent,
-  type AgentInput,
-  type AgentOptions,
-  type AgentOutput,
-} from "../agents/agent";
+import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "../agents/agent";
 import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types";
 import type { ChatModel } from "../models/chat";
 import { addMessagesToInput } from "../prompt/prompt-builder";
@@ -35,10 +30,8 @@ export class ExecutionEngine extends EventEmitter implements Context {
 
   private agents: Agent[] = [];
 
-  private agentListeners: Map<
-    Agent,
-    { topic: string; listener: (input: AgentInput) => void }[]
-  > = new Map();
+  private agentListeners: Map<Agent, { topic: string; listener: (input: AgentInput) => void }[]> =
+    new Map();
 
   addAgent(...agents: Agent[]) {
     for (const agent of agents) {
@@ -89,31 +82,20 @@ export class ExecutionEngine extends EventEmitter implements Context {
     return this.runSequential(input, ...agents);
   }
 
-  async runSequential(
-    input: AgentInput,
-    ...agents: [Agent, ...Agent[]]
-  ): Promise<AgentOutput> {
+  async runSequential(input: AgentInput, ...agents: [Agent, ...Agent[]]): Promise<AgentOutput> {
     const output: AgentOutput = {};
 
     for (const agent of agents.flat()) {
-      const { output: o } = await this.callAgent(
-        { ...input, ...output },
-        agent,
-      );
+      const { output: o } = await this.callAgent({ ...input, ...output }, agent);
       Object.assign(output, o);
     }
 
     return output;
   }
 
-  async runParallel(
-    input: AgentInput,
-    ...agents: [Agent, ...Agent[]]
-  ): Promise<AgentOutput> {
+  async runParallel(input: AgentInput, ...agents: [Agent, ...Agent[]]): Promise<AgentOutput> {
     const outputs = await Promise.all(
-      agents.map((agent) =>
-        this.callAgent(input, agent).then((res) => res.output),
-      ),
+      agents.map((agent) => this.callAgent(input, agent).then((res) => res.output)),
     );
 
     return Object.assign({}, ...outputs);

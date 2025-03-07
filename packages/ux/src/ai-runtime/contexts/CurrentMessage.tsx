@@ -7,9 +7,7 @@ export interface CurrentMessageContextValue {
   message: MessageItem;
 }
 
-const currentMessageContext = createContext<
-  CurrentMessageContextValue | undefined
->(undefined);
+const currentMessageContext = createContext<CurrentMessageContextValue | undefined>(undefined);
 
 export function CurrentMessageProvider({
   message,
@@ -17,19 +15,13 @@ export function CurrentMessageProvider({
 }: { message: MessageItem; children?: ReactNode }) {
   const state = useMemo(() => ({ message }), [message]);
 
-  return (
-    <currentMessageContext.Provider value={state}>
-      {children}
-    </currentMessageContext.Provider>
-  );
+  return <currentMessageContext.Provider value={state}>{children}</currentMessageContext.Provider>;
 }
 
 export function useCurrentMessage(args?: {
   optional?: false;
 }): CurrentMessageContextValue;
-export function useCurrentMessage(args: { optional: true }):
-  | CurrentMessageContextValue
-  | undefined;
+export function useCurrentMessage(args: { optional: true }): CurrentMessageContextValue | undefined;
 export function useCurrentMessage({ optional }: { optional?: boolean } = {}) {
   const ctx = useContext(currentMessageContext);
   if (!optional && !ctx) {
@@ -46,9 +38,9 @@ export interface CurrentMessageOutputContextValue<T = any> {
   outputValue: T;
 }
 
-const currentMessageOutputContext = createContext<
-  CurrentMessageOutputContextValue | undefined
->(undefined);
+const currentMessageOutputContext = createContext<CurrentMessageOutputContextValue | undefined>(
+  undefined,
+);
 
 export function CurrentMessageOutputProvider({
   output,
@@ -74,9 +66,7 @@ export function useCurrentMessageOutput<T = any>(args?: {
 export function useCurrentMessageOutput<T = any>(args: {
   optional: true;
 }): CurrentMessageOutputContextValue<T> | undefined;
-export function useCurrentMessageOutput({
-  optional,
-}: { optional?: boolean } = {}) {
+export function useCurrentMessageOutput({ optional }: { optional?: boolean } = {}) {
   const ctx = useContext(currentMessageOutputContext);
   if (!optional && !ctx) {
     throw new Error(

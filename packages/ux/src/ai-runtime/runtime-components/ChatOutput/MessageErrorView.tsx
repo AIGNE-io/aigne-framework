@@ -3,10 +3,7 @@ import { Alert, Box } from "@mui/material";
 
 import MarkdownRenderer from "../../components/MarkdownRenderer";
 
-export default function MessageErrorView({
-  error,
-  sx,
-}: { error: any; sx?: any }) {
+export default function MessageErrorView({ error, sx }: { error: any; sx?: any }) {
   const { t } = useLocaleContext();
 
   if (!error) return null;
@@ -22,11 +19,7 @@ export default function MessageErrorView({
   }
 
   return (
-    <Alert
-      className="ai-chat-message-error"
-      severity="error"
-      sx={{ mr: 5, ...sx }}
-    >
+    <Alert className="ai-chat-message-error" severity="error" sx={{ mr: 5, ...sx }}>
       {error.message}
     </Alert>
   );

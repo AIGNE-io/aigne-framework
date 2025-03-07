@@ -19,14 +19,7 @@ import {
   useTheme,
 } from "@mui/material";
 import pick from "lodash/pick";
-import {
-  type RefObject,
-  Suspense,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type RefObject, Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 import { AgentErrorView } from "../../components/AgentErrorBoundary";
 import { useActiveAgent } from "../../contexts/ActiveAgent";
@@ -34,11 +27,7 @@ import { useAgent } from "../../contexts/Agent";
 import { CurrentAgentProvider } from "../../contexts/CurrentAgent";
 import { CurrentMessageProvider } from "../../contexts/CurrentMessage";
 import { useEntryAgent } from "../../contexts/EntryAgent";
-import {
-  type MessageItem,
-  SessionProvider,
-  useSession,
-} from "../../contexts/Session";
+import { type MessageItem, SessionProvider, useSession } from "../../contexts/Session";
 import { useSessions } from "../../contexts/Sessions";
 import { useAppearances } from "../../hooks/use-appearances";
 import mapRight from "../../utils/map-right";
@@ -103,10 +92,7 @@ function V0Page({
             <Box
               sx={{
                 flex: 1,
-                height:
-                  !isMobile && currentSessionId
-                    ? "calc(100% - 48px - 16px - 16px)"
-                    : "unset",
+                height: !isMobile && currentSessionId ? "calc(100% - 48px - 16px - 16px)" : "unset",
               }}
             >
               {currentSessionId ? <V0DetailRender /> : <V0ListRender />}
@@ -151,11 +137,7 @@ function V0ListRender() {
 
   return (
     <Box key="list-render" flex={1}>
-      <Typography
-        variant="h2"
-        color="textColor"
-        sx={{ fontWeight: "bold", mt: isMobile ? 3 : 6 }}
-      >
+      <Typography variant="h2" color="textColor" sx={{ fontWeight: "bold", mt: isMobile ? 3 : 6 }}>
         {agent?.project?.name || t("v0.title")}
       </Typography>
       <Typography
@@ -203,10 +185,7 @@ function V0ListRender() {
                   }
                 >
                   <SessionProvider sessionId={item.id}>
-                    <ItemView
-                      key={item.id}
-                      ConfirmDialogRef={ConfirmDialogRef}
-                    />
+                    <ItemView key={item.id} ConfirmDialogRef={ConfirmDialogRef} />
                   </SessionProvider>
                 </Suspense>
               ))}
@@ -228,9 +207,7 @@ function V0ListRender() {
   );
 }
 
-function ItemView({
-  ConfirmDialogRef,
-}: { ConfirmDialogRef: RefObject<{ open?: Function }> }) {
+function ItemView({ ConfirmDialogRef }: { ConfirmDialogRef: RefObject<{ open?: Function }> }) {
   const { t } = useLocaleContext();
   const { setCurrentSessionId, deleteSession } = useSessions((s) =>
     pick(s, "setCurrentSessionId", "deleteSession"),
@@ -324,18 +301,12 @@ function ItemView({
 }
 
 function V0DetailRender() {
-  const { setCurrentSessionId } = useSessions((s) =>
-    pick(s, "setCurrentSessionId"),
-  );
+  const { setCurrentSessionId } = useSessions((s) => pick(s, "setCurrentSessionId"));
   const { messages: messagesListOriginal, loading } = useSession((s) =>
     pick(s, "messages", "loading"),
   );
-  const {
-    currentMessageTaskId,
-    setCurrentMessageTaskId,
-    propertiesValueMap,
-    isMobile,
-  } = useV0RuntimeContext();
+  const { currentMessageTaskId, setCurrentMessageTaskId, propertiesValueMap, isMobile } =
+    useV0RuntimeContext();
   const [sliderOpenInMobile, setSliderOpenInMobile] = useState(!isMobile);
   const { t } = useLocaleContext();
 
@@ -347,9 +318,7 @@ function V0DetailRender() {
         message.id === currentMessageTaskId ||
         index === 0,
     ) ?? [];
-  const currentMessage = messagesList.find(
-    (message) => message.id === currentMessageTaskId,
-  );
+  const currentMessage = messagesList.find((message) => message.id === currentMessageTaskId);
 
   useEffect(() => {
     if (messagesList.length) {
@@ -424,13 +393,7 @@ function V0DetailRender() {
           {isMobile ? (
             <Button
               startIcon={
-                <Icon
-                  icon={
-                    sliderOpenInMobile
-                      ? "tabler:chevron-up"
-                      : "tabler:chevron-down"
-                  }
-                />
+                <Icon icon={sliderOpenInMobile ? "tabler:chevron-up" : "tabler:chevron-down"} />
               }
               size="small"
               onClick={() => setSliderOpenInMobile(!sliderOpenInMobile)}
@@ -515,9 +478,7 @@ function V0DetailRender() {
                       color: "textColor",
                       borderRadius: 1,
                       border: 1,
-                      borderColor: isCurrent
-                        ? "primary.main"
-                        : "background.block",
+                      borderColor: isCurrent ? "primary.main" : "background.block",
                       backgroundColor: "white",
                       position: "relative",
                       transition: "all 0.3s",

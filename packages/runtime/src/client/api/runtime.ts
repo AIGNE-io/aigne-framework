@@ -1,8 +1,4 @@
-import type {
-  MemoryActions,
-  MemoryItem,
-  RunnableDefinition,
-} from "@aigne/core";
+import type { MemoryActions, MemoryItem, RunnableDefinition } from "@aigne/core";
 import { joinURL, withQuery } from "ufo";
 
 import { fetchApi } from "./api";
@@ -14,9 +10,9 @@ export async function getRunnableDefinition({
   projectId: string;
   agentId: string;
 }): Promise<RunnableDefinition> {
-  return fetchApi(
-    joinURL("/api/aigne", projectId, "agents", agentId, "definition"),
-  ).then((res) => res.json() as Promise<RunnableDefinition>);
+  return fetchApi(joinURL("/api/aigne", projectId, "agents", agentId, "definition")).then(
+    (res) => res.json() as Promise<RunnableDefinition>,
+  );
 }
 
 export async function getRunnableHistories({
@@ -32,9 +28,6 @@ export async function getRunnableHistories({
   >;
 }): Promise<{ results?: MemoryItem<{ input: object; output: object }>[] }> {
   return fetchApi(
-    withQuery(
-      joinURL("/api/aigne", projectId, "agents", agentId, "histories"),
-      { ...options },
-    ),
+    withQuery(joinURL("/api/aigne", projectId, "agents", agentId, "histories"), { ...options }),
   ).then((res) => res.json() as any);
 }

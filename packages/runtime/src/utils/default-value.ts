@@ -22,29 +22,20 @@ import isNil from "lodash/isNil";
  * const obj2 = { a: 3, b: 4 };
  * const defaultValues = getDefaultValue(['a', 'b'], obj1, obj2); // { a: 1, b: 2 }
  */
-export function getDefaultValue<
-  T extends { [key: string]: any },
-  K extends keyof T,
->(key: K, ...args: (T | null | undefined)[]): T[K] | undefined;
-export function getDefaultValue<
-  T extends { [key: string]: any },
-  K extends keyof T,
->(
+export function getDefaultValue<T extends { [key: string]: any }, K extends keyof T>(
+  key: K,
+  ...args: (T | null | undefined)[]
+): T[K] | undefined;
+export function getDefaultValue<T extends { [key: string]: any }, K extends keyof T>(
   key: K[],
   ...args: (T | null | undefined)[]
 ): { [key in K]: T[key] | undefined };
-export function getDefaultValue<
-  T extends { [key: string]: any },
-  K extends keyof T,
->(
+export function getDefaultValue<T extends { [key: string]: any }, K extends keyof T>(
   key: K | K[],
   ...args: (T | null | undefined)[]
 ): T[K] | { [key in K]: T[key] | undefined } | undefined {
   if (Array.isArray(key)) {
-    const entries: [K, T[K] | undefined][] = key.map((k) => [
-      k,
-      getDefaultValue(k, ...args),
-    ]);
+    const entries: [K, T[K] | undefined][] = key.map((k) => [k, getDefaultValue(k, ...args)]);
     return Object.fromEntries(entries) as any;
   }
 

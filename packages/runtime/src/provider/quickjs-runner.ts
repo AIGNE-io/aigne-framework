@@ -1,9 +1,6 @@
 import crypto from "node:crypto";
 
-import {
-  SandboxFunctionRunner,
-  type SandboxFunctionRunnerInput,
-} from "@aigne/core";
+import { SandboxFunctionRunner, type SandboxFunctionRunnerInput } from "@aigne/core";
 import { Sandbox } from "@blocklet/quickjs/sandbox";
 import { call, getComponentMountPoint } from "@blocklet/sdk/lib/component";
 import config from "@blocklet/sdk/lib/config";
@@ -13,11 +10,7 @@ import { injectable } from "tsyringe";
 @injectable()
 export class QuickJSRunner extends SandboxFunctionRunner {
   async process(input: SandboxFunctionRunnerInput) {
-    if (
-      input.language &&
-      input.language !== "javascript" &&
-      input.language !== "typescript"
-    ) {
+    if (input.language && input.language !== "javascript" && input.language !== "typescript") {
       throw new Error(`Unsupported language ${input.language}`);
     }
 
@@ -34,8 +27,7 @@ export class QuickJSRunner extends SandboxFunctionRunner {
         error: (...args) => log(...args),
       },
       getComponentMountPoint,
-      call: (...args: Parameters<typeof call>) =>
-        call(...args).then((res) => ({ data: res.data })),
+      call: (...args: Parameters<typeof call>) => call(...args).then((res) => ({ data: res.data })),
       crypto: { randomInt: crypto.randomInt },
       config: {
         env: pick(config.env, "appId", "appName", "appDescription", "appUrl"),

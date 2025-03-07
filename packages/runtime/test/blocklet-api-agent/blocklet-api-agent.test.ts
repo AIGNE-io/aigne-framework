@@ -34,9 +34,7 @@ test("BlockletAPIAgent.run with get method", async () => {
     apiId,
   });
 
-  spyOn(agent, "fetch").mockImplementation((request) =>
-    Promise.resolve(request),
-  );
+  spyOn(agent, "fetch").mockImplementation((request) => Promise.resolve(request));
 
   const result = await agent.run({
     id: "123",
@@ -45,9 +43,7 @@ test("BlockletAPIAgent.run with get method", async () => {
     message2: "hello world3",
   });
 
-  expect(result.url).toEqual(
-    "https://api.example.com/discuss-kit/api/v1/sdk/posts/123",
-  );
+  expect(result.url).toEqual("https://api.example.com/discuss-kit/api/v1/sdk/posts/123");
   expect(result.method).toEqual("get");
   expect(result.query).toEqual({ message: "hello" });
   expect(result.headers).toEqual({

@@ -21,9 +21,7 @@ export interface DebugContextValue {
   close: () => void;
 }
 
-const debugContext = createContext<UseBoundStore<
-  StoreApi<DebugContextValue>
-> | null>(null);
+const debugContext = createContext<UseBoundStore<StoreApi<DebugContextValue>> | null>(null);
 
 export function DebugProvider({
   children,
@@ -82,17 +80,11 @@ export function DebugProvider({
     ),
   );
 
-  return (
-    <debugContext.Provider value={state}>{children}</debugContext.Provider>
-  );
+  return <debugContext.Provider value={state}>{children}</debugContext.Provider>;
 }
 
-export function useDebug():
-  | UseBoundStore<StoreApi<DebugContextValue>>
-  | undefined;
-export function useDebug<U>(
-  selector: (state: DebugContextValue) => U,
-): U | undefined;
+export function useDebug(): UseBoundStore<StoreApi<DebugContextValue>> | undefined;
+export function useDebug<U>(selector: (state: DebugContextValue) => U): U | undefined;
 export function useDebug<U>(selector?: (state: DebugContextValue) => U) {
   const ctx = useContext(debugContext);
   if (!ctx) return undefined;
@@ -105,13 +97,11 @@ export interface DebugDialogContextValue {
   setOpen?: (open: boolean) => void;
 }
 
-const debugDialogContext = createContext<UseBoundStore<
-  StoreApi<DebugDialogContextValue>
-> | null>(null);
+const debugDialogContext = createContext<UseBoundStore<StoreApi<DebugDialogContextValue>> | null>(
+  null,
+);
 
-export function DebugDialogProvider({
-  children,
-}: { children?: React.ReactNode }) {
+export function DebugDialogProvider({ children }: { children?: React.ReactNode }) {
   const [state] = useState(() =>
     create(
       immer<DebugDialogContextValue>((set) => ({
@@ -124,16 +114,10 @@ export function DebugDialogProvider({
     ),
   );
 
-  return (
-    <debugDialogContext.Provider value={state}>
-      {children}
-    </debugDialogContext.Provider>
-  );
+  return <debugDialogContext.Provider value={state}>{children}</debugDialogContext.Provider>;
 }
 
-export function useDebugDialog<U>(
-  selector: (state: DebugDialogContextValue) => U,
-): U | undefined {
+export function useDebugDialog<U>(selector: (state: DebugDialogContextValue) => U): U | undefined {
   const ctx = useContext(debugDialogContext);
   if (!ctx) return undefined;
 

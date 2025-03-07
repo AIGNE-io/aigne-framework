@@ -11,9 +11,7 @@ export interface CreateOrUpdateSecretsInput {
   }[];
 }
 
-export async function createSecrets({
-  input,
-}: { input: CreateOrUpdateSecretsInput }): Promise<{}> {
+export async function createSecrets({ input }: { input: CreateOrUpdateSecretsInput }): Promise<{}> {
   return request({
     blocklet: AI_RUNTIME_DID,
     method: "POST",

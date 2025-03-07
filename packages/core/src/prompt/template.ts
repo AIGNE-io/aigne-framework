@@ -1,9 +1,6 @@
 import Mustache from "mustache";
 import { z } from "zod";
-import type {
-  ChatModelInputMessage,
-  ChatModelOutputToolCall,
-} from "../models/chat";
+import type { ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat";
 
 export class PromptTemplate {
   static from(template: string) {
@@ -23,9 +20,7 @@ export class PromptTemplate {
 
 export const ChatMessageRoles = ["system", "user", "agent", "tool"] as const;
 
-export function isChatMessageRole(
-  role: unknown,
-): role is (typeof ChatMessageRoles)[number] {
+export function isChatMessageRole(role: unknown): role is (typeof ChatMessageRoles)[number] {
   return ChatMessageRoles.includes(role as any);
 }
 
@@ -39,8 +34,7 @@ export class ChatMessageTemplate {
   format(variables?: Record<string, unknown>): ChatModelInputMessage {
     return {
       role: this.role,
-      content:
-        this.content && PromptTemplate.from(this.content).format(variables),
+      content: this.content && PromptTemplate.from(this.content).format(variables),
       name: this.name,
     };
   }
@@ -91,11 +85,7 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
     public toolCallId: string,
     name?: string,
   ) {
-    super(
-      "tool",
-      typeof content === "string" ? content : JSON.stringify(content),
-      name,
-    );
+    super("tool", typeof content === "string" ? content : JSON.stringify(content), name);
   }
 
   format(variables?: Record<string, unknown>) {
@@ -109,9 +99,7 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
 export class ChatMessagesTemplate {
   static from(messages: ChatMessageTemplate[] | string) {
     return new ChatMessagesTemplate(
-      typeof messages === "string"
-        ? [UserMessageTemplate.from(messages)]
-        : messages,
+      typeof messages === "string" ? [UserMessageTemplate.from(messages)] : messages,
     );
   }
 
@@ -168,9 +156,7 @@ const chatMessageSchema = z.union([
 
 const chatMessagesSchema = z.array(chatMessageSchema);
 
-export function parseChatMessages(
-  messages: unknown,
-): ChatMessageTemplate[] | undefined {
+export function parseChatMessages(messages: unknown): ChatMessageTemplate[] | undefined {
   const result = chatMessagesSchema.safeParse(messages);
   if (!result.success) return undefined;
 
@@ -181,17 +167,9 @@ export function parseChatMessages(
       case "user":
         return UserMessageTemplate.from(message.content, message.name);
       case "agent":
-        return new AgentMessageTemplate(
-          message.content,
-          message.toolCalls,
-          message.name,
-        );
+        return new AgentMessageTemplate(message.content, message.toolCalls, message.name);
       case "tool":
-        return ToolMessageTemplate.from(
-          message.content,
-          message.toolCallId,
-          message.name,
-        );
+        return ToolMessageTemplate.from(message.content, message.toolCallId, message.name);
     }
   });
 }

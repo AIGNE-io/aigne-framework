@@ -11,14 +11,7 @@
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "types": "./lib/dts/index.d.ts",
-  "files": [
-    "lib/cjs",
-    "lib/dts",
-    "lib/esm",
-    "LICENSE",
-    "package.json",
-    "README.md"
-  ],
+  "files": ["lib/cjs", "lib/dts", "lib/esm", "LICENSE", "package.json", "README.md"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/blocklet/ai-studio.git"

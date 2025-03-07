@@ -42,10 +42,7 @@ const createAgentState = ({
 
 const LOADING_TASKS: { [id: string]: Promise<void> } = {};
 
-export function useAgent<U>(
-  options: { aid: string },
-  selector: (state: AgentState) => U,
-): U;
+export function useAgent<U>(options: { aid: string }, selector: (state: AgentState) => U): U;
 export function useAgent(options: { aid: string }, selector?: undefined): Agent;
 export function useAgent<U>(
   { aid }: { aid: string },
@@ -58,9 +55,7 @@ export function useAgent<U>(
   if (selector) return state(useShallow(selector));
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { agent, error } = state(
-    useShallow((s) => ({ agent: s.agent, error: s.error })),
-  );
+  const { agent, error } = state(useShallow((s) => ({ agent: s.agent, error: s.error })));
 
   if (!agent) {
     if (error) throw error;

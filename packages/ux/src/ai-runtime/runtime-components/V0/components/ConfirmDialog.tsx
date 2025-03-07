@@ -51,24 +51,11 @@ const ConfirmDialog = forwardRef((props: ConfirmDialogProps, ref: any) => {
       },
   );
 
-  const {
-    title,
-    children,
-    onConfirm,
-    onCancel,
-    onConfirmProps,
-    onCancelProps,
-  } = openParams as OpenParamsProps;
+  const { title, children, onConfirm, onCancel, onConfirmProps, onCancelProps } =
+    openParams as OpenParamsProps;
 
   return (
-    <Dialog
-      disableScrollLock
-      onClose={close}
-      fullWidth
-      maxWidth="sm"
-      {...props}
-      open={openDialog}
-    >
+    <Dialog disableScrollLock onClose={close} fullWidth maxWidth="sm" {...props} open={openDialog}>
       <DialogTitle
         sx={{
           display: "flex",

@@ -3,9 +3,7 @@ import config from "@blocklet/sdk/lib/config";
 import { joinURL } from "ufo";
 
 export async function getBlockletOpenAPIs() {
-  const response = await fetch(
-    joinURL(config.env.appUrl, "/.well-known/service/openapi.json"),
-  );
+  const response = await fetch(joinURL(config.env.appUrl, "/.well-known/service/openapi.json"));
   await checkFetchResponse(response);
 
   const schema = (await response.json()) as BlockletOpenAPIResponse;

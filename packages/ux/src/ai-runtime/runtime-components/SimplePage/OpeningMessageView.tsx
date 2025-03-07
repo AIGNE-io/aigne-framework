@@ -8,10 +8,7 @@ import { useCurrentAgent } from "../../contexts/CurrentAgent";
 import { CurrentMessageOutputProvider } from "../../contexts/CurrentMessage";
 import { useEntryAgent } from "../../contexts/EntryAgent";
 import { useSession } from "../../contexts/Session";
-import {
-  useOpeningMessage,
-  useOpeningQuestions,
-} from "../../hooks/use-appearances";
+import { useOpeningMessage, useOpeningQuestions } from "../../hooks/use-appearances";
 
 const OpeningMessageView = memo((props: StackProps) => {
   const { aid } = useEntryAgent();
@@ -28,56 +25,41 @@ const OpeningMessageView = memo((props: StackProps) => {
   );
   const openingMessageComponentId =
     openingMessageOutput?.appearance?.componentId ||
-    DEFAULT_OUTPUT_COMPONENTS[RuntimeOutputVariable.openingMessage]
-      ?.componentId;
+    DEFAULT_OUTPUT_COMPONENTS[RuntimeOutputVariable.openingMessage]?.componentId;
 
   const agent = useAgent({ aid: useCurrentAgent().aid });
   const openingQuestions = useOpeningQuestions();
   const openingQuestionsOutput = useMemo(
-    () =>
-      agent.outputVariables?.find(
-        (i) => i.name === RuntimeOutputVariable.openingQuestions,
-      ),
+    () => agent.outputVariables?.find((i) => i.name === RuntimeOutputVariable.openingQuestions),
     [agent.outputVariables],
   );
   const openingQuestionsComponentId =
     openingQuestionsOutput?.appearance?.componentId ||
-    DEFAULT_OUTPUT_COMPONENTS[RuntimeOutputVariable.openingQuestions]
-      ?.componentId;
+    DEFAULT_OUTPUT_COMPONENTS[RuntimeOutputVariable.openingQuestions]?.componentId;
 
   if (
     (!openingMessage?.message || !openingMessageComponentId) &&
-    (!openingQuestionsComponentId ||
-      !openingQuestions?.questions.length ||
-      !isMessagesEmpty)
+    (!openingQuestionsComponentId || !openingQuestions?.questions.length || !isMessagesEmpty)
   ) {
     return null;
   }
 
   return (
     <Stack {...props}>
-      {openingMessage?.message &&
-        openingMessageOutput &&
-        openingMessageComponentId && (
-          <CurrentMessageOutputProvider
-            output={openingMessageOutput}
-            outputValue={undefined}
-          >
-            <CustomComponentRenderer
-              aid={aid}
-              output={{ id: openingMessageOutput.id }}
-              instanceId={`${agent.id}-${openingMessageOutput.id}`}
-              componentId={openingMessageComponentId}
-              properties={openingMessageOutput?.appearance?.componentProperties}
-            />
-          </CurrentMessageOutputProvider>
-        )}
+      {openingMessage?.message && openingMessageOutput && openingMessageComponentId && (
+        <CurrentMessageOutputProvider output={openingMessageOutput} outputValue={undefined}>
+          <CustomComponentRenderer
+            aid={aid}
+            output={{ id: openingMessageOutput.id }}
+            instanceId={`${agent.id}-${openingMessageOutput.id}`}
+            componentId={openingMessageComponentId}
+            properties={openingMessageOutput?.appearance?.componentProperties}
+          />
+        </CurrentMessageOutputProvider>
+      )}
 
       {openingQuestionsOutput && openingQuestionsComponentId && (
-        <CurrentMessageOutputProvider
-          output={openingQuestionsOutput}
-          outputValue={undefined}
-        >
+        <CurrentMessageOutputProvider output={openingQuestionsOutput} outputValue={undefined}>
           <CustomComponentRenderer
             aid={aid}
             output={{ id: openingQuestionsOutput.id }}

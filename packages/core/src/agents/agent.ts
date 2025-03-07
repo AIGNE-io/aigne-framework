@@ -3,16 +3,11 @@ import { type ZodObject, z } from "zod";
 import type { Context } from "../execution-engine/context";
 import { userInput } from "../prompt/prompt-builder";
 import { logger } from "../utils/logger";
-import {
-  type TransferAgentOutput,
-  transferAgentOutputKey,
-  transferToAgentOutput,
-} from "./types";
+import { type TransferAgentOutput, transferAgentOutputKey, transferToAgentOutput } from "./types";
 
 export type AgentInput = Record<string, unknown>;
 
-export type AgentOutput = Record<string, unknown> &
-  Partial<TransferAgentOutput>;
+export type AgentOutput = Record<string, unknown> & Partial<TransferAgentOutput>;
 
 export type SubscribeTopic = string | string[];
 
@@ -25,9 +20,9 @@ export interface AgentOptions<
   _I extends AgentInput = AgentInput,
   O extends AgentOutput = AgentOutput,
 > {
-  subscribeTopic?: SubscribeTopic;
+  inputTopic?: SubscribeTopic;
 
-  publishTopic?: PublishTopic<O>;
+  nextTopic?: PublishTopic<O>;
 
   name?: string;
 
@@ -37,7 +32,7 @@ export interface AgentOptions<
 
   outputSchema?: ZodObject<any>;
 
-  outputIncludeInput?: boolean;
+  includeInputInOutput?: boolean;
 
   tools?: (Agent | ((input: AgentInput) => AgentOutput | Agent))[];
 
@@ -55,9 +50,9 @@ export abstract class Agent<
     this.description = options.description;
     this.inputSchema = options.inputSchema || z.object({});
     this.outputSchema = options.outputSchema || z.object({});
-    this.outputIncludeInput = options.outputIncludeInput;
-    this.subscribeTopic = options.subscribeTopic;
-    this.publishTopic = options.publishTopic;
+    this.outputIncludeInput = options.includeInputInOutput;
+    this.subscribeTopic = options.inputTopic;
+    this.publishTopic = options.nextTopic;
     this.tools = (options.tools ?? []).map((tool) => {
       if (typeof tool === "function") {
         return FunctionAgent.from({ name: tool.name, fn: tool });
@@ -90,10 +85,7 @@ export abstract class Agent<
 
     const parsedInput = this.inputSchema.passthrough().parse(_input) as I;
 
-    logger.debug(
-      `Agent ${this.name} (${this.constructor.name}) start`,
-      parsedInput,
-    );
+    logger.debug(`Agent ${this.name} (${this.constructor.name}) start`, parsedInput);
 
     const output = await this.process(parsedInput, context);
 
@@ -105,8 +97,7 @@ export abstract class Agent<
 
     logger.debug(`Agent ${this.name} (${this.constructor.name}) end`, {
       ...finalOutput,
-      [transferAgentOutputKey]:
-        finalOutput[transferAgentOutputKey]?.agent?.name,
+      [transferAgentOutputKey]: finalOutput[transferAgentOutputKey]?.agent?.name,
     });
 
     return finalOutput;

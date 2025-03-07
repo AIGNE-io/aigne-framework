@@ -137,12 +137,7 @@ function ResponsiveChatBotContainer({
   }
 
   return (
-    <ChatBotPopper
-      anchorEl={anchorEl}
-      title={profile.name}
-      open={open}
-      onClose={onClose}
-    >
+    <ChatBotPopper anchorEl={anchorEl} title={profile.name} open={open} onClose={onClose}>
       {children}
     </ChatBotPopper>
   );
@@ -184,11 +179,7 @@ function ChatBotPopper({
             onClose?.();
           }}
         >
-          <Grow
-            {...TransitionProps}
-            style={{ transformOrigin: "right bottom" }}
-            timeout={350}
-          >
+          <Grow {...TransitionProps} style={{ transformOrigin: "right bottom" }} timeout={350}>
             <Stack
               sx={{
                 height: "100%",
@@ -212,15 +203,8 @@ function ChatBotPopper({
 
                 <ChatMenuButton />
 
-                <Button
-                  sx={{ minWidth: 28, minHeight: 28, p: 0 }}
-                  onClick={onClose}
-                >
-                  <Icon
-                    icon="tabler:x"
-                    fontSize={24}
-                    color="rgba(75, 85, 99, 1)"
-                  />
+                <Button sx={{ minWidth: 28, minHeight: 28, p: 0 }} onClick={onClose}>
+                  <Icon icon="tabler:x" fontSize={24} color="rgba(75, 85, 99, 1)" />
                 </Button>
               </Stack>
 

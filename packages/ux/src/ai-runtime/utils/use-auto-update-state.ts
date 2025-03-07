@@ -15,10 +15,7 @@ export function useAutoUpdateState<S>(
   const update = useUpdate();
 
   const state = useMemo<S>(
-    () =>
-      typeof initialState === "function"
-        ? (initialState as Function)()
-        : initialState,
+    () => (typeof initialState === "function" ? (initialState as Function)() : initialState),
     deps,
   );
 
@@ -32,8 +29,7 @@ export function useAutoUpdateState<S>(
   }
 
   const setState = useCallback<Dispatch<SetStateAction<S>>>((n) => {
-    current.current =
-      typeof n === "function" ? (n as Function)(current.current) : n;
+    current.current = typeof n === "function" ? (n as Function)(current.current) : n;
     update();
   }, []);
 

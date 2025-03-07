@@ -26,9 +26,7 @@ export interface SimpleChatPreferences extends ComponentPreferencesBase {
   hideInputs?: boolean;
 }
 
-export default function SimpleChat({
-  ...preferences
-}: {} & SimpleChatPreferences) {
+export default function SimpleChat({ ...preferences }: {} & SimpleChatPreferences) {
   return (
     <ComponentPreferencesProvider {...preferences}>
       <BackgroundImage />
@@ -80,8 +78,7 @@ function SimpleChatView() {
                   bottom: 0,
                   zIndex: 10,
                   borderRadius: 1,
-                  bgcolor: (theme) =>
-                    alpha(theme.palette.background.paper, 0.8),
+                  bgcolor: (theme) => alpha(theme.palette.background.paper, 0.8),
                   backdropFilter: "blur(16px)",
                 }}
               />

@@ -8,14 +8,10 @@ export interface EntryAgentContext {
   working?: boolean;
 }
 
-const activeAgentContext = createContext<EntryAgentContext | undefined>(
-  undefined,
-);
+const activeAgentContext = createContext<EntryAgentContext | undefined>(undefined);
 
 export function useEntryAgent(args?: { optional?: false }): EntryAgentContext;
-export function useEntryAgent(args: { optional: true }):
-  | EntryAgentContext
-  | undefined;
+export function useEntryAgent(args: { optional: true }): EntryAgentContext | undefined;
 export function useEntryAgent({ optional }: { optional?: boolean } = {}) {
   const context = useContext(activeAgentContext);
   if (!context && !optional) {
@@ -38,20 +34,13 @@ export const EntryAgentProvider = ({
 }) => {
   const state = useMemo(() => ({ aid, working }), [aid, working]);
 
-  return (
-    <activeAgentContext.Provider value={state}>
-      {children}
-    </activeAgentContext.Provider>
-  );
+  return <activeAgentContext.Provider value={state}>{children}</activeAgentContext.Provider>;
 };
 
-export function EntryAgentProviderFromUrl({
-  children,
-}: { children?: ReactNode }) {
+export function EntryAgentProviderFromUrl({ children }: { children?: ReactNode }) {
   const [query] = useSearchParams();
   const aid = query.get("aid");
-  if (!aid)
-    throw new CustomError(404, "Missing required query parameters `aid`");
+  if (!aid) throw new CustomError(404, "Missing required query parameters `aid`");
 
   return (
     <EntryAgentProvider aid={aid} working={query.get("working") === "true"}>

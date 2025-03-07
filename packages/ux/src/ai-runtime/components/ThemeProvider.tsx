@@ -62,8 +62,7 @@ export default function ThemeProvider({ children }: { children?: ReactNode }) {
       .join(",");
 
     const bodyFontFamily = [
-      appearance?.typography?.fontFamily &&
-        JSON.stringify(appearance?.typography?.fontFamily),
+      appearance?.typography?.fontFamily && JSON.stringify(appearance?.typography?.fontFamily),
       fontFamily,
     ]
       .filter(Boolean)
@@ -82,16 +81,15 @@ export default function ThemeProvider({ children }: { children?: ReactNode }) {
                 theme.unstable_sx({
                   ".MuiInputBase-root": {
                     fieldset: { borderColor: "grey.400" },
-                    [`&.Mui-focused, :not(.${inputBaseClasses.disabled}):hover`]:
-                      {
-                        fieldset: {
-                          border: "none",
-                          boxShadow: `0px 0px 0px 4px ${alpha(
-                            theme.palette.primary.main,
-                            0.2,
-                          )}, 0px 0px 0px 1px ${theme.palette.primary.main}`,
-                        },
+                    [`&.Mui-focused, :not(.${inputBaseClasses.disabled}):hover`]: {
+                      fieldset: {
+                        border: "none",
+                        boxShadow: `0px 0px 0px 4px ${alpha(
+                          theme.palette.primary.main,
+                          0.2,
+                        )}, 0px 0px 0px 1px ${theme.palette.primary.main}`,
                       },
+                    },
                   },
                   ".MuiInputLabel-root": {
                     [`&.Mui-focused, :not(.${inputBaseClasses.disabled}):hover, &.MuiFormLabel-filled`]:

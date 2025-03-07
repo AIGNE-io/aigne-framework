@@ -6,10 +6,7 @@ import DOMPurify from "isomorphic-dompurify";
 import { type ComponentType, useMemo } from "react";
 import { getQuery, joinURL, withQuery } from "ufo";
 
-import type {
-  RuntimeOutputShare,
-  RuntimeOutputVariablesSchema,
-} from "@aigne/agent-v1";
+import type { RuntimeOutputShare, RuntimeOutputVariablesSchema } from "@aigne/agent-v1";
 import { RuntimeOutputVariable } from "@aigne/agent-v1/types";
 import { AI_RUNTIME_DID } from "../../constants";
 import { useAgent } from "../../contexts/Agent";
@@ -28,8 +25,9 @@ export default function ShareActions({ ...props }: StackProps) {
 
   const sharing = useMemo(
     () =>
-      agent.outputVariables?.find((i) => i.name === RuntimeOutputVariable.share)
-        ?.initialValue as RuntimeOutputShare | undefined,
+      agent.outputVariables?.find((i) => i.name === RuntimeOutputVariable.share)?.initialValue as
+        | RuntimeOutputShare
+        | undefined,
     [agent],
   );
 
@@ -37,9 +35,7 @@ export default function ShareActions({ ...props }: StackProps) {
     () =>
       agent.parameters
         ?.filter(isValidInput)
-        .map(
-          (i) => [i.label?.trim() || i.key, message.inputs?.[i.key]] as const,
-        )
+        .map((i) => [i.label?.trim() || i.key, message.inputs?.[i.key]] as const)
         .filter((i) => i[1])
         .map(([k, v]) => `${k}: ${v}`)
         .join("\n") || "",
@@ -169,9 +165,9 @@ function ShareCopy({
   const { message } = useCurrentMessage();
   const { link } = useCurrentLink();
 
-  const content = message.outputs?.objects?.find(
-    (i) => i?.[RuntimeOutputVariable.text],
-  )?.[RuntimeOutputVariable.text];
+  const content = message.outputs?.objects?.find((i) => i?.[RuntimeOutputVariable.text])?.[
+    RuntimeOutputVariable.text
+  ];
 
   const image = message.outputs?.objects
     ?.find((i) => i?.[RuntimeOutputVariable.images]?.length)
@@ -199,16 +195,10 @@ function ShareCopy({
           }
 
           texts.push(content);
-          window.navigator.clipboard.writeText(
-            texts.filter(Boolean).join("\n\n"),
-          );
+          window.navigator.clipboard.writeText(texts.filter(Boolean).join("\n\n"));
         } else if (image) {
-          const imageBlob = await convertImageToBlob(
-            await downloadImage({ url: image }),
-          );
-          window.navigator.clipboard.write([
-            new ClipboardItem({ "image/png": imageBlob }),
-          ]);
+          const imageBlob = await convertImageToBlob(await downloadImage({ url: image }));
+          window.navigator.clipboard.write([new ClipboardItem({ "image/png": imageBlob })]);
         }
       }}
     />
@@ -227,9 +217,9 @@ function ShareSave({
   const filename = message.inputs?.question || message.id;
   const { link } = useCurrentLink();
 
-  const content = message.outputs?.objects?.find(
-    (i) => i?.[RuntimeOutputVariable.text],
-  )?.[RuntimeOutputVariable.text];
+  const content = message.outputs?.objects?.find((i) => i?.[RuntimeOutputVariable.text])?.[
+    RuntimeOutputVariable.text
+  ];
 
   const image = message.outputs?.objects
     ?.find((i) => i?.[RuntimeOutputVariable.images]?.length)
@@ -295,9 +285,7 @@ function ShareCommunity({
       ] ?? "";
 
     const images = (
-      message.outputs?.objects?.find?.(
-        (i) => i?.[RuntimeOutputVariable.images]?.length,
-      )?.[
+      message.outputs?.objects?.find?.((i) => i?.[RuntimeOutputVariable.images]?.length)?.[
         RuntimeOutputVariable.images
       ] as RuntimeOutputVariablesSchema[RuntimeOutputVariable.images]
     )?.map((i: { url: string }) => i.url);
@@ -355,18 +343,14 @@ const useCurrentLink = () => {
   if (!prefix) {
     return { link: null };
   }
-  const link = withQuery(
-    joinURL(window.origin, prefix, "/messages", message.id),
-    {
-      agentUrl: withQuery(
-        (getQuery(window.location.href).agentUrl as string) ||
-          window.location.href,
-        {
-          inviter: session.user?.did,
-        },
-      ),
-    },
-  );
+  const link = withQuery(joinURL(window.origin, prefix, "/messages", message.id), {
+    agentUrl: withQuery(
+      (getQuery(window.location.href).agentUrl as string) || window.location.href,
+      {
+        inviter: session.user?.did,
+      },
+    ),
+  });
 
   return { link };
 };

@@ -1,9 +1,6 @@
 import OutputFieldContainer from "../../components/OutputFieldContainer";
 import ShareActions from "../../components/ShareActions";
-import {
-  useCurrentMessage,
-  useCurrentMessageOutput,
-} from "../../contexts/CurrentMessage";
+import { useCurrentMessage, useCurrentMessageOutput } from "../../contexts/CurrentMessage";
 
 export default function ShareView() {
   const { output } = useCurrentMessageOutput();

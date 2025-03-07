@@ -1,15 +1,6 @@
-import {
-  LocaleProvider,
-  useLocaleContext,
-} from "@arcblock/ux/lib/Locale/context";
+import { LocaleProvider, useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { Icon } from "@iconify/react";
-import {
-  Box,
-  type BoxProps,
-  type IconButtonProps,
-  MenuItem,
-  useTheme,
-} from "@mui/material";
+import { Box, type BoxProps, type IconButtonProps, MenuItem, useTheme } from "@mui/material";
 import { useCallback } from "react";
 import {
   FacebookIcon,
@@ -73,11 +64,7 @@ export default function SocialShare(
 
   return (
     // @ts-ignore
-    <LocaleProvider
-      translations={translations}
-      locale={locale}
-      fallbackLocale="en"
-    >
+    <LocaleProvider translations={translations} locale={locale} fallbackLocale="en">
       {renderContent()}
     </LocaleProvider>
   );
@@ -140,67 +127,32 @@ export function SocialShareMenu({
           </Box>
         </MenuItem>,
         <MenuItem key="shareOnTelegram">
-          <Box
-            component={TelegramShareButton}
-            url={url}
-            title={content}
-            sx={buttonSx}
-          >
-            <Box
-              component={TelegramIcon}
-              sx={itemIconSx}
-              round
-              {...iconProps}
-            />
+          <Box component={TelegramShareButton} url={url} title={content} sx={buttonSx}>
+            <Box component={TelegramIcon} sx={itemIconSx} round {...iconProps} />
             <span>{t("socialShare.shareToTelegram")}</span>
           </Box>
         </MenuItem>,
         <MenuItem key="shareOnReddit">
-          <Box
-            component={RedditShareButton}
-            url={url}
-            title={content}
-            sx={buttonSx}
-          >
+          <Box component={RedditShareButton} url={url} title={content} sx={buttonSx}>
             <Box component={RedditIcon} sx={itemIconSx} round {...iconProps} />
             <span>{t("socialShare.shareToReddit")}</span>
           </Box>
         </MenuItem>,
         <MenuItem key="shareOnWeibo">
-          <Box
-            component={WeiboShareButton}
-            url={url}
-            title={content}
-            sx={buttonSx}
-          >
+          <Box component={WeiboShareButton} url={url} title={content} sx={buttonSx}>
             <Box component={WeiboIcon} sx={itemIconSx} round {...iconProps} />
             <span>{t("socialShare.shareToWeibo")}</span>
           </Box>
         </MenuItem>,
         <MenuItem key="shareOnFacebook">
           <Box component={FacebookShareButton} url={url} sx={buttonSx}>
-            <Box
-              component={FacebookIcon}
-              sx={itemIconSx}
-              round
-              {...iconProps}
-            />
+            <Box component={FacebookIcon} sx={itemIconSx} round {...iconProps} />
             <span>{t("socialShare.shareToFacebook")}</span>
           </Box>
         </MenuItem>,
         <MenuItem key="shareOnLinkedin">
-          <Box
-            component={LinkedinShareButton}
-            url={url}
-            summary={content}
-            sx={buttonSx}
-          >
-            <Box
-              component={LinkedinIcon}
-              sx={itemIconSx}
-              round
-              {...iconProps}
-            />
+          <Box component={LinkedinShareButton} url={url} summary={content} sx={buttonSx}>
+            <Box component={LinkedinIcon} sx={itemIconSx} round {...iconProps} />
             <span>{t("socialShare.shareToLinkedin")}</span>
           </Box>
         </MenuItem>,

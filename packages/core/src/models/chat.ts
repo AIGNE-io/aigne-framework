@@ -69,9 +69,7 @@ export type Role = "system" | "user" | "agent" | "tool";
 export interface ChatModelInputMessage {
   role: Role;
 
-  content?:
-    | string
-    | ({ type: "text"; text: string } | { type: "image_url"; url: string })[];
+  content?: string | ({ type: "text"; text: string } | { type: "image_url"; url: string })[];
 
   toolCalls?: {
     id: string;

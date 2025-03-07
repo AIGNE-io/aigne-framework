@@ -1,18 +1,11 @@
-import {
-  type DataType,
-  OrderedRecord,
-  type RunnableDefinition,
-  isNonNullable,
-} from "@aigne/core";
+import { type DataType, OrderedRecord, type RunnableDefinition, isNonNullable } from "@aigne/core";
 
 import type { ProjectDefinition } from "../../runtime/runtime";
 import { formatCode } from "../../utils/prettier";
 
 export async function generateWrapperCode(project: ProjectDefinition) {
   // TODO: 考虑中文和其他语言情况
-  const projectName = (project.name || project.id)
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]/g, "_");
+  const projectName = (project.name || project.id).toLowerCase().replaceAll(/[^a-z0-9]/g, "_");
 
   const packageName = `@aigne-project/${projectName}`;
 
@@ -131,9 +124,7 @@ export default ${projectName}
   return [...result, { fileName: "package.json", content: packageJson }];
 }
 
-function sanitizeProjectDefinition(
-  project: ProjectDefinition,
-): ProjectDefinition {
+function sanitizeProjectDefinition(project: ProjectDefinition): ProjectDefinition {
   return {
     blockletDid: project.blockletDid,
     id: project.id,

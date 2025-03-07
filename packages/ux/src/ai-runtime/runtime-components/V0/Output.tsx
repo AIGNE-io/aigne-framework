@@ -2,15 +2,7 @@ import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import Toast from "@arcblock/ux/lib/Toast";
 import { transpileAndLoadScript } from "@blocklet/pages-kit/components";
 import { Icon } from "@iconify/react";
-import {
-  Alert,
-  Box,
-  Button,
-  ButtonGroup,
-  Drawer,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, ButtonGroup, Drawer, Stack, Typography } from "@mui/material";
 import groupBy from "lodash/groupBy";
 import { Suspense, useRef, useState } from "react";
 
@@ -35,8 +27,7 @@ const DEFAULT_DESKTOP_SX = {
 export default function V0Output() {
   const { message } = useCurrentMessage();
   const propertiesSettingRef = useRef(null);
-  const { propertiesValueMap, setPropertiesValueMap, isMobile } =
-    useV0RuntimeContext();
+  const { propertiesValueMap, setPropertiesValueMap, isMobile } = useV0RuntimeContext();
 
   const [code, setCode] = useState("");
   const { t, locale } = useLocaleContext();
@@ -49,8 +40,7 @@ export default function V0Output() {
   const objects = message.outputs?.objects;
   const { id: taskId, inputs } = message;
 
-  const isMessageLoading =
-    (message.loading || !message.outputs) && !message.error;
+  const isMessageLoading = (message.loading || !message.outputs) && !message.error;
 
   const disabled = isMessageLoading || !objects?.length || message.error;
 
@@ -137,10 +127,7 @@ export default function V0Output() {
 
           try {
             await transpileAndLoadScript(currentCode).then((m) => {
-              if (
-                typeof m?.PROPERTIES_SCHEMA === "object" &&
-                m?.PROPERTIES_SCHEMA.length
-              ) {
+              if (typeof m?.PROPERTIES_SCHEMA === "object" && m?.PROPERTIES_SCHEMA.length) {
                 const schemaDefaultValues = Object.fromEntries(
                   m.PROPERTIES_SCHEMA.map((item: any) => {
                     const { key, locales } = item;
@@ -151,24 +138,15 @@ export default function V0Output() {
 
                 const defaultValues = {
                   ...schemaDefaultValues,
-                  ...(propertiesValueMap[taskId]?.[locale] ||
-                    propertiesValueMap[taskId]?.en ||
-                    {}),
+                  ...(propertiesValueMap[taskId]?.[locale] || propertiesValueMap[taskId]?.en || {}),
                 };
 
                 // format default values
                 m.PROPERTIES_SCHEMA.forEach((item: any) => {
                   const { key, type } = item;
-                  if (
-                    type === "json" &&
-                    typeof defaultValues[key] === "object"
-                  ) {
+                  if (type === "json" && typeof defaultValues[key] === "object") {
                     try {
-                      defaultValues[key] = JSON.stringify(
-                        defaultValues[key],
-                        null,
-                        2,
-                      );
+                      defaultValues[key] = JSON.stringify(defaultValues[key], null, 2);
                     } catch (error) {
                       // ignore error
                     }
@@ -273,39 +251,37 @@ export default function V0Output() {
           }}
         >
           {/* render tooltip by group */}
-          {Object.entries(groupBy(tooltipOptions, "group")).map(
-            ([group, options]) => {
-              return (
-                <ButtonGroup
-                  variant="text"
-                  key={group}
-                  color="inherit"
-                  size="small"
-                  sx={{
-                    borderColor: "rgba(0, 0, 0, 0.1) !important",
-                    border: 1,
-                  }}
-                >
-                  {options.map(
-                    (option: {
-                      icon: string;
-                      key: string;
-                      props?: any;
-                      buttonText?: string;
-                    }) => {
-                      const { icon, key, props, buttonText } = option;
-                      return (
-                        <Button key={key} data-taskid={taskId} {...props}>
-                          <Icon icon={icon} fontSize={22} />
-                          {buttonText && <Box sx={{ ml: 1 }}>{buttonText}</Box>}
-                        </Button>
-                      );
-                    },
-                  )}
-                </ButtonGroup>
-              );
-            },
-          )}
+          {Object.entries(groupBy(tooltipOptions, "group")).map(([group, options]) => {
+            return (
+              <ButtonGroup
+                variant="text"
+                key={group}
+                color="inherit"
+                size="small"
+                sx={{
+                  borderColor: "rgba(0, 0, 0, 0.1) !important",
+                  border: 1,
+                }}
+              >
+                {options.map(
+                  (option: {
+                    icon: string;
+                    key: string;
+                    props?: any;
+                    buttonText?: string;
+                  }) => {
+                    const { icon, key, props, buttonText } = option;
+                    return (
+                      <Button key={key} data-taskid={taskId} {...props}>
+                        <Icon icon={icon} fontSize={22} />
+                        {buttonText && <Box sx={{ ml: 1 }}>{buttonText}</Box>}
+                      </Button>
+                    );
+                  },
+                )}
+              </ButtonGroup>
+            );
+          })}
         </Box>
       </Stack>
 
@@ -337,19 +313,11 @@ export default function V0Output() {
       ))}
 
       {!isMessageLoading && message.outputs?.content && (
-        <ShareActions
-          direction="row"
-          justifyContent="flex-end"
-          sx={{ mt: 2 }}
-        />
+        <ShareActions direction="row" justifyContent="flex-end" sx={{ mt: 2 }} />
       )}
 
       <Suspense fallback={<Loading />}>
-        <Drawer
-          anchor={isMobile ? "bottom" : "right"}
-          open={!!code}
-          onClose={onCloseCode}
-        >
+        <Drawer anchor={isMobile ? "bottom" : "right"} open={!!code} onClose={onCloseCode}>
           <Box
             sx={{
               p: 2,

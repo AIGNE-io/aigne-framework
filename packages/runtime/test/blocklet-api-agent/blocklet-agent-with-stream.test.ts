@@ -32,9 +32,7 @@ test("BlockletAPIAgent.run with get method with streaming response", async () =>
     apiId,
   });
 
-  spyOn(agent, "fetch").mockImplementation((request) =>
-    Promise.resolve(request),
-  );
+  spyOn(agent, "fetch").mockImplementation((request) => Promise.resolve(request));
 
   const result = await agent.run(
     {

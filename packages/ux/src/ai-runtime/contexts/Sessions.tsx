@@ -19,16 +19,11 @@ export interface SessionsContextValue {
   setCurrentSessionId: (sessionId?: string) => void;
 }
 
-const sessionsContext = createContext<UseBoundStore<
-  StoreApi<SessionsContextValue>
-> | null>(null);
+const sessionsContext = createContext<UseBoundStore<StoreApi<SessionsContextValue>> | null>(null);
 
 const LOADING_TASKS: { [id: string]: Promise<void> } = {};
 
-export function SessionsProvider({
-  aid,
-  children,
-}: { aid: string; children?: ReactNode }) {
+export function SessionsProvider({ aid, children }: { aid: string; children?: ReactNode }) {
   const { getSessions, createSession, deleteSession } = useAIGNEApi();
 
   const state = useMemo(
@@ -50,8 +45,7 @@ export function SessionsProvider({
 
                   if (options?.autoSetCurrentSessionId) {
                     // Set current session id to the last session id if it's not set
-                    if (!state.currentSessionId)
-                      state.currentSessionId = sessions.at(0)?.id;
+                    if (!state.currentSessionId) state.currentSessionId = sessions.at(0)?.id;
                   }
                 });
               } catch (error) {
@@ -102,22 +96,14 @@ export function SessionsProvider({
     if (error) throw error;
 
     const key = `sessions-loading-${aid}`;
-    LOADING_TASKS[key] ??= state
-      .getState()
-      .reload({ autoSetCurrentSessionId: true });
+    LOADING_TASKS[key] ??= state.getState().reload({ autoSetCurrentSessionId: true });
     throw LOADING_TASKS[key]!;
   }
 
-  return (
-    <sessionsContext.Provider value={state}>
-      {children}
-    </sessionsContext.Provider>
-  );
+  return <sessionsContext.Provider value={state}>{children}</sessionsContext.Provider>;
 }
 
-export function useSessions<U>(
-  selector: (state: SessionsContextValue) => U,
-): U {
+export function useSessions<U>(selector: (state: SessionsContextValue) => U): U {
   const state = useContext(sessionsContext);
 
   if (!state)

@@ -1,7 +1,4 @@
-import {
-  LocaleProvider,
-  useLocaleContext,
-} from "@arcblock/ux/lib/Locale/context";
+import { LocaleProvider, useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import Result from "@arcblock/ux/lib/Result";
 import { Box } from "@mui/material";
 import React, { type ReactNode } from "react";
@@ -9,9 +6,7 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { translations } from "../locales";
 
-export default function RuntimeCommonProvider({
-  children,
-}: { children?: ReactNode }) {
+export default function RuntimeCommonProvider({ children }: { children?: ReactNode }) {
   return (
     <RuntimeLocaleProvider>
       <ErrorBoundary FallbackComponent={ErrorRender}>
@@ -36,11 +31,7 @@ export function RuntimeLocaleProvider({ children }: { children?: ReactNode }) {
   const { locale } = useLocaleContext();
 
   return (
-    <LocaleProvider
-      translations={translations}
-      locale={locale}
-      fallbackLocale="en"
-    >
+    <LocaleProvider translations={translations} locale={locale} fallbackLocale="en">
       {children}
     </LocaleProvider>
   );

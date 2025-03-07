@@ -3,10 +3,7 @@ import type { InferAttributes, WhereOptions } from "sequelize";
 import type { VectorStoreDocument } from "../../core/type";
 import { initSequelize } from "../../lib/sequelize";
 import { migrate } from "./migrate";
-import {
-  type VectorHistory,
-  initVectorHistoryModel,
-} from "./models/vector-history";
+import { type VectorHistory, initVectorHistoryModel } from "./models/vector-history";
 
 export class DefaultVectorHistoryStore {
   constructor(public path: string) {}

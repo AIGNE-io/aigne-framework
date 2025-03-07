@@ -6,22 +6,11 @@ import type {
   RunnableResponseChunk,
   RunnableResponseProgress,
 } from "@aigne/core";
-import {
-  Agent,
-  type LLMModel,
-  TYPES,
-  isRunnableResponseDelta,
-} from "@aigne/core";
+import { Agent, type LLMModel, TYPES, isRunnableResponseDelta } from "@aigne/core";
 import { Memory } from "@aigne/memory";
 import type { ChatCompletionResponse } from "@blocklet/ai-kit/api/types/index";
-import {
-  defaultImageModel,
-  getSupportedImagesModels,
-} from "@blocklet/ai-runtime/common";
-import {
-  parseIdentity,
-  stringifyIdentity,
-} from "@blocklet/ai-runtime/common/aid";
+import { defaultImageModel, getSupportedImagesModels } from "@blocklet/ai-runtime/common";
+import { parseIdentity, stringifyIdentity } from "@blocklet/ai-runtime/common/aid";
 import { getMcpResources } from "@blocklet/ai-runtime/common/mcp";
 import {
   type CallAI,
@@ -120,18 +109,12 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
     };
 
     const callAIImage: CallAIImage = async ({ input }) => {
-      const adapter = await getAdapter(
-        "image-generation",
-        input.model || defaultImageModel,
-      );
+      const adapter = await getAdapter("image-generation", input.model || defaultImageModel);
       if (adapter) {
         if (adapter) {
           if (!this.context) throw new Error("No context");
           const runnable = await this.context.resolve<
-            Runnable<
-              Record<string, any>,
-              { [RuntimeOutputVariable.images]: { url: string }[] }
-            >
+            Runnable<Record<string, any>, { [RuntimeOutputVariable.images]: { url: string }[] }>
           >({
             ...agentV1ToRunnableDefinition(adapter.agent),
             // @ts-ignore
@@ -143,17 +126,15 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
           });
 
           const uploadImages = await Promise.all(
-            result[RuntimeOutputVariable.images].map(
-              async (data: { url: string }) => ({
-                url: (
-                  await uploadImageToImageBin({
-                    filename: `AI Generate ${Date.now()}.png`,
-                    data,
-                    userId: this.context?.state.userId,
-                  })
-                ).url,
-              }),
-            ),
+            result[RuntimeOutputVariable.images].map(async (data: { url: string }) => ({
+              url: (
+                await uploadImageToImageBin({
+                  filename: `AI Generate ${Date.now()}.png`,
+                  data,
+                  userId: this.context?.state.userId,
+                })
+              ).url,
+            })),
           );
 
           return { data: uploadImages };
@@ -162,8 +143,7 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
 
       const supportImages = await getSupportedImagesModels();
       const imageModel = supportImages.find(
-        (i) =>
-          i.model === ((agent as ImageAssistant)?.model || defaultImageModel),
+        (i) => i.model === ((agent as ImageAssistant)?.model || defaultImageModel),
       );
 
       const model = {
@@ -210,9 +190,7 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
         const { blockletDid, projectId, agentId } = identity;
 
         if (projectId.startsWith("mcp_")) {
-          const a = (await getMcpResources({ blockletDid })).find(
-            (i) => i.id === agentId,
-          );
+          const a = (await getMcpResources({ blockletDid })).find((i) => i.id === agentId);
 
           if (a) {
             agent = {
@@ -295,9 +273,7 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
             }
 
             if (options.projectId === project.id) return project.memories ?? [];
-            logger.warn(
-              "Unsupported to get memory variables from other projects",
-            );
+            logger.warn("Unsupported to get memory variables from other projects");
             return [];
           },
           getAgent,
@@ -316,10 +292,7 @@ export class AgentV1<I extends {} = {}, O extends {} = {}> extends Agent<I, O> {
           },
           setCache: async ({ aid, cacheKey, inputs, outputs }) => {
             const { agentId } = parseIdentity(aid, { rejectWhenError: true });
-            await cacheMemory.create(
-              { inputs, outputs },
-              { metadata: { key: cacheKey }, agentId },
-            );
+            await cacheMemory.create({ inputs, outputs }, { metadata: { key: cacheKey }, agentId });
           },
           getSecret(args) {
             throw new Error("Not implemented");

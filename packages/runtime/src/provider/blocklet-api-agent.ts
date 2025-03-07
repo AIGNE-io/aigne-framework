@@ -26,10 +26,7 @@ import { nanoid } from "nanoid";
 import { inject, injectable } from "tsyringe";
 import { joinURL } from "ufo";
 
-import {
-  type BlockletOpenAPI,
-  getBlockletOpenAPIs,
-} from "../utils/blocklet-openapi";
+import { type BlockletOpenAPI, getBlockletOpenAPIs } from "../utils/blocklet-openapi";
 
 let blockletAPIs: Promise<{ [id: string]: BlockletOpenAPI }> | undefined;
 
@@ -148,9 +145,7 @@ function create<
   );
 }
 
-async function getBlockletOpenAPI(
-  id: string,
-): Promise<BlockletOpenAPI | undefined> {
+async function getBlockletOpenAPI(id: string): Promise<BlockletOpenAPI | undefined> {
   blockletAPIs ??= getBlockletOpenAPIs().then((apis) =>
     Object.fromEntries(apis.map((i) => [i.id, i])),
   );

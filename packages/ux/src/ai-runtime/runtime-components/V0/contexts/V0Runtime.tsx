@@ -1,11 +1,5 @@
 import { useMediaQuery } from "@mui/material";
-import {
-  type ReactNode,
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { type ReactNode, createContext, useContext, useMemo, useState } from "react";
 
 interface V0RuntimeContext {
   setCurrentMessageTaskId: (messageId: string | undefined) => void;
@@ -20,9 +14,7 @@ const context = createContext<V0RuntimeContext | undefined>(undefined);
 let cancelAutoScrollTimer: any;
 
 export function V0RuntimeProvider({ children }: { children?: ReactNode }) {
-  const [currentMessageTaskId, setCurrentMessageTaskId] = useState<
-    string | undefined
-  >();
+  const [currentMessageTaskId, setCurrentMessageTaskId] = useState<string | undefined>();
   const [propertiesValueMap, setPropertiesValueMap] = useState(
     {} as {
       [taskId: string]: any;
@@ -47,8 +39,7 @@ export function V0RuntimeProvider({ children }: { children?: ReactNode }) {
                 // is first time to scroll
                 if (!currentMessageTaskId) {
                   const observer = new MutationObserver(() => {
-                    if (cancelAutoScrollTimer)
-                      clearTimeout(cancelAutoScrollTimer);
+                    if (cancelAutoScrollTimer) clearTimeout(cancelAutoScrollTimer);
                     el?.scrollIntoView({ behavior: "smooth" });
 
                     cancelAutoScrollTimer = setTimeout(() => {

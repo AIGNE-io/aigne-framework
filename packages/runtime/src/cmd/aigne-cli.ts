@@ -12,10 +12,7 @@ program
   .addCommand(
     new Command("gen-code")
       .requiredOption("-p, --project <string>", "path to AIGNE project")
-      .option(
-        "--resource-blocklet-did <string>",
-        "resource blocklet DID of the project",
-      )
+      .option("--resource-blocklet-did <string>", "resource blocklet DID of the project")
       .action(async ({ project, resourceBlockletDid }) => {
         if (typeof project !== "string" || !existsSync(project)) {
           throw new Error(`Invalid project path: ${project}`);

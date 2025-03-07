@@ -3,22 +3,15 @@ import { Skeleton } from "@mui/material";
 import { useMemo } from "react";
 
 import OutputFieldContainer from "../../components/OutputFieldContainer";
-import {
-  useCurrentMessage,
-  useCurrentMessageOutput,
-} from "../../contexts/CurrentMessage";
+import { useCurrentMessage, useCurrentMessageOutput } from "../../contexts/CurrentMessage";
 
 export type ImagesViewPropValue = Array<{ url: string }>;
 
 export default function ImagesView() {
   const { message } = useCurrentMessage({ optional: true }) ?? {};
-  const { outputValue, output } =
-    useCurrentMessageOutput<ImagesViewPropValue>();
+  const { outputValue, output } = useCurrentMessageOutput<ImagesViewPropValue>();
 
-  const images = useMemo(
-    () => outputValue.map((i) => ({ src: i.url })),
-    [outputValue],
-  );
+  const images = useMemo(() => outputValue.map((i) => ({ src: i.url })), [outputValue]);
 
   if (!images.length && !message?.loading) return null;
 

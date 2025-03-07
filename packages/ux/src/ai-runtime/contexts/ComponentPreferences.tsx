@@ -1,11 +1,5 @@
 import omitBy from "lodash/omitBy";
-import {
-  type ComponentType,
-  type ReactNode,
-  createContext,
-  useContext,
-  useMemo,
-} from "react";
+import { type ComponentType, type ReactNode, createContext, useContext, useMemo } from "react";
 
 export interface ComponentPreferencesBase {
   hideInputFields?: string[];
@@ -16,9 +10,10 @@ export interface ComponentPreferencesBase {
 
 const componentPreferencesContext = createContext<any>(undefined);
 
-export function ComponentPreferencesProvider<
-  T extends ComponentPreferencesBase,
->({ children, ...preferences }: { children?: ReactNode } & T) {
+export function ComponentPreferencesProvider<T extends ComponentPreferencesBase>({
+  children,
+  ...preferences
+}: { children?: ReactNode } & T) {
   const inherited = useComponentPreferences();
 
   const value = useMemo(
@@ -37,7 +32,5 @@ export function ComponentPreferencesProvider<
 }
 
 export function useComponentPreferences<T>() {
-  return useContext(componentPreferencesContext) as
-    | (T & ComponentPreferencesBase)
-    | undefined;
+  return useContext(componentPreferencesContext) as (T & ComponentPreferencesBase) | undefined;
 }

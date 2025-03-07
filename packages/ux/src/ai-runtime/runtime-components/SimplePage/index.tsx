@@ -11,10 +11,7 @@ import {
   type ComponentPreferencesBase,
   ComponentPreferencesProvider,
 } from "../../contexts/ComponentPreferences";
-import {
-  CurrentAgentProvider,
-  useCurrentAgent,
-} from "../../contexts/CurrentAgent";
+import { CurrentAgentProvider, useCurrentAgent } from "../../contexts/CurrentAgent";
 import { CurrentMessageProvider } from "../../contexts/CurrentMessage";
 import { type MessageItem, useSession } from "../../contexts/Session";
 import { useAppearances, useProfile } from "../../hooks/use-appearances";
@@ -61,9 +58,7 @@ function HeaderView(props: StackProps) {
       <CustomComponentRenderer
         aid={aid}
         output={profile.outputSettings}
-        componentId={
-          profile.appearance.componentId || DEFAULT_HEADER_COMPONENT_ID
-        }
+        componentId={profile.appearance.componentId || DEFAULT_HEADER_COMPONENT_ID}
         properties={profile.appearance.componentProperties}
         props={profile.appearance.componentProps}
       />
@@ -71,10 +66,7 @@ function HeaderView(props: StackProps) {
   );
 }
 
-function OutputView({
-  resultTitle,
-  ...props
-}: { resultTitle?: string } & StackProps) {
+function OutputView({ resultTitle, ...props }: { resultTitle?: string } & StackProps) {
   const error = useSession((s) => s.error);
   const lastMessage = useSession((s) => s.messages?.at(0));
 

@@ -39,9 +39,7 @@ export default function PhotoGalleryItem() {
 
   const objects = message.outputs?.objects ?? [];
 
-  const images = objects.flatMap(
-    (i) => i?.[RuntimeOutputVariable.images] ?? [],
-  );
+  const images = objects.flatMap((i) => i?.[RuntimeOutputVariable.images] ?? []);
   if (!images.length && message.error) throw new Error(message.error.message);
 
   return images.map(({ url }, index) => (
@@ -85,8 +83,7 @@ export default function PhotoGalleryItem() {
           fontWeight: 500,
           fontSize: 13,
           color: "white",
-          background:
-            "linear-gradient(to bottom, rgba(2, 7, 19, 0) 0%, rgba(2, 7, 19, 0.8) 100%)",
+          background: "linear-gradient(to bottom, rgba(2, 7, 19, 0) 0%, rgba(2, 7, 19, 0.8) 100%)",
           opacity: 0,
           transition: "opacity 0.3s",
         }}
@@ -183,10 +180,7 @@ function PromptDialog({ url, ...props }: { url: string } & DialogProps) {
           justifyContent: "space-between",
         }}
       >
-        <Typography
-          component="h5"
-          sx={{ fontSize: 24, fontWeight: 700, color: "primary.main" }}
-        >
+        <Typography component="h5" sx={{ fontSize: 24, fontWeight: 700, color: "primary.main" }}>
           {t("photoWall.dialog.title")}
         </Typography>
 
@@ -283,11 +277,7 @@ function PromptDialog({ url, ...props }: { url: string } & DialogProps) {
               />
             </Box>
 
-            <ShareActions
-              direction="row"
-              justifyContent="flex-end"
-              sx={{ mt: 2 }}
-            />
+            <ShareActions direction="row" justifyContent="flex-end" sx={{ mt: 2 }} />
           </Stack>
         </Stack>
       </DialogContent>

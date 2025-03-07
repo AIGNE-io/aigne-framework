@@ -1,9 +1,4 @@
-import {
-  Tooltip,
-  type TooltipProps,
-  styled,
-  tooltipClasses,
-} from "@mui/material";
+import { Tooltip, type TooltipProps, styled, tooltipClasses } from "@mui/material";
 
 const TransparentTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />

@@ -20,11 +20,7 @@ const RadioField = forwardRef<
   } & Omit<RadioGroupProps, "onChange">
 >(({ readOnly, parameter, onChange, ...props }, ref) => {
   if (parameter?.multiple) {
-    const value = Array.isArray(props.value)
-      ? props.value
-      : props.value
-        ? [props.value]
-        : [];
+    const value = Array.isArray(props.value) ? props.value : props.value ? [props.value] : [];
 
     return (
       <FormGroup sx={{ display: "flex", flexDirection: "row" }}>
@@ -52,9 +48,7 @@ const RadioField = forwardRef<
                 px: 2.5,
                 border: 2,
                 borderColor: (theme) =>
-                  checked
-                    ? theme.palette.primary.main
-                    : alpha(theme.palette.primary.main, 0.3),
+                  checked ? theme.palette.primary.main : alpha(theme.palette.primary.main, 0.3),
                 borderRadius: 8,
                 ".MuiCheckbox-root": {
                   // hidden radio button
@@ -71,12 +65,7 @@ const RadioField = forwardRef<
   const value = Array.isArray(props.value) ? props.value[0] : props.value;
 
   return (
-    <RadioGroup
-      ref={ref}
-      row
-      onChange={(e) => onChange(e.target.value)}
-      {...props}
-    >
+    <RadioGroup ref={ref} row onChange={(e) => onChange(e.target.value)} {...props}>
       {parameter?.options?.map((option) => {
         const val = option.value || option.label;
         const checked = val === value;
@@ -98,9 +87,7 @@ const RadioField = forwardRef<
               px: 2.5,
               border: 2,
               borderColor: (theme) =>
-                checked
-                  ? theme.palette.primary.main
-                  : alpha(theme.palette.primary.main, 0.3),
+                checked ? theme.palette.primary.main : alpha(theme.palette.primary.main, 0.3),
               borderRadius: 8,
               ".MuiRadio-root": {
                 // hidden radio button

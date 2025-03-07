@@ -1,11 +1,5 @@
 import { Box, type BoxProps, Stack } from "@mui/material";
-import {
-  type ComponentProps,
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-} from "react";
+import { type ComponentProps, createContext, useContext, useEffect, useMemo } from "react";
 import * as scrollToBottom from "react-scroll-to-bottom";
 // @ts-ignore
 import useInternalContext from "react-scroll-to-bottom/lib/esm/hooks/internal/useInternalContext";
@@ -25,9 +19,7 @@ export default function ScrollView({
   ...props
 }: BoxProps & {
   scroll?: "window" | "element";
-  initialScrollBehavior?: ComponentProps<
-    typeof Composer
-  >["initialScrollBehavior"];
+  initialScrollBehavior?: ComponentProps<typeof Composer>["initialScrollBehavior"];
 }) {
   const ctx = useScrollViewContext();
 
@@ -43,11 +35,7 @@ export default function ScrollView({
   return (
     <scrollViewContext.Provider value>
       <Composer initialScrollBehavior={initialScrollBehavior}>
-        <ScrollViewWithinWindow
-          scroll={scroll}
-          component={component}
-          {...props}
-        >
+        <ScrollViewWithinWindow scroll={scroll} component={component} {...props}>
           {children}
         </ScrollViewWithinWindow>
       </Composer>

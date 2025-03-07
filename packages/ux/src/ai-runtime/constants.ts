@@ -66,8 +66,6 @@ export const DEFAULT_OUTPUT_COMPONENTS: {
   },
 };
 
-export function getDefaultOutputComponent(
-  output: Pick<OutputVariable, "name">,
-) {
+export function getDefaultOutputComponent(output: Pick<OutputVariable, "name">) {
   return DEFAULT_OUTPUT_COMPONENTS[output.name!];
 }

@@ -11,9 +11,7 @@ export interface ActiveAgentContext {
   setActiveAid: (aid: string) => void;
 }
 
-const activeAgentContext = createContext<ActiveAgentContext | undefined>(
-  undefined,
-);
+const activeAgentContext = createContext<ActiveAgentContext | undefined>(undefined);
 
 export function useActiveAgent() {
   const context = useContext(activeAgentContext);
@@ -32,8 +30,8 @@ export function ActiveAgentProvider({ children }: { children?: ReactNode }) {
 
   const childAid = useMemo(() => {
     const agentId =
-      getOutputVariableInitialValue(agent, RuntimeOutputVariable.children)
-        ?.agents?.[0]?.id ?? agent.id;
+      getOutputVariableInitialValue(agent, RuntimeOutputVariable.children)?.agents?.[0]?.id ??
+      agent.id;
     return stringifyIdentity({
       ...parseIdentity(entryAid, { rejectWhenError: true }),
       agentId,
@@ -41,14 +39,7 @@ export function ActiveAgentProvider({ children }: { children?: ReactNode }) {
   }, [entryAid, agent]);
 
   const [activeAid, setActiveAid] = useAutoUpdateState(childAid, [childAid]);
-  const context = useMemo(
-    () => ({ aid: activeAid, setActiveAid }),
-    [activeAid, setActiveAid],
-  );
+  const context = useMemo(() => ({ aid: activeAid, setActiveAid }), [activeAid, setActiveAid]);
 
-  return (
-    <activeAgentContext.Provider value={context}>
-      {children}
-    </activeAgentContext.Provider>
-  );
+  return <activeAgentContext.Provider value={context}>{children}</activeAgentContext.Provider>;
 }

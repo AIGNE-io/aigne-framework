@@ -16,15 +16,10 @@ export interface VectorStoreSearchOptions {
 export interface Retriever<T> {
   get(id: string): Promise<VectorStoreDocument<T> | null>;
   insert(document: VectorStoreDocument<T>): Promise<void>;
-  delete(
-    idOrFilter: string | string[] | Record<string, any>,
-  ): Promise<VectorStoreDocument<T>[]>;
+  delete(idOrFilter: string | string[] | Record<string, any>): Promise<VectorStoreDocument<T>[]>;
   reset(): Promise<void>;
   update(document: VectorStoreDocument<T>): Promise<void>;
-  list(
-    k: number,
-    options?: VectorStoreSearchOptions,
-  ): Promise<VectorStoreDocument<T>[]>;
+  list(k: number, options?: VectorStoreSearchOptions): Promise<VectorStoreDocument<T>[]>;
   search(
     query: string,
     k: number,
@@ -64,11 +59,7 @@ export interface HistoryStore<T> {
     ...histories: Omit<ActionHistory<T>, "createdAt" | "updatedAt">[]
   ): Promise<ActionHistory<T>[]>;
   getHistory(memoryId: string): Promise<ActionHistory<T>[]>;
-  addMessage(
-    history: Omit<MessageHistory, "createdAt" | "updatedAt">,
-  ): Promise<MessageHistory>;
-  getMessages(options: { filter: { [key: string]: any } }): Promise<
-    MessageHistory[]
-  >;
+  addMessage(history: Omit<MessageHistory, "createdAt" | "updatedAt">): Promise<MessageHistory>;
+  getMessages(options: { filter: { [key: string]: any } }): Promise<MessageHistory[]>;
   reset(): Promise<void>;
 }

@@ -75,29 +75,26 @@ export function createMiddleware(runtime: AIGNERuntime): Router {
     },
   );
 
-  router.get(
-    `/api/aigne/${runtime.id}/agents/:agentId/definition`,
-    async (req, res) => {
-      const { agentId } = req.params;
+  router.get(`/api/aigne/${runtime.id}/agents/:agentId/definition`, async (req, res) => {
+    const { agentId } = req.params;
 
-      try {
-        if (!agentId) throw new Error("agentId are required");
+    try {
+      if (!agentId) throw new Error("agentId are required");
 
-        const agent = await runtime
-          .copy({ state: { userId: req.user?.did, user: req.user } })
-          .resolve(agentId);
+      const agent = await runtime
+        .copy({ state: { userId: req.user?.did, user: req.user } })
+        .resolve(agentId);
 
-        res.json(agent.definition);
-      } catch (error) {
-        res.status(500).json({ error: { message: error.message } });
-        logger.error("AIGNE Middleware: get agent definition error", {
-          projectId: runtime.id,
-          agentId,
-          error,
-        });
-      }
-    },
-  );
+      res.json(agent.definition);
+    } catch (error) {
+      res.status(500).json({ error: { message: error.message } });
+      logger.error("AIGNE Middleware: get agent definition error", {
+        projectId: runtime.id,
+        agentId,
+        error,
+      });
+    }
+  });
 
   const getHistoryQuerySchema = Joi.object<{
     sessionId?: string;
@@ -127,11 +124,10 @@ export function createMiddleware(runtime: AIGNERuntime): Router {
         const userId = req.user?.did;
         if (!userId) throw new Error("Unauthorized");
 
-        const { sessionId, k, sort, filter } =
-          await getHistoryQuerySchema.validateAsync(
-            { ...req.query, sort: tryParse(req.query.sort) },
-            { stripUnknown: true },
-          );
+        const { sessionId, k, sort, filter } = await getHistoryQuerySchema.validateAsync(
+          { ...req.query, sort: tryParse(req.query.sort) },
+          { stripUnknown: true },
+        );
 
         const data = await runtime.historyManager?.filter({
           userId,

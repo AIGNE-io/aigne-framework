@@ -1,8 +1,4 @@
-import {
-  TextField,
-  type TextFieldProps,
-  inputBaseClasses,
-} from "@mui/material";
+import { TextField, type TextFieldProps, inputBaseClasses } from "@mui/material";
 import { type KeyboardEvent, forwardRef, useCallback } from "react";
 
 import type { StringParameter } from "@aigne/agent-v1";

@@ -31,10 +31,7 @@ export default function VerifyVC({
   const parameters = useMemo(
     () =>
       agent.parameters
-        ?.filter(
-          (i) =>
-            isValidInput(i) && !preferences?.hideInputFields?.includes(i.key),
-        )
+        ?.filter((i) => isValidInput(i) && !preferences?.hideInputFields?.includes(i.key))
         .map((i) => ({
           ...i,
           label: i.label?.trim() || undefined,
@@ -42,8 +39,7 @@ export default function VerifyVC({
     [agent.parameters],
   );
 
-  const isOnlyOneVCInput =
-    parameters?.length === 1 && parameters[0]?.type === "verify_vc";
+  const isOnlyOneVCInput = parameters?.length === 1 && parameters[0]?.type === "verify_vc";
 
   const working = useEntryAgent({ optional: true })?.working;
   const { locale } = useLocaleContext();
@@ -76,8 +72,7 @@ export default function VerifyVC({
               }
             },
             messages: {
-              title:
-                parameter.placeholder || parameter.helper || "Provide Your VC",
+              title: parameter.placeholder || parameter.helper || "Provide Your VC",
               scan: "Connect your DID Wallet to provide",
               confirm: "Confirm on your DID Wallet",
               success: "Ownership verified",
@@ -85,9 +80,7 @@ export default function VerifyVC({
           });
         }}
         endIcon={
-          verified ? (
-            <Box component={Icon} icon={VerifiedIcon} color="success.main" />
-          ) : undefined
+          verified ? <Box component={Icon} icon={VerifiedIcon} color="success.main" /> : undefined
         }
       >
         {verified
@@ -95,9 +88,7 @@ export default function VerifyVC({
           : parameter.buttonTitle || "Verify VC"}
       </Button>
 
-      {parameter.placeholder && (
-        <FormHelperText>{parameter.placeholder}</FormHelperText>
-      )}
+      {parameter.placeholder && <FormHelperText>{parameter.placeholder}</FormHelperText>}
     </>
   );
 }

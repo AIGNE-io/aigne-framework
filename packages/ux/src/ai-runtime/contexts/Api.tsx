@@ -1,11 +1,7 @@
 import { type ReactNode, createContext, useContext, useMemo } from "react";
 
 import { type Agent, getAgent } from "../api/agent";
-import {
-  type GetMessagesQuery,
-  type Message,
-  getMessages,
-} from "../api/message";
+import { type GetMessagesQuery, type Message, getMessages } from "../api/message";
 import {
   type Session,
   clearSession,
@@ -50,14 +46,11 @@ export const AIGNEApiProvider = ({
       getSessions: api.getSessions || getSessions,
       createSession:
         api.createSession ||
-        (({ aid, name }) =>
-          createSession({ aid, name }).then((res) => res.created)),
+        (({ aid, name }) => createSession({ aid, name }).then((res) => res.created)),
       deleteSession: api.deleteSession || deleteSession,
       clearSession: api.clearSession || clearSession,
       getSession:
-        api.getSession ||
-        (({ sessionId }) =>
-          getSession({ sessionId }).then((res) => res.session)),
+        api.getSession || (({ sessionId }) => getSession({ sessionId }).then((res) => res.session)),
       getMessages: api.getMessages || getMessages,
       getAgent:
         api.getAgent ||
@@ -78,11 +71,7 @@ export const AIGNEApiProvider = ({
     [],
   );
 
-  return (
-    <aigneApiContext.Provider value={value}>
-      {children}
-    </aigneApiContext.Provider>
-  );
+  return <aigneApiContext.Provider value={value}>{children}</aigneApiContext.Provider>;
 };
 
 export const useAIGNEApi = () => {

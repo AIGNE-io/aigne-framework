@@ -1,8 +1,6 @@
 import { DataTypes, type QueryInterface } from "sequelize";
 
-export const up = async ({
-  context: queryInterface,
-}: { context: QueryInterface }) => {
+export const up = async ({ context: queryInterface }: { context: QueryInterface }) => {
   await queryInterface.renameTable("VectorHistories", "VectorHistoryBack");
 
   await queryInterface.createTable("VectorHistories", {
@@ -42,9 +40,7 @@ export const up = async ({
   `);
 };
 
-export const down = async ({
-  context: queryInterface,
-}: { context: QueryInterface }) => {
+export const down = async ({ context: queryInterface }: { context: QueryInterface }) => {
   await queryInterface.dropTable("VectorHistories");
 
   await queryInterface.renameTable("VectorHistoryBack", "VectorHistories");

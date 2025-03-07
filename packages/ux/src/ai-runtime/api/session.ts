@@ -15,9 +15,7 @@ export interface Session {
   agentId: string;
 }
 
-export async function getSessions({
-  aid,
-}: { aid: string }): Promise<{ sessions: Session[] }> {
+export async function getSessions({ aid }: { aid: string }): Promise<{ sessions: Session[] }> {
   return request({
     blocklet: AI_RUNTIME_DID,
     url: "/api/sessions",
@@ -52,9 +50,7 @@ export async function createSession({
   });
 }
 
-export async function clearSession({
-  sessionId,
-}: { sessionId: string }): Promise<{}> {
+export async function clearSession({ sessionId }: { sessionId: string }): Promise<{}> {
   return request({
     blocklet: AI_RUNTIME_DID,
     method: "POST",

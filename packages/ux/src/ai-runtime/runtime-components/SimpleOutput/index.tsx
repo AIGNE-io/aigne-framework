@@ -1,10 +1,7 @@
 import { RuntimeOutputVariable } from "@aigne/agent-v1/types";
 import { Stack } from "@mui/material";
 import { Suspense, useMemo } from "react";
-import {
-  AgentErrorBoundary,
-  AgentErrorView,
-} from "../../components/AgentErrorBoundary";
+import { AgentErrorBoundary, AgentErrorView } from "../../components/AgentErrorBoundary";
 import { getDefaultOutputComponent } from "../../constants";
 import { useAgent } from "../../contexts/Agent";
 import { useComponentPreferences } from "../../contexts/ComponentPreferences";
@@ -23,8 +20,7 @@ const ignoredOutputs = new Set<string>([
 
 export default function SimpleOutput() {
   const preferences = useComponentPreferences();
-  const CustomComponentActionsComponent =
-    preferences?.customOutputActionsComponent;
+  const CustomComponentActionsComponent = preferences?.customOutputActionsComponent;
 
   const { message } = useCurrentMessage();
 
@@ -37,9 +33,7 @@ export default function SimpleOutput() {
         ...i,
         appearance: {
           ...i.appearance,
-          componentId:
-            i.appearance?.componentId ||
-            getDefaultOutputComponent(i)?.componentId,
+          componentId: i.appearance?.componentId || getDefaultOutputComponent(i)?.componentId,
         },
       }))
       .filter(
@@ -53,13 +47,7 @@ export default function SimpleOutput() {
   return (
     <Stack gap={2}>
       {outputs.map((output) => {
-        return (
-          <MessageOutputRenderer
-            key={output.id}
-            output={output}
-            message={message}
-          />
-        );
+        return <MessageOutputRenderer key={output.id} output={output} message={message} />;
       })}
 
       {message.error && <AgentErrorView error={message.error} />}

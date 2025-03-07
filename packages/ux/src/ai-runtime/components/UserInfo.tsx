@@ -1,12 +1,6 @@
 import Avatar from "@arcblock/ux/lib/Avatar";
 import DID from "@arcblock/ux/lib/DID";
-import {
-  Box,
-  Stack,
-  type StackProps,
-  Typography,
-  type TypographyProps,
-} from "@mui/material";
+import { Box, Stack, type StackProps, Typography, type TypographyProps } from "@mui/material";
 import dayjs from "dayjs";
 import { type ReactNode, useMemo } from "react";
 
@@ -80,14 +74,7 @@ export default function UserInfo({
 
         {/* @ts-ignore */}
         {showDID && did && (
-          <Box
-            component={DID}
-            did={did}
-            copyable={false}
-            size={14}
-            responsive
-            sx={{ mt: -0.25 }}
-          />
+          <Box component={DID} did={did} copyable={false} size={14} responsive sx={{ mt: -0.25 }} />
         )}
 
         <Box flex={1}>{children}</Box>
@@ -121,17 +108,12 @@ export function UserName({
   );
 }
 
-export function UserTime({
-  time,
-  ...restProps
-}: TypographyProps & { time: string }) {
+export function UserTime({ time, ...restProps }: TypographyProps & { time: string }) {
   const formattedTime = useMemo(() => {
     const date = dayjs(time);
     if (!date.isValid()) return undefined;
 
-    return date.isSame(dayjs(), "date")
-      ? date.format("HH:mm")
-      : date.format("YYYY-MM-DD HH:mm");
+    return date.isSame(dayjs(), "date") ? date.format("HH:mm") : date.format("YYYY-MM-DD HH:mm");
   }, [time]);
 
   if (!formattedTime) return null;

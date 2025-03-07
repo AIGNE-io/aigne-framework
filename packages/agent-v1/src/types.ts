@@ -12,9 +12,7 @@ import type { Assistant } from "@blocklet/ai-runtime/types";
 
 export * from "@blocklet/ai-runtime/types";
 
-export function agentV1ToRunnableDefinition(
-  agent: Assistant,
-): RunnableDefinition {
+export function agentV1ToRunnableDefinition(agent: Assistant): RunnableDefinition {
   return {
     ...agent,
     inputs: OrderedRecord.fromArray(

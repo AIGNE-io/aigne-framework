@@ -20,9 +20,7 @@ const OutputFieldContainer = memo(
               fontWeight: 500,
             }}
           >
-            {output.appearance.icon && (
-              <Box component={Icon} icon={output.appearance.icon} />
-            )}
+            {output.appearance.icon && <Box component={Icon} icon={output.appearance.icon} />}
 
             <Box component="span" sx={{ flex: 1, textOverflow: "hidden" }}>
               {output.appearance.title}

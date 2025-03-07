@@ -1,11 +1,4 @@
-import {
-  type ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-} from "react";
+import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import { type StoreApi, type UseBoundStore, create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { useShallow } from "zustand/react/shallow";
@@ -47,9 +40,7 @@ export interface SessionContextValue {
   clearSession: () => Promise<void>;
 }
 
-const sessionContext = createContext<UseBoundStore<
-  StoreApi<SessionContextValue>
-> | null>(null);
+const sessionContext = createContext<UseBoundStore<StoreApi<SessionContextValue>> | null>(null);
 
 const LOADING_TASKS: { [id: string]: Promise<void> } = {};
 
@@ -93,9 +84,7 @@ export const SessionProvider = ({
     throw LOADING_TASKS[sessionId]!;
   }
 
-  return (
-    <sessionContext.Provider value={state}>{children}</sessionContext.Provider>
-  );
+  return <sessionContext.Provider value={state}>{children}</sessionContext.Provider>;
 };
 
 const STATE_CACHE: {
@@ -106,10 +95,7 @@ function createSessionState(
   options: {
     entryAid: string;
     sessionId?: string;
-  } & Pick<
-    AIGNEApiContextValue,
-    "runAgent" | "getSession" | "getMessages" | "clearSession"
-  >,
+  } & Pick<AIGNEApiContextValue, "runAgent" | "getSession" | "getMessages" | "clearSession">,
 ) {
   if (options.sessionId) {
     const state = STATE_CACHE[options.sessionId];
@@ -194,15 +180,12 @@ function createSessionState(
                 if (mainTaskId === value.taskId) {
                   requestAnimationFrame(() => {
                     set((state) => {
-                      const msg = state.messages?.findLast(
-                        (i) => i.id === message!.id,
-                      );
+                      const msg = state.messages?.findLast((i) => i.id === message!.id);
                       if (!msg) return;
 
                       msg.outputs ??= {};
                       msg.outputs.content =
-                        (msg.outputs.content || "") +
-                        (value.delta.content || "");
+                        (msg.outputs.content || "") + (value.delta.content || "");
 
                       if (value.delta.object) {
                         msg.outputs.objects ??= [];
@@ -215,9 +198,7 @@ function createSessionState(
 
               if (value?.type === "ERROR") {
                 set((state) => {
-                  const msg = state.messages?.findLast(
-                    (i) => i.id === message!.id,
-                  );
+                  const msg = state.messages?.findLast((i) => i.id === message!.id);
                   if (msg) msg.error = value.error;
                   else throw new Error(value.error.message);
                 });
@@ -236,9 +217,7 @@ function createSessionState(
             set((state) => {
               state.running = false;
               if (message) {
-                const msg = state.messages?.findLast(
-                  (i) => i.id === message!.id,
-                );
+                const msg = state.messages?.findLast((i) => i.id === message!.id);
                 if (msg) msg.loading = false;
               }
             });

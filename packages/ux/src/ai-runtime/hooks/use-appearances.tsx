@@ -39,9 +39,7 @@ export function useAppearances(args?: { aid: string }) {
     return {
       ...result,
       output,
-      outputSettings: output
-        ? { id: output.id }
-        : { name: RuntimeOutputVariable.appearancePage },
+      outputSettings: output ? { id: output.id } : { name: RuntimeOutputVariable.appearancePage },
     };
   }, [agent]);
 
@@ -63,9 +61,7 @@ export function useAppearances(args?: { aid: string }) {
     return {
       ...result,
       output,
-      outputSettings: output
-        ? { id: output.id }
-        : { name: RuntimeOutputVariable.appearanceInput },
+      outputSettings: output ? { id: output.id } : { name: RuntimeOutputVariable.appearanceInput },
     };
   }, [agent, entryAgent]);
 
@@ -88,9 +84,7 @@ export function useAppearances(args?: { aid: string }) {
     return {
       ...result,
       output,
-      outputSettings: output
-        ? { id: output.id }
-        : { name: RuntimeOutputVariable.appearanceOutput },
+      outputSettings: output ? { id: output.id } : { name: RuntimeOutputVariable.appearanceOutput },
     };
   }, [agent, entryAgent]);
 
@@ -114,40 +108,25 @@ export function useProfile(args?: { aid: string }) {
   const agent = useAgent({ aid: args?.aid || aid });
 
   return useMemo(() => {
-    const profile = getOutputVariableInitialValue(
-      agent,
-      RuntimeOutputVariable.profile,
-    );
-    const entryProfile = getOutputVariableInitialValue(
-      entryAgent,
-      RuntimeOutputVariable.profile,
-    );
+    const profile = getOutputVariableInitialValue(agent, RuntimeOutputVariable.profile);
+    const entryProfile = getOutputVariableInitialValue(entryAgent, RuntimeOutputVariable.profile);
 
-    const output = agent.outputVariables?.find(
-      (i) => i.name === RuntimeOutputVariable.profile,
-    );
+    const output = agent.outputVariables?.find((i) => i.name === RuntimeOutputVariable.profile);
     const appearance = output?.appearance;
     const entryAppearance = entryAgent.outputVariables?.find(
       (i) => i.name === RuntimeOutputVariable.profile,
     )?.appearance;
 
     return {
-      avatar:
-        profile?.avatar || entryProfile?.avatar || getProjectIconUrl({ aid }),
-      name:
-        profile?.name ||
-        entryProfile?.name ||
-        entryAgent.name ||
-        entryAgent.project.name,
+      avatar: profile?.avatar || entryProfile?.avatar || getProjectIconUrl({ aid }),
+      name: profile?.name || entryProfile?.name || entryAgent.name || entryAgent.project.name,
       description:
         profile?.description ||
         entryProfile?.description ||
         entryAgent.description ||
         entryAgent.project.description,
       output,
-      outputSettings: output
-        ? { id: output.id }
-        : { name: RuntimeOutputVariable.profile },
+      outputSettings: output ? { id: output.id } : { name: RuntimeOutputVariable.profile },
       appearance: appearance?.componentId
         ? { ...appearance, componentId: appearance.componentId }
         : entryAppearance?.componentId
@@ -167,10 +146,7 @@ export function useOpeningMessage(args?: { aid: string }) {
   const profile = useProfile({ aid: args?.aid || aid });
 
   return useMemo(() => {
-    const agentOpening = getOutputVariableInitialValue(
-      agent,
-      RuntimeOutputVariable.openingMessage,
-    );
+    const agentOpening = getOutputVariableInitialValue(agent, RuntimeOutputVariable.openingMessage);
     if (agentOpening?.message) {
       return {
         agent,

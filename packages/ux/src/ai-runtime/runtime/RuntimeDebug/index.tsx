@@ -120,20 +120,9 @@ function AgentView() {
 function SessionsBar() {
   const { locale } = useLocaleContext();
 
-  const {
-    sessions,
-    loaded,
-    createSession,
-    setCurrentSessionId,
-    currentSessionId,
-  } = useSessions((s) =>
-    pick(s, [
-      "sessions",
-      "loaded",
-      "createSession",
-      "setCurrentSessionId",
-      "currentSessionId",
-    ]),
+  const { sessions, loaded, createSession, setCurrentSessionId, currentSessionId } = useSessions(
+    (s) =>
+      pick(s, ["sessions", "loaded", "createSession", "setCurrentSessionId", "currentSessionId"]),
   );
 
   const setOpen = useDebugDialog((s) => s.setOpen);
@@ -198,10 +187,7 @@ function SessionsBar() {
           </Select>
 
           <Tooltip title="New session">
-            <LoadingButton
-              onClick={newSession}
-              sx={{ minWidth: 32, minHeight: 32, p: 0 }}
-            >
+            <LoadingButton onClick={newSession} sx={{ minWidth: 32, minHeight: 32, p: 0 }}>
               <Icon icon={PlusIcon} fontSize={18} />
             </LoadingButton>
           </Tooltip>
@@ -210,10 +196,7 @@ function SessionsBar() {
 
       <Box flex={1} />
 
-      <LoadingButton
-        onClick={() => setOpen?.(true)}
-        sx={{ minWidth: 32, minHeight: 32, p: 0 }}
-      >
+      <LoadingButton onClick={() => setOpen?.(true)} sx={{ minWidth: 32, minHeight: 32, p: 0 }}>
         <Icon icon={WandIcon} fontSize={18} />
       </LoadingButton>
 
@@ -230,19 +213,14 @@ function SessionsBar() {
 
 function SessionActions() {
   const deleteSession = useSessions((s) => s.deleteSession);
-  const { clearSession, sessionId } = useSession((s) =>
-    pick(s, "clearSession", "sessionId"),
-  );
+  const { clearSession, sessionId } = useSession((s) => pick(s, "clearSession", "sessionId"));
 
   if (!sessionId) return null;
 
   return (
     <>
       <Tooltip title="Clean messages">
-        <LoadingButton
-          onClick={clearSession}
-          sx={{ minWidth: 32, minHeight: 32, p: 0 }}
-        >
+        <LoadingButton onClick={clearSession} sx={{ minWidth: 32, minHeight: 32, p: 0 }}>
           <Icon icon={MessageXIcon} fontSize={18} />
         </LoadingButton>
       </Tooltip>

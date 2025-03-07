@@ -13,10 +13,7 @@ import { getAssetUrl } from "../../api/asset";
 import CustomComponentRenderer from "../../components/CustomComponentRenderer/CustomComponentRenderer";
 import { useActiveAgent } from "../../contexts/ActiveAgent";
 import { useAgent } from "../../contexts/Agent";
-import {
-  CurrentAgentProvider,
-  useCurrentAgent,
-} from "../../contexts/CurrentAgent";
+import { CurrentAgentProvider, useCurrentAgent } from "../../contexts/CurrentAgent";
 import { useEntryAgent } from "../../contexts/EntryAgent";
 import { useAppearances, useProfile } from "../../hooks/use-appearances";
 import { isValidInput } from "../../utils/agent-inputs";
@@ -35,25 +32,15 @@ export default function InputsView({ collapsible, ...props }: InputsViewProps) {
 
   const inputs = useMemo(() => agent.parameters?.filter(isValidInput), [agent]);
   const enableCollapse = collapsible && !!inputs && inputs.length > 1;
-  const collapseSx = enableCollapse
-    ? { maxHeight: "40vh", overflow: "auto" }
-    : {};
+  const collapseSx = enableCollapse ? { maxHeight: "40vh", overflow: "auto" } : {};
 
   const [open, setOpen] = useState(true);
 
   return (
     <Stack gap={1} py={1} {...props}>
       {enableCollapse && (
-        <Stack
-          direction="row"
-          justifyContent="center"
-          onClick={() => setOpen(!open)}
-          mb={-1}
-        >
-          <DrawerOpenCloseIcon
-            color="grey.500"
-            arrowDirection={open ? "down" : "up"}
-          />
+        <Stack direction="row" justifyContent="center" onClick={() => setOpen(!open)} mb={-1}>
+          <DrawerOpenCloseIcon color="grey.500" arrowDirection={open ? "down" : "up"} />
         </Stack>
       )}
 
@@ -99,20 +86,14 @@ const AgentList = memo(({ ...props }: StackProps) => {
     <Stack direction="row" gap={2} py={1} overflow="auto" {...props}>
       {children?.map((child) => (
         <CurrentAgentProvider key={child.aid} aid={child.aid}>
-          <AgentAvatar
-            selected={activeAid === child.aid}
-            onClick={() => setActiveAid(child.aid)}
-          />
+          <AgentAvatar selected={activeAid === child.aid} onClick={() => setActiveAid(child.aid)} />
         </CurrentAgentProvider>
       ))}
     </Stack>
   );
 });
 
-function AgentAvatar({
-  selected,
-  ...props
-}: { selected?: boolean } & IconButtonProps) {
+function AgentAvatar({ selected, ...props }: { selected?: boolean } & IconButtonProps) {
   const { aid } = useEntryAgent();
 
   const { appearanceInput } = useAppearances();
@@ -130,9 +111,7 @@ function AgentAvatar({
         ...props.sx,
       }}
     >
-      <Avatar
-        src={getAssetUrl({ aid, filename: profile?.avatar, preset: "avatar" })}
-      >
+      <Avatar src={getAssetUrl({ aid, filename: profile?.avatar, preset: "avatar" })}>
         {profile.name?.slice(0, 1)}
       </Avatar>
     </IconButton>

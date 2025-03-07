@@ -20,8 +20,7 @@ export default function Runtime(props: {
   const [query] = useSearchParams();
 
   const aid = props.aid || query.get("aid");
-  if (!aid)
-    throw new CustomError(404, "Missing required query parameters `aid`");
+  if (!aid) throw new CustomError(404, "Missing required query parameters `aid`");
 
   return (
     <RuntimeProvider aid={aid} working={props.working} debug={props.debug}>

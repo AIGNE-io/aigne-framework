@@ -68,10 +68,7 @@ const MessageOutputValueTransformView = memo(
 
     const deferredOutputValue = useDeferredValue(outputValue);
 
-    const transformedOutputValue = usePromise(jsonataEvaluate, [
-      expression,
-      deferredOutputValue,
-    ]);
+    const transformedOutputValue = usePromise(jsonataEvaluate, [expression, deferredOutputValue]);
 
     return (
       <MessageOutputValueRenderer
@@ -99,9 +96,8 @@ const MessageOutputValueRenderer = memo(
     const deferredOutputValue = useDeferredValue(outputValue);
 
     // NOTE: get the output value schema of the custom component
-    const schema = (
-      useComponent({ instanceId: componentId, componentId })?.Component as any
-    )?.aigneOutputValueSchema;
+    const schema = (useComponent({ instanceId: componentId, componentId })?.Component as any)
+      ?.aigneOutputValueSchema;
 
     const validate = useAjvInstance(schema);
 
@@ -117,10 +113,7 @@ const MessageOutputValueRenderer = memo(
     if (!valid) return null;
 
     return (
-      <CurrentMessageOutputProvider
-        output={output}
-        outputValue={valid.outputValue}
-      >
+      <CurrentMessageOutputProvider output={output} outputValue={valid.outputValue}>
         <CustomComponentRenderer
           aid={message.aid}
           output={{ id: output.id }}

@@ -25,10 +25,7 @@ export function userInput(message: string | object) {
   return { [USER_INPUT_MESSAGE_KEY]: message };
 }
 
-export function addMessagesToInput(
-  input: AgentInput,
-  messages: ChatModelInputMessage[],
-) {
+export function addMessagesToInput(input: AgentInput, messages: ChatModelInputMessage[]) {
   const originalUserInputMessages = input[USER_INPUT_MESSAGE_KEY];
 
   const newMessages: ChatModelInputMessage[] = [];
@@ -66,9 +63,7 @@ export class PromptBuilder {
     };
   }
 
-  private buildMessages(
-    options: PromptBuilderBuildOptions,
-  ): ChatModelInputMessage[] {
+  private buildMessages(options: PromptBuilderBuildOptions): ChatModelInputMessage[] {
     const { agent, input } = options;
 
     const template = ChatMessagesTemplate.from([]);
@@ -89,10 +84,7 @@ export class PromptBuilder {
       const messages = parseChatMessages(userInputMessage);
 
       if (messages) template.messages.push(...messages);
-      else
-        template.messages.push(
-          UserMessageTemplate.from(JSON.stringify(userInputMessage)),
-        );
+      else template.messages.push(UserMessageTemplate.from(JSON.stringify(userInputMessage)));
     }
 
     return template.format(input);
@@ -126,9 +118,7 @@ export class PromptBuilder {
       function: {
         name: i.name,
         description: i.description,
-        parameters: !isEmptyObjectType(i.inputSchema)
-          ? zodToJsonSchema(i.inputSchema)
-          : {},
+        parameters: !isEmptyObjectType(i.inputSchema) ? zodToJsonSchema(i.inputSchema) : {},
       },
     }));
 

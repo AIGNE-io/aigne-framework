@@ -1,9 +1,4 @@
-import {
-  CircularProgress,
-  MenuItem,
-  type MenuItemProps,
-  Stack,
-} from "@mui/material";
+import { CircularProgress, MenuItem, type MenuItemProps, Stack } from "@mui/material";
 import { type MouseEvent, type ReactNode, useState } from "react";
 
 export default function LoadingMenuItem({
@@ -38,12 +33,7 @@ export default function LoadingMenuItem({
     >
       {(clicked && confirmation) || children}
 
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="flex-end"
-        sx={{ width: 18 }}
-      >
+      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ width: 18 }}>
         {loading && <CircularProgress size={14} />}
       </Stack>
     </MenuItem>

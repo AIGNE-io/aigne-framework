@@ -12,9 +12,7 @@ export class MockSandboxFunctionRunner<
   Memories extends { [name: string]: MemoryItemWithScore[] } = {},
   State extends ContextState = ContextState,
 > extends SandboxFunctionRunner<I, O, Memories, State> {
-  override async *process(
-    input: SandboxFunctionRunnerInput<I, Memories, State>,
-  ) {
+  override async *process(input: SandboxFunctionRunnerInput<I, Memories, State>) {
     const args = { ...input.input, ...input.memories, $context: input.context };
 
     const argKeys = Object.keys(args);

@@ -10,8 +10,7 @@ import type { ModelStatic, Sequelize } from "sequelize";
 
 import nextId from "../../../lib/next-id";
 
-export interface Message
-  extends Model<InferAttributes<Message>, InferCreationAttributes<Message>> {
+export interface Message extends Model<InferAttributes<Message>, InferCreationAttributes<Message>> {
   id: CreationOptional<string>;
 
   createdAt: CreationOptional<Date>;

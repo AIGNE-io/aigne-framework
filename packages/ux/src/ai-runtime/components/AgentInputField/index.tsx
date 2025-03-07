@@ -35,9 +35,7 @@ export default function AgentInputField({
     number: NumberField,
     string: StringField,
     select:
-      parameter.type === "select" && parameter.style === "checkbox"
-        ? RadioField
-        : SelectField,
+      parameter.type === "select" && parameter.style === "checkbox" ? RadioField : SelectField,
     language: LanguageField,
     boolean: BooleanField,
     verify_vc: VerifyVC,

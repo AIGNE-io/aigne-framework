@@ -29,9 +29,7 @@ export default function MessagesView({ ...props }: StackProps) {
         <React.Fragment key={message.id}>
           <MessageView message={message} />
 
-          {divider && index !== messages.length - 1 ? (
-            <Divider sx={{ my: 2 }} />
-          ) : undefined}
+          {divider && index !== messages.length - 1 ? <Divider sx={{ my: 2 }} /> : undefined}
         </React.Fragment>
       ))}
 

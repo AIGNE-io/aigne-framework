@@ -3,14 +3,7 @@ import Toast from "@arcblock/ux/lib/Toast";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ImageIcon from "@mui/icons-material/Image";
-import {
-  Box,
-  Button,
-  IconButton,
-  InputAdornment,
-  Stack,
-  type TextFieldProps,
-} from "@mui/material";
+import { Box, Button, IconButton, InputAdornment, Stack, type TextFieldProps } from "@mui/material";
 import { useRef } from "react";
 
 import type { ImageParameter } from "@aigne/agent-v1";
@@ -30,9 +23,7 @@ export default function ImageField({
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { t } = useLocaleContext();
 
-  const list = (
-    Array.isArray(props.value) ? props.value : [props.value]
-  ).filter(Boolean);
+  const list = (Array.isArray(props.value) ? props.value : [props.value]).filter(Boolean);
 
   const handleFiles = async (files: File[]) => {
     if (parameter.multiple) {
@@ -49,9 +40,7 @@ export default function ImageField({
       const response = await uploadImage({ input: formData });
       props.onChange(
         parameter.multiple
-          ? [...list, ...(response.uploads || []).map((i) => i.url)].filter(
-              Boolean,
-            )
+          ? [...list, ...(response.uploads || []).map((i) => i.url)].filter(Boolean)
           : response.uploads[0]?.url || "",
       );
     } catch (error) {
@@ -108,9 +97,7 @@ export default function ImageField({
                   style={{ display: "none" }}
                   multiple={Boolean(parameter.multiple)}
                   ref={fileInputRef}
-                  onChange={(e) =>
-                    handleFiles(Array.from(e.target.files ?? []))
-                  }
+                  onChange={(e) => handleFiles(Array.from(e.target.files ?? []))}
                 />
 
                 <input
@@ -119,9 +106,7 @@ export default function ImageField({
                   capture="environment"
                   style={{ display: "none" }}
                   ref={cameraInputRef}
-                  onChange={(e) =>
-                    handleFiles(Array.from(e.target.files || []))
-                  }
+                  onChange={(e) => handleFiles(Array.from(e.target.files || []))}
                 />
 
                 <IconButton

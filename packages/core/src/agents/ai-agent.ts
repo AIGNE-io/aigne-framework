@@ -2,17 +2,8 @@ import type { Context } from "../execution-engine/context";
 import type { ChatModel, ChatModelOutputToolCall } from "../models/chat";
 import { PromptBuilder } from "../prompt/prompt-builder";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template";
-import {
-  Agent,
-  type AgentInput,
-  type AgentOptions,
-  type AgentOutput,
-} from "./agent";
-import {
-  type TransferAgentOutput,
-  isTransferAgentOutput,
-  transferAgentOutputKey,
-} from "./types";
+import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "./agent";
+import { type TransferAgentOutput, isTransferAgentOutput, transferAgentOutputKey } from "./types";
 
 const DEFAULT_OUTPUT_KEY = "text";
 
@@ -94,9 +85,7 @@ export class AIAgent<
         // Continue LLM function calling loop if any tools were executed
         if (executedToolCalls.length) {
           modelInput.messages.push(
-            AgentMessageTemplate.from(
-              executedToolCalls.map(({ call }) => call),
-            ).format(),
+            AgentMessageTemplate.from(executedToolCalls.map(({ call }) => call)).format(),
           );
 
           modelInput.messages.push(

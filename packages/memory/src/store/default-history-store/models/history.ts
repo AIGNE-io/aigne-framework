@@ -10,8 +10,7 @@ import type { ModelStatic, Sequelize } from "sequelize";
 import type { EventType } from "../../../core/type";
 import nextId from "../../../lib/next-id";
 
-export interface History
-  extends Model<InferAttributes<History>, InferCreationAttributes<History>> {
+export interface History extends Model<InferAttributes<History>, InferCreationAttributes<History>> {
   id: CreationOptional<string>;
 
   memoryId: string;

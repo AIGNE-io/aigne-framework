@@ -25,8 +25,7 @@ export class AIGNERuntime<
 > implements Context<State>
 {
   constructor(public readonly options?: AIGNERuntimeOptions) {
-    const id =
-      options?.id || options?.projectDefinition?.id || DEFAULT_RUNTIME_ID;
+    const id = options?.id || options?.projectDefinition?.id || DEFAULT_RUNTIME_ID;
     if (!id) throw new Error("Runtime id is required");
     this.id = id;
 

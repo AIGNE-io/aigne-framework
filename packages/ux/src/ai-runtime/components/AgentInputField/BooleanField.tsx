@@ -33,9 +33,7 @@ const BooleanField = forwardRef<
         }
       />
 
-      {parameter?.helper && (
-        <FormHelperText>{parameter?.helper}</FormHelperText>
-      )}
+      {parameter?.helper && <FormHelperText>{parameter?.helper}</FormHelperText>}
     </FormControl>
   );
 });

@@ -49,8 +49,7 @@ Product description:
   );
 
   expect(result).toEqual({
-    features:
-      "Extracted features: AIGNE is a No-code Generative AI Apps Engine",
+    features: "Extracted features: AIGNE is a No-code Generative AI Apps Engine",
     audience: "Audience: AIGNE is a No-code Generative AI Apps Engine",
   });
 });

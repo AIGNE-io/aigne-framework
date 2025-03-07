@@ -16,10 +16,7 @@ import TransparentTooltip from "./TransparentTooltip";
 
 const codeField = "code";
 
-function RetryComponent({
-  message,
-  tip,
-}: { message: MessageItem | undefined; tip?: string }) {
+function RetryComponent({ message, tip }: { message: MessageItem | undefined; tip?: string }) {
   const { t } = useLocaleContext();
   const runAgent = useSession((s) => s.runAgent);
   const { aid } = useCurrentAgent();
@@ -96,9 +93,7 @@ function RetryComponent({
 
             // remove $ starting parameters object
             const canUseParameters = Object.fromEntries(
-              Object.entries(inputs || {}).filter(
-                ([key]) => !key.startsWith("$"),
-              ),
+              Object.entries(inputs || {}).filter(([key]) => !key.startsWith("$")),
             );
 
             await runAgent({
@@ -138,20 +133,13 @@ export default function CodePreview({
   if (!code) return null;
 
   return (
-    <Box
-      id={componentId}
-      key={componentId}
-      className="code-preview-wrapper"
-      {...restProps}
-    >
+    <Box id={componentId} key={componentId} className="code-preview-wrapper" {...restProps}>
       <CustomComponentRenderer
         componentId={componentId}
         locale={locale}
         props={propertiesValue || {}}
         // eslint-disable-next-line react/no-unstable-nested-components
-        fallbackRender={() => (
-          <RetryComponent message={message} tip={t("v0.errorCodeTip")} />
-        )}
+        fallbackRender={() => <RetryComponent message={message} tip={t("v0.errorCodeTip")} />}
         dev={{
           components: {
             [componentId]: {
@@ -196,8 +184,7 @@ export function CodeRenderByMessage({
       minHeight,
     },
   };
-  const isMessageLoading =
-    (message?.loading || !message?.outputs) && !message?.error;
+  const isMessageLoading = (message?.loading || !message?.outputs) && !message?.error;
 
   const ContentRender = useCallback(() => {
     if (isMessageLoading) {
@@ -232,9 +219,7 @@ export function CodeRenderByMessage({
           componentId={`code-preview-${taskId}`}
           code={code}
           propertiesValue={
-            propertiesValueMap?.[taskId]?.[locale] ||
-            propertiesValueMap?.[taskId]?.en ||
-            {}
+            propertiesValueMap?.[taskId]?.[locale] || propertiesValueMap?.[taskId]?.en || {}
           }
           message={message}
         />

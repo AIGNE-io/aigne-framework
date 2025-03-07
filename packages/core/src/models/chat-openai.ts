@@ -1,9 +1,6 @@
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
-import type {
-  ChatCompletionMessageParam,
-  ChatCompletionTool,
-} from "openai/resources";
+import type { ChatCompletionMessageParam, ChatCompletionTool } from "openai/resources";
 import { isNonNullable } from "../utils/type-utils";
 import {
   ChatModel,
@@ -24,8 +21,7 @@ export class ChatModelOpenAI extends ChatModel {
   private _client?: OpenAI;
 
   private get client() {
-    if (!this.config?.apiKey)
-      throw new Error("Api Key is required for ChatModelOpenAI");
+    if (!this.config?.apiKey) throw new Error("Api Key is required for ChatModelOpenAI");
 
     this._client ??= new OpenAI({ apiKey: this.config.apiKey });
     return this._client;
@@ -47,9 +43,7 @@ export class ChatModelOpenAI extends ChatModel {
               type: "json_schema",
               json_schema: {
                 ...input.responseFormat.jsonSchema,
-                schema: jsonSchemaToOpenAIJsonSchema(
-                  input.responseFormat.jsonSchema.schema,
-                ),
+                schema: jsonSchemaToOpenAIJsonSchema(input.responseFormat.jsonSchema.schema),
               },
             }
           : undefined,
@@ -141,9 +135,7 @@ async function contentsFromInputMessages(
   }));
 }
 
-function toolsFromInputTools(
-  tools?: ChatModelInputTool[],
-): ChatCompletionTool[] | undefined {
+function toolsFromInputTools(tools?: ChatModelInputTool[]): ChatCompletionTool[] | undefined {
   return tools?.length
     ? tools.map((i) => ({
         type: "function",
@@ -169,9 +161,7 @@ function jsonSchemaToOpenAIJsonSchema(schema: any): any {
           // NOTE: All fields must be required https://platform.openai.com/docs/guides/structured-outputs/all-fields-must-be-required
           return [
             key,
-            required?.includes(key)
-              ? valueSchema
-              : { anyOf: [valueSchema, { type: ["null"] }] },
+            required?.includes(key) ? valueSchema : { anyOf: [valueSchema, { type: ["null"] }] },
           ];
         }),
       ),

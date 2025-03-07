@@ -9,15 +9,9 @@ import { joinURL } from "ufo";
 
 import { fetchApi } from "./api/api";
 import type { AIGNERuntime } from "./runtime";
-import {
-  EventSourceParserStream,
-  RunnableStreamParser,
-} from "./utils/event-stream";
+import { EventSourceParserStream, RunnableStreamParser } from "./utils/event-stream";
 
-export class Agent<I extends {} = {}, O extends {} = {}> extends Runnable<
-  I,
-  O
-> {
+export class Agent<I extends {} = {}, O extends {} = {}> extends Runnable<I, O> {
   constructor(
     private runtime: AIGNERuntime,
     definition: RunnableDefinition,
@@ -25,19 +19,10 @@ export class Agent<I extends {} = {}, O extends {} = {}> extends Runnable<
     super(definition);
   }
 
-  async run(
-    input: I,
-    options: RunOptions & { stream: true },
-  ): Promise<RunnableResponseStream<O>>;
+  async run(input: I, options: RunOptions & { stream: true }): Promise<RunnableResponseStream<O>>;
   async run(input: I, options?: RunOptions & { stream?: boolean }): Promise<O>;
   async run(input: I, options?: RunOptions): Promise<RunnableResponse<O>> {
-    const url = joinURL(
-      "/api/aigne",
-      this.runtime.id,
-      "agents",
-      this.id,
-      "run",
-    );
+    const url = joinURL("/api/aigne", this.runtime.id, "agents", this.id, "run");
     const body = { input, options };
 
     const result = await fetchApi(url, {

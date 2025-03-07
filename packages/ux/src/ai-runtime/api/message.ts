@@ -38,9 +38,7 @@ export async function getMessages({
   });
 }
 
-export async function deleteMessages({
-  sessionId,
-}: { sessionId: string }): Promise<void> {
+export async function deleteMessages({ sessionId }: { sessionId: string }): Promise<void> {
   await request({
     blocklet: AI_RUNTIME_DID,
     method: "DELETE",

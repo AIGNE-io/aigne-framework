@@ -1,12 +1,7 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { Icon } from "@iconify/react";
 import { Box, Stack, styled } from "@mui/material";
-import React, {
-  type ComponentProps,
-  type ReactElement,
-  type ReactNode,
-  Suspense,
-} from "react";
+import React, { type ComponentProps, type ReactElement, type ReactNode, Suspense } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -148,9 +143,7 @@ function MarkdownPre({ children, ...props }: { children?: ReactNode }) {
           titleSucceed={<Icon icon="tabler:copy-check" />}
           sx={{ minWidth: 32, minHeight: 32, p: 0, fontSize: 18 }}
           onClick={() => {
-            window.navigator.clipboard.writeText(
-              (childrenProps as any).children,
-            );
+            window.navigator.clipboard.writeText((childrenProps as any).children);
           }}
         />
       </Stack>

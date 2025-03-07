@@ -15,17 +15,13 @@ try {
 }
 
 export const getAIRuntimeApiPrefix = () =>
-  (window as any).AI_RUNTIME_API_PREFIX ||
-  getComponentMountPoint(AI_RUNTIME_DID);
+  (window as any).AI_RUNTIME_API_PREFIX || getComponentMountPoint(AI_RUNTIME_DID);
 
 const fetchMap: { [blocklet: string]: typeof window.fetch } = {};
 
 const getFetch = (blocklet: string) => {
   if (!fetchMap[blocklet]) {
-    fetchMap[blocklet] = createFetch(
-      {},
-      { lazy: isDEV, lazyTime: 1000, componentDid: blocklet },
-    );
+    fetchMap[blocklet] = createFetch({}, { lazy: isDEV, lazyTime: 1000, componentDid: blocklet });
   }
 
   return fetchMap[blocklet]!;

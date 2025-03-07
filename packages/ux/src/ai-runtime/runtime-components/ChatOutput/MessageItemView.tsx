@@ -39,19 +39,13 @@ const MessageItemView = memo(
     return (
       <MessageItemContainer
         {...props}
-        className={cx(
-          "ai-chat-message-item",
-          hideAvatar && "hide-avatar",
-          props.className,
-        )}
+        className={cx("ai-chat-message-item", hideAvatar && "hide-avatar", props.className)}
       >
         {showUserMessage && !isEmpty(message.inputs) && (
           <UserMessage message={message} hideAvatar={hideAvatar} />
         )}
 
-        {!isEmpty(message.outputs) && (
-          <AgentMessage message={message} hideAvatar={hideAvatar} />
-        )}
+        {!isEmpty(message.outputs) && <AgentMessage message={message} hideAvatar={hideAvatar} />}
       </MessageItemContainer>
     );
   },
@@ -97,10 +91,7 @@ const MessageItemContainer = styled(Stack)`
   }
 `;
 
-function UserMessage({
-  message,
-  hideAvatar,
-}: { message: MessageItem; hideAvatar?: boolean }) {
+function UserMessage({ message, hideAvatar }: { message: MessageItem; hideAvatar?: boolean }) {
   const { session: authSession } = useSessionContext();
 
   return (
@@ -159,17 +150,13 @@ function UserMessage({
   );
 }
 
-function AgentMessage({
-  message,
-  hideAvatar,
-}: { message: MessageItem; hideAvatar?: boolean }) {
+function AgentMessage({ message, hideAvatar }: { message: MessageItem; hideAvatar?: boolean }) {
   const { aid } = useEntryAgent();
   const profile = useProfile({ aid });
 
   const showMainMessage = !!message.outputs?.content;
 
-  const isMessageLoading =
-    (message.loading || !message.outputs) && !message.error;
+  const isMessageLoading = (message.loading || !message.outputs) && !message.error;
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -238,9 +225,7 @@ function AgentMessage({
             >
               <Stack gap={1} className="message-response">
                 {message.outputs?.content && (
-                  <MarkdownRenderer
-                    className={isMessageLoading ? "writing" : ""}
-                  >
+                  <MarkdownRenderer className={isMessageLoading ? "writing" : ""}>
                     {message.outputs.content}
                   </MarkdownRenderer>
                 )}
@@ -283,11 +268,7 @@ export function MessageItemWrapper({
   return (
     <MessageItemContainer
       {...props}
-      className={cx(
-        "ai-chat-message-item",
-        hideAvatar && "hide-avatar",
-        props.className,
-      )}
+      className={cx("ai-chat-message-item", hideAvatar && "hide-avatar", props.className)}
     >
       {agentMessage && (
         <Stack className="ai-chat-message-ai" direction="row" gap={1.5}>
@@ -348,9 +329,7 @@ function MessageTime({ time }: { time: string }) {
     const date = dayjs(time);
     if (!date.isValid()) return undefined;
 
-    return date.isSame(dayjs(), "date")
-      ? date.format("HH:mm")
-      : date.format("YYYY-MM-DD HH:mm");
+    return date.isSame(dayjs(), "date") ? date.format("HH:mm") : date.format("YYYY-MM-DD HH:mm");
   }, [time]);
 
   if (!t) return null;

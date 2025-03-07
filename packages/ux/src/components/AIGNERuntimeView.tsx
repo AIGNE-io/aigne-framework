@@ -1,8 +1,5 @@
 import type { Assistant } from "@aigne/agent-v1";
-import {
-  AssistantResponseType,
-  RuntimeOutputVariable,
-} from "@aigne/agent-v1/types";
+import { AssistantResponseType, RuntimeOutputVariable } from "@aigne/agent-v1/types";
 import type { Context, Runnable } from "@aigne/core";
 import { CustomComponentRenderer } from "@blocklet/pages-kit/components";
 import { nanoid } from "nanoid";
@@ -74,10 +71,7 @@ function HeaderMenu() {
   return null;
 }
 
-function useApiProps(
-  context: Context,
-  agent: Runnable,
-): Partial<AIGNEApiContextValue> {
+function useApiProps(context: Context, agent: Runnable): Partial<AIGNEApiContextValue> {
   const sessionId = "default-session";
 
   const aid = stringifyIdentity({
@@ -89,8 +83,7 @@ function useApiProps(
     () => ({
       async getAgent({ aid }) {
         const { agentId } = parseIdentity(aid, { rejectWhenError: true });
-        const agent = (await context.resolve(agentId))
-          .definition as any as Assistant;
+        const agent = (await context.resolve(agentId)).definition as any as Assistant;
 
         const profile = agent.outputVariables?.find(
           (i) => i.name === RuntimeOutputVariable.profile,
@@ -135,13 +128,7 @@ function useApiProps(
           agentId: agent.id,
         };
       },
-      async getMessages({
-        sessionId,
-        limit,
-        before,
-        after,
-        orderDirection = "desc",
-      }) {
+      async getMessages({ sessionId, limit, before, after, orderDirection = "desc" }) {
         const results =
           (
             await context.historyManager?.filter({

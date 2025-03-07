@@ -17,10 +17,7 @@ import { useForm } from "react-hook-form";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-import {
-  type CreateOrUpdateSecretsInput,
-  createSecrets,
-} from "../../api/secret";
+import { type CreateOrUpdateSecretsInput, createSecrets } from "../../api/secret";
 import { useAgent } from "../../contexts/Agent";
 import { useEntryAgent } from "../../contexts/EntryAgent";
 
@@ -46,9 +43,7 @@ export const settingsDialogState = create<SettingsDialogState>()(
   })),
 );
 
-export default function AgentSettingsDialog({
-  ...props
-}: Omit<DialogProps, "open">) {
+export default function AgentSettingsDialog({ ...props }: Omit<DialogProps, "open">) {
   const { t } = useLocaleContext();
 
   const isOpen = settingsDialogState((state) => state.isOpen);
@@ -125,11 +120,7 @@ export default function AgentSettingsDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t("cancel")}</Button>
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          loading={form.formState.isSubmitting}
-        >
+        <LoadingButton type="submit" variant="contained" loading={form.formState.isSubmitting}>
           {t("save")}
         </LoadingButton>
       </DialogActions>

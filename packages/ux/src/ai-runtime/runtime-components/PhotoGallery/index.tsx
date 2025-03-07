@@ -1,12 +1,6 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { Masonry } from "@mui/lab";
-import {
-  Box,
-  Skeleton,
-  Stack,
-  type StackProps,
-  Typography,
-} from "@mui/material";
+import { Box, Skeleton, Stack, type StackProps, Typography } from "@mui/material";
 import { Suspense, memo, useRef } from "react";
 import Balancer from "react-wrap-balancer";
 
@@ -31,9 +25,7 @@ export interface GalleryLayoutPreferences extends ComponentPreferencesBase {
   resultTitle?: string;
 }
 
-export default function PhotoGallery({
-  ...preferences
-}: GalleryLayoutPreferences) {
+export default function PhotoGallery({ ...preferences }: GalleryLayoutPreferences) {
   const { aid: activeAid } = useActiveAgent();
 
   return (
@@ -59,17 +51,12 @@ export default function PhotoGallery({
 function NoOutputs() {
   return (
     <Stack mt={10}>
-      <Typography color="text.disabled">
-        You haven't generated any pictures yet.
-      </Typography>
+      <Typography color="text.disabled">You haven't generated any pictures yet.</Typography>
     </Stack>
   );
 }
 
-function OutputView({
-  resultTitle,
-  ...props
-}: { resultTitle?: string } & StackProps) {
+function OutputView({ resultTitle, ...props }: { resultTitle?: string } & StackProps) {
   const { t } = useLocaleContext();
 
   const ref = useRef<HTMLDivElement>(null);
@@ -93,13 +80,7 @@ function OutputView({
       {...props}
     >
       {resultTitle && (
-        <Typography
-          width="100%"
-          component="h2"
-          fontSize={36}
-          fontWeight={700}
-          textAlign="center"
-        >
+        <Typography width="100%" component="h2" fontSize={36} fontWeight={700} textAlign="center">
           <Balancer>{resultTitle}</Balancer>
         </Typography>
       )}

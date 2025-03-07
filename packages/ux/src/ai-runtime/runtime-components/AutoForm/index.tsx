@@ -1,13 +1,6 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { cx } from "@emotion/css";
-import {
-  Box,
-  FormLabel,
-  InputAdornment,
-  Stack,
-  formLabelClasses,
-  styled,
-} from "@mui/material";
+import { Box, FormLabel, InputAdornment, Stack, formLabelClasses, styled } from "@mui/material";
 import isEmpty from "lodash/isEmpty";
 import omit from "lodash/omit";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -53,10 +46,7 @@ export default function AutoForm({
   const parameters = useMemo(
     () =>
       agent.parameters
-        ?.filter(
-          (i) =>
-            isValidInput(i) && !preferences?.hideInputFields?.includes(i.key),
-        )
+        ?.filter((i) => isValidInput(i) && !preferences?.hideInputFields?.includes(i.key))
         .map((i) => ({ ...i, label: i.label?.trim() || undefined })),
     [agent.parameters],
   );
@@ -87,11 +77,9 @@ export default function AutoForm({
     [imageParameters],
   );
   const initialFormValues = useInitialFormValues();
-  const changeImageParameterRender =
-    agent.type === "prompt" && isOnlyOneImageParameter;
+  const changeImageParameterRender = agent.type === "prompt" && isOnlyOneImageParameter;
 
-  const isOnlyOneVCInput =
-    parameters?.length === 1 && parameters[0]?.type === "verify_vc";
+  const isOnlyOneVCInput = parameters?.length === 1 && parameters[0]?.type === "verify_vc";
 
   const hiddenSubmit = isOnlyOneVCInput;
 
@@ -109,17 +97,12 @@ export default function AutoForm({
     }
   }, [defaultForm, preferences?.autoGenerate]);
 
-  const isInInput =
-    submitInQuestionField && parameters?.some((i) => i.key === "question");
+  const isInInput = submitInQuestionField && parameters?.some((i) => i.key === "question");
 
   const renderImageUploadIcon = () => {
     if (!isOnlyOneImageParameter || !imageParameters?.[0]) return null;
     return (
-      <ImageUpload
-        control={form.control}
-        parameter={imageParameters[0]}
-        isInInput={isInInput}
-      />
+      <ImageUpload control={form.control} parameter={imageParameters[0]} isInInput={isInInput} />
     );
   };
 
@@ -135,9 +118,9 @@ export default function AutoForm({
         value={previewsValue}
         parameter={imageParameters[0]}
         onRemove={(index) => {
-          const list = (
-            Array.isArray(previewsValue) ? previewsValue : [previewsValue]
-          ).filter(Boolean);
+          const list = (Array.isArray(previewsValue) ? previewsValue : [previewsValue]).filter(
+            Boolean,
+          );
           const newUrls = list.filter((_: any, i: any) => i !== index);
           form.setValue(imageParameters[0]!.key!, newUrls);
         }}
@@ -146,11 +129,7 @@ export default function AutoForm({
   };
 
   useEffect(() => {
-    if (
-      autoFillLastForm &&
-      !form.formState.isSubmitted &&
-      !form.formState.isSubmitting
-    ) {
+    if (autoFillLastForm && !form.formState.isSubmitted && !form.formState.isSubmitting) {
       form.reset(chatMode ? omit(defaultForm, "question") : defaultForm);
     }
   }, [defaultForm, autoFillLastForm, form, chatMode]);
@@ -177,8 +156,7 @@ export default function AutoForm({
       {parameters?.map((parameter, index) => {
         const { key, required } = parameter ?? {};
         if (!key) return null;
-        if (parameter.type === "image" && changeImageParameterRender)
-          return null;
+        if (parameter.type === "image" && changeImageParameterRender) return null;
 
         return (
           <Box key={parameter.id}>
@@ -188,32 +166,26 @@ export default function AutoForm({
               rules={{
                 required: required || key === "question",
                 min:
-                  parameter.type === "number" &&
-                  typeof parameter.min === "number"
+                  parameter.type === "number" && typeof parameter.min === "number"
                     ? { value: parameter.min, message: "" }
                     : undefined,
                 max:
-                  parameter.type === "number" &&
-                  typeof parameter.max === "number"
+                  parameter.type === "number" && typeof parameter.max === "number"
                     ? { value: parameter.max, message: "" }
                     : undefined,
                 minLength:
-                  parameter.type === "string" &&
-                  typeof parameter.minLength === "number"
+                  parameter.type === "string" && typeof parameter.minLength === "number"
                     ? { value: parameter.minLength, message: "" }
                     : undefined,
                 maxLength:
-                  parameter.type === "string" &&
-                  typeof parameter.maxLength === "number"
+                  parameter.type === "string" && typeof parameter.maxLength === "number"
                     ? { value: parameter.maxLength, message: "" }
                     : undefined,
               }}
               render={({ field, fieldState }) => {
                 return (
                   <Stack className="form-item">
-                    {parameter.label && (
-                      <FormLabel>{parameter.label}</FormLabel>
-                    )}
+                    {parameter.label && <FormLabel>{parameter.label}</FormLabel>}
 
                     <AgentInputField
                       inputProps={{ "data-testid": `runtime-input-${key}` }}
@@ -224,23 +196,14 @@ export default function AutoForm({
                       fullWidth
                       label={undefined}
                       parameter={parameter}
-                      maxRows={
-                        !parameter?.type || parameter?.type === "string"
-                          ? 5
-                          : undefined
-                      }
+                      maxRows={!parameter?.type || parameter?.type === "string" ? 5 : undefined}
                       value={field.value || ""}
-                      onChange={(value) =>
-                        field.onChange({ target: { value } })
-                      }
+                      onChange={(value) => field.onChange({ target: { value } })}
                       error={Boolean(fieldState.error)}
-                      helperText={
-                        fieldState.error?.message || parameter?.helper
-                      }
+                      helperText={fieldState.error?.message || parameter?.helper}
                       sx={{ flex: 1 }}
                       InputProps={{
-                        ...(parameter.key === "question" &&
-                        submitInQuestionField
+                        ...(parameter.key === "question" && submitInQuestionField
                           ? {
                               endAdornment: (
                                 <InputAdornment
@@ -251,13 +214,8 @@ export default function AutoForm({
                                     alignSelf: "flex-end",
                                   }}
                                 >
-                                  <Stack
-                                    direction="row"
-                                    alignItems="center"
-                                    gap={1}
-                                  >
-                                    {changeImageParameterRender &&
-                                      renderImageUploadIcon()}
+                                  <Stack direction="row" alignItems="center" gap={1}>
+                                    {changeImageParameterRender && renderImageUploadIcon()}
 
                                     <LoadingButton
                                       data-testid="runtime-submit-button"
@@ -339,10 +297,7 @@ function useInitialFormValues() {
     }
 
     return Object.fromEntries(
-      agent.parameters?.map((parameter) => [
-        parameter.key,
-        parameter.defaultValue,
-      ]) ?? [],
+      agent.parameters?.map((parameter) => [parameter.key, parameter.defaultValue]) ?? [],
     );
   }, [lastInputs, agent, preferences?.initialInputValues]);
 }

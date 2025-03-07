@@ -9,8 +9,5 @@ export function useIsAgentAdmin(agent: Agent) {
 
   if (ADMIN_ROLES.includes(session.user.role)) return true;
 
-  return (
-    session.user.did === agent.createdBy ||
-    session.user.did === agent.project.createdBy
-  );
+  return session.user.did === agent.createdBy || session.user.did === agent.project.createdBy;
 }

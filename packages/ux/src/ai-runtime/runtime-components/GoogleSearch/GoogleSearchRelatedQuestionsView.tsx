@@ -3,10 +3,7 @@ import React, { useState } from "react";
 
 import OutputFieldContainer from "../../components/OutputFieldContainer";
 import { useCurrentAgent } from "../../contexts/CurrentAgent";
-import {
-  useCurrentMessage,
-  useCurrentMessageOutput,
-} from "../../contexts/CurrentMessage";
+import { useCurrentMessage, useCurrentMessageOutput } from "../../contexts/CurrentMessage";
 import { useSession } from "../../contexts/Session";
 
 export type GoogleSearchRelatedViewPropValue = Array<{
@@ -22,8 +19,7 @@ export default function GoogleSearchRelatedView({
   const { aid } = useCurrentAgent();
   const { message } = useCurrentMessage({ optional: true }) ?? {};
 
-  const { outputValue, output } =
-    useCurrentMessageOutput<GoogleSearchRelatedViewPropValue>();
+  const { outputValue, output } = useCurrentMessageOutput<GoogleSearchRelatedViewPropValue>();
 
   const { lastMessageId, runAgent } = useSession((s) => ({
     lastMessageId: s?.messages?.at(0)?.id,

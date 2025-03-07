@@ -50,9 +50,7 @@ Draft copy:
   ] as const;
 
   let modelCallCount = 0;
-  spyOn(model, "process").mockImplementation(
-    async () => mockModelResults[modelCallCount++] ?? {},
-  );
+  spyOn(model, "process").mockImplementation(async () => mockModelResults[modelCallCount++] ?? {});
 
   const engine = new ExecutionEngine({ model });
 

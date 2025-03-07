@@ -1,10 +1,5 @@
 import { expect, test } from "bun:test";
-import {
-  ExecutionEngine,
-  FunctionAgent,
-  UserInputTopic,
-  UserOutputTopic,
-} from "@aigne/core";
+import { ExecutionEngine, FunctionAgent, UserInputTopic, UserOutputTopic } from "@aigne/core";
 
 test("ExecutionEngine.run", async () => {
   const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
@@ -20,14 +15,14 @@ test("ExecutionEngine.run", async () => {
 
 test("ExecutionEngine.runLoop", async () => {
   const plusOne = FunctionAgent.from({
-    subscribeTopic: [UserInputTopic, "revise"],
-    publishTopic: "review_request",
+    inputTopic: [UserInputTopic, "revise"],
+    nextTopic: "review_request",
     fn: (input: { num: number }) => ({ num: input.num + 1 }),
   });
 
   const reviewer = FunctionAgent.from({
-    subscribeTopic: "review_request",
-    publishTopic: (output) => (output.num > 10 ? UserOutputTopic : "revise"),
+    inputTopic: "review_request",
+    nextTopic: (output) => (output.num > 10 ? UserOutputTopic : "revise"),
     fn: ({ num }: { num: number }) => {
       return {
         num,

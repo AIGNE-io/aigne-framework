@@ -1,10 +1,6 @@
 import { LRUCache } from "lru-cache";
 
-import type {
-  ActionHistory,
-  HistoryStore,
-  MessageHistory,
-} from "../../core/type";
+import type { ActionHistory, HistoryStore, MessageHistory } from "../../core/type";
 import { initSequelize } from "../../lib/sequelize";
 import { migrate } from "./migrate";
 import { initHistoryModel } from "./models/history";
@@ -49,9 +45,7 @@ export class DefaultHistoryStore<T> implements HistoryStore<T> {
     return this._models;
   }
 
-  async addHistory(
-    ...history: ActionHistory<T>[]
-  ): Promise<ActionHistory<T>[]> {
+  async addHistory(...history: ActionHistory<T>[]): Promise<ActionHistory<T>[]> {
     const { History } = await this.models;
 
     return await History.bulkCreate(history);
@@ -80,9 +74,7 @@ export class DefaultHistoryStore<T> implements HistoryStore<T> {
     return await Message.findByPk(id);
   }
 
-  async getMessages(options: { filter: { [key: string]: any } }): Promise<
-    MessageHistory[]
-  > {
+  async getMessages(options: { filter: { [key: string]: any } }): Promise<MessageHistory[]> {
     const { Message } = await this.models;
 
     return await Message.findAll({ where: options.filter });

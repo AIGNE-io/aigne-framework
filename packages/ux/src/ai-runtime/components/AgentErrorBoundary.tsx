@@ -11,9 +11,7 @@ import { useIsAgentAdmin } from "../hooks/use-agent-admin";
 import { settingsDialogState } from "./AgentSettings/AgentSettingsDialog";
 
 export function AgentErrorBoundary({ children }: { children?: ReactNode }) {
-  return (
-    <ErrorBoundary FallbackComponent={AgentErrorView}>{children}</ErrorBoundary>
-  );
+  return <ErrorBoundary FallbackComponent={AgentErrorView}>{children}</ErrorBoundary>;
 }
 
 export function AgentErrorView({ error }: { error: any }) {

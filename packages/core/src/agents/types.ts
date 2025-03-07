@@ -16,8 +16,6 @@ export function transferToAgentOutput(agent: Agent): TransferAgentOutput {
   };
 }
 
-export function isTransferAgentOutput(
-  output: AgentOutput,
-): output is TransferAgentOutput {
+export function isTransferAgentOutput(output: AgentOutput): output is TransferAgentOutput {
   return transferAgentOutputKey in output;
 }

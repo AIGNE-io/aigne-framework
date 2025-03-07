@@ -52,11 +52,7 @@ export class RunnableStreamParser<O> extends TransformStream<
             this.$text += chunk.$text;
           }
 
-          Object.assign(
-            this.delta,
-            { $text: this.$text || undefined },
-            chunk.delta,
-          );
+          Object.assign(this.delta, { $text: this.$text || undefined }, chunk.delta);
           controller.enqueue({ ...chunk, delta: { ...this.delta } });
           return;
         }

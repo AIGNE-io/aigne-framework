@@ -9,8 +9,7 @@ export type ReferencedLinksViewPropValue = Array<{
 }>;
 
 export default function ReferencedLinksView() {
-  const { outputValue, output } =
-    useCurrentMessageOutput<ReferencedLinksViewPropValue>();
+  const { outputValue, output } = useCurrentMessageOutput<ReferencedLinksViewPropValue>();
 
   if (!outputValue.length) return null;
 

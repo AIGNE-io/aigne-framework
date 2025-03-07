@@ -1,9 +1,6 @@
 import { Stack, Typography, type TypographyProps } from "@mui/material";
 
-import type {
-  RuntimeOutputVariable,
-  RuntimeOutputVariablesSchema,
-} from "@aigne/agent-v1";
+import type { RuntimeOutputVariable, RuntimeOutputVariablesSchema } from "@aigne/agent-v1";
 
 export default function MessageSuggestedQuestions({
   dataSource,
@@ -19,10 +16,7 @@ export default function MessageSuggestedQuestions({
       <Stack gap={1}>
         {suggestedQuestions.map((item) => {
           return (
-            <MessageSuggestedQuestion
-              key={item.question}
-              onClick={() => onClick?.(item)}
-            >
+            <MessageSuggestedQuestion key={item.question} onClick={() => onClick?.(item)}>
               {item.question}
             </MessageSuggestedQuestion>
           );

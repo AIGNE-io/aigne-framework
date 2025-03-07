@@ -65,10 +65,7 @@ export interface Document {
   name?: string;
 }
 
-export async function deleteDocument(
-  knowledgeId: string,
-  documentId: string,
-): Promise<void> {
+export async function deleteDocument(knowledgeId: string, documentId: string): Promise<void> {
   return request({
     blocklet: AI_STUDIO_DID,
     method: "DELETE",

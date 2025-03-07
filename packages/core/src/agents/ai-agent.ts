@@ -17,7 +17,7 @@ export interface AIAgentOptions<
   toolChoice?: AIAgentToolChoice;
 }
 
-export type AIAgentToolChoice = "auto" | "none" | "required" | Agent;
+export type AIAgentToolChoice = "auto" | "none" | "required" | "router" | Agent;
 
 export class AIAgent<
   I extends AgentInput = AgentInput,
@@ -86,6 +86,15 @@ export class AIAgent<
           } else {
             executedToolCalls.push({ call, output });
           }
+        }
+
+        if (this.toolChoice === "router") {
+          const output = executedToolCalls[0]?.output;
+          if (!output || executedToolCalls.length !== 1) {
+            throw new Error("Router toolChoice requires exactly one tool to be executed");
+          }
+
+          return output as O;
         }
 
         // Continue LLM function calling loop if any tools were executed

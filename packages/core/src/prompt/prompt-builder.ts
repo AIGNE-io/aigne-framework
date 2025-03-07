@@ -136,6 +136,8 @@ export class PromptBuilder {
             description: manualChoice.description,
           },
         };
+      } else if (manualChoice === "router") {
+        toolChoice = "required";
       } else {
         toolChoice = manualChoice;
       }

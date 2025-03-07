@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "../agents/agent";
 import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types";
 import type { ChatModel } from "../models/chat";
-import { addMessagesToInput } from "../prompt/prompt-builder";
+import { addMessagesToInput, userInput } from "../prompt/prompt-builder";
 import { orArrayToArray } from "../utils/type-utils";
 import type { Context } from "./context";
 import { MessageQueue, UserInputTopic, UserOutputTopic } from "./message-queue";
@@ -83,21 +83,23 @@ export class ExecutionEngine extends EventEmitter implements Context {
   }
 
   async run(agent: Agent): Promise<UserAgent>;
-  async run(input: AgentInput): Promise<AgentOutput>;
-  async run(input: AgentInput, ...agents: Agent[]): Promise<AgentOutput>;
+  async run(input: AgentInput | string): Promise<AgentOutput>;
+  async run(input: AgentInput | string, ...agents: Agent[]): Promise<AgentOutput>;
   async run(
-    input: AgentInput,
+    input: AgentInput | string,
     options: ExecutionEngineRunOptions,
     ...agents: Agent[]
   ): Promise<AgentOutput>;
   async run(
-    input: AgentInput | Agent,
+    _input: AgentInput | string | Agent,
     _options?: ExecutionEngineRunOptions | Agent,
     ..._agents: Agent[]
   ) {
-    if (input instanceof Agent) return this.runChatLoop(input);
+    if (_input instanceof Agent) return this.runChatLoop(_input);
 
     const [options, agents] = this.splitOptionsAndAgents(_options, ..._agents);
+
+    const input = typeof _input === "string" ? userInput(_input) : _input;
 
     if (agents.length === 0) return this.publishUserInputTopic(input);
 

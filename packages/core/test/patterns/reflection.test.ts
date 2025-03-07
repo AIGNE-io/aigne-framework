@@ -9,7 +9,7 @@ import {
 } from "@aigne/core";
 import { z } from "zod";
 
-test("Patterns - Concurrency", async () => {
+test("Patterns - Reflection", async () => {
   const model = new ChatModelOpenAI();
 
   const coder = AIAgent.from({
@@ -115,9 +115,13 @@ Please review the code. If previous feedback was provided, see if it was address
     agents: [coder, reviewer],
   });
 
-  const result = await engine.runLoop({
+  const runLoop = spyOn(engine as any, "runLoop");
+
+  const result = await engine.run({
     question: "Write a function to find the sum of all even numbers in a list.",
   });
+
+  expect(runLoop).toHaveBeenCalledTimes(1);
 
   expect(modelProcess).toHaveBeenCalledTimes(mockModelResults.length);
 

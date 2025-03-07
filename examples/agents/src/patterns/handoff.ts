@@ -29,7 +29,9 @@ const agentB = AIAgent.from({
   tools: [transferToAgentA],
 });
 
-const userAgent = await new ExecutionEngine({ model }).runChatLoop(agentA);
+const engine = new ExecutionEngine({ model });
+
+const userAgent = await engine.run(agentA);
 
 // Create a terminal interface let the user interact with the agent
 const io = createInterface({

@@ -1,6 +1,6 @@
 import { ZodObject, type ZodType } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
-import type { AgentInput } from "../agents/agent";
+import { Agent, type AgentInput } from "../agents/agent";
 import type { AIAgent } from "../agents/ai-agent";
 import type { Context } from "../execution-engine/context";
 import type {
@@ -9,6 +9,7 @@ import type {
   ChatModelInputMessage,
   ChatModelInputResponseFormat,
   ChatModelInputTool,
+  ChatModelInputToolChoice,
 } from "../models/chat";
 import {
   ChatMessagesTemplate,
@@ -122,9 +123,31 @@ export class PromptBuilder {
       },
     }));
 
+    let toolChoice: ChatModelInputToolChoice | undefined;
+
+    // use manual choice if configured in the agent
+    const { toolChoice: manualChoice } = options.agent;
+    if (manualChoice) {
+      if (manualChoice instanceof Agent) {
+        toolChoice = {
+          type: "function",
+          function: {
+            name: manualChoice.name,
+            description: manualChoice.description,
+          },
+        };
+      } else {
+        toolChoice = manualChoice;
+      }
+    }
+    // otherwise, use auto choice if there is only one tool
+    else {
+      toolChoice = tools.length ? "auto" : undefined;
+    }
+
     return {
       tools,
-      toolChoice: tools.length ? "auto" : undefined,
+      toolChoice,
     };
   }
 }

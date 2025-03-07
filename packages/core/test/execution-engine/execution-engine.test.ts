@@ -13,7 +13,7 @@ test("ExecutionEngine.run", async () => {
   expect(result).toEqual({ sum: 3 });
 });
 
-test("ExecutionEngine.runLoop", async () => {
+test("ExecutionEngine.run with reflection", async () => {
   const plusOne = FunctionAgent.from({
     inputTopic: [UserInputTopic, "revise"],
     nextTopic: "review_request",
@@ -33,7 +33,7 @@ test("ExecutionEngine.runLoop", async () => {
 
   const engine = new ExecutionEngine({ agents: [plusOne, reviewer] });
 
-  const result = await engine.runLoop({ num: 1 });
+  const result = await engine.run({ num: 1 });
 
   expect(result).toEqual({ num: 11, approval: "approve" });
 });

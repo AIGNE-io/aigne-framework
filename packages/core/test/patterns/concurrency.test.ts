@@ -42,11 +42,16 @@ Product description:
     return {};
   });
 
-  const result = await engine.runParallel(
+  const runParallel = spyOn(engine as any, "runParallel");
+
+  const result = await engine.run(
     { product: "AIGNE is a No-code Generative AI Apps Engine" },
+    { concurrency: true },
     featureExtractor,
     audienceAnalyzer,
   );
+
+  expect(runParallel).toHaveBeenCalledTimes(1);
 
   expect(result).toEqual({
     features: "Extracted features: AIGNE is a No-code Generative AI Apps Engine",

@@ -1,5 +1,5 @@
 import type { Context } from "../execution-engine/context";
-import type { ChatModel, ChatModelOutputToolCall } from "../models/chat";
+import type { ChatModel, ChatModelInputToolChoice, ChatModelOutputToolCall } from "../models/chat";
 import { PromptBuilder } from "../prompt/prompt-builder";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template";
 import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "./agent";
@@ -14,7 +14,10 @@ export interface AIAgentOptions<
   model?: ChatModel;
   instructions?: string;
   outputKey?: string;
+  toolChoice?: AIAgentToolChoice;
 }
+
+export type AIAgentToolChoice = "auto" | "none" | "required" | Agent;
 
 export class AIAgent<
   I extends AgentInput = AgentInput,
@@ -32,6 +35,7 @@ export class AIAgent<
     this.model = options.model;
     this.instructions = options.instructions;
     this.outputKey = options.outputKey;
+    this.toolChoice = options.toolChoice;
   }
 
   model?: ChatModel;
@@ -41,6 +45,8 @@ export class AIAgent<
   instructions?: string;
 
   outputKey?: string;
+
+  toolChoice?: AIAgentToolChoice;
 
   async process(input: I, context?: Context): Promise<O> {
     const model = context?.model ?? this.model;

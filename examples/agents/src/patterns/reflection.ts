@@ -76,7 +76,7 @@ const engine = new ExecutionEngine({
   agents: [coder, reviewer],
 });
 
-const result = await engine.runLoop({
+const result = await engine.run({
   question: "Write a function to find the sum of all even numbers in a list.",
 });
 

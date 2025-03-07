@@ -14,6 +14,10 @@ export interface ExecutionEngineOptions {
   agents?: Agent[];
 }
 
+export interface ExecutionEngineRunOptions {
+  concurrency?: boolean;
+}
+
 export class ExecutionEngine extends EventEmitter implements Context {
   constructor(options?: ExecutionEngineOptions) {
     super();
@@ -78,11 +82,42 @@ export class ExecutionEngine extends EventEmitter implements Context {
     this.messageQueue.off(topic, listener);
   }
 
-  async run(input: AgentInput, ...agents: [Agent, ...Agent[]]) {
+  async run(agent: Agent): Promise<UserAgent>;
+  async run(input: AgentInput): Promise<AgentOutput>;
+  async run(input: AgentInput, ...agents: Agent[]): Promise<AgentOutput>;
+  async run(
+    input: AgentInput,
+    options: ExecutionEngineRunOptions,
+    ...agents: Agent[]
+  ): Promise<AgentOutput>;
+  async run(
+    input: AgentInput | Agent,
+    _options?: ExecutionEngineRunOptions | Agent,
+    ..._agents: Agent[]
+  ) {
+    if (input instanceof Agent) return this.runChatLoop(input);
+
+    const [options, agents] = this.splitOptionsAndAgents(_options, ..._agents);
+
+    if (agents.length === 0) return this.publishUserInputTopic(input);
+
+    if (options?.concurrency) return this.runParallel(input, ...agents);
+
     return this.runSequential(input, ...agents);
   }
 
-  async runSequential(input: AgentInput, ...agents: [Agent, ...Agent[]]): Promise<AgentOutput> {
+  private splitOptionsAndAgents(
+    options?: ExecutionEngineRunOptions | Agent,
+    ...agents: Agent[]
+  ): [ExecutionEngineRunOptions | undefined, Agent[]] {
+    if (options instanceof Agent) {
+      return [{}, [options, ...agents]];
+    }
+
+    return [options, agents];
+  }
+
+  private async runSequential(input: AgentInput, ...agents: Agent[]): Promise<AgentOutput> {
     const output: AgentOutput = {};
 
     for (const agent of agents.flat()) {
@@ -93,7 +128,7 @@ export class ExecutionEngine extends EventEmitter implements Context {
     return output;
   }
 
-  async runParallel(input: AgentInput, ...agents: [Agent, ...Agent[]]): Promise<AgentOutput> {
+  private async runParallel(input: AgentInput, ...agents: Agent[]): Promise<AgentOutput> {
     const outputs = await Promise.all(
       agents.map((agent) => this.callAgent(input, agent).then((res) => res.output)),
     );
@@ -101,33 +136,18 @@ export class ExecutionEngine extends EventEmitter implements Context {
     return Object.assign({}, ...outputs);
   }
 
-  async runLoop(
-    input: AgentInput,
-    options?: {
-      subscribe: { [topic: string]: (message: AgentOutput) => void };
-    },
-  ) {
+  private async publishUserInputTopic(input: AgentInput) {
     this.publish(UserInputTopic, input);
-
-    const subscriptions = Object.entries(options?.subscribe || {});
-
-    for (const [topic, listener] of subscriptions) {
-      this.subscribe(topic, listener);
-    }
 
     // TODO: 处理超时、错误、无限循环、饿死等情况
     const result = await new Promise((resolve) => {
       this.messageQueue.on(UserOutputTopic, (result) => resolve(result));
     });
 
-    for (const [topic, listener] of subscriptions) {
-      this.unsubscribe(topic, listener);
-    }
-
     return result;
   }
 
-  async runChatLoop(agent: Agent) {
+  private async runChatLoop(agent: Agent) {
     type S = { input: AgentInput; resolve: (output: AgentOutput) => void };
     const inputStream = new TransformStream<S, S>({});
 

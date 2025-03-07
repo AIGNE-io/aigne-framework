@@ -115,7 +115,7 @@ export class ExecutionEngine extends EventEmitter implements Context {
       this.subscribe(topic, listener);
     }
 
-    // TODO: 处理超时、错误、无限循环等情况
+    // TODO: 处理超时、错误、无限循环、饿死等情况
     const result = await new Promise((resolve) => {
       this.messageQueue.on(UserOutputTopic, (result) => resolve(result));
     });

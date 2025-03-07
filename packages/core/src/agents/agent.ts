@@ -34,7 +34,7 @@ export interface AgentOptions<
 
   includeInputInOutput?: boolean;
 
-  tools?: (Agent | ((input: AgentInput) => AgentOutput | Agent))[];
+  tools?: (Agent | FunctionAgentFn)[];
 
   skills?: Agent[];
 }

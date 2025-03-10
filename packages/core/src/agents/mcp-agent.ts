@@ -5,9 +5,12 @@ import {
   type StdioServerParameters,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
-import { jsonSchemaToZod } from "@n8n/json-schema-to-zod";
+import { type JsonSchema, jsonSchemaToZod } from "@n8n/json-schema-to-zod";
 import { type ZodObject, z } from "zod";
 import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "./agent";
+
+const MCP_AGENT_CLIENT_NAME = "MCPAgent";
+const MCP_AGENT_CLIENT_VERSION = "0.0.1";
 
 export interface MCPAgentOptions extends AgentOptions {
   client: Client;
@@ -50,8 +53,8 @@ export class MCPAgent extends Agent {
 
   private static async fromTransport(transport: Transport): Promise<MCPAgent> {
     const client = new Client({
-      name: "MCPAgent",
-      version: "0.0.1",
+      name: MCP_AGENT_CLIENT_NAME,
+      version: MCP_AGENT_CLIENT_VERSION,
     });
     await client.connect(transport);
     const { tools: mcpTools } = await client.listTools();
@@ -61,11 +64,12 @@ export class MCPAgent extends Agent {
         client,
         name: tool.name,
         description: tool.description,
-        inputSchema: jsonSchemaToZod<ZodObject<any>>(tool.inputSchema as any),
+        inputSchema: jsonSchemaToZod<ZodObject<any>>(tool.inputSchema as JsonSchema),
         outputSchema: z
           .object({
-            _meta: z.unknown(),
-            content: z.unknown(),
+            _meta: z.record(z.unknown()).optional(),
+            content: z.array(z.record(z.unknown())),
+            isError: z.boolean().optional(),
           })
           .passthrough(),
       });

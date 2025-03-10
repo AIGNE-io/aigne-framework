@@ -29,3 +29,4 @@ const result = await engine.run("extract content from https://www.arcblock.io", 
 await engine.destroy();
 
 console.log(result);
+process.exit(0);

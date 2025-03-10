@@ -2,6 +2,9 @@
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
+![Codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/branch/v2/graph/badge.svg)
+![NPM Version](https://img.shields.io/npm/v/%40aigne%2Fcore) ![MIT licensed](https://img.shields.io/npm/l/%40aigne%2Fcore)
+
 
 ## What is AIGNE Framework
 

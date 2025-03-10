@@ -38,4 +38,8 @@ jobs:
         run: pnpm lint
 
       - name: Test
-        run: pnpm test
+        run: pnpm test:coverage
+
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

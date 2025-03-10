@@ -18,9 +18,10 @@
   },
   "scripts": {
     "build": "tsc --build scripts/tsconfig.build.json",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "bun test"
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter lcov"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",

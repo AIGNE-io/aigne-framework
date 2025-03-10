@@ -4,50 +4,8 @@ import { Agent, type AgentInput, type AgentOutput } from "../agents/agent";
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor() {
     super({
-      inputSchema: z.object({
-        messages: z.array(z.any()),
-        responseFormat: z.any().optional(),
-        tools: z.array(z.any()).optional(),
-        toolChoice: z
-          .union([
-            z.literal("auto"),
-            z.literal("none"),
-            z.literal("required"),
-            z.object({
-              type: z.literal("function"),
-              function: z.object({
-                name: z.string(),
-                description: z.string().optional(),
-              }),
-            }),
-          ])
-          .optional(),
-        modelOptions: z
-          .object({
-            model: z.string().optional(),
-            temperature: z.number().optional(),
-            topP: z.number().optional(),
-            frequencyPenalty: z.number().optional(),
-            presencePenalty: z.number().optional(),
-          })
-          .optional(),
-      }),
-      outputSchema: z.object({
-        text: z.string().optional(),
-        json: z.any().optional(),
-        toolCalls: z
-          .array(
-            z.object({
-              id: z.string(),
-              type: z.literal("function"),
-              function: z.object({
-                name: z.string(),
-                arguments: z.any(),
-              }),
-            }),
-          )
-          .optional(),
-      }),
+      inputSchema: chatModelInputSchema,
+      outputSchema: chatModelOutputSchema,
     });
   }
 }
@@ -82,6 +40,35 @@ export interface ChatModelInputMessage {
   name?: string;
 }
 
+const chatModelInputMessageSchema = z.object({
+  role: z.union([z.literal("system"), z.literal("user"), z.literal("agent"), z.literal("tool")]),
+  content: z
+    .union([
+      z.string(),
+      z.array(
+        z.union([
+          z.object({ type: z.literal("text"), text: z.string() }),
+          z.object({ type: z.literal("image_url"), url: z.string() }),
+        ]),
+      ),
+    ])
+    .optional(),
+  toolCalls: z
+    .array(
+      z.object({
+        id: z.string(),
+        type: z.literal("function"),
+        function: z.object({
+          name: z.string(),
+          arguments: z.record(z.unknown()),
+        }),
+      }),
+    )
+    .optional(),
+  toolCallId: z.string().optional(),
+  name: z.string().optional(),
+});
+
 export type ChatModelInputResponseFormat =
   | { type: "text" }
   | {
@@ -94,6 +81,19 @@ export type ChatModelInputResponseFormat =
       };
     };
 
+const chatModelInputResponseFormatSchema = z.union([
+  z.literal("text"),
+  z.object({
+    type: z.literal("json_schema"),
+    jsonSchema: z.object({
+      name: z.string(),
+      description: z.string().optional(),
+      schema: z.record(z.unknown()),
+      strict: z.boolean().optional(),
+    }),
+  }),
+]);
+
 export interface ChatModelInputTool {
   type: "function";
   function: {
@@ -103,11 +103,27 @@ export interface ChatModelInputTool {
   };
 }
 
+const chatModelInputToolSchema = z.object({
+  type: z.literal("function"),
+  function: z.object({
+    name: z.string(),
+    description: z.string().optional(),
+    parameters: z.record(z.unknown()),
+  }),
+});
+
 export type ChatModelInputToolChoice =
   | "auto"
   | "none"
   | "required"
   | { type: "function"; function: { name: string; description?: string } };
+
+const chatModelInputToolChoiceSchema = z.union([
+  z.literal("auto"),
+  z.literal("none"),
+  z.literal("required"),
+  chatModelInputToolSchema,
+]);
 
 export interface ChatModelOptions {
   model?: string;
@@ -116,6 +132,22 @@ export interface ChatModelOptions {
   frequencyPenalty?: number;
   presencePenalty?: number;
 }
+
+const chatModelOptionsSchema = z.object({
+  model: z.string().optional(),
+  temperature: z.number().optional(),
+  topP: z.number().optional(),
+  frequencyPenalty: z.number().optional(),
+  presencePenalty: z.number().optional(),
+});
+
+const chatModelInputSchema = z.object({
+  messages: z.array(chatModelInputMessageSchema),
+  responseFormat: chatModelInputResponseFormatSchema.optional(),
+  tools: z.array(chatModelInputToolSchema).optional(),
+  toolChoice: chatModelInputToolChoiceSchema.optional(),
+  modelOptions: chatModelOptionsSchema.optional(),
+});
 
 export interface ChatModelOutput extends AgentOutput {
   text?: string;
@@ -131,3 +163,18 @@ export interface ChatModelOutputToolCall {
     arguments: AgentInput;
   };
 }
+
+const chatModelOutputToolCallSchema = z.object({
+  id: z.string(),
+  type: z.literal("function"),
+  function: z.object({
+    name: z.string(),
+    arguments: z.record(z.unknown()),
+  }),
+});
+
+const chatModelOutputSchema = z.object({
+  text: z.string().optional(),
+  json: z.unknown().optional(),
+  toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
+});

@@ -18,12 +18,6 @@ export class PromptTemplate {
   }
 }
 
-export const ChatMessageRoles = ["system", "user", "agent", "tool"] as const;
-
-export function isChatMessageRole(role: unknown): role is (typeof ChatMessageRoles)[number] {
-  return ChatMessageRoles.includes(role as any);
-}
-
 export class ChatMessageTemplate {
   constructor(
     public role: "system" | "user" | "agent" | "tool",

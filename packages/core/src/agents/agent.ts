@@ -36,13 +36,19 @@ export interface AgentOptions<
 
   tools?: (Agent | FunctionAgentFn)[];
 
-  skills?: Agent[];
+  skills?: (Agent | FunctionAgentFn)[];
 }
 
-export abstract class Agent<
+export class Agent<
   I extends AgentInput = AgentInput,
   O extends AgentOutput = AgentOutput,
 > extends EventEmitter {
+  static from<I extends AgentInput = AgentInput, O extends AgentOutput = AgentOutput>(
+    options: AgentOptions<I, O>,
+  ): Agent<I, O> {
+    return new Agent(options);
+  }
+
   constructor(options: AgentOptions<I, O>) {
     super();
 
@@ -53,13 +59,8 @@ export abstract class Agent<
     this.includeInputInOutput = options.includeInputInOutput;
     this.subscribeTopic = options.subscribeTopic;
     this.publishTopic = options.publishTopic;
-    this.tools = (options.tools ?? []).map((tool) => {
-      if (typeof tool === "function") {
-        return FunctionAgent.from({ name: tool.name, fn: tool });
-      }
-      return tool;
-    });
-    this.skills = options.skills || [];
+    if (options.tools?.length) this.tools.push(...options.tools.map(functionToAgent));
+    if (options.skills?.length) this.skills.push(...options.skills.map(functionToAgent));
   }
 
   name: string;
@@ -76,9 +77,19 @@ export abstract class Agent<
 
   publishTopic?: PublishTopic<any>;
 
-  tools: Agent[];
+  readonly tools: Agent[] = [];
 
-  skills: Agent[];
+  readonly skills = new Proxy<{ [key: string]: Agent } & Array<Agent>>([] as any, {
+    get: (target, p, receiver) => {
+      return Reflect.get(target, p, receiver) ?? target.find((i) => i.name === p);
+    },
+  });
+
+  addSkill<I extends AgentInput, O extends AgentOutput>(
+    skill: Agent<I, O> | FunctionAgentFn<I, O>,
+  ) {
+    this.skills.push(typeof skill === "function" ? functionToAgent(skill) : skill);
+  }
 
   get isCallable(): boolean {
     return !!this.process;
@@ -126,13 +137,15 @@ export class FunctionAgent<
   O extends AgentOutput = AgentOutput,
 > extends Agent<I, O> {
   static from<I extends AgentInput, O extends AgentOutput>(
+    options: FunctionAgentFn<I, O>,
+  ): FunctionAgent<I, O>;
+  static from<I extends AgentInput, O extends AgentOutput>(
+    options: FunctionAgentOptions<I, O>,
+  ): FunctionAgent<I, O>;
+  static from<I extends AgentInput, O extends AgentOutput>(
     options: FunctionAgentOptions<I, O> | FunctionAgentFn<I, O>,
   ): FunctionAgent<I, O> {
-    if (typeof options === "function") {
-      return new FunctionAgent({ fn: options });
-    }
-
-    return new FunctionAgent(options);
+    return typeof options === "function" ? functionToAgent(options) : new FunctionAgent(options);
   }
 
   constructor(options: FunctionAgentOptions<I, O>) {
@@ -157,3 +170,15 @@ export type FunctionAgentFn<
   I extends AgentInput = AgentInput,
   O extends AgentOutput = AgentOutput,
 > = (input: I, context?: Context) => O | Promise<O> | Agent | Promise<Agent>;
+
+function functionToAgent<I extends AgentInput, O extends AgentOutput>(
+  agent: FunctionAgentFn<I, O>,
+): FunctionAgent<I, O>;
+function functionToAgent<T extends Agent>(agent: T): T;
+function functionToAgent<T extends Agent>(agent: T | FunctionAgentFn): T | FunctionAgent;
+function functionToAgent<T extends Agent>(agent: T | FunctionAgentFn): T | FunctionAgent {
+  if (typeof agent === "function") {
+    return FunctionAgent.from({ name: agent.name, fn: agent });
+  }
+  return agent;
+}

@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.build.json",
-  "compilerOptions": {
-    "module": "ESNext",
-    "outDir": "../lib/dts",
-    "declaration": true,
-    "emitDeclarationOnly": true
-  }
-}

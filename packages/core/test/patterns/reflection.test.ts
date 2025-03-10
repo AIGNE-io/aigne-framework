@@ -115,7 +115,7 @@ Please review the code. If previous feedback was provided, see if it was address
     agents: [coder, reviewer],
   });
 
-  const runLoop = spyOn(engine as any, "runLoop");
+  const runLoop = spyOn(engine as any, "publishUserInputTopic");
 
   const result = await engine.run({
     question: "Write a function to find the sum of all even numbers in a list.",

@@ -12,16 +12,16 @@
     "clean": "pnpm -r run clean",
     "build:libs": "pnpm -F @aigne/* build",
     "bump-version": "zx scripts/bump-version.mjs",
-    "update:deps": "npx -y taze latest -r -w -n '/blocklet|abtnode|arcblock|ocap|did-space|nft-studio/' && pnpm install && pnpm dedupe",
+    "update:deps": "npx -y taze latest -r -w && pnpm install && pnpm dedupe",
     "test": "pnpm -r run test",
     "postinstall": "npx simple-git-hooks"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "bumpp": "^9.10.1",
+    "bumpp": "^10.0.3",
     "simple-git-hooks": "^2.11.1",
-    "typescript": "^5.7.3",
-    "zx": "^8.3.0"
+    "typescript": "^5.8.2",
+    "zx": "^8.4.0"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

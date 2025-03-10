@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["lib/", "mustache.ts"]
+    "ignore": ["lib/", "dist/"]
   },
   "formatter": {
     "enabled": true,
@@ -36,37 +36,6 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double"
-    },
-    "parser": {
-      "unsafeParameterDecoratorsEnabled": true
     }
-  },
-  "overrides": [
-    {
-      "include": ["packages/agent-v1/**", "packages/ux/src/ai-runtime/**"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noImplicitAnyLet": "off",
-            "noThenProperty": "off",
-            "noArrayIndexKey": "off",
-            "noConfusingVoidType": "off"
-          },
-          "performance": {
-            "noAccumulatingSpread": "off"
-          },
-          "complexity": {
-            "noForEach": "off"
-          },
-          "correctness": {
-            "useExhaustiveDependencies": "off",
-            "useJsxKeyInIterable": "off"
-          },
-          "a11y": {
-            "noSvgWithoutTitle": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

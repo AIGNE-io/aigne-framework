@@ -56,7 +56,9 @@ export interface PromptBuilderBuildOptions {
 }
 
 export class PromptBuilder {
-  async build(options: PromptBuilderBuildOptions): Promise<ChatModelInput> {
+  async build(
+    options: PromptBuilderBuildOptions,
+  ): Promise<ChatModelInput & { toolAgents: Agent[] }> {
     return {
       messages: this.buildMessages(options),
       responseFormat: this.buildResponseFormat(options),
@@ -111,8 +113,11 @@ export class PromptBuilder {
 
   private buildTools(
     options: PromptBuilderBuildOptions,
-  ): Pick<ChatModelInput, "tools" | "toolChoice"> {
-    const toolAgents = options.agent.tools.concat(options.context?.tools ?? []);
+  ): Pick<ChatModelInput, "tools" | "toolChoice"> & { toolAgents: Agent[] } {
+    const toolAgents = options.agent.tools
+      .concat(options.context?.tools ?? [])
+      // TODO: support nested tools in the agent skills?
+      .flatMap((i) => (i.isCallable ? i.skills.concat(i) : i.skills));
 
     const tools: ChatModelInputTool[] = toolAgents.map((i) => ({
       type: "function",
@@ -148,6 +153,7 @@ export class PromptBuilder {
     }
 
     return {
+      toolAgents,
       tools,
       toolChoice,
     };

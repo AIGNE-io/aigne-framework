@@ -22,7 +22,7 @@ export class ExecutionEngine extends EventEmitter implements Context {
   constructor(options?: ExecutionEngineOptions) {
     super();
     this.model = options?.model;
-    this.tools = options?.tools;
+    this.tools = options?.tools ?? [];
     if (options?.agents?.length) this.addAgent(...options.agents);
   }
 
@@ -30,7 +30,7 @@ export class ExecutionEngine extends EventEmitter implements Context {
 
   model?: ChatModel;
 
-  tools?: Agent[];
+  tools: Agent[];
 
   private agents: Agent[] = [];
 
@@ -46,13 +46,15 @@ export class ExecutionEngine extends EventEmitter implements Context {
   }
 
   private attachAgentSubscriptions(agent: Agent) {
-    for (const topic of orArrayToArray(agent.inputTopic)) {
+    for (const topic of orArrayToArray(agent.subscribeTopic)) {
       const listener = async (input: AgentInput) => {
         try {
           const { output } = await this.callAgent(input, agent);
 
           const topics =
-            typeof agent.nextTopic === "function" ? await agent.nextTopic(output) : agent.nextTopic;
+            typeof agent.publishTopic === "function"
+              ? await agent.publishTopic(output)
+              : agent.publishTopic;
 
           for (const topic of orArrayToArray(topics)) {
             this.publish(topic, output);
@@ -165,7 +167,14 @@ export class ExecutionEngine extends EventEmitter implements Context {
     (async () => {
       let activeAgent = agent;
 
-      for await (const { input, resolve } of inputStream.readable) {
+      const reader = inputStream.readable.getReader();
+
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const { input, resolve } = value;
+
         const { agent, output } = await this.callAgent(input, activeAgent);
 
         if (agent) activeAgent = agent;
@@ -223,6 +232,15 @@ export class ExecutionEngine extends EventEmitter implements Context {
       agent: activeAgent,
       output,
     };
+  }
+
+  async destroy() {
+    for (const tool of this.tools) {
+      await tool.destroy();
+    }
+    for (const agent of this.agents) {
+      await agent.destroy();
+    }
   }
 }
 

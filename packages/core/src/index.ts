@@ -1,5 +1,6 @@
 export * from "./agents/agent";
 export * from "./agents/ai-agent";
+export * from "./agents/mcp-agent";
 export * from "./execution-engine";
 export * from "./execution-engine/context";
 export * from "./execution-engine/message-queue";

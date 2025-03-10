@@ -14,8 +14,11 @@ const model = new ChatModelOpenAI({
 });
 
 const coder = AIAgent.from({
-  inputTopic: [UserInputTopic, "rewrite_request"],
-  nextTopic: "review_request",
+  subscribeTopic: [UserInputTopic, "rewrite_request"],
+  publishTopic: "review_request",
+  // TODO:
+  // 1. PromptBuilder.fromFile
+  // 2. PromptBuilder.fromString
   instructions: `\
 You are a proficient coder. You write code to solve problems.
 Work with the reviewer to improve your code.
@@ -43,8 +46,8 @@ User's question:
 });
 
 const reviewer = AIAgent.from({
-  inputTopic: "review_request",
-  nextTopic: (output) => (output.approval ? UserOutputTopic : "rewrite_request"),
+  subscribeTopic: "review_request",
+  publishTopic: (output) => (output.approval ? UserOutputTopic : "rewrite_request"),
   instructions: `\
 You are a code reviewer. You focus on correctness, efficiency and safety of the code.
 

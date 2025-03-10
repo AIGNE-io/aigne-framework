@@ -15,14 +15,14 @@ test("ExecutionEngine.run", async () => {
 
 test("ExecutionEngine.run with reflection", async () => {
   const plusOne = FunctionAgent.from({
-    inputTopic: [UserInputTopic, "revise"],
-    nextTopic: "review_request",
+    subscribeTopic: [UserInputTopic, "revise"],
+    publishTopic: "review_request",
     fn: (input: { num: number }) => ({ num: input.num + 1 }),
   });
 
   const reviewer = FunctionAgent.from({
-    inputTopic: "review_request",
-    nextTopic: (output) => (output.num > 10 ? UserOutputTopic : "revise"),
+    subscribeTopic: "review_request",
+    publishTopic: (output) => (output.num > 10 ? UserOutputTopic : "revise"),
     fn: ({ num }: { num: number }) => {
       return {
         num,

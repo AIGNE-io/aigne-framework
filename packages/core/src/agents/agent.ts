@@ -20,9 +20,9 @@ export interface AgentOptions<
   _I extends AgentInput = AgentInput,
   O extends AgentOutput = AgentOutput,
 > {
-  inputTopic?: SubscribeTopic;
+  subscribeTopic?: SubscribeTopic;
 
-  nextTopic?: PublishTopic<O>;
+  publishTopic?: PublishTopic<O>;
 
   name?: string;
 
@@ -51,8 +51,8 @@ export abstract class Agent<
     this.inputSchema = options.inputSchema || z.object({});
     this.outputSchema = options.outputSchema || z.object({});
     this.includeInputInOutput = options.includeInputInOutput;
-    this.inputTopic = options.inputTopic;
-    this.nextTopic = options.nextTopic;
+    this.subscribeTopic = options.subscribeTopic;
+    this.publishTopic = options.publishTopic;
     this.tools = (options.tools ?? []).map((tool) => {
       if (typeof tool === "function") {
         return FunctionAgent.from({ name: tool.name, fn: tool });
@@ -72,15 +72,21 @@ export abstract class Agent<
 
   includeInputInOutput?: boolean;
 
-  inputTopic?: SubscribeTopic;
+  subscribeTopic?: SubscribeTopic;
 
-  nextTopic?: PublishTopic<any>;
+  publishTopic?: PublishTopic<any>;
 
   tools: Agent[];
 
   skills: Agent[];
 
+  get isCallable(): boolean {
+    return !!this.process;
+  }
+
   async call(input: I | string, context?: Context): Promise<O> {
+    if (!this.process) throw new Error("Agent must implement process method");
+
     const _input = typeof input === "string" ? userInput(input) : input;
 
     const parsedInput = this.inputSchema.passthrough().parse(_input) as I;
@@ -103,7 +109,9 @@ export abstract class Agent<
     return finalOutput;
   }
 
-  abstract process(input: I, context?: Context): Promise<O>;
+  process?(input: I, context?: Context): Promise<O>;
+
+  async destroy() {}
 }
 
 export interface FunctionAgentOptions<

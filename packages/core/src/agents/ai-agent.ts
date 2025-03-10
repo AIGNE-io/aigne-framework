@@ -54,16 +54,14 @@ export class AIAgent<
 
     let transferOutput: TransferAgentOutput | undefined;
 
-    const modelInput = await this.promptBuilder.build({
+    const { toolAgents, ...modelInput } = await this.promptBuilder.build({
       agent: this,
       input,
       model,
       context,
     });
 
-    const toolsMap = new Map<string, Agent>(
-      this.tools.concat(context?.tools ?? []).map((i) => [i.name, i]),
-    );
+    const toolsMap = new Map<string, Agent>(toolAgents.map((i) => [i.name, i]));
 
     for (;;) {
       const { text, json, toolCalls } = await model.call(modelInput, context);

@@ -129,19 +129,13 @@ export interface FunctionAgentOptions<
   I extends AgentInput = AgentInput,
   O extends AgentOutput = AgentOutput,
 > extends AgentOptions<I, O> {
-  fn: FunctionAgentFn<I, O>;
+  fn?: FunctionAgentFn<I, O>;
 }
 
 export class FunctionAgent<
   I extends AgentInput = AgentInput,
   O extends AgentOutput = AgentOutput,
 > extends Agent<I, O> {
-  static from<I extends AgentInput, O extends AgentOutput>(
-    options: FunctionAgentFn<I, O>,
-  ): FunctionAgent<I, O>;
-  static from<I extends AgentInput, O extends AgentOutput>(
-    options: FunctionAgentOptions<I, O>,
-  ): FunctionAgent<I, O>;
   static from<I extends AgentInput, O extends AgentOutput>(
     options: FunctionAgentOptions<I, O> | FunctionAgentFn<I, O>,
   ): FunctionAgent<I, O> {
@@ -150,7 +144,7 @@ export class FunctionAgent<
 
   constructor(options: FunctionAgentOptions<I, O>) {
     super(options);
-    this.fn = options.fn;
+    this.fn = options.fn ?? ((() => ({})) as unknown as FunctionAgentFn<I, O>);
   }
 
   fn: FunctionAgentFn<I, O>;

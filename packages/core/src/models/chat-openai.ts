@@ -78,10 +78,12 @@ export class ChatModelOpenAI extends ChatModel {
       if (choice?.delta.content) text += choice.delta.content;
     }
 
-    const result: ChatModelOutput = { text };
+    const result: ChatModelOutput = {};
 
     if (input.responseFormat?.type === "json_schema") {
       result.json = JSON.parse(text);
+    } else {
+      result.text = text;
     }
 
     if (toolCalls.length) {

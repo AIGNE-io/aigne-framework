@@ -21,14 +21,24 @@ export class PromptTemplate {
 export class ChatMessageTemplate {
   constructor(
     public role: "system" | "user" | "agent" | "tool",
-    public content?: string,
+    public content?: ChatModelInputMessage["content"],
     public name?: string,
   ) {}
 
   format(variables?: Record<string, unknown>): ChatModelInputMessage {
+    let { content } = this;
+    if (Array.isArray(content)) {
+      content = content.map((i) => {
+        if (i.type === "text") return { ...i, text: PromptTemplate.from(i.text).format(variables) };
+        return i;
+      });
+    } else if (typeof content === "string") {
+      content = PromptTemplate.from(content).format(variables);
+    }
+
     return {
       role: this.role,
-      content: this.content && PromptTemplate.from(this.content).format(variables),
+      content,
       name: this.name,
     };
   }
@@ -41,7 +51,7 @@ export class SystemMessageTemplate extends ChatMessageTemplate {
 }
 
 export class UserMessageTemplate extends ChatMessageTemplate {
-  static from(template: string, name?: string) {
+  static from(template: NonNullable<ChatModelInputMessage["content"]>, name?: string) {
     return new UserMessageTemplate("user", template, name);
   }
 }

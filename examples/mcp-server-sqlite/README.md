@@ -12,7 +12,7 @@ This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/a
 ## Try without Installation
 
 ```bash
-OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
 
 npx -y @aigne/example-mcp-server-sqlite # run the example
 ```

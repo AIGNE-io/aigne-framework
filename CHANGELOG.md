@@ -1,3 +1,7 @@
+## 1.1.0-beta.10 (2025-3-13)
+
+- chore: ensure required environment variables have values
+
 ## 1.1.0-beta.9 (2025-3-13)
 
 - fix(MCP): catch list resource error treat as empty list

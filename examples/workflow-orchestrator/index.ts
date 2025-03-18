@@ -20,6 +20,9 @@ const model = new ChatModelOpenAI({
 const puppeteer = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
+  env: {
+    ...(process.env as Record<string, string>),
+  },
 });
 
 const finder = AIAgent.from({

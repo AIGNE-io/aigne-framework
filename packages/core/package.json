@@ -31,7 +31,7 @@
     "clean": "rimraf lib coverage",
     "prepublishOnly": "run-s clean build",
     "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter lcov"
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",

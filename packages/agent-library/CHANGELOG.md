@@ -1,3 +1,7 @@
+## 1.1.0-beta.17 (2025-3-18)
+
+- chore: add support for esm module
+
 ## 1.1.0-beta.16 (2025-3-18)
 
 - chore: add puppeteer in linux need docker_container

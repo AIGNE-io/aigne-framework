@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam, ChatCompletionTool } from "openai/resources";
-import { isNonNullable } from "../utils/type-utils";
+import { isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
   type ChatModelInput,
@@ -9,7 +9,7 @@ import {
   type ChatModelInputTool,
   type ChatModelOutput,
   type Role,
-} from "./chat";
+} from "./chat.js";
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 

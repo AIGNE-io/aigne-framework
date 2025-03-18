@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
-import type { AgentInput, AgentOutput } from "../agents/agent";
-import type { UserAgent } from "../execution-engine";
-import { logger } from "./logger";
+import type { AgentInput, AgentOutput } from "../agents/agent.js";
+import type { UserAgent } from "../execution-engine/index.js";
+import { logger } from "./logger.js";
 
 export interface ChatLoopOptions {
   log?: typeof console.log;

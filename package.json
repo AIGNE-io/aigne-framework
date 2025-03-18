@@ -24,10 +24,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "bumpp": "^10.0.3",
+    "bumpp": "^10.1.0",
     "simple-git-hooks": "^2.11.1",
     "typescript": "^5.8.2",
-    "zx": "^8.4.0"
+    "zx": "^8.4.1"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

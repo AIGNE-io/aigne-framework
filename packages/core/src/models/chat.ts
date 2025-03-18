@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Agent, type AgentInput, type AgentOutput } from "../agents/agent";
+import { Agent, type AgentInput, type AgentOutput } from "../agents/agent.js";
 
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor() {

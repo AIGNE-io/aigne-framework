@@ -1,6 +1,6 @@
 import Mustache from "mustache";
 import { z } from "zod";
-import type { ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat";
+import type { ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat.js";
 
 export class PromptTemplate {
   static from(template: string) {

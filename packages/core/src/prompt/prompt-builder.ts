@@ -1,11 +1,11 @@
 import { readFile } from "node:fs/promises";
-import type { GetPromptResult } from "@modelcontextprotocol/sdk/types";
-import { isNil } from "lodash";
+import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
+import { isNil } from "lodash-es";
 import { ZodObject, type ZodType } from "zod";
-import zodToJsonSchema from "zod-to-json-schema";
-import { Agent, type AgentInput, type AgentOptions } from "../agents/agent";
-import type { AIAgent } from "../agents/ai-agent";
-import type { Context } from "../execution-engine/context";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import { Agent, type AgentInput, type AgentOptions } from "../agents/agent.js";
+import type { AIAgent } from "../agents/ai-agent.js";
+import type { Context } from "../execution-engine/context.js";
 import type {
   ChatModel,
   ChatModelInput,
@@ -13,14 +13,14 @@ import type {
   ChatModelInputResponseFormat,
   ChatModelInputTool,
   ChatModelInputToolChoice,
-} from "../models/chat";
+} from "../models/chat.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
   SystemMessageTemplate,
   UserMessageTemplate,
   parseChatMessages,
-} from "./template";
+} from "./template.js";
 
 export const USER_INPUT_MESSAGE_KEY = "$user_input_message";
 

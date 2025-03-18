@@ -1,5 +1,4 @@
-import { get as _get } from "lodash";
-import isNil from "lodash/isNil";
+import { get as _get, isNil } from "lodash-es";
 
 export function isNonNullable<T>(value: T): value is NonNullable<T> {
   return !isNil(value);

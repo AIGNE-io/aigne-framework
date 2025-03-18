@@ -11,7 +11,7 @@ import {
   type Step,
   TASK_PROMPT_TEMPLATE,
   TASK_RESULT_TEMPLATE,
-} from "./orchestrator-prompts";
+} from "./orchestrator-prompts.js";
 
 const DEFAULT_MAX_ITERATIONS = 30;
 

@@ -1,4 +1,4 @@
-import type { Agent, AgentOutput } from "./agent";
+import type { Agent, AgentOutput } from "./agent.js";
 
 export const transferAgentOutputKey = "$transferAgentTo";
 

@@ -1,6 +1,6 @@
 import type EventEmitter from "node:events";
-import type { Agent, AgentInput, AgentOutput } from "../agents/agent";
-import type { ChatModel } from "../models/chat";
+import type { Agent, AgentInput, AgentOutput } from "../agents/agent.js";
+import type { ChatModel } from "../models/chat.js";
 
 export interface Context extends EventEmitter {
   model?: ChatModel;

@@ -5,13 +5,13 @@ import {
   type AgentOptions,
   type AgentOutput,
   type FunctionAgentFn,
-} from "../agents/agent";
-import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types";
-import type { ChatModel } from "../models/chat";
-import { addMessagesToInput, userInput } from "../prompt/prompt-builder";
-import { isNotEmpty, orArrayToArray } from "../utils/type-utils";
-import type { Context } from "./context";
-import { MessageQueue, UserInputTopic, UserOutputTopic } from "./message-queue";
+} from "../agents/agent.js";
+import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types.js";
+import type { ChatModel } from "../models/chat.js";
+import { addMessagesToInput, userInput } from "../prompt/prompt-builder.js";
+import { isNotEmpty, orArrayToArray } from "../utils/type-utils.js";
+import type { Context } from "./context.js";
+import { MessageQueue, UserInputTopic, UserOutputTopic } from "./message-queue.js";
 
 export interface ExecutionEngineOptions {
   model?: ChatModel;

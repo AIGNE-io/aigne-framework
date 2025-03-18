@@ -10,13 +10,17 @@ import type {
   CallToolResult,
   GetPromptResult,
   ReadResourceResult,
-} from "@modelcontextprotocol/sdk/types";
+} from "@modelcontextprotocol/sdk/types.js";
 import {} from "zod";
-import type { Context } from "../execution-engine/context";
-import { logger } from "../utils/logger";
-import { promptFromMCPPrompt, resourceFromMCPResource, toolFromMCPTool } from "../utils/mcp-utils";
-import { createAccessorArray } from "../utils/type-utils";
-import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "./agent";
+import type { Context } from "../execution-engine/context.js";
+import { logger } from "../utils/logger.js";
+import {
+  promptFromMCPPrompt,
+  resourceFromMCPResource,
+  toolFromMCPTool,
+} from "../utils/mcp-utils.js";
+import { createAccessorArray } from "../utils/type-utils.js";
+import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "./agent.js";
 
 const MCP_AGENT_CLIENT_NAME = "MCPAgent";
 const MCP_AGENT_CLIENT_VERSION = "0.0.1";

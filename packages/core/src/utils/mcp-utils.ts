@@ -1,3 +1,4 @@
+import { type JsonSchema, jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { UriTemplate } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
 import type {
@@ -5,10 +6,9 @@ import type {
   ListResourceTemplatesResult,
   ListResourcesResult,
   ListToolsResult,
-} from "@modelcontextprotocol/sdk/types";
-import { type JsonSchema, jsonSchemaToZod } from "@n8n/json-schema-to-zod";
+} from "@modelcontextprotocol/sdk/types.js";
 import { type ZodObject, type ZodType, z } from "zod";
-import { MCPPrompt, MCPResource, MCPTool } from "../agents/mcp-agent";
+import { MCPPrompt, MCPResource, MCPTool } from "../agents/mcp-agent.js";
 
 export function toolFromMCPTool(client: Client, tool: ListToolsResult["tools"][number]) {
   return new MCPTool({

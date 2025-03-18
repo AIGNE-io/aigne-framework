@@ -1,10 +1,10 @@
 import EventEmitter from "node:events";
 import { type ZodObject, type ZodType, z } from "zod";
-import type { Context } from "../execution-engine/context";
-import { userInput } from "../prompt/prompt-builder";
-import { logger } from "../utils/logger";
-import { createAccessorArray } from "../utils/type-utils";
-import { type TransferAgentOutput, transferToAgentOutput } from "./types";
+import type { Context } from "../execution-engine/context.js";
+import { userInput } from "../prompt/prompt-builder.js";
+import { logger } from "../utils/logger.js";
+import { createAccessorArray } from "../utils/type-utils.js";
+import { type TransferAgentOutput, transferToAgentOutput } from "./types.js";
 
 export type AgentInput = Record<string, unknown>;
 

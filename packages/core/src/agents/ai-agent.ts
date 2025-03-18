@@ -1,9 +1,13 @@
-import type { Context } from "../execution-engine/context";
-import type { ChatModel, ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat";
-import { PromptBuilder } from "../prompt/prompt-builder";
-import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template";
-import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "./agent";
-import { type TransferAgentOutput, isTransferAgentOutput, transferAgentOutputKey } from "./types";
+import type { Context } from "../execution-engine/context.js";
+import type { ChatModel, ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat.js";
+import { PromptBuilder } from "../prompt/prompt-builder.js";
+import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
+import { Agent, type AgentInput, type AgentOptions, type AgentOutput } from "./agent.js";
+import {
+  type TransferAgentOutput,
+  isTransferAgentOutput,
+  transferAgentOutputKey,
+} from "./types.js";
 
 const DEFAULT_OUTPUT_KEY = "text";
 const DEFAULT_MAX_HISTORY_MESSAGES = 10;

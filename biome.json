@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["lib/", "dist/"]
+    "ignore": ["lib/", "dist/", "package.json"]
   },
   "formatter": {
     "enabled": true,

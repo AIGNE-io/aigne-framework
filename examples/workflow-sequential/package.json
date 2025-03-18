@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-sequential",
-  "version": "1.1.0-beta.17",
+  "version": "1.2.0-beta.17",
   "description": "A demonstration of using AIGNE Framework to build a sequential workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-sequential",
@@ -10,7 +10,11 @@
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
   "bin": "index.ts",
-  "files": [".env.local.example", "*.ts", "README.md"],
+  "files": [
+    ".env.local.example",
+    "*.ts",
+    "README.md"
+  ],
   "scripts": {
     "start": "npx -y bun run index.ts"
   },

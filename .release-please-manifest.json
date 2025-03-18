@@ -1,14 +1,14 @@
 {
-  ".": "1.1.0-beta.17",
-  "packages/agent-library": "1.1.0-beta.17",
-  "packages/core": "1.1.0-beta.17",
-  "examples/mcp-server-puppeteer": "1.1.0-beta.17",
-  "examples/mcp-server-sqlite": "1.1.0-beta.17",
+  ".": "1.2.0-beta.17",
+  "packages/agent-library": "1.2.0-beta.17",
+  "packages/core": "1.2.0-beta.17",
+  "examples/mcp-server-puppeteer": "1.2.0-beta.17",
+  "examples/mcp-server-sqlite": "1.2.0-beta.17",
   "examples/workflow-code-execution": "1.1.0-beta.17",
   "examples/workflow-concurrency": "1.1.0-beta.17",
   "examples/workflow-handoff": "1.1.0-beta.17",
-  "examples/workflow-orchestrator": "1.1.0-beta.17",
+  "examples/workflow-orchestrator": "1.2.0-beta.17",
   "examples/workflow-reflection": "1.1.0-beta.17",
-  "examples/workflow-router": "1.1.0-beta.17",
-  "examples/workflow-sequential": "1.1.0-beta.17"
+  "examples/workflow-router": "1.2.0-beta.17",
+  "examples/workflow-sequential": "1.2.0-beta.17"
 }

@@ -31,19 +31,15 @@ Run the test suite using:
 pnpm test
 ```
 
+To run the test suite with coverage, use:
+
+```bash
+pnpm test:coverage
+```
+
 ## Running Examples
 
-Examples are located in the `examples/agents/` directory. To run an example, use:
-
-```bash
-bun run src/<example_name>.ts
-```
-
-For example:
-
-```bash
-bun run src/patterns/handoff.ts
-```
+Examples are located in the `examples/` directory. To run an example, navigate to each example directory and checkout its README for instructions.
 
 ## Lint, Typecheck, Format
 

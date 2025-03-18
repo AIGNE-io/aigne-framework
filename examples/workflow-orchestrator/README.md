@@ -36,6 +36,7 @@ class proofreader processing
 class fact_checker processing
 class style_enforcer processing
 ```
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
@@ -74,6 +75,14 @@ Setup your OpenAI API key in the `.env.local` file:
 OPENAI_API_KEY="" # setup your OpenAI API key here
 ```
 
+When running Puppeteer inside a Docker container, set the following environment variable:
+
+```
+DOCKER_CONTAINER="true"
+```
+
+This ensures Puppeteer configures itself correctly for a Docker environment, preventing potential compatibility issues.
+
 ### Run the Example
 
 ```bash
@@ -89,7 +98,12 @@ Here is the generated report for this example: [arcblock-deep-research.md](./gen
 ```typescript
 import assert from "node:assert";
 import { OrchestratorAgent } from "@aigne/agent-library";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, MCPAgent } from "@aigne/core-next";
+import {
+  AIAgent,
+  ChatModelOpenAI,
+  ExecutionEngine,
+  MCPAgent,
+} from "@aigne/core-next";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
@@ -141,7 +155,8 @@ const writer = AIAgent.from({
 
 const proofreader = AIAgent.from({
   name: "proofreader",
-  description: "Review the short story for grammar, spelling, and punctuation errors",
+  description:
+    "Review the short story for grammar, spelling, and punctuation errors",
   instructions: `Review the short story for grammar, spelling, and punctuation errors.
   Identify any awkward phrasing or structural issues that could improve clarity.
   Provide detailed feedback on corrections.`,
@@ -178,7 +193,7 @@ Conduct an in-depth research on ArcBlock using only the official website\
 (avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
 The report should include comprehensive insights into the company's products \
 (with detailed research findings and links), technical architecture, and future plans.`,
-  agent,
+  agent
 );
 console.log(result);
 // Output:

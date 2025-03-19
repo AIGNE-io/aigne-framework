@@ -3,6 +3,13 @@
 - chore: release v1.2.0
 
 
+## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.2.0...aigne-framework-v1.2.1) (2025-03-19)
+
+
+### Bug Fixes
+
+* **core:** enforce stricter input/output type checks ([#26](https://github.com/AIGNE-io/aigne-framework/issues/26)) ([ef8cf53](https://github.com/AIGNE-io/aigne-framework/commit/ef8cf53586aff08a809909c56ab2a20f215fa129))
+
 ## 1.1.0-beta.17 (2025-3-18)
 
 - chore: add support for esm module

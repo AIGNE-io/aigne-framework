@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core-next",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "AIGNE core library for building AI-powered applications",
   "publishConfig": {
     "access": "public"

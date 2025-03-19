@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/core-next-v1.2.0...core-next-v1.2.1) (2025-03-19)
+
+
+### Bug Fixes
+
+* **core:** enforce stricter input/output type checks ([#26](https://github.com/AIGNE-io/aigne-framework/issues/26)) ([ef8cf53](https://github.com/AIGNE-io/aigne-framework/commit/ef8cf53586aff08a809909c56ab2a20f215fa129))
 
 ## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/core-next-v1.1.0...core-next-v1.2.0) (2025-03-18)
 

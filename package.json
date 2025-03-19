@@ -11,8 +11,8 @@
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
   "scripts": {
-    "lint": "biome check && pnpm -r run lint",
-    "lint:fix": "biome check --write && pnpm -r run lint",
+    "lint": "npm run build && biome check && pnpm -r run lint",
+    "lint:fix": "npm run build && biome check --write && pnpm -r run lint",
     "build": "pnpm build:libs",
     "clean": "pnpm -r run clean",
     "build:libs": "pnpm -F @aigne/* build",

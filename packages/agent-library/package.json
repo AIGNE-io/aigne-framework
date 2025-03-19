@@ -32,7 +32,7 @@
     }
   },
   "scripts": {
-    "lint": "tsc --noEmit --module NodeNext --moduleResolution NodeNext",
+    "lint": "tsc --noEmit",
     "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib coverage",
     "prepublishOnly": "run-s clean build",

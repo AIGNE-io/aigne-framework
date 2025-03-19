@@ -193,10 +193,14 @@ export class MCPTool extends MCPBase<AgentInput, CallToolResult> {
   }
 }
 
-export class MCPPrompt extends MCPBase<{ [key: string]: string }, GetPromptResult> {
-  async process(input: AgentInput): Promise<GetPromptResult> {
+export interface MCPPromptInput extends AgentInput {
+  [key: string]: string;
+}
+
+export class MCPPrompt extends MCPBase<MCPPromptInput, GetPromptResult> {
+  async process(input: MCPPromptInput): Promise<GetPromptResult> {
     const result = await debug.spinner(
-      this.client.getPrompt({ name: this.name, arguments: input as Record<string, string> }),
+      this.client.getPrompt({ name: this.name, arguments: input }),
       `Get prompt ${this.name} from ${this.mcpServer}`,
       (output) => debug("input: %O\noutput: %O", input, output),
     );
@@ -205,12 +209,11 @@ export class MCPPrompt extends MCPBase<{ [key: string]: string }, GetPromptResul
   }
 }
 
-export interface MCPResourceOptions
-  extends MCPToolBaseOptions<{ [key: string]: never }, ReadResourceResult> {
+export interface MCPResourceOptions extends MCPToolBaseOptions<MCPPromptInput, ReadResourceResult> {
   uri: string;
 }
 
-export class MCPResource extends MCPBase<{ [key: string]: string }, ReadResourceResult> {
+export class MCPResource extends MCPBase<MCPPromptInput, ReadResourceResult> {
   constructor(options: MCPResourceOptions) {
     super(options);
     this.uri = options.uri;
@@ -218,7 +221,7 @@ export class MCPResource extends MCPBase<{ [key: string]: string }, ReadResource
 
   uri: string;
 
-  async process(input: { [key: string]: string }): Promise<ReadResourceResult> {
+  async process(input: MCPPromptInput): Promise<ReadResourceResult> {
     const uri = new UriTemplate(this.uri).expand(input);
 
     const result = await debug.spinner(

@@ -1,5 +1,5 @@
 import EventEmitter from "node:events";
-import { type ZodObject, type ZodType, z } from "zod";
+import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";
 import { userInput } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
@@ -29,9 +29,9 @@ export interface AgentOptions<
 
   description?: string;
 
-  inputSchema?: ZodObject<{ [key in keyof I]: ZodType }>;
+  inputSchema?: ZodType<I>;
 
-  outputSchema?: ZodObject<{ [key in keyof O]: ZodType }>;
+  outputSchema?: ZodType<O>;
 
   includeInputInOutput?: boolean;
 
@@ -44,15 +44,21 @@ export abstract class Agent<
   I extends AgentInput = AgentInput,
   O extends AgentOutput = AgentOutput,
 > extends EventEmitter {
-  constructor(options: AgentOptions<I, O>) {
+  constructor({ inputSchema, outputSchema, ...options }: AgentOptions<I, O>) {
     super();
 
     this.name = options.name || this.constructor.name;
     this.description = options.description;
-    this.inputSchema =
-      options.inputSchema || (z.object({}) as ZodObject<{ [key in keyof I]: ZodType }>);
-    this.outputSchema =
-      options.outputSchema || (z.object({}) as ZodObject<{ [key in keyof O]: ZodType }>);
+
+    if (
+      (inputSchema && !(inputSchema instanceof ZodObject)) ||
+      (outputSchema && !(outputSchema instanceof ZodObject))
+    ) {
+      throw new Error("inputSchema must be a Zod object");
+    }
+    this.inputSchema = (inputSchema || z.object({})).passthrough() as unknown as ZodType<I>;
+    this.outputSchema = (outputSchema || z.object({})).passthrough() as unknown as ZodType<O>;
+
     this.includeInputInOutput = options.includeInputInOutput;
     this.subscribeTopic = options.subscribeTopic;
     this.publishTopic = options.publishTopic as PublishTopic<AgentOutput>;
@@ -64,9 +70,9 @@ export abstract class Agent<
 
   readonly description?: string;
 
-  readonly inputSchema: ZodObject<{ [key in keyof I]: ZodType }>;
+  readonly inputSchema: ZodType<I>;
 
-  readonly outputSchema: ZodObject<{ [key in keyof O]: ZodType }>;
+  readonly outputSchema: ZodType<O>;
 
   readonly includeInputInOutput?: boolean;
 
@@ -91,10 +97,10 @@ export abstract class Agent<
 
     const _input = typeof input === "string" ? userInput(input) : input;
 
-    const parsedInput = this.inputSchema.passthrough().parse(_input) as I;
+    const parsedInput = this.inputSchema.parse(_input) as I;
 
     const result = this.process(parsedInput, context).then((output) => {
-      const parsedOutput = this.outputSchema.passthrough().parse(output) as O;
+      const parsedOutput = this.outputSchema.parse(output) as O;
 
       return this.includeInputInOutput ? { ...parsedInput, ...parsedOutput } : parsedOutput;
     });

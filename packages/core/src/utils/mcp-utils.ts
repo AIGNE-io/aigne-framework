@@ -1,11 +1,14 @@
 import { type JsonSchema, jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { UriTemplate } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
-import type {
-  ListPromptsResult,
-  ListResourceTemplatesResult,
-  ListResourcesResult,
-  ListToolsResult,
+import {
+  CallToolResultSchema,
+  GetPromptResultSchema,
+  type ListPromptsResult,
+  type ListResourceTemplatesResult,
+  type ListResourcesResult,
+  type ListToolsResult,
+  ReadResourceResultSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { type ZodObject, type ZodType, z } from "zod";
 import { MCPPrompt, MCPResource, MCPTool } from "../agents/mcp-agent.js";
@@ -18,13 +21,7 @@ export function toolFromMCPTool(client: Client, tool: ListToolsResult["tools"][n
     inputSchema: jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(
       tool.inputSchema as JsonSchema,
     ),
-    outputSchema: z
-      .object({
-        _meta: z.record(z.unknown()).optional(),
-        content: z.array(z.record(z.unknown())),
-        isError: z.boolean().optional(),
-      })
-      .passthrough(),
+    outputSchema: CallToolResultSchema,
   });
 }
 
@@ -42,12 +39,7 @@ export function promptFromMCPPrompt(client: Client, prompt: ListPromptsResult["p
         ),
       required: prompt.arguments?.filter((i) => i.required).map((i) => i.name),
     }),
-    outputSchema: z
-      .object({
-        description: z.string().optional(),
-        messages: z.array(z.record(z.unknown())),
-      })
-      .passthrough(),
+    outputSchema: GetPromptResultSchema,
   });
 }
 
@@ -74,10 +66,8 @@ export function resourceFromMCPResource(
     name: resource.name,
     uri,
     description: resource.description,
-    inputSchema: z
-      .object(Object.fromEntries(variables.map((i) => [i, z.string().optional()])))
-      .passthrough(),
-    outputSchema: z.object({ contents: z.array(z.record(z.unknown())) }).passthrough(),
+    inputSchema: z.object(Object.fromEntries(variables.map((i) => [i, z.string()]))),
+    outputSchema: ReadResourceResultSchema,
   });
 }
 

@@ -81,8 +81,8 @@ export type ChatModelInputResponseFormat =
       };
     };
 
-const chatModelInputResponseFormatSchema = z.union([
-  z.literal("text"),
+const chatModelInputResponseFormatSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("text") }),
   z.object({
     type: z.literal("json_schema"),
     jsonSchema: z.object({
@@ -141,7 +141,7 @@ const chatModelOptionsSchema = z.object({
   presencePenalty: z.number().optional(),
 });
 
-const chatModelInputSchema = z.object({
+const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({
   messages: z.array(chatModelInputMessageSchema),
   responseFormat: chatModelInputResponseFormatSchema.optional(),
   tools: z.array(chatModelInputToolSchema).optional(),
@@ -173,8 +173,8 @@ const chatModelOutputToolCallSchema = z.object({
   }),
 });
 
-const chatModelOutputSchema = z.object({
+const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
   text: z.string().optional(),
-  json: z.unknown().optional(),
+  json: z.record(z.unknown()).optional(),
   toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
 });

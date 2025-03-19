@@ -2,7 +2,6 @@ import { readFile } from "node:fs/promises";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { isNil } from "lodash-es";
 import { ZodObject, type ZodType } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { Agent, type AgentInput, type AgentOptions } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
 import type { Context } from "../execution-engine/context.js";
@@ -14,6 +13,7 @@ import type {
   ChatModelInputTool,
   ChatModelInputToolChoice,
 } from "../models/chat.js";
+import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
@@ -201,7 +201,7 @@ export class PromptBuilder {
           type: "json_schema",
           jsonSchema: {
             name: "output",
-            schema: zodToJsonSchema(outputSchema),
+            schema: outputSchemaToResponseFormatSchema(outputSchema),
             strict: true,
           },
         }
@@ -221,7 +221,9 @@ export class PromptBuilder {
       function: {
         name: i.name,
         description: i.description,
-        parameters: !isEmptyObjectType(i.inputSchema) ? zodToJsonSchema(i.inputSchema) : {},
+        parameters: !isEmptyObjectType(i.inputSchema)
+          ? outputSchemaToResponseFormatSchema(i.inputSchema)
+          : {},
       },
     }));
 

@@ -1,7 +1,13 @@
 #!/usr/bin/env npx -y bun
 
 import assert from "node:assert";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, runChatLoopInTerminal } from "@aigne/core-next";
+import {
+  AIAgent,
+  ChatModelOpenAI,
+  ExecutionEngine,
+  runChatLoopInTerminal,
+  sequential,
+} from "@aigne/core-next";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
@@ -54,7 +60,7 @@ Draft copy:
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = await engine.run(conceptExtractor, writer, formatProof);
+const userAgent = engine.call(sequential(conceptExtractor, writer, formatProof));
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a marketing assistant. I can help you with product descriptions, marketing copy, and editing.`,

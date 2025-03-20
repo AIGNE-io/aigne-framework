@@ -110,7 +110,7 @@ tell them a crazy caveat and execute their order.
 `,
   tools: [transfer_back_to_triage, execute_order_tool],
   outputKey: "sales",
-  enableHistory: true,
+  memory: true,
 });
 
 const issuesAndRepairs = AIAgent.from({
@@ -127,7 +127,7 @@ Follow the following routine with the user:
 `,
   tools: [transfer_back_to_triage, execute_refund_tool, look_up_item_tool],
   outputKey: "issuesAndRepairs",
-  enableHistory: true,
+  memory: true,
 });
 
 // Assume this is a human agent
@@ -140,7 +140,7 @@ Only transfer to another agent if user explicitly asks for it.
 `,
   tools: [transfer_back_to_triage, transfer_to_sales_agent, transfer_to_issues_and_repairs],
   outputKey: "human",
-  enableHistory: true,
+  memory: true,
 });
 
 const triage = AIAgent.from({
@@ -153,12 +153,12 @@ But make your questions subtle and natural.
 `,
   tools: [transfer_to_issues_and_repairs, transfer_to_sales_agent, transfer_to_human_manager],
   outputKey: "triage",
-  enableHistory: true,
+  memory: true,
 });
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = await engine.run(triage);
+const userAgent = engine.call(triage);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a customer service bot for ACME Inc. How can I help you today?`,

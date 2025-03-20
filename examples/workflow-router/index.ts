@@ -11,33 +11,33 @@ const model = new ChatModelOpenAI({
 });
 
 const productSupport = AIAgent.from({
-  enableHistory: true,
   name: "product_support",
   description: "Agent to assist with any product-related questions.",
   instructions: `You are an agent capable of handling any product-related questions.
   Your goal is to provide accurate and helpful information about the product.
   Be polite, professional, and ensure the user feels supported.`,
   outputKey: "product_support",
+  memory: true,
 });
 
 const feedback = AIAgent.from({
-  enableHistory: true,
   name: "feedback",
   description: "Agent to assist with any feedback-related questions.",
   instructions: `You are an agent capable of handling any feedback-related questions.
   Your goal is to listen to the user's feedback, acknowledge their input, and provide appropriate responses.
   Be empathetic, understanding, and ensure the user feels heard.`,
   outputKey: "feedback",
+  memory: true,
 });
 
 const other = AIAgent.from({
-  enableHistory: true,
   name: "other",
   description: "Agent to assist with any general questions.",
   instructions: `You are an agent capable of handling any general questions.
   Your goal is to provide accurate and helpful information on a wide range of topics.
   Be friendly, knowledgeable, and ensure the user feels satisfied with the information provided.`,
   outputKey: "other",
+  memory: true,
 });
 
 const triage = AIAgent.from({
@@ -51,7 +51,7 @@ const triage = AIAgent.from({
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = await engine.run(triage);
+const userAgent = engine.call(triage);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Welcome to the support chat!

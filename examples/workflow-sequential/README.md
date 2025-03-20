@@ -72,7 +72,7 @@ The following example demonstrates how to build a sequential workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core-next";
+import { AIAgent, ChatModelOpenAI, ExecutionEngine, sequential } from "@aigne/core-next";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
@@ -125,12 +125,9 @@ Draft copy:
 
 const engine = new ExecutionEngine({ model });
 
-const result = await engine.run(
-  { product: "AIGNE is a No-code Generative AI Apps Engine" },
-  conceptExtractor,
-  writer,
-  formatProof,
-);
+const result = await engine.call(sequential(conceptExtractor, writer, formatProof), {
+  product: "AIGNE is a No-code Generative AI Apps Engine",
+});
 
 console.log(result);
 

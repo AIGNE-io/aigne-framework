@@ -8,6 +8,7 @@ import {
   ExecutionEngine,
   MCPAgent,
   PromptBuilder,
+  getMessage,
   logger,
   runChatLoopInTerminal,
 } from "@aigne/core-next";
@@ -40,15 +41,15 @@ const engine = new ExecutionEngine({
 });
 
 const agent = AIAgent.from({
-  enableHistory: true,
   instructions: PromptBuilder.from(prompt),
+  memory: true,
 });
 
-const userAgent = await engine.run(agent);
+const userAgent = engine.call(agent);
 
 await runChatLoopInTerminal(userAgent, {
   initialCall: {},
-  onResponse: (response) => console.log(response.text),
+  onResponse: (response) => console.log(getMessage(response)),
 });
 
 process.exit(0);

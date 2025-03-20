@@ -38,13 +38,14 @@ You are a proficient coder. You write code to solve problems.
 Work with the sandbox to execute your code.
 `,
   tools: [sandbox],
+  memory: true,
 });
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = await engine.run(coder);
+const user = engine.call(coder);
 
-await runChatLoopInTerminal(userAgent, {
+await runChatLoopInTerminal(user, {
   welcome:
     "Welcome to the code execution workflow! you can ask me anything can be resolved by running code.",
   defaultQuestion: "10! = ?",

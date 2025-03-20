@@ -6,6 +6,7 @@ import {
   ChatModelOpenAI,
   ExecutionEngine,
   MCPAgent,
+  getMessage,
   logger,
   runChatLoopInTerminal,
 } from "@aigne/core-next";
@@ -35,16 +36,16 @@ const agent = AIAgent.from({
 1. navigate to the url
 2. evaluate document.body.innerText to get the content
 `,
-  enableHistory: true,
+  memory: true,
 });
 
-const userAgent = await engine.run(agent);
+const userAgent = engine.call(agent);
 
 await runChatLoopInTerminal(userAgent, {
   welcome:
     "Hello! I'm a chatbot that can extract content from a website. Try asking me a question!",
   defaultQuestion: "What is the content of https://www.arcblock.io",
-  onResponse: (response) => console.log(response.text),
+  onResponse: (response) => console.log(getMessage(response)),
 });
 
 process.exit(0);

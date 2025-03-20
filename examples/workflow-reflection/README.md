@@ -146,9 +146,10 @@ Please review the code. If previous feedback was provided, see if it was address
 });
 
 const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
+engine.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
 
-const result = await engine.run("Write a function to find the sum of all even numbers in a list.");
-console.log(result);
+const { message } = await engine.subscribe(UserOutputTopic);
+console.log(message);
 // Output:
 // {
 //   code: "def sum_of_even_numbers(numbers):\n    \"\"\"Function to calculate the sum of all even numbers in a list.\"\"\"\n    return sum(number for number in numbers if number % 2 == 0)",

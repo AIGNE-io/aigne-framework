@@ -35,6 +35,7 @@ export class AgentMemory {
   memories: Memory[] = [];
 
   addMemory(memory: Memory) {
+    if (this.memories.at(-1)?.content === memory.content) return;
     this.memories.push(memory);
   }
 

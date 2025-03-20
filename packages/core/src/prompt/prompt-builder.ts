@@ -238,7 +238,6 @@ function isEmptyObjectType(schema: ZodType) {
 }
 
 function convertMessageToContent(i: Message) {
-  console.log(i);
   const str = i[MESSAGE_KEY];
   return !isNil(str) ? (typeof str === "string" ? str : JSON.stringify(str)) : JSON.stringify(i);
 }

@@ -1,8 +1,8 @@
-import type { Agent, AgentOutput } from "./agent.js";
+import type { Agent, Message } from "./agent.js";
 
 export const transferAgentOutputKey = "$transferAgentTo";
 
-export interface TransferAgentOutput extends Record<string, unknown> {
+export interface TransferAgentOutput extends Message {
   [transferAgentOutputKey]: {
     agent: Agent;
   };
@@ -16,6 +16,17 @@ export function transferToAgentOutput(agent: Agent): TransferAgentOutput {
   };
 }
 
-export function isTransferAgentOutput(output: AgentOutput): output is TransferAgentOutput {
-  return transferAgentOutputKey in output;
+export function isTransferAgentOutput(output: Message): output is TransferAgentOutput {
+  return !!(output[transferAgentOutputKey] as TransferAgentOutput)?.agent;
+}
+
+export function replaceTransferAgentToName(output: Message): Message {
+  if (isTransferAgentOutput(output)) {
+    return {
+      ...output,
+      [transferAgentOutputKey]: output[transferAgentOutputKey].agent.name,
+    };
+  }
+
+  return output;
 }

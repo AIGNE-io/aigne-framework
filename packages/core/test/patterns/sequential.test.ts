@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core-next";
+import { AIAgent, ChatModelOpenAI, ExecutionEngine, sequential } from "@aigne/core-next";
 
 test("Patterns - Sequential", async () => {
   const model = new ChatModelOpenAI();
@@ -54,12 +54,9 @@ Draft copy:
 
   const engine = new ExecutionEngine({ model });
 
-  const result = await engine.run(
-    { product: "AIGNE is a No-code Generative AI Apps Engine" },
-    conceptExtractor,
-    writer,
-    formatProof,
-  );
+  const result = await engine.call(sequential(conceptExtractor, writer, formatProof), {
+    product: "AIGNE is a No-code Generative AI Apps Engine",
+  });
 
   expect(result).toEqual({
     concept: mockModelResults[0].text,

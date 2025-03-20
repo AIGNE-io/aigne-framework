@@ -4,57 +4,23 @@ import { join } from "node:path";
 import {
   AIAgent,
   FunctionAgent,
+  MESSAGE_KEY,
   PromptBuilder,
-  USER_INPUT_MESSAGE_KEY,
-  addMessagesToInput,
-  userInput,
+  createMessage,
 } from "@aigne/core-next";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
 test("userInput function should return correct object", () => {
   const message = "Hello";
-  const result = userInput(message);
-  expect(result).toEqual({ [USER_INPUT_MESSAGE_KEY]: message });
-});
-
-test("addMessagesToInput function should add messages correctly", () => {
-  const input = addMessagesToInput({ [USER_INPUT_MESSAGE_KEY]: "Hello" }, [
-    { role: "user", content: "How are you?" },
-  ]);
-  expect(input).toEqual({
-    [USER_INPUT_MESSAGE_KEY]: [
-      { role: "user", content: "Hello" },
-      { role: "user", content: "How are you?" },
-    ],
-  });
-
-  const input1 = addMessagesToInput(
-    { [USER_INPUT_MESSAGE_KEY]: [{ role: "user", content: "Hello" }] },
-    [{ role: "agent", content: "How can I help you?" }],
-  );
-  expect(input1).toEqual({
-    [USER_INPUT_MESSAGE_KEY]: [
-      { role: "user", content: "Hello" },
-      { role: "agent", content: "How can I help you?" },
-    ],
-  });
-
-  const input2 = addMessagesToInput({ [USER_INPUT_MESSAGE_KEY]: { name: "foo" } }, [
-    { role: "agent", content: "How can I help you?" },
-  ]);
-  expect(input2).toEqual({
-    [USER_INPUT_MESSAGE_KEY]: [
-      { role: "user", content: '{"name":"foo"}' },
-      { role: "agent", content: "How can I help you?" },
-    ],
-  });
+  const result = createMessage(message);
+  expect(result).toEqual({ [MESSAGE_KEY]: message });
 });
 
 test("PromptBuilder should build messages correctly", async () => {
   const builder = PromptBuilder.from("Test instructions");
 
-  const prompt1 = await builder.build({ input: userInput("Hello") });
+  const prompt1 = await builder.build({ input: createMessage("Hello") });
 
   expect(prompt1.messages).toEqual([
     {
@@ -67,7 +33,7 @@ test("PromptBuilder should build messages correctly", async () => {
     },
   ]);
 
-  const prompt2 = await builder.build({ input: userInput({ name: "foo" }) });
+  const prompt2 = await builder.build({ input: createMessage({ name: "foo" }) });
   expect(prompt2.messages).toEqual([
     {
       role: "system",

@@ -1,26 +1,31 @@
 import EventEmitter from "node:events";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";
-import { userInput } from "../prompt/prompt-builder.js";
+import { createMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
-import { createAccessorArray } from "../utils/type-utils.js";
-import { type TransferAgentOutput, transferToAgentOutput } from "./types.js";
+import {
+  type Nullish,
+  type PromiseOrValue,
+  createAccessorArray,
+  orArrayToArray,
+} from "../utils/type-utils.js";
+import { AgentMemory, type AgentMemoryOptions } from "./memory.js";
+import {
+  type TransferAgentOutput,
+  replaceTransferAgentToName,
+  transferToAgentOutput,
+} from "./types.js";
 
-export type AgentInput = Record<string, unknown>;
-
-export type AgentOutput = Record<string, unknown> & Partial<TransferAgentOutput>;
+export type Message = Record<string, unknown>;
 
 export type SubscribeTopic = string | string[];
 
-export type PublishTopic<O extends AgentOutput = AgentOutput> =
+export type PublishTopic<O extends Message> =
   | string
   | string[]
-  | ((output: O) => string | string[] | Promise<string | string[]>);
+  | ((output: O) => PromiseOrValue<Nullish<string | string[]>>);
 
-export interface AgentOptions<
-  I extends AgentInput = AgentInput,
-  O extends AgentOutput = AgentOutput,
-> {
+export interface AgentOptions<I extends Message = Message, O extends Message = Message> {
   subscribeTopic?: SubscribeTopic;
 
   publishTopic?: PublishTopic<O>;
@@ -38,11 +43,13 @@ export interface AgentOptions<
   tools?: (Agent | FunctionAgentFn)[];
 
   disableLogging?: boolean;
+
+  memory?: AgentMemory | AgentMemoryOptions | true;
 }
 
 export abstract class Agent<
-  I extends AgentInput = AgentInput,
-  O extends AgentOutput = AgentOutput,
+  I extends Message = Message,
+  O extends Message = Message,
 > extends EventEmitter {
   constructor({ inputSchema, outputSchema, ...options }: AgentOptions<I, O>) {
     super();
@@ -61,12 +68,29 @@ export abstract class Agent<
 
     this.includeInputInOutput = options.includeInputInOutput;
     this.subscribeTopic = options.subscribeTopic;
-    this.publishTopic = options.publishTopic as PublishTopic<AgentOutput>;
+    this.publishTopic = options.publishTopic as PublishTopic<Message>;
     if (options.tools?.length) this.tools.push(...options.tools.map(functionToAgent));
     this.disableLogging = options.disableLogging;
+    if (options.memory) {
+      this.memory =
+        options.memory instanceof AgentMemory
+          ? options.memory
+          : typeof options.memory === "boolean"
+            ? new AgentMemory({ enable: options.memory })
+            : new AgentMemory(options.memory);
+    }
   }
 
+  readonly memory?: AgentMemory;
+
   readonly name: string;
+
+  /**
+   * Default topic this agent will subscribe to
+   */
+  get topic(): string {
+    return `$agent_${this.name}`;
+  }
 
   readonly description?: string;
 
@@ -78,13 +102,33 @@ export abstract class Agent<
 
   readonly subscribeTopic?: SubscribeTopic;
 
-  readonly publishTopic?: PublishTopic<AgentOutput>;
+  readonly publishTopic?: PublishTopic<Message>;
 
   readonly tools = createAccessorArray<Agent>([], (arr, name) => arr.find((t) => t.name === name));
 
   private disableLogging?: boolean;
 
-  addTool<I extends AgentInput, O extends AgentOutput>(tool: Agent<I, O> | FunctionAgentFn<I, O>) {
+  /**
+   * Attach agent to context:
+   * - subscribe to topic and call process method when message received
+   * - subscribe to memory topic if memory is enabled
+   * @param context Context to attach
+   */
+  attach(context: Context) {
+    this.memory?.attach(context);
+
+    for (const topic of orArrayToArray(this.subscribeTopic).concat(this.topic)) {
+      context.subscribe(topic, async ({ message }) => {
+        try {
+          await context.call(this, message);
+        } catch (error) {
+          context.emit("error", error);
+        }
+      });
+    }
+  }
+
+  addTool<I extends Message, O extends Message>(tool: Agent<I, O> | FunctionAgentFn<I, O>) {
     this.tools.push(typeof tool === "function" ? functionToAgent(tool) : tool);
   }
 
@@ -95,41 +139,55 @@ export abstract class Agent<
   async call(input: I | string, context?: Context): Promise<O> {
     if (!this.process) throw new Error("Agent must implement process method");
 
-    const _input = typeof input === "string" ? userInput(input) : input;
+    const _input = typeof input === "string" ? createMessage(input) : input;
 
     const parsedInput = this.inputSchema.parse(_input) as I;
 
-    const result = this.process(parsedInput, context).then((output) => {
-      const parsedOutput = this.outputSchema.parse(output) as O;
+    logger.debug("Call agent %s start with input: %O", this.name, input);
 
-      return this.includeInputInOutput ? { ...parsedInput, ...parsedOutput } : parsedOutput;
-    });
+    const result = this.process(parsedInput, context)
+      .then((output) => {
+        const parsedOutput = this.outputSchema.parse(output) as O;
+        return this.includeInputInOutput ? { ...parsedInput, ...parsedOutput } : parsedOutput;
+      })
+      .then((output) => {
+        this.memory?.addMemory({ role: "user", content: _input });
+        this.memory?.addMemory({
+          role: "agent",
+          content: replaceTransferAgentToName(output),
+          source: this.name,
+        });
+        return output;
+      });
 
     return logger.debug.spinner(
       result,
       `Call agent ${this.name}`,
-      (output) => logger.debug("input: %O\noutput: %O", input, output),
+      (output) =>
+        logger.debug(
+          "Call agent %s succeed with output: %O",
+          this.name,
+          replaceTransferAgentToName(output),
+        ),
       { disabled: this.disableLogging },
     );
   }
 
-  abstract process(input: I, context?: Context): Promise<O>;
+  abstract process(input: I, context?: Context): Promise<O | TransferAgentOutput>;
 
   async shutdown() {}
 }
 
-export interface FunctionAgentOptions<
-  I extends AgentInput = AgentInput,
-  O extends AgentOutput = AgentOutput,
-> extends AgentOptions<I, O> {
+export interface FunctionAgentOptions<I extends Message = Message, O extends Message = Message>
+  extends AgentOptions<I, O> {
   fn?: FunctionAgentFn<I, O>;
 }
 
-export class FunctionAgent<
-  I extends AgentInput = AgentInput,
-  O extends AgentOutput = AgentOutput,
-> extends Agent<I, O> {
-  static from<I extends AgentInput, O extends AgentOutput>(
+export class FunctionAgent<I extends Message = Message, O extends Message = Message> extends Agent<
+  I,
+  O
+> {
+  static from<I extends Message, O extends Message>(
     options: FunctionAgentOptions<I, O> | FunctionAgentFn<I, O>,
   ): FunctionAgent<I, O> {
     return typeof options === "function" ? functionToAgent(options) : new FunctionAgent(options);
@@ -142,23 +200,23 @@ export class FunctionAgent<
 
   fn: FunctionAgentFn<I, O>;
 
-  async process(input: I, context?: Context): Promise<O> {
+  async process(input: I, context?: Context) {
     const result = await this.fn(input, context);
 
     if (result instanceof Agent) {
-      return transferToAgentOutput(result) as O;
+      return transferToAgentOutput(result);
     }
 
     return result;
   }
 }
 
-export type FunctionAgentFn<
-  I extends AgentInput = AgentInput,
-  O extends AgentOutput = AgentOutput,
-> = (input: I, context?: Context) => O | Promise<O> | Agent | Promise<Agent>;
+export type FunctionAgentFn<I extends Message = Message, O extends Message = Message> = (
+  input: I,
+  context?: Context,
+) => O | Promise<O> | Agent | Promise<Agent>;
 
-function functionToAgent<I extends AgentInput, O extends AgentOutput>(
+function functionToAgent<I extends Message, O extends Message>(
   agent: FunctionAgentFn<I, O>,
 ): FunctionAgent<I, O>;
 function functionToAgent<T extends Agent>(agent: T): T;

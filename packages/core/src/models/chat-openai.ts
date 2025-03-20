@@ -81,7 +81,7 @@ export class ChatModelOpenAI extends ChatModel {
 
     const result: ChatModelOutput = {};
 
-    if (input.responseFormat?.type === "json_schema") {
+    if (input.responseFormat?.type === "json_schema" && text) {
       result.json = JSON.parse(text);
     } else {
       result.text = text;

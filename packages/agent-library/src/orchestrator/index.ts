@@ -1,6 +1,12 @@
-import type { AgentOptions, AgentOutput, Context } from "@aigne/core-next";
-import type { AgentInput } from "@aigne/core-next";
-import { AIAgent, Agent, PromptTemplate, getUserInputMessage } from "@aigne/core-next";
+import {
+  AIAgent,
+  Agent,
+  type AgentOptions,
+  type Context,
+  type Message,
+  PromptTemplate,
+  getMessage,
+} from "@aigne/core-next";
 import {
   FULL_PLAN_PROMPT_TEMPLATE,
   type FullPlanOutput,
@@ -28,7 +34,7 @@ export interface TaskWithResult {
   result: string;
 }
 
-export interface PlanResult extends AgentOutput {
+export interface PlanResult extends Message {
   objective: string;
   plan?: FullPlanOutput;
   is_complete?: boolean;
@@ -36,24 +42,22 @@ export interface PlanResult extends AgentOutput {
   step_results: StepResult[];
 }
 
-export interface FullPlanInput extends AgentInput {
+export interface FullPlanInput extends Message {
   objective: string;
   plan_result: string;
   agents: string;
 }
 
-export interface OrchestratorAgentOptions<
-  I extends AgentInput = AgentInput,
-  O extends AgentOutput = AgentOutput,
-> extends AgentOptions<I, O> {
+export interface OrchestratorAgentOptions<I extends Message = Message, O extends Message = Message>
+  extends AgentOptions<I, O> {
   maxIterations?: number;
 }
 
 export class OrchestratorAgent<
-  I extends AgentInput = AgentInput,
-  O extends AgentOutput = AgentOutput,
+  I extends Message = Message,
+  O extends Message = Message,
 > extends Agent<I, O> {
-  static from<I extends AgentInput, O extends AgentOutput>(
+  static from<I extends Message, O extends Message>(
     options: OrchestratorAgentOptions<I, O>,
   ): OrchestratorAgent<I, O> {
     return new OrchestratorAgent(options);
@@ -82,11 +86,11 @@ export class OrchestratorAgent<
 
   maxIterations?: number;
 
-  async process(input: I, context?: Context): Promise<O> {
+  async process(input: I, context?: Context) {
     const model = context?.model;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
-    const objective = getUserInputMessage(input);
+    const objective = getMessage(input);
     if (!objective) throw new Error("Objective is required to run OrchestratorAgent");
 
     const result: PlanResult = {
@@ -103,7 +107,7 @@ export class OrchestratorAgent<
       result.plan = plan;
 
       if (plan.is_complete) {
-        return this.completer.call({ plan_result: this.formatPlanResult(result) }, context);
+        return context.call(this.completer, { plan_result: this.formatPlanResult(result) });
       }
 
       for (const step of plan.steps) {
@@ -119,7 +123,7 @@ export class OrchestratorAgent<
   private async getFullPlan(
     objective: string,
     planResult: PlanResult,
-    context?: Context,
+    context: Context,
   ): Promise<FullPlanOutput> {
     const agents = this.tools
       .map(
@@ -130,10 +134,11 @@ Functions: ${agent.tools.map((tool) => `- ${tool.name} ${tool.description}`).joi
       )
       .join("\n");
 
-    return this.planner.call(
-      { objective, plan_result: this.formatPlanResult(planResult), agents },
-      context,
-    );
+    return context.call(this.planner, {
+      objective,
+      plan_result: this.formatPlanResult(planResult),
+      agents,
+    });
   }
 
   private async executeStep(
@@ -159,13 +164,13 @@ Functions: ${agent.tools.map((tool) => `- ${tool.name} ${tool.description}`).joi
       let result: string;
 
       if (agent.isCallable) {
-        result = JSON.stringify(await agent.call(prompt, context));
+        result = JSON.stringify(await context.call(agent, prompt));
       } else {
         const executor = AIAgent.from({
           instructions: prompt,
           tools: agent.tools,
         });
-        result = JSON.stringify(await executor.call({}, context));
+        result = JSON.stringify(await context.call(executor, {}));
       }
 
       taskResults.push({ ...task, result });

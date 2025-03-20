@@ -8,7 +8,7 @@ test("ExecutionEngine.run", async () => {
 
   const engine = new ExecutionEngine();
 
-  const result = await engine.run({ a: 1, b: 2 }, plus);
+  const result = await engine.call(plus, { a: 1, b: 2 });
 
   expect(result).toEqual({ sum: 3 });
 });
@@ -32,8 +32,8 @@ test("ExecutionEngine.run with reflection", async () => {
   });
 
   const engine = new ExecutionEngine({ agents: [plusOne, reviewer] });
-
-  const result = await engine.run({ num: 1 });
+  engine.publish(UserInputTopic, { num: 1 });
+  const { message: result } = await engine.subscribe(UserOutputTopic);
 
   expect(result).toEqual({ num: 11, approval: "approve" });
 });

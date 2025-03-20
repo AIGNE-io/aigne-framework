@@ -8,7 +8,7 @@ test("Patterns - Run", async () => {
 
   const engine = new ExecutionEngine();
 
-  const result = await engine.run({ a: 1, b: 2 }, plus);
+  const result = await engine.call(plus, { a: 1, b: 2 });
 
   expect(result).toEqual({ sum: 3 });
 });

@@ -53,9 +53,9 @@ const agentB = AIAgent.from({
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = await engine.run(agentA);
+const userAgent = await engine.call(agentA);
 
-const response = await userAgent.run("transfer to agent b");
+const response = await userAgent.call("transfer to agent b");
 // output
 // {
 //   B: "Agent B awaits here,  \nIn haikus I shall speak now,  \nWhat do you seek, friend?",
@@ -236,6 +236,7 @@ class sandbox processing
 - [Workflow Reflection](./examples/workflow-reflection) - Enable self-improvement through output evaluation and refinement capabilities.
 - [Workflow Orchestration](./examples/workflow-orchestration) - Coordinate multiple agents working together in sophisticated processing pipelines.
 - [Workflow Code Execution](./examples/workflow-code-execution) - Safely execute dynamically generated code within AI-driven workflows.
+- [Workflow Group Chat](./examples/workflow-group-chat) - Share messages and interact with multiple agents in a group chat environment.
 
 ## Contributing and Releasing
 

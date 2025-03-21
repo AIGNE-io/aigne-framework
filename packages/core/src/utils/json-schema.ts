@@ -1,10 +1,10 @@
 import { isObject } from "lodash-es";
 import type { ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import type { AgentOutput } from "../agents/agent.js";
+import type { Message } from "../agents/agent.js";
 
 export function outputSchemaToResponseFormatSchema(
-  agentOutput: ZodType<AgentOutput>,
+  agentOutput: ZodType<Message>,
 ): Record<string, unknown> {
   return setAdditionPropertiesDeep(zodToJsonSchema(agentOutput), false);
 }

@@ -14,7 +14,7 @@ import type { APIPromise } from "openai/core";
 import type { ChatCompletion, ChatCompletionChunk } from "openai/resources";
 import type { Stream } from "openai/streaming";
 
-test("ChatModelOpenAI.run", async () => {
+test("ChatModelOpenAI.call", async () => {
   const model = new ChatModelOpenAI({
     apiKey: "YOUR_API_KEY",
     model: "gpt-4o-mini",

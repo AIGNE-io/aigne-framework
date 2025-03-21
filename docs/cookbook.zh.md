@@ -106,7 +106,7 @@ Work with the sandbox to execute your code.
 
 // 创建执行引擎并运行
 const engine = new ExecutionEngine({ model });
-const result = await engine.run("10! = ?", coder);
+const result = await engine.call(coder, "10! = ?");
 console.log(result);
 // 输出: { text: "The value of \\(10!\\) (10 factorial) is 3,628,800." }
 ```
@@ -172,11 +172,8 @@ Draft copy:
 
 // 按顺序执行三个Agent
 const engine = new ExecutionEngine({ model });
-const result = await engine.run(
-  { product: "AIGNE is a No-code Generative AI Apps Engine" },
-  conceptExtractor,
-  writer,
-  formatProof,
+const result = await engine.call(sequential(conceptExtractor, writer, formatProof),
+  { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
 
 console.log(result);
@@ -219,9 +216,9 @@ Product description:
 
 // 并行执行两个Agent
 const engine = new ExecutionEngine({ model });
-const result = await engine.run(
-  { product: "AIGNE is a No-code Generative AI Apps Engine" },
+const result = await engine.call(
   parallel(featureExtractor, audienceAnalyzer),
+  { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
 
 console.log(result);
@@ -307,7 +304,7 @@ Please review the code. If previous feedback was provided, see if it was address
 
 // 执行反思工作流
 const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
-const result = await engine.run("Write a function to find the sum of all even numbers in a list.");
+const result = await engine.call("Write a function to find the sum of all even numbers in a list.");
 console.log(result);
 // 输出包含通过审查的代码及反馈
 ```
@@ -348,7 +345,7 @@ const agentB = AIAgent.from({
 
 // 执行交接工作流
 const engine = new ExecutionEngine({ model });
-const userAgent = await engine.run(agentA);
+const userAgent = await engine.call(agentA);
 
 // 转交给Agent B
 const result1 = await userAgent.call("transfer to agent b");
@@ -422,17 +419,17 @@ const triage = AIAgent.from({
 const engine = new ExecutionEngine({ model });
 
 // 产品相关问题自动路由到产品支持
-const result1 = await engine.run("How to use this product?", triage);
+const result1 = await engine.call(triage, "How to use this product?");
 console.log(result1);
 // { product_support: "I'd be happy to help you with that! However, I need to know which specific product you're referring to..." }
 
 // 反馈相关问题自动路由到反馈
-const result2 = await engine.run("I have feedback about the app.", triage);
+const result2 = await engine.call(triage, "I have feedback about the app.");
 console.log(result2);
 // { feedback: "Thank you for sharing your feedback! I'm here to listen..." }
 
 // 一般问题自动路由到一般查询
-const result3 = await engine.run("What is the weather today?", triage);
+const result3 = await engine.call(triage, "What is the weather today?");
 console.log(result3);
 // { other: "I can't provide real-time weather updates. However, you can check a reliable weather website..." }
 ```
@@ -529,12 +526,12 @@ const agent = OrchestratorAgent.from({
 
 // 执行编排工作流
 const engine = new ExecutionEngine({ model });
-const result = await engine.run(
+const result = await engine.call(
+  agent,
   `Conduct an in-depth research on ArcBlock using only the official website\
 (avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
 The report should include comprehensive insights into the company's products \
-(with detailed research findings and links), technical architecture, and future plans.`,
-  agent,
+(with detailed research findings and links), technical architecture, and future plans.`
 );
 console.log(result);
 ```
@@ -584,9 +581,9 @@ const agent = AIAgent.from({
 });
 
 // 执行内容提取
-const result = await engine.run(
-  "extract content from https://www.arcblock.io",
-  agent
+const result = await engine.call(
+  agent,
+  "extract content from https://www.arcblock.io"
 );
 
 console.log(result);
@@ -641,17 +638,17 @@ const agent = AIAgent.from({
 
 // 创建表
 console.log(
-  await engine.run(
-    "create a product table with columns name description and createdAt",
-    agent
+  await engine.call(
+    agent,
+    "create a product table with columns name description and createdAt"
   )
 );
 
 // 插入数据
-console.log(await engine.run("create 10 products for test", agent));
+console.log(await engine.call(agent, "create 10 products for test"));
 
 // 查询数据
-console.log(await engine.run("how many products?", agent));
+console.log(await engine.call(agent, "how many products?"));
 // 输出: { text: "There are 10 products in the database." }
 
 await engine.shutdown();
@@ -697,7 +694,7 @@ await engine.shutdown();
    - 下一个Agent可以通过`{{key}}`访问这些数据
 
 2. **如何处理Agent失败或错误？**
-   - 使用try/catch包装engine.run调用
+   - 使用try/catch包装engine.call调用
    - 设计工作流时考虑可能的失败路径，添加错误处理Agent
 
 3. **如何限制Agent的输出格式？**

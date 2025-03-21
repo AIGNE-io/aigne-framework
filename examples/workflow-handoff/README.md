@@ -118,7 +118,7 @@ const agentB = AIAgent.from({
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = await engine.run(agentA);
+const userAgent = engine.call(agentA);
 
 const result1 = await userAgent.call("transfer to agent b");
 console.log(result1);

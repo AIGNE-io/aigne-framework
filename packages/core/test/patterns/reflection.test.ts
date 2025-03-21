@@ -115,16 +115,10 @@ Please review the code. If previous feedback was provided, see if it was address
     agents: [coder, reviewer],
   });
 
-  const runLoop = spyOn(
-    engine as unknown as { publishUserInputTopic: () => unknown },
-    "publishUserInputTopic",
-  );
-
-  const result = await engine.run({
+  engine.publish(UserInputTopic, {
     question: "Write a function to find the sum of all even numbers in a list.",
   });
-
-  expect(runLoop).toHaveBeenCalledTimes(1);
+  const { message: result } = await engine.subscribe(UserOutputTopic);
 
   expect(modelProcess).toHaveBeenCalledTimes(mockModelResults.length);
 

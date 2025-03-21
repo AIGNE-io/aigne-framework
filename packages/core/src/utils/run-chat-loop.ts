@@ -1,14 +1,14 @@
 import inquirer from "inquirer";
-import type { AgentInput, AgentOutput } from "../agents/agent.js";
-import type { UserAgent } from "../execution-engine/index.js";
+import type { Message } from "../agents/agent.js";
+import type { UserAgent } from "../agents/user-agent.js";
 import { logger } from "./logger.js";
 
 export interface ChatLoopOptions {
   log?: typeof console.log;
-  initialCall?: AgentInput | string;
+  initialCall?: Message | string;
   welcome?: string;
   defaultQuestion?: string;
-  onResponse?: (response: AgentOutput) => void;
+  onResponse?: (response: Message) => void;
   inputKey?: string;
 }
 
@@ -16,14 +16,29 @@ export async function runChatLoopInTerminal(
   userAgent: UserAgent,
   { log = console.log.bind(console), ...options }: ChatLoopOptions = {},
 ) {
+  let isLoopExited = false;
+
+  let prompt: ReturnType<typeof inquirer.prompt<{ question: string }>> | undefined;
+
   if (options?.welcome) log(options.welcome);
 
   if (options?.initialCall) {
     await callAgent(userAgent, options.initialCall, { ...options, log });
   }
 
+  (async () => {
+    for await (const output of userAgent.stream) {
+      if (isLoopExited) return;
+
+      if (options?.onResponse) options.onResponse(output);
+      else log(output);
+
+      prompt?.ui.close();
+    }
+  })();
+
   for (let i = 0; ; i++) {
-    const { question } = await inquirer.prompt([
+    prompt = inquirer.prompt([
       {
         type: "input",
         name: "question",
@@ -31,7 +46,15 @@ export async function runChatLoopInTerminal(
         default: i === 0 ? options?.defaultQuestion : undefined,
       },
     ]);
-    if (!question.trim()) continue;
+
+    let question: string | undefined;
+    try {
+      question = (await prompt).question;
+    } catch {
+      // ignore abort error from inquirer
+    }
+
+    if (!question?.trim()) continue;
 
     const cmd = COMMANDS[question.trim()];
     if (cmd) {
@@ -43,11 +66,13 @@ export async function runChatLoopInTerminal(
 
     await callAgent(userAgent, question, { ...options, log });
   }
+
+  isLoopExited = true;
 }
 
 async function callAgent(
   agent: UserAgent,
-  input: AgentInput | string,
+  input: Message | string,
   options: Pick<ChatLoopOptions, "onResponse" | "inputKey"> &
     Required<Pick<ChatLoopOptions, "log">>,
 ) {

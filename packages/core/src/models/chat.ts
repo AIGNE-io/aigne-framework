@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Agent, type AgentInput, type AgentOutput } from "../agents/agent.js";
+import { Agent, type Message } from "../agents/agent.js";
 
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor() {
@@ -10,7 +10,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   }
 }
 
-export interface ChatModelInput extends AgentInput {
+export interface ChatModelInput extends Message {
   messages: ChatModelInputMessage[];
 
   responseFormat?: ChatModelInputResponseFormat;
@@ -32,7 +32,7 @@ export interface ChatModelInputMessage {
   toolCalls?: {
     id: string;
     type: "function";
-    function: { name: string; arguments: AgentInput };
+    function: { name: string; arguments: Message };
   }[];
 
   toolCallId?: string;
@@ -149,7 +149,7 @@ const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({
   modelOptions: chatModelOptionsSchema.optional(),
 });
 
-export interface ChatModelOutput extends AgentOutput {
+export interface ChatModelOutput extends Message {
   text?: string;
   json?: object;
   toolCalls?: ChatModelOutputToolCall[];
@@ -160,7 +160,7 @@ export interface ChatModelOutputToolCall {
   type: "function";
   function: {
     name: string;
-    arguments: AgentInput;
+    arguments: Message;
   };
 }
 

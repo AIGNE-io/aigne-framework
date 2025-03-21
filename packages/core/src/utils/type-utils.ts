@@ -1,5 +1,9 @@
 import { get as _get, isNil } from "lodash-es";
 
+export type PromiseOrValue<T> = T | Promise<T>;
+
+export type Nullish<T> = T | null | undefined;
+
 export function isNonNullable<T>(value: T): value is NonNullable<T> {
   return !isNil(value);
 }

@@ -19,6 +19,7 @@ The Agent is a core concept in the AIGNE framework, representing an entity that 
 | `includeInputInOutput` | `boolean \| undefined` | Whether to include the input in the output |
 | `subscribeTopic` | `SubscribeTopic` | Topics the Agent subscribes to |
 | `publishTopic` | `PublishTopic<AgentOutput>` | Topics to publish the output to |
+| `memory` | `AgentMemory` | Configures the Agent's memory functionality, type is `AgentMemory`. Can be set to `true` in configuration to automatically create an `AgentMemory` instance |
 | `tools` | `Agent[]` | List of tools available to the Agent |
 | `isCallable` | `boolean` | Indicates whether the Agent can be called |
 
@@ -41,7 +42,8 @@ constructor(options: AgentOptions<I, O>)
   | `inputSchema` | `ZodObject<{ [key in keyof I]: ZodType }>` | Zod schema for validating input |
   | `outputSchema` | `ZodObject<{ [key in keyof O]: ZodType }>` | Zod schema for validating output |
   | `includeInputInOutput` | `boolean` | Whether to include the input in the output |
-  | `tools` | `(Agent \| FunctionAgentFn)[]` | List of tools available to the Agent |
+  | `memory` | `AgentMemory` | Configures the Agent's memory functionality, type is `AgentMemory`. Can be set to `true` in configuration to automatically create an `AgentMemory` instance |
+| `tools` | `(Agent \| FunctionAgentFn)[]` | List of tools available to the Agent |
   | `disableLogging` | `boolean` | Whether to disable logging |
 
 ### Methods

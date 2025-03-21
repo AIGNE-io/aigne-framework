@@ -20,9 +20,7 @@ const model = new ChatModelOpenAI({
 const puppeteer = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
-  env: {
-    ...(process.env as Record<string, string>),
-  },
+  env: process.env as Record<string, string>,
 });
 
 const finder = AIAgent.from({
@@ -94,7 +92,7 @@ const agent = OrchestratorAgent.from({
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = await engine.run(agent);
+const userAgent = engine.call(agent);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: "Welcome to the Orchestrator Agent!",

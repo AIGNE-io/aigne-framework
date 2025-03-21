@@ -26,12 +26,12 @@ const agent = AIAgent.from({
 `,
 });
 
-const result = await engine.run("extract content from https://www.arcblock.io", agent);
+const result = await engine.call(agent, "extract content from https://www.arcblock.io");
 
 console.log(result);
 // output:
 // {
-//   text: "The content extracted from the website [ArcBlock](https://www.arcblock.io) is as follows:\n\n---\n\n**Redefining Software Architect and Ecosystems**\n\nA total solution for building decentralized applications ...",
+//   $message: "The content extracted from the website [ArcBlock](https://www.arcblock.io) is as follows:\n\n---\n\n**Redefining Software Architect and Ecosystems**\n\nA total solution for building decentralized applications ...",
 // }
 
 await engine.shutdown();

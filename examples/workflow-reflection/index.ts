@@ -5,6 +5,7 @@ import {
   AIAgent,
   ChatModelOpenAI,
   ExecutionEngine,
+  UserAgent,
   UserInputTopic,
   UserOutputTopic,
   runChatLoopInTerminal,
@@ -78,7 +79,11 @@ Please review the code. If previous feedback was provided, see if it was address
 
 const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
 
-const userAgent = await engine.run();
+const userAgent = UserAgent.from({
+  context: engine,
+  publishTopic: UserInputTopic,
+  subscribeTopic: UserOutputTopic,
+});
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a coder with a reviewer. I can help you write code and get it reviewed.`,

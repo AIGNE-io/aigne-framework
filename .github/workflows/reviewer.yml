@@ -24,9 +24,10 @@ jobs:
     steps:
       - uses: blocklet/ai-pr-reviewer@v0.1.2
         env:
-          GITHUB_TOKEN: ${{ secrets.GIT_HUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         with:
           debug: false
+          language: 'en-US'
           review_simple_changes: false
           review_comment_lgtm: false

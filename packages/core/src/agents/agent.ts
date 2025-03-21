@@ -175,7 +175,9 @@ export abstract class Agent<
 
   abstract process(input: I, context?: Context): Promise<O | TransferAgentOutput>;
 
-  async shutdown() {}
+  async shutdown() {
+    this.memory?.detach();
+  }
 }
 
 export interface FunctionAgentOptions<I extends Message = Message, O extends Message = Message>

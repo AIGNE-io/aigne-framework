@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   AIAgent,
+  AgentMemory,
   FunctionAgent,
   MESSAGE_KEY,
   PromptBuilder,
@@ -20,12 +21,27 @@ test("userInput function should return correct object", () => {
 test("PromptBuilder should build messages correctly", async () => {
   const builder = PromptBuilder.from("Test instructions");
 
-  const prompt1 = await builder.build({ input: createMessage("Hello") });
+  const memory = new AgentMemory({ enable: true });
+  memory.addMemory({
+    role: "agent",
+    content: createMessage("Hello, How can I help you?"),
+    source: "TestAgent",
+  });
+
+  const prompt1 = await builder.build({
+    memory,
+    input: createMessage("Hello"),
+  });
 
   expect(prompt1.messages).toEqual([
     {
       role: "system",
       content: "Test instructions",
+    },
+    {
+      role: "agent",
+      content: "Hello, How can I help you?",
+      name: "TestAgent",
     },
     {
       role: "user",

@@ -1,5 +1,6 @@
 import { EventEmitter } from "node:events";
 import type { Message } from "../agents/agent.js";
+import { orArrayToArray } from "../utils/type-utils.js";
 
 export const UserInputTopic = "UserInputTopic";
 
@@ -21,9 +22,13 @@ export class MessageQueue {
   private events = new EventEmitter();
 
   publish(topic: string | string[], message: MessageRequest) {
-    for (const t of Array.isArray(topic) ? topic : [topic]) {
+    for (const t of orArrayToArray(topic)) {
       this.events.emit(t, message);
     }
+  }
+
+  error(error: Error) {
+    this.events.emit("error", error);
   }
 
   subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;

@@ -1,5 +1,11 @@
-import { expect, test } from "bun:test";
-import { ExecutionEngine, FunctionAgent, UserInputTopic, UserOutputTopic } from "@aigne/core-next";
+import { expect, spyOn, test } from "bun:test";
+import {
+  AIAgent,
+  ExecutionEngine,
+  FunctionAgent,
+  UserInputTopic,
+  UserOutputTopic,
+} from "@aigne/core-next";
 
 test("ExecutionEngine.run", async () => {
   const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
@@ -36,4 +42,27 @@ test("ExecutionEngine.run with reflection", async () => {
   const { message: result } = await engine.subscribe(UserOutputTopic);
 
   expect(result).toEqual({ num: 11, approval: "approve" });
+});
+
+test("ExecutionEngine.shutdown should shutdown all tools and agents", async () => {
+  const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
+    sum: a + b,
+  }));
+
+  const agent = AIAgent.from({
+    memory: { subscribeTopic: "test_topic" },
+  });
+
+  const engine = new ExecutionEngine({
+    tools: [plus],
+    agents: [agent],
+  });
+
+  const plusShutdown = spyOn(plus, "shutdown");
+  const agentShutdown = spyOn(agent, "shutdown");
+
+  await engine.shutdown();
+
+  expect(plusShutdown).toHaveBeenCalled();
+  expect(agentShutdown).toHaveBeenCalled();
 });

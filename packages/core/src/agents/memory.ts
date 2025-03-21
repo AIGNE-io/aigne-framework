@@ -1,4 +1,5 @@
 import type { Context } from "../execution-engine/context.js";
+import type { Unsubscribe } from "../execution-engine/message-queue.js";
 import { orArrayToArray } from "../utils/type-utils.js";
 import type { Message } from "./agent.js";
 
@@ -34,6 +35,8 @@ export class AgentMemory {
 
   memories: Memory[] = [];
 
+  private subscriptions: Unsubscribe[] = [];
+
   addMemory(memory: Memory) {
     if (this.memories.at(-1)?.content === memory.content) return;
     this.memories.push(memory);
@@ -41,9 +44,18 @@ export class AgentMemory {
 
   attach(context: Context) {
     for (const topic of orArrayToArray(this.subscribeTopic)) {
-      context.subscribe(topic, ({ role, message, source }) => {
+      const sub = context.subscribe(topic, ({ role, message, source }) => {
         this.addMemory({ role, source, content: message });
       });
+
+      this.subscriptions.push(sub);
     }
+  }
+
+  detach() {
+    for (const sub of this.subscriptions) {
+      sub();
+    }
+    this.subscriptions = [];
   }
 }

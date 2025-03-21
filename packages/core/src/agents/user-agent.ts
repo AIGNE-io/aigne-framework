@@ -73,19 +73,21 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
   }
 
   get stream() {
-    let subs: Unsubscribe[] = [];
+    let subscriptions: Unsubscribe[] = [];
 
     return new ReadableStream<MessagePayload & { topic: string }>({
       start: (controller) => {
         const subscribeTopic = orArrayToArray(this.subscribeTopic);
 
-        subs = subscribeTopic.map((topic) =>
-          this.subscribe(topic, (message) => controller.enqueue({ ...message, topic })),
+        subscriptions = subscribeTopic.map((topic) =>
+          this.subscribe(topic, (message) => {
+            controller.enqueue({ ...message, topic });
+          }),
         );
       },
       cancel: () => {
-        for (const sub of subs) {
-          sub();
+        for (const unsubscribe of subscriptions) {
+          unsubscribe();
         }
       },
     });

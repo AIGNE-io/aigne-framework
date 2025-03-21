@@ -87,3 +87,27 @@ test("runChatLoopInTerminal should call agent correctly", async () => {
   );
   expect(log).toHaveBeenCalledWith({ text: "hello, this is a test response message" });
 });
+
+test("runChatLoopInTerminal should subscribe user agent stream", async () => {
+  const context = new ExecutionEngine({});
+
+  const user = UserAgent.from({ context, subscribeTopic: "test_topic" });
+
+  const log = mock((..._args) => {});
+  const onResponse = mock((..._args) => {});
+
+  runChatLoopInTerminal(user, { log, onResponse });
+  context.publish("test_topic", "hello, this is a test message");
+  // Check the response after a delay to allow the event loop to run
+  setTimeout(() => {
+    expect(onResponse.mock.calls).toEqual([
+      [
+        expect.objectContaining({
+          topic: "test_topic",
+          role: "user",
+          message: createMessage("hello, this is a test message"),
+        }),
+      ],
+    ]);
+  });
+});

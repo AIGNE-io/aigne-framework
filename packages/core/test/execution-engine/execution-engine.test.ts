@@ -7,7 +7,7 @@ import {
   UserOutputTopic,
 } from "@aigne/core-next";
 
-test("ExecutionEngine.run", async () => {
+test("ExecutionEngine.call", async () => {
   const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
     sum: a + b,
   }));
@@ -19,7 +19,7 @@ test("ExecutionEngine.run", async () => {
   expect(result).toEqual({ sum: 3 });
 });
 
-test("ExecutionEngine.run with reflection", async () => {
+test("ExecutionEngine.call with reflection", async () => {
   const plusOne = FunctionAgent.from({
     subscribeTopic: [UserInputTopic, "revise"],
     publishTopic: "review_request",

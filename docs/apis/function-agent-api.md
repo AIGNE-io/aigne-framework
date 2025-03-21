@@ -234,9 +234,9 @@ const aiAgent = AIAgent.from({
 const engine = new ExecutionEngine({ model });
 
 // Run the workflow
-const result = await engine.run(
-  { data: [1, 2, 3, 4, 5] },
-  aiAgent
+const result = await engine.call(
+  aiAgent,
+  { data: [1, 2, 3, 4, 5] }
 );
 
 console.log(result); // Contains AI's analysis of the data

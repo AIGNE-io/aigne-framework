@@ -193,9 +193,9 @@ const aiAgent = AIAgent.from({
 const engine = new ExecutionEngine({ model });
 
 // 运行工作流
-const result = await engine.run(
-  { data: [1, 2, 3, 4, 5] },
-  aiAgent
+const result = await engine.call(
+  aiAgent,
+  { data: [1, 2, 3, 4, 5] }
 );
 
 console.log(result); // 包含 AI 对数据的分析结果

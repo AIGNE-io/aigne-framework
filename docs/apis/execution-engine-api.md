@@ -84,49 +84,56 @@ unsubscribe(topic: string, listener: (message: AgentOutput) => void)
 - `topic`: `string` - Topic to unsubscribe from
 - `listener`: `(message: AgentOutput) => void` - Previously registered callback function
 
-#### `run`
+#### `call`
 
-Runs one or more Agents, processes input, and returns output. This method has three different overloads, each with a different purpose.
+Calls an agent with a message and returns the output. This method has multiple overloads, each with a different purpose.
 
 ```typescript
-// Overload 1: Only agents parameters
-run(...agents: Runnable[]): Promise<UserAgent>;
+// Overload 1: Create a user agent to consistently call an agent
+call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
 
-// Overload 2: Only input parameter
-run(input: AgentInput | string): Promise<AgentOutput>;
+// Overload 2: Call an agent with a message
+call<I extends Message, O extends Message>(
+  agent: Runnable<I, O>,
+  message: I | string,
+): Promise<O>;
 
-// Overload 3: Input parameter and multiple agents parameters
-run(input: AgentInput | string, ...agents: [Runnable, ...Runnable[]]): Promise<AgentOutput>;
+// Overload 3: Call an agent with a message and return the output and the active agent
+call<I extends Message, O extends Message>(
+  agent: Runnable<I, O>,
+  message: I | string,
+  options: { returnActiveAgent?: true },
+): Promise<[O, Runnable]>;
 ```
 
 ##### Overload Descriptions
 
-1. **Only agents parameters**
+1. **Create a user agent to consistently call an agent**
    - Returns a `UserAgent` instance for continuous interaction with the execution engine
    - Suitable for scenarios requiring multi-turn dialogue or continuous interaction
-   - The returned `UserAgent` instance can receive new inputs and get responses via its `run` method
+   - The returned `UserAgent` instance can receive new inputs and get responses via its `process` method
 
-2. **Only input parameter**
-   - Publishes a message to `UserInputTopic`, triggering Agents subscribed to that topic
-   - Waits for an Agent to publish a response to `UserOutputTopic`
-   - Returns the response published to `UserOutputTopic`
-   - Suitable for scenarios where message routing paths are already set up
+2. **Call an agent with a message**
+   - Calls the specified agent with the provided message
+   - Returns the output of the agent
+   - Suitable for scenarios where a single interaction is needed
 
-3. **Input parameter and agents parameters**
-   - Passes the input to the first agent to run
-   - Sequentially passes the output of each agent as input to the next
-   - Returns the output of the last agent
-   - Suitable for scenarios requiring sequential data processing
+3. **Call an agent with a message and return the output and the active agent**
+   - Calls the specified agent with the provided message
+   - Returns the output of the agent and the final active agent
+   - Suitable for scenarios where the active agent needs to be tracked
 
 ##### Parameters
 
-- `input`: `AgentInput | string` - Agent input data or text
-- `agents`: `Runnable[]` - List of Agents or functions to run
+- `agent`: `Runnable<I, O>` - Agent or function to call
+- `message`: `I | string` - Message to pass to the agent
+- `options`: `{ returnActiveAgent?: boolean }` - Options for the call
 
 ##### Returns
 
-- `Promise<UserAgent>` - When only agents parameters are provided, returns a UserAgent instance for continuous interaction
-- `Promise<AgentOutput>` - When input or input and agents parameters are provided, returns the processing result
+- `UserAgent<I, O>` - When only the agent parameter is provided, returns a UserAgent instance for continuous interaction
+- `Promise<O>` - When the message parameter is provided, returns the processing result
+- `Promise<[O, Runnable]>` - When the options parameter is provided, returns the processing result and the active agent
 
 #### `runAgent`
 
@@ -214,14 +221,34 @@ type Runnable = Agent | FunctionAgentFn;
 Represents the user's proxy in the execution engine, used for continuous interaction sessions.
 
 ```typescript
-class UserAgent<I extends AgentInput = AgentInput, O extends AgentOutput = AgentOutput> extends Agent<I, O> {
-  constructor(
-    public options: AgentOptions<I, O> & {
-      run: (input: I) => Promise<O>;
-    }
-  );
+class UserAgent<I extends Message = Message, O extends Message = Message> extends Agent<I, O> {
+  static from<I extends Message, O extends Message>(
+    options: UserAgentOptions<I, O>,
+  ): UserAgent<I, O>;
 
-  process(input: I): Promise<O>;
+  constructor(options: UserAgentOptions<I, O>);
+
+  process(input: I, context?: Context): Promise<O>;
+
+  publish(topic: string | string[], message: Message | string): void;
+
+  subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
+  subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
+
+  unsubscribe(topic: string, listener: MessageQueueListener): void;
+
+  get stream(): ReadableStream<MessagePayload & { topic: string }>;
+}
+```
+
+#### `UserAgentOptions`
+
+Defines the configuration options for a `UserAgent`.
+
+```typescript
+interface UserAgentOptions<I extends Message = Message, O extends Message = Message> extends AgentOptions<I, O> {
+  context?: Context;
+  process?: (input: I, context: Context) => PromiseOrValue<O>;
 }
 ```
 
@@ -260,18 +287,18 @@ const assistant = AIAgent.from({
 // Create execution engine
 const engine = new ExecutionEngine({ model });
 
-// Method 1: Run directly and get results
-const result = await engine.run("Hello, please tell me today's date", assistant);
+// Method 1: Call directly and get results
+const result = await engine.call(assistant, "Hello, please tell me today's date");
 console.log(result);
 
 // Method 2: Create interactive session
-const userAgent = await engine.run(assistant);
+const userAgent = engine.call(assistant);
 
 // Send messages and get replies
-const response1 = await userAgent.run("Hello!");
+const response1 = await userAgent.call("Hello!");
 console.log(response1);
 
-const response2 = await userAgent.run("Can you help me write a poem?");
+const response2 = await userAgent.call("Can you help me write a poem?");
 console.log(response2);
 
 // Shut down the execution engine
@@ -315,9 +342,9 @@ const summarizer = AIAgent.from({
 const engine = new ExecutionEngine({ model });
 
 // Execute Agents sequentially
-const result = await engine.run(
-  { data: [10, 20, 30, 40, 50] },
-  sequential(dataPrep, analyzer, summarizer)
+const result = await engine.call(
+  sequential(dataPrep, analyzer, summarizer),
+  { data: [10, 20, 30, 40, 50] }
 );
 
 console.log(result);
@@ -353,9 +380,9 @@ const storyteller = AIAgent.from({
 const engine = new ExecutionEngine({ model });
 
 // Execute Agents in parallel
-const result = await engine.run(
-  { topic: "Moon" },
-  parallel(poet, storyteller)
+const result = await engine.call(
+  parallel(poet, storyteller),
+  { topic: "Moon" }
 );
 
 console.log("Poetry:", result.poem);

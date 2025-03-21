@@ -53,9 +53,9 @@ const agentB = AIAgent.from({
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = await engine.run(agentA);
+const userAgent = await engine.call(agentA);
 
-const response = await userAgent.run("transfer to agent b");
+const response = await userAgent.call("transfer to agent b");
 // 输出
 // {
 //   B: "Agent B awaits here,  \nIn haikus I shall speak now,  \nWhat do you seek, friend?",
@@ -251,6 +251,7 @@ Coder ->> User: 10!（10的阶乘）的值是 3,628,800。
 - [Workflow Reflection](./examples/workflow-reflection) - 通过输出评估和修正能力实现自我提升。
 - [Workflow Orchestration](./examples/workflow-orchestration) - 协调多个代理在复杂处理管道中共同工作。
 - [Workflow Code Execution](./examples/workflow-code-execution) - 在 AI 驱动的工作流中安全执行动态生成的代码。
+- [Workflow Group Chat](./examples/workflow-group-chat) - 通过聊天模型实现群聊功能，支持多个用户同时参与。
 
 ## 贡献与发布
 

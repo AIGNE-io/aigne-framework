@@ -17,8 +17,9 @@ Agent 是 AIGNE 框架的核心概念，代表了一个能够接收输入并产�
 | `inputSchema` | `ZodObject<{ [key in keyof I]: ZodType }>` | 验证输入的 Zod 模式 |
 | `outputSchema` | `ZodObject<{ [key in keyof O]: ZodType }>` | 验证输出的 Zod 模式 |
 | `includeInputInOutput` | `boolean \| undefined` | 是否在输出中包含输入 |
-| `subscribeTopic` | `SubscribeTopic` | Agent 订阅的主题 |
+| `subscribeTopic` | `SubscribeTopic` | Agent 订阅的主题，用于实现 memory 功能，允许代理在指定主题上共享和接收信息 |
 | `publishTopic` | `PublishTopic<AgentOutput>` | 输出发布的主题 |
+| `memory` | `AgentMemory` | 用于配置 Agent 的记忆功能，类型为 `AgentMemory`。在配置参数中可以设置为 `true`，以便自动创建 `AgentMemory` 实例 |
 | `tools` | `Agent[]` | Agent 可以使用的工具列表 |
 | `isCallable` | `boolean` | 指示 Agent 是否可以被调用 |
 
@@ -34,14 +35,15 @@ constructor(options: AgentOptions<I, O>)
 
   | 选项名 | 类型 | 描述 |
   |-------|------|------|
-  | `subscribeTopic` | `SubscribeTopic` | Agent 订阅的主题 |
+  | `subscribeTopic` | `SubscribeTopic` | Agent 订阅的主题，用于实现 memory 功能，允许代理在指定主题上共享和接收信息 |
   | `publishTopic` | `PublishTopic<O>` | 输出发布的主题 |
   | `name` | `string` | Agent 的名称 |
   | `description` | `string` | Agent 的描述信息 |
   | `inputSchema` | `ZodObject<{ [key in keyof I]: ZodType }>` | 验证输入的 Zod 模式 |
   | `outputSchema` | `ZodObject<{ [key in keyof O]: ZodType }>` | 验证输出的 Zod 模式 |
   | `includeInputInOutput` | `boolean` | 是否在输出中包含输入 |
-  | `tools` | `(Agent \| FunctionAgentFn)[]` | Agent 可以使用的工具列表 |
+  | `memory` | `AgentMemory` | 用于配置 Agent 的记忆功能，类型为 `AgentMemory`。在配置参数中可以设置为 `true`，以便自动创建 `AgentMemory` 实例 |
+| `tools` | `(Agent \| FunctionAgentFn)[]` | Agent 可以使用的工具列表 |
   | `disableLogging` | `boolean` | 是否禁用日志记录 |
 
 ### 方法

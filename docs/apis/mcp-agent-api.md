@@ -293,9 +293,9 @@ const agent = AIAgent.from({
 });
 
 // Run Agent to extract content from specified website
-const result = await engine.run(
-  "extract content from https://www.arcblock.io",
-  agent
+const result = await engine.call(
+  agent,
+  "extract content from https://www.arcblock.io"
 );
 
 console.log(result);
@@ -316,7 +316,7 @@ The basic workflow for using Puppeteer MCP Agent to extract website content is a
 2. Use MCPAgent.from method to connect to the Puppeteer MCP server
 3. Create an ExecutionEngine and add the Puppeteer MCP Agent as a tool
 4. Create an AIAgent and set instructions for extracting website content
-5. Use engine.run method to run the Agent, passing in the request to extract website content
+5. Use engine.call method to run the Agent, passing in the Agent and the request to extract website content
 6. The AI Agent will use the tools provided by the Puppeteer MCP Agent to perform the following operations:
    - Navigate to the specified URL
    - Use JavaScript to extract the page content

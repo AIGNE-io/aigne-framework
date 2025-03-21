@@ -106,7 +106,7 @@ Work with the sandbox to execute your code.
 
 // Create execution engine and run
 const engine = new ExecutionEngine({ model });
-const result = await engine.run("10! = ?", coder);
+const result = await engine.call(coder, "10! = ?");
 console.log(result);
 // Output: { text: "The value of \\(10!\\) (10 factorial) is 3,628,800." }
 ```
@@ -172,11 +172,8 @@ Draft copy:
 
 // Execute three Agents in sequence
 const engine = new ExecutionEngine({ model });
-const result = await engine.run(
-  { product: "AIGNE is a No-code Generative AI Apps Engine" },
-  conceptExtractor,
-  writer,
-  formatProof,
+const result = await engine.call(sequential(conceptExtractor, writer, formatProof),
+  { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
 
 console.log(result);
@@ -219,9 +216,9 @@ Product description:
 
 // Execute two Agents in parallel
 const engine = new ExecutionEngine({ model });
-const result = await engine.run(
-  { product: "AIGNE is a No-code Generative AI Apps Engine" },
+const result = await engine.call(
   parallel(featureExtractor, audienceAnalyzer),
+  { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
 
 console.log(result);
@@ -307,7 +304,7 @@ Please review the code. If previous feedback was provided, see if it was address
 
 // Execute reflection workflow
 const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
-const result = await engine.run("Write a function to find the sum of all even numbers in a list.");
+const result = await engine.call("Write a function to find the sum of all even numbers in a list.");
 console.log(result);
 // Output contains approved code and feedback
 ```
@@ -348,7 +345,7 @@ const agentB = AIAgent.from({
 
 // Execute handoff workflow
 const engine = new ExecutionEngine({ model });
-const userAgent = await engine.run(agentA);
+const userAgent = await engine.call(agentA);
 
 // Transfer to Agent B
 const result1 = await userAgent.call("transfer to agent b");
@@ -422,17 +419,17 @@ const triage = AIAgent.from({
 const engine = new ExecutionEngine({ model });
 
 // Product-related questions automatically routed to product support
-const result1 = await engine.run("How to use this product?", triage);
+const result1 = await engine.call(triage, "How to use this product?");
 console.log(result1);
 // { product_support: "I'd be happy to help you with that! However, I need to know which specific product you're referring to..." }
 
 // Feedback-related questions automatically routed to feedback
-const result2 = await engine.run("I have feedback about the app.", triage);
+const result2 = await engine.call(triage, "I have feedback about the app.");
 console.log(result2);
 // { feedback: "Thank you for sharing your feedback! I'm here to listen..." }
 
 // General questions automatically routed to general query
-const result3 = await engine.run("What is the weather today?", triage);
+const result3 = await engine.call(triage, "What is the weather today?");
 console.log(result3);
 // { other: "I can't provide real-time weather updates. However, you can check a reliable weather website..." }
 ```
@@ -529,12 +526,12 @@ const agent = OrchestratorAgent.from({
 
 // Execute orchestrator workflow
 const engine = new ExecutionEngine({ model });
-const result = await engine.run(
+const result = await engine.call(
+  agent,
   `Conduct an in-depth research on ArcBlock using only the official website\
 (avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
 The report should include comprehensive insights into the company's products \
-(with detailed research findings and links), technical architecture, and future plans.`,
-  agent,
+(with detailed research findings and links), technical architecture, and future plans.`
 );
 console.log(result);
 ```
@@ -584,9 +581,9 @@ const agent = AIAgent.from({
 });
 
 // Execute content extraction
-const result = await engine.run(
-  "extract content from https://www.arcblock.io",
-  agent
+const result = await engine.call(
+  agent,
+  "extract content from https://www.arcblock.io"
 );
 
 console.log(result);
@@ -641,17 +638,17 @@ const agent = AIAgent.from({
 
 // Create table
 console.log(
-  await engine.run(
-    "create a product table with columns name description and createdAt",
-    agent
+  await engine.call(
+    agent,
+    "create a product table with columns name description and createdAt"
   )
 );
 
 // Insert data
-console.log(await engine.run("create 10 products for test", agent));
+console.log(await engine.call(agent, "create 10 products for test"));
 
 // Query data
-console.log(await engine.run("how many products?", agent));
+console.log(await engine.call(agent, "how many products?"));
 // Output: { text: "There are 10 products in the database." }
 
 await engine.shutdown();
@@ -697,7 +694,7 @@ Complex applications may require combining multiple workflow patterns:
    - The next Agent can access this data via `{{key}}`
 
 2. **How to handle Agent failures or errors?**
-   - Use try/catch to wrap engine.run calls
+   - Use try/catch to wrap engine.call calls
    - Consider possible failure paths when designing workflows, add error handling Agents
 
 3. **How to constrain Agent output format?**

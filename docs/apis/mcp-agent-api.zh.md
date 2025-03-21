@@ -293,9 +293,9 @@ const agent = AIAgent.from({
 });
 
 // 运行 Agent 提取指定网站的内容
-const result = await engine.run(
-  "extract content from https://www.arcblock.io",
-  agent
+const result = await engine.call(
+  agent,
+  "extract content from https://www.arcblock.io"
 );
 
 console.log(result);

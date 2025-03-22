@@ -3,6 +3,7 @@ import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import {
   StdioClientTransport,
   type StdioServerParameters,
+  getDefaultEnvironment,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { UriTemplate } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
@@ -63,7 +64,14 @@ export class MCPAgent extends Agent {
     }
 
     if (isStdioServerParameters(options)) {
-      const transport = new StdioClientTransport({ ...options, stderr: "pipe" });
+      const transport = new StdioClientTransport({
+        ...options,
+        env: {
+          ...getDefaultEnvironment(),
+          ...options.env,
+        },
+        stderr: "pipe",
+      });
       return MCPAgent.fromTransport(transport);
     }
 

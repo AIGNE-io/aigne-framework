@@ -1,0 +1,26 @@
+{
+  "name": "@aigne/example-mcp-server-github-integrator",
+  "version": "1.0.0",
+  "description": "A demonstration of using AIGNE Framework and GitHub MCP Server to interact with GitHub repositories",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-server-github-integrator",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bin": "index.ts",
+  "files": [
+    ".env.local.example",
+    "*.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "npx -y bun run index.ts",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aigne/core-next": "workspace:^",
+    "zod": "^3.24.2"
+  }
+}

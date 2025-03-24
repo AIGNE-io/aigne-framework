@@ -9,6 +9,7 @@
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Core Concepts](#core-concepts)
+    - [Chat Model](#chat-model)
     - [Agent](#agent)
     - [Workflow](#workflow)
     - [Execution Engine](#execution-engine)
@@ -34,6 +35,38 @@
 AIGNE Framework is a framework for building applications based on Large Language Models (LLMs). It provides a series of tools and abstractions that enable developers to easily create complex AI workflows. This Cookbook aims to help developers understand the core concepts of AIGNE Framework and demonstrate through examples how to use different workflow patterns to solve real-world problems.
 
 ## Core Concepts
+
+### Chat Model
+
+In AIGNE Framework, ChatModel is an abstract base class for interacting with Large Language Models (LLMs). It provides a unified interface to handle different underlying model implementations, including:
+
+- **OpenAIChatModel**: For communicating with OpenAI's GPT series models
+- **ClaudeChatModel**: For communicating with Anthropic's Claude series models
+
+ChatModel can be used directly, but it's generally recommended to use it through ExecutionEngine to gain more advanced features like tool integration, error handling, and state management.
+
+**Example**:
+
+```typescript
+import { OpenAIChatModel, ClaudeChatModel } from "@aigne/core-next";
+
+// Initialize OpenAI model
+const openaiModel = new OpenAIChatModel({
+  apiKey: "YOUR_OPENAI_API_KEY",
+  model: "gpt-4o-mini", // Optional, defaults to "gpt-4o-mini"
+});
+
+// Initialize Claude model
+const claudeModel = new ClaudeChatModel({
+  apiKey: "YOUR_ANTHROPIC_API_KEY",
+  model: "claude-3-7-sonnet-latest", // Optional, defaults to "claude-3-7-sonnet-latest"
+});
+
+// Use with ExecutionEngine
+const engine = new ExecutionEngine({ model: openaiModel });
+```
+
+For more information, refer to the [ChatModel API documentation](./apis/chat-model.md).
 
 ### Agent
 

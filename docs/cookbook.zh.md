@@ -9,6 +9,7 @@
   - [目录](#目录)
   - [介绍](#介绍)
   - [基础概念](#基础概念)
+    - [聊天模型（ChatModel）](#聊天模型chatmodel)
     - [Agent](#agent)
     - [工作流](#工作流)
     - [执行引擎](#执行引擎)
@@ -34,6 +35,38 @@
 AIGNE Framework是一个用于构建基于大型语言模型(LLM)的应用程序的框架。它提供了一系列工具和抽象，使开发者能够轻松地创建复杂的AI工作流程。本Cookbook旨在帮助开发者理解AIGNE Framework的核心概念，并通过示例展示如何使用不同的工作流模式来解决实际问题。
 
 ## 基础概念
+
+### 聊天模型（ChatModel）
+
+在AIGNE Framework中，ChatModel是与大型语言模型（LLM）交互的抽象基类。它提供了统一的接口来处理不同的底层模型实现，包括：
+
+- **OpenAIChatModel**: 用于与OpenAI的GPT系列模型进行通信
+- **ClaudeChatModel**: 用于与Anthropic的Claude系列模型进行通信
+
+ChatModel可以直接使用，但通常建议通过ExecutionEngine来使用，以获得更高级的功能如工具集成、错误处理和状态管理。
+
+**示例**:
+
+```typescript
+import { OpenAIChatModel, ClaudeChatModel } from "@aigne/core-next";
+
+// 初始化OpenAI模型
+const openaiModel = new OpenAIChatModel({
+  apiKey: "YOUR_OPENAI_API_KEY",
+  model: "gpt-4o-mini", // 可选，默认为"gpt-4o-mini"
+});
+
+// 初始化Claude模型
+const claudeModel = new ClaudeChatModel({
+  apiKey: "YOUR_ANTHROPIC_API_KEY",
+  model: "claude-3-7-sonnet-latest", // 可选，默认为"claude-3-7-sonnet-latest"
+});
+
+// 使用ExecutionEngine
+const engine = new ExecutionEngine({ model: openaiModel });
+```
+
+更多信息请参考[ChatModel API文档](./apis/chat-model.zh.md)。
 
 ### Agent
 

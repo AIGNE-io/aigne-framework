@@ -21,6 +21,15 @@ importers:
         specifier: ^8.4.1
         version: 8.4.1
 
+  examples/mcp-server-github-integrator:
+    dependencies:
+      '@aigne/core-next':
+        specifier: workspace:^
+        version: link:../../packages/core
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
+
   examples/mcp-server-puppeteer:
     dependencies:
       '@aigne/core-next':

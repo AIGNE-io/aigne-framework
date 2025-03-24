@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@aigne/core-next": "workspace:^",
+    "openai": "^4.87.3",
     "zod": "^3.24.2"
   }
 }

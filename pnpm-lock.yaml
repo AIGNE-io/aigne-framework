@@ -26,6 +26,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -35,6 +38,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -44,6 +50,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -53,6 +62,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -62,6 +74,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -71,6 +86,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -80,6 +98,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -92,6 +113,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -101,6 +125,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -110,6 +137,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -119,6 +149,9 @@ importers:
       '@aigne/core-next':
         specifier: workspace:^
         version: link:../../packages/core
+      openai:
+        specifier: ^4.87.3
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -150,12 +183,6 @@ importers:
       '@aigne/json-schema-to-zod':
         specifier: ^1.3.2
         version: 1.3.2(zod@3.24.2)
-      '@anthropic-ai/sdk':
-        specifier: ^0.39.0
-        version: 0.39.0(encoding@0.1.13)
-      '@google/generative-ai':
-        specifier: ^0.24.0
-        version: 0.24.0
       '@modelcontextprotocol/sdk':
         specifier: ^1.7.0
         version: 1.7.0
@@ -180,9 +207,6 @@ importers:
       nanoid:
         specifier: ^5.1.4
         version: 5.1.4
-      openai:
-        specifier: ^4.87.3
-        version: 4.87.3(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       ora:
         specifier: ^8.2.0
         version: 8.2.0
@@ -193,6 +217,12 @@ importers:
         specifier: ^3.24.4
         version: 3.24.4(zod@3.24.2)
     devDependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^0.39.0
+        version: 0.39.0(encoding@0.1.13)
+      '@google/generative-ai':
+        specifier: ^0.24.0
+        version: 0.24.0
       '@types/bun':
         specifier: ^1.2.5
         version: 1.2.5
@@ -202,6 +232,9 @@ importers:
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
+      openai:
+        specifier: ^4.89.0
+        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1148,8 +1181,8 @@ packages:
     resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
     engines: {node: '>=18'}
 
-  openai@4.87.3:
-    resolution: {integrity: sha512-d2D54fzMuBYTxMW8wcNmhT1rYKcTfMJ8t+4KjH2KtvYenygITiGBgHoIrzHwnDQWW+C5oCA+ikIR2jgPCFqcKQ==}
+  openai@4.89.0:
+    resolution: {integrity: sha512-XNI0q2l8/Os6jmojxaID5EhyQjxZgzR2gWcpEjYWK5hGKwE7AcifxEY7UNwFDDHJQXqeiosQ0CJwQN+rvnwdjA==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -2597,7 +2630,7 @@ snapshots:
     dependencies:
       mimic-function: 5.0.1
 
-  openai@4.87.3(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2):
+  openai@4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2):
     dependencies:
       '@types/node': 18.19.71
       '@types/node-fetch': 2.6.12

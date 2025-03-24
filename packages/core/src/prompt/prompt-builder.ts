@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { isNil } from "lodash-es";
 import { ZodObject, type ZodType } from "zod";
-import { Agent, type AgentOptions, type Message } from "../agents/agent.js";
+import { Agent, type Message } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
 import type { AgentMemory } from "../agents/memory.js";
 import type { Context } from "../execution-engine/context.js";
@@ -46,7 +46,7 @@ export interface PromptBuilderBuildOptions {
   agent?: AIAgent;
   input?: Message;
   model?: ChatModel;
-  outputSchema?: AgentOptions["outputSchema"];
+  outputSchema?: Agent["outputSchema"];
 }
 
 export class PromptBuilder {

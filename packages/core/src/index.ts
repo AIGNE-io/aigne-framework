@@ -10,5 +10,6 @@ export * from "./models/claude-chat-model.js";
 export * from "./models/openai-chat-model.js";
 export * from "./prompt/prompt-builder.js";
 export * from "./prompt/template.js";
+export * from "./utils/json-schema.js";
 export * from "./utils/logger.js";
 export * from "./utils/run-chat-loop.js";

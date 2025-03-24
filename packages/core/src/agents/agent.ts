@@ -33,9 +33,9 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
 
   description?: string;
 
-  inputSchema?: ZodType<I>;
+  inputSchema?: AgentInputOutputSchema<I>;
 
-  outputSchema?: ZodType<O>;
+  outputSchema?: AgentInputOutputSchema<O>;
 
   includeInputInOutput?: boolean;
 
@@ -51,15 +51,10 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     this.name = options.name || this.constructor.name;
     this.description = options.description;
 
-    if (
-      (inputSchema && !(inputSchema instanceof ZodObject)) ||
-      (outputSchema && !(outputSchema instanceof ZodObject))
-    ) {
-      throw new Error("inputSchema must be a Zod object");
-    }
-    this.inputSchema = (inputSchema || z.object({})).passthrough() as unknown as ZodType<I>;
-    this.outputSchema = (outputSchema || z.object({})).passthrough() as unknown as ZodType<O>;
-
+    if (inputSchema) checkAgentInputOutputSchema(inputSchema);
+    if (outputSchema) checkAgentInputOutputSchema(outputSchema);
+    this._inputSchema = inputSchema;
+    this._outputSchema = outputSchema;
     this.includeInputInOutput = options.includeInputInOutput;
     this.subscribeTopic = options.subscribeTopic;
     this.publishTopic = options.publishTopic as PublishTopic<Message>;
@@ -88,9 +83,23 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
   readonly description?: string;
 
-  readonly inputSchema: ZodType<I>;
+  private readonly _inputSchema?: AgentInputOutputSchema<I>;
 
-  readonly outputSchema: ZodType<O>;
+  private readonly _outputSchema?: AgentInputOutputSchema<O>;
+
+  get inputSchema(): ZodType<I> {
+    const s = this._inputSchema;
+    const schema = typeof s === "function" ? s(this) : s || z.object({});
+    checkAgentInputOutputSchema(schema);
+    return schema.passthrough() as unknown as ZodType<I>;
+  }
+
+  get outputSchema(): ZodType<O> {
+    const s = this._outputSchema;
+    const schema = typeof s === "function" ? s(this) : s || z.object({});
+    checkAgentInputOutputSchema(schema);
+    return schema.passthrough() as unknown as ZodType<O>;
+  }
 
   readonly includeInputInOutput?: boolean;
 
@@ -169,6 +178,29 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
   async shutdown() {
     this.memory?.detach();
+  }
+}
+
+export type AgentInputOutputSchema<I extends Message = Message> =
+  | ZodType<I>
+  | ((agent: Agent) => ZodType<I>);
+
+function checkAgentInputOutputSchema<I extends Message>(
+  schema: ZodType,
+): asserts schema is ZodObject<{ [key in keyof I]: ZodType<I[key]> }>;
+function checkAgentInputOutputSchema<I extends Message>(
+  schema: (agent: Agent) => ZodType<I>,
+): asserts schema is (agent: Agent) => ZodType;
+function checkAgentInputOutputSchema<I extends Message>(
+  schema: ZodType | ((agent: Agent) => ZodType<I>),
+): asserts schema is ZodObject<{ [key in keyof I]: ZodType<I[key]> }> | ((agent: Agent) => ZodType);
+function checkAgentInputOutputSchema<I extends Message>(
+  schema: ZodType | ((agent: Agent) => ZodType<I>),
+): asserts schema is
+  | ZodObject<{ [key in keyof I]: ZodType<I[key]> }>
+  | ((agent: Agent) => ZodType) {
+  if (!(schema instanceof ZodObject) && typeof schema !== "function") {
+    throw new Error("schema must be a zod object or function return a zod object ");
   }
 }
 

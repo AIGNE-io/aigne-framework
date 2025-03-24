@@ -1,3 +1,4 @@
+import { type Agent, ensureZodUnionArray } from "@aigne/core";
 import { z } from "zod";
 
 export const TASK_RESULT_TEMPLATE = `Task: {{task_description}}
@@ -47,21 +48,25 @@ Results so far that may provide helpful context:
 export const SYNTHESIZE_PLAN_PROMPT_TEMPLATE = `Synthesize the results of executing all steps in the plan into a cohesive result:
 {{plan_result}}`;
 
-export const TaskSchema = z.object({
-  description: z.string().describe("Detailed description of the task"),
-  agent: z.string().describe("Name of the agent to execute the task"),
-});
+export function getFullPlanSchema(agents: Agent[]) {
+  const TaskSchema = z.object({
+    description: z.string().describe("Detailed description of the task"),
+    agent: z
+      .union(ensureZodUnionArray(agents.map((i) => z.literal(i.name))))
+      .describe("Name of the agent to execute the task"),
+  });
 
-export const StepSchema = z.object({
-  description: z.string().describe("Detailed description of the step"),
-  tasks: z.array(TaskSchema).describe("Tasks that can run in parallel in this step"),
-});
+  const StepSchema = z.object({
+    description: z.string().describe("Detailed description of the step"),
+    tasks: z.array(TaskSchema).describe("Tasks that can run in parallel in this step"),
+  });
 
-export const FullPlanSchema = z.object({
-  steps: z.array(StepSchema).describe("All sequential steps in the plan"),
-  is_complete: z.boolean().describe("Whether the plan is complete"),
-});
+  return z.object({
+    steps: z.array(StepSchema).describe("All sequential steps in the plan"),
+    is_complete: z.boolean().describe("Whether the plan is complete"),
+  });
+}
 
-export type Task = z.infer<typeof TaskSchema>;
-export type Step = z.infer<typeof StepSchema>;
-export type FullPlanOutput = z.infer<typeof FullPlanSchema>;
+export type FullPlanOutput = z.infer<ReturnType<typeof getFullPlanSchema>>;
+export type Step = FullPlanOutput["steps"][number];
+export type Task = Step["tasks"][number];

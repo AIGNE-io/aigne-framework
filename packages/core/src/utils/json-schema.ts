@@ -1,5 +1,5 @@
 import { isObject } from "lodash-es";
-import type { ZodType } from "zod";
+import type { ZodType, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { Message } from "../agents/agent.js";
 import { logger } from "./logger.js";
@@ -36,4 +36,16 @@ export function parseJSON(json: string) {
     logger.debug("Failed to parse JSON", { json, error });
     throw new Error(`Failed to parse JSON ${error.message}`);
   }
+}
+
+/**
+ * Ensure that the union array has at least 1 item.
+ * NOTE: the zod union requires at least 2 items (just type definition, not runtime behavior)
+ * so we need to ensure that the union has at least 1 item.
+ * @param union - The union array
+ * @returns The union array with at least 1 item (but the type is at least 2 items for z.union)
+ */
+export function ensureZodUnionArray<T extends z.ZodType>(union: T[]): [T, T, ...T[]] {
+  if (!(union.length >= 1)) throw new Error("Union must have at least 1 item");
+  return union as [T, T, ...T[]];
 }

@@ -10,13 +10,13 @@ import {
 import {
   FULL_PLAN_PROMPT_TEMPLATE,
   type FullPlanOutput,
-  FullPlanSchema,
   PLAN_RESULT_TEMPLATE,
   STEP_RESULT_TEMPLATE,
   SYNTHESIZE_PLAN_PROMPT_TEMPLATE,
   type Step,
   TASK_PROMPT_TEMPLATE,
   TASK_RESULT_TEMPLATE,
+  getFullPlanSchema,
 } from "./orchestrator-prompts.js";
 
 const DEFAULT_MAX_ITERATIONS = 30;
@@ -70,7 +70,7 @@ export class OrchestratorAgent<
     this.planner = new AIAgent<FullPlanInput, FullPlanOutput>({
       name: "llm_orchestration_planner",
       instructions: FULL_PLAN_PROMPT_TEMPLATE,
-      outputSchema: FullPlanSchema,
+      outputSchema: () => getFullPlanSchema(this.tools),
     });
 
     this.completer = new AIAgent({

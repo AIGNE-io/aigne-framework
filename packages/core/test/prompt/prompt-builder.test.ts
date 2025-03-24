@@ -33,6 +33,7 @@ test("PromptBuilder should build messages correctly", async () => {
     input: createMessage("Hello"),
   });
 
+  expect(memory.enabled).toBe(true);
   expect(prompt1.messages).toEqual([
     {
       role: "system",

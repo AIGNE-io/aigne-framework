@@ -1,0 +1,24 @@
+{
+  "id": "msg_01NqfGH3TEq6xAyh3S5yCJwJ",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-3-7-sonnet-20250219",
+  "content": [
+    {
+      "type": "tool_use",
+      "id": "toolu_01EfNWLTKA7bQ63xjY4snkAD",
+      "name": "generate_json",
+      "input": {
+        "text": "The current temperature in New York is 20 degrees."
+      }
+    }
+  ],
+  "stop_reason": "tool_use",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 469,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 34
+  }
+}

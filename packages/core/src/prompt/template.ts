@@ -1,6 +1,10 @@
 import Mustache from "mustache";
 import { z } from "zod";
-import type { ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat.js";
+import type {
+  ChatModelInputMessage,
+  ChatModelInputMessageContent,
+  ChatModelOutputToolCall,
+} from "../models/chat.js";
 
 export class PromptTemplate {
   static from(template: string) {
@@ -51,7 +55,7 @@ export class SystemMessageTemplate extends ChatMessageTemplate {
 }
 
 export class UserMessageTemplate extends ChatMessageTemplate {
-  static from(template: NonNullable<ChatModelInputMessage["content"]>, name?: string) {
+  static from(template: ChatModelInputMessageContent, name?: string) {
     return new UserMessageTemplate("user", template, name);
   }
 }

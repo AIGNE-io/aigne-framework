@@ -150,6 +150,9 @@ importers:
       '@aigne/json-schema-to-zod':
         specifier: ^1.3.2
         version: 1.3.2(zod@3.24.2)
+      '@anthropic-ai/sdk':
+        specifier: ^0.39.0
+        version: 0.39.0(encoding@0.1.13)
       '@google/generative-ai':
         specifier: ^0.24.0
         version: 0.24.0
@@ -212,6 +215,9 @@ packages:
     resolution: {integrity: sha512-yw7e4XjL4a62a+PkVHrFDHWjNjWEDh2sDG5JHY7pH+NCxkM9WavITuh/AfL5sZjA4IZVpyhcqMVvk1uIWOjENg==}
     peerDependencies:
       zod: ^3.0.0
+
+  '@anthropic-ai/sdk@0.39.0':
+    resolution: {integrity: sha512-eMyDIPRZbt1CCLErRCi3exlAvNkBtRe+kW5vvJyef93PmNr/clstYgHhtvmkxN82nlKgzyGPCyGxrm0JQ1ZIdg==}
 
   '@biomejs/biome@1.9.4':
     resolution: {integrity: sha512-1rkd7G70+o9KkTn5KLmDYXihGoTaIGO9PIIN2ZB7UJxFrWw04CZHPYiMRjYsaDvVV7hP1dYNRLxSANLaBFGpog==}
@@ -1583,6 +1589,18 @@ snapshots:
   '@aigne/json-schema-to-zod@1.3.2(zod@3.24.2)':
     dependencies:
       zod: 3.24.2
+
+  '@anthropic-ai/sdk@0.39.0(encoding@0.1.13)':
+    dependencies:
+      '@types/node': 18.19.71
+      '@types/node-fetch': 2.6.12
+      abort-controller: 3.0.0
+      agentkeepalive: 4.6.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0(encoding@0.1.13)
+    transitivePeerDependencies:
+      - encoding
 
   '@biomejs/biome@1.9.4':
     optionalDependencies:

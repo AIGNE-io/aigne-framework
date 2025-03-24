@@ -5,6 +5,7 @@ export * from "./agents/memory.js";
 export * from "./agents/types.js";
 export * from "./agents/user-agent.js";
 export * from "./execution-engine/index.js";
+export * from "./models/chat-claude.js";
 export * from "./models/chat-openai.js";
 export * from "./models/chat.js";
 export * from "./prompt/prompt-builder.js";

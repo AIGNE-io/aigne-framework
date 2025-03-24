@@ -1,0 +1,9 @@
+data: {"type":"message_start","message":{"id":"msg_01Dc467QP8xtL24eqmvyfF7i","type":"message","role":"assistant","model":"claude-3-7-sonnet-20250219","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":5}}}
+data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_01MnGRVuuum7T1AiVoRh89QC","name":"get_weather","input":{}}}
+data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}}
+data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"city\": \""}}
+data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"New York"}}
+data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\"}"}}
+data: {"type":"content_block_stop","index":0}
+data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"output_tokens":54}}
+data: {"type":"message_stop"}

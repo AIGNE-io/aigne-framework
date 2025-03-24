@@ -27,7 +27,7 @@ export type Role = "system" | "user" | "agent" | "tool";
 export interface ChatModelInputMessage {
   role: Role;
 
-  content?: string | ({ type: "text"; text: string } | { type: "image_url"; url: string })[];
+  content?: ChatModelInputMessageContent;
 
   toolCalls?: {
     id: string;
@@ -39,6 +39,12 @@ export interface ChatModelInputMessage {
 
   name?: string;
 }
+
+export type ChatModelInputMessageContent = string | (TextContent | ImageUrlContent)[];
+
+export type TextContent = { type: "text"; text: string };
+
+export type ImageUrlContent = { type: "image_url"; url: string };
 
 const chatModelInputMessageSchema = z.object({
   role: z.union([z.literal("system"), z.literal("user"), z.literal("agent"), z.literal("tool")]),

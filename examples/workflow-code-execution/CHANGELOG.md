@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.2.0...example-workflow-sequential-v1.3.0) (2025-03-24)
+## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.1.0...example-workflow-code-execution-v1.2.0) (2025-03-24)
 
 
 ### Features
@@ -12,10 +12,3 @@
 ### Bug Fixes
 
 * rename @aigne/core-next to @aigne/core ([3a81009](https://github.com/AIGNE-io/aigne-framework/commit/3a8100962c81813217b687ae28e8de604419c622))
-
-## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.1.0...example-workflow-sequential-v1.2.0) (2025-03-18)
-
-
-### Features
-
-* add sequential and parallel helper function ([a295697](https://github.com/AIGNE-io/aigne-framework/commit/a295697b5694754e02954fc5c7f382a3b219a3ab))

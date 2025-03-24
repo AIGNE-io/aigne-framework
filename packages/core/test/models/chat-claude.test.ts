@@ -11,7 +11,7 @@ import {
 import type Anthropic from "@anthropic-ai/sdk";
 import { createMockEventStream } from "../_utils/event-stream";
 
-test("ChatModelOpenAI.call", async () => {
+test("ChatModelClaude.call", async () => {
   const model = new ChatModelClaude({
     apiKey: "YOUR_API_KEY",
   });

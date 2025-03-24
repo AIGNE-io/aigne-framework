@@ -130,7 +130,7 @@ export class PromptBuilder {
 
     const memory = options.memory ?? options.agent?.memory;
 
-    if (memory?.enable) {
+    if (memory?.enabled) {
       const k = memory.maxMemoriesInChat ?? DEFAULT_MAX_HISTORY_MESSAGES;
       const histories = memory.memories.slice(-k);
 

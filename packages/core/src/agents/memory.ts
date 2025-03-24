@@ -7,7 +7,7 @@ export interface AgentMemoryOptions {
   /**
    * Enable memory, default is true
    */
-  enable?: boolean;
+  enabled?: boolean;
 
   subscribeTopic?: string | string[];
 
@@ -22,12 +22,12 @@ export interface Memory {
 
 export class AgentMemory {
   constructor(options: AgentMemoryOptions) {
-    this.enable = options.enable ?? true;
+    this.enabled = options.enabled ?? true;
     this.subscribeTopic = options.subscribeTopic;
     this.maxMemoriesInChat = options.maxMemoriesInChat;
   }
 
-  enable?: boolean;
+  enabled?: boolean;
 
   subscribeTopic?: string | string[];
 
@@ -39,6 +39,7 @@ export class AgentMemory {
 
   addMemory(memory: Memory) {
     if (this.memories.at(-1)?.content === memory.content) return;
+    // TODO: save all memories into database instead of in-memory
     this.memories.push(memory);
   }
 

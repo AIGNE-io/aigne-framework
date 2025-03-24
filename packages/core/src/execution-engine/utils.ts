@@ -5,7 +5,10 @@ export function sequential(..._agents: [Runnable, ...Runnable[]]): FunctionAgent
   let agents = [..._agents];
 
   return async (input: Message, context?: Context) => {
-    if (!context) throw new Error("Context is required for sequential agents");
+    if (!context)
+      throw new Error(
+        "Context is required for executing sequential agents. Please provide a valid context.",
+      );
 
     const output: Message = {};
 
@@ -31,7 +34,10 @@ export function parallel(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn
   let agents = [..._agents];
 
   return async (input: Message, context?: Context) => {
-    if (!context) throw new Error("Context is required for parallel agents");
+    if (!context)
+      throw new Error(
+        "Context is required for executing parallel agents. Please provide a valid context.",
+      );
 
     const result = await Promise.all(
       agents.map((agent) => context.call(agent, input, { returnActiveAgent: true })),

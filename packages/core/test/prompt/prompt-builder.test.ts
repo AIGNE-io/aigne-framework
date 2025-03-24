@@ -21,7 +21,7 @@ test("userInput function should return correct object", () => {
 test("PromptBuilder should build messages correctly", async () => {
   const builder = PromptBuilder.from("Test instructions");
 
-  const memory = new AgentMemory({ enable: true });
+  const memory = new AgentMemory({ enabled: true });
   memory.addMemory({
     role: "agent",
     content: createMessage("Hello, How can I help you?"),

@@ -1,4 +1,3 @@
-import EventEmitter from "node:events";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";
 import { createMessage } from "../prompt/prompt-builder.js";
@@ -47,13 +46,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   memory?: AgentMemory | AgentMemoryOptions | true;
 }
 
-export abstract class Agent<
-  I extends Message = Message,
-  O extends Message = Message,
-> extends EventEmitter {
+export abstract class Agent<I extends Message = Message, O extends Message = Message> {
   constructor({ inputSchema, outputSchema, ...options }: AgentOptions<I, O>) {
-    super();
-
     this.name = options.name || this.constructor.name;
     this.description = options.description;
 
@@ -76,7 +70,7 @@ export abstract class Agent<
         options.memory instanceof AgentMemory
           ? options.memory
           : typeof options.memory === "boolean"
-            ? new AgentMemory({ enable: options.memory })
+            ? new AgentMemory({ enabled: options.memory })
             : new AgentMemory(options.memory);
     }
   }
@@ -137,8 +131,6 @@ export abstract class Agent<
   }
 
   async call(input: I | string, context?: Context): Promise<O> {
-    if (!this.process) throw new Error("Agent must implement process method");
-
     const _input = typeof input === "string" ? createMessage(input) : input;
 
     const parsedInput = this.inputSchema.parse(_input) as I;

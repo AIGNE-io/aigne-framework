@@ -22,7 +22,7 @@
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
     "@aigne/core-next": "workspace:^",
-    "openai": "^4.87.3",
+    "openai": "^4.89.0",
     "zod": "^3.24.2"
   }
 }

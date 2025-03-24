@@ -48,10 +48,10 @@
     "inquirer": "^12.5.0",
     "lodash-es": "^4.17.21",
     "mustache": "^4.2.0",
-    "nanoid": "^5.1.4",
+    "nanoid": "^5.1.5",
     "ora": "^8.2.0",
     "zod": "^3.24.2",
-    "zod-to-json-schema": "^3.24.4"
+    "zod-to-json-schema": "^3.24.5"
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

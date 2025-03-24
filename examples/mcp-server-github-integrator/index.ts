@@ -3,9 +3,9 @@
 import assert from "node:assert";
 import {
   AIAgent,
-  ChatModelOpenAI,
   ExecutionEngine,
   MCPAgent,
+  OpenAIChatModel,
   logger,
   runChatLoopInTerminal,
 } from "@aigne/core-next";
@@ -19,7 +19,7 @@ assert(
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 

@@ -4,16 +4,16 @@ import assert from "node:assert";
 import { OrchestratorAgent } from "@aigne/agent-library";
 import {
   AIAgent,
-  ChatModelOpenAI,
   ExecutionEngine,
   MCPAgent,
+  OpenAIChatModel,
   runChatLoopInTerminal,
 } from "@aigne/core-next";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 

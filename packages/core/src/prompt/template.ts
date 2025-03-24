@@ -4,7 +4,7 @@ import type {
   ChatModelInputMessage,
   ChatModelInputMessageContent,
   ChatModelOutputToolCall,
-} from "../models/chat.js";
+} from "../models/chat-model.js";
 
 export class PromptTemplate {
   static from(template: string) {

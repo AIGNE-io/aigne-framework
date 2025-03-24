@@ -14,11 +14,11 @@ import {
   type ChatModelInput,
   type ChatModelInputMessageContent,
   type ChatModelOutput,
-} from "./chat.js";
+} from "./chat-model.js";
 
 const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
 
-export class ChatModelClaude extends ChatModel {
+export class ClaudeChatModel extends ChatModel {
   constructor(public config?: { apiKey?: string; model?: string }) {
     super();
   }
@@ -26,7 +26,7 @@ export class ChatModelClaude extends ChatModel {
   private _client?: Anthropic;
 
   get client() {
-    if (!this.config?.apiKey) throw new Error("Api Key is required for ChatModelClaude");
+    if (!this.config?.apiKey) throw new Error("Api Key is required for ClaudeChatModel");
 
     this._client ??= new Anthropic({ apiKey: this.config.apiKey });
     return this._client;

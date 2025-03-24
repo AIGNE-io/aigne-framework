@@ -157,9 +157,9 @@ console.log(userData); // { id: 123, name: "John Doe", email: "john@example.com"
 ### 在工具链中使用
 
 ```typescript
-import { ExecutionEngine, AIAgent, FunctionAgent, ChatModelOpenAI } from "@aigne/core-next";
+import { ExecutionEngine, AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core-next";
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
   model: "gpt-4"
 });

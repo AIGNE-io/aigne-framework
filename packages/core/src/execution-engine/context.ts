@@ -1,6 +1,6 @@
 import type EventEmitter from "node:events";
 import type { Agent, FunctionAgentFn, Message } from "../agents/agent.js";
-import type { ChatModel } from "../models/chat.js";
+import type { ChatModel } from "../models/chat-model.js";
 import type { MessagePayload, MessageQueueListener, Unsubscribe } from "./message-queue.js";
 
 export type Runnable<I extends Message = Message, O extends Message = Message> =

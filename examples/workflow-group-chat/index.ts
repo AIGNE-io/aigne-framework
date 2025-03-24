@@ -4,9 +4,9 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import {
   AIAgent,
-  ChatModelOpenAI,
   ExecutionEngine,
   FunctionAgent,
+  OpenAIChatModel,
   PromptTemplate,
   UserAgent,
   createMessage,
@@ -19,7 +19,7 @@ import { z } from "zod";
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
-const gpt = new ChatModelOpenAI({
+const gpt = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
   model: "gpt-4o",
 });

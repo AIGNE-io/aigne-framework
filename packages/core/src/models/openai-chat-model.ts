@@ -9,11 +9,11 @@ import {
   type ChatModelInputTool,
   type ChatModelOutput,
   type Role,
-} from "./chat.js";
+} from "./chat-model.js";
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 
-export class ChatModelOpenAI extends ChatModel {
+export class OpenAIChatModel extends ChatModel {
   constructor(public config?: { apiKey?: string; model?: string }) {
     super();
   }
@@ -21,7 +21,7 @@ export class ChatModelOpenAI extends ChatModel {
   private _client?: OpenAI;
 
   private get client() {
-    if (!this.config?.apiKey) throw new Error("Api Key is required for ChatModelOpenAI");
+    if (!this.config?.apiKey) throw new Error("Api Key is required for OpenAIChatModel");
 
     this._client ??= new OpenAI({ apiKey: this.config.apiKey });
     return this._client;

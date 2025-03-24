@@ -1,11 +1,11 @@
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, MCPAgent } from "@aigne/core-next";
+import { AIAgent, ExecutionEngine, MCPAgent, OpenAIChatModel } from "@aigne/core-next";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 

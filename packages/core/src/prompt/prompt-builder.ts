@@ -13,7 +13,7 @@ import type {
   ChatModelInputResponseFormat,
   ChatModelInputTool,
   ChatModelInputToolChoice,
-} from "../models/chat.js";
+} from "../models/chat-model.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
 import {
   AgentMessageTemplate,

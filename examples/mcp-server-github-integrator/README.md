@@ -118,7 +118,7 @@ The following example demonstrates how to use the GitHub MCP server to search fo
 ```typescript
 import {
   AIAgent,
-  ChatModelOpenAI,
+  OpenAIChatModel,
   ExecutionEngine,
   MCPAgent,
 } from "@aigne/core-next";
@@ -127,7 +127,7 @@ import {
 const { OPENAI_API_KEY, GITHUB_PERSONAL_ACCESS_TOKEN } = process.env;
 
 // Initialize OpenAI model
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 

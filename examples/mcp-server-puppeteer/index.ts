@@ -3,9 +3,9 @@
 import assert from "node:assert";
 import {
   AIAgent,
-  ChatModelOpenAI,
   ExecutionEngine,
   MCPAgent,
+  OpenAIChatModel,
   getMessage,
   logger,
   runChatLoopInTerminal,
@@ -16,7 +16,7 @@ assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 

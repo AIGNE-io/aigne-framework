@@ -1,5 +1,9 @@
 import type { Context } from "../execution-engine/context.js";
-import type { ChatModel, ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat.js";
+import type {
+  ChatModel,
+  ChatModelInputMessage,
+  ChatModelOutputToolCall,
+} from "../models/chat-model.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
 import { Agent, type AgentOptions, type Message } from "./agent.js";

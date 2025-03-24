@@ -3,7 +3,7 @@ import { isNil } from "lodash-es";
 import { Agent, type Message } from "../agents/agent.js";
 import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
-import type { ChatModel } from "../models/chat.js";
+import type { ChatModel } from "../models/chat-model.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import type { Context, Runnable } from "./context.js";
 import {

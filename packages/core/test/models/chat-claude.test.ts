@@ -3,7 +3,7 @@ import { join } from "node:path";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
-  ChatModelClaude,
+  ClaudeChatModel,
   SystemMessageTemplate,
   ToolMessageTemplate,
   UserMessageTemplate,
@@ -11,8 +11,8 @@ import {
 import type Anthropic from "@anthropic-ai/sdk";
 import { createMockEventStream } from "../_utils/event-stream";
 
-test("ChatModelClaude.call", async () => {
-  const model = new ChatModelClaude({
+test("ClaudeChatModel.call", async () => {
+  const model = new ClaudeChatModel({
     apiKey: "YOUR_API_KEY",
   });
 

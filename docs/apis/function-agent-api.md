@@ -157,9 +157,9 @@ console.log(userData); // { id: 123, name: "John Doe", email: "john@example.com"
 ### Agent Transfer
 
 ```typescript
-import { FunctionAgent, AIAgent, ChatModelOpenAI } from "@aigne/core-next";
+import { FunctionAgent, AIAgent, OpenAIChatModel } from "@aigne/core-next";
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
   model: "gpt-4"
 });
@@ -198,9 +198,9 @@ const result = await intentAnalyzer.call({ text: "I need some help" });
 ### Using in a Tool Chain
 
 ```typescript
-import { ExecutionEngine, AIAgent, FunctionAgent, ChatModelOpenAI } from "@aigne/core-next";
+import { ExecutionEngine, AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core-next";
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
   model: "gpt-4"
 });

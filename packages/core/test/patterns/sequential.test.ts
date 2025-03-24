@@ -1,8 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, sequential } from "@aigne/core-next";
+import { AIAgent, ExecutionEngine, OpenAIChatModel, sequential } from "@aigne/core-next";
 
 test("Patterns - Sequential", async () => {
-  const model = new ChatModelOpenAI();
+  const model = new OpenAIChatModel();
 
   const conceptExtractor = AIAgent.from({
     instructions: `\

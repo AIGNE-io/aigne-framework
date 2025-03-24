@@ -73,7 +73,7 @@ The following example demonstrates how to build a reflection workflow:
 import assert from "node:assert";
 import {
   AIAgent,
-  ChatModelOpenAI,
+  OpenAIChatModel,
   ExecutionEngine,
   UserInputTopic,
   UserOutputTopic,
@@ -83,7 +83,7 @@ import { z } from "zod";
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 

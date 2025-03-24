@@ -261,13 +261,13 @@ interface MCPResourceOptions extends MCPToolBaseOptions<{ [key: string]: never }
 ```typescript
 import {
   AIAgent,
-  ChatModelOpenAI,
+  OpenAIChatModel,
   ExecutionEngine,
   MCPAgent
 } from "@aigne/core-next";
 
 // 创建 AI 模型
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY
 });
 

@@ -1,8 +1,8 @@
 import assert from "node:assert";
 import {
   AIAgent,
-  ChatModelOpenAI,
   ExecutionEngine,
+  OpenAIChatModel,
   UserInputTopic,
   UserOutputTopic,
 } from "@aigne/core-next";
@@ -11,7 +11,7 @@ import { z } from "zod";
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 

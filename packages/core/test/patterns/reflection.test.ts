@@ -1,16 +1,16 @@
 import { expect, spyOn, test } from "bun:test";
 import {
   AIAgent,
-  ChatModelOpenAI,
   type ChatModelOutput,
   ExecutionEngine,
+  OpenAIChatModel,
   UserInputTopic,
   UserOutputTopic,
 } from "@aigne/core-next";
 import { z } from "zod";
 
 test("Patterns - Reflection", async () => {
-  const model = new ChatModelOpenAI();
+  const model = new OpenAIChatModel();
 
   const coder = AIAgent.from({
     subscribeTopic: [UserInputTopic, "rewrite_request"],

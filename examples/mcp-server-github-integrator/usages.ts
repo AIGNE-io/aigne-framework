@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, MCPAgent } from "@aigne/core-next";
+import { AIAgent, ExecutionEngine, MCPAgent, OpenAIChatModel } from "@aigne/core-next";
 
 const { OPENAI_API_KEY, GITHUB_PERSONAL_ACCESS_TOKEN } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
@@ -8,7 +8,7 @@ assert(
   "Please set the GITHUB_PERSONAL_ACCESS_TOKEN environment variable",
 );
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 

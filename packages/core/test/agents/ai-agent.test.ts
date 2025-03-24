@@ -1,9 +1,9 @@
 import { expect, spyOn, test } from "bun:test";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, createMessage } from "@aigne/core-next";
+import { AIAgent, ExecutionEngine, OpenAIChatModel, createMessage } from "@aigne/core-next";
 import { z } from "zod";
 
 test("AIAgent.call", async () => {
-  const model = new ChatModelOpenAI();
+  const model = new OpenAIChatModel();
   const engine = new ExecutionEngine({ model });
 
   const agent = AIAgent.from({
@@ -18,7 +18,7 @@ test("AIAgent.call", async () => {
 });
 
 test("AIAgent.call with structured output", async () => {
-  const model = new ChatModelOpenAI();
+  const model = new OpenAIChatModel();
   const engine = new ExecutionEngine({ model });
 
   const agent = AIAgent.from({
@@ -44,7 +44,7 @@ test("AIAgent.call with structured output", async () => {
 });
 
 test("AIAgent should pass both arguments (model generated) and input (user provided) to the tool", async () => {
-  const model = new ChatModelOpenAI();
+  const model = new OpenAIChatModel();
   const engine = new ExecutionEngine({ model });
 
   const plus = AIAgent.from({
@@ -101,7 +101,7 @@ test("AIAgent should pass both arguments (model generated) and input (user provi
 });
 
 test("AIAgent with router toolChoice mode should return tool result", async () => {
-  const model = new ChatModelOpenAI();
+  const model = new OpenAIChatModel();
   const engine = new ExecutionEngine({ model });
 
   const plus = AIAgent.from({

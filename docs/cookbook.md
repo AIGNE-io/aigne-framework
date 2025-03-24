@@ -77,7 +77,7 @@ const engine = new ExecutionEngine({ model });
 **Example**:
 
 ```typescript
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, FunctionAgent } from "@aigne/core-next";
+import { AIAgent, OpenAIChatModel, ExecutionEngine, FunctionAgent } from "@aigne/core-next";
 import { z } from "zod";
 
 // Create JavaScript sandbox
@@ -123,7 +123,7 @@ console.log(result);
 **Example**:
 
 ```typescript
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core-next";
+import { AIAgent, OpenAIChatModel, ExecutionEngine } from "@aigne/core-next";
 
 // Concept extractor Agent
 const conceptExtractor = AIAgent.from({
@@ -192,7 +192,7 @@ console.log(result);
 **Example**:
 
 ```typescript
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, parallel } from "@aigne/core-next";
+import { AIAgent, OpenAIChatModel, ExecutionEngine, parallel } from "@aigne/core-next";
 
 // Feature extraction Agent
 const featureExtractor = AIAgent.from({
@@ -240,7 +240,7 @@ console.log(result);
 ```typescript
 import {
   AIAgent,
-  ChatModelOpenAI,
+  OpenAIChatModel,
   ExecutionEngine,
   UserInputTopic,
   UserOutputTopic,
@@ -321,7 +321,7 @@ console.log(result);
 **Example**:
 
 ```typescript
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core-next";
+import { AIAgent, OpenAIChatModel, ExecutionEngine } from "@aigne/core-next";
 
 // Function to transfer to Agent B
 function transfer_to_b() {
@@ -370,7 +370,7 @@ console.log(result2);
 **Example**:
 
 ```typescript
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core-next";
+import { AIAgent, OpenAIChatModel, ExecutionEngine } from "@aigne/core-next";
 
 // Product support Agent
 const productSupport = AIAgent.from({
@@ -447,7 +447,7 @@ console.log(result3);
 
 ```typescript
 import { OrchestratorAgent } from "@aigne/agent-library";
-import { AIAgent, ChatModelOpenAI, ExecutionEngine, MCPAgent } from "@aigne/core-next";
+import { AIAgent, OpenAIChatModel, ExecutionEngine, MCPAgent } from "@aigne/core-next";
 
 // Create specialized Agents
 const puppeteer = await MCPAgent.from({
@@ -554,7 +554,7 @@ The Puppeteer MCP server allows AIGNE Framework to access and manipulate web con
 ```typescript
 import {
   AIAgent,
-  ChatModelOpenAI,
+  OpenAIChatModel,
   ExecutionEngine,
   MCPAgent,
 } from "@aigne/core-next";
@@ -609,7 +609,7 @@ The SQLite MCP server allows AIGNE Framework to interact with SQLite databases.
 import { join } from "node:path";
 import {
   AIAgent,
-  ChatModelOpenAI,
+  OpenAIChatModel,
   ExecutionEngine,
   MCPAgent,
 } from "@aigne/core-next";

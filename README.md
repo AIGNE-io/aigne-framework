@@ -21,10 +21,10 @@ AIGNE Framework is a functional AI application development framework designed to
 ## Usage
 
 ```ts
-import { AIAgent, ChatModelOpenAI, ExecutionEngine } from "@aigne/core-next";
+import { AIAgent, OpenAIChatModel, ExecutionEngine } from "@aigne/core-next";
 import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
 
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
   model: DEFAULT_CHAT_MODEL,
 });

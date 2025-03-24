@@ -261,13 +261,13 @@ The following example demonstrates how to use the AIGNE framework and Puppeteer 
 ```typescript
 import {
   AIAgent,
-  ChatModelOpenAI,
+  OpenAIChatModel,
   ExecutionEngine,
   MCPAgent
 } from "@aigne/core-next";
 
 // Create AI model
-const model = new ChatModelOpenAI({
+const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY
 });
 
@@ -312,7 +312,7 @@ await engine.shutdown();
 
 The basic workflow for using Puppeteer MCP Agent to extract website content is as follows:
 
-1. Create a ChatModelOpenAI instance
+1. Create a OpenAIChatModel instance
 2. Use MCPAgent.from method to connect to the Puppeteer MCP server
 3. Create an ExecutionEngine and add the Puppeteer MCP Agent as a tool
 4. Create an AIAgent and set instructions for extracting website content

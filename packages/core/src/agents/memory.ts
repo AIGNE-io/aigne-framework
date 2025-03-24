@@ -39,7 +39,8 @@ export class AgentMemory {
 
   addMemory(memory: Memory) {
     if (this.memories.at(-1)?.content === memory.content) return;
-    // TODO: save all memories into database instead of in-memory
+    // TODO: save all memories into database instead of in-memory,
+    // and give every memory a unique id to avoid duplication
     this.memories.push(memory);
   }
 

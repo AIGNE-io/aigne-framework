@@ -24,7 +24,7 @@ test("AIAgent.call", async () => {
     .mockReturnValueOnce(
       Promise.resolve<{ json: FullPlanOutput }>({
         json: {
-          is_complete: false,
+          isComplete: false,
           steps: [
             {
               description: "Find the closest match to a user's request",
@@ -50,28 +50,34 @@ test("AIAgent.call", async () => {
     )
     .mockReturnValueOnce(Promise.resolve({ text: "ArcBlock is a blockchain platform" }))
     .mockReturnValueOnce(
+      Promise.resolve({ text: "Synthesized: ArcBlock is a blockchain platform" }),
+    )
+    .mockReturnValueOnce(
       Promise.resolve({ text: "The content has been written to the filesystem" }),
+    )
+    .mockReturnValueOnce(
+      Promise.resolve({ text: "Synthesized: The content has been written to the filesystem" }),
     )
     .mockReturnValueOnce(
       Promise.resolve<{ json: FullPlanOutput }>({
         json: {
-          is_complete: true,
+          isComplete: true,
           steps: [],
         },
       }),
     )
     .mockReturnValueOnce(Promise.resolve({ text: "Task finished" }));
 
-  const finderProcess = spyOn(finder, "call");
-  const writerProcess = spyOn(writer, "call");
+  const finderCall = spyOn(finder, "call");
+  const writerCall = spyOn(writer, "call");
 
   const result = await engine.call(agent, "Deep research ArcBlock and write a professional report");
 
   expect(result).toEqual(createMessage("Task finished"));
-  expect(finderProcess.mock.calls).toEqual([
+  expect(finderCall.mock.calls).toEqual([
     [createMessage(expect.stringContaining("Find the closest match to a user's request")), engine],
   ]);
-  expect(writerProcess.mock.calls).toEqual([
+  expect(writerCall.mock.calls).toEqual([
     [createMessage(expect.stringContaining("Write to the filesystem")), engine],
   ]);
 });

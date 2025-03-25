@@ -5,52 +5,42 @@ import {
   type Context,
   type Message,
   PromptTemplate,
+  createMessage,
   getMessage,
 } from "@aigne/core";
+import fastq from "fastq";
 import {
   FULL_PLAN_PROMPT_TEMPLATE,
+  type FullPlanInput,
   type FullPlanOutput,
-  PLAN_RESULT_TEMPLATE,
-  STEP_RESULT_TEMPLATE,
-  SYNTHESIZE_PLAN_PROMPT_TEMPLATE,
+  SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE,
+  SYNTHESIZE_STEP_PROMPT_TEMPLATE,
   type Step,
+  type StepWithResult,
+  type SynthesizeStepPromptInput,
   TASK_PROMPT_TEMPLATE,
-  TASK_RESULT_TEMPLATE,
+  type Task,
+  type TaskPromptInput,
   getFullPlanSchema,
 } from "./orchestrator-prompts.js";
 
 const DEFAULT_MAX_ITERATIONS = 30;
+const DEFAULT_TASK_CONCURRENCY = 5;
 
 export * from "./orchestrator-prompts.js";
 
-export interface StepResult {
-  step: Step;
-  task_results: Array<TaskWithResult>;
-}
-
-export interface TaskWithResult {
-  description: string;
-  agent: string;
-  result: string;
-}
-
-export interface PlanResult extends Message {
+export interface FullPlanWithResult {
   objective: string;
   plan?: FullPlanOutput;
-  is_complete?: boolean;
+  steps: StepWithResult[];
   result?: string;
-  step_results: StepResult[];
-}
-
-export interface FullPlanInput extends Message {
-  objective: string;
-  plan_result: string;
-  agents: string;
+  status?: boolean;
 }
 
 export interface OrchestratorAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
   maxIterations?: number;
+  tasksConcurrency?: number;
 }
 
 export class OrchestratorAgent<
@@ -66,6 +56,7 @@ export class OrchestratorAgent<
   constructor(options: OrchestratorAgentOptions<I, O>) {
     super({ ...options });
     this.maxIterations = options.maxIterations;
+    this.tasksConcurrency = options.tasksConcurrency;
 
     this.planner = new AIAgent<FullPlanInput, FullPlanOutput>({
       name: "llm_orchestration_planner",
@@ -75,16 +66,18 @@ export class OrchestratorAgent<
 
     this.completer = new AIAgent({
       name: "llm_orchestration_completer",
-      instructions: SYNTHESIZE_PLAN_PROMPT_TEMPLATE,
+      instructions: FULL_PLAN_PROMPT_TEMPLATE,
       outputSchema: this.outputSchema,
     });
   }
 
   private planner: AIAgent<FullPlanInput, FullPlanOutput>;
 
-  private completer: AIAgent<{ plan_result: string }, O>;
+  private completer: AIAgent<FullPlanInput, O>;
 
   maxIterations?: number;
+
+  tasksConcurrency?: number;
 
   async process(input: I, context?: Context) {
     const model = context?.model;
@@ -93,127 +86,132 @@ export class OrchestratorAgent<
     const objective = getMessage(input);
     if (!objective) throw new Error("Objective is required to run OrchestratorAgent");
 
-    const result: PlanResult = {
+    const result: FullPlanWithResult = {
       objective,
-      step_results: [],
+      steps: [],
     };
 
     let iterations = 0;
     const maxIterations = this.maxIterations ?? DEFAULT_MAX_ITERATIONS;
 
     while (iterations++ < maxIterations) {
-      const plan = await this.getFullPlan(objective, result, context);
+      const plan = await this.getFullPlan(result, context);
 
       result.plan = plan;
 
-      if (plan.is_complete) {
-        return context.call(this.completer, { plan_result: this.formatPlanResult(result) });
+      if (plan.isComplete) {
+        return this.synthesizePlanResult(result, context);
       }
 
       for (const step of plan.steps) {
         const stepResult = await this.executeStep(result, step, context);
 
-        result.step_results.push(stepResult);
+        result.steps.push(stepResult);
       }
     }
 
     throw new Error(`Max iterations reached: ${maxIterations}`);
   }
 
+  private getFullPlanInput(planResult: FullPlanWithResult): FullPlanInput {
+    return {
+      objective: planResult.objective,
+      steps: planResult.steps,
+      plan: {
+        status: planResult.status ? "Complete" : "In Progress",
+        result: planResult.result || "No results yet",
+      },
+      agents: this.tools.map((i) => ({
+        name: i.name,
+        description: i.description,
+        tools: i.tools.map((i) => ({ name: i.name, description: i.description })),
+      })),
+    };
+  }
+
   private async getFullPlan(
-    objective: string,
-    planResult: PlanResult,
+    planResult: FullPlanWithResult,
     context: Context,
   ): Promise<FullPlanOutput> {
-    const agents = this.tools
-      .map(
-        (agent, idx) =>
-          `${idx + 1}. Agent Name: ${agent.name}
-Description: ${agent.description}
-Functions: ${agent.tools.map((tool) => `- ${tool.name} ${tool.description}`).join("\n")}`,
-      )
-      .join("\n");
+    return context.call(this.planner, this.getFullPlanInput(planResult));
+  }
 
-    return context.call(this.planner, {
-      objective,
-      plan_result: this.formatPlanResult(planResult),
-      agents,
+  private async synthesizePlanResult(planResult: FullPlanWithResult, context: Context): Promise<O> {
+    return context.call(this.completer, {
+      ...this.getFullPlanInput(planResult),
+      ...createMessage(SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE),
     });
   }
 
   private async executeStep(
-    previousResult: PlanResult,
+    planResult: FullPlanWithResult,
     step: Step,
     context?: Context,
-  ): Promise<StepResult> {
+  ): Promise<StepWithResult> {
+    const concurrency = this.tasksConcurrency ?? DEFAULT_TASK_CONCURRENCY;
+
     const model = context?.model;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
-    const taskResults: TaskWithResult[] = [];
-
-    for (const task of step.tasks) {
+    const queue = fastq.promise(async (task: Task) => {
       const agent = this.tools.find((agent) => agent.name === task.agent);
       if (!agent) throw new Error(`Agent ${task.agent} not found`);
 
-      const prompt = PromptTemplate.from(TASK_PROMPT_TEMPLATE).format({
-        objective: previousResult.objective,
-        task: task.description,
-        context: this.formatPlanResult(previousResult),
+      const prompt = PromptTemplate.from(TASK_PROMPT_TEMPLATE).format(<TaskPromptInput>{
+        objective: planResult.objective,
+        step,
+        task,
+        steps: planResult.steps,
       });
 
       let result: string;
 
       if (agent.isCallable) {
-        result = JSON.stringify(await context.call(agent, prompt));
+        result = getMessageOrJsonString(await context.call(agent, prompt));
       } else {
         const executor = AIAgent.from({
+          name: "llm_orchestration_task_executor",
           instructions: prompt,
           tools: agent.tools,
         });
-        result = JSON.stringify(await context.call(executor, {}));
+        result = getMessageOrJsonString(await context.call(executor, {}));
       }
 
-      taskResults.push({ ...task, result });
+      return { task, result };
+    }, concurrency);
+
+    let results: StepWithResult["tasks"] | undefined;
+
+    try {
+      results = await Promise.all(step.tasks.map((task) => queue.push(task)));
+    } catch (error) {
+      queue.kill();
+      throw error;
     }
+
+    const result = getMessageOrJsonString(
+      await context.call(
+        AIAgent.from<SynthesizeStepPromptInput, Message>({
+          name: "llm_orchestration_step_synthesizer",
+          instructions: SYNTHESIZE_STEP_PROMPT_TEMPLATE,
+        }),
+        { objective: planResult.objective, step, tasks: results },
+      ),
+    );
+    if (!result) throw new Error("unexpected empty result from synthesize step's tasks results");
 
     return {
       step,
-      task_results: taskResults,
+      tasks: results,
+      result,
     };
   }
+}
 
-  private formatPlanResult(planResult: PlanResult): string {
-    return PromptTemplate.from(PLAN_RESULT_TEMPLATE).format({
-      plan_objective: planResult.objective,
-      steps_str: this.formatStepsResults(planResult.step_results),
-      plan_status: planResult.is_complete ? "Complete" : "In Progress",
-      plan_result: planResult.result || "No results yet",
-    });
+function getMessageOrJsonString(output: Message): string {
+  const entries = Object.entries(output);
+  if (entries.length === 1 && typeof entries[1] === "string") {
+    return entries[1];
   }
-
-  private formatStepsResults(stepResults: StepResult[]): string {
-    if (!stepResults.length) return "No steps executed yet";
-
-    return stepResults
-      .map(
-        (stepResult, index) =>
-          `${index + 1}:\n${
-            stepResult.task_results.length
-              ? PromptTemplate.from(STEP_RESULT_TEMPLATE).format({
-                  step_description: stepResult.step.description,
-                  tasks_str: stepResult.task_results
-                    .map(
-                      (task) =>
-                        `- ${PromptTemplate.from(TASK_RESULT_TEMPLATE).format({
-                          task_description: task.description,
-                          task_result: task.result,
-                        })}`,
-                    )
-                    .join("\n"),
-                })
-              : "No result"
-          }`,
-      )
-      .join("\n\n");
-  }
+  return JSON.stringify(output);
 }

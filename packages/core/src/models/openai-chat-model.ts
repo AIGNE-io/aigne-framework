@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam, ChatCompletionTool } from "openai/resources";
+import { parseJSON } from "../utils/json-schema.js";
 import { isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
@@ -82,7 +83,7 @@ export class OpenAIChatModel extends ChatModel {
     const result: ChatModelOutput = {};
 
     if (input.responseFormat?.type === "json_schema" && text) {
-      result.json = JSON.parse(text);
+      result.json = parseJSON(text);
     } else {
       result.text = text;
     }
@@ -90,7 +91,7 @@ export class OpenAIChatModel extends ChatModel {
     if (toolCalls.length) {
       result.toolCalls = toolCalls.map(({ args, ...c }) => ({
         ...c,
-        function: { ...c.function, arguments: JSON.parse(args) },
+        function: { ...c.function, arguments: parseJSON(args) },
       }));
     }
 

@@ -138,3 +138,59 @@ test("ClaudeChatModel.call", async () => {
     json: { text: "The current temperature in New York is 20 degrees." },
   });
 });
+
+test("ClaudeChatModel.call should pass system and messages to claude correctly", async () => {
+  const model = new ClaudeChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
+
+  const stream = spyOn(model.client.messages, "stream").mockReturnValueOnce(
+    createMockEventStream({ path: join(import.meta.dirname, "claude-streaming-response-1.txt") }),
+  );
+
+  await model.call({
+    messages: [
+      { role: "system", content: "You are a chatbot" },
+      { role: "user", content: "hello" },
+    ],
+  });
+
+  expect(stream.mock.calls).toEqual([
+    [
+      expect.objectContaining({
+        system: "You are a chatbot",
+        messages: [{ role: "user", content: "hello" }],
+      }),
+    ],
+  ]);
+});
+
+test("ClaudeChatModel.call should use system message as user message if messages is empty", async () => {
+  const model = new ClaudeChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
+
+  const stream = spyOn(model.client.messages, "stream").mockReturnValueOnce(
+    createMockEventStream({ path: join(import.meta.dirname, "claude-streaming-response-1.txt") }),
+  );
+
+  await model.call({
+    messages: [{ role: "system", content: "You are a chatbot" }],
+  });
+
+  // Should not include system property in the request, the system message should be treated as user message
+  expect(stream.mock.calls).toEqual([
+    [
+      expect.not.objectContaining({
+        system: expect.anything(),
+      }),
+    ],
+  ]);
+  expect(stream.mock.calls).toEqual([
+    [
+      expect.objectContaining({
+        messages: [{ role: "user", content: "You are a chatbot" }],
+      }),
+    ],
+  ]);
+});

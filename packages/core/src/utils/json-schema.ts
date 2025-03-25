@@ -2,6 +2,7 @@ import { isObject } from "lodash-es";
 import type { ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { Message } from "../agents/agent.js";
+import { logger } from "./logger.js";
 
 export function outputSchemaToResponseFormatSchema(
   agentOutput: ZodType<Message>,
@@ -26,4 +27,13 @@ function setAdditionPropertiesDeep<T>(schema: T, additionalProperties: boolean):
     ) as T;
   }
   return schema;
+}
+
+export function parseJSON(json: string) {
+  try {
+    return JSON.parse(json);
+  } catch (error) {
+    logger.debug("Failed to parse JSON", { json, error });
+    throw error;
+  }
 }

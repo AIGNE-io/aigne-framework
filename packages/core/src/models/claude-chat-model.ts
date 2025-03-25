@@ -3,11 +3,14 @@ import type { MessageStream } from "@anthropic-ai/sdk/lib/MessageStream.js";
 import type {
   ContentBlockParam,
   MessageParam,
+  Tool,
   ToolChoice,
   ToolUnion,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources/index.js";
+import { isEmpty } from "lodash-es";
 import type { Message } from "../agents/agent.js";
+import { parseJSON } from "../utils/json-schema.js";
 import { isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
@@ -98,7 +101,7 @@ export class ClaudeChatModel extends ChatModel {
       result.toolCalls = toolCalls
         .map(({ args, ...c }) => ({
           ...c,
-          function: { ...c.function, arguments: JSON.parse(args) },
+          function: { ...c.function, arguments: parseJSON(args) },
         }))
         .filter(isNonNullable);
     }
@@ -164,7 +167,7 @@ function convertMessages({ messages, responseFormat }: ChatModelInput): {
     } else if (msg.role === "user") {
       if (!msg.content) throw new Error("User message must have content");
 
-      msgs.push({ role: "user", content: contentBlockParamFromContent(msg.content) });
+      msgs.push({ role: "user", content: convertContent(msg.content) });
     } else if (msg.role === "agent") {
       if (msg.toolCalls?.length) {
         msgs.push({
@@ -177,7 +180,7 @@ function convertMessages({ messages, responseFormat }: ChatModelInput): {
           })),
         });
       } else if (msg.content) {
-        msgs.push({ role: "assistant", content: contentBlockParamFromContent(msg.content) });
+        msgs.push({ role: "assistant", content: convertContent(msg.content) });
       } else {
         throw new Error("Agent message must have content or toolCalls");
       }
@@ -190,12 +193,18 @@ function convertMessages({ messages, responseFormat }: ChatModelInput): {
     );
   }
 
-  return { messages: msgs, system: systemMessages.join("\n").trim() || undefined };
+  const system = systemMessages.join("\n").trim() || undefined;
+
+  // Claude requires at least one message, so we add a system message if there are no messages
+  if (msgs.length === 0) {
+    if (!system) throw new Error("No messages provided");
+    return { messages: [{ role: "user", content: system }] };
+  }
+
+  return { messages: msgs, system };
 }
 
-function contentBlockParamFromContent(
-  content: ChatModelInputMessageContent,
-): string | ContentBlockParam[] {
+function convertContent(content: ChatModelInputMessageContent): string | ContentBlockParam[] {
   if (typeof content === "string") return content;
 
   if (Array.isArray(content)) {
@@ -229,10 +238,12 @@ function convertTools({
 
   return {
     tools: tools?.length
-      ? tools.map((i) => ({
+      ? tools.map<Tool>((i) => ({
           name: i.function.name,
           description: i.function.description,
-          input_schema: i.function.parameters as Anthropic.Messages.Tool.InputSchema,
+          input_schema: isEmpty(i.function.parameters)
+            ? { type: "object" }
+            : (i.function.parameters as Anthropic.Messages.Tool.InputSchema),
         }))
       : undefined,
     tool_choice: choice,

@@ -3,6 +3,14 @@
 - chore: release v1.2.0
 
 
+## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.3.0...aigne-framework-v1.3.1) (2025-03-25)
+
+
+### Bug Fixes
+
+* **core:** use system message as user message for claude model if needed ([#32](https://github.com/AIGNE-io/aigne-framework/issues/32)) ([316a6d5](https://github.com/AIGNE-io/aigne-framework/commit/316a6d51f885cceee4020c24695f6588f6b7425f))
+* simplify mcp examples ([2b0b50e](https://github.com/AIGNE-io/aigne-framework/commit/2b0b50ef278edb938d26e5b31f0be73eb51e9204))
+
 ## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.2.0...aigne-framework-v1.3.0) (2025-03-24)
 
 

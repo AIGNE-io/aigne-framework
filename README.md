@@ -1,4 +1,4 @@
-# AIGNE Framework
+![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner&title=AIGNE%20Framework&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize&w=160&h=160&v=0.4.227)
 
 [English](./README.md) | [中文](./README.zh.md)
 

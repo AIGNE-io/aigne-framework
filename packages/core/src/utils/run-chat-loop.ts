@@ -76,14 +76,18 @@ async function callAgent(
   options: Pick<ChatLoopOptions, "onResponse" | "inputKey"> &
     Required<Pick<ChatLoopOptions, "log">>,
 ) {
-  const response = await logger.spinner(
-    agent.call(
-      options.inputKey && typeof input === "string" ? { [options.inputKey]: input } : input,
-    ),
-    "🤖",
-  );
-  if (options?.onResponse) options.onResponse(response);
-  else options.log(response);
+  try {
+    const response = await logger.spinner(
+      agent.call(
+        options.inputKey && typeof input === "string" ? { [options.inputKey]: input } : input,
+      ),
+      "🤖",
+    );
+    if (options?.onResponse) options.onResponse(response);
+    else options.log(response);
+  } catch (error) {
+    options.log(`ERROR: ${error.message}`);
+  }
 }
 
 const COMMANDS: { [key: string]: () => { exit?: boolean; message?: string } } = {

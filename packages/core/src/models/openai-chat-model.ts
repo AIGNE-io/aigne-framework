@@ -8,36 +8,51 @@ import {
   type ChatModelInput,
   type ChatModelInputMessage,
   type ChatModelInputTool,
+  type ChatModelOptions,
   type ChatModelOutput,
   type Role,
 } from "./chat-model.js";
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 
+export interface OpenAIChatModelOptions {
+  apiKey?: string;
+  model?: string;
+  modelOptions?: ChatModelOptions;
+}
+
 export class OpenAIChatModel extends ChatModel {
-  constructor(public config?: { apiKey?: string; model?: string }) {
+  constructor(public options?: OpenAIChatModelOptions) {
     super();
   }
 
   private _client?: OpenAI;
 
   private get client() {
-    if (!this.config?.apiKey) throw new Error("Api Key is required for OpenAIChatModel");
+    if (!this.options?.apiKey) throw new Error("Api Key is required for OpenAIChatModel");
 
-    this._client ??= new OpenAI({ apiKey: this.config.apiKey });
+    this._client ??= new OpenAI({ apiKey: this.options.apiKey });
     return this._client;
+  }
+
+  get modelOptions() {
+    return this.options?.modelOptions;
   }
 
   async process(input: ChatModelInput): Promise<ChatModelOutput> {
     const res = await this.client.chat.completions.create({
-      model: this.config?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
-      temperature: input.modelOptions?.temperature,
-      top_p: input.modelOptions?.topP,
-      frequency_penalty: input.modelOptions?.frequencyPenalty,
-      presence_penalty: input.modelOptions?.presencePenalty,
+      model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
+      temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
+      top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
+      frequency_penalty:
+        input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,
+      presence_penalty: input.modelOptions?.presencePenalty ?? this.modelOptions?.presencePenalty,
       messages: await contentsFromInputMessages(input.messages),
       tools: toolsFromInputTools(input.tools),
       tool_choice: input.toolChoice,
+      parallel_tool_calls: !input.tools?.length
+        ? undefined
+        : (input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls),
       response_format:
         input.responseFormat?.type === "json_schema"
           ? {

@@ -137,6 +137,7 @@ export interface ChatModelOptions {
   topP?: number;
   frequencyPenalty?: number;
   presencePenalty?: number;
+  parallelToolCalls?: boolean;
 }
 
 const chatModelOptionsSchema = z.object({
@@ -145,6 +146,7 @@ const chatModelOptionsSchema = z.object({
   topP: z.number().optional(),
   frequencyPenalty: z.number().optional(),
   presencePenalty: z.number().optional(),
+  parallelToolCalls: z.boolean().optional().default(true),
 });
 
 const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({

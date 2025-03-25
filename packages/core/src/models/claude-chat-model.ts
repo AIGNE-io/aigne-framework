@@ -17,36 +17,50 @@ import {
   ChatModel,
   type ChatModelInput,
   type ChatModelInputMessageContent,
+  type ChatModelOptions,
   type ChatModelOutput,
 } from "./chat-model.js";
 
 const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
 
+export interface ClaudeChatModelOptions {
+  apiKey?: string;
+  model?: string;
+  modelOptions?: ChatModelOptions;
+}
+
 export class ClaudeChatModel extends ChatModel {
-  constructor(public config?: { apiKey?: string; model?: string }) {
+  constructor(public options?: ClaudeChatModelOptions) {
     super();
   }
 
   private _client?: Anthropic;
 
   get client() {
-    if (!this.config?.apiKey) throw new Error("Api Key is required for ClaudeChatModel");
+    if (!this.options?.apiKey) throw new Error("Api Key is required for ClaudeChatModel");
 
-    this._client ??= new Anthropic({ apiKey: this.config.apiKey });
+    this._client ??= new Anthropic({ apiKey: this.options.apiKey });
     return this._client;
   }
 
+  get modelOptions() {
+    return this.options?.modelOptions;
+  }
+
   async process(input: ChatModelInput): Promise<ChatModelOutput> {
-    const model = this.config?.model || CHAT_MODEL_CLAUDE_DEFAULT_MODEL;
+    const model = this.options?.model || CHAT_MODEL_CLAUDE_DEFAULT_MODEL;
+    const disableParallelToolUse =
+      input.modelOptions?.parallelToolCalls === false ||
+      this.modelOptions?.parallelToolCalls === false;
 
     const body: Anthropic.Messages.MessageCreateParams = {
       model,
-      temperature: input.modelOptions?.temperature,
-      top_p: input.modelOptions?.topP,
+      temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
+      top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       // TODO: make dynamic based on model https://docs.anthropic.com/en/docs/about-claude/models/all-models
       max_tokens: /claude-3-[5|7]/.test(model) ? 8192 : 4096,
       ...convertMessages(input),
-      ...convertTools(input),
+      ...convertTools({ ...input, disableParallelToolUse }),
     };
 
     const stream = this.client.messages.stream({
@@ -235,17 +249,21 @@ function convertContent(content: ChatModelInputMessageContent): string | Content
 function convertTools({
   tools,
   toolChoice,
-}: ChatModelInput): { tools?: ToolUnion[]; tool_choice?: ToolChoice } | undefined {
+  disableParallelToolUse,
+}: ChatModelInput & {
+  disableParallelToolUse?: boolean;
+}): { tools?: ToolUnion[]; tool_choice?: ToolChoice } | undefined {
   let choice: ToolChoice | undefined;
   if (typeof toolChoice === "object" && "type" in toolChoice && toolChoice.type === "function") {
     choice = {
       type: "tool",
       name: toolChoice.function.name,
+      disable_parallel_tool_use: disableParallelToolUse,
     };
   } else if (toolChoice === "required") {
-    choice = { type: "any" };
+    choice = { type: "any", disable_parallel_tool_use: disableParallelToolUse };
   } else if (toolChoice === "auto") {
-    choice = { type: "auto" };
+    choice = { type: "auto", disable_parallel_tool_use: disableParallelToolUse };
   } else if (toolChoice === "none") {
     choice = { type: "none" };
   }

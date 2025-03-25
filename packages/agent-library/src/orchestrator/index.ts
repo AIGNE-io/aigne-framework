@@ -210,8 +210,9 @@ export class OrchestratorAgent<
 
 function getMessageOrJsonString(output: Message): string {
   const entries = Object.entries(output);
-  if (entries.length === 1 && typeof entries[1] === "string") {
-    return entries[1];
+  const firstValue = entries[0]?.[1];
+  if (entries.length === 1 && typeof firstValue === "string") {
+    return firstValue;
   }
   return JSON.stringify(output);
 }

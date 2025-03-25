@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { type FullPlanOutput, OrchestratorAgent } from "@aigne/agent-library";
+import { type FullPlanOutput, OrchestratorAgent, getFullPlanSchema } from "@aigne/agent-library";
 import { AIAgent, ExecutionEngine, OpenAIChatModel, createMessage } from "@aigne/core";
 
 test("AIAgent.call", async () => {
@@ -80,4 +80,19 @@ test("AIAgent.call", async () => {
   expect(writerCall.mock.calls).toEqual([
     [createMessage(expect.stringContaining("Write to the filesystem")), engine],
   ]);
+});
+
+test("getFullPlanSchema should throw error if tools name is not unique", async () => {
+  expect(() =>
+    getFullPlanSchema([
+      AIAgent.from({
+        name: "finder",
+        description: 'Find the closest match to a user"s request',
+      }),
+      AIAgent.from({
+        name: "finder",
+        description: "Write to the filesystem",
+      }),
+    ]),
+  ).toThrowError("Tools name must be unique for orchestrator: finder");
 });

@@ -164,6 +164,9 @@ importers:
       fastq:
         specifier: ^1.19.1
         version: 1.19.1
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
       zod:
         specifier: ^3.24.2
         version: 3.24.2

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.3.0...example-mcp-sqlite-v1.3.1) (2025-03-25)
+
+
+### Bug Fixes
+
+* simplify mcp examples ([2b0b50e](https://github.com/AIGNE-io/aigne-framework/commit/2b0b50ef278edb938d26e5b31f0be73eb51e9204))
+
 ## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-sqlite-v1.2.0...example-mcp-server-sqlite-v1.3.0) (2025-03-24)
 
 

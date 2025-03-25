@@ -46,6 +46,8 @@ export function parseJSON(json: string) {
  * @returns The union array with at least 1 item (but the type is at least 2 items for z.union)
  */
 export function ensureZodUnionArray<T extends z.ZodType>(union: T[]): [T, T, ...T[]] {
-  if (!(union.length >= 1)) throw new Error("Union must have at least 1 item");
+  if (!(union.length >= 1)) {
+    throw new Error(`Union must have at least 1 item, but got ${union.length}`);
+  }
   return union as [T, T, ...T[]];
 }

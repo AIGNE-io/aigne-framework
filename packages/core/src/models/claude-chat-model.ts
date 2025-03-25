@@ -11,6 +11,7 @@ import type {
 import { isEmpty } from "lodash-es";
 import type { Message } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
+import { logger } from "../utils/logger.js";
 import { isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
@@ -65,48 +66,61 @@ export class ClaudeChatModel extends ChatModel {
   }
 
   private async extractResultFromClaudeStream(stream: MessageStream) {
-    let text = "";
-    const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-      args: string;
-    })[] = [];
+    const logs: string[] = [];
 
-    for await (const chunk of stream) {
-      // handle streaming text
-      if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-        text += chunk.delta.text;
+    try {
+      let text = "";
+      const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
+        args: string;
+      })[] = [];
+
+      for await (const chunk of stream) {
+        logs.push(JSON.stringify(chunk));
+
+        // handle streaming text
+        if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
+          text += chunk.delta.text;
+        }
+
+        if (chunk.type === "content_block_start" && chunk.content_block.type === "tool_use") {
+          toolCalls[chunk.index] = {
+            type: "function",
+            id: chunk.content_block.id,
+            function: {
+              name: chunk.content_block.name,
+              arguments: {},
+            },
+            args: "",
+          };
+        }
+
+        if (chunk.type === "content_block_delta" && chunk.delta.type === "input_json_delta") {
+          const call = toolCalls[chunk.index];
+          if (!call) throw new Error("Tool call not found");
+          call.args += chunk.delta.partial_json;
+        }
       }
 
-      if (chunk.type === "content_block_start" && chunk.content_block.type === "tool_use") {
-        toolCalls[chunk.index] = {
-          type: "function",
-          id: chunk.content_block.id,
-          function: {
-            name: chunk.content_block.name,
-            arguments: {},
-          },
-          args: "",
-        };
+      const result: ChatModelOutput = { text };
+
+      if (toolCalls.length) {
+        result.toolCalls = toolCalls
+          .map(({ args, ...c }) => ({
+            ...c,
+            function: {
+              ...c.function,
+              // NOTE: claude may return a blank string for empty object (the tool's input schema is a empty object)
+              arguments: args.trim() ? parseJSON(args) : {},
+            },
+          }))
+          .filter(isNonNullable);
       }
 
-      if (chunk.type === "content_block_delta" && chunk.delta.type === "input_json_delta") {
-        const call = toolCalls[chunk.index];
-        if (!call) throw new Error("Tool call not found");
-        call.args += chunk.delta.partial_json;
-      }
+      return result;
+    } catch (error) {
+      logger.debug("Failed to process Claude stream", { error, logs });
+      throw error;
     }
-
-    const result: ChatModelOutput = { text };
-
-    if (toolCalls.length) {
-      result.toolCalls = toolCalls
-        .map(({ args, ...c }) => ({
-          ...c,
-          function: { ...c.function, arguments: parseJSON(args) },
-        }))
-        .filter(isNonNullable);
-    }
-
-    return result;
   }
 
   private async requestStructuredOutput(

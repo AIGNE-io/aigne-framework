@@ -33,7 +33,7 @@
   },
   "scripts": {
     "lint": "tsc --noEmit",
-    "build": "tsc --build scripts/tsconfig.build.json",
+    "build": "tsc --build scripts/tsconfig.build.json && node scripts/after-build.js",
     "clean": "rimraf lib coverage",
     "prepublishOnly": "run-s clean build",
     "test": "bun test",

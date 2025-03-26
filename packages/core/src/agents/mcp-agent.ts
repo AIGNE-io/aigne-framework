@@ -54,13 +54,25 @@ function isStdioServerParameters(
   return "command" in options && typeof options.command === "string";
 }
 
+function getMCPServerString(options: MCPAgentOptions | MCPServerOptions): string {
+  if (isSSEServerParameters(options)) {
+    return options.url;
+  }
+
+  if (isStdioServerParameters(options)) {
+    return `${options.command} ${options.args?.join(" ") || ""}`;
+  }
+
+  return "unknown";
+}
+
 export class MCPAgent extends Agent {
   static from(options: MCPServerOptions): Promise<MCPAgent>;
   static from(options: MCPAgentOptions): MCPAgent;
   static from(options: MCPAgentOptions | MCPServerOptions): MCPAgent | Promise<MCPAgent> {
     if (isSSEServerParameters(options)) {
       const transport = new SSEClientTransport(new URL(options.url));
-      return MCPAgent.fromTransport(transport);
+      return MCPAgent.fromTransport(transport, options);
     }
 
     if (isStdioServerParameters(options)) {
@@ -72,19 +84,25 @@ export class MCPAgent extends Agent {
         },
         stderr: "pipe",
       });
-      return MCPAgent.fromTransport(transport);
+      return MCPAgent.fromTransport(transport, options);
     }
 
     return new MCPAgent(options);
   }
 
-  private static async fromTransport(transport: Transport): Promise<MCPAgent> {
+  private static async fromTransport(
+    transport: Transport,
+    options: MCPAgentOptions | MCPServerOptions,
+  ): Promise<MCPAgent> {
     const client = new Client({
       name: MCP_AGENT_CLIENT_NAME,
       version: MCP_AGENT_CLIENT_VERSION,
     });
 
-    await debug.spinner(client.connect(transport), "Connecting to MCP server");
+    await debug.spinner(
+      client.connect(transport),
+      `Connecting to MCP server: ${getMCPServerString(options)}`,
+    );
 
     const mcpServer = getMCPServerName(client);
 

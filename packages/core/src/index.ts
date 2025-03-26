@@ -8,6 +8,7 @@ export * from "./execution-engine/index.js";
 export * from "./models/chat-model.js";
 export * from "./models/claude-chat-model.js";
 export * from "./models/openai-chat-model.js";
+export * from "./models/xai-chat-model.js";
 export * from "./prompt/prompt-builder.js";
 export * from "./prompt/template.js";
 export * from "./utils/json-schema.js";

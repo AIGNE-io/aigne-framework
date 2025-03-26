@@ -17,6 +17,7 @@ const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 
 export interface OpenAIChatModelOptions {
   apiKey?: string;
+  baseURL?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
 }
@@ -31,7 +32,10 @@ export class OpenAIChatModel extends ChatModel {
   private get client() {
     if (!this.options?.apiKey) throw new Error("Api Key is required for OpenAIChatModel");
 
-    this._client ??= new OpenAI({ apiKey: this.options.apiKey });
+    this._client ??= new OpenAI({
+      baseURL: this.options.baseURL,
+      apiKey: this.options.apiKey,
+    });
     return this._client;
   }
 

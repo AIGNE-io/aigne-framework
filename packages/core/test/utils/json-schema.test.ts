@@ -1,7 +1,6 @@
 import { expect, test } from "bun:test";
 import { ensureZodUnionArray, outputSchemaToResponseFormatSchema } from "@aigne/core";
 import { z } from "zod";
-import {} from "../../src/utils/type-utils.js";
 
 test("ensureZodUnionArray should throw error if the unions is empty array", async () => {
   const enums: string[] = [];

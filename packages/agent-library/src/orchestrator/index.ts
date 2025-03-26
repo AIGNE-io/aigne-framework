@@ -5,10 +5,12 @@ import {
   type Context,
   type Message,
   PromptTemplate,
+  checkArguments,
   createMessage,
   getMessage,
 } from "@aigne/core";
 import fastq from "fastq";
+import { z } from "zod";
 import {
   FULL_PLAN_PROMPT_TEMPLATE,
   type FullPlanInput,
@@ -54,6 +56,8 @@ export class OrchestratorAgent<
   }
 
   constructor(options: OrchestratorAgentOptions<I, O>) {
+    checkArguments("OrchestratorAgent", orchestratorAgentOptionsSchema, options);
+
     super({ ...options });
     this.maxIterations = options.maxIterations;
     this.tasksConcurrency = options.tasksConcurrency;
@@ -216,3 +220,8 @@ function getMessageOrJsonString(output: Message): string {
   }
   return JSON.stringify(output);
 }
+
+const orchestratorAgentOptionsSchema = z.object({
+  maxIterations: z.number().optional(),
+  tasksConcurrency: z.number().optional(),
+});

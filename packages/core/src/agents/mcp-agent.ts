@@ -12,7 +12,7 @@ import type {
   GetPromptResult,
   ReadResourceResult,
 } from "@modelcontextprotocol/sdk/types.js";
-import {} from "zod";
+import { type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";
 import { logger } from "../utils/logger.js";
 import {
@@ -20,7 +20,7 @@ import {
   resourceFromMCPResource,
   toolFromMCPTool,
 } from "../utils/mcp-utils.js";
-import { createAccessorArray } from "../utils/type-utils.js";
+import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
 import { Agent, type AgentOptions, type Message } from "./agent.js";
 
 const MCP_AGENT_CLIENT_NAME = "MCPAgent";
@@ -70,6 +70,8 @@ export class MCPAgent extends Agent {
   static from(options: MCPServerOptions): Promise<MCPAgent>;
   static from(options: MCPAgentOptions): MCPAgent;
   static from(options: MCPAgentOptions | MCPServerOptions): MCPAgent | Promise<MCPAgent> {
+    checkArguments("MCPAgent.from", mcpAgentOptionsSchema, options);
+
     if (isSSEServerParameters(options)) {
       const transport = new SSEClientTransport(new URL(options.url));
       return MCPAgent.fromTransport(transport, options);
@@ -267,3 +269,21 @@ function getMCPServerName(client: Client): string | undefined {
   const { name, version } = info;
   return `${name}@${version}`;
 }
+
+const mcpAgentOptionsSchema: ZodType<
+  MCPAgentOptions | SSEServerParameters | StdioServerParameters
+> = z.union([
+  z.object({
+    client: z.instanceof(Client),
+    prompts: z.array(z.instanceof(MCPPrompt)).optional(),
+    resources: z.array(z.instanceof(MCPResource)).optional(),
+  }),
+  z.object({
+    url: z.string(),
+  }),
+  z.object({
+    command: z.string(),
+    args: z.array(z.string()).optional(),
+    env: z.record(z.string()).optional(),
+  }),
+]);

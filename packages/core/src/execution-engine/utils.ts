@@ -1,7 +1,10 @@
-import type { FunctionAgentFn, Message } from "../agents/agent.js";
+import { type ZodType, z } from "zod";
+import { Agent, type FunctionAgentFn, type Message } from "../agents/agent.js";
+import { checkArguments } from "../utils/type-utils.js";
 import type { Context, Runnable } from "./context.js";
 
 export function sequential(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn {
+  checkArguments("sequential", agentArraySchema, _agents);
   let agents = [..._agents];
 
   return async (input: Message, context?: Context) => {
@@ -31,6 +34,7 @@ export function sequential(..._agents: [Runnable, ...Runnable[]]): FunctionAgent
 }
 
 export function parallel(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn {
+  checkArguments("parallel", agentArraySchema, _agents);
   let agents = [..._agents];
 
   return async (input: Message, context?: Context) => {
@@ -49,3 +53,7 @@ export function parallel(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn
     return Object.assign({}, ...outputs);
   };
 }
+
+const agentArraySchema = z.array(
+  z.union([z.function() as ZodType<FunctionAgentFn>, z.instanceof(Agent)]),
+);

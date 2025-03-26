@@ -9,10 +9,11 @@ import type {
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources/index.js";
 import { isEmpty } from "lodash-es";
+import { z } from "zod";
 import type { Message } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
-import { isNonNullable } from "../utils/type-utils.js";
+import { checkArguments, isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
   type ChatModelInput,
@@ -29,8 +30,24 @@ export interface ClaudeChatModelOptions {
   modelOptions?: ChatModelOptions;
 }
 
+export const claudeChatModelOptionsSchema = z.object({
+  apiKey: z.string().optional(),
+  model: z.string().optional(),
+  modelOptions: z
+    .object({
+      model: z.string().optional(),
+      temperature: z.number().optional(),
+      topP: z.number().optional(),
+      frequencyPenalty: z.number().optional(),
+      presencePenalty: z.number().optional(),
+      parallelToolCalls: z.boolean().optional().default(true),
+    })
+    .optional(),
+});
+
 export class ClaudeChatModel extends ChatModel {
   constructor(public options?: ClaudeChatModelOptions) {
+    if (options) checkArguments("ClaudeChatModel", claudeChatModelOptionsSchema, options);
     super();
   }
 

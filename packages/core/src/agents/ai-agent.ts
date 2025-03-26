@@ -1,9 +1,7 @@
+import { z } from "zod";
 import type { Context } from "../execution-engine/context.js";
-import type {
-  ChatModel,
-  ChatModelInputMessage,
-  ChatModelOutputToolCall,
-} from "../models/chat-model.js";
+import { ChatModel } from "../models/chat-model.js";
+import type { ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat-model.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
 import { Agent, type AgentOptions, type Message } from "./agent.js";
@@ -22,12 +20,41 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
 
 export type AIAgentToolChoice = "auto" | "none" | "required" | "router" | Agent;
 
+export const aiAgentToolChoiceSchema = z.union(
+  [
+    z.literal("auto"),
+    z.literal("none"),
+    z.literal("required"),
+    z.literal("router"),
+    z.instanceof(Agent),
+  ],
+  { message: "aiAgentToolChoice must be 'auto', 'none', 'required', 'router', or an Agent" },
+);
+
+export const aiAgentOptionsSchema = z.object({
+  model: z.instanceof(ChatModel).optional(),
+  instructions: z.union([z.string(), z.instanceof(PromptBuilder)]).optional(),
+  outputKey: z.string().optional(),
+  toolChoice: aiAgentToolChoiceSchema.optional(),
+  enableHistory: z.boolean().optional(),
+  maxHistoryMessages: z.number().optional(),
+  includeInputInOutput: z.boolean().optional(),
+  subscribeTopic: z.union([z.string(), z.array(z.string())]).optional(),
+  publishTopic: z.union([z.string(), z.array(z.string()), z.function()]).optional(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  tools: z.array(z.union([z.instanceof(Agent), z.function()])).optional(),
+  disableLogging: z.boolean().optional(),
+  memory: z.union([z.boolean(), z.any(), z.any()]).optional(),
+});
+
 export class AIAgent<I extends Message = Message, O extends Message = Message> extends Agent<I, O> {
   static from<I extends Message, O extends Message>(options: AIAgentOptions<I, O>): AIAgent<I, O> {
     return new AIAgent(options);
   }
 
   constructor(options: AIAgentOptions<I, O>) {
+    aiAgentOptionsSchema.parse(options);
     super(options);
 
     this.model = options.model;

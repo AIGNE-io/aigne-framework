@@ -14,3 +14,4 @@ export * from "./prompt/template.js";
 export * from "./utils/json-schema.js";
 export * from "./utils/logger.js";
 export * from "./utils/run-chat-loop.js";
+export * from "./utils/type-utils.js";

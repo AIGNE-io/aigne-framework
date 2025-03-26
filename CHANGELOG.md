@@ -3,6 +3,18 @@
 - chore: release v1.2.0
 
 
+## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.3.1...aigne-framework-v1.4.0) (2025-03-26)
+
+
+### Features
+
+* **core:** add xAI chat model adapter ([#34](https://github.com/AIGNE-io/aigne-framework/issues/34)) ([b228d22](https://github.com/AIGNE-io/aigne-framework/commit/b228d22b550535ab8e511f13de9e4a65dd73e3c0))
+
+
+### Bug Fixes
+
+* **orchestrator:** refactor and enhance orchestrator with step synthesis ([#31](https://github.com/AIGNE-io/aigne-framework/issues/31)) ([ba9fca0](https://github.com/AIGNE-io/aigne-framework/commit/ba9fca04fad71d49c8f4f52172b56668a94ea714))
+
 ## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.3.0...aigne-framework-v1.3.1) (2025-03-25)
 
 

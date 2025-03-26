@@ -2,6 +2,13 @@
 
 - chore: release 1.2.0
 
+## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.3.0...agent-library-v1.3.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* **orchestrator:** refactor and enhance orchestrator with step synthesis ([#31](https://github.com/AIGNE-io/aigne-framework/issues/31)) ([ba9fca0](https://github.com/AIGNE-io/aigne-framework/commit/ba9fca04fad71d49c8f4f52172b56668a94ea714))
+
 ## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.2.0...agent-library-v1.3.0) (2025-03-24)
 
 

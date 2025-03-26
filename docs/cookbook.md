@@ -42,13 +42,14 @@ In AIGNE Framework, ChatModel is an abstract base class for interacting with Lar
 
 - **OpenAIChatModel**: For communicating with OpenAI's GPT series models
 - **ClaudeChatModel**: For communicating with Anthropic's Claude series models
+- **XAIChatModel**: For communicating with X.AI's Grok series models
 
 ChatModel can be used directly, but it's generally recommended to use it through ExecutionEngine to gain more advanced features like tool integration, error handling, and state management.
 
 **Example**:
 
 ```typescript
-import { OpenAIChatModel, ClaudeChatModel } from "@aigne/core";
+import { OpenAIChatModel, ClaudeChatModel, XAIChatModel } from "@aigne/core";
 
 // Initialize OpenAI model
 const openaiModel = new OpenAIChatModel({
@@ -60,6 +61,12 @@ const openaiModel = new OpenAIChatModel({
 const claudeModel = new ClaudeChatModel({
   apiKey: "YOUR_ANTHROPIC_API_KEY",
   model: "claude-3-7-sonnet-latest", // Optional, defaults to "claude-3-7-sonnet-latest"
+});
+
+// Initialize X.AI Grok model
+const xaiModel = new XAIChatModel({
+  apiKey: "YOUR_XAI_API_KEY",
+  model: "grok-2-latest", // Optional, defaults to "grok-2-latest"
 });
 
 // Use with ExecutionEngine

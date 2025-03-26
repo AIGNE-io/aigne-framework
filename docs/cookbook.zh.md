@@ -42,13 +42,14 @@ AIGNE Framework是一个用于构建基于大型语言模型(LLM)的应用程序
 
 - **OpenAIChatModel**: 用于与OpenAI的GPT系列模型进行通信
 - **ClaudeChatModel**: 用于与Anthropic的Claude系列模型进行通信
+- **XAIChatModel**: 用于与X.AI的Grok系列模型进行通信
 
 ChatModel可以直接使用，但通常建议通过ExecutionEngine来使用，以获得更高级的功能如工具集成、错误处理和状态管理。
 
 **示例**:
 
 ```typescript
-import { OpenAIChatModel, ClaudeChatModel } from "@aigne/core";
+import { OpenAIChatModel, ClaudeChatModel, XAIChatModel } from "@aigne/core";
 
 // 初始化OpenAI模型
 const openaiModel = new OpenAIChatModel({
@@ -60,6 +61,12 @@ const openaiModel = new OpenAIChatModel({
 const claudeModel = new ClaudeChatModel({
   apiKey: "YOUR_ANTHROPIC_API_KEY",
   model: "claude-3-7-sonnet-latest", // 可选，默认为"claude-3-7-sonnet-latest"
+});
+
+// 初始化X.AI Grok模型
+const xaiModel = new XAIChatModel({
+  apiKey: "YOUR_XAI_API_KEY",
+  model: "grok-2-latest", // 可选，默认为"grok-2-latest"
 });
 
 // 使用ExecutionEngine

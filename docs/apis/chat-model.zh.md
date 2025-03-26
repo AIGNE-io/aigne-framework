@@ -10,13 +10,14 @@ ChatModel 是 aigne-framework 中用于与 AI 大型语言模型交互的抽象�
 
 - **OpenAIChatModel**: 用于与 OpenAI 的 GPT 系列模型（如 GPT-4o）进行通信
 - **ClaudeChatModel**: 用于与 Anthropic 的 Claude 系列模型进行通信
+- **XAIChatModel**: 用于与 X.AI 的 Grok 系列模型进行通信
 
 ## 模型初始化
 
 创建 ChatModel 实例，用于直接使用或提供给 ExecutionEngine：
 
 ```typescript
-import { OpenAIChatModel, ClaudeChatModel } from "@aigne/core";
+import { OpenAIChatModel, ClaudeChatModel, XAIChatModel } from "@aigne/core";
 
 // 初始化 OpenAI 模型
 const openaiModel = new OpenAIChatModel({
@@ -28,6 +29,12 @@ const openaiModel = new OpenAIChatModel({
 const claudeModel = new ClaudeChatModel({
   apiKey: "YOUR_ANTHROPIC_API_KEY",
   model: "claude-3-7-sonnet-latest", // 可选，默认为 "claude-3-7-sonnet-latest"
+});
+
+// 初始化 X.AI Grok 模型
+const xaiModel = new XAIChatModel({
+  apiKey: "YOUR_XAI_API_KEY",
+  model: "grok-2-latest", // 可选，默认为 "grok-2-latest"
 });
 ```
 

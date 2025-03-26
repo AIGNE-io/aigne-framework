@@ -33,11 +33,12 @@
   },
   "scripts": {
     "lint": "tsc --noEmit",
-    "build": "tsc --build scripts/tsconfig.build.json && node scripts/after-build.js",
+    "build": "tsc --build scripts/tsconfig.build.json && npm run postbuild",
     "clean": "rimraf lib coverage",
     "prepublishOnly": "run-s clean build",
     "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {
     "@aigne/core": "workspace:^",

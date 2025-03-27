@@ -3,6 +3,18 @@
 - chore: release v1.2.0
 
 
+## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.4.0...aigne-framework-v1.5.0) (2025-03-27)
+
+
+### Features
+
+* **dx:** show mcp server url on connecting ([#39](https://github.com/AIGNE-io/aigne-framework/issues/39)) ([5819a76](https://github.com/AIGNE-io/aigne-framework/commit/5819a76435fae7333720f9e0c58a25aebc1089e3))
+
+
+### Bug Fixes
+
+* **dx:** export models/utils in submodules ([#43](https://github.com/AIGNE-io/aigne-framework/issues/43)) ([bd561b3](https://github.com/AIGNE-io/aigne-framework/commit/bd561b397de816f04c2d63d58538e81fba82fc7f))
+
 ## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.3.1...aigne-framework-v1.4.0) (2025-03-26)
 
 

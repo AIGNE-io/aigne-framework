@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.3.0...example-workflow-sequential-v1.3.1) (2025-03-27)
+
+
+### Bug Fixes
+
+* **dx:** export models/utils in submodules ([#43](https://github.com/AIGNE-io/aigne-framework/issues/43)) ([bd561b3](https://github.com/AIGNE-io/aigne-framework/commit/bd561b397de816f04c2d63d58538e81fba82fc7f))
+
 ## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.2.0...example-workflow-sequential-v1.3.0) (2025-03-24)
 
 

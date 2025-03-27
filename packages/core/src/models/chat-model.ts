@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
+import type { Context } from "../execution-engine/context.js";
 
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor() {
@@ -7,6 +8,30 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       inputSchema: chatModelInputSchema,
       outputSchema: chatModelOutputSchema,
     });
+  }
+
+  protected override preprocess(input: ChatModelInput, context?: Context): void {
+    super.preprocess(input, context);
+    if (context) {
+      const { limits, usage } = context;
+      const usedTokens = usage.completionTokens + usage.promptTokens;
+      if (limits?.maxTokens && usedTokens >= limits.maxTokens) {
+        throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
+      }
+    }
+  }
+
+  protected override postprocess(
+    input: ChatModelInput,
+    output: ChatModelOutput,
+    context?: Context,
+  ): void {
+    super.postprocess(input, output, context);
+    const { usage } = output;
+    if (context && usage) {
+      context.usage.completionTokens += usage.completionTokens;
+      context.usage.promptTokens += usage.promptTokens;
+    }
   }
 }
 

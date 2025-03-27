@@ -7,9 +7,25 @@ export type Runnable<I extends Message = Message, O extends Message = Message> =
   | Agent<I, O>
   | FunctionAgentFn;
 
+export interface ContextUsage {
+  promptTokens: number;
+  completionTokens: number;
+  agentCalls: number;
+}
+
+export interface ContextLimits {
+  maxTokens?: number;
+  maxAgentCalls?: number;
+  timeout?: number;
+}
+
 export interface Context extends EventEmitter {
   model?: ChatModel;
   tools?: Agent[];
+
+  usage: ContextUsage;
+
+  limits?: ContextLimits;
 
   /**
    * Call an agent with a message

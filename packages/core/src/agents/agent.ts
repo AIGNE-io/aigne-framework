@@ -146,18 +146,15 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
     logger.debug("Call agent %s start with input: %O", this.name, input);
 
+    this.preprocess(parsedInput, context);
+
     const result = this.process(parsedInput, context)
       .then((output) => {
         const parsedOutput = this.outputSchema.parse(output) as O;
         return this.includeInputInOutput ? { ...parsedInput, ...parsedOutput } : parsedOutput;
       })
       .then((output) => {
-        this.memory?.addMemory({ role: "user", content: _input });
-        this.memory?.addMemory({
-          role: "agent",
-          content: replaceTransferAgentToName(output),
-          source: this.name,
-        });
+        this.postprocess(parsedInput, output, context);
         return output;
       });
 
@@ -172,6 +169,28 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
         ),
       { disabled: this.disableLogging },
     );
+  }
+
+  protected preprocess(_: I, context?: Context) {
+    if (context) {
+      const { limits, usage } = context;
+      if (limits?.maxAgentCalls && usage.agentCalls >= limits.maxAgentCalls) {
+        throw new Error(`Exceeded max agent calls ${usage.agentCalls}/${limits.maxAgentCalls}`);
+      }
+    }
+  }
+
+  protected postprocess(input: I, output: O, context?: Context) {
+    if (context) {
+      context.usage.agentCalls++;
+    }
+
+    this.memory?.addMemory({ role: "user", content: input });
+    this.memory?.addMemory({
+      role: "agent",
+      content: replaceTransferAgentToName(output),
+      source: this.name,
+    });
   }
 
   abstract process(input: I, context?: Context): Promise<O | TransferAgentOutput>;

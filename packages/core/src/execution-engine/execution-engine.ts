@@ -7,7 +7,7 @@ import { UserAgent } from "../agents/user-agent.js";
 import { ChatModel } from "../models/chat-model.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import { checkArguments } from "../utils/type-utils.js";
-import type { Context, Runnable } from "./context.js";
+import type { Context, ContextLimits, ContextUsage, Runnable } from "./context.js";
 import {
   type MessagePayload,
   MessageQueue,
@@ -20,6 +20,7 @@ export interface ExecutionEngineOptions {
   model?: ChatModel;
   tools?: Agent[];
   agents?: Agent[];
+  limits?: ContextLimits;
 }
 
 export class ExecutionEngine extends EventEmitter implements Context {
@@ -29,6 +30,7 @@ export class ExecutionEngine extends EventEmitter implements Context {
     super();
     this.model = options?.model;
     this.tools = options?.tools ?? [];
+    this.limits = options?.limits;
     if (options?.agents?.length) this.addAgent(...options.agents);
 
     this.initProcessExitHandler();
@@ -41,6 +43,14 @@ export class ExecutionEngine extends EventEmitter implements Context {
   tools: Agent[];
 
   private agents: Agent[] = [];
+
+  usage: ContextUsage = {
+    promptTokens: 0,
+    completionTokens: 0,
+    agentCalls: 0,
+  };
+
+  limits?: ContextLimits;
 
   addAgent(...agents: Agent[]) {
     checkArguments("ExecutionEngine.addAgent", executionEngineAddAgentArgsSchema, agents);

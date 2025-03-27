@@ -12,7 +12,7 @@ export interface XAIChatModelOptions {
 }
 
 export class XAIChatModel extends OpenAIChatModel {
-  constructor(public options?: XAIChatModelOptions) {
+  constructor(options?: XAIChatModelOptions) {
     super({
       ...options,
       model: options?.model || XAI_DEFAULT_CHAT_MODEL,

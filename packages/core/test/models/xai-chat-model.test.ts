@@ -1,5 +1,4 @@
 import { expect, spyOn, test } from "bun:test";
-import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   AgentMessageTemplate,
@@ -9,10 +8,7 @@ import {
   UserMessageTemplate,
 } from "@aigne/core";
 import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
-import type OpenAI from "openai";
-import type { APIPromise } from "openai/core";
-import type { ChatCompletion, ChatCompletionChunk } from "openai/resources";
-import type { Stream } from "openai/streaming";
+import { createMockEventStream } from "../_utils/event-stream";
 
 test("XAIChatModel.call", async () => {
   const model = new XAIChatModel({
@@ -20,16 +16,8 @@ test("XAIChatModel.call", async () => {
     model: "grok-2-latest",
   });
 
-  spyOn((model as unknown as { client: OpenAI }).client.chat.completions, "create").mockReturnValue(
-    new ReadableStream({
-      async start(controller) {
-        const file = await readFile(join(import.meta.dirname, "openai-streaming-response.txt"));
-        for (const line of file.toString().split("\n")) {
-          if (line) controller.enqueue(JSON.parse(line.replace("data:", "")));
-        }
-        controller.close();
-      },
-    }) as unknown as APIPromise<Stream<ChatCompletionChunk> | ChatCompletion>,
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
+    createMockEventStream({ path: join(import.meta.dirname, "xai-streaming-response.txt") }),
   );
 
   const result = await model.call({
@@ -82,7 +70,11 @@ test("XAIChatModel.call", async () => {
   });
 
   expect(result).toEqual({
-    json: { text: "The current temperature in New York is 20°C." },
+    json: { text: "The temperature in New York is 20 degrees Celsius." },
+    usage: {
+      promptTokens: 177,
+      completionTokens: 20,
+    },
   });
 });
 
@@ -97,5 +89,17 @@ test("XAIChatModel should initialize with correct options", () => {
     apiKey: "YOUR_API_KEY",
     baseURL: "https://custom.x.ai/v1",
     model: "grok-2-vision-1212",
+  });
+});
+
+test("XAIChatModel should initialize with default options", () => {
+  const customModel = new XAIChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
+
+  expect(customModel.options).toEqual({
+    apiKey: "YOUR_API_KEY",
+    baseURL: "https://api.x.ai/v1",
+    model: "grok-2-latest",
   });
 });

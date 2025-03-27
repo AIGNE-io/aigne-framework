@@ -13,6 +13,7 @@ import { z } from "zod";
 import type { Message } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
+import { mergeUsage } from "../utils/model-utils.js";
 import { checkArguments, isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
@@ -20,6 +21,7 @@ import {
   type ChatModelInputMessageContent,
   type ChatModelOptions,
   type ChatModelOutput,
+  type ChatModelOutputUsage,
 } from "./chat-model.js";
 
 const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
@@ -90,7 +92,13 @@ export class ClaudeChatModel extends ChatModel {
     // Claude doesn't support json_schema response and tool calls in the same request,
     // so we need to make a separate request for json_schema response when the tool calls is empty
     if (!result.toolCalls?.length && input.responseFormat?.type === "json_schema") {
-      return this.requestStructuredOutput(body, input.responseFormat);
+      const output = await this.requestStructuredOutput(body, input.responseFormat);
+
+      return {
+        ...output,
+        // merge usage from both requests
+        usage: mergeUsage(result.usage, output.usage),
+      };
     }
 
     return result;
@@ -104,8 +112,22 @@ export class ClaudeChatModel extends ChatModel {
       const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
         args: string;
       })[] = [];
+      let usage: ChatModelOutputUsage | undefined;
 
       for await (const chunk of stream) {
+        if (chunk.type === "message_start") {
+          const { input_tokens, output_tokens } = chunk.message.usage;
+
+          usage = {
+            promptTokens: input_tokens,
+            completionTokens: output_tokens,
+          };
+        }
+
+        if (chunk.type === "message_delta" && usage) {
+          usage.completionTokens = chunk.usage.output_tokens;
+        }
+
         logs.push(JSON.stringify(chunk));
 
         // handle streaming text
@@ -132,7 +154,7 @@ export class ClaudeChatModel extends ChatModel {
         }
       }
 
-      const result: ChatModelOutput = { text };
+      const result: ChatModelOutput = { usage, text };
 
       if (toolCalls.length) {
         result.toolCalls = toolCalls
@@ -185,6 +207,10 @@ export class ClaudeChatModel extends ChatModel {
     if (!jsonTool) throw new Error("Json tool not found");
     return {
       json: jsonTool.input as Message,
+      usage: {
+        promptTokens: result.usage.input_tokens,
+        completionTokens: result.usage.output_tokens,
+      },
     };
   }
 }

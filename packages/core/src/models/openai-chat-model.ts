@@ -11,6 +11,7 @@ import {
   type ChatModelInputTool,
   type ChatModelOptions,
   type ChatModelOutput,
+  type ChatModelOutputUsage,
   type Role,
 } from "./chat-model.js";
 
@@ -47,7 +48,7 @@ export class OpenAIChatModel extends ChatModel {
 
   private _client?: OpenAI;
 
-  private get client() {
+  get client() {
     if (!this.options?.apiKey) throw new Error("Api Key is required for OpenAIChatModel");
 
     this._client ??= new OpenAI({
@@ -85,6 +86,9 @@ export class OpenAIChatModel extends ChatModel {
               },
             }
           : undefined,
+      stream_options: {
+        include_usage: true,
+      },
       stream: true,
     });
 
@@ -92,6 +96,7 @@ export class OpenAIChatModel extends ChatModel {
     const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
       args: string;
     })[] = [];
+    let usage: ChatModelOutputUsage | undefined;
 
     for await (const chunk of res) {
       const choice = chunk.choices?.[0];
@@ -115,9 +120,18 @@ export class OpenAIChatModel extends ChatModel {
       }
 
       if (choice?.delta.content) text += choice.delta.content;
+
+      if (chunk.usage) {
+        usage = {
+          promptTokens: chunk.usage.prompt_tokens,
+          completionTokens: chunk.usage.completion_tokens,
+        };
+      }
     }
 
-    const result: ChatModelOutput = {};
+    const result: ChatModelOutput = {
+      usage,
+    };
 
     if (input.responseFormat?.type === "json_schema" && text) {
       result.json = parseJSON(text);

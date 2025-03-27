@@ -82,6 +82,10 @@ test("ClaudeChatModel.call", async () => {
           },
         },
       ],
+      usage: {
+        promptTokens: 416,
+        completionTokens: 54,
+      },
     }),
   );
 
@@ -136,6 +140,10 @@ test("ClaudeChatModel.call", async () => {
 
   expect(result2).toEqual({
     json: { text: "The current temperature in New York is 20 degrees." },
+    usage: {
+      promptTokens: 955,
+      completionTokens: 54,
+    },
   });
 });
 

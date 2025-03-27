@@ -71,13 +71,8 @@ The following example demonstrates how to build a reflection workflow:
 
 ```typescript
 import assert from "node:assert";
-import {
-  AIAgent,
-  OpenAIChatModel,
-  ExecutionEngine,
-  UserInputTopic,
-  UserOutputTopic,
-} from "@aigne/core";
+import { AIAgent, ExecutionEngine, UserInputTopic, UserOutputTopic } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;

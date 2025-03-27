@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, ExecutionEngine, MCPAgent, OpenAIChatModel } from "@aigne/core";
+import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
@@ -11,7 +12,7 @@ const model = new OpenAIChatModel({
 
 const sqlite = await MCPAgent.from({
   command: "uvx",
-  args: ["-q", "mcp-sqlite", "--db-path", join(process.cwd(), "usages.db")],
+  args: ["-q", "mcp-server-sqlite", "--db-path", join(process.cwd(), "usages.db")],
 });
 
 const engine = new ExecutionEngine({

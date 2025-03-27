@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { logger } from "@aigne/core";
+import { logger } from "@aigne/core/utils/logger.js";
 
 test("logger.debug", async () => {
   expect(logger).toEqual(

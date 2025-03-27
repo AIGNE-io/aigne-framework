@@ -7,8 +7,8 @@ import {
   SystemMessageTemplate,
   ToolMessageTemplate,
   UserMessageTemplate,
-  XAIChatModel,
 } from "@aigne/core";
+import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
 import type OpenAI from "openai";
 import type { APIPromise } from "openai/core";
 import type { ChatCompletion, ChatCompletionChunk } from "openai/resources";

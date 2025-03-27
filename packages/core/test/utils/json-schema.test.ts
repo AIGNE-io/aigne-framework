@@ -1,5 +1,8 @@
 import { expect, test } from "bun:test";
-import { ensureZodUnionArray, outputSchemaToResponseFormatSchema } from "@aigne/core";
+import {
+  ensureZodUnionArray,
+  outputSchemaToResponseFormatSchema,
+} from "@aigne/core/utils/json-schema.js";
 import { z } from "zod";
 
 test("ensureZodUnionArray should throw error if the unions is empty array", async () => {

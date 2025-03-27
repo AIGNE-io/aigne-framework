@@ -3,11 +3,11 @@ import { join } from "node:path";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
-  ClaudeChatModel,
   SystemMessageTemplate,
   ToolMessageTemplate,
   UserMessageTemplate,
 } from "@aigne/core";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import type Anthropic from "@anthropic-ai/sdk";
 import { createMockEventStream } from "../_utils/event-stream";
 

@@ -1,11 +1,6 @@
 import { expect, mock, spyOn, test } from "bun:test";
-import {
-  AIAgent,
-  ExecutionEngine,
-  UserAgent,
-  createMessage,
-  runChatLoopInTerminal,
-} from "@aigne/core";
+import { AIAgent, ExecutionEngine, UserAgent, createMessage } from "@aigne/core";
+import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
 import inquirer from "inquirer";
 
 test("runChatLoopInTerminal should respond /help /exit commands", async () => {

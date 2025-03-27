@@ -3,10 +3,10 @@ import {
   AIAgent,
   type ChatModelOutput,
   ExecutionEngine,
-  OpenAIChatModel,
   UserInputTopic,
   UserOutputTopic,
 } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
 test("Patterns - Reflection", async () => {

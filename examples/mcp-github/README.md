@@ -116,12 +116,9 @@ pnpm example # Run predefined examples
 The following example demonstrates how to use the GitHub MCP server to search for repositories:
 
 ```typescript
-import {
-  AIAgent,
-  OpenAIChatModel,
-  ExecutionEngine,
-  MCPAgent,
-} from "@aigne/core";
+import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+
 
 // Load environment variables
 const { OPENAI_API_KEY, GITHUB_PERSONAL_ACCESS_TOKEN } = process.env;

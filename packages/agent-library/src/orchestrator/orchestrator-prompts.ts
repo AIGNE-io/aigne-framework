@@ -1,4 +1,5 @@
-import { type Agent, type Message, ensureZodUnionArray } from "@aigne/core";
+import type { Agent, Message } from "@aigne/core";
+import { ensureZodUnionArray } from "@aigne/core/utils/json-schema.js";
 import { groupBy, pickBy } from "lodash-es";
 import { z } from "zod";
 

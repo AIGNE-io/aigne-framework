@@ -4,11 +4,11 @@ import { join } from "node:path";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
-  OpenAIChatModel,
   SystemMessageTemplate,
   ToolMessageTemplate,
   UserMessageTemplate,
 } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import type OpenAI from "openai";
 import type { APIPromise } from "openai/core";
 import type { ChatCompletion, ChatCompletionChunk } from "openai/resources";

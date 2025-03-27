@@ -1,13 +1,9 @@
 #!/usr/bin/env npx -y bun
 
 import assert from "node:assert";
-import {
-  AIAgent,
-  ExecutionEngine,
-  OpenAIChatModel,
-  runChatLoopInTerminal,
-  sequential,
-} from "@aigne/core";
+import { AIAgent, ExecutionEngine, sequential } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");

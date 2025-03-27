@@ -6,13 +6,13 @@ import {
   AIAgent,
   ExecutionEngine,
   FunctionAgent,
-  OpenAIChatModel,
   PromptTemplate,
   UserAgent,
   createMessage,
   getMessage,
-  logger,
 } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import inquirer from "inquirer";
 import { z } from "zod";
 

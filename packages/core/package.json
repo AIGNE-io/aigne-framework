@@ -29,6 +29,33 @@
       "import": "./lib/esm/index.js",
       "require": "./lib/cjs/index.js",
       "types": "./lib/dts/index.d.ts"
+    },
+    "./*": {
+      "import": "./lib/esm/*",
+      "require": "./lib/cjs/*",
+      "types": "./lib/dts/*"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./lib/dts/index.d.ts"
+      ],
+      "agents/*": [
+        "./lib/dts/agents/*"
+      ],
+      "execution-engine/*": [
+        "./lib/dts/execution-engine/*"
+      ],
+      "models/*": [
+        "./lib/dts/models/*"
+      ],
+      "prompt/*": [
+        "./lib/dts/prompt/*"
+      ],
+      "utils/*": [
+        "./lib/dts/utils/*"
+      ]
     }
   },
   "scripts": {

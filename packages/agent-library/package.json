@@ -25,10 +25,17 @@
   "module": "./lib/esm/index.js",
   "types": "./lib/dts/index.d.ts",
   "exports": {
-    ".": {
-      "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js",
-      "types": "./lib/dts/index.d.ts"
+    "./*": {
+      "import": "./lib/esm/*",
+      "require": "./lib/cjs/*",
+      "types": "./lib/dts/*"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./lib/dts/*"
+      ]
     }
   },
   "scripts": {

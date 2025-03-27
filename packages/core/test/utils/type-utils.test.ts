@@ -1,13 +1,12 @@
 import { expect, test } from "bun:test";
+import { Agent, type FunctionAgentFn } from "@aigne/core";
 import {
-  Agent,
-  type FunctionAgentFn,
   checkArguments,
   createAccessorArray,
   get,
   isNonNullable,
   orArrayToArray,
-} from "@aigne/core";
+} from "@aigne/core/utils/type-utils.js";
 import { type ZodType, z } from "zod";
 
 test("type-utils.isNonNullable", async () => {

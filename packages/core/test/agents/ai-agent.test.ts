@@ -1,5 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
-import { AIAgent, ExecutionEngine, OpenAIChatModel, createMessage } from "@aigne/core";
+import { AIAgent, ExecutionEngine, createMessage } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
 test("AIAgent.call", async () => {

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "paths": {
       "@aigne/core": ["../core/src"],
-      "@aigne/agent-library": ["./src"]
+      "@aigne/core/*": ["../core/src/*"],
+      "@aigne/agent-library/*": ["./src/*"]
     }
   },
   "exclude": ["node_modules", "lib"],

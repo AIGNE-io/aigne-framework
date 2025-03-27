@@ -5,10 +5,10 @@ import {
   type Context,
   type Message,
   PromptTemplate,
-  checkArguments,
   createMessage,
   getMessage,
 } from "@aigne/core";
+import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import fastq from "fastq";
 import { z } from "zod";
 import {

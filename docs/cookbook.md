@@ -87,11 +87,9 @@ pnpm install openai @anthropic-ai/sdk @google/generative-ai
 
 ```json
 {
-  ...
   "overrides": {
     "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
   }
-  ...
 }
 ```
 
@@ -99,11 +97,9 @@ pnpm install openai @anthropic-ai/sdk @google/generative-ai
 
 ```json
 {
-  ...
   "resolutions": {
     "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
   }
-  ...
 }
 ```
 

@@ -17,7 +17,9 @@ ChatModel 是 aigne-framework 中用于与 AI 大型语言模型交互的抽象�
 创建 ChatModel 实例，用于直接使用或提供给 ExecutionEngine：
 
 ```typescript
-import { OpenAIChatModel, ClaudeChatModel, XAIChatModel } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
+import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
 
 // 初始化 OpenAI 模型
 const openaiModel = new OpenAIChatModel({
@@ -46,8 +48,8 @@ ExecutionEngine 是 aigne-framework 中与 ChatModel 结合使用的推荐方式
 import {
   AIAgent,
   ExecutionEngine,
-  OpenAIChatModel,
 } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 初始化模型
 const model = new OpenAIChatModel({
@@ -81,8 +83,8 @@ import {
   ChatMessagesTemplate,
   SystemMessageTemplate,
   UserMessageTemplate,
-  ClaudeChatModel  // 或 OpenAIChatModel
 } from "@aigne/core";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";  // 或 OpenAIChatModel
 
 // 初始化模型
 const model = new ClaudeChatModel({

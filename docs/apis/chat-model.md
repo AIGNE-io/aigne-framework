@@ -17,7 +17,9 @@ Currently, aigne-framework supports the following chat models:
 Create a ChatModel instance to use directly or provide to an ExecutionEngine:
 
 ```typescript
-import { OpenAIChatModel, ClaudeChatModel, XAIChatModel } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
+import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
 
 // Initialize OpenAI model
 const openaiModel = new OpenAIChatModel({
@@ -46,8 +48,8 @@ ExecutionEngine is the recommended way to use ChatModel in aigne-framework, as i
 import {
   AIAgent,
   ExecutionEngine,
-  OpenAIChatModel,
 } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Initialize model
 const model = new OpenAIChatModel({
@@ -81,8 +83,8 @@ import {
   ChatMessagesTemplate,
   SystemMessageTemplate,
   UserMessageTemplate,
-  ClaudeChatModel  // or OpenAIChatModel
 } from "@aigne/core";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js"; // or OpenAIChatModel
 
 // Initialize model
 const model = new ClaudeChatModel({

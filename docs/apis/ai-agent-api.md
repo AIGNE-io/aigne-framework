@@ -122,7 +122,8 @@ type AIAgentToolChoice = "auto" | "none" | "required" | "router" | Agent;
 ### Creating a Basic AIAgent
 
 ```typescript
-import { AIAgent, OpenAIChatModel } from "@aigne/core";
+import { AIAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -143,7 +144,8 @@ console.log(output.text); // Output of AI's response
 ### Using AIAgent with Tools
 
 ```typescript
-import { AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core";
+import { AIAgent, FunctionAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -184,7 +186,8 @@ console.log(output.text); // "The weather in Beijing today is sunny with a tempe
 ### Using AIAgent in Router Mode
 
 ```typescript
-import { AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core";
+import { AIAgent, FunctionAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,

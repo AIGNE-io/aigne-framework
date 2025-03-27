@@ -49,7 +49,9 @@ ChatModel可以直接使用，但通常建议通过ExecutionEngine来使用，�
 **示例**:
 
 ```typescript
-import { OpenAIChatModel, ClaudeChatModel, XAIChatModel } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
+import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
 
 // 初始化OpenAI模型
 const openaiModel = new OpenAIChatModel({
@@ -117,7 +119,8 @@ const engine = new ExecutionEngine({ model });
 **示例**:
 
 ```typescript
-import { AIAgent, OpenAIChatModel, ExecutionEngine, FunctionAgent } from "@aigne/core";
+import { AIAgent, ExecutionEngine, FunctionAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
 // 创建JavaScript沙箱
@@ -163,7 +166,8 @@ console.log(result);
 **示例**:
 
 ```typescript
-import { AIAgent, OpenAIChatModel, ExecutionEngine } from "@aigne/core";
+import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 概念提取Agent
 const conceptExtractor = AIAgent.from({
@@ -232,7 +236,8 @@ console.log(result);
 **示例**:
 
 ```typescript
-import { AIAgent, OpenAIChatModel, ExecutionEngine, parallel } from "@aigne/core";
+import { AIAgent, ExecutionEngine, parallel } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 功能提取Agent
 const featureExtractor = AIAgent.from({
@@ -280,11 +285,11 @@ console.log(result);
 ```typescript
 import {
   AIAgent,
-  OpenAIChatModel,
   ExecutionEngine,
   UserInputTopic,
   UserOutputTopic,
 } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
 // 编码Agent
@@ -361,7 +366,8 @@ console.log(result);
 **示例**:
 
 ```typescript
-import { AIAgent, OpenAIChatModel, ExecutionEngine } from "@aigne/core";
+import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 转交给Agent B的函数
 function transfer_to_b() {
@@ -410,7 +416,8 @@ console.log(result2);
 **示例**:
 
 ```typescript
-import { AIAgent, OpenAIChatModel, ExecutionEngine } from "@aigne/core";
+import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 产品支持Agent
 const productSupport = AIAgent.from({
@@ -487,7 +494,8 @@ console.log(result3);
 
 ```typescript
 import { OrchestratorAgent } from "@aigne/agent-library";
-import { AIAgent, OpenAIChatModel, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 创建各专业Agent
 const puppeteer = await MCPAgent.from({
@@ -594,10 +602,10 @@ Puppeteer MCP服务器允许AIGNE Framework访问和操作网页内容。
 ```typescript
 import {
   AIAgent,
-  OpenAIChatModel,
   ExecutionEngine,
   MCPAgent,
 } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 创建Puppeteer MCP Agent
 const puppeteerMCPAgent = await MCPAgent.from({
@@ -649,10 +657,10 @@ SQLite MCP服务器允许AIGNE Framework与SQLite数据库交互。
 import { join } from "node:path";
 import {
   AIAgent,
-  OpenAIChatModel,
   ExecutionEngine,
   MCPAgent,
 } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 创建SQLite MCP Agent
 const sqlite = await MCPAgent.from({

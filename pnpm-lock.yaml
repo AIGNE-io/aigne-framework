@@ -27,8 +27,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -39,8 +39,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -51,8 +51,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -63,8 +63,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -75,8 +75,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -87,8 +87,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -99,8 +99,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -114,8 +114,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -126,8 +126,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -138,8 +138,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -150,8 +150,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -172,8 +172,8 @@ importers:
         version: 3.24.2
     devDependencies:
       '@types/bun':
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.6
+        version: 1.2.6
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -187,11 +187,11 @@ importers:
   packages/core:
     dependencies:
       '@aigne/json-schema-to-zod':
-        specifier: ^1.3.2
-        version: 1.3.2(zod@3.24.2)
+        specifier: ^1.3.3
+        version: 1.3.3(zod@3.24.2)
       '@modelcontextprotocol/sdk':
-        specifier: ^1.7.0
-        version: 1.7.0
+        specifier: ^1.8.0
+        version: 1.8.0
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -230,8 +230,8 @@ importers:
         specifier: ^0.24.0
         version: 0.24.0
       '@types/bun':
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.6
+        version: 1.2.6
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -239,8 +239,8 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5
       openai:
-        specifier: ^4.89.0
-        version: 4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -250,8 +250,8 @@ importers:
 
 packages:
 
-  '@aigne/json-schema-to-zod@1.3.2':
-    resolution: {integrity: sha512-yw7e4XjL4a62a+PkVHrFDHWjNjWEDh2sDG5JHY7pH+NCxkM9WavITuh/AfL5sZjA4IZVpyhcqMVvk1uIWOjENg==}
+  '@aigne/json-schema-to-zod@1.3.3':
+    resolution: {integrity: sha512-8QsF5Vm/Znj16KAvfNIoXghSB7XzGGp+HHoI3CWyuFLX6DbI0YrzRm3EpKo87OhbpdtiWQurC0bidkH2cbsYNQ==}
     peerDependencies:
       zod: ^3.0.0
 
@@ -440,12 +440,12 @@ packages:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
 
-  '@modelcontextprotocol/sdk@1.7.0':
-    resolution: {integrity: sha512-IYPe/FLpvF3IZrd/f5p5ffmWhMc3aEMuM2wGJASDqC2Ge7qatVCdbfPx3n/5xFeb19xN0j/911M2AaFuircsWA==}
+  '@modelcontextprotocol/sdk@1.8.0':
+    resolution: {integrity: sha512-e06W7SwrontJDHwCawNO5SGxG+nU9AAx+jpHHZqGl/WrDBdWOpvirC+s58VpJTB5QemI4jTRcjWT4Pt3Q1NPQQ==}
     engines: {node: '>=18'}
 
-  '@types/bun@1.2.5':
-    resolution: {integrity: sha512-w2OZTzrZTVtbnJew1pdFmgV99H0/L+Pvw+z1P67HaR18MHOzYnTYOi6qzErhK8HyT+DB782ADVPPE92Xu2/Opg==}
+  '@types/bun@1.2.6':
+    resolution: {integrity: sha512-fY9CAmTdJH1Llx7rugB0FpgWK2RKuHCs3g2cFDYXUutIy1QGiPQxKkGY8owhfZ4MXWNfxwIbQLChgH5gDsY7vw==}
 
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
@@ -538,8 +538,8 @@ packages:
   brace-expansion@2.0.1:
     resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
 
-  bun-types@1.2.5:
-    resolution: {integrity: sha512-3oO6LVGGRRKI4kHINx5PIdIgnLRb7l/SprhzqXapmoYkFl5m4j6EvALvbDVuuBFaamB46Ap6HCUxIXNLCGy+tg==}
+  bun-types@1.2.6:
+    resolution: {integrity: sha512-FbCKyr5KDiPULUzN/nm5oqQs9nXCHD8dVc64BArxJadCvbNzAI6lUWGh9fSJZWeDIRD38ikceBU8Kj/Uh+53oQ==}
 
   bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
@@ -1190,8 +1190,8 @@ packages:
     resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
     engines: {node: '>=18'}
 
-  openai@4.89.0:
-    resolution: {integrity: sha512-XNI0q2l8/Os6jmojxaID5EhyQjxZgzR2gWcpEjYWK5hGKwE7AcifxEY7UNwFDDHJQXqeiosQ0CJwQN+rvnwdjA==}
+  openai@4.89.1:
+    resolution: {integrity: sha512-k6t7WfnodIctPo40/9sy7Ww4VypnfkKi/urO2VQx4trCIwgzeroO1jkaCL2f5MyTS1H3HT9X+M2qLsc7NSXwTw==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -1632,7 +1632,7 @@ packages:
 
 snapshots:
 
-  '@aigne/json-schema-to-zod@1.3.2(zod@3.24.2)':
+  '@aigne/json-schema-to-zod@1.3.3(zod@3.24.2)':
     dependencies:
       zod: 3.24.2
 
@@ -1810,10 +1810,11 @@ snapshots:
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
-  '@modelcontextprotocol/sdk@1.7.0':
+  '@modelcontextprotocol/sdk@1.8.0':
     dependencies:
       content-type: 1.0.5
       cors: 2.8.5
+      cross-spawn: 7.0.6
       eventsource: 3.0.5
       express: 5.0.1
       express-rate-limit: 7.5.0(express@5.0.1)
@@ -1824,9 +1825,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@types/bun@1.2.5':
+  '@types/bun@1.2.6':
     dependencies:
-      bun-types: 1.2.5
+      bun-types: 1.2.6
 
   '@types/debug@4.1.12':
     dependencies:
@@ -1936,7 +1937,7 @@ snapshots:
     dependencies:
       balanced-match: 1.0.2
 
-  bun-types@1.2.5:
+  bun-types@1.2.6:
     dependencies:
       '@types/node': 22.10.7
       '@types/ws': 8.5.13
@@ -2647,7 +2648,7 @@ snapshots:
     dependencies:
       mimic-function: 5.0.1
 
-  openai@4.89.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2):
+  openai@4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2):
     dependencies:
       '@types/node': 18.19.71
       '@types/node-fetch': 2.6.12

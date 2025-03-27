@@ -8,6 +8,9 @@
 - [AIGNE Framework Cookbook](#aigne-framework-cookbook)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
+  - [Installation](#installation)
+    - [Installing AIGNE Framework](#installing-aigne-framework)
+    - [Using @aigne/core in CommonJS Environment](#using-aignecore-in-commonjs-environment)
   - [Core Concepts](#core-concepts)
     - [Chat Model](#chat-model)
     - [Agent](#agent)
@@ -33,6 +36,76 @@
 ## Introduction
 
 AIGNE Framework is a framework for building applications based on Large Language Models (LLMs). It provides a series of tools and abstractions that enable developers to easily create complex AI workflows. This Cookbook aims to help developers understand the core concepts of AIGNE Framework and demonstrate through examples how to use different workflow patterns to solve real-world problems.
+
+## Installation
+
+To get started with AIGNE Framework, you need to install the relevant dependencies.
+
+### Installing AIGNE Framework
+
+**npm**
+
+```bash
+npm install @aigne/core
+
+# If you need advanced Agents from Agent Library
+npm install @aigne/agent-library
+
+# Install LLM libraries as needed
+npm install openai @anthropic-ai/sdk @google/generative-ai
+```
+
+**yarn**
+
+```bash
+yarn add @aigne/core
+
+# If you need advanced Agents from Agent Library
+yarn add @aigne/agent-library
+
+# Install LLM libraries as needed
+yarn add openai @anthropic-ai/sdk @google/generative-ai
+```
+
+**pnpm**
+
+```bash
+pnpm install @aigne/core
+
+# If you need advanced Agents from Agent Library
+pnpm install @aigne/agent-library
+
+# Install LLM libraries as needed
+pnpm install openai @anthropic-ai/sdk @google/generative-ai
+```
+
+### Using @aigne/core in CommonJS Environment
+
+@aigne/core supports use in both CommonJS and ES Module environments. If your project uses the CommonJS module system, but due to a [third-party lib not supporting ESM](https://github.com/AIGNE-io/aigne-framework/issues/36), you need to add the following configuration to your project's package.json before the issue is fixed:
+
+**npm**
+
+```json
+{
+  ...
+  "overrides": {
+    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
+  }
+  ...
+}
+```
+
+**yarn or pnpm**
+
+```json
+{
+  ...
+  "resolutions": {
+    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
+  }
+  ...
+}
+```
 
 ## Core Concepts
 

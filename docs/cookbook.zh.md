@@ -8,6 +8,9 @@
 - [AIGNE Framework Cookbook](#aigne-framework-cookbook)
   - [目录](#目录)
   - [介绍](#介绍)
+  - [安装](#安装)
+    - [安装 AIGNE Framework](#安装-aigne-framework)
+    - [在 CommonJS 环境中使用 @aigne/core](#在-commonjs-环境中使用-aignecore)
   - [基础概念](#基础概念)
     - [聊天模型（ChatModel）](#聊天模型chatmodel)
     - [Agent](#agent)
@@ -33,6 +36,77 @@
 ## 介绍
 
 AIGNE Framework是一个用于构建基于大型语言模型(LLM)的应用程序的框架。它提供了一系列工具和抽象，使开发者能够轻松地创建复杂的AI工作流程。本Cookbook旨在帮助开发者理解AIGNE Framework的核心概念，并通过示例展示如何使用不同的工作流模式来解决实际问题。
+
+## 安装
+
+要开始使用AIGNE Framework，你需要安装相关依赖。
+
+### 安装 AIGNE Framework
+
+**npm**
+
+```bash
+npm install @aigne/core
+
+# 如果需要 Agent Library 中的高级 Agent
+npm install @aigne/agent-library
+
+# 根据需要选择安装 LLM
+npm install openai @anthropic-ai/sdk @google/generative-ai
+```
+
+**yarn**
+
+```bash
+yarn add @aigne/core
+
+# 如果需要 Agent Library 中的高级 Agent
+yarn add @aigne/agent-library
+
+# 根据需要选择安装 LLM
+yarn add openai @anthropic-ai/sdk @google/generative-ai
+```
+
+**pnpm**
+
+```bash
+pnpm install @aigne/core
+
+# 如果需要 Agent Library 中的高级 Agent
+pnpm install @aigne/agent-library
+
+# 根据需要选择安装 LLM
+pnpm install openai @anthropic-ai/sdk @google/generative-ai
+```
+
+### 在 CommonJS 环境中使用 @aigne/core
+
+@aigne/core 支持在 CommonJS 和 ES Module 环境中使用。如果你的项目使用 CommonJS 模块系统，但由于一个[第三方 lib 不支持 ESM](https://github.com/AIGNE-io/aigne-framework/issues/36)，在问题修复前，需要在项目中的 package.json 中加入下面的配置：
+
+**npm**
+
+```json
+{
+  ...
+  "overrides": {
+    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
+  }
+  ...
+}
+```
+
+**yarn or pnpm**
+
+```json
+{
+  ...
+  "resolutions": {
+    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
+  }
+  ...
+}
+```
+
 
 ## 基础概念
 

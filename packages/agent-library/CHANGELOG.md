@@ -2,6 +2,13 @@
 
 - chore: release 1.2.0
 
+## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.3.2...agent-library-v1.4.0) (2025-03-28)
+
+
+### Features
+
+* support token/call/time limits for ExecutionEngine ([#44](https://github.com/AIGNE-io/aigne-framework/issues/44)) ([5a2ca0a](https://github.com/AIGNE-io/aigne-framework/commit/5a2ca0a033267dd4765f574b53dca71e932e53d4))
+
 ## [1.3.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.3.1...agent-library-v1.3.2) (2025-03-27)
 
 

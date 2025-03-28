@@ -80,10 +80,13 @@ test("AIAgent.call", async () => {
 
   expect(result).toEqual(createMessage("Task finished"));
   expect(finderCall.mock.calls).toEqual([
-    [createMessage(expect.stringContaining("Find the closest match to a user's request")), engine],
+    [
+      createMessage(expect.stringContaining("Find the closest match to a user's request")),
+      expect.anything(),
+    ],
   ]);
   expect(writerCall.mock.calls).toEqual([
-    [createMessage(expect.stringContaining("Write to the filesystem")), engine],
+    [createMessage(expect.stringContaining("Write to the filesystem")), expect.anything()],
   ]);
 });
 

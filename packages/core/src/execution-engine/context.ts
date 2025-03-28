@@ -1,5 +1,6 @@
 import type EventEmitter from "node:events";
 import type { Agent, FunctionAgentFn, Message } from "../agents/agent.js";
+import type { UserAgent } from "../agents/user-agent.js";
 import type { ChatModel } from "../models/chat-model.js";
 import type { MessagePayload, MessageQueueListener, Unsubscribe } from "./message-queue.js";
 
@@ -27,6 +28,14 @@ export interface Context extends EventEmitter {
 
   limits?: ContextLimits;
 
+  status?: "normal" | "timeout";
+
+  /**
+   * Create a user agent to consistently call an agent
+   * @param agent Agent to call
+   * @returns User agent
+   */
+  call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
   /**
    * Call an agent with a message
    * @param agent Agent to call
@@ -47,13 +56,13 @@ export interface Context extends EventEmitter {
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options: { returnActiveAgent?: true },
+    options: { returnActiveAgent: true },
   ): Promise<[O, Runnable]>;
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
     options?: { returnActiveAgent?: boolean },
-  ): Promise<O | [O, Runnable]>;
+  ): UserAgent<I, O> | Promise<O | [O, Runnable]>;
 
   /**
    * Publish a message to a topic, the engine will call the listeners of the topic

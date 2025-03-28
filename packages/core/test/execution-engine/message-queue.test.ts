@@ -1,7 +1,9 @@
 import { expect, test } from "bun:test";
-import { MessageQueue, createMessage } from "@aigne/core";
+import { ExecutionEngine, MessageQueue, createMessage } from "@aigne/core";
 
 test("MessageQueue.subscribe should resolve a message", async () => {
+  const context = new ExecutionEngine().newContext();
+
   const messageQueue = new MessageQueue();
 
   const message = messageQueue.subscribe("test_topic");
@@ -9,11 +11,13 @@ test("MessageQueue.subscribe should resolve a message", async () => {
     role: "user",
     message: createMessage("hello"),
     source: "test_user",
+    context,
   });
   expect(message).resolves.toEqual({
     role: "user",
     message: createMessage("hello"),
     source: "test_user",
+    context,
   });
 });
 

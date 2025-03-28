@@ -97,7 +97,10 @@ test("AIAgent should pass both arguments (model generated) and input (user provi
 
   const result = await engine.call(agent, "1 + 1 = ?");
 
-  expect(plusCall).toHaveBeenCalledWith({ ...createMessage("1 + 1 = ?"), a: 1, b: 1 }, engine);
+  expect(plusCall).toHaveBeenCalledWith(
+    { ...createMessage("1 + 1 = ?"), a: 1, b: 1 },
+    expect.anything(),
+  );
   expect(result).toEqual(createMessage("The sum is 2"));
 });
 
@@ -144,6 +147,9 @@ test("AIAgent with router toolChoice mode should return tool result", async () =
 
   const result = await engine.call(agent, "1 + 1 = ?");
 
-  expect(plusCall).toHaveBeenCalledWith({ ...createMessage("1 + 1 = ?"), a: 1, b: 1 }, engine);
+  expect(plusCall).toHaveBeenCalledWith(
+    { ...createMessage("1 + 1 = ?"), a: 1, b: 1 },
+    expect.anything(),
+  );
   expect(result).toEqual({ sum: 2 });
 });

@@ -4,10 +4,10 @@ import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
 import inquirer from "inquirer";
 
 test("runChatLoopInTerminal should respond /help /exit commands", async () => {
-  const context = new ExecutionEngine({});
+  const engine = new ExecutionEngine({});
 
   const userAgent = UserAgent.from({
-    context,
+    context: engine.newContext(),
     process: () => ({ text: "hello" }),
   });
 
@@ -84,15 +84,15 @@ test("runChatLoopInTerminal should call agent correctly", async () => {
 });
 
 test("runChatLoopInTerminal should subscribe user agent stream", async () => {
-  const context = new ExecutionEngine({});
+  const engine = new ExecutionEngine({});
 
-  const user = UserAgent.from({ context, subscribeTopic: "test_topic" });
+  const user = UserAgent.from({ context: engine.newContext(), subscribeTopic: "test_topic" });
 
   const log = mock((..._args) => {});
   const onResponse = mock((..._args) => {});
 
   runChatLoopInTerminal(user, { log, onResponse });
-  context.publish("test_topic", "hello, this is a test message");
+  user.publish("test_topic", "hello, this is a test message");
   // Check the response after a delay to allow the event loop to run
   setTimeout(() => {
     expect(onResponse.mock.calls).toEqual([

@@ -23,7 +23,7 @@ export interface ExecutionEngineOptions {
   limits?: ContextLimits;
 }
 
-export class ExecutionEngine extends EventEmitter implements Context {
+export class ExecutionEngine extends EventEmitter {
   constructor(options?: ExecutionEngineOptions) {
     if (options) checkArguments("ExecutionEngine", executionEngineOptionsSchema, options);
 
@@ -44,12 +44,6 @@ export class ExecutionEngine extends EventEmitter implements Context {
 
   private agents: Agent[] = [];
 
-  usage: ContextUsage = {
-    promptTokens: 0,
-    completionTokens: 0,
-    agentCalls: 0,
-  };
-
   limits?: ContextLimits;
 
   addAgent(...agents: Agent[]) {
@@ -62,8 +56,8 @@ export class ExecutionEngine extends EventEmitter implements Context {
     }
   }
 
-  private createMessageFromInput(message: Message | string): Message {
-    return typeof message === "string" ? createMessage(message) : message;
+  newContext() {
+    return new ExecutionEngineContext(this);
   }
 
   /**
@@ -73,19 +67,7 @@ export class ExecutionEngine extends EventEmitter implements Context {
    * @param from the agent who publish the message, if not provided, it will be treated as a user message
    */
   publish(topic: string | string[], message: Message | string, from?: Agent) {
-    checkArguments("ExecutionEngine.publish", executionEnginePublishArgsSchema, {
-      topic,
-      message,
-      from,
-    });
-
-    const request: MessageRequest = {
-      role: !from || from instanceof UserAgent ? "user" : "agent",
-      source: from?.name,
-      message: this.createMessageFromInput(message),
-    };
-
-    this.messageQueue.publish(topic, request);
+    return new ExecutionEngineContext(this).publish(topic, message, from);
   }
 
   /**
@@ -114,60 +96,19 @@ export class ExecutionEngine extends EventEmitter implements Context {
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options: { returnActiveAgent?: true },
+    options: { returnActiveAgent: true },
   ): Promise<[O, Runnable]>;
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message?: I | string,
     options?: { returnActiveAgent?: boolean },
-  ): UserAgent | Promise<O | [O, Runnable]> {
-    checkArguments("ExecutionEngine.call", executionEngineCallArgsSchema, {
-      agent,
-      message,
-      options,
-    });
-
-    if (isNil(message)) {
-      let activeAgent: Runnable = agent;
-
-      return UserAgent.from({
-        context: this,
-        process: async (input, context) => {
-          const [output, agent] = await context.call(activeAgent, input, {
-            returnActiveAgent: true,
-          });
-          activeAgent = agent;
-          return output;
-        },
-      });
-    }
-
-    return this._call(agent, this.createMessageFromInput(message)).then((result) =>
-      options?.returnActiveAgent ? [result.output, result.agent] : result.output,
-    );
-  }
-
-  /**
-   * Call an agent with a message and return the output and the active agent
-   * @param agent Agent to call
-   * @param message Message to pass to the agent
-   * @returns the output of the agent and the final active agent
-   */
-  private async _call<I extends Message, O extends Message>(agent: Runnable<I, O>, message: I) {
-    const { output, agent: activeAgent } = await this.callAgent(agent, message);
-
-    if (activeAgent instanceof Agent) {
-      const publishTopics =
-        typeof activeAgent.publishTopic === "function"
-          ? await activeAgent.publishTopic(output)
-          : activeAgent.publishTopic;
-
-      if (publishTopics?.length) {
-        this.publish(publishTopics, output, activeAgent);
-      }
-    }
-
-    return { output, agent: activeAgent };
+  ): UserAgent<I, O> | Promise<O | [O, Runnable]>;
+  call<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    message?: I | string,
+    options?: { returnActiveAgent?: boolean },
+  ): UserAgent<I, O> | Promise<O | [O, Runnable]> {
+    return new ExecutionEngineContext(this).call(agent, message, options);
   }
 
   subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
@@ -189,46 +130,6 @@ export class ExecutionEngine extends EventEmitter implements Context {
     });
 
     this.messageQueue.unsubscribe(topic, listener);
-  }
-
-  private async callAgent<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
-    input: I,
-  ): Promise<{ agent: Runnable; output: O }> {
-    let activeAgent: Runnable = agent;
-    let output: O | undefined;
-
-    for (;;) {
-      let result: Message | Agent;
-
-      if (typeof activeAgent === "function") {
-        result = await activeAgent(input, this);
-      } else {
-        result = await activeAgent.call(input, this);
-      }
-
-      if (!(result instanceof Agent)) output = result as O;
-
-      const transferToAgent =
-        result instanceof Agent
-          ? result
-          : isTransferAgentOutput(result)
-            ? result[transferAgentOutputKey].agent
-            : undefined;
-
-      if (transferToAgent) {
-        activeAgent = transferToAgent;
-      } else {
-        break;
-      }
-    }
-
-    if (!output) throw new Error("Unexpected empty output");
-
-    return {
-      agent: activeAgent,
-      output,
-    };
   }
 
   async shutdown() {
@@ -276,3 +177,205 @@ const executionEngineUnsubscribeArgsSchema = z.object({
   topic: z.string(),
   listener: z.function(z.tuple([z.any()]), z.any()),
 });
+
+export class ExecutionEngineContext extends EventEmitter implements Context {
+  constructor(private readonly context: ExecutionEngine) {
+    super();
+    this.limits = context.limits;
+  }
+
+  get model() {
+    return this.context.model;
+  }
+
+  get tools() {
+    return this.context.tools;
+  }
+
+  usage: ContextUsage = {
+    promptTokens: 0,
+    completionTokens: 0,
+    agentCalls: 0,
+  };
+
+  limits?: ContextLimits | undefined;
+
+  private abortController = new AbortController();
+
+  private timer?: Timer;
+
+  private initTimeout() {
+    if (this.timer) return;
+
+    const timeout = this.limits?.timeout;
+    if (timeout) {
+      this.timer = setTimeout(() => {
+        this.abortController.abort();
+      }, timeout);
+    }
+  }
+
+  get status() {
+    return this.abortController.signal.aborted ? "timeout" : "normal";
+  }
+
+  call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
+  call<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    message: I | string,
+  ): Promise<O>;
+  call<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    message: I | string,
+    options: { returnActiveAgent: true },
+  ): Promise<[O, Runnable]>;
+  call<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    message?: I | string,
+    options?: { returnActiveAgent?: boolean },
+  ): UserAgent<I, O> | Promise<O | [O, Runnable]>;
+  call<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    message?: I | string,
+    options?: { returnActiveAgent?: boolean },
+  ): UserAgent<I, O> | Promise<O | [O, Runnable]> {
+    checkArguments("ExecutionEngine._call", executionEngineCallArgsSchema, {
+      agent,
+      message,
+      options,
+    });
+
+    if (isNil(message)) {
+      let activeAgent: Runnable = agent;
+
+      return UserAgent.from<I, O>({
+        context: this,
+        process: async (input, context) => {
+          const [output, agent] = await context.call(activeAgent, input, {
+            returnActiveAgent: true,
+          });
+          activeAgent = agent;
+          return output as O;
+        },
+      });
+    }
+
+    return withAbortSignal(
+      this.abortController.signal,
+      new Error("ExecutionEngine is timeout"),
+      async () => {
+        this.initTimeout();
+
+        const msg = createMessageFromInput(message);
+
+        return this.callAgent(agent, msg).then(async ({ output, agent: activeAgent }) => {
+          if (activeAgent instanceof Agent) {
+            const publishTopics =
+              typeof activeAgent.publishTopic === "function"
+                ? await activeAgent.publishTopic(output)
+                : activeAgent.publishTopic;
+
+            if (publishTopics?.length) {
+              this.publish(publishTopics, output, activeAgent);
+            }
+          }
+
+          if (options?.returnActiveAgent) {
+            return [output, activeAgent];
+          }
+
+          return output;
+        });
+      },
+    );
+  }
+
+  publish(topic: string | string[], message: Message | string, from?: Agent): void {
+    checkArguments("ExecutionEngineContext.publish", executionEnginePublishArgsSchema, {
+      topic,
+      message,
+      from,
+    });
+
+    const request: MessageRequest = {
+      role: !from || from instanceof UserAgent ? "user" : "agent",
+      source: from?.name,
+      message: createMessageFromInput(message),
+      context: this,
+    };
+
+    this.context.messageQueue.publish(topic, request);
+  }
+
+  subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
+  subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
+  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload> {
+    return this.context.subscribe(topic, listener);
+  }
+
+  unsubscribe(topic: string, listener: MessageQueueListener): void {
+    this.context.unsubscribe(topic, listener);
+  }
+
+  emit(eventName: string | symbol, ...args: unknown[]) {
+    return this.context.emit(eventName, ...args);
+  }
+
+  private async callAgent<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    input: I,
+  ): Promise<{ agent: Runnable; output: O }> {
+    let activeAgent: Runnable = agent;
+    let output: O | undefined;
+
+    for (;;) {
+      let result: Message | Agent;
+
+      if (typeof activeAgent === "function") {
+        result = await activeAgent(input, this);
+      } else {
+        result = await activeAgent.call(input, this);
+      }
+
+      if (!(result instanceof Agent)) output = result as O;
+
+      const transferToAgent =
+        result instanceof Agent
+          ? result
+          : isTransferAgentOutput(result)
+            ? result[transferAgentOutputKey].agent
+            : undefined;
+
+      if (transferToAgent) {
+        activeAgent = transferToAgent;
+      } else {
+        break;
+      }
+    }
+
+    if (!output) throw new Error("Unexpected empty output");
+
+    return {
+      agent: activeAgent,
+      output,
+    };
+  }
+}
+
+function withAbortSignal<T>(signal: AbortSignal, error: Error, fn: () => Promise<T>): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const listener = () => reject(error);
+
+    signal.addEventListener("abort", listener);
+
+    fn()
+      .then(resolve, reject)
+      .finally(() => {
+        signal.removeEventListener("abort", listener);
+      });
+  });
+}
+
+function createMessageFromInput(message: Message | string): Message {
+  return typeof message === "string" ? createMessage(message) : message;
+}

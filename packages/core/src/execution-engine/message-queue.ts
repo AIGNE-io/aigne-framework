@@ -1,6 +1,7 @@
 import { EventEmitter } from "node:events";
 import type { Message } from "../agents/agent.js";
 import { orArrayToArray } from "../utils/type-utils.js";
+import type { Context } from "./context.js";
 
 export const UserInputTopic = "UserInputTopic";
 
@@ -10,6 +11,9 @@ export interface MessagePayload {
   role: "user" | "agent";
   source?: string;
   message: Message;
+
+  // Context of the message
+  context: Context;
 }
 
 export type MessageQueueListener = (message: MessagePayload) => void;

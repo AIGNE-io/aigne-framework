@@ -117,11 +117,11 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * - subscribe to memory topic if memory is enabled
    * @param context Context to attach
    */
-  attach(context: Context) {
+  attach(context: Pick<Context, "subscribe">) {
     this.memory?.attach(context);
 
     for (const topic of orArrayToArray(this.subscribeTopic).concat(this.topic)) {
-      context.subscribe(topic, async ({ message }) => {
+      context.subscribe(topic, async ({ message, context }) => {
         try {
           await context.call(this, message);
         } catch (error) {
@@ -139,6 +139,13 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     return !!this.process;
   }
 
+  private checkContextStatus(context?: Context) {
+    if (context) {
+      const { status } = context;
+      if (status === "timeout") throw new Error("ExecutionEngine is timeout");
+    }
+  }
+
   async call(input: I | string, context?: Context): Promise<O> {
     const _input = typeof input === "string" ? createMessage(input) : input;
 
@@ -147,6 +154,8 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     logger.debug("Call agent %s start with input: %O", this.name, input);
 
     this.preprocess(parsedInput, context);
+
+    this.checkContextStatus(context);
 
     const result = this.process(parsedInput, context)
       .then((output) => {
@@ -172,18 +181,20 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   }
 
   protected preprocess(_: I, context?: Context) {
+    this.checkContextStatus(context);
+
     if (context) {
       const { limits, usage } = context;
       if (limits?.maxAgentCalls && usage.agentCalls >= limits.maxAgentCalls) {
         throw new Error(`Exceeded max agent calls ${usage.agentCalls}/${limits.maxAgentCalls}`);
       }
+
+      usage.agentCalls++;
     }
   }
 
   protected postprocess(input: I, output: O, context?: Context) {
-    if (context) {
-      context.usage.agentCalls++;
-    }
+    this.checkContextStatus(context);
 
     this.memory?.addMemory({ role: "user", content: input });
     this.memory?.addMemory({

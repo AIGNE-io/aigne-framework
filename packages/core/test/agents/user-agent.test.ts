@@ -2,11 +2,11 @@ import { expect, test } from "bun:test";
 import { ExecutionEngine, UserAgent, createMessage } from "@aigne/core";
 
 test("UserAgent.stream", async () => {
-  const context = new ExecutionEngine({});
+  const engine = new ExecutionEngine({});
 
   const userAgent = UserAgent.from({
     name: "user_agent",
-    context,
+    context: engine.newContext(),
     subscribeTopic: "test_topic",
   });
 
@@ -18,6 +18,7 @@ test("UserAgent.stream", async () => {
       role: "user",
       message: createMessage("hello"),
       source: "user_agent",
+      context: expect.anything(),
     },
     done: false,
   });

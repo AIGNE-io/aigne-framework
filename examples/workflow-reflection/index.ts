@@ -74,7 +74,7 @@ Please review the code. If previous feedback was provided, see if it was address
 const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
 
 const userAgent = UserAgent.from({
-  context: engine,
+  context: engine.newContext(),
   publishTopic: UserInputTopic,
   subscribeTopic: UserOutputTopic,
 });

@@ -47,7 +47,7 @@ export class AgentMemory {
     this.memories.push(memory);
   }
 
-  attach(context: Context) {
+  attach(context: Pick<Context, "subscribe">) {
     for (const topic of orArrayToArray(this.subscribeTopic)) {
       const sub = context.subscribe(topic, ({ role, message, source }) => {
         this.addMemory({ role, source, content: message });

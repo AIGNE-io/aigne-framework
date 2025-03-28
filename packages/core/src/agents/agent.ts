@@ -142,7 +142,9 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   private checkContextStatus(context: Context) {
     if (context) {
       const { status } = context;
-      if (status === "timeout") throw new Error("ExecutionEngine is timeout");
+      if (status === "timeout") {
+        throw new Error(`ExecutionEngine for agent ${this.name} has timed out`);
+      }
     }
   }
 

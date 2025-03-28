@@ -12,12 +12,10 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
 
   protected override preprocess(input: ChatModelInput, context: Context): void {
     super.preprocess(input, context);
-    if (context) {
-      const { limits, usage } = context;
-      const usedTokens = usage.completionTokens + usage.promptTokens;
-      if (limits?.maxTokens && usedTokens >= limits.maxTokens) {
-        throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
-      }
+    const { limits, usage } = context;
+    const usedTokens = usage.completionTokens + usage.promptTokens;
+    if (limits?.maxTokens && usedTokens >= limits.maxTokens) {
+      throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
     }
   }
 
@@ -28,7 +26,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   ): void {
     super.postprocess(input, output, context);
     const { usage } = output;
-    if (context && usage) {
+    if (usage) {
       context.usage.completionTokens += usage.completionTokens;
       context.usage.promptTokens += usage.promptTokens;
     }

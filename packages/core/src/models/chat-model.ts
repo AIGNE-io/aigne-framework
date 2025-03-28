@@ -10,7 +10,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     });
   }
 
-  protected override preprocess(input: ChatModelInput, context?: Context): void {
+  protected override preprocess(input: ChatModelInput, context: Context): void {
     super.preprocess(input, context);
     if (context) {
       const { limits, usage } = context;
@@ -24,7 +24,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   protected override postprocess(
     input: ChatModelInput,
     output: ChatModelOutput,
-    context?: Context,
+    context: Context,
   ): void {
     super.postprocess(input, output, context);
     const { usage } = output;

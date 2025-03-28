@@ -104,5 +104,5 @@ test("runChatLoopInTerminal should subscribe user agent stream", async () => {
         }),
       ],
     ]);
-  });
+  }, 0);
 });

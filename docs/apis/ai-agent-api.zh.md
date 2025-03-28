@@ -63,13 +63,13 @@ static from<I extends AgentInput, O extends AgentOutput>(options: AIAgentOptions
 处理输入并生成输出，与 AI 模型交互并处理响应。
 
 ```typescript
-async process(input: I, context?: Context): Promise<O>
+async process(input: I, context: Context): Promise<O>
 ```
 
 ##### 参数
 
 - `input`: `I` - 输入数据
-- `context`: `Context` (可选) - 执行上下文
+- `context`: `Context` - 执行上下文
 
 ##### 返回值
 

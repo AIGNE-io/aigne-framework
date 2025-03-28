@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { createMockEventStream } from "../_utils/event-stream";
+import { createMockEventStream } from "../_utils/event-stream.js";
 
 export function mockOpenAIStreaming<T>({
   text,

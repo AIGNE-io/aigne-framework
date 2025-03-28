@@ -22,6 +22,7 @@
     "rules": {
       "recommended": true,
       "correctness": {
+        "useImportExtensions": "error",
         "noUnusedVariables": "error",
         "noUnusedImports": "error",
         "noUnusedFunctionParameters": "error",

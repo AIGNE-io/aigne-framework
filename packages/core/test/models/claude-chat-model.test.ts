@@ -9,7 +9,7 @@ import {
 } from "@aigne/core";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import type Anthropic from "@anthropic-ai/sdk";
-import { createMockEventStream } from "../_utils/event-stream";
+import { createMockEventStream } from "../_utils/event-stream.js";
 
 test("ClaudeChatModel.call", async () => {
   const model = new ClaudeChatModel({

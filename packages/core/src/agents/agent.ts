@@ -139,31 +139,37 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     return !!this.process;
   }
 
-  private checkContextStatus(context?: Context) {
+  private checkContextStatus(context: Context) {
     if (context) {
       const { status } = context;
       if (status === "timeout") throw new Error("ExecutionEngine is timeout");
     }
   }
 
+  private async newDefaultContext() {
+    return import("../execution-engine/context.js").then((m) => new m.ExecutionContext());
+  }
+
   async call(input: I | string, context?: Context): Promise<O> {
+    const ctx = context ?? (await this.newDefaultContext());
+
     const _input = typeof input === "string" ? createMessage(input) : input;
 
     const parsedInput = this.inputSchema.parse(_input) as I;
 
     logger.debug("Call agent %s start with input: %O", this.name, input);
 
-    this.preprocess(parsedInput, context);
+    this.preprocess(parsedInput, ctx);
 
-    this.checkContextStatus(context);
+    this.checkContextStatus(ctx);
 
-    const result = this.process(parsedInput, context)
+    const result = this.process(parsedInput, ctx)
       .then((output) => {
         const parsedOutput = this.outputSchema.parse(output) as O;
         return this.includeInputInOutput ? { ...parsedInput, ...parsedOutput } : parsedOutput;
       })
       .then((output) => {
-        this.postprocess(parsedInput, output, context);
+        this.postprocess(parsedInput, output, ctx);
         return output;
       });
 
@@ -180,7 +186,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     );
   }
 
-  protected preprocess(_: I, context?: Context) {
+  protected preprocess(_: I, context: Context) {
     this.checkContextStatus(context);
 
     if (context) {
@@ -193,7 +199,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     }
   }
 
-  protected postprocess(input: I, output: O, context?: Context) {
+  protected postprocess(input: I, output: O, context: Context) {
     this.checkContextStatus(context);
 
     this.memory?.addMemory({ role: "user", content: input });
@@ -204,7 +210,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     });
   }
 
-  abstract process(input: I, context?: Context): Promise<O | TransferAgentOutput>;
+  abstract process(input: I, context: Context): Promise<O | TransferAgentOutput>;
 
   async shutdown() {
     this.memory?.detach();
@@ -256,7 +262,7 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
 
   fn: FunctionAgentFn<I, O>;
 
-  async process(input: I, context?: Context) {
+  async process(input: I, context: Context) {
     const result = await this.fn(input, context);
 
     if (result instanceof Agent) {
@@ -269,7 +275,7 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
 
 export type FunctionAgentFn<I extends Message = Message, O extends Message = Message> = (
   input: I,
-  context?: Context,
+  context: Context,
 ) => O | Promise<O> | Agent | Promise<Agent>;
 
 function functionToAgent<I extends Message, O extends Message>(

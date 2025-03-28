@@ -8,7 +8,7 @@ import {
   UserMessageTemplate,
 } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { createMockEventStream } from "../_utils/event-stream";
+import { createMockEventStream } from "../_utils/event-stream.js";
 
 test("OpenAIChatModel.call", async () => {
   const model = new OpenAIChatModel({

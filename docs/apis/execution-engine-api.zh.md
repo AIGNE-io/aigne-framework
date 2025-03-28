@@ -6,14 +6,7 @@
 
 ## ExecutionEngine 类
 
-`ExecutionEngine` 同时继承自 `EventEmitter` 和实现了 `Context` 接口，为 Agent 提供执行环境。
-
-### 基本属性
-
-| 属性名 | 类型 | 描述 |
-|-------|------|------|
-| `model` | `ChatModel \| undefined` | 默认的 AI 聊天模型实例 |
-| `tools` | `Agent[]` | 所有 Agent 可以访问的工具列表 |
+`ExecutionEngine` 继承自 `EventEmitter`，为 Agent 提供执行环境。它为每个操作创建一个执行上下文。
 
 ### 构造函数
 
@@ -23,13 +16,13 @@ constructor(options?: ExecutionEngineOptions)
 
 #### 参数
 
-- `options`: `ExecutionEngineOptions` (可选) - 执行引擎配置选项
-
-  | 选项名 | 类型 | 描述 |
-  |-------|------|------|
-  | `model` | `ChatModel` | 默认的 AI 聊天模型实例 |
-  | `tools` | `Agent[]` | 全局可用的工具列表 |
-  | `agents` | `Agent[]` | 初始化时添加的 Agent 列表 |
+- `model`: `ChatModel` - 默认的 AI 聊天模型实例
+- `tools`: `Agent[]` - 全局可用的工具列表
+- `agents`: `Agent[]` - 初始化时添加的 Agent 列表
+- `limits`: `ContextLimits` - 执行引擎的限制配置
+  - `maxTokens`: `number` - 允许处理的最大 Token 数
+  - `maxAgentCalls`: `number` - 允许的最大 Agent 调用次数
+  - `timeout`: `number` - 执行超时时间（毫秒）
 
 ### 方法
 
@@ -50,26 +43,35 @@ addAgent(...agents: Agent[])
 向指定主题发布消息。
 
 ```typescript
-publish(topic: string, message: unknown)
+publish(topic: string | string[], message: Message | string, from?: Agent)
 ```
 
 ##### 参数
 
-- `topic`: `string` - 消息主题
-- `message`: `unknown` - 要发布的消息内容
+- `topic`: `string | string[]` - 消息主题或主题数组
+- `message`: `Message | string` - 要发布的消息内容
+- `from`: `Agent` (可选) - 发布消息的 Agent
 
 #### `subscribe`
 
-订阅指定主题的消息。
+订阅指定主题的消息。此方法有多种重载方式。
 
 ```typescript
-subscribe(topic: string, listener: (message: AgentOutput) => void)
+// 使用回调函数订阅
+// 注册一个回调函数，用于接收主题上的每条消息
+// 返回一个取消订阅函数，可以调用该函数停止接收消息
+subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
+
+// 订阅并等待单个消息
+// 返回一个 Promise，该 Promise 会在下一条消息发布到主题时解析
+// 适用于一次性消息接收场景
+subscribe(topic: string): Promise<MessagePayload>;
 ```
 
 ##### 参数
 
 - `topic`: `string` - 要订阅的主题
-- `listener`: `(message: AgentOutput) => void` - 接收消息的回调函数
+- `listener`: `MessageQueueListener` (可选) - 接收消息的回调函数
 
 #### `unsubscribe`
 
@@ -89,39 +91,30 @@ unsubscribe(topic: string, listener: (message: AgentOutput) => void)
 调用一个 Agent 并返回输出。此方法有多种重载方式，每种方式都有不同的用途。
 
 ```typescript
-// 重载 1: 创建一个用户代理以持续调用 Agent
+// 创建一个用户代理以持续调用 Agent
+// 返回一个 UserAgent 实例，用于持续与执行引擎交互
+// 适合需要多轮对话或持续交互的场景
 call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
 
-// 重载 2: 使用消息调用 Agent
+// 使用消息调用 Agent
+// 使用提供的消息调用指定的 Agent
+// 返回 Agent 的输出
+// 适合需要单次交互的场景
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
 ): Promise<O>;
 
-// 重载 3: 使用消息调用 Agent 并返回输出和活动的 Agent
+// 使用消息调用 Agent 并返回输出和活动的 Agent
+// 使用提供的消息调用指定的 Agent
+// 返回 Agent 的输出和最终活动的 Agent
+// 适合需要跟踪活动 Agent 的场景
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
   options: { returnActiveAgent?: true },
 ): Promise<[O, Runnable]>;
 ```
-
-##### 重载方式说明
-
-1. **创建一个用户代理以持续调用 Agent**
-   - 返回一个 `UserAgent` 实例，用于持续与执行引擎交互
-   - 适合需要多轮对话或持续交互的场景
-   - 返回的 `UserAgent` 实例可以通过其 `process` 方法接收新的输入并获取响应
-
-2. **使用消息调用 Agent**
-   - 使用提供的消息调用指定的 Agent
-   - 返回 Agent 的输出
-   - 适合需要单次交互的场景
-
-3. **使用消息调用 Agent 并返回输出和活动的 Agent**
-   - 使用提供的消息调用指定的 Agent
-   - 返回 Agent 的输出和最终活动的 Agent
-   - 适合需要跟踪活动 Agent 的场景
 
 ##### 参数
 
@@ -134,23 +127,6 @@ call<I extends Message, O extends Message>(
 - `UserAgent<I, O>` - 当仅提供 agent 参数时，返回可用于持续交互的 UserAgent 实例
 - `Promise<O>` - 当提供 message 参数时，返回处理结果
 - `Promise<[O, Runnable]>` - 当提供 options 参数时，返回处理结果和活动的 Agent
-
-#### `runAgent`
-
-运行单个 Agent 并处理潜在的 Agent 转移。
-
-```typescript
-async runAgent(input: AgentInput, agent: Runnable): Promise<{ agent: Runnable; output: AgentOutput }>
-```
-
-##### 参数
-
-- `input`: `AgentInput` - Agent 的输入数据
-- `agent`: `Runnable` - 要运行的 Agent 或函数
-
-##### 返回值
-
-- `Promise<{ agent: Runnable; output: AgentOutput }>` - 返回最终运行的 Agent 及其输出
 
 #### `shutdown`
 
@@ -167,12 +143,12 @@ async shutdown()
 创建一个按顺序执行多个 Agent 的函数。
 
 ```typescript
-function sequential(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn
+function sequential(...agents: [Runnable, ...Runnable[]]): FunctionAgentFn
 ```
 
 #### 参数
 
-- `_agents`: `[Runnable, ...Runnable[]]` - 要按顺序执行的 Agent 列表
+- `agents`: `[Runnable, ...Runnable[]]` - 要按顺序执行的 Agent 列表
 
 #### 返回值
 
@@ -183,30 +159,18 @@ function sequential(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn
 创建一个并行执行多个 Agent 的函数。
 
 ```typescript
-function parallel(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn
+function parallel(...agents: [Runnable, ...Runnable[]]): FunctionAgentFn
 ```
 
 #### 参数
 
-- `_agents`: `[Runnable, ...Runnable[]]` - 要并行执行的 Agent 列表
+- `agents`: `[Runnable, ...Runnable[]]` - 要并行执行的 Agent 列表
 
 #### 返回值
 
 - `FunctionAgentFn` - 返回一个函数，该函数并行执行指定的 Agent 并合并它们的输出
 
 ## 相关类型
-
-### `ExecutionEngineOptions`
-
-定义执行引擎的配置选项。
-
-```typescript
-interface ExecutionEngineOptions {
-  model?: ChatModel;
-  tools?: Agent[];
-  agents?: Agent[];
-}
-```
 
 ### `Runnable`
 
@@ -228,7 +192,7 @@ class UserAgent<I extends Message = Message, O extends Message = Message> extend
 
   constructor(options: UserAgentOptions<I, O>);
 
-  process(input: I, context?: Context): Promise<O>;
+  process(input: I, context: Context): Promise<O>;
 
   publish(topic: string | string[], message: Message | string): void;
 
@@ -247,7 +211,7 @@ class UserAgent<I extends Message = Message, O extends Message = Message> extend
 
 ```typescript
 interface UserAgentOptions<I extends Message = Message, O extends Message = Message> extends AgentOptions<I, O> {
-  context?: Context;
+  context: Context;
   process?: (input: I, context: Context) => PromiseOrValue<O>;
 }
 ```

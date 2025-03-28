@@ -8,7 +8,7 @@ import {
   UserMessageTemplate,
 } from "@aigne/core";
 import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
-import { createMockEventStream } from "../_utils/event-stream";
+import { createMockEventStream } from "../_utils/event-stream.js";
 
 test("XAIChatModel.call", async () => {
   const model = new XAIChatModel({

@@ -56,7 +56,7 @@ static from<I extends AgentInput, O extends AgentOutput>(
 执行包装的函数并处理结果。
 
 ```typescript
-async process(input: I, context?: Context): Promise<O>
+async process(input: I, context: Context): Promise<O>
 ```
 
 ##### 参数
@@ -86,7 +86,7 @@ interface FunctionAgentOptions<I extends AgentInput = AgentInput, O extends Agen
 
 ```typescript
 type FunctionAgentFn<I extends AgentInput = AgentInput, O extends AgentOutput = AgentOutput> =
-  (input: I, context?: Context) => O | Promise<O> | Agent | Promise<Agent>;
+  (input: I, context: Context) => O | Promise<O> | Agent | Promise<Agent>;
 ```
 
 ## 工作机制

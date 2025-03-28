@@ -75,8 +75,6 @@ test("ExecutionEngine.shutdown should shutdown all tools and agents", async () =
 test("ExecutionEngine should throw error if reached max agent calls", async () => {
   const plus = FunctionAgent.from(
     async ({ num, times }: { num: number; times: number }, context): Promise<{ num: number }> => {
-      if (!context) throw new Error("Context is required");
-
       if (times <= 1) {
         return { num: num + 1 };
       }

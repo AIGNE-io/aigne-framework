@@ -83,8 +83,8 @@ export class OrchestratorAgent<
 
   tasksConcurrency?: number;
 
-  async process(input: I, context?: Context) {
-    const model = context?.model;
+  async process(input: I, context: Context) {
+    const { model } = context;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
     const objective = getMessage(input);
@@ -150,11 +150,11 @@ export class OrchestratorAgent<
   private async executeStep(
     planResult: FullPlanWithResult,
     step: Step,
-    context?: Context,
+    context: Context,
   ): Promise<StepWithResult> {
     const concurrency = this.tasksConcurrency ?? DEFAULT_TASK_CONCURRENCY;
 
-    const model = context?.model;
+    const { model } = context;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
     const queue = fastq.promise(async (task: Task) => {

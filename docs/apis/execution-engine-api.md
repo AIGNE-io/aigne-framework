@@ -6,14 +6,7 @@ The Execution Engine is a core component of the AIGNE framework, responsible for
 
 ## ExecutionEngine Class
 
-`ExecutionEngine` simultaneously inherits from `EventEmitter` and implements the `Context` interface, providing an execution environment for Agents.
-
-### Basic Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `model` | `ChatModel \| undefined` | Default AI chat model instance |
-| `tools` | `Agent[]` | List of tools accessible to all Agents |
+`ExecutionEngine` inherits from `EventEmitter` and provides an execution environment for Agents. It creates an execution context for each operation.
 
 ### Constructor
 
@@ -23,13 +16,13 @@ constructor(options?: ExecutionEngineOptions)
 
 #### Parameters
 
-- `options`: `ExecutionEngineOptions` (optional) - Execution engine configuration options
-
-  | Option | Type | Description |
-  |--------|------|-------------|
-  | `model` | `ChatModel` | Default AI chat model instance |
-  | `tools` | `Agent[]` | List of globally available tools |
-  | `agents` | `Agent[]` | List of Agents to add at initialization |
+- `model`: `ChatModel` - Default Chat model instance
+- `tools`: `Agent[]` - List of globally available tools
+- `agents`: `Agent[]` - List of Agents to add at initialization
+- `limits`: `ContextLimits` - Context limits configuration
+  - `maxTokens`: `number` - Maximum number of tokens allowed to be processed
+  - `maxAgentCalls`: `number` - Maximum number of agent calls allowed
+  - `timeout`: `number` - Execution timeout in milliseconds
 
 ### Methods
 
@@ -50,26 +43,35 @@ addAgent(...agents: Agent[])
 Publishes a message to a specified topic.
 
 ```typescript
-publish(topic: string, message: unknown)
+publish(topic: string | string[], message: Message | string, from?: Agent)
 ```
 
 ##### Parameters
 
-- `topic`: `string` - Message topic
-- `message`: `unknown` - Message content to publish
+- `topic`: `string | string[]` - Message topic or an array of topics
+- `message`: `Message | string` - Message content to publish
+- `from`: `Agent` (optional) - The agent who publishes the message
 
 #### `subscribe`
 
-Subscribes to messages on a specified topic.
+Subscribes to messages on a specified topic. This method has multiple overloads.
 
 ```typescript
-subscribe(topic: string, listener: (message: AgentOutput) => void)
+// Subscribe with a callback function
+// Registers a callback function to be called for each message on the topic
+// Returns an unsubscribe function that can be called to stop receiving messages
+subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
+
+// Subscribe and wait for a single message
+// Returns a promise that resolves with the next message published to the topic
+// Useful for one-time message reception
+subscribe(topic: string): Promise<MessagePayload>;
 ```
 
 ##### Parameters
 
 - `topic`: `string` - Topic to subscribe to
-- `listener`: `(message: AgentOutput) => void` - Callback function to receive messages
+- `listener`: `MessageQueueListener` (optional) - Callback function to receive messages
 
 #### `unsubscribe`
 
@@ -89,39 +91,30 @@ unsubscribe(topic: string, listener: (message: AgentOutput) => void)
 Calls an agent with a message and returns the output. This method has multiple overloads, each with a different purpose.
 
 ```typescript
-// Overload 1: Create a user agent to consistently call an agent
+// Create a user agent to consistently call an agent
+// Returns a UserAgent instance for continuous interaction with the execution engine
+// Suitable for scenarios requiring multi-turn dialogue or continuous interaction
 call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
 
-// Overload 2: Call an agent with a message
+// Call an agent with a message
+// Calls the specified agent with the provided message
+// Returns the output of the agent
+// Suitable for scenarios where a single interaction is needed
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
 ): Promise<O>;
 
-// Overload 3: Call an agent with a message and return the output and the active agent
+// Call an agent with a message and return the output and the active agent
+// Calls the specified agent with the provided message
+// Returns the output of the agent and the final active agent
+// Suitable for scenarios where the active agent needs to be tracked
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
   options: { returnActiveAgent?: true },
 ): Promise<[O, Runnable]>;
 ```
-
-##### Overload Descriptions
-
-1. **Create a user agent to consistently call an agent**
-   - Returns a `UserAgent` instance for continuous interaction with the execution engine
-   - Suitable for scenarios requiring multi-turn dialogue or continuous interaction
-   - The returned `UserAgent` instance can receive new inputs and get responses via its `process` method
-
-2. **Call an agent with a message**
-   - Calls the specified agent with the provided message
-   - Returns the output of the agent
-   - Suitable for scenarios where a single interaction is needed
-
-3. **Call an agent with a message and return the output and the active agent**
-   - Calls the specified agent with the provided message
-   - Returns the output of the agent and the final active agent
-   - Suitable for scenarios where the active agent needs to be tracked
 
 ##### Parameters
 
@@ -134,23 +127,6 @@ call<I extends Message, O extends Message>(
 - `UserAgent<I, O>` - When only the agent parameter is provided, returns a UserAgent instance for continuous interaction
 - `Promise<O>` - When the message parameter is provided, returns the processing result
 - `Promise<[O, Runnable]>` - When the options parameter is provided, returns the processing result and the active agent
-
-#### `runAgent`
-
-Runs a single Agent and handles potential Agent transfers.
-
-```typescript
-async runAgent(input: AgentInput, agent: Runnable): Promise<{ agent: Runnable; output: AgentOutput }>
-```
-
-##### Parameters
-
-- `input`: `AgentInput` - Agent input data
-- `agent`: `Runnable` - Agent or function to run
-
-##### Returns
-
-- `Promise<{ agent: Runnable; output: AgentOutput }>` - Returns the final Agent run and its output
 
 #### `shutdown`
 
@@ -167,12 +143,12 @@ async shutdown()
 Creates a function that executes multiple Agents sequentially.
 
 ```typescript
-function sequential(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn
+function sequential(...agents: [Runnable, ...Runnable[]]): FunctionAgentFn
 ```
 
 #### Parameters
 
-- `_agents`: `[Runnable, ...Runnable[]]` - List of Agents to execute sequentially
+- `agents`: `[Runnable, ...Runnable[]]` - List of Agents to execute sequentially
 
 #### Returns
 
@@ -183,30 +159,18 @@ function sequential(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn
 Creates a function that executes multiple Agents in parallel.
 
 ```typescript
-function parallel(..._agents: [Runnable, ...Runnable[]]): FunctionAgentFn
+function parallel(...agents: [Runnable, ...Runnable[]]): FunctionAgentFn
 ```
 
 #### Parameters
 
-- `_agents`: `[Runnable, ...Runnable[]]` - List of Agents to execute in parallel
+- `agents`: `[Runnable, ...Runnable[]]` - List of Agents to execute in parallel
 
 #### Returns
 
 - `FunctionAgentFn` - Returns a function that executes the specified Agents in parallel and merges their outputs
 
 ## Related Types
-
-### `ExecutionEngineOptions`
-
-Defines the configuration options for the execution engine.
-
-```typescript
-interface ExecutionEngineOptions {
-  model?: ChatModel;
-  tools?: Agent[];
-  agents?: Agent[];
-}
-```
 
 ### `Runnable`
 
@@ -228,7 +192,7 @@ class UserAgent<I extends Message = Message, O extends Message = Message> extend
 
   constructor(options: UserAgentOptions<I, O>);
 
-  process(input: I, context?: Context): Promise<O>;
+  process(input: I, context: Context): Promise<O>;
 
   publish(topic: string | string[], message: Message | string): void;
 
@@ -247,7 +211,7 @@ Defines the configuration options for a `UserAgent`.
 
 ```typescript
 interface UserAgentOptions<I extends Message = Message, O extends Message = Message> extends AgentOptions<I, O> {
-  context?: Context;
+  context: Context;
   process?: (input: I, context: Context) => PromiseOrValue<O>;
 }
 ```

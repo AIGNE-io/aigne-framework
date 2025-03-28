@@ -82,13 +82,13 @@ addTool<I extends AgentInput, O extends AgentOutput>(tool: Agent<I, O> | Functio
 处理输入并产生输出的抽象方法，所有子类必须实现此方法。
 
 ```typescript
-abstract process(input: I, context?: Context): Promise<O>
+abstract process(input: I, context: Context): Promise<O>
 ```
 
 ##### 参数
 
 - `input`: `I` - 输入数据
-- `context`: `Context` (可选) - 执行上下文
+- `context`: `Context` - 执行上下文
 
 ##### 返回值
 

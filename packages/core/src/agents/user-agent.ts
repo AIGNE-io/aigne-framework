@@ -9,7 +9,7 @@ import { Agent, type AgentOptions, type Message } from "./agent.js";
 
 export interface UserAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
-  context?: Context;
+  context: Context;
   process?: (input: I, context: Context) => PromiseOrValue<O>;
 }
 
@@ -29,7 +29,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     this.context = options.context;
   }
 
-  private context?: Context;
+  readonly context: Context;
 
   private get ctx() {
     if (!this.context) throw new Error("UserAgent must have a context");
@@ -38,7 +38,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
   private _process?: (input: I, context: Context) => PromiseOrValue<O>;
 
-  async process(input: I, context?: Context): Promise<O> {
+  async process(input: I, context: Context): Promise<O> {
     const ctx = context ?? this.context;
     if (!ctx) throw new Error("UserAgent must have a context");
 

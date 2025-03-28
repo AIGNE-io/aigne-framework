@@ -63,13 +63,13 @@ static from<I extends AgentInput, O extends AgentOutput>(options: AIAgentOptions
 Processes input and generates output by interacting with the AI model and handling responses.
 
 ```typescript
-async process(input: I, context?: Context): Promise<O>
+async process(input: I, context: Context): Promise<O>
 ```
 
 ##### Parameters
 
 - `input`: `I` - Input data
-- `context`: `Context` (optional) - Execution context
+- `context`: `Context` - Execution context
 
 ##### Returns
 

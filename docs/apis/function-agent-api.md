@@ -56,7 +56,7 @@ static from<I extends AgentInput, O extends AgentOutput>(
 Executes the wrapped function and processes the result.
 
 ```typescript
-async process(input: I, context?: Context): Promise<O>
+async process(input: I, context: Context): Promise<O>
 ```
 
 ##### Parameters
@@ -86,7 +86,7 @@ Defines the type of function that can be wrapped by FunctionAgent.
 
 ```typescript
 type FunctionAgentFn<I extends AgentInput = AgentInput, O extends AgentOutput = AgentOutput> =
-  (input: I, context?: Context) => O | Promise<O> | Agent | Promise<Agent>;
+  (input: I, context: Context) => O | Promise<O> | Agent | Promise<Agent>;
 ```
 
 ## How It Works

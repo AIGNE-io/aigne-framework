@@ -82,13 +82,13 @@ addTool<I extends AgentInput, O extends AgentOutput>(tool: Agent<I, O> | Functio
 Abstract method that processes the input and produces output. All subclasses must implement this method.
 
 ```typescript
-abstract process(input: I, context?: Context): Promise<O>
+abstract process(input: I, context: Context): Promise<O>
 ```
 
 ##### Parameters
 
 - `input`: `I` - Input data
-- `context`: `Context` (optional) - Execution context
+- `context`: `Context` - Execution context
 
 ##### Returns
 

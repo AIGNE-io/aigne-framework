@@ -56,9 +56,6 @@ export function mockMCPSSEServer(port: number) {
   app.get("/sse", async (_: Request, res: Response) => {
     const transport = new SSEServerTransport("/messages", res);
     transports[transport.sessionId] = transport;
-    res.on("close", () => {
-      delete transports[transport.sessionId];
-    });
     console.log("New transport connected", transport.sessionId);
     await server.connect(transport);
     console.log("New transport connected end", transport.sessionId);

@@ -94,6 +94,46 @@ test("MCPAgent should reconnect to mcp server automatically", async () => {
       }),
     );
 
+    expect(mcp.prompts.map((i) => i.name)).toEqual(["echo"]);
+    const prompt = await mcp.prompts.echo?.call({ message: "AIGNE" });
+    expect(prompt).toEqual(
+      expect.objectContaining({
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: "Please process this message: AIGNE",
+            },
+          },
+          {
+            role: "user",
+            content: {
+              type: "resource",
+              resource: {
+                uri: "echo://AIGNE",
+                blob: Buffer.from("Resource echo: AIGNE").toString("base64"),
+                mimeType: "text/plain",
+              },
+            },
+          },
+        ],
+      }),
+    );
+
+    expect(mcp.resources.map((i) => i.name)).toEqual(["echo"]);
+    const resource = await mcp.resources.echo?.call({ message: "AIGNE" });
+    expect(resource).toEqual(
+      expect.objectContaining({
+        contents: [
+          {
+            uri: "echo://AIGNE",
+            text: "Resource echo: AIGNE",
+          },
+        ],
+      }),
+    );
+
     // shutdown the MCP server
     mcpServer.closeAllConnections();
     mcpServer.close();

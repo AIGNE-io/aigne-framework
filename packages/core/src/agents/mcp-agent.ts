@@ -1,15 +1,18 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import type { Request } from "@anthropic-ai/sdk/_shims/auto/types.js";
+import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import {
   StdioClientTransport,
   type StdioServerParameters,
   getDefaultEnvironment,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
+import type { RequestOptions } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { UriTemplate } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
 import type {
   CallToolResult,
   GetPromptResult,
+  Implementation,
   ReadResourceResult,
 } from "@modelcontextprotocol/sdk/types.js";
 import { type ZodType, z } from "zod";
@@ -20,7 +23,7 @@ import {
   resourceFromMCPResource,
   toolFromMCPTool,
 } from "../utils/mcp-utils.js";
-import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
+import { type PromiseOrValue, checkArguments, createAccessorArray } from "../utils/type-utils.js";
 import { Agent, type AgentOptions, type Message } from "./agent.js";
 
 const MCP_AGENT_CLIENT_NAME = "MCPAgent";
@@ -40,6 +43,8 @@ export type MCPServerOptions = SSEServerParameters | StdioServerParameters;
 
 export type SSEServerParameters = {
   url: string;
+  autoReconnect?: boolean;
+  isErrorNeedReconnect?: (error: Error) => boolean;
 };
 
 function isSSEServerParameters(
@@ -73,19 +78,20 @@ export class MCPAgent extends Agent {
     checkArguments("MCPAgent.from", mcpAgentOptionsSchema, options);
 
     if (isSSEServerParameters(options)) {
-      const transport = new SSEClientTransport(new URL(options.url));
+      const transport = () => new SSEClientTransport(new URL(options.url));
       return MCPAgent.fromTransport(transport, options);
     }
 
     if (isStdioServerParameters(options)) {
-      const transport = new StdioClientTransport({
-        ...options,
-        env: {
-          ...getDefaultEnvironment(),
-          ...options.env,
-        },
-        stderr: "pipe",
-      });
+      const transport = () =>
+        new StdioClientTransport({
+          ...options,
+          env: {
+            ...getDefaultEnvironment(),
+            ...options.env,
+          },
+          stderr: "pipe",
+        });
       return MCPAgent.fromTransport(transport, options);
     }
 
@@ -93,13 +99,25 @@ export class MCPAgent extends Agent {
   }
 
   private static async fromTransport(
-    transport: Transport,
+    transportCreator: () => Transport,
     options: MCPAgentOptions | MCPServerOptions,
   ): Promise<MCPAgent> {
-    const client = new Client({
-      name: MCP_AGENT_CLIENT_NAME,
-      version: MCP_AGENT_CLIENT_VERSION,
-    });
+    const client = new ClientWithReconnect(
+      {
+        name: MCP_AGENT_CLIENT_NAME,
+        version: MCP_AGENT_CLIENT_VERSION,
+      },
+      undefined,
+      isSSEServerParameters(options)
+        ? {
+            transportCreator,
+            enabled: options.autoReconnect,
+            isErrorNeedReconnect: options.isErrorNeedReconnect,
+          }
+        : undefined,
+    );
+
+    const transport = transportCreator();
 
     await debug.spinner(
       client.connect(transport),
@@ -119,7 +137,7 @@ export class MCPAgent extends Agent {
           .spinner(client.listTools(), `Listing tools from ${mcpServer}`, ({ tools }) =>
             debug("%O", tools),
           )
-          .then(({ tools }) => tools.map((tool) => toolFromMCPTool(client, tool)))
+          .then(({ tools }) => tools.map((tool) => toolFromMCPTool(tool, { client })))
       : undefined;
 
     const prompts = isPromptsAvailable
@@ -127,7 +145,7 @@ export class MCPAgent extends Agent {
           .spinner(client.listPrompts(), `Listing prompts from ${mcpServer}`, ({ prompts }) =>
             debug("%O", prompts),
           )
-          .then(({ prompts }) => prompts.map((prompt) => promptFromMCPPrompt(client, prompt)))
+          .then(({ prompts }) => prompts.map((prompt) => promptFromMCPPrompt(prompt, { client })))
       : undefined;
 
     const resources = isResourcesAvailable
@@ -145,7 +163,7 @@ export class MCPAgent extends Agent {
           )
           .then(([{ resources }, { resourceTemplates }]) =>
             [...resources, ...resourceTemplates].map((resource) =>
-              resourceFromMCPResource(client, resource),
+              resourceFromMCPResource(resource, { client }),
             ),
           )
       : undefined;
@@ -191,18 +209,67 @@ export class MCPAgent extends Agent {
   }
 }
 
-export interface MCPToolBaseOptions<I extends Message, O extends Message>
+export interface ClientWithReconnectOptions {
+  transportCreator?: () => PromiseOrValue<Transport>;
+  isErrorNeedReconnect?: (error: Error) => boolean;
+  enabled?: boolean;
+}
+
+class ClientWithReconnect extends Client {
+  constructor(
+    info: Implementation,
+    options?: ClientOptions,
+    private reconnectOptions?: ClientWithReconnectOptions,
+  ) {
+    super(info, options);
+  }
+
+  private get isReconnectSupported(): boolean {
+    return !!this.reconnectOptions?.transportCreator;
+  }
+
+  private async reconnect() {
+    if (!this.reconnectOptions?.transportCreator)
+      throw new Error("reconnect requires a transportCreator");
+
+    await this.close();
+    await this.connect(await this.reconnectOptions.transportCreator());
+  }
+
+  override async request<T extends ZodType<object>>(
+    request: Request,
+    resultSchema: T,
+    options?: RequestOptions,
+  ): Promise<z.infer<T>> {
+    try {
+      return await super.request(request, resultSchema, options);
+    } catch (error) {
+      if (
+        this.reconnectOptions?.enabled &&
+        this.isReconnectSupported &&
+        (!this.reconnectOptions.isErrorNeedReconnect || // default to reconnect on all errors
+          this.reconnectOptions.isErrorNeedReconnect(error as Error))
+      ) {
+        await this.reconnect();
+        return await super.request(request, resultSchema, options);
+      }
+      throw error;
+    }
+  }
+}
+
+export interface MCPBaseOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
-  client: Client;
+  client: ClientWithReconnect;
 }
 
 export abstract class MCPBase<I extends Message, O extends Message> extends Agent<I, O> {
-  constructor(options: MCPToolBaseOptions<I, O>) {
+  constructor(options: MCPBaseOptions<I, O>) {
     super(options);
     this.client = options.client;
   }
 
-  protected client: Client;
+  protected client: ClientWithReconnect;
 
   protected get mcpServer() {
     return getMCPServerName(this.client);
@@ -237,7 +304,7 @@ export class MCPPrompt extends MCPBase<MCPPromptInput, GetPromptResult> {
   }
 }
 
-export interface MCPResourceOptions extends MCPToolBaseOptions<MCPPromptInput, ReadResourceResult> {
+export interface MCPResourceOptions extends MCPBaseOptions<MCPPromptInput, ReadResourceResult> {
   uri: string;
 }
 

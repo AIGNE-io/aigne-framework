@@ -45,7 +45,7 @@ static from(options: MCPAgentOptions): MCPAgent;
   - When passing `SSEServerParameters`:
     - `url`: `string` - MCP server URL address
     - `autoReconnect`: `boolean` - Optional, whether to enable automatic reconnection, defaults to true
-    - `isErrorNeedReconnect`: `(error: Error) => boolean` - Optional, custom function to determine which errors need reconnection
+    - `isErrorNeedReconnect`: `(error: Error) => boolean` - Optional, custom function to determine which errors need reconnection, defaults to all errors triggering reconnection
   - When passing `StdioServerParameters`:
     - `command`: `string` - Command to start the MCP server
     - `args`: `string[]` - Optional, list of command arguments

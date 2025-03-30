@@ -45,7 +45,7 @@ static from(options: MCPAgentOptions): MCPAgent;
   - 当传入 `SSEServerParameters` 时：
     - `url`: `string` - MCP 服务器的 URL 地址
     - `autoReconnect`: `boolean` - 可选，是否启用自动重连功能，默认为 true
-    - `isErrorNeedReconnect`: `(error: Error) => boolean` - 可选，自定义判断哪些错误需要重连的函数
+    - `isErrorNeedReconnect`: `(error: Error) => boolean` - 可选，自定义判断哪些错误需要重连的函数，默认为所有错误都会触发重连
   - 当传入 `StdioServerParameters` 时：
     - `command`: `string` - 启动 MCP 服务器的命令
     - `args`: `string[]` - 可选，命令的参数列表

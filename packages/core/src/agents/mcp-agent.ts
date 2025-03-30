@@ -1,4 +1,3 @@
-import type { Request } from "@anthropic-ai/sdk/_shims/auto/types.js";
 import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import {
@@ -14,6 +13,7 @@ import type {
   GetPromptResult,
   Implementation,
   ReadResourceResult,
+  Request,
 } from "@modelcontextprotocol/sdk/types.js";
 import { type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";

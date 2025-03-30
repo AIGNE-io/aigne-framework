@@ -10,12 +10,10 @@ MCP Agent is an Agent implementation for interacting with servers compliant with
 
 ### Basic Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `client` | `Client` | MCP client instance, used for communicating with the MCP server |
-| `prompts` | `MCPPrompt[]` | List of prompt templates provided by the MCP server |
-| `resources` | `MCPResource[]` | List of resources provided by the MCP server |
-| `isCallable` | `boolean` | Always false, as MCPAgent itself cannot be directly called |
+- `client`: `Client` - MCP client instance, used for communicating with the MCP server
+- `prompts`: `MCPPrompt[]` - List of prompt templates provided by the MCP server
+- `resources`: `MCPResource[]` - List of resources provided by the MCP server
+- `isCallable`: `boolean` - Always false, as MCPAgent itself cannot be directly called
 
 ### Constructor
 
@@ -26,12 +24,9 @@ constructor(options: MCPAgentOptions)
 #### Parameters
 
 - `options`: `MCPAgentOptions` - MCPAgent configuration options
-
-  | Option | Type | Description |
-  |--------|------|-------------|
-  | `client` | `Client` | MCP client instance |
-  | `prompts` | `MCPPrompt[]` | Optional list of prompt templates |
-  | `resources` | `MCPResource[]` | Optional list of resources |
+  - `client`: `Client` - MCP client instance
+  - `prompts`: `MCPPrompt[]` - Optional list of prompt templates
+  - `resources`: `MCPResource[]` - Optional list of resources
 
 ### Static Methods
 
@@ -47,45 +42,20 @@ static from(options: MCPAgentOptions): MCPAgent;
 ##### Parameters
 
 - `options`: `MCPServerOptions | MCPAgentOptions` - Server options or MCPAgent configuration
+  - When passing `SSEServerParameters`:
+    - `url`: `string` - MCP server URL address
+    - `autoReconnect`: `boolean` - Optional, whether to enable automatic reconnection, defaults to true
+    - `isErrorNeedReconnect`: `(error: Error) => boolean` - Optional, custom function to determine which errors need reconnection
+  - When passing `StdioServerParameters`:
+    - `command`: `string` - Command to start the MCP server
+    - `args`: `string[]` - Optional, list of command arguments
+    - `env`: `Record<string, string>` - Optional, environment variable configuration
 
 ##### Returns
 
 - `MCPAgent | Promise<MCPAgent>` - Returns the created MCPAgent instance or a Promise for the instance
 
-#### `fromTransport`
-
-Private static method for creating an MCPAgent from a transport interface.
-
-```typescript
-private static async fromTransport(transport: Transport): Promise<MCPAgent>
-```
-
-##### Parameters
-
-- `transport`: `Transport` - MCP transport interface
-
-##### Returns
-
-- `Promise<MCPAgent>` - Returns the created MCPAgent instance
-
 ### Methods
-
-#### `process`
-
-MCPAgent itself does not support processing, so this method always throws an error.
-
-```typescript
-async process(_input: AgentInput, _context?: Context): Promise<AgentOutput>
-```
-
-##### Parameters
-
-- `_input`: `AgentInput` - Input data (unused)
-- `_context`: `Context` (optional) - Execution context (unused)
-
-##### Returns
-
-- Always throws an error, does not return a value
 
 #### `shutdown`
 
@@ -101,28 +71,8 @@ async shutdown()
 
 ### Basic Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `client` | `Client` | MCP client instance |
-| `mcpServer` | `string \| undefined` | MCP server name |
-
-### Methods
-
-#### `process`
-
-Calls an MCP tool and returns the result.
-
-```typescript
-async process(input: AgentInput): Promise<CallToolResult>
-```
-
-##### Parameters
-
-- `input`: `AgentInput` - Input data, which will be passed as arguments to the MCP tool
-
-##### Returns
-
-- `Promise<CallToolResult>` - Returns the result of the MCP tool call
+- `client`: `Client` - MCP client instance
+- `mcpServer`: `string \| undefined` - MCP server name
 
 ## MCPPrompt Class
 
@@ -130,28 +80,8 @@ async process(input: AgentInput): Promise<CallToolResult>
 
 ### Basic Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `client` | `Client` | MCP client instance |
-| `mcpServer` | `string \| undefined` | MCP server name |
-
-### Methods
-
-#### `process`
-
-Retrieves an MCP prompt template and returns the result.
-
-```typescript
-async process(input: AgentInput): Promise<GetPromptResult>
-```
-
-##### Parameters
-
-- `input`: `AgentInput` - Input data, which will be passed as arguments to the MCP prompt template
-
-##### Returns
-
-- `Promise<GetPromptResult>` - Returns the result of the MCP prompt template
+- `client`: `Client` - MCP client instance
+- `mcpServer`: `string \| undefined` - MCP server name
 
 ## MCPResource Class
 
@@ -159,11 +89,9 @@ async process(input: AgentInput): Promise<GetPromptResult>
 
 ### Basic Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `client` | `Client` | MCP client instance |
-| `mcpServer` | `string \| undefined` | MCP server name |
-| `uri` | `string` | Resource URI or URI template |
+- `client`: `Client` - MCP client instance
+- `mcpServer`: `string \| undefined` - MCP server name
+- `uri`: `string` - Resource URI or URI template
 
 ### Constructor
 
@@ -174,29 +102,8 @@ constructor(options: MCPResourceOptions)
 #### Parameters
 
 - `options`: `MCPResourceOptions` - MCPResource configuration options
-
-  | Option | Type | Description |
-  |--------|------|-------------|
-  | `client` | `Client` | MCP client instance |
-  | `uri` | `string` | Resource URI or URI template |
-
-### Methods
-
-#### `process`
-
-Reads an MCP resource and returns the result.
-
-```typescript
-async process(input: { [key: string]: string }): Promise<ReadResourceResult>
-```
-
-##### Parameters
-
-- `input`: `{ [key: string]: string }` - Key-value pairs for expanding the URI template
-
-##### Returns
-
-- `Promise<ReadResourceResult>` - Returns the read MCP resource
+  - `client`: `Client` - MCP client instance
+  - `uri`: `string` - Resource URI or URI template
 
 ## Related Types
 
@@ -227,8 +134,14 @@ Defines the parameters for an SSE-based MCP server.
 ```typescript
 type SSEServerParameters = {
   url: string;
+  autoReconnect?: boolean;
+  isErrorNeedReconnect?: (error: Error) => boolean;
 };
 ```
+
+- `url`: `string` - MCP server URL address
+- `autoReconnect`: `boolean` - Optional, whether to enable automatic reconnection, defaults to true
+- `isErrorNeedReconnect`: `(error: Error) => boolean` - Optional, custom function to determine which errors need reconnection; if not provided, all errors will trigger reconnection
 
 ### `StdioServerParameters`
 
@@ -241,6 +154,10 @@ interface StdioServerParameters {
   env?: Record<string, string>;
 }
 ```
+
+- `command`: `string` - Command to start the MCP server
+- `args`: `string[]` - Optional, list of command arguments
+- `env`: `Record<string, string>` - Optional, environment variable configuration
 
 ### `MCPResourceOptions`
 
@@ -307,21 +224,6 @@ console.log(result);
 // Shut down the execution engine
 await engine.shutdown();
 ```
-
-### Workflow
-
-The basic workflow for using Puppeteer MCP Agent to extract website content is as follows:
-
-1. Create a OpenAIChatModel instance
-2. Use MCPAgent.from method to connect to the Puppeteer MCP server
-3. Create an ExecutionEngine and add the Puppeteer MCP Agent as a tool
-4. Create an AIAgent and set instructions for extracting website content
-5. Use engine.call method to run the Agent, passing in the Agent and the request to extract website content
-6. The AI Agent will use the tools provided by the Puppeteer MCP Agent to perform the following operations:
-   - Navigate to the specified URL
-   - Use JavaScript to extract the page content
-   - Return the extracted content
-7. Finally, shut down the execution engine
 
 ### Using Other MCP Servers
 

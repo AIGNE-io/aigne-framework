@@ -245,9 +245,9 @@ class ClientWithReconnect extends Client {
       return await super.request(request, resultSchema, options);
     } catch (error) {
       if (
-        this.reconnectOptions?.enabled &&
+        this.reconnectOptions?.enabled !== false &&
         this.isReconnectSupported &&
-        (!this.reconnectOptions.isErrorNeedReconnect || // default to reconnect on all errors
+        (!this.reconnectOptions?.isErrorNeedReconnect || // default to reconnect on all errors
           this.reconnectOptions.isErrorNeedReconnect(error as Error))
       ) {
         await this.reconnect();

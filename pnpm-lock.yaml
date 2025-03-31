@@ -210,6 +210,9 @@ importers:
       p-retry:
         specifier: ^6.2.1
         version: 6.2.1
+      yaml:
+        specifier: ^2.7.1
+        version: 2.7.1
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -1724,6 +1727,11 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+
+  yaml@2.7.1:
+    resolution: {integrity: sha512-10ULxpnOCQXxJvBgxsn9ptjq6uviG/htZKk9veJGhlqn3w/DxQ631zFF+nlQXLwmImeS5amR2dl2U8sg6U9jsQ==}
+    engines: {node: '>= 14'}
+    hasBin: true
 
   yoctocolors-cjs@2.1.2:
     resolution: {integrity: sha512-cYVsTjKl8b+FrnidjibDWskAv7UKOfcwaVZdp/it9n1s9fU3IkgDbhdIRKCW4JDsAlECJY0ytoVPT3sK6kideA==}
@@ -3442,6 +3450,8 @@ snapshots:
 
   ws@8.18.0:
     optional: true
+
+  yaml@2.7.1: {}
 
   yoctocolors-cjs@2.1.2: {}
 

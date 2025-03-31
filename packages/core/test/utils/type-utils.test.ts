@@ -8,6 +8,7 @@ import {
   isNil,
   isNonNullable,
   orArrayToArray,
+  tryOrThrow,
 } from "@aigne/core/utils/type-utils.js";
 import { type ZodType, z } from "zod";
 
@@ -81,4 +82,41 @@ test("type-utils.checkArguments should throw an error if the arguments do not ma
       { agent: 1 } as unknown,
     );
   }).toThrow("test check arguments error: agent: Input not instance of Agent");
+});
+
+test("type-utils.tryOrThrow should return the value if the function succeeds", async () => {
+  const result = tryOrThrow(
+    () => 42,
+    (error) => new Error(`Error: ${error.message}`),
+  );
+  expect(result).toBe(42);
+
+  const result2 = await tryOrThrow(
+    () => Promise.resolve(42),
+    (error) => new Error(`Error: ${error.message}`),
+  );
+  expect(result2).toBe(42);
+});
+
+test("type-utils.tryOrThrow should throw an error if the function fails", async () => {
+  expect(() => {
+    tryOrThrow(() => {
+      throw new Error("Test error");
+    }, "Error: Test error");
+  }).toThrow("Error: Test error");
+
+  expect(() => {
+    tryOrThrow(() => {
+      throw new Error("Test error");
+    }, new Error("Error: Test error"));
+  }).toThrow("Error: Test error");
+
+  expect(() => {
+    tryOrThrow(
+      () => {
+        throw new Error("Test error");
+      },
+      (error) => new Error(`Error: ${error.message}`),
+    );
+  }).toThrow("Error: Test error");
 });

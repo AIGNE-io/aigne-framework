@@ -22,12 +22,15 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: blocklet/ai-pr-reviewer@v0.1.2
+      - uses: blocklet/aigne-code-reviewer@v0.1.14
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DEBUG: '@aigne/*'
         with:
           debug: false
           language: 'en-US'
           review_simple_changes: false
           review_comment_lgtm: false
+          path_filters: |
+            !docs/*

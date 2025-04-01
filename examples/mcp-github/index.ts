@@ -3,7 +3,7 @@
 import assert from "node:assert";
 import { AIAgent, ExecutionEngine, MCPAgent, getMessage } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { logger } from "@aigne/core/src/utils/logger.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
 
 const { OPENAI_API_KEY, GITHUB_PERSONAL_ACCESS_TOKEN } = process.env;

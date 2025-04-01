@@ -249,6 +249,7 @@ class ClientWithReconnect extends Client {
       {
         retries: this.reconnectOptions?.maxReconnects ?? DEFAULT_MAX_RECONNECTS,
         shouldRetry: this.shouldReconnect,
+        onFailedAttempt: (error) => debug("Reconnect attempt failed: %O", error),
       },
     );
   }
@@ -262,6 +263,7 @@ class ClientWithReconnect extends Client {
       return await super.request(request, resultSchema, options);
     } catch (error) {
       if (this.shouldReconnect(error)) {
+        debug("Error occurred, reconnecting to MCP server: %O", error);
         await this.reconnect();
         return await super.request(request, resultSchema, options);
       }

@@ -11,7 +11,7 @@ export function isNil(value: unknown): value is null | undefined {
 export function isEmpty(obj: unknown): boolean {
   if (isNil(obj)) return true;
   if (typeof obj === "string" || Array.isArray(obj)) return obj.length === 0;
-  if (typeof obj === "object") Object.keys(obj).length === 0;
+  if (typeof obj === "object") return Object.keys(obj).length === 0;
   return false;
 }
 
@@ -21,6 +21,20 @@ export function isNonNullable<T>(value: T): value is NonNullable<T> {
 
 export function isNotEmpty<T>(arr: T[]): arr is [T, ...T[]] {
   return arr.length > 0;
+}
+
+export function duplicates<T>(arr: T[], key: (item: T) => unknown = (item: T) => item): T[] {
+  const seen = new Set();
+  const duplicates = new Set<T>();
+  for (const item of arr) {
+    const k = key(item);
+    if (seen.has(k)) {
+      duplicates.add(item);
+    } else {
+      seen.add(k);
+    }
+  }
+  return Array.from(duplicates);
 }
 
 export function orArrayToArray<T>(value?: T | T[]): T[] {

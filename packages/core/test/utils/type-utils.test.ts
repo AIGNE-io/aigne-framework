@@ -3,6 +3,9 @@ import { Agent, type FunctionAgentFn } from "@aigne/core";
 import {
   checkArguments,
   createAccessorArray,
+  duplicates,
+  isEmpty,
+  isNil,
   isNonNullable,
   orArrayToArray,
 } from "@aigne/core/utils/type-utils.js";
@@ -10,6 +13,30 @@ import { type ZodType, z } from "zod";
 
 test("type-utils.isNonNullable", async () => {
   expect([null, undefined, 0].filter(isNonNullable)).toEqual([0]);
+});
+
+test("type-utils.isNil", async () => {
+  expect([null, undefined, 0].filter((value) => !isNil(value))).toEqual([0]);
+});
+
+test("types-utils.isEmpty", async () => {
+  expect(isEmpty({})).toBe(true);
+  expect(isEmpty("")).toBe(true);
+  expect(isEmpty([])).toBe(true);
+});
+
+test("type-utils.duplicates", async () => {
+  const array = [
+    { id: 1, name: "foo" },
+    { id: 2, name: "bar" },
+    { id: 1, name: "baz" },
+  ];
+
+  const duplicated = duplicates(array, (item) => item.id);
+
+  expect(duplicated).toEqual([{ id: 1, name: "baz" }]);
+
+  expect(duplicates(["foo", "bar", "baz", "foo"])).toEqual(["foo"]);
 });
 
 test("type-utils.orArrayToArray", async () => {

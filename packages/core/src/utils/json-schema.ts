@@ -13,7 +13,7 @@ function setAdditionPropertiesDeep<T>(schema: T, additionalProperties: boolean):
   if (Array.isArray(schema)) {
     return schema.map((s) => setAdditionPropertiesDeep(s, additionalProperties)) as T;
   }
-  if (schema && typeof schema === "object" && !Array.isArray(schema)) {
+  if (schema !== null && typeof schema === "object" && !Array.isArray(schema)) {
     return Object.entries(schema).reduce(
       (acc, [key, value]) => {
         acc[key] = setAdditionPropertiesDeep(value, additionalProperties);

@@ -13,12 +13,12 @@ export interface ChatLoopOptions {
   inputKey?: string;
 }
 
-logger.setSpinner(ora());
-
 export async function runChatLoopInTerminal(
   userAgent: UserAgent,
   { log = console.log.bind(console), ...options }: ChatLoopOptions = {},
 ) {
+  logger.setSpinner(ora());
+
   let isLoopExited = false;
 
   let prompt: ReturnType<typeof inquirer.prompt<{ question: string }>> | undefined;

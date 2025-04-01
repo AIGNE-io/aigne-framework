@@ -10,7 +10,7 @@ interface RunOptions extends OptionValues {
 export function createRunCommand(): Command {
   const runCommand = new Command("run")
     .description("Run a chat loop with the specified agent")
-    .argument("<path>", "Path to the agents directory")
+    .argument("[path]", "Path to the agents directory", ".")
     .option("--agent <agent>", "Name of the agent to use (defaults to the first agent found)")
     .action(async (path: string, options: RunOptions) => {
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);

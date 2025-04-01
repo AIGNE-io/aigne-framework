@@ -1,12 +1,14 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { ChatModel, createMessage } from "@aigne/core";
-import { load } from "@aigne/core/loader/index.js";
+import { AIAgent, ChatModel, ExecutionEngine, createMessage } from "@aigne/core";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model";
 import { nanoid } from "nanoid";
 
 test("loader should load agents correctly", async () => {
-  const engine = await load({ path: join(import.meta.dirname, "./test-agent-library/chat") });
+  const engine = await ExecutionEngine.load({
+    path: join(import.meta.dirname, "./test-agent-library/chat"),
+  });
 
   expect(engine.agents.length).toBe(1);
 
@@ -42,8 +44,30 @@ test("loader should load agents correctly", async () => {
   expect(result).toEqual(expect.objectContaining(createMessage("1 + 2 = 3")));
 });
 
+test("loader should use override options", async () => {
+  const model = new ClaudeChatModel({});
+  const testAgent = AIAgent.from({ name: "test-agent" });
+  const testTool = AIAgent.from({ name: "test-tool" });
+
+  const engine = await ExecutionEngine.load({
+    path: join(import.meta.dirname, "./test-agent-library/chat"),
+    model,
+    agents: [testAgent],
+    tools: [testTool],
+  });
+
+  expect(engine.model).toBe(model);
+  expect([...engine.agents]).toEqual([
+    expect.objectContaining({
+      name: "chat",
+    }),
+    testAgent,
+  ]);
+  expect([...engine.tools]).toEqual([expect.objectContaining({ name: "calculate" }), testTool]);
+});
+
 test("loader should error if agent file is not supported", async () => {
-  const engine = load({
+  const engine = ExecutionEngine.load({
     path: join(import.meta.dirname, "./test-agent-library/invalid-agent-file"),
   });
 

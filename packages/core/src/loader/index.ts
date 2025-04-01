@@ -4,7 +4,6 @@ import { parse } from "yaml";
 import { z } from "zod";
 import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
-import { ExecutionEngine } from "../execution-engine/execution-engine.js";
 import type { ChatModel } from "../models/chat-model.js";
 import { OpenAIChatModel } from "../models/openai-chat-model.js";
 import { tryOrThrow } from "../utils/type-utils.js";
@@ -32,11 +31,11 @@ export async function load(options: LoadOptions) {
     (aigne.tools ?? []).map((filename) => loadAgent(join(rootDir, filename))),
   );
 
-  return new ExecutionEngine({
+  return {
     model: await loadModel(aigne.chat_model),
     agents,
     tools,
-  });
+  };
 }
 
 export async function loadAgent(path: string): Promise<Agent> {
@@ -82,6 +81,7 @@ async function loadModel(
     presencePenalty: model.presence_penalty ?? undefined,
   };
 
+  // TODO: add support for other models such as AutoChatModel, ClaudeChatModel, etc.
   if (/^o1|gpt-/.test(model.name)) {
     return new OpenAIChatModel(params);
   }
@@ -94,10 +94,10 @@ const aigneFileSchema = z.object({
       z.string(),
       z.object({
         name: z.string().nullish(),
-        temperature: z.number().nullish(),
-        top_p: z.number().nullish(),
-        frequent_penalty: z.number().nullish(),
-        presence_penalty: z.number().nullish(),
+        temperature: z.number().min(0).max(2).nullish(),
+        top_p: z.number().min(0).nullish(),
+        frequent_penalty: z.number().min(-2).max(2).nullish(),
+        presence_penalty: z.number().min(-2).max(2).nullish(),
       }),
     ])
     .nullish()

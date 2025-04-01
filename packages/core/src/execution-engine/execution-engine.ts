@@ -22,8 +22,17 @@ export interface ExecutionEngineOptions {
 }
 
 export class ExecutionEngine extends EventEmitter {
-  static async load({ path }: { path: string }) {
-    return load({ path });
+  static async load({
+    path,
+    ...options
+  }: { path: string } & ExecutionEngineOptions): Promise<ExecutionEngine> {
+    const { model, agents, tools } = await load({ path });
+    return new ExecutionEngine({
+      model,
+      ...options,
+      agents: agents.concat(options.agents ?? []),
+      tools: tools.concat(options.tools ?? []),
+    });
   }
 
   constructor(options?: ExecutionEngineOptions) {

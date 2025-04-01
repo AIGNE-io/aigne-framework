@@ -3,3 +3,5 @@ chat_model:
   temperature: 0.4
 agents:
   - chat.yaml
+tools:
+  - calculate.js

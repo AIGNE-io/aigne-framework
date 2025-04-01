@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.3.1...example-workflow-group-chat-v1.4.0) (2025-04-01)
+
+
+### Features
+
+* support token/call/time limits for ExecutionEngine ([#44](https://github.com/AIGNE-io/aigne-framework/issues/44)) ([5a2ca0a](https://github.com/AIGNE-io/aigne-framework/commit/5a2ca0a033267dd4765f574b53dca71e932e53d4))
+
 ## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.3.0...example-workflow-group-chat-v1.3.1) (2025-03-27)
 
 

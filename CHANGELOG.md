@@ -3,6 +3,18 @@
 - chore: release v1.2.0
 
 
+## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.5.0...aigne-framework-v1.6.0) (2025-04-01)
+
+
+### Features
+
+* support token/call/time limits for ExecutionEngine ([#44](https://github.com/AIGNE-io/aigne-framework/issues/44)) ([5a2ca0a](https://github.com/AIGNE-io/aigne-framework/commit/5a2ca0a033267dd4765f574b53dca71e932e53d4))
+
+
+### Bug Fixes
+
+* support reconnect to the MCP server automatically ([#50](https://github.com/AIGNE-io/aigne-framework/issues/50)) ([898d83f](https://github.com/AIGNE-io/aigne-framework/commit/898d83f75fc655142b93c70a1afeda376a2e92b4))
+
 ## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.4.0...aigne-framework-v1.5.0) (2025-03-27)
 
 

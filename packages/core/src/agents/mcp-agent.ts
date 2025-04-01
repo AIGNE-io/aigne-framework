@@ -246,7 +246,10 @@ class ClientWithReconnect extends Client {
         await this.close();
         await this.connect(await transportCreator());
       },
-      { retries: this.reconnectOptions?.maxReconnects ?? DEFAULT_MAX_RECONNECTS },
+      {
+        retries: this.reconnectOptions?.maxReconnects ?? DEFAULT_MAX_RECONNECTS,
+        shouldRetry: this.shouldReconnect,
+      },
     );
   }
 

@@ -15,6 +15,7 @@ import type {
   ReadResourceResult,
   Request,
 } from "@modelcontextprotocol/sdk/types.js";
+import pRetry from "p-retry";
 import { type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";
 import { logger } from "../utils/logger.js";
@@ -28,6 +29,7 @@ import { Agent, type AgentOptions, type Message } from "./agent.js";
 
 const MCP_AGENT_CLIENT_NAME = "MCPAgent";
 const MCP_AGENT_CLIENT_VERSION = "0.0.1";
+const DEFAULT_MAX_RECONNECTS = 10;
 
 const debug = logger.base.extend("mcp");
 
@@ -43,8 +45,16 @@ export type MCPServerOptions = SSEServerParameters | StdioServerParameters;
 
 export type SSEServerParameters = {
   url: string;
-  autoReconnect?: boolean;
-  isErrorNeedReconnect?: (error: Error) => boolean;
+  /**
+   * Whether to automatically reconnect to the server if the connection is lost.
+   * @default 10 set to 0 to disable automatic reconnection
+   */
+  maxReconnects?: number;
+  /**
+   * A function that determines whether to reconnect to the server based on the error.
+   * default to reconnect on all errors.
+   */
+  shouldReconnect?: (error: Error) => boolean;
 };
 
 function isSSEServerParameters(
@@ -108,13 +118,7 @@ export class MCPAgent extends Agent {
         version: MCP_AGENT_CLIENT_VERSION,
       },
       undefined,
-      isSSEServerParameters(options)
-        ? {
-            transportCreator,
-            enabled: options.autoReconnect,
-            isErrorNeedReconnect: options.isErrorNeedReconnect,
-          }
-        : undefined,
+      isSSEServerParameters(options) ? { transportCreator, ...options } : undefined,
     );
 
     const transport = transportCreator();
@@ -211,8 +215,8 @@ export class MCPAgent extends Agent {
 
 export interface ClientWithReconnectOptions {
   transportCreator?: () => PromiseOrValue<Transport>;
-  isErrorNeedReconnect?: (error: Error) => boolean;
-  enabled?: boolean;
+  maxReconnects?: number;
+  shouldReconnect?: (error: Error) => boolean;
 }
 
 class ClientWithReconnect extends Client {
@@ -224,16 +228,26 @@ class ClientWithReconnect extends Client {
     super(info, options);
   }
 
-  private get isReconnectSupported(): boolean {
-    return !!this.reconnectOptions?.transportCreator;
+  private shouldReconnect(error: Error): boolean {
+    const { transportCreator, shouldReconnect, maxReconnects } = this.reconnectOptions || {};
+
+    if (!transportCreator || maxReconnects === 0) return false;
+    if (!shouldReconnect) return true; // default to reconnect on all errors
+
+    return shouldReconnect(error);
   }
 
   private async reconnect() {
-    if (!this.reconnectOptions?.transportCreator)
-      throw new Error("reconnect requires a transportCreator");
+    const transportCreator = this.reconnectOptions?.transportCreator;
+    if (!transportCreator) throw new Error("reconnect requires a transportCreator");
 
-    await this.close();
-    await this.connect(await this.reconnectOptions.transportCreator());
+    await pRetry(
+      async () => {
+        await this.close();
+        await this.connect(await transportCreator());
+      },
+      { retries: this.reconnectOptions?.maxReconnects ?? DEFAULT_MAX_RECONNECTS },
+    );
   }
 
   override async request<T extends ZodType<object>>(
@@ -244,12 +258,7 @@ class ClientWithReconnect extends Client {
     try {
       return await super.request(request, resultSchema, options);
     } catch (error) {
-      if (
-        this.reconnectOptions?.enabled !== false &&
-        this.isReconnectSupported &&
-        (!this.reconnectOptions?.isErrorNeedReconnect || // default to reconnect on all errors
-          this.reconnectOptions.isErrorNeedReconnect(error as Error))
-      ) {
+      if (this.shouldReconnect(error)) {
         await this.reconnect();
         return await super.request(request, resultSchema, options);
       }

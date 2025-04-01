@@ -44,8 +44,8 @@ static from(options: MCPAgentOptions): MCPAgent;
 - `options`: `MCPServerOptions | MCPAgentOptions` - Server options or MCPAgent configuration
   - When passing `SSEServerParameters`:
     - `url`: `string` - MCP server URL address
-    - `autoReconnect`: `boolean` - Optional, whether to enable automatic reconnection, defaults to true
-    - `isErrorNeedReconnect`: `(error: Error) => boolean` - Optional, custom function to determine which errors need reconnection, defaults to all errors triggering reconnection
+    - `maxReconnects`: `number` - Optional, maximum number of reconnection attempts, defaults to 10, set to 0 to disable automatic reconnection
+    - `shouldReconnect`: `(error: Error) => boolean` - Optional, custom function to determine which errors need reconnection, defaults to all errors triggering reconnection
   - When passing `StdioServerParameters`:
     - `command`: `string` - Command to start the MCP server
     - `args`: `string[]` - Optional, list of command arguments
@@ -65,32 +65,40 @@ Shuts down the MCPAgent and releases resources.
 async shutdown()
 ```
 
-## MCPTool Class
+## MCPBase Class
 
-`MCPTool` is an Agent implementation for calling tools provided by an MCP server.
+`MCPBase` is a base class for `MCPTool`, `MCPPrompt`, and `MCPResource`, providing common functionality for interacting with MCP servers.
 
 ### Basic Properties
 
-- `client`: `Client` - MCP client instance
+- `client`: `ClientWithReconnect` - MCP client instance with automatic reconnection support
 - `mcpServer`: `string \| undefined` - MCP server name
+
+### Constructor
+
+```typescript
+constructor(options: MCPBaseOptions<I, O>)
+```
+
+#### Parameters
+
+- `options`: `MCPBaseOptions<I, O>` - MCPBase configuration options
+  - `client`: `ClientWithReconnect` - MCP client instance with automatic reconnection support
+
+## MCPTool Class
+
+`MCPTool` inherits from `MCPBase` and is used for calling tools provided by an MCP server.
 
 ## MCPPrompt Class
 
-`MCPPrompt` is an Agent implementation for retrieving prompt templates provided by an MCP server.
-
-### Basic Properties
-
-- `client`: `Client` - MCP client instance
-- `mcpServer`: `string \| undefined` - MCP server name
+`MCPPrompt` inherits from `MCPBase` and is used for retrieving prompt templates provided by an MCP server.
 
 ## MCPResource Class
 
-`MCPResource` is an Agent implementation for accessing resources provided by an MCP server.
+`MCPResource` inherits from `MCPBase` and is used for accessing resources provided by an MCP server.
 
 ### Basic Properties
 
-- `client`: `Client` - MCP client instance
-- `mcpServer`: `string \| undefined` - MCP server name
 - `uri`: `string` - Resource URI or URI template
 
 ### Constructor
@@ -134,14 +142,14 @@ Defines the parameters for an SSE-based MCP server.
 ```typescript
 type SSEServerParameters = {
   url: string;
-  autoReconnect?: boolean;
-  isErrorNeedReconnect?: (error: Error) => boolean;
+  maxReconnects?: number;
+  shouldReconnect?: (error: Error) => boolean;
 };
 ```
 
 - `url`: `string` - MCP server URL address
-- `autoReconnect`: `boolean` - Optional, whether to enable automatic reconnection, defaults to true
-- `isErrorNeedReconnect`: `(error: Error) => boolean` - Optional, custom function to determine which errors need reconnection; if not provided, all errors will trigger reconnection
+- `maxReconnects`: `number` - Optional, maximum number of reconnection attempts, defaults to 10, set to 0 to disable automatic reconnection
+- `shouldReconnect`: `(error: Error) => boolean` - Optional, custom function to determine which errors need reconnection; if not provided, all errors will trigger reconnection
 
 ### `StdioServerParameters`
 
@@ -164,7 +172,7 @@ interface StdioServerParameters {
 Defines the configuration options for MCPResource.
 
 ```typescript
-interface MCPResourceOptions extends MCPToolBaseOptions<{ [key: string]: never }, ReadResourceResult> {
+interface MCPResourceOptions extends MCPBaseOptions<MCPPromptInput, ReadResourceResult> {
   uri: string;
 }
 ```

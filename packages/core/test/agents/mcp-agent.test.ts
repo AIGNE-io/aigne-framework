@@ -76,10 +76,7 @@ test("MCPAgent should reconnect to mcp server automatically", async () => {
 
   let mcpServer = mockMCPSSEServer(port);
 
-  const mcp = await MCPAgent.from({
-    url,
-    isErrorNeedReconnect: (error) => !!error.message.match(/no transport found for sessionId/i),
-  });
+  const mcp = await MCPAgent.from({ url });
 
   try {
     expect(mcp.tools.map((i) => i.name)).toEqual(["echo"]);

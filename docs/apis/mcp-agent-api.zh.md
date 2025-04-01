@@ -44,8 +44,8 @@ static from(options: MCPAgentOptions): MCPAgent;
 - `options`: `MCPServerOptions | MCPAgentOptions` - 服务器选项或 MCPAgent 配置
   - 当传入 `SSEServerParameters` 时：
     - `url`: `string` - MCP 服务器的 URL 地址
-    - `autoReconnect`: `boolean` - 可选，是否启用自动重连功能，默认为 true
-    - `isErrorNeedReconnect`: `(error: Error) => boolean` - 可选，自定义判断哪些错误需要重连的函数，默认为所有错误都会触发重连
+    - `maxReconnects`: `number` - 可选，最大重连次数，默认为10，设置为0表示禁用自动重连
+    - `shouldReconnect`: `(error: Error) => boolean` - 可选，自定义判断哪些错误需要重连的函数，默认为所有错误都会触发重连
   - 当传入 `StdioServerParameters` 时：
     - `command`: `string` - 启动 MCP 服务器的命令
     - `args`: `string[]` - 可选，命令的参数列表
@@ -65,32 +65,40 @@ static from(options: MCPAgentOptions): MCPAgent;
 async shutdown()
 ```
 
-## MCPTool 类
+## MCPBase 类
 
-`MCPTool` 是用于调用 MCP 服务器提供的工具的 Agent 实现。
+`MCPBase` 是 `MCPTool`、`MCPPrompt` 和 `MCPResource` 的基类，提供了与 MCP 服务器交互的共同功能。
 
 ### 基本属性
 
-- `client`: `Client` - MCP 客户端实例
+- `client`: `ClientWithReconnect` - 支持自动重连的 MCP 客户端实例
 - `mcpServer`: `string \| undefined` - MCP 服务器名称
+
+### 构造函数
+
+```typescript
+constructor(options: MCPBaseOptions<I, O>)
+```
+
+#### 参数
+
+- `options`: `MCPBaseOptions<I, O>` - MCPBase 配置选项
+  - `client`: `ClientWithReconnect` - 支持自动重连的 MCP 客户端实例
+
+## MCPTool 类
+
+`MCPTool` 继承自 `MCPBase`，用于调用 MCP 服务器提供的工具。
 
 ## MCPPrompt 类
 
-`MCPPrompt` 是用于获取 MCP 服务器提供的提示模板的 Agent 实现。
-
-### 基本属性
-
-- `client`: `Client` - MCP 客户端实例
-- `mcpServer`: `string \| undefined` - MCP 服务器名称
+`MCPPrompt` 继承自 `MCPBase`，用于获取 MCP 服务器提供的提示模板。
 
 ## MCPResource 类
 
-`MCPResource` 是用于访问 MCP 服务器提供的资源的 Agent 实现。
+`MCPResource` 继承自 `MCPBase`，用于访问 MCP 服务器提供的资源。
 
 ### 基本属性
 
-- `client`: `Client` - MCP 客户端实例
-- `mcpServer`: `string \| undefined` - MCP 服务器名称
 - `uri`: `string` - 资源 URI 或 URI 模板
 
 ### 构造函数
@@ -134,14 +142,14 @@ type MCPServerOptions = SSEServerParameters | StdioServerParameters;
 ```typescript
 type SSEServerParameters = {
   url: string;
-  autoReconnect?: boolean;
-  isErrorNeedReconnect?: (error: Error) => boolean;
+  maxReconnects?: number;
+  shouldReconnect?: (error: Error) => boolean;
 };
 ```
 
 - `url`: `string` - MCP 服务器的 URL 地址
-- `autoReconnect`: `boolean` - 可选，是否启用自动重连功能，默认为 true
-- `isErrorNeedReconnect`: `(error: Error) => boolean` - 可选，自定义判断哪些错误需要重连的函数，如果未提供则所有错误都会触发重连
+- `maxReconnects`: `number` - 可选，最大重连次数，默认为10，设置为0表示禁用自动重连
+- `shouldReconnect`: `(error: Error) => boolean` - 可选，自定义判断哪些错误需要重连的函数，如果未提供则所有错误都会触发重连
 
 ### `StdioServerParameters`
 
@@ -164,7 +172,7 @@ interface StdioServerParameters {
 定义 MCPResource 的配置选项。
 
 ```typescript
-interface MCPResourceOptions extends MCPToolBaseOptions<{ [key: string]: never }, ReadResourceResult> {
+interface MCPResourceOptions extends MCPBaseOptions<MCPPromptInput, ReadResourceResult> {
   uri: string;
 }
 ```

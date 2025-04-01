@@ -102,5 +102,5 @@ test("getFullPlanSchema should throw error if tools name is not unique", async (
         description: "Write to the filesystem",
       }),
     ]),
-  ).toThrowError("Tools name must be unique for orchestrator: finder");
+  ).toThrowError("Duplicate agent names found in orchestrator: finder");
 });

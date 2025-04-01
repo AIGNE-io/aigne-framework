@@ -1,6 +1,6 @@
 import type { Agent, Message } from "@aigne/core";
 import { ensureZodUnionArray } from "@aigne/core/utils/json-schema.js";
-import { duplicates } from "@aigne/core/utils/type-utils";
+import { duplicates } from "@aigne/core/utils/type-utils.js";
 import { z } from "zod";
 
 export const SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE = `\
@@ -11,7 +11,7 @@ export function getFullPlanSchema(agents: Agent[]) {
   const agentNames = agents.map((i) => i.name);
   if (new Set(agentNames).size !== agentNames.length) {
     const dup = duplicates(agentNames);
-    throw new Error(`Tools name must be unique for orchestrator: ${dup.join(",")}`);
+    throw new Error(`Duplicate agent names found in orchestrator: ${dup.join(",")}`);
   }
 
   const TaskSchema = z.object({

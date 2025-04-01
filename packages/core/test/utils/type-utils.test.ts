@@ -23,6 +23,11 @@ test("types-utils.isEmpty", async () => {
   expect(isEmpty({})).toBe(true);
   expect(isEmpty("")).toBe(true);
   expect(isEmpty([])).toBe(true);
+  expect(isEmpty(null)).toBe(true);
+  expect(isEmpty(undefined)).toBe(true);
+  expect(isEmpty({ foo: "bar" })).toBe(false);
+  expect(isEmpty("test")).toBe(false);
+  expect(isEmpty([1])).toBe(false);
 });
 
 test("type-utils.duplicates", async () => {

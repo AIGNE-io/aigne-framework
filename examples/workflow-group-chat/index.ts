@@ -93,7 +93,7 @@ const user = UserAgent.from({
   publishTopic: DEFAULT_TOPIC,
   memory: { subscribeTopic: DEFAULT_TOPIC },
   async process() {
-    logger.globalSpinner.stop();
+    logger.globalSpinner?.stop();
     const { question } = await inquirer.prompt([
       {
         type: "input",
@@ -106,7 +106,7 @@ const user = UserAgent.from({
       },
     ]);
     isFirstQuestion = false;
-    logger.globalSpinner.start();
+    logger.globalSpinner?.start();
     return createMessage(question);
   },
 });

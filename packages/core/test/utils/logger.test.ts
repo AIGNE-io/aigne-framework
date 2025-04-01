@@ -1,5 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
+import assert from "node:assert";
 import { logger } from "@aigne/core/utils/logger.js";
+import ora from "ora";
 
 test("logger.debug", async () => {
   expect(logger).toEqual(
@@ -24,6 +26,9 @@ test("logger.debug", async () => {
 });
 
 test("logger.spinner fail", async () => {
+  logger.setSpinner(ora());
+  assert(logger.globalSpinner, "globalSpinner should be set");
+
   const start = spyOn(logger.globalSpinner, "start").mockReturnThis();
   const fail = spyOn(logger.globalSpinner, "fail").mockReturnThis();
 
@@ -42,6 +47,9 @@ test("logger.spinner fail", async () => {
 });
 
 test("logger.spinner succeed", async () => {
+  logger.setSpinner(ora());
+  assert(logger.globalSpinner, "globalSpinner should be set");
+
   const start = spyOn(logger.globalSpinner, "start").mockReturnThis();
   const succeed = spyOn(logger.globalSpinner, "succeed").mockReturnThis();
 
@@ -60,6 +68,9 @@ test("logger.spinner succeed", async () => {
 });
 
 test("logger.spinner stop if message is not provided", async () => {
+  logger.setSpinner(ora());
+  assert(logger.globalSpinner, "globalSpinner should be set");
+
   const start = spyOn(logger.globalSpinner, "start").mockReturnThis();
   const stop = spyOn(logger.globalSpinner, "stop").mockReturnThis();
 
@@ -77,6 +88,9 @@ test("logger.spinner stop if message is not provided", async () => {
 });
 
 test("logger.spinner nested tasks", async () => {
+  logger.setSpinner(ora());
+  assert(logger.globalSpinner, "globalSpinner should be set");
+
   const start = spyOn(logger.globalSpinner, "start").mockReturnThis();
   const succeed = spyOn(logger.globalSpinner, "succeed").mockReturnThis();
   const stop = spyOn(logger.globalSpinner, "stop").mockReturnThis();

@@ -1,4 +1,5 @@
 import inquirer from "inquirer";
+import ora from "ora";
 import type { Message } from "../agents/agent.js";
 import type { UserAgent } from "../agents/user-agent.js";
 import { logger } from "./logger.js";
@@ -11,6 +12,8 @@ export interface ChatLoopOptions {
   onResponse?: (response: Message) => void;
   inputKey?: string;
 }
+
+logger.setSpinner(ora());
 
 export async function runChatLoopInTerminal(
   userAgent: UserAgent,

@@ -1,4 +1,3 @@
-import { isObject } from "lodash-es";
 import type { ZodType, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { Message } from "../agents/agent.js";
@@ -14,7 +13,7 @@ function setAdditionPropertiesDeep<T>(schema: T, additionalProperties: boolean):
   if (Array.isArray(schema)) {
     return schema.map((s) => setAdditionPropertiesDeep(s, additionalProperties)) as T;
   }
-  if (isObject(schema)) {
+  if (schema && typeof schema === "object" && !Array.isArray(schema)) {
     return Object.entries(schema).reduce(
       (acc, [key, value]) => {
         acc[key] = setAdditionPropertiesDeep(value, additionalProperties);

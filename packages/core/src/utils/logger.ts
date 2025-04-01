@@ -1,5 +1,5 @@
 import debug, { type Debugger } from "debug";
-import ora from "ora";
+import type { Ora } from "ora";
 
 interface DebugWithSpinner extends Debugger {
   spinner<T>(
@@ -12,10 +12,10 @@ interface DebugWithSpinner extends Debugger {
 }
 
 debug.log = (...args) => {
-  const { isSpinning } = globalSpinner;
-  if (isSpinning) globalSpinner.stop();
+  const { isSpinning } = globalSpinner ?? {};
+  if (isSpinning) globalSpinner?.stop();
   console.log(...args);
-  if (isSpinning) globalSpinner.start();
+  if (isSpinning) globalSpinner?.start();
 };
 
 function createDebugger(namespace: string): DebugWithSpinner {
@@ -47,7 +47,7 @@ function createDebugger(namespace: string): DebugWithSpinner {
   return i;
 }
 
-const globalSpinner = ora();
+let globalSpinner: Ora | undefined;
 
 interface SpinnerTask<T = unknown> {
   promise: Promise<T>;
@@ -67,7 +67,7 @@ async function spinner<T>(
   const task: SpinnerTask<T> = { promise, message, callback };
   globalSpinnerTasks.push(task as SpinnerTask);
 
-  globalSpinner.start(message || " ");
+  globalSpinner?.start(message || " ");
 
   await promise
     .then((result) => {
@@ -86,17 +86,17 @@ async function spinner<T>(
 
     // Recover spinner state for last running task
     if (!task.status) {
-      globalSpinner.start(task.message || " ");
+      globalSpinner?.start(task.message || " ");
       break;
     }
 
     globalSpinnerTasks.pop();
 
     if (task.message) {
-      if (task.status === "fail") globalSpinner.fail(task.message);
-      else globalSpinner.succeed(task.message);
+      if (task.status === "fail") globalSpinner?.fail(task.message);
+      else globalSpinner?.succeed(task.message);
     } else {
-      globalSpinner.stop();
+      globalSpinner?.stop();
     }
 
     // NOTE: This is a workaround to make sure the spinner stops spinning before the next tick
@@ -115,4 +115,8 @@ export const logger = Object.assign(debug, {
   base,
   debug: base.extend("core"),
   spinner,
+  setSpinner: (spinner: Ora) => {
+    globalSpinner = spinner;
+    logger.globalSpinner = spinner;
+  },
 });

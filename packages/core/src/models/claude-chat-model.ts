@@ -8,13 +8,12 @@ import type {
   ToolUnion,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources/index.js";
-import { isEmpty } from "lodash-es";
 import { z } from "zod";
 import type { Message } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
 import { mergeUsage } from "../utils/model-utils.js";
-import { checkArguments, isNonNullable } from "../utils/type-utils.js";
+import { checkArguments, isEmpty, isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
   type ChatModelInput,

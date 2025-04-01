@@ -3,7 +3,6 @@ import { Agent, type FunctionAgentFn } from "@aigne/core";
 import {
   checkArguments,
   createAccessorArray,
-  get,
   isNonNullable,
   orArrayToArray,
 } from "@aigne/core/utils/type-utils.js";
@@ -16,12 +15,6 @@ test("type-utils.isNonNullable", async () => {
 test("type-utils.orArrayToArray", async () => {
   expect(orArrayToArray(1)).toEqual([1]);
   expect(orArrayToArray([1, 2, 3])).toEqual([1, 2, 3]);
-});
-
-test("type-utils.get", async () => {
-  expect(get({ foo: "hello" }, "foo", "string")).toBe("hello");
-
-  expect(get({ foo: "hello" }, "foo", "number")).toBeUndefined();
 });
 
 test("type-utils.createAccessorArray", async () => {

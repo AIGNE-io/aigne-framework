@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
-import { isNil } from "lodash-es";
 import { ZodObject, type ZodType } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
@@ -15,6 +14,7 @@ import type {
   ChatModelInputToolChoice,
 } from "../models/chat-model.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
+import { isNil } from "../utils/type-utils.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,

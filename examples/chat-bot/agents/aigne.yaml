@@ -1,0 +1,6 @@
+chat_model:
+  name: gpt-4o-mini
+  temperature: 0.4
+  top_p: 0.9
+agents:
+  - chat.yaml

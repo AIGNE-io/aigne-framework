@@ -2,7 +2,7 @@ import { expect, mock, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, ChatModel, ExecutionEngine, createMessage } from "@aigne/core";
-import { loadAIGNEFile, loadAgent } from "@aigne/core/loader";
+import { loadAIGNEFile, loadAgent } from "@aigne/core/loader/index.js";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import { nanoid } from "nanoid";
 

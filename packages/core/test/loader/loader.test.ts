@@ -1,13 +1,14 @@
-import { expect, spyOn, test } from "bun:test";
+import { expect, mock, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, ChatModel, ExecutionEngine, createMessage } from "@aigne/core";
+import { loadAIGNEFile, loadAgent } from "@aigne/core/loader";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import { nanoid } from "nanoid";
 
-test("loader should load agents correctly", async () => {
+test("ExecutionEngine.load should load agents correctly", async () => {
   const engine = await ExecutionEngine.load({
-    path: join(import.meta.dirname, "./test-agent-library/chat"),
+    path: join(import.meta.dirname, "../../test-agents"),
   });
 
   expect(engine.agents.length).toBe(1);
@@ -21,7 +22,7 @@ test("loader should load agents correctly", async () => {
   assert(chat, "chat agent should be defined");
 
   expect(chat.tools.length).toBe(1);
-  expect(chat.tools[0]).toEqual(expect.objectContaining({ name: "calculate" }));
+  expect(chat.tools[0]).toEqual(expect.objectContaining({ name: "evaluateJs" }));
 
   expect(engine.model).toBeInstanceOf(ChatModel);
   assert(engine.model, "model should be defined");
@@ -33,7 +34,7 @@ test("loader should load agents correctly", async () => {
           {
             id: nanoid(),
             type: "function",
-            function: { name: "calculate", arguments: { a: 1, b: 2 } },
+            function: { name: "evaluateJs", arguments: { code: "1 + 1" } },
           },
         ],
       }),
@@ -50,7 +51,7 @@ test("loader should use override options", async () => {
   const testTool = AIAgent.from({ name: "test-tool" });
 
   const engine = await ExecutionEngine.load({
-    path: join(import.meta.dirname, "./test-agent-library/chat"),
+    path: join(import.meta.dirname, "../../test-agents"),
     model,
     agents: [testAgent],
     tools: [testTool],
@@ -63,13 +64,29 @@ test("loader should use override options", async () => {
     }),
     testAgent,
   ]);
-  expect([...engine.tools]).toEqual([expect.objectContaining({ name: "calculate" }), testTool]);
+  expect([...engine.tools]).toEqual([expect.objectContaining({ name: "evaluateJs" }), testTool]);
 });
 
 test("loader should error if agent file is not supported", async () => {
-  const engine = ExecutionEngine.load({
-    path: join(import.meta.dirname, "./test-agent-library/invalid-agent-file"),
-  });
-
+  const engine = loadAgent(join(import.meta.dirname, "./not-exist-agent-library/test.txt"));
   expect(engine).rejects.toThrow("Unsupported agent file type");
+});
+
+test("loadAIGNEFile should error if aigne.yaml file is invalid", async () => {
+  const readFile = mock()
+    .mockReturnValueOnce(Promise.reject(new Error("no such file or directory")))
+    .mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"))
+    .mockReturnValueOnce("chat_model: 123");
+
+  expect(loadAIGNEFile("./not-exist-aigne.yaml", { readFile })).rejects.toThrow(
+    "no such file or directory",
+  );
+
+  expect(loadAIGNEFile("./invalid-aigne.yaml", { readFile })).rejects.toThrow(
+    "Failed to parse aigne.yaml",
+  );
+
+  expect(loadAIGNEFile("./invalid-content-aigne.yaml", { readFile })).rejects.toThrow(
+    "Failed to validate aigne.yaml",
+  );
 });

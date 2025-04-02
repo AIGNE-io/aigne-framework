@@ -1,12 +1,13 @@
-import { expect, test } from "bun:test";
+import { expect, mock, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, FunctionAgent } from "@aigne/core";
+import { loadAgentFromYamlFile } from "@aigne/core/loader/ai-agent.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
 import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
 
-test("loadAgent should load agents correctly", async () => {
-  const agent = await loadAgent(join(import.meta.dirname, "./test-agent-library/ai-agent.yaml"));
+test("loadAgentFromYaml should load agent correctly", async () => {
+  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/chat.yaml"));
 
   expect(agent).toBeInstanceOf(AIAgent);
   assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
@@ -15,37 +16,12 @@ test("loadAgent should load agents correctly", async () => {
     expect.objectContaining({
       name: "chat",
       description: "Chat agent",
-      outputKey: "test_output",
     }),
   );
   expect(agent.instructions.instructions).toBe(`\
 You are a helpful assistant that can answer questions and provide information on a wide range of topics.
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 `);
-  expect(outputSchemaToResponseFormatSchema(agent.inputSchema)).toEqual(
-    expect.objectContaining({
-      type: "object",
-      properties: {
-        question: {
-          type: "string",
-          description: "The question or topic the user wants to discuss.",
-        },
-      },
-      required: ["question"],
-    }),
-  );
-  expect(outputSchemaToResponseFormatSchema(agent.outputSchema)).toEqual(
-    expect.objectContaining({
-      type: "object",
-      properties: {
-        answer: {
-          type: "string",
-          description: "The answer or information provided by the agent.",
-        },
-      },
-      required: ["answer"],
-    }),
-  );
 
   expect(agent.tools.length).toBe(1);
   const tool = agent.tools[0];
@@ -53,36 +29,49 @@ Your goal is to assist users in finding the information they need and to engage 
   assert(tool instanceof FunctionAgent, "tool should be an instance of FunctionAgent");
   expect(tool).toEqual(
     expect.objectContaining({
-      name: "plus",
-      description: "This agent calculates the sum of two numbers.",
+      name: "evaluateJs",
+      description: "This agent evaluates JavaScript code.",
     }),
   );
   expect(outputSchemaToResponseFormatSchema(tool.inputSchema)).toEqual(
     expect.objectContaining({
       type: "object",
       properties: {
-        a: {
-          type: "number",
-          description: "First number",
-        },
-        b: {
-          type: "number",
-          description: "Second number",
+        code: {
+          type: "string",
+          description: "JavaScript code to evaluate",
         },
       },
-      required: ["a", "b"],
+      required: ["code"],
     }),
   );
   expect(outputSchemaToResponseFormatSchema(tool.outputSchema)).toEqual(
     expect.objectContaining({
       type: "object",
       properties: {
-        sum: {
-          type: "number",
-          description: "Sum of the two numbers",
+        result: {
+          description: "Result of the evaluated code",
         },
       },
-      required: ["sum"],
     }),
+  );
+});
+
+test("loadAgentFromYaml should error if agent.yaml file is invalid", async () => {
+  const readFile = mock()
+    .mockReturnValueOnce(Promise.reject(new Error("no such file or directory")))
+    .mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"))
+    .mockReturnValueOnce("name: 123");
+
+  expect(loadAgentFromYamlFile("./not-exist-aigne.yaml", { readFile })).rejects.toThrow(
+    "no such file or directory",
+  );
+
+  expect(loadAgentFromYamlFile("./invalid-aigne.yaml", { readFile })).rejects.toThrow(
+    "Failed to parse agent definition",
+  );
+
+  expect(loadAgentFromYamlFile("./invalid-content-aigne.yaml", { readFile })).rejects.toThrow(
+    "Failed to validate agent definition",
   );
 });

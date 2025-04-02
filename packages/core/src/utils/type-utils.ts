@@ -95,7 +95,7 @@ export function checkArguments<T>(prefix: string, schema: ZodType<T>, args: T) {
   }
 }
 
-export function tryOrThrow<T, P = PromiseOrValue<T>>(
+export function tryOrThrow<P extends PromiseOrValue<unknown>>(
   fn: () => P,
   error: string | Error | ((error: Error) => Error),
 ): P {

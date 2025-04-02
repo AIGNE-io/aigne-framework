@@ -26,10 +26,14 @@
   "scripts": {
     "lint": "tsc --noEmit",
     "build": "tsc --build tsconfig.build.json",
-    "clean": "rimraf dist coverage",
+    "clean": "rimraf dist coverage templates/coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
+    "test": "run-s test:src test:templates",
+    "test:coverage": "run-s test:src:coverage test:templates:coverage",
+    "test:src": "bun test test/",
+    "test:src:coverage": "bun test test/ --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test:templates": "cd templates && node --test",
+    "test:templates:coverage": "cd templates && mkdir -p coverage && node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test-reporter=spec --test-reporter-destination=stdout"
   },
   "dependencies": {
     "@aigne/core": "workspace:^",

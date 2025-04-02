@@ -17,8 +17,8 @@
     "clean": "pnpm -r run clean",
     "build:libs": "pnpm -F @aigne/* build",
     "update:deps": "npx -y taze latest -r -w && pnpm install && pnpm dedupe",
-    "test": "bun test .test.ts",
-    "test:coverage": "bun test .test.ts --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test": "pnpm -r run test",
+    "test:coverage": "pnpm -r run test:coverage",
     "postinstall": "npx simple-git-hooks"
   },
   "devDependencies": {

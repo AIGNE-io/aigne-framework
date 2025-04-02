@@ -39,11 +39,11 @@
     "@aigne/core": "workspace:^",
     "commander": "^13.1.0",
     "inquirer": "^12.5.0",
-    "openai": "^4.89.1"
+    "openai": "^4.91.1"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.6",
-    "@types/node": "^22.13.14",
+    "@types/bun": "^1.2.8",
+    "@types/node": "^22.13.17",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.2"

@@ -89,14 +89,14 @@
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "@google/generative-ai": "^0.24.0",
-    "@types/bun": "^1.2.6",
+    "@types/bun": "^1.2.8",
     "@types/express": "^5.0.1",
     "@types/mustache": "^4.2.5",
-    "@types/node": "^22.13.14",
+    "@types/node": "^22.13.17",
     "detect-port": "^2.1.0",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "npm-run-all": "^4.1.5",
-    "openai": "^4.89.1",
+    "openai": "^4.91.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.2"
   }

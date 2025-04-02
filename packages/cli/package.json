@@ -26,7 +26,7 @@
   "scripts": {
     "lint": "tsc --noEmit",
     "build": "tsc --build tsconfig.build.json",
-    "clean": "rimraf dist coverage templates/coverage",
+    "clean": "rimraf dist test/coverage templates/coverage",
     "prepublishOnly": "run-s clean build",
     "test": "run-s test:src test:templates",
     "test:coverage": "run-s test:src:coverage test:templates:coverage",

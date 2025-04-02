@@ -26,14 +26,11 @@ export function createRunCommand(): Command {
           for (const agent of engine.agents) {
             console.log(`- ${agent.name}`);
           }
-          process.exit(1);
+          throw new Error(`Agent "${options.agent}" not found`);
         }
       } else {
         agent = engine.agents[0];
-        if (!agent) {
-          console.error("No agents found in the specified path.");
-          process.exit(1);
-        }
+        if (!agent) throw new Error("No agents found in the specified path");
       }
 
       const user = engine.call(agent);

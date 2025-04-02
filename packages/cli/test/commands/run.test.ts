@@ -12,11 +12,11 @@ test("run command should call run chat loop correctly", async () => {
 
   const command = createRunCommand();
 
-  const chatAgentPath = join(import.meta.dirname, "chat");
+  const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
   // should run in current directory
   const cwd = process.cwd();
-  process.chdir(chatAgentPath);
+  process.chdir(testAgentsPath);
   await command.parseAsync(["", "run"]);
   expect(runChatLoopInTerminal).toHaveBeenNthCalledWith(
     1,
@@ -26,7 +26,7 @@ test("run command should call run chat loop correctly", async () => {
   process.chdir(cwd);
 
   // should run in specified directory
-  await command.parseAsync(["", "run", chatAgentPath]);
+  await command.parseAsync(["", "run", testAgentsPath]);
   expect(runChatLoopInTerminal).toHaveBeenNthCalledWith(
     1,
     expect.any(UserAgent),
@@ -34,11 +34,24 @@ test("run command should call run chat loop correctly", async () => {
   );
 
   // should run in specified directory of relative path
-  const relativePath = relative(cwd, chatAgentPath);
+  const relativePath = relative(cwd, testAgentsPath);
   await command.parseAsync(["", "run", relativePath]);
   expect(runChatLoopInTerminal).toHaveBeenNthCalledWith(
     1,
     expect.any(UserAgent),
     expect.objectContaining({}),
+  );
+
+  // should run specified agent
+  await command.parseAsync(["", "run", testAgentsPath, "--agent", "chat"]);
+  expect(runChatLoopInTerminal).toHaveBeenNthCalledWith(
+    1,
+    expect.any(UserAgent),
+    expect.objectContaining({}),
+  );
+
+  // should error if agent not found
+  expect(command.parseAsync(["", "run", testAgentsPath, "--agent", "chat1"])).rejects.toThrow(
+    "not found",
   );
 });

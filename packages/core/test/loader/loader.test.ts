@@ -2,7 +2,7 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, ChatModel, ExecutionEngine, createMessage } from "@aigne/core";
-import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import { nanoid } from "nanoid";
 
 test("loader should load agents correctly", async () => {

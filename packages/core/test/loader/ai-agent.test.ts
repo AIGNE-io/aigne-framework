@@ -2,8 +2,8 @@ import { expect, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, FunctionAgent } from "@aigne/core";
-import { loadAgent } from "@aigne/core/loader";
-import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema";
+import { loadAgent } from "@aigne/core/loader/index.js";
+import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
 
 test("loadAgent should load agents correctly", async () => {
   const agent = await loadAgent(join(import.meta.dirname, "./test-agent-library/ai-agent.yaml"));

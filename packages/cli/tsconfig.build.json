@@ -5,7 +5,8 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./src",
-    "noEmit": false
+    "noEmit": false,
+    "paths": {}
   },
   "include": ["./src"]
 }

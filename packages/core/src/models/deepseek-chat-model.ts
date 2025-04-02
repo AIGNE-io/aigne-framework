@@ -1,58 +1,39 @@
 import { nanoid } from "nanoid";
-import OpenAI from "openai";
-import type { ChatCompletionMessageParam, ChatCompletionTool } from "openai/resources";
-import { z } from "zod";
+import { OpenAI } from "openai";
+import type {
+  ChatCompletionMessageParam,
+  ChatCompletionTool,
+} from "openai/resources/chat/completions.js";
+import { SystemMessageTemplate } from "../prompt/template.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { checkArguments, isNonNullable } from "../utils/type-utils.js";
-import {
-  ChatModel,
-  type ChatModelInput,
-  type ChatModelInputMessage,
-  type ChatModelInputTool,
-  type ChatModelOptions,
-  type ChatModelOutput,
-  type ChatModelOutputUsage,
-  type Role,
+import type {
+  ChatModelInput,
+  ChatModelInputMessage,
+  ChatModelInputTool,
+  ChatModelOutput,
+  ChatModelOutputUsage,
 } from "./chat-model.js";
+import { ChatModel } from "./chat-model.js";
+import type { OpenAIChatModelOptions } from "./openai-chat-model.js";
+import { ROLE_MAP, openAIChatModelOptionsSchema } from "./openai-chat-model.js";
 
-const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
+const DEEPSEEK_DEFAULT_CHAT_MODEL = "deepseek-chat";
+const DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 
-export interface OpenAIChatModelOptions {
-  apiKey?: string;
-  baseURL?: string;
-  model?: string;
-  modelOptions?: ChatModelOptions;
-}
-
-export const openAIChatModelOptionsSchema = z.object({
-  apiKey: z.string().optional(),
-  baseURL: z.string().optional(),
-  model: z.string().optional(),
-  modelOptions: z
-    .object({
-      model: z.string().optional(),
-      temperature: z.number().optional(),
-      topP: z.number().optional(),
-      frequencyPenalty: z.number().optional(),
-      presencePenalty: z.number().optional(),
-      parallelToolCalls: z.boolean().optional().default(true),
-    })
-    .optional(),
-});
-
-export class OpenAIChatModel extends ChatModel {
+export class DeepSeekChatModel extends ChatModel {
   constructor(public options?: OpenAIChatModelOptions) {
-    if (options) checkArguments("OpenAIChatModel", openAIChatModelOptionsSchema, options);
+    if (options) checkArguments("DeepSeekChatModel", openAIChatModelOptionsSchema, options);
     super();
   }
 
   private _client?: OpenAI;
 
   get client() {
-    if (!this.options?.apiKey) throw new Error("Api Key is required for OpenAIChatModel");
+    if (!this.options?.apiKey) throw new Error("Api Key is required for DeepSeekChatModel");
 
     this._client ??= new OpenAI({
-      baseURL: this.options.baseURL,
+      baseURL: this.options.baseURL || DEEPSEEK_BASE_URL,
       apiKey: this.options.apiKey,
     });
     return this._client;
@@ -63,8 +44,17 @@ export class OpenAIChatModel extends ChatModel {
   }
 
   async process(input: ChatModelInput): Promise<ChatModelOutput> {
+    const jsonMode = input.responseFormat?.type === "json_schema";
+    if (jsonMode) {
+      const systemPrompt = SystemMessageTemplate.from(
+        `The response should be a JSON object following this schema: 
+        ${JSON.stringify((input.responseFormat as { jsonSchema: { schema: Record<string, unknown> } }).jsonSchema)}`,
+      );
+      input.messages.unshift(systemPrompt);
+    }
+
     const res = await this.client.chat.completions.create({
-      model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
+      model: this.options?.model || DEEPSEEK_DEFAULT_CHAT_MODEL,
       temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
       top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       frequency_penalty:
@@ -76,16 +66,7 @@ export class OpenAIChatModel extends ChatModel {
       parallel_tool_calls: !input.tools?.length
         ? undefined
         : (input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls),
-      response_format:
-        input.responseFormat?.type === "json_schema"
-          ? {
-              type: "json_schema",
-              json_schema: {
-                ...input.responseFormat.jsonSchema,
-                schema: jsonSchemaToOpenAIJsonSchema(input.responseFormat.jsonSchema.schema),
-              },
-            }
-          : undefined,
+      response_format: jsonMode ? { type: "json_object" } : undefined,
       stream_options: {
         include_usage: true,
       },
@@ -133,7 +114,7 @@ export class OpenAIChatModel extends ChatModel {
       usage,
     };
 
-    if (input.responseFormat?.type === "json_schema" && text) {
+    if (jsonMode && text) {
       result.json = parseJSON(text);
     } else {
       result.text = text;
@@ -150,13 +131,6 @@ export class OpenAIChatModel extends ChatModel {
   }
 }
 
-export const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
-  system: "system",
-  user: "user",
-  agent: "assistant",
-  tool: "tool",
-} as const;
-
 async function contentsFromInputMessages(
   messages: ChatModelInputMessage[],
 ): Promise<ChatCompletionMessageParam[]> {
@@ -171,12 +145,6 @@ async function contentsFromInputMessages(
                 ?.map((c) => {
                   if (c.type === "text") {
                     return { type: "text" as const, text: c.text };
-                  }
-                  if (c.type === "image_url") {
-                    return {
-                      type: "image_url" as const,
-                      image_url: { url: c.url },
-                    };
                   }
                 })
                 .filter(isNonNullable),
@@ -204,40 +172,4 @@ function toolsFromInputTools(tools?: ChatModelInputTool[]): ChatCompletionTool[]
         },
       }))
     : undefined;
-}
-
-function jsonSchemaToOpenAIJsonSchema(schema: Record<string, unknown>): Record<string, unknown> {
-  if (schema?.type === "object") {
-    const { required, properties } = schema as {
-      required?: string[];
-      properties: Record<string, unknown>;
-    };
-
-    return {
-      ...schema,
-      properties: Object.fromEntries(
-        Object.entries(properties).map(([key, value]) => {
-          const valueSchema = jsonSchemaToOpenAIJsonSchema(value as Record<string, unknown>);
-
-          // NOTE: All fields must be required https://platform.openai.com/docs/guides/structured-outputs/all-fields-must-be-required
-          return [
-            key,
-            required?.includes(key) ? valueSchema : { anyOf: [valueSchema, { type: ["null"] }] },
-          ];
-        }),
-      ),
-      required: Object.keys(properties),
-    };
-  }
-
-  if (schema?.type === "array") {
-    const { items } = schema as { items: Record<string, unknown> };
-
-    return {
-      ...schema,
-      items: jsonSchemaToOpenAIJsonSchema(items),
-    };
-  }
-
-  return schema;
 }

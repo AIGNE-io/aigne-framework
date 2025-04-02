@@ -1,59 +1,45 @@
 import { nanoid } from "nanoid";
-import OpenAI from "openai";
-import type { ChatCompletionMessageParam, ChatCompletionTool } from "openai/resources";
+import { OpenAI } from "openai";
+import type {
+  ChatCompletionMessageParam,
+  ChatCompletionTool,
+} from "openai/resources/chat/completions.js";
 import { z } from "zod";
 import { parseJSON } from "../utils/json-schema.js";
 import { checkArguments, isNonNullable } from "../utils/type-utils.js";
-import {
-  ChatModel,
-  type ChatModelInput,
-  type ChatModelInputMessage,
-  type ChatModelInputTool,
-  type ChatModelOptions,
-  type ChatModelOutput,
-  type ChatModelOutputUsage,
-  type Role,
+import type {
+  ChatModelInput,
+  ChatModelInputMessage,
+  ChatModelInputTool,
+  ChatModelOutput,
+  ChatModelOutputUsage,
 } from "./chat-model.js";
+import { ChatModel } from "./chat-model.js";
+import type { OpenAIChatModelOptions } from "./openai-chat-model.js";
+import { ROLE_MAP, openAIChatModelOptionsSchema } from "./openai-chat-model.js";
 
-const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
+const OLLAMA_BASE_URL = "http://localhost:11434/v1";
 
-export interface OpenAIChatModelOptions {
-  apiKey?: string;
-  baseURL?: string;
-  model?: string;
-  modelOptions?: ChatModelOptions;
-}
+export type OllamaChatModelOptions = Omit<OpenAIChatModelOptions, "model"> & {
+  model: string;
+};
 
-export const openAIChatModelOptionsSchema = z.object({
-  apiKey: z.string().optional(),
-  baseURL: z.string().optional(),
-  model: z.string().optional(),
-  modelOptions: z
-    .object({
-      model: z.string().optional(),
-      temperature: z.number().optional(),
-      topP: z.number().optional(),
-      frequencyPenalty: z.number().optional(),
-      presencePenalty: z.number().optional(),
-      parallelToolCalls: z.boolean().optional().default(true),
-    })
-    .optional(),
+export const ollamaChatModelOptionsSchema = openAIChatModelOptionsSchema.extend({
+  model: z.string(),
 });
 
-export class OpenAIChatModel extends ChatModel {
-  constructor(public options?: OpenAIChatModelOptions) {
-    if (options) checkArguments("OpenAIChatModel", openAIChatModelOptionsSchema, options);
+export class OllamaChatModel extends ChatModel {
+  constructor(public options: OllamaChatModelOptions) {
+    if (options) checkArguments("OllamaChatModel", ollamaChatModelOptionsSchema, options);
     super();
   }
 
   private _client?: OpenAI;
 
   get client() {
-    if (!this.options?.apiKey) throw new Error("Api Key is required for OpenAIChatModel");
-
     this._client ??= new OpenAI({
-      baseURL: this.options.baseURL,
-      apiKey: this.options.apiKey,
+      baseURL: this.options.baseURL || OLLAMA_BASE_URL,
+      apiKey: this.options.apiKey || "ollama",
     });
     return this._client;
   }
@@ -64,7 +50,7 @@ export class OpenAIChatModel extends ChatModel {
 
   async process(input: ChatModelInput): Promise<ChatModelOutput> {
     const res = await this.client.chat.completions.create({
-      model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
+      model: this.options.model,
       temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
       top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       frequency_penalty:
@@ -149,13 +135,6 @@ export class OpenAIChatModel extends ChatModel {
     return result;
   }
 }
-
-export const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
-  system: "system",
-  user: "user",
-  agent: "assistant",
-  tool: "tool",
-} as const;
 
 async function contentsFromInputMessages(
   messages: ChatModelInputMessage[],

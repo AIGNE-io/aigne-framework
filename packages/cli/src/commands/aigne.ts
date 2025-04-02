@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { version } from "../../package.json";
+import pkg from "../../package.json" with { type: "json" };
 import { createCreateCommand } from "./create.js";
 import { createRunCommand } from "./run.js";
 import { createTestCommand } from "./test.js";
@@ -8,7 +8,7 @@ export function createAIGNECommand(): Command {
   return new Command()
     .name("aigne")
     .description("CLI for AIGNE framework")
-    .version(version)
+    .version(pkg.version)
     .addCommand(createRunCommand())
     .addCommand(createTestCommand())
     .addCommand(createCreateCommand())

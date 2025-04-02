@@ -16,9 +16,13 @@
     "dist",
     "LICENSE",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "templates"
   ],
-  "bin": "dist/cli.js",
+  "type": "module",
+  "bin": {
+    "aigne": "dist/cli.js"
+  },
   "scripts": {
     "lint": "tsc --noEmit",
     "build": "tsc --build tsconfig.build.json",
@@ -30,7 +34,8 @@
   "dependencies": {
     "@aigne/core": "workspace:^",
     "commander": "^13.1.0",
-    "inquirer": "^9.2.15"
+    "inquirer": "^12.5.0",
+    "openai": "^4.89.1"
   },
   "devDependencies": {
     "@types/bun": "^1.2.6",

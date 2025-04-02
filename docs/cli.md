@@ -1,5 +1,7 @@
 # AIGNE CLI
 
+**English** | [中文](cli.zh.md)
+
 The AIGNE Command Line Interface (CLI) provides a set of tools to run and test your AIGNE agents from the command line.
 
 ## Installation
@@ -159,4 +161,7 @@ The AIGNE CLI inherits any environment variables needed by your agents. Make sur
 
 ## Additional Resources
 
-For more information about developing agents, refer to the [AIGNE Framework Documentation](https://github.com/AIGNE-io/aigne-framework).
+For more information about developing agents, refer to the following resources:
+
+- [Agent Development Guide](./agent-development.md): Guide to developing AIGNE agents using YAML/JS configuration files
+- [AIGNE Framework Documentation](./cookbook.md): Official framework documentation

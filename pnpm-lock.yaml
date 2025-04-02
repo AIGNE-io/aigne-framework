@@ -23,15 +23,9 @@ importers:
 
   examples/chat-bot:
     dependencies:
-      '@aigne/core':
+      '@aigne/cli':
         specifier: workspace:^
-        version: link:../../packages/core
-      openai:
-        specifier: ^4.89.1
-        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
-      zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        version: link:../../packages/cli
 
   examples/mcp-github:
     dependencies:
@@ -201,6 +195,12 @@ importers:
       commander:
         specifier: ^13.1.0
         version: 13.1.0
+      inquirer:
+        specifier: ^12.5.0
+        version: 12.5.0(@types/node@22.13.14)
+      openai:
+        specifier: ^4.89.1
+        version: 4.89.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
     devDependencies:
       '@types/bun':
         specifier: ^1.2.6

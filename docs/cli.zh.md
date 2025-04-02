@@ -1,5 +1,7 @@
 # AIGNE CLI
 
+[English](cli.md) | **中文**
+
 AIGNE 命令行界面（CLI）提供了一套工具，用于从命令行运行和测试您的 AIGNE 代理。
 
 ## 安装
@@ -159,4 +161,7 @@ AIGNE CLI 继承代理所需的任何环境变量。在运行 CLI 之前，请�
 
 ## 其他资源
 
-有关开发代理的更多信息，请参阅 [AIGNE 框架文档](https://github.com/AIGNE-io/aigne-framework)。
+有关开发代理的更多信息，请参阅以下资源：
+
+- [代理开发指南](./agent-development.zh.md)：使用 YAML/JS 配置文件开发 AIGNE 代理的指南
+- [AIGNE 框架文档](./cookbook.zh.md)：官方框架文档

@@ -1,6 +1,9 @@
+import vm from "node:vm";
+
 export default async function evaluateJs({ code }) {
-  // biome-ignore lint/security/noGlobalEval: <explanation>
-  const result = eval(code);
+  const sandbox = {};
+  const context = vm.createContext(sandbox);
+  const result = vm.runInContext(code, context, { displayErrors: true });
   return { result };
 }
 

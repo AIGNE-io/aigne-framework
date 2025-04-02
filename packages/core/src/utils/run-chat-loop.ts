@@ -33,7 +33,7 @@ export async function runChatLoopInTerminal(
     for await (const output of userAgent.stream) {
       if (isLoopExited) return;
 
-      if (options?.onResponse) options.onResponse(output);
+      if (options?.onResponse) options.onResponse(output.message);
       else log(output);
 
       prompt?.ui.close();

@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { cp } from "node:fs/promises";
-import { isAbsolute, join, resolve } from "node:path";
+import { isAbsolute, join, relative, resolve } from "node:path";
 import { Command } from "commander";
 import inquirer from "inquirer";
 
@@ -8,16 +8,16 @@ export function createCreateCommand(): Command {
   return new Command("create")
     .description("Create a new aigne project with agent config files")
     .argument("[path]", "Path to create the project directory", ".")
-    .action(async (path: string) => {
-      let projectPath = path;
+    .action(async (_path: string) => {
+      let path = _path;
 
-      if (projectPath === ".") {
+      if (path === ".") {
         const answers = await inquirer.prompt([
           {
             type: "input",
             name: "projectName",
             message: "Project name:",
-            default: path !== "." ? path : "my-aigne-project",
+            default: _path !== "." ? _path : "my-aigne-project",
             validate: (input) => {
               if (input.trim() === "") return "Project name cannot be empty.";
 
@@ -25,17 +25,18 @@ export function createCreateCommand(): Command {
             },
           },
         ]);
-        projectPath = answers.projectName;
+        path = answers.projectName;
       }
 
-      const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
-      const isPathNotEmpty = existsSync(absolutePath) && readdirSync(absolutePath).length > 0;
+      path = isAbsolute(path) ? path : resolve(process.cwd(), path);
+
+      const isPathNotEmpty = existsSync(path) && readdirSync(path).length > 0;
       if (isPathNotEmpty) {
         const answers = await inquirer.prompt([
           {
             type: "confirm",
             name: "overwrite",
-            message: `The directory "${absolutePath}" is not empty. Do you want to remove its contents?`,
+            message: `The directory "${path}" is not empty. Do you want to remove its contents?`,
             default: false,
           },
         ]);
@@ -58,7 +59,7 @@ export function createCreateCommand(): Command {
         },
       ]);
 
-      mkdirSync(absolutePath, { recursive: true });
+      mkdirSync(path, { recursive: true });
 
       const templatePath = join(import.meta.dirname, "../../templates", template);
 
@@ -67,12 +68,14 @@ export function createCreateCommand(): Command {
       const files = readdirSync(templatePath);
       for (const file of files) {
         const source = join(templatePath, file);
-        const destination = join(absolutePath, file);
+        const destination = join(path, file);
         await cp(source, destination, { recursive: true, force: true });
       }
 
       console.log("\n✅ Aigne project created successfully!");
-      console.log(`\nTo use your new agent, run:\n  cd ${path} && npx -y aigne run`);
+      console.log(
+        `\nTo use your new agent, run:\n  cd ${relative(process.cwd(), path)} && aigne run`,
+      );
     })
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);

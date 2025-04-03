@@ -34,3 +34,6 @@ jobs:
           review_comment_lgtm: false
           path_filters: |
             !docs/*
+            !**/*.md
+            !**/package.json
+            !**/*.yaml

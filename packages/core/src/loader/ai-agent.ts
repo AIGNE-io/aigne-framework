@@ -31,12 +31,9 @@ const agentFileSchema = z.object({
     .transform((v) => v ?? undefined),
 });
 
-export async function loadAgentFromYamlFile(
-  path: string,
-  { readFile: _readFile = readFile }: { readFile?: typeof readFile } = {},
-) {
+export async function loadAgentFromYamlFile(path: string) {
   const raw = await tryOrThrow(
-    () => _readFile(path, "utf8"),
+    () => readFile(path, "utf8"),
     (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
   );
 

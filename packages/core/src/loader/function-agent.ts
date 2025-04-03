@@ -19,12 +19,9 @@ const agentJsFileSchema = z.object({
   fn: z.function() as unknown as ZodFunction<ZodTuple<[ZodType<Message>]>, ZodType<Message>>,
 });
 
-export async function loadAgentFromJsFile(
-  path: string,
-  { import: _import }: { import?: (path: string) => Promise<{ default: unknown }> } = {},
-) {
+export async function loadAgentFromJsFile(path: string) {
   const { default: agent } = await tryOrThrow(
-    () => (_import ? _import(path) : import(path)),
+    () => import(path),
     (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
   );
 

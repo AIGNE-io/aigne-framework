@@ -106,12 +106,9 @@ const aigneFileSchema = z.object({
   tools: z.array(z.string()).nullish(),
 });
 
-export async function loadAIGNEFile(
-  path: string,
-  { readFile: _readFile = readFile }: { readFile?: typeof readFile } = {},
-) {
+export async function loadAIGNEFile(path: string) {
   const raw = await tryOrThrow(
-    () => _readFile(path, "utf8"),
+    () => readFile(path, "utf8"),
     (error) => new Error(`Failed to load aigne.yaml from ${path}: ${error.message}`),
   );
 

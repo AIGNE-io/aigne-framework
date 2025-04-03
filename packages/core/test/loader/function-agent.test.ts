@@ -1,24 +1,23 @@
-import { expect, mock, test } from "bun:test";
+import { expect, test } from "bun:test";
 import { loadAgentFromJsFile } from "@aigne/core/loader/function-agent.js";
+import { mockModule } from "@aigne/test-utils/mock-module.js";
 
 test("loadAgentFromJs should error if agent.js file is invalid", async () => {
   const fn = () => {};
   fn.description = 123;
 
-  const customImport = mock()
-    .mockReturnValueOnce(Promise.reject(new Error("no such file or directory")))
-    .mockReturnValueOnce(Promise.resolve({}))
-    .mockReturnValueOnce(Promise.resolve({ default: fn }));
-
-  expect(loadAgentFromJsFile("./agent.js", { import: customImport })).rejects.toThrow(
+  await using _1 = await mockModule("@aigne/test-not-found-agent", () =>
+    Promise.reject(new Error("no such file or directory")),
+  );
+  expect(loadAgentFromJsFile("@aigne/test-not-found-agent")).rejects.toThrow(
     "no such file or directory",
   );
 
-  expect(loadAgentFromJsFile("./agent.js", { import: customImport })).rejects.toThrow(
+  await using _2 = await mockModule("@aigne/invalid-agent-fn", () => ({}));
+  expect(loadAgentFromJsFile("@aigne/invalid-agent-fn")).rejects.toThrow(
     "must export a default function",
   );
 
-  expect(loadAgentFromJsFile("./agent.js", { import: customImport })).rejects.toThrow(
-    "Failed to parse agent",
-  );
+  await using _3 = await mockModule("@aigne/not-valid-agent", () => ({ default: fn }));
+  expect(loadAgentFromJsFile("@aigne/not-valid-agent")).rejects.toThrow("Failed to parse agent");
 });

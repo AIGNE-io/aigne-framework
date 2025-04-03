@@ -208,6 +208,9 @@ importers:
         specifier: ^4.91.1
         version: 4.91.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
       '@types/bun':
         specifier: ^1.2.8
         version: 1.2.8
@@ -266,6 +269,9 @@ importers:
         specifier: ^3.24.5
         version: 3.24.5(zod@3.24.2)
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
       '@anthropic-ai/sdk':
         specifier: ^0.39.0
         version: 0.39.0(encoding@0.1.13)
@@ -299,6 +305,22 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      typescript:
+        specifier: ^5.8.2
+        version: 5.8.2
+
+  packages/test-utils:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../core
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.8
+        version: 1.2.8
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
       typescript:
         specifier: ^5.8.2
         version: 5.8.2

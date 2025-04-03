@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { AIAgent, ChatModel, ExecutionEngine, createMessage } from "@aigne/core";
 import { loadAIGNEFile, loadAgent } from "@aigne/core/loader/index.js";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
+import { mockModule } from "@aigne/test-utils/mock-module.js";
 import { nanoid } from "nanoid";
 
 test("ExecutionEngine.load should load agents correctly", async () => {
@@ -78,15 +79,13 @@ test("loadAIGNEFile should error if aigne.yaml file is invalid", async () => {
     .mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"))
     .mockReturnValueOnce("chat_model: 123");
 
-  expect(loadAIGNEFile("./not-exist-aigne.yaml", { readFile })).rejects.toThrow(
-    "no such file or directory",
-  );
+  await using _ = await mockModule("node:fs/promises", () => ({ readFile }));
 
-  expect(loadAIGNEFile("./invalid-aigne.yaml", { readFile })).rejects.toThrow(
-    "Failed to parse aigne.yaml",
-  );
+  expect(loadAIGNEFile("./not-exist-aigne.yaml")).rejects.toThrow("no such file or directory");
 
-  expect(loadAIGNEFile("./invalid-content-aigne.yaml", { readFile })).rejects.toThrow(
+  expect(loadAIGNEFile("./invalid-aigne.yaml")).rejects.toThrow("Failed to parse aigne.yaml");
+
+  expect(loadAIGNEFile("./invalid-content-aigne.yaml")).rejects.toThrow(
     "Failed to validate aigne.yaml",
   );
 });

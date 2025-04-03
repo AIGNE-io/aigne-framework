@@ -44,6 +44,7 @@
     "openai": "^4.91.1"
   },
   "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
     "@types/bun": "^1.2.8",
     "@types/gradient-string": "^1.1.6",
     "@types/node": "^22.14.0",

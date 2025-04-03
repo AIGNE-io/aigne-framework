@@ -5,6 +5,7 @@
     ".": {},
     "packages/agent-library": {},
     "packages/core": {},
+    "packages/cli": {},
     "examples/mcp-github": {},
     "examples/mcp-puppeteer": {},
     "examples/mcp-sqlite": {},
@@ -15,6 +16,7 @@
     "examples/workflow-orchestrator": {},
     "examples/workflow-reflection": {},
     "examples/workflow-router": {},
-    "examples/workflow-sequential": {}
+    "examples/workflow-sequential": {},
+    "examples/chat-bot": {}
   }
 }

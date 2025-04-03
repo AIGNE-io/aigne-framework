@@ -61,10 +61,10 @@
   "scripts": {
     "lint": "tsc --noEmit",
     "build": "tsc --build scripts/tsconfig.build.json",
-    "clean": "rimraf lib coverage",
+    "clean": "rimraf lib test/coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test": "cd test && bun test",
+    "test:coverage": "cd test && bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {
@@ -77,6 +77,7 @@
     "nanoid": "^5.1.5",
     "ora": "^8.2.0",
     "p-retry": "^6.2.1",
+    "yaml": "^2.7.1",
     "zod": "^3.24.2",
     "zod-to-json-schema": "^3.24.5"
   },
@@ -86,16 +87,17 @@
     "openai": "^4.87.3"
   },
   "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
     "@anthropic-ai/sdk": "^0.39.0",
     "@google/generative-ai": "^0.24.0",
-    "@types/bun": "^1.2.6",
+    "@types/bun": "^1.2.8",
     "@types/express": "^5.0.1",
     "@types/mustache": "^4.2.5",
-    "@types/node": "^22.13.14",
+    "@types/node": "^22.14.0",
     "detect-port": "^2.1.0",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "npm-run-all": "^4.1.5",
-    "openai": "^4.89.1",
+    "openai": "^4.91.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.2"
   }

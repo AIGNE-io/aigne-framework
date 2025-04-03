@@ -46,14 +46,15 @@ export class OpenAIChatModel extends ChatModel {
     super();
   }
 
-  private _client?: OpenAI;
+  protected _client?: OpenAI;
 
   get client() {
-    if (!this.options?.apiKey) throw new Error("Api Key is required for OpenAIChatModel");
+    const apiKey = this.options?.apiKey || process.env.OPENAI_API_KEY;
+    if (!apiKey) throw new Error("Api Key is required for OpenAIChatModel");
 
     this._client ??= new OpenAI({
-      baseURL: this.options.baseURL,
-      apiKey: this.options.apiKey,
+      baseURL: this.options?.baseURL,
+      apiKey,
     });
     return this._client;
   }

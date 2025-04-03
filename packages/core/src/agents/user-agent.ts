@@ -1,3 +1,4 @@
+import { ReadableStream } from "node:stream/web";
 import type { Context } from "../execution-engine/context.js";
 import type {
   MessagePayload,

@@ -96,13 +96,7 @@ test("runChatLoopInTerminal should subscribe user agent stream", async () => {
   // Check the response after a delay to allow the event loop to run
   setTimeout(() => {
     expect(onResponse.mock.calls).toEqual([
-      [
-        expect.objectContaining({
-          topic: "test_topic",
-          role: "user",
-          message: createMessage("hello, this is a test message"),
-        }),
-      ],
+      [expect.objectContaining(createMessage("hello, this is a test message"))],
     ]);
   }, 0);
 });

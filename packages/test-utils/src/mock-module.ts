@@ -11,7 +11,6 @@ export async function mockModule(
 
   await mock.module(modulePath, () => {
     if ("error" in mocks) throw mocks.error;
-    console.log({ original, mock: mocks.modules });
     return { ...original, ...mocks.modules };
   });
   return {

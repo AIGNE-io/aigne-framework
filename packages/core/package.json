@@ -61,10 +61,10 @@
   "scripts": {
     "lint": "tsc --noEmit",
     "build": "tsc --build scripts/tsconfig.build.json",
-    "clean": "rimraf lib test/coverage",
+    "clean": "rimraf lib coverage",
     "prepublishOnly": "run-s clean build",
     "test": "cd test && bun test",
-    "test:coverage": "cd test && bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test:coverage": "cd test && bun test --coverage --coverage-reporter=lcov --coverage-dir=../coverage --coverage-reporter=text",
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {

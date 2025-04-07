@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { exists, readFile, stat } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
 import { parse } from "yaml";
 import { z } from "zod";
@@ -10,7 +10,7 @@ import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromYamlFile } from "./ai-agent.js";
 import { loadAgentFromJsFile } from "./function-agent.js";
 
-const AIGNE_FILE_NAME = "aigne.yaml";
+const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
 export interface LoadOptions {
   path: string;
@@ -19,7 +19,7 @@ export interface LoadOptions {
 export async function load(options: LoadOptions) {
   const { path } = options;
 
-  const aigneFilePath = path.endsWith(AIGNE_FILE_NAME) ? path : join(path, AIGNE_FILE_NAME);
+  const aigneFilePath = await getAIGNEFilePath(path);
   const rootDir = dirname(aigneFilePath);
 
   const aigne = await loadAIGNEFile(aigneFilePath);
@@ -123,4 +123,17 @@ export async function loadAIGNEFile(path: string) {
   );
 
   return agent;
+}
+
+async function getAIGNEFilePath(path: string) {
+  const s = await stat(path);
+
+  if (s.isDirectory()) {
+    for (const file of AIGNE_FILE_NAME) {
+      const filePath = join(path, file);
+      if (await exists(filePath)) return filePath;
+    }
+  }
+
+  return path;
 }

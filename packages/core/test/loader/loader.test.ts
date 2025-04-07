@@ -2,7 +2,7 @@ import { expect, mock, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, ChatModel, ExecutionEngine, createMessage } from "@aigne/core";
-import { loadAIGNEFile, loadAgent } from "@aigne/core/loader/index.js";
+import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import { mockModule } from "@aigne/test-utils/mock-module.js";
 import { nanoid } from "nanoid";
@@ -73,19 +73,50 @@ test("loader should error if agent file is not supported", async () => {
   expect(engine).rejects.toThrow("Unsupported agent file type");
 });
 
-test("loadAIGNEFile should error if aigne.yaml file is invalid", async () => {
-  const readFile = mock()
-    .mockReturnValueOnce(Promise.reject(new Error("no such file or directory")))
-    .mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"))
-    .mockReturnValueOnce("chat_model: 123");
+test("load should process path correctly", async () => {
+  const stat = mock();
+  const exists = mock();
+  const readFile = mock();
 
-  await using _ = await mockModule("node:fs/promises", () => ({ readFile }));
+  await using _ = await mockModule("node:fs/promises", () => ({ stat, exists, readFile }));
 
-  expect(loadAIGNEFile("./not-exist-aigne.yaml")).rejects.toThrow("no such file or directory");
+  // mock a non-existing file
+  stat.mockReturnValueOnce(Promise.reject(new Error("no such file or directory")));
+  expect(load({ path: "aigne.yaml" })).rejects.toThrow("no such file or directory");
 
-  expect(loadAIGNEFile("./invalid-aigne.yaml")).rejects.toThrow("Failed to parse aigne.yaml");
+  // mock a yaml file with invalid content
+  stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => false }));
+  readFile.mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"));
+  expect(load({ path: "invalid-yaml/aigne.yaml" })).rejects.toThrow("Failed to parse aigne.yaml");
+  expect(readFile).toHaveBeenLastCalledWith("invalid-yaml/aigne.yaml", "utf8");
 
-  expect(loadAIGNEFile("./invalid-content-aigne.yaml")).rejects.toThrow(
+  // mock a valid yaml but invalid properties
+  stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => false }));
+  readFile.mockReturnValueOnce("chat_model: 123");
+  expect(load({ path: "invalid-properties/aigne.yaml" })).rejects.toThrow(
     "Failed to validate aigne.yaml",
   );
+  expect(readFile).toHaveBeenLastCalledWith("invalid-properties/aigne.yaml", "utf8");
+
+  // mock a directory with a .yaml file
+  stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => true }));
+  exists.mockReturnValueOnce(Promise.resolve(true));
+  readFile.mockReturnValueOnce("chat_model: gpt-4o-mini");
+  expect(load({ path: "foo" })).resolves.toEqual({
+    model: expect.anything(),
+    agents: [],
+    tools: [],
+  });
+  expect(readFile).toHaveBeenLastCalledWith("foo/aigne.yaml", "utf8");
+
+  // mock a directory with a .yml file
+  stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => true }));
+  exists.mockReturnValueOnce(Promise.resolve(false)).mockReturnValueOnce(Promise.resolve(true));
+  readFile.mockReturnValueOnce("chat_model: gpt-4o-mini");
+  expect(load({ path: "bar" })).resolves.toEqual({
+    model: expect.anything(),
+    agents: [],
+    tools: [],
+  });
+  expect(readFile).toHaveBeenLastCalledWith("bar/aigne.yml", "utf8");
 });

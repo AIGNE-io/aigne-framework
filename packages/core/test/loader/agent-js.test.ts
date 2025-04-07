@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { loadAgentFromJsFile } from "@aigne/core/loader/function-agent.js";
+import { loadAgentFromJsFile } from "@aigne/core/loader/agent-js.js";
 import { mockModule } from "@aigne/test-utils/mock-module.js";
 
 test("loadAgentFromJs should error if agent.js file is invalid", async () => {

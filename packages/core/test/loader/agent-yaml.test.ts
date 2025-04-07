@@ -2,7 +2,7 @@ import { expect, mock, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, FunctionAgent } from "@aigne/core";
-import { loadAgentFromYamlFile } from "@aigne/core/loader/ai-agent.js";
+import { loadAgentFromYamlFile } from "@aigne/core/loader/agent-yaml.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
 import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
 import { mockModule } from "@aigne/test-utils/mock-module.js";

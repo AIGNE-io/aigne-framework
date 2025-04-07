@@ -10,8 +10,8 @@ import { ClaudeChatModel } from "../models/claude-chat-model.js";
 import { OpenAIChatModel } from "../models/openai-chat-model.js";
 import { XAIChatModel } from "../models/xai-chat-model.js";
 import { tryOrThrow } from "../utils/type-utils.js";
-import { loadAgentFromYamlFile } from "./ai-agent.js";
-import { loadAgentFromJsFile } from "./function-agent.js";
+import { loadAgentFromJsFile } from "./agent-js.js";
+import { loadAgentFromYamlFile } from "./agent-yaml.js";
 
 const DEFAULT_MODEL_PROVIDER = "openai";
 

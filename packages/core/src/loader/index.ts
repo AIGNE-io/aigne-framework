@@ -4,6 +4,7 @@ import { parse } from "yaml";
 import { z } from "zod";
 import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
+import { MCPAgent } from "../agents/mcp-agent.js";
 import type { ChatModel } from "../models/chat-model.js";
 import { ClaudeChatModel } from "../models/claude-chat-model.js";
 import { OpenAIChatModel } from "../models/openai-chat-model.js";
@@ -56,17 +57,33 @@ export async function loadAgent(path: string): Promise<Agent> {
 
   if (extname(path) === ".yaml" || extname(path) === ".yml") {
     const agent = await loadAgentFromYamlFile(path);
-    return AIAgent.from({
-      name: agent.name,
-      description: agent.description,
-      instructions: agent.instructions,
-      inputSchema: agent.input_schema,
-      outputSchema: agent.output_schema,
-      outputKey: agent.output_key,
-      tools: await Promise.all(
-        (agent.tools ?? []).map((filename) => loadAgent(join(dirname(path), filename))),
-      ),
-    });
+    if (agent.type === "ai") {
+      return AIAgent.from({
+        name: agent.name,
+        description: agent.description,
+        instructions: agent.instructions,
+        inputSchema: agent.input_schema,
+        outputSchema: agent.output_schema,
+        outputKey: agent.output_key,
+        tools: await Promise.all(
+          (agent.tools ?? []).map((filename) => loadAgent(join(dirname(path), filename))),
+        ),
+      });
+    }
+    if (agent.type === "mcp") {
+      if (agent.url) {
+        return MCPAgent.from({
+          url: agent.url,
+        });
+      }
+      if (agent.command) {
+        return MCPAgent.from({
+          command: agent.command,
+          args: agent.args,
+        });
+      }
+      throw new Error(`Missing url or command in mcp agent: ${path}`);
+    }
   }
 
   throw new Error(`Unsupported agent file type: ${path}`);
@@ -85,7 +102,6 @@ async function loadModel(
     presencePenalty: model.presence_penalty ?? undefined,
   };
 
-  // TODO: add support for other models such as AutoChatModel, ClaudeChatModel, etc.
   const availableModels = [OpenAIChatModel, ClaudeChatModel, XAIChatModel];
   const M = availableModels.find((m) =>
     m.name.toLowerCase().includes(model.provider || DEFAULT_MODEL_PROVIDER),

@@ -1,12 +1,13 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, ChatModel, ExecutionEngine, createMessage } from "@aigne/core";
+import { AIAgent, ChatModel, ExecutionEngine, MCPAgent, createMessage } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
 import { mockModule } from "@aigne/test-utils/mock-module.js";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { nanoid } from "nanoid";
 
 test("ExecutionEngine.load should load agents correctly", async () => {
@@ -158,4 +159,63 @@ chat_model:
 `),
   );
   expect((await load({ path: "aigne.yaml" })).model).toBeInstanceOf(XAIChatModel);
+});
+
+test("loadAgent should load MCP agent from url correctly", async () => {
+  const testMcp = MCPAgent.from({
+    name: "test-mcp",
+    client: new Client({ name: "test-mcp-cleint", version: "0.0.1" }),
+  });
+
+  const from = spyOn(MCPAgent, "from").mockReturnValueOnce(testMcp);
+
+  const readFile = mock().mockReturnValueOnce(`\
+type: mcp
+url: http://localhost:3000/sse
+`);
+
+  await using _ = await mockModule("node:fs/promises", () => ({
+    readFile,
+  }));
+
+  expect(await loadAgent("./remote-mcp.yaml")).toBe(testMcp);
+  expect(from).toHaveBeenLastCalledWith({
+    url: "http://localhost:3000/sse",
+  });
+});
+
+test("loadAgent should load MCP agent from command correctly", async () => {
+  const fsMcp = MCPAgent.from({
+    name: "filesystem",
+    client: new Client({ name: "test-mcp-cleint", version: "0.0.1" }),
+  });
+  const from = spyOn(MCPAgent, "from").mockReturnValueOnce(fsMcp);
+
+  const readFile = mock().mockReturnValueOnce(`\
+type: mcp
+command: npx
+args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
+`);
+
+  await using _ = await mockModule("node:fs/promises", () => ({
+    readFile,
+  }));
+
+  expect(await loadAgent("./local-mcp.yaml")).toBe(fsMcp);
+  expect(from).toHaveBeenLastCalledWith({
+    command: "npx",
+    args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
+  });
+});
+
+test("loadAgent should error if MCP agent options is not valid", async () => {
+  const readFile = mock().mockReturnValueOnce(`\
+type: mcp
+`);
+
+  await using _ = await mockModule("node:fs/promises", () => ({
+    readFile,
+  }));
+
+  expect(loadAgent("./local-mcp.yaml")).rejects.toThrow("Missing url or command in mcp agent");
 });

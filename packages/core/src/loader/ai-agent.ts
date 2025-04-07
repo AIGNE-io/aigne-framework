@@ -5,31 +5,49 @@ import { type ZodObject, type ZodType, z } from "zod";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { inputOutputSchema } from "./schema.js";
 
-const agentFileSchema = z.object({
-  name: z.string(),
-  description: z
-    .string()
-    .nullish()
-    .transform((v) => v ?? undefined),
-  instructions: z
-    .string()
-    .nullish()
-    .transform((v) => v ?? undefined),
-  input_schema: inputOutputSchema
-    .nullish()
-    .transform((v) => (v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined)),
-  output_schema: inputOutputSchema
-    .nullish()
-    .transform((v) => (v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined)),
-  output_key: z
-    .string()
-    .nullish()
-    .transform((v) => v ?? undefined),
-  tools: z
-    .array(z.string())
-    .nullish()
-    .transform((v) => v ?? undefined),
-});
+const agentFileSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("ai"),
+    name: z.string(),
+    description: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
+    instructions: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
+    input_schema: inputOutputSchema
+      .nullish()
+      .transform((v) => (v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined)),
+    output_schema: inputOutputSchema
+      .nullish()
+      .transform((v) => (v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined)),
+    output_key: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
+    tools: z
+      .array(z.string())
+      .nullish()
+      .transform((v) => v ?? undefined),
+  }),
+  z.object({
+    type: z.literal("mcp"),
+    url: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
+    command: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
+    args: z
+      .array(z.string())
+      .nullish()
+      .transform((v) => v ?? undefined),
+  }),
+]);
 
 export async function loadAgentFromYamlFile(path: string) {
   const raw = await tryOrThrow(
@@ -43,7 +61,7 @@ export async function loadAgentFromYamlFile(path: string) {
   );
 
   const agent = tryOrThrow(
-    () => agentFileSchema.parse(json),
+    () => agentFileSchema.parse({ ...json, type: json.type ?? "ai" }),
     (error) => new Error(`Failed to validate agent definition from ${path}: ${error.message}`),
   );
 

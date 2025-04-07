@@ -80,3 +80,31 @@ test("loadAgentFromYaml should error if agent.yaml file is invalid", async () =>
     "Failed to validate agent definition",
   );
 });
+
+test("loadAgentFromYaml should load mcp agent correctly", async () => {
+  const readFile = mock()
+    .mockReturnValueOnce(`\
+type: mcp
+url: http://localhost:3000/sse
+`)
+    .mockReturnValueOnce(`\
+type: mcp
+command: npx
+args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
+`);
+
+  await using _ = await mockModule("node:fs/promises", () => ({
+    readFile,
+  }));
+
+  expect(await loadAgentFromYamlFile("./remote-mcp.yaml")).toEqual({
+    type: "mcp",
+    url: "http://localhost:3000/sse",
+  });
+
+  expect(await loadAgentFromYamlFile("./local-mcp.yaml")).toEqual({
+    type: "mcp",
+    command: "npx",
+    args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
+  });
+});

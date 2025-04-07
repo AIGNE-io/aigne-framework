@@ -37,11 +37,6 @@ export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine
 
   const app = express();
 
-  app.use(<ErrorRequestHandler>((error, _req, res, _next) => {
-    console.error("handle route error", { error });
-    res.status(500).json({ error: { message: error.message } });
-  }));
-
   const transports: { [sessionId: string]: SSEServerTransport } = {};
 
   app.get("/sse", async (_: Request, res: Response) => {
@@ -59,9 +54,16 @@ export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine
     if (transport) {
       await transport.handlePostMessage(req, res);
     } else {
-      res.status(400).send("No transport found for sessionId");
+      throw new HttpError(400, "No transport found for sessionId");
     }
   });
+
+  app.use(<ErrorRequestHandler>((error, _req, res, _next) => {
+    console.error("handle route error", { error });
+    res
+      .status(error instanceof HttpError ? error.status : 500)
+      .json({ error: { message: error.message } });
+  }));
 
   const { promise, resolve, reject } = Promise.withResolvers();
 
@@ -73,4 +75,13 @@ export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine
   await promise;
 
   return httpServer;
+}
+
+class HttpError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+  }
 }

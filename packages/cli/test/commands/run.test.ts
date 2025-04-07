@@ -1,4 +1,4 @@
-import { expect, mock, test } from "bun:test";
+import { expect, mock, spyOn, test } from "bun:test";
 import { join, relative } from "node:path";
 import { createRunCommand } from "@aigne/cli/commands/run.js";
 import { UserAgent } from "@aigne/core";
@@ -52,6 +52,7 @@ test("run command should call run chat loop correctly", async () => {
   );
 
   // should error if agent not found
+  spyOn(console, "error").mockReturnValueOnce(undefined);
   expect(command.parseAsync(["", "run", testAgentsPath, "--agent", "chat1"])).rejects.toThrow(
     "not found",
   );

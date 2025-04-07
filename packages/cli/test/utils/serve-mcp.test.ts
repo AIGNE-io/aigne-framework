@@ -6,6 +6,7 @@ import { ExecutionEngine } from "@aigne/core";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { detect } from "detect-port";
+import { withQuery } from "ufo";
 
 test("serveMCPServer should work", async () => {
   const port = await detect();
@@ -47,7 +48,27 @@ test("serveMCPServer should work", async () => {
   });
 
   await client.close();
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  server.closeAllConnections();
+  server.close();
+});
+
+test("serveMCPServer should respond error by express router", async () => {
+  const port = await detect();
+
+  const testAgentsPath = join(import.meta.dirname, "../../test-agents");
+  const engine = await ExecutionEngine.load({ path: testAgentsPath });
+  const server = await serveMCPServer({ engine, port });
+
+  spyOn(console, "error").mockReturnValueOnce(undefined);
+  const result = await fetch(
+    withQuery(`http://localhost:${port}/messages`, { sessionId: "test-session-id" }),
+    { method: "POST" },
+  );
+  expect(result.status).toBe(400);
+  expect(result.json()).resolves.toEqual({
+    error: { message: "No transport found for sessionId" },
+  });
+
   server.closeAllConnections();
   server.close();
 });

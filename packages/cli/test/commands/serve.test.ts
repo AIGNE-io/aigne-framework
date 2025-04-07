@@ -21,9 +21,11 @@ test("serve-mcp command should work with default options", async () => {
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
+  const cwd = process.cwd();
   process.chdir(testAgentsPath);
   await command.parseAsync(["", "serve", "--mcp"]);
   expect(mockListen).toHaveBeenCalledWith(3000, expect.any(Function));
+  process.chdir(cwd);
 });
 
 test("serve-mcp command should work with custom options", async () => {

@@ -13,13 +13,13 @@ export function createServeCommand(): Command {
     .description("Serve the agents in the specified directory as a MCP server")
     .argument("[path]", "Path to the agents directory", ".")
     .option("--mcp", "Serve the agents as a MCP server")
-    .option("--port <port>", "Port to run the MCP server on", "3000")
+    .option("--port <port>", "Port to run the MCP server on", Number.parseInt, 3000)
     .action(async (path: string, options: ServeMCPOptions) => {
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
 
       const engine = await ExecutionEngine.load({ path: absolutePath });
 
-      if (options.mcp) serveMCPServer({ engine, port: options.port });
+      if (options.mcp) await serveMCPServer({ engine, port: options.port });
       else throw new Error("Default server is not supported yet. Please use --mcp option");
     })
     .showHelpAfterError(true)

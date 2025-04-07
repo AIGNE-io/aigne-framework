@@ -39,10 +39,10 @@ export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine
 
   const transports: { [sessionId: string]: SSEServerTransport } = {};
 
-  app.get("/sse", async (_: Request, res: Response) => {
+  app.get("/sse", async (req: Request, res: Response) => {
     const transport = new SSEServerTransport("/messages", res);
     transports[transport.sessionId] = transport;
-    res.on("close", () => {
+    req.on("close", () => {
       delete transports[transport.sessionId];
     });
     await server.connect(transport);

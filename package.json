@@ -17,15 +17,15 @@
     "clean": "pnpm -r run clean",
     "build:libs": "pnpm -F @aigne/* build",
     "update:deps": "npx -y taze latest -r -w && pnpm install && pnpm dedupe",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test": "pnpm -r run test",
+    "test:coverage": "pnpm -r run test:coverage",
     "postinstall": "npx simple-git-hooks"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "simple-git-hooks": "^2.12.1",
     "typescript": "^5.8.2",
-    "zx": "^8.4.1"
+    "zx": "^8.5.0"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

@@ -24,11 +24,12 @@ export class DeepSeekChatModel extends ChatModel {
   private _client?: OpenAI;
 
   get client() {
-    if (!this.options?.apiKey) throw new Error("Api Key is required for DeepSeekChatModel");
+    const apiKey = this.options?.apiKey || process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) throw new Error("Api Key is required for DeepSeekChatModel");
 
     this._client ??= new OpenAI({
-      baseURL: this.options.baseURL || DEEPSEEK_BASE_URL,
-      apiKey: this.options.apiKey,
+      baseURL: this.options?.baseURL || DEEPSEEK_BASE_URL,
+      apiKey,
     });
     return this._client;
   }

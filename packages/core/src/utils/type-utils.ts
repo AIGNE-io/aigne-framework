@@ -94,3 +94,30 @@ export function checkArguments<T>(prefix: string, schema: ZodType<T>, args: T) {
     throw error;
   }
 }
+
+export function tryOrThrow<P extends PromiseOrValue<unknown>>(
+  fn: () => P,
+  error: string | Error | ((error: Error) => Error),
+): P {
+  const createError = (e: Error) => {
+    return typeof error === "function"
+      ? error(e)
+      : typeof error === "string"
+        ? new Error(error)
+        : error;
+  };
+
+  try {
+    const result = fn();
+
+    if (result instanceof Promise) {
+      return result.catch((e) => {
+        throw createError(e);
+      }) as P;
+    }
+
+    return result;
+  } catch (e) {
+    throw createError(e);
+  }
+}

@@ -1,0 +1,9 @@
+chat_model:
+  provider: openai
+  name: gpt-4o-mini
+  temperature: 0.8
+agents:
+  - chat.yaml
+tools:
+  - sandbox.js
+  - filesystem.yaml

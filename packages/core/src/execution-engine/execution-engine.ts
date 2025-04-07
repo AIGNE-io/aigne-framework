@@ -3,8 +3,9 @@ import { z } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import {} from "../agents/types.js";
 import type { UserAgent } from "../agents/user-agent.js";
+import { load } from "../loader/index.js";
 import { ChatModel } from "../models/chat-model.js";
-import { checkArguments } from "../utils/type-utils.js";
+import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
 import { type ContextLimits, ExecutionContext, type Runnable } from "./context.js";
 import {
   type MessagePayload,
@@ -21,13 +22,26 @@ export interface ExecutionEngineOptions {
 }
 
 export class ExecutionEngine extends EventEmitter {
+  static async load({
+    path,
+    ...options
+  }: { path: string } & ExecutionEngineOptions): Promise<ExecutionEngine> {
+    const { model, agents, tools } = await load({ path });
+    return new ExecutionEngine({
+      model,
+      ...options,
+      agents: agents.concat(options.agents ?? []),
+      tools: tools.concat(options.tools ?? []),
+    });
+  }
+
   constructor(options?: ExecutionEngineOptions) {
     if (options) checkArguments("ExecutionEngine", executionEngineOptionsSchema, options);
 
     super();
     this.model = options?.model;
-    this.tools = options?.tools ?? [];
     this.limits = options?.limits;
+    if (options?.tools?.length) this.tools.push(...options.tools);
     if (options?.agents?.length) this.addAgent(...options.agents);
 
     this.initProcessExitHandler();
@@ -37,9 +51,9 @@ export class ExecutionEngine extends EventEmitter {
 
   model?: ChatModel;
 
-  tools: Agent[];
+  readonly tools = createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name));
 
-  private agents: Agent[] = [];
+  readonly agents = createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name));
 
   limits?: ContextLimits;
 

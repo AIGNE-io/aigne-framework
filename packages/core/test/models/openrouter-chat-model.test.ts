@@ -10,7 +10,7 @@ import {
 import { OpenRouterChatModel } from "@aigne/core/models/openrouter-chat-model.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
 
-test("OpenAIChatModel.call", async () => {
+test("OpenRouterChatModel.call", async () => {
   const model = new OpenRouterChatModel({
     apiKey: "YOUR_API_KEY",
     model: "openai/gpt-4o",

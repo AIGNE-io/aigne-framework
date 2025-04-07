@@ -1,29 +1,23 @@
 import { nanoid } from "nanoid";
 import { OpenAI } from "openai";
-import type {
-  ChatCompletionMessageParam,
-  ChatCompletionTool,
-} from "openai/resources/chat/completions.js";
 import { SystemMessageTemplate } from "../prompt/template.js";
 import { parseJSON } from "../utils/json-schema.js";
-import { checkArguments, isNonNullable } from "../utils/type-utils.js";
-import type {
-  ChatModelInput,
-  ChatModelInputMessage,
-  ChatModelInputTool,
-  ChatModelOutput,
-  ChatModelOutputUsage,
-} from "./chat-model.js";
+import { checkArguments } from "../utils/type-utils.js";
+import type { ChatModelInput, ChatModelOutput, ChatModelOutputUsage } from "./chat-model.js";
 import { ChatModel } from "./chat-model.js";
-import type { OpenAIChatModelOptions } from "./openai-chat-model.js";
-import { ROLE_MAP, openAIChatModelOptionsSchema } from "./openai-chat-model.js";
+import {
+  type OpenAIBaseModelOptions,
+  contentsFromInputMessages,
+  openAIBaseModelOptionsSchema,
+  toolsFromInputTools,
+} from "./openai-base-model.js";
 
 const DEEPSEEK_DEFAULT_CHAT_MODEL = "deepseek-chat";
 const DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 
 export class DeepSeekChatModel extends ChatModel {
-  constructor(public options?: OpenAIChatModelOptions) {
-    if (options) checkArguments("DeepSeekChatModel", openAIChatModelOptionsSchema, options);
+  constructor(public options?: OpenAIBaseModelOptions) {
+    if (options) checkArguments("DeepSeekChatModel", openAIBaseModelOptionsSchema, options);
     super();
   }
 
@@ -45,12 +39,14 @@ export class DeepSeekChatModel extends ChatModel {
 
   async process(input: ChatModelInput): Promise<ChatModelOutput> {
     const jsonMode = input.responseFormat?.type === "json_schema";
+    const messages = [...input.messages];
+
     if (jsonMode) {
       const systemPrompt = SystemMessageTemplate.from(
         `The response should be a JSON object following this schema: 
         ${JSON.stringify((input.responseFormat as { jsonSchema: { schema: Record<string, unknown> } }).jsonSchema)}`,
       );
-      input.messages.unshift(systemPrompt);
+      messages.unshift(systemPrompt);
     }
 
     const res = await this.client.chat.completions.create({
@@ -60,7 +56,7 @@ export class DeepSeekChatModel extends ChatModel {
       frequency_penalty:
         input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,
       presence_penalty: input.modelOptions?.presencePenalty ?? this.modelOptions?.presencePenalty,
-      messages: await contentsFromInputMessages(input.messages),
+      messages: await contentsFromInputMessages(messages),
       tools: toolsFromInputTools(input.tools),
       tool_choice: input.toolChoice,
       parallel_tool_calls: !input.tools?.length
@@ -129,47 +125,4 @@ export class DeepSeekChatModel extends ChatModel {
 
     return result;
   }
-}
-
-async function contentsFromInputMessages(
-  messages: ChatModelInputMessage[],
-): Promise<ChatCompletionMessageParam[]> {
-  return messages.map(
-    (i) =>
-      ({
-        role: ROLE_MAP[i.role],
-        content:
-          typeof i.content === "string"
-            ? i.content
-            : i.content
-                ?.map((c) => {
-                  if (c.type === "text") {
-                    return { type: "text" as const, text: c.text };
-                  }
-                })
-                .filter(isNonNullable),
-        tool_calls: i.toolCalls?.map((i) => ({
-          ...i,
-          function: {
-            ...i.function,
-            arguments: JSON.stringify(i.function.arguments),
-          },
-        })),
-        tool_call_id: i.toolCallId,
-        name: i.name,
-      }) as ChatCompletionMessageParam,
-  );
-}
-
-function toolsFromInputTools(tools?: ChatModelInputTool[]): ChatCompletionTool[] | undefined {
-  return tools?.length
-    ? tools.map((i) => ({
-        type: "function",
-        function: {
-          name: i.function.name,
-          description: i.function.description,
-          parameters: i.function.parameters as Record<string, unknown>,
-        },
-      }))
-    : undefined;
 }

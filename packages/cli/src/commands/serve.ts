@@ -13,7 +13,7 @@ export function createServeCommand(): Command {
     .description("Serve the agents in the specified directory as a MCP server")
     .argument("[path]", "Path to the agents directory", ".")
     .option("--mcp", "Serve the agents as a MCP server")
-    .option("--port <port>", "Port to run the MCP server on", Number.parseInt, 3000)
+    .option("--port <port>", "Port to run the MCP server on", (s) => Number.parseInt(s), 3000)
     .action(async (path: string, options: ServeMCPOptions) => {
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
 

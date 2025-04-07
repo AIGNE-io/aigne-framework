@@ -1,11 +1,10 @@
-import type { Server } from "node:http";
 import { type ExecutionEngine, getMessage } from "@aigne/core";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import express, { type ErrorRequestHandler, type Request, type Response } from "express";
 import { ZodObject, type ZodRawShape } from "zod";
 
-export function serveMCPServer({ engine, port }: { engine: ExecutionEngine; port: number }) {
+export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine; port: number }) {
   const server = new McpServer(
     {
       name: engine.name || "aigne-mcp-server",
@@ -64,10 +63,14 @@ export function serveMCPServer({ engine, port }: { engine: ExecutionEngine; port
     }
   });
 
-  return new Promise<Server>((resolve, reject) => {
-    const server = app.listen(port, (error) => {
-      if (error) reject(error);
-      resolve(server);
-    });
+  const { promise, resolve, reject } = Promise.withResolvers();
+
+  const httpServer = app.listen(port, (error) => {
+    if (error) reject(error);
+    resolve();
   });
+
+  await promise;
+
+  return httpServer;
 }

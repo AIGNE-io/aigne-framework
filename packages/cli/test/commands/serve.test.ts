@@ -5,7 +5,7 @@ import { mockModule } from "@aigne/test-utils/mock-module.js";
 import { detect } from "detect-port";
 
 test("serve-mcp command should work with default options", async () => {
-  const mockListen = mock();
+  const mockListen = mock().mockImplementationOnce((_, cb) => cb());
   const mockExpress = mock(() => ({
     use: mock(),
     get: mock(),
@@ -23,11 +23,11 @@ test("serve-mcp command should work with default options", async () => {
 
   process.chdir(testAgentsPath);
   await command.parseAsync(["", "serve", "--mcp"]);
-  expect(mockListen).toHaveBeenCalledWith("3000", expect.any(Function));
+  expect(mockListen).toHaveBeenCalledWith(3000, expect.any(Function));
 });
 
 test("serve-mcp command should work with custom options", async () => {
-  const mockListen = mock();
+  const mockListen = mock().mockImplementationOnce((_, cb) => cb());
   const mockExpress = mock(() => ({
     use: mock(),
     get: mock(),
@@ -47,5 +47,5 @@ test("serve-mcp command should work with custom options", async () => {
 
   await command.parseAsync(["", "serve", "--mcp", "--port", port.toString(), testAgentsPath]);
 
-  expect(mockListen).toHaveBeenCalledWith(port.toString(), expect.any(Function));
+  expect(mockListen).toHaveBeenCalledWith(port, expect.any(Function));
 });

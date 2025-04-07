@@ -1,0 +1,3 @@
+type: mcp
+command: npx
+args: ["-y", "@modelcontextprotocol/server-filesystem", "."]

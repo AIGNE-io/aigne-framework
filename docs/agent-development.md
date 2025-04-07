@@ -9,6 +9,7 @@ The AIGNE framework enables developers to create powerful AI agents through simp
 - [Project Configuration File (aigne.yaml)](#project-configuration-file-aigneyaml)
 - [YAML Format Agent Definition (chat.yaml)](#yaml-format-agent-definition-chatyaml)
 - [JavaScript Format Agent Definition (plus.js)](#javascript-format-agent-definition-plusjs)
+- [MCP Format Agent Definition (filesystem.yaml)](#mcp-format-agent-definition-filesystemyaml)
 - [Agent Test File (plus.test.js)](#agent-test-file-plustestjs)
 - [Development Process and Best Practices](#development-process-and-best-practices)
 
@@ -20,6 +21,7 @@ The AIGNE framework enables developers to create powerful AI agents through simp
 
 ```yaml
 chat_model:
+  provider: openai
   name: gpt-4o-mini
   temperature: 0.8
 agents:
@@ -29,6 +31,7 @@ agents:
 ### Configuration Options Explained
 
 - `chat_model`: Defines the default AI model configuration
+  - `provider`: [Optional] Model provider, possible values are `openai`, `claude`, `xai`
   - `name`: Model name (such as `gpt-4o-mini`, `gpt-4o`, etc.)
   - `temperature`: Randomness of the model output (0.0-1.0). Lower values produce more deterministic outputs; higher values produce more diverse and innovative outputs.
   - `top_p`: [Optional] Number of highest probability tokens to consider during sampling
@@ -122,6 +125,56 @@ plus.output_schema = {
 - `xxx.description`: Function description, providing a brief explanation of the tool
 - `xxx.input_schema`: JSON Schema definition of input parameters, standard JSON Schema format
 - `xxx.output_schema`: JSON Schema definition of output results, standard JSON Schema format
+
+## MCP Format Agent Definition (filesystem.yaml)
+
+AIGNE also supports [MCP (Model Context Protocol)](https://modelcontextprotocol.io/introduction) agents, which allow you to connect to external tools and resources through MCP servers. These are defined through YAML files with a specific format.
+
+### Basic Structure
+
+MCP agents can be defined in two ways:
+
+1. Using a local command:
+
+```yaml
+type: mcp
+command: npx
+args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
+```
+
+2. Using a URL to connect to a remote MCP server:
+
+```yaml
+type: mcp
+url: "http://localhost:3000"
+```
+
+### Configuration Options Explained
+
+When using a local command:
+- `type`: Must be set to `mcp` to indicate this is an MCP agent
+- `command`: The base command to run the MCP server
+- `args`: Array of arguments to pass to the command
+  - The first element is often a package name that implements an MCP server
+  - Additional arguments can be passed as needed by the specific MCP server
+
+When connecting to a remote server:
+- `type`: Must be set to `mcp` to indicate this is an MCP agent
+- `url`: URL of the remote MCP server to connect to
+
+### How MCP Agents Work
+
+MCP agents work by connecting to MCP servers that implement the Model Context Protocol. These servers can provide:
+
+1. **Tools**: Executable functions that can be called by the AI
+2. **Resources**: Data sources that can be accessed by the AI
+3. **Resource Templates**: Patterns for dynamically generating resources
+
+When an MCP agent is initialized, the AIGNE framework will:
+
+1. Start the MCP server using the provided command and arguments
+2. Connect to the server and discover available tools and resources
+3. Make these tools and resources available to the AI through a standardized interface
 
 ## Agent Test File (plus.test.js)
 

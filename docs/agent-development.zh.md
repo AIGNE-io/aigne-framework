@@ -9,6 +9,7 @@ AIGNE 框架使开发者能够通过简单的配置和代码文件创建强大�
 - [项目配置文件 (aigne.yaml)](#项目配置文件-aigneyaml)
 - [YAML 格式代理定义 (chat.yaml)](#yaml-格式代理定义-chatyaml)
 - [JavaScript 格式代理定义 (plus.js)](#javascript-格式代理定义-plusjs)
+- [MCP 格式代理定义 (filesystem.yaml)](#mcp-格式代理定义-filesystemyaml)
 - [代理测试文件 (plus.test.js)](#代理测试文件-plustestjs)
 - [开发流程与最佳实践](#开发流程与最佳实践)
 
@@ -20,6 +21,7 @@ AIGNE 框架使开发者能够通过简单的配置和代码文件创建强大�
 
 ```yaml
 chat_model:
+  provider: openai
   name: gpt-4o-mini
   temperature: 0.8
 agents:
@@ -29,6 +31,7 @@ agents:
 ### 配置选项详解
 
 - `chat_model`: 定义默认使用的 AI 模型配置
+  - `provider`: 【可选】模型提供商，可选值为 `openai`、`claude`、`xai`
   - `name`: 模型名称（如 `gpt-4o-mini`、`gpt-4o` 等）
   - `temperature`: 模型输出的随机性（0.0-1.0）。值越低，输出越确定性；值越高，输出越多样化和创新。
   - `top_p`: 【可选】采样时考虑的最高概率 token 数量
@@ -122,6 +125,56 @@ plus.output_schema = {
 - `xxx.description`: 函数描述，提供工具的简要说明
 - `xxx.input_schema`: 输入参数的 JSON Schema 定义，标准 JSON Schema 格式
 - `xxx.output_schema`: 输出结果的 JSON Schema 定义，标准 JSON Schema 格式
+
+## MCP 格式代理定义 (filesystem.yaml)
+
+AIGNE 还支持 [MCP（Model Context Protocol）](https://modelcontextprotocol.io/introduction)代理，它允许您通过 MCP 服务器连接外部工具和资源。这些代理通过具有特定格式的 YAML 文件定义。
+
+### 基本结构
+
+MCP 代理可以通过两种方式定义：
+
+1. 使用本地命令：
+
+```yaml
+type: mcp
+command: npx
+args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
+```
+
+2. 使用 URL 连接到远程 MCP 服务器：
+
+```yaml
+type: mcp
+url: "http://localhost:3000"
+```
+
+### 配置选项详解
+
+使用本地命令时：
+- `type`：必须设置为 `mcp`，表明这是一个 MCP 代理
+- `command`：运行 MCP 服务器的基本命令
+- `args`：传递给命令的参数数组
+  - 第一个元素通常是实现 MCP 服务器的包名
+  - 根据特定 MCP 服务器的需求，可以传递额外的参数
+
+连接到远程服务器时：
+- `type`：必须设置为 `mcp`，表明这是一个 MCP 代理
+- `url`：要连接的远程 MCP 服务器的 URL
+
+### MCP 代理工作原理
+
+MCP 代理通过连接实现 Model Context Protocol 的 MCP 服务器工作。这些服务器可以提供：
+
+1. **工具（Tools）**：可以被 AI 调用的可执行函数
+2. **资源（Resources）**：可以被 AI 访问的数据源
+3. **资源模板（Resource Templates）**：用于动态生成资源的模式
+
+当 MCP 代理初始化时，AIGNE 框架将：
+
+1. 使用提供的命令和参数启动 MCP 服务器
+2. 连接到服务器并发现可用的工具和资源
+3. 通过标准化接口使这些工具和资源对 AI 可用
 
 ## 代理测试文件 (plus.test.js)
 

@@ -3,6 +3,7 @@ import pkg from "../../package.json" with { type: "json" };
 import { asciiLogo } from "../utils/ascii-logo.js";
 import { createCreateCommand } from "./create.js";
 import { createRunCommand } from "./run.js";
+import { createServeMCPCommand } from "./serve-mcp.js";
 import { createTestCommand } from "./test.js";
 
 export function createAIGNECommand(): Command {
@@ -15,6 +16,7 @@ export function createAIGNECommand(): Command {
     .addCommand(createRunCommand())
     .addCommand(createTestCommand())
     .addCommand(createCreateCommand())
+    .addCommand(createServeMCPCommand())
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);
 }

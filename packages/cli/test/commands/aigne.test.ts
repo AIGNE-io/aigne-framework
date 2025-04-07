@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
+import { createAIGNECommand } from "@aigne/cli/commands/aigne.js";
 import { Command } from "commander";
-import { createAIGNECommand } from "../../src/commands/aigne.js";
 
 test("aigne command should parse --version correctly", async () => {
   const command = createAIGNECommand();

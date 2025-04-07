@@ -1,8 +1,8 @@
 import { expect, mock, test } from "bun:test";
 import { join, relative } from "node:path";
+import { createRunCommand } from "@aigne/cli/commands/run.js";
 import { UserAgent } from "@aigne/core";
 import { mockModule } from "@aigne/test-utils/mock-module.js";
-import { createRunCommand } from "../../src/commands/run.js";
 
 test("run command should call run chat loop correctly", async () => {
   const runChatLoopInTerminal = mock();

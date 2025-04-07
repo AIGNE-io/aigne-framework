@@ -87,18 +87,18 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
   private readonly _outputSchema?: AgentInputOutputSchema<O>;
 
-  get inputSchema(): ZodType<I> {
+  get inputSchema(): ZodObject<{ [key in keyof I]: ZodType<I[key]> }> {
     const s = this._inputSchema;
     const schema = typeof s === "function" ? s(this) : s || z.object({});
     checkAgentInputOutputSchema(schema);
-    return schema.passthrough() as unknown as ZodType<I>;
+    return schema.passthrough() as unknown as ZodObject<{ [key in keyof I]: ZodType<I[key]> }>;
   }
 
-  get outputSchema(): ZodType<O> {
+  get outputSchema(): ZodObject<{ [key in keyof O]: ZodType<O[key]> }> {
     const s = this._outputSchema;
     const schema = typeof s === "function" ? s(this) : s || z.object({});
     checkAgentInputOutputSchema(schema);
-    return schema.passthrough() as unknown as ZodType<O>;
+    return schema.passthrough() as unknown as ZodObject<{ [key in keyof O]: ZodType<O[key]> }>;
   }
 
   readonly includeInputInOutput?: boolean;

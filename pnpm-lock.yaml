@@ -192,12 +192,18 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.8.0
+        version: 1.8.0
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
       commander:
         specifier: ^13.1.0
         version: 13.1.0
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
       gradient-string:
         specifier: ^3.0.0
         version: 3.0.0
@@ -207,6 +213,9 @@ importers:
       openai:
         specifier: ^4.91.1
         version: 4.91.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -214,12 +223,18 @@ importers:
       '@types/bun':
         specifier: ^1.2.8
         version: 1.2.8
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.1
       '@types/gradient-string':
         specifier: ^1.1.6
         version: 1.1.6
       '@types/node':
         specifier: ^22.14.0
         version: 22.14.0
+      detect-port:
+        specifier: ^2.1.0
+        version: 2.1.0
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5

@@ -15,6 +15,13 @@ test("ExecutionEngine.load should load agents correctly", async () => {
     path: join(import.meta.dirname, "../../test-agents"),
   });
 
+  expect(engine).toEqual(
+    expect.objectContaining({
+      name: "test_aigne_project",
+      description: "A test project for the aigne agent",
+    }),
+  );
+
   expect(engine.agents.length).toBe(1);
 
   const chat = engine.agents[0];

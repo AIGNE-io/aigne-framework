@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import * as childProcess from "node:child_process";
 import { join } from "node:path";
-import { createTestCommand } from "../../src/commands/test.js";
+import { createTestCommand } from "@aigne/cli/commands/test.js";
 
 test("test command should spawn node --test process with correct arguments", async () => {
   const spawnSyncMock = spyOn(childProcess, "spawnSync").mockReturnValue(

@@ -15,6 +15,8 @@ import {
 } from "./message-queue.js";
 
 export interface ExecutionEngineOptions {
+  name?: string;
+  description?: string;
   model?: ChatModel;
   tools?: Agent[];
   agents?: Agent[];
@@ -26,10 +28,12 @@ export class ExecutionEngine extends EventEmitter {
     path,
     ...options
   }: { path: string } & ExecutionEngineOptions): Promise<ExecutionEngine> {
-    const { model, agents, tools } = await load({ path });
+    const { model, agents, tools, ...aigne } = await load({ path });
     return new ExecutionEngine({
       model,
       ...options,
+      name: options.name || aigne.name || undefined,
+      description: options.description || aigne.description || undefined,
       agents: agents.concat(options.agents ?? []),
       tools: tools.concat(options.tools ?? []),
     });
@@ -39,6 +43,8 @@ export class ExecutionEngine extends EventEmitter {
     if (options) checkArguments("ExecutionEngine", executionEngineOptionsSchema, options);
 
     super();
+    this.name = options?.name;
+    this.description = options?.description;
     this.model = options?.model;
     this.limits = options?.limits;
     if (options?.tools?.length) this.tools.push(...options.tools);
@@ -46,6 +52,10 @@ export class ExecutionEngine extends EventEmitter {
 
     this.initProcessExitHandler();
   }
+
+  name?: string;
+
+  description?: string;
 
   readonly messageQueue = new MessageQueue();
 

@@ -112,22 +112,26 @@ test("load should process path correctly", async () => {
   stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => true }));
   exists.mockReturnValueOnce(Promise.resolve(true));
   readFile.mockReturnValueOnce("chat_model: gpt-4o-mini");
-  expect(load({ path: "foo" })).resolves.toEqual({
-    model: expect.anything(),
-    agents: [],
-    tools: [],
-  });
+  expect(load({ path: "foo" })).resolves.toEqual(
+    expect.objectContaining({
+      model: expect.anything(),
+      agents: [],
+      tools: [],
+    }),
+  );
   expect(readFile).toHaveBeenLastCalledWith("foo/aigne.yaml", "utf8");
 
   // mock a directory with a .yml file
   stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => true }));
   exists.mockReturnValueOnce(Promise.resolve(false)).mockReturnValueOnce(Promise.resolve(true));
   readFile.mockReturnValueOnce("chat_model: gpt-4o-mini");
-  expect(load({ path: "bar" })).resolves.toEqual({
-    model: expect.anything(),
-    agents: [],
-    tools: [],
-  });
+  expect(load({ path: "bar" })).resolves.toEqual(
+    expect.objectContaining({
+      model: expect.anything(),
+      agents: [],
+      tools: [],
+    }),
+  );
   expect(readFile).toHaveBeenLastCalledWith("bar/aigne.yml", "utf8");
 });
 

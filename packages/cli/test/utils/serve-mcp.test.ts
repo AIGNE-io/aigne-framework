@@ -14,11 +14,13 @@ test("serveMCPServer should work", async () => {
   const engine = await ExecutionEngine.load({ path: testAgentsPath });
 
   assert(engine.model, "engine.model should be defined");
-  spyOn(engine.model, "call").mockReturnValueOnce(
-    Promise.resolve({
-      text: "hello, how can I help you?",
-    }),
-  );
+  spyOn(engine.model, "call")
+    .mockReturnValueOnce(
+      Promise.resolve({
+        text: "hello, how can I help you?",
+      }),
+    )
+    .mockImplementation(() => Promise.reject(new Error("not implemented")));
 
   const server = await serveMCPServer({ engine, port });
 

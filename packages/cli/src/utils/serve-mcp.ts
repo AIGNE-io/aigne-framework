@@ -2,7 +2,8 @@ import type { Server } from "node:http";
 import { type ExecutionEngine, getMessage } from "@aigne/core";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
-import express, { type Request, type Response } from "express";
+import express, { type ErrorRequestHandler, type Request, type Response } from "express";
+import { ZodObject, type ZodRawShape } from "zod";
 
 export function serveMCPServer({ engine, port }: { engine: ExecutionEngine; port: number }) {
   const server = new McpServer(
@@ -19,7 +20,9 @@ export function serveMCPServer({ engine, port }: { engine: ExecutionEngine; port
   for (const agent of engine.agents) {
     const schema = agent.inputSchema;
 
-    server.tool(agent.name, agent.description || "", schema.shape, async (input) => {
+    if (!(schema instanceof ZodObject)) throw new Error("Agent input schema must be a ZodObject");
+
+    server.tool(agent.name, agent.description || "", schema.shape as ZodRawShape, async (input) => {
       const result = await engine.call(agent, input);
 
       return {
@@ -34,6 +37,11 @@ export function serveMCPServer({ engine, port }: { engine: ExecutionEngine; port
   }
 
   const app = express();
+
+  app.use(<ErrorRequestHandler>((error, _req, res, _next) => {
+    console.error("handle route error", { error });
+    res.status(500).json({ error: { message: error.message } });
+  }));
 
   const transports: { [sessionId: string]: SSEServerTransport } = {};
 

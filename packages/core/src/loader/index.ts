@@ -5,10 +5,14 @@ import { z } from "zod";
 import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel } from "../models/chat-model.js";
+import { ClaudeChatModel } from "../models/claude-chat-model.js";
 import { OpenAIChatModel } from "../models/openai-chat-model.js";
+import { XAIChatModel } from "../models/xai-chat-model.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromYamlFile } from "./ai-agent.js";
 import { loadAgentFromJsFile } from "./function-agent.js";
+
+const DEFAULT_MODEL_PROVIDER = "openai";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
@@ -82,10 +86,12 @@ async function loadModel(
   };
 
   // TODO: add support for other models such as AutoChatModel, ClaudeChatModel, etc.
-  if (/^o1|gpt-/.test(model.name)) {
-    return new OpenAIChatModel(params);
-  }
-  throw new Error(`Unsupported model: ${model.name}`);
+  const availableModels = [OpenAIChatModel, ClaudeChatModel, XAIChatModel];
+  const M = availableModels.find((m) =>
+    m.name.toLowerCase().includes(model.provider || DEFAULT_MODEL_PROVIDER),
+  );
+  if (!M) throw new Error(`Unsupported model: ${model.provider} ${model.name}`);
+  return new M(params);
 }
 
 const aigneFileSchema = z.object({
@@ -93,6 +99,7 @@ const aigneFileSchema = z.object({
     .union([
       z.string(),
       z.object({
+        provider: z.string().nullish(),
         name: z.string().nullish(),
         temperature: z.number().min(0).max(2).nullish(),
         top_p: z.number().min(0).nullish(),

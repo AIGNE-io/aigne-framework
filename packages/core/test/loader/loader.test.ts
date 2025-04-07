@@ -4,6 +4,8 @@ import { join } from "node:path";
 import { AIAgent, ChatModel, ExecutionEngine, createMessage } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
 import { mockModule } from "@aigne/test-utils/mock-module.js";
 import { nanoid } from "nanoid";
 
@@ -119,4 +121,41 @@ test("load should process path correctly", async () => {
     tools: [],
   });
   expect(readFile).toHaveBeenLastCalledWith("bar/aigne.yml", "utf8");
+});
+
+test("load should load model correctly", async () => {
+  const stat = mock().mockReturnValue(Promise.resolve({ isDirectory: () => false }));
+  const readFile = mock();
+
+  await using _ = await mockModule("node:fs/promises", () => ({ stat, readFile }));
+
+  readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o"));
+  expect((await load({ path: "aigne.yaml" })).model).toBeInstanceOf(OpenAIChatModel);
+
+  readFile.mockReturnValueOnce(
+    Promise.resolve(`\
+chat_model:
+  provider: openai
+  name: gpt-4o
+`),
+  );
+  expect((await load({ path: "aigne.yaml" })).model).toBeInstanceOf(OpenAIChatModel);
+
+  readFile.mockReturnValueOnce(
+    Promise.resolve(`\
+chat_model:
+  provider: claude
+  name: claude-3.5
+`),
+  );
+  expect((await load({ path: "aigne.yaml" })).model).toBeInstanceOf(ClaudeChatModel);
+
+  readFile.mockReturnValueOnce(
+    Promise.resolve(`\
+chat_model:
+  provider: xai
+  name: grok-2-latest
+`),
+  );
+  expect((await load({ path: "aigne.yaml" })).model).toBeInstanceOf(XAIChatModel);
 });

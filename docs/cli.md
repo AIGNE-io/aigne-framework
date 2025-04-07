@@ -126,6 +126,38 @@ Run tests in a specific directory:
 aigne test ./my-agents
 ```
 
+### `aigne serve`
+
+Serve the agents in the specified directory as a Model Context Protocol (MCP) server.
+
+```bash
+aigne serve [path] [options]
+```
+
+#### Arguments
+
+- `path`: Path to the agents directory (defaults to current directory `.`)
+
+#### Options
+
+- `--mcp`: Serve the agents as a MCP server (required at this time)
+- `--port <port>`: Port to run the MCP server on (defaults to 3000)
+- `--help`: Display help for the command
+
+#### Examples
+
+Serve agents in the current directory as an MCP server on the default port:
+
+```bash
+aigne serve --mcp
+```
+
+Serve agents in a specific directory with a custom port:
+
+```bash
+aigne serve ./my-agents --mcp --port 8080
+```
+
 ## Usage Examples
 
 ### Create and Run an Agent

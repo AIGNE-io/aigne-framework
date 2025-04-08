@@ -18,7 +18,7 @@ test("DeepSeekChatModel.call", async () => {
 
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
-      path: join(import.meta.dirname, "openai-streaming-response.txt"),
+      path: join(import.meta.dirname, "deepseek-streaming-response.txt"),
     }),
   );
 
@@ -74,8 +74,8 @@ test("DeepSeekChatModel.call", async () => {
   expect(result).toEqual({
     json: { text: "The current temperature in New York is 20°C." },
     usage: {
-      promptTokens: 100,
-      completionTokens: 20,
+      promptTokens: 193,
+      completionTokens: 16,
     },
   });
 });

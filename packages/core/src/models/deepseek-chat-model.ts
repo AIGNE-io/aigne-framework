@@ -6,18 +6,18 @@ import { checkArguments } from "../utils/type-utils.js";
 import type { ChatModelInput, ChatModelOutput, ChatModelOutputUsage } from "./chat-model.js";
 import { ChatModel } from "./chat-model.js";
 import {
-  type OpenAIBaseModelOptions,
+  type OpenAIChatModelOptions,
   contentsFromInputMessages,
-  openAIBaseModelOptionsSchema,
+  openAIChatModelOptionsSchema,
   toolsFromInputTools,
-} from "./openai-base-model.js";
+} from "./openai-chat-model.js";
 
 const DEEPSEEK_DEFAULT_CHAT_MODEL = "deepseek-chat";
 const DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 
 export class DeepSeekChatModel extends ChatModel {
-  constructor(public options?: OpenAIBaseModelOptions) {
-    if (options) checkArguments("DeepSeekChatModel", openAIBaseModelOptionsSchema, options);
+  constructor(public options?: OpenAIChatModelOptions) {
+    if (options) checkArguments("DeepSeekChatModel", openAIChatModelOptionsSchema, options);
     super();
   }
 

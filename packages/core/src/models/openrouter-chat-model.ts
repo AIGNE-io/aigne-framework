@@ -1,14 +1,13 @@
 import OpenAI from "openai";
-import { OpenAIBaseModel, type OpenAIBaseModelOptions } from "./openai-base-model.js";
+import { OpenAIChatModel, type OpenAIChatModelOptions } from "./openai-chat-model.js";
 
 const OPENROUTER_DEFAULT_CHAT_MODEL = "openai/gpt-4o";
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
-export class OpenRouterChatModel extends OpenAIBaseModel {
-  constructor(options?: OpenAIBaseModelOptions) {
+export class OpenRouterChatModel extends OpenAIChatModel {
+  constructor(options?: OpenAIChatModelOptions) {
     super({
       ...options,
-      name: "OpenRouterChatModel",
       model: options?.model || OPENROUTER_DEFAULT_CHAT_MODEL,
       baseURL: options?.baseURL || OPENROUTER_BASE_URL,
     });

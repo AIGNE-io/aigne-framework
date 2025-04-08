@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { appendFile, readFile } from "node:fs/promises";
 
 export function createMockEventStream<T>(data: { path: string } | { raw: string }): T {
   return new ReadableStream({
@@ -10,4 +10,9 @@ export function createMockEventStream<T>(data: { path: string } | { raw: string 
       controller.close();
     },
   }) as unknown as T;
+}
+
+export async function appendToEventStream(chunk: unknown, filePath: string): Promise<void> {
+  const data = `data:${JSON.stringify(chunk)}\n`;
+  await appendFile(filePath, data, { encoding: "utf-8" });
 }

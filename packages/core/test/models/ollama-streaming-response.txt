@@ -1,0 +1,2 @@
+data:{"id":"chatcmpl-988","object":"chat.completion.chunk","created":1744093608,"model":"llama3.1","system_fingerprint":"fp_ollama","choices":[],"usage":{"prompt_tokens":101,"completion_tokens":17,"total_tokens":118}}
+data:{"id":"chatcmpl-988","object":"chat.completion.chunk","created":1744093608,"model":"llama3.1","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{"role":"assistant","content":"{\"text\": \"The current temperature in New York is 20 degrees.\"}"},"finish_reason":"stop"}]}

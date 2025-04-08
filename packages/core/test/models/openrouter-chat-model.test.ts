@@ -18,7 +18,7 @@ test("OpenRouterChatModel.call", async () => {
 
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
-      path: join(import.meta.dirname, "openai-streaming-response.txt"),
+      path: join(import.meta.dirname, "openrouter-streaming-response.txt"),
     }),
   );
 

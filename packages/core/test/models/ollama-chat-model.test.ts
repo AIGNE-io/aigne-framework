@@ -17,7 +17,7 @@ test("OllamaChatModel.call", async () => {
 
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
-      path: join(import.meta.dirname, "openai-streaming-response.txt"),
+      path: join(import.meta.dirname, "ollama-streaming-response.txt"),
     }),
   );
 
@@ -71,10 +71,10 @@ test("OllamaChatModel.call", async () => {
   });
 
   expect(result).toEqual({
-    json: { text: "The current temperature in New York is 20°C." },
+    json: { text: "The current temperature in New York is 20 degrees." },
     usage: {
-      promptTokens: 100,
-      completionTokens: 20,
+      promptTokens: 101,
+      completionTokens: 17,
     },
   });
 });

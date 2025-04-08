@@ -1,5 +1,5 @@
 import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { SSEClientTransport, type SSEClientTransportOptions } from "@modelcontextprotocol/sdk/client/sse.js";
 import {
   StdioClientTransport,
   type StdioServerParameters,
@@ -46,6 +46,10 @@ export type MCPServerOptions = SSEServerParameters | StdioServerParameters;
 export type SSEServerParameters = {
   url: string;
   /**
+   * Additional options to pass to the SSEClientTransport.
+   */
+  opts?: SSEClientTransportOptions;
+  /**
    * Whether to automatically reconnect to the server if the connection is lost.
    * @default 10 set to 0 to disable automatic reconnection
    */
@@ -88,7 +92,7 @@ export class MCPAgent extends Agent {
     checkArguments("MCPAgent.from", mcpAgentOptionsSchema, options);
 
     if (isSSEServerParameters(options)) {
-      const transport = () => new SSEClientTransport(new URL(options.url));
+      const transport = () => new SSEClientTransport(new URL(options.url), options.opts);
       return MCPAgent.fromTransport(transport, options);
     }
 
@@ -361,6 +365,9 @@ const mcpAgentOptionsSchema: ZodType<
   }),
   z.object({
     url: z.string(),
+    opts: z.object({}).optional(),
+    maxReconnects: z.number().optional(),
+    shouldReconnect: z.function().args(z.instanceof(Error)).returns(z.boolean()).optional(),
   }),
   z.object({
     command: z.string(),

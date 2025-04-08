@@ -209,7 +209,9 @@ export function toolsFromInputTools(
     : undefined;
 }
 
-function jsonSchemaToOpenAIJsonSchema(schema: Record<string, unknown>): Record<string, unknown> {
+export function jsonSchemaToOpenAIJsonSchema(
+  schema: Record<string, unknown>,
+): Record<string, unknown> {
   if (schema?.type === "object") {
     const { required, properties } = schema as {
       required?: string[];

@@ -32,7 +32,7 @@ export class OllamaChatModel extends OpenAIChatModel {
     if (!model) throw new Error("Model is required for OllamaChatModel");
 
     this._client ??= new OpenAI({
-      baseURL: this.options?.baseURL,
+      baseURL: this.options?.baseURL || OLLAMA_BASE_URL,
       apiKey: this.options?.apiKey,
     });
     return this._client;

@@ -1,42 +1,42 @@
 import { beforeEach, expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
-import { DeepSeekChatModel } from "@aigne/core/models/deepseek-chat-model.js";
+import { GeminiChatModel } from "@aigne/core/models/gemini-chat-model.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
 import {
   COMMON_RESPONSE_FORMAT,
   COMMON_TOOLS,
   createWeatherToolCallMessages,
   createWeatherToolExpected,
+  createWeatherToolMessages,
 } from "../_utils/openai-like-utils.js";
 
-let model: DeepSeekChatModel;
+let model: GeminiChatModel;
 
 beforeEach(() => {
-  model = new DeepSeekChatModel({
+  model = new GeminiChatModel({
     apiKey: "YOUR_API_KEY",
-    model: "deepseek-chat",
+    model: "gemini-2.0-flash",
   });
 });
-
-test("DeepSeekChatModel.call should return the correct tool", async () => {
+test("GeminiChatModel.call should return the correct tool", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
-      path: join(import.meta.dirname, "deepseek-streaming-response-1.txt"),
+      path: join(import.meta.dirname, "gemini-streaming-response-1.txt"),
     }),
   );
 
   const result = await model.call({
-    messages: createWeatherToolCallMessages(),
+    messages: createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
 
   expect(result).toEqual(createWeatherToolExpected());
 });
 
-test("DeepSeekChatModel.call", async () => {
+test("GeminiChatModel.call", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
-      path: join(import.meta.dirname, "deepseek-streaming-response-2.txt"),
+      path: join(import.meta.dirname, "gemini-streaming-response-2.txt"),
     }),
   );
 
@@ -47,10 +47,7 @@ test("DeepSeekChatModel.call", async () => {
   });
 
   expect(result).toEqual({
-    json: { text: "The current temperature in New York is 20°C." },
-    usage: {
-      promptTokens: 193,
-      completionTokens: 16,
-    },
+    json: { text: "The temperature in New York is 20 degrees." },
+    usage: undefined,
   });
 });

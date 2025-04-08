@@ -1,74 +1,50 @@
-import { expect, spyOn, test } from "bun:test";
+import { beforeEach, expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
-import {
-  AgentMessageTemplate,
-  ChatMessagesTemplate,
-  SystemMessageTemplate,
-  ToolMessageTemplate,
-  UserMessageTemplate,
-} from "@aigne/core";
 import { OpenRouterChatModel } from "@aigne/core/models/openrouter-chat-model.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
+import {
+  COMMON_RESPONSE_FORMAT,
+  COMMON_TOOLS,
+  createWeatherToolCallMessages,
+  createWeatherToolExpected,
+  createWeatherToolMessages,
+} from "../_utils/openai-like-utils.js";
 
-test("OpenRouterChatModel.call", async () => {
-  const model = new OpenRouterChatModel({
-    apiKey: "YOUR_API_KEY",
+let model: OpenRouterChatModel;
+
+beforeEach(() => {
+  model = new OpenRouterChatModel({
+    apiKey: "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",
     model: "openai/gpt-4o",
   });
+});
 
+test("OpenRouterChatModel.call should return the correct tool", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
-      path: join(import.meta.dirname, "openrouter-streaming-response.txt"),
+      path: join(import.meta.dirname, "openai-streaming-response-1.txt"),
     }),
   );
 
   const result = await model.call({
-    messages: ChatMessagesTemplate.from([
-      SystemMessageTemplate.from("You are a chatbot"),
-      UserMessageTemplate.from([{ type: "text", text: "What is the weather in New York?" }]),
-      AgentMessageTemplate.from(undefined, [
-        {
-          id: "get_weather",
-          type: "function",
-          function: { name: "get_weather", arguments: { city: "New York" } },
-        },
-      ]),
-      ToolMessageTemplate.from({ temperature: 20 }, "get_weather"),
-    ]).format(),
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "get_weather",
-          parameters: {
-            type: "object",
-            properties: {
-              city: {
-                type: "string",
-              },
-            },
-            required: ["city"],
-          },
-        },
-      },
-    ],
-    responseFormat: {
-      type: "json_schema",
-      jsonSchema: {
-        name: "output",
-        schema: {
-          type: "object",
-          properties: {
-            text: {
-              type: "string",
-            },
-          },
-          required: ["text"],
-          additionalProperties: false,
-        },
-        strict: true,
-      },
-    },
+    messages: createWeatherToolMessages(),
+    tools: COMMON_TOOLS,
+  });
+
+  expect(result).toEqual(createWeatherToolExpected());
+});
+
+test("OpenRouterChatModel.call", async () => {
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
+    createMockEventStream({
+      path: join(import.meta.dirname, "openrouter-streaming-response-2.txt"),
+    }),
+  );
+
+  const result = await model.call({
+    messages: createWeatherToolCallMessages(),
+    tools: COMMON_TOOLS,
+    responseFormat: COMMON_RESPONSE_FORMAT,
   });
 
   expect(result).toEqual({

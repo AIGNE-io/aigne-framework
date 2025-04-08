@@ -18,9 +18,13 @@ export class XAIChatModel extends OpenAIChatModel {
     if (!apiKey) throw new Error("Api Key is required for XAIChatModel");
 
     this._client ??= new OpenAI({
-      baseURL: this.options?.baseURL,
+      baseURL: this.options?.baseURL || XAI_BASE_URL,
       apiKey,
     });
     return this._client;
+  }
+
+  get modelOptions() {
+    return this.options?.modelOptions;
   }
 }

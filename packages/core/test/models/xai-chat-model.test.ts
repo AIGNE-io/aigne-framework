@@ -1,14 +1,34 @@
 import { expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
-import {
-  AgentMessageTemplate,
-  ChatMessagesTemplate,
-  SystemMessageTemplate,
-  ToolMessageTemplate,
-  UserMessageTemplate,
-} from "@aigne/core";
 import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
+import {
+  COMMON_RESPONSE_FORMAT,
+  COMMON_TOOLS,
+  createWeatherToolCallMessages,
+  createWeatherToolExpected,
+  createWeatherToolMessages,
+} from "../_utils/openai-like-utils.js";
+
+test("XAIChatModel.call should return the correct tool", async () => {
+  const model = new XAIChatModel({
+    apiKey: "YOUR_API_KEY",
+    model: "grok-2-latest",
+  });
+
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
+    createMockEventStream({
+      path: join(import.meta.dirname, "xai-streaming-response-1.txt"),
+    }),
+  );
+
+  const result = await model.call({
+    messages: createWeatherToolMessages(),
+    tools: COMMON_TOOLS,
+  });
+
+  expect(result).toEqual(expect.objectContaining(createWeatherToolExpected()));
+});
 
 test("XAIChatModel.call", async () => {
   const model = new XAIChatModel({
@@ -17,63 +37,22 @@ test("XAIChatModel.call", async () => {
   });
 
   spyOn(model.client.chat.completions, "create").mockReturnValue(
-    createMockEventStream({ path: join(import.meta.dirname, "xai-streaming-response.txt") }),
+    createMockEventStream({
+      path: join(import.meta.dirname, "xai-streaming-response-2.txt"),
+    }),
   );
 
   const result = await model.call({
-    messages: ChatMessagesTemplate.from([
-      SystemMessageTemplate.from("You are a chatbot"),
-      UserMessageTemplate.from([{ type: "text", text: "What is the weather in New York?" }]),
-      AgentMessageTemplate.from(undefined, [
-        {
-          id: "get_weather",
-          type: "function",
-          function: { name: "get_weather", arguments: { city: "New York" } },
-        },
-      ]),
-      ToolMessageTemplate.from({ temperature: 20 }, "get_weather"),
-    ]).format(),
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "get_weather",
-          parameters: {
-            type: "object",
-            properties: {
-              city: {
-                type: "string",
-              },
-            },
-            required: ["city"],
-          },
-        },
-      },
-    ],
-    responseFormat: {
-      type: "json_schema",
-      jsonSchema: {
-        name: "output",
-        schema: {
-          type: "object",
-          properties: {
-            text: {
-              type: "string",
-            },
-          },
-          required: ["text"],
-          additionalProperties: false,
-        },
-        strict: true,
-      },
-    },
+    messages: createWeatherToolCallMessages(),
+    tools: COMMON_TOOLS,
+    responseFormat: COMMON_RESPONSE_FORMAT,
   });
 
   expect(result).toEqual({
     json: { text: "The temperature in New York is 20 degrees Celsius." },
     usage: {
-      promptTokens: 177,
-      completionTokens: 20,
+      promptTokens: 413,
+      completionTokens: 17,
     },
   });
 });

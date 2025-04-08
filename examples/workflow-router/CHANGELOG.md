@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-router-v1.3.1...example-workflow-router-v1.4.0) (2025-04-08)
+
+
+### Features
+
+* add agent library support ([#51](https://github.com/AIGNE-io/aigne-framework/issues/51)) ([1f0d34d](https://github.com/AIGNE-io/aigne-framework/commit/1f0d34ddda3154283a4bc958ddb9b68b4ac106b0))
+
 ## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-router-v1.3.0...example-workflow-router-v1.3.1) (2025-03-27)
 
 

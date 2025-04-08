@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "AIGNE core library for building AI-powered applications",
   "publishConfig": {
     "access": "public"
@@ -63,8 +63,8 @@
     "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib test/coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "cd test && bun test",
-    "test:coverage": "cd test && bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test": "bun --cwd test test",
+    "test:coverage": "bun --cwd test test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {

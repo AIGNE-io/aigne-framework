@@ -37,6 +37,7 @@ export async function load(options: LoadOptions) {
   );
 
   return {
+    ...aigne,
     model: await loadModel(aigne.chat_model),
     agents,
     tools,
@@ -111,6 +112,8 @@ async function loadModel(
 }
 
 const aigneFileSchema = z.object({
+  name: z.string().nullish(),
+  description: z.string().nullish(),
   chat_model: z
     .union([
       z.string(),

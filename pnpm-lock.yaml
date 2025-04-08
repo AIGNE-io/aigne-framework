@@ -192,12 +192,18 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.8.0
+        version: 1.8.0
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
       commander:
         specifier: ^13.1.0
         version: 13.1.0
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
       gradient-string:
         specifier: ^3.0.0
         version: 3.0.0
@@ -207,6 +213,9 @@ importers:
       openai:
         specifier: ^4.91.1
         version: 4.91.1(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -214,12 +223,18 @@ importers:
       '@types/bun':
         specifier: ^1.2.8
         version: 1.2.8
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.1
       '@types/gradient-string':
         specifier: ^1.1.6
         version: 1.1.6
       '@types/node':
         specifier: ^22.14.0
         version: 22.14.0
+      detect-port:
+        specifier: ^2.1.0
+        version: 2.1.0
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -229,6 +244,9 @@ importers:
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
+      ufo:
+        specifier: ^1.6.0
+        version: 1.6.0
 
   packages/core:
     dependencies:
@@ -1620,6 +1638,9 @@ packages:
     resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  ufo@1.6.0:
+    resolution: {integrity: sha512-AkgU2cV/+Xb4Uz6cic0kMZbtM42nbltnGvTVOt/8gMCbO2/z64nE47TOygh7HjgFPkUkVRBEyNFqpqi3zo+BJA==}
 
   unbox-primitive@1.1.0:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
@@ -3186,6 +3207,8 @@ snapshots:
       reflect.getprototypeof: 1.0.10
 
   typescript@5.8.2: {}
+
+  ufo@1.6.0: {}
 
   unbox-primitive@1.1.0:
     dependencies:

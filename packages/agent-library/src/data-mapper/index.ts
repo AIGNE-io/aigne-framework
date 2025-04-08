@@ -1,6 +1,5 @@
 import assert from "node:assert";
-import { ExecutionEngine, UserInputTopic, UserOutputTopic } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { type ChatModel, ExecutionEngine, UserInputTopic, UserOutputTopic } from "@aigne/core";
 
 import toJsonSchema from "to-json-schema";
 import mapper from "./agents/mapper.js";
@@ -20,17 +19,17 @@ export interface TransformInput {
 
 export async function generateMapping({
   input,
+  model,
 }: {
   input: TransformInput;
+  model?: ChatModel;
 }): Promise<{
   jsonata: string;
   confidence: number;
   confidenceReasoning: string;
 } | null> {
   try {
-    const model = new OpenAIChatModel({
-      apiKey: OPENAI_API_KEY,
-    });
+    if (!model) throw new Error("model is required to run data mapper");
 
     // if sourceSchema is not provided, generate it from sourceData
     if (!input.sourceSchema && input.sourceData) {

@@ -49,5 +49,36 @@ test("serve-mcp command should work with custom options", async () => {
 
   await command.parseAsync(["", "serve", "--mcp", "--port", port.toString(), testAgentsPath]);
 
-  expect(mockListen).toHaveBeenCalledWith(port, expect.any(Function));
+  expect(mockListen).toHaveBeenLastCalledWith(port, expect.any(Function));
+});
+
+test("serve-mcp command should use process.env.PORT", async () => {
+  const mockListen = mock().mockImplementationOnce((_, cb) => cb());
+  const mockExpress = mock(() => ({
+    use: mock(),
+    get: mock(),
+    post: mock(),
+    listen: mockListen,
+  }));
+
+  await using _ = await mockModule("express", () => ({
+    default: mockExpress,
+  }));
+
+  const port = await detect();
+
+  const command = createServeCommand();
+
+  const testAgentsPath = join(import.meta.dirname, "../../test-agents");
+
+  process.env.PORT = port.toString();
+
+  await command.parseAsync(["", "serve", "--mcp", testAgentsPath]);
+
+  expect(mockListen).toHaveBeenLastCalledWith(port, expect.any(Function));
+
+  process.env.PORT = "INVALID_PORT";
+  expect(command.parseAsync(["", "serve", "--mcp", testAgentsPath])).rejects.toThrow(
+    "parse PORT error",
+  );
 });

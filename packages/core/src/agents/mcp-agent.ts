@@ -53,7 +53,7 @@ export type SSEServerParameters = {
    * The timeout for requests to the server, in milliseconds.
    * @default 10000
    */
-  requestTimeout?: number;
+  timeout?: number;
   /**
    * Whether to automatically reconnect to the server if the connection is lost.
    * @default 10 set to 0 to disable automatic reconnection
@@ -224,7 +224,7 @@ export class MCPAgent extends Agent {
 
 export interface ClientWithReconnectOptions {
   transportCreator?: () => PromiseOrValue<Transport>;
-  requestTimeout?: number;
+  timeout?: number;
   maxReconnects?: number;
   shouldReconnect?: (error: Error) => boolean;
 }
@@ -271,7 +271,7 @@ class ClientWithReconnect extends Client {
   ): Promise<z.infer<T>> {
     const mergedOptions: RequestOptions = {
       ...(options ?? {}),
-      timeout: options?.timeout ?? this.reconnectOptions?.requestTimeout ?? 10000,
+      timeout: options?.timeout ?? this.reconnectOptions?.timeout ?? 10000,
     };
     try {
       return await super.request(request, resultSchema, mergedOptions);
@@ -376,7 +376,7 @@ const mcpAgentOptionsSchema: ZodType<
   z.object({
     url: z.string(),
     opts: z.object({}).optional(),
-    requestTimeout: z.number().optional(),
+    timeout: z.number().optional(),
     maxReconnects: z.number().optional(),
     shouldReconnect: z.function().args(z.instanceof(Error)).returns(z.boolean()).optional(),
   }),

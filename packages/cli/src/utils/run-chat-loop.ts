@@ -1,5 +1,7 @@
 import { inspect } from "node:util";
 import { type Message, createMessage, type UserAgent as input } from "@aigne/core";
+import { figures } from "@aigne/listr2";
+import chalk from "chalk";
 import inquirer from "inquirer";
 import { TerminalTracer } from "../tracer/terminal.js";
 
@@ -53,14 +55,20 @@ export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopO
 async function callAgent(userAgent: input, input: Message | string, options: ChatLoopOptions) {
   const tracer = new TerminalTracer(userAgent.context);
 
-  const result = await tracer.run(
+  const { result, context } = await tracer.run(
     userAgent,
     options.inputKey && typeof input === "string"
       ? { [options.inputKey]: input }
       : createMessage(input),
   );
 
-  console.log(inspect(result, { colors: true }));
+  console.log(
+    `
+${chalk.grey(figures.tick)} 💬 ${inspect(input, { colors: true })}
+${chalk.grey(figures.tick)} 🤖 ${tracer.formatTokenUsage(context.usage, true)}
+${inspect(result, { colors: true })}
+`,
+  );
 }
 
 const COMMANDS: { [key: string]: () => { exit?: boolean; message?: string } } = {

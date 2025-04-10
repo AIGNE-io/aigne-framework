@@ -130,36 +130,35 @@ export class TerminalTracer {
     });
   }
 
-  protected formatAgentStartedOutput(agent: Agent, data: Message) {
+  formatAgentStartedOutput(agent: Agent, data: Message) {
     return `\
-${chalk.yellow(figures.pointer)} call agent ${agent.name} started with input:
+${chalk.grey(figures.pointer)} call agent ${agent.name} started with input:
 ${this.formatMessage(data)}`;
   }
 
-  protected formatAgentSucceedOutput(agent: Agent, data: Message) {
+  formatAgentSucceedOutput(agent: Agent, data: Message) {
     return `\
-${chalk.green(figures.tick)} call agent ${agent.name} succeed with output:
+${chalk.grey(figures.tick)} call agent ${agent.name} succeed with output:
 ${this.formatMessage(data)}`;
   }
 
-  protected formatAgentFailedOutput(agent: Agent, data: Error) {
+  formatAgentFailedOutput(agent: Agent, data: Error) {
     return `\
-${chalk.red(figures.cross)} call agent ${agent.name} failed with error:
+${chalk.grey(figures.cross)} call agent ${agent.name} failed with error:
 ${this.formatMessage(data)}`;
   }
 
-  protected formatMessage(data: unknown) {
+  formatMessage(data: unknown) {
     return inspect(data, { colors: true, depth: DEBUG_DEPTH });
   }
 
-  protected formatTokenUsage(usage: Pick<ContextUsage, "promptTokens" | "completionTokens">) {
-    return ` ${chalk.grey("(tokens:")} ${chalk.yellow(usage.promptTokens)}${chalk.green("/")}${chalk.cyan(usage.completionTokens)}${chalk.grey(")")}`;
+  formatTokenUsage(usage: Partial<ContextUsage>, calls?: boolean) {
+    const formattedCalls =
+      usage.agentCalls && calls ? ` ${chalk.grey("calls:")} ${chalk.cyan(usage.agentCalls)}` : "";
+    return ` ${chalk.grey("(tokens:")} ${chalk.yellow(usage.promptTokens)}${chalk.grey("/")}${chalk.cyan(usage.completionTokens)}${formattedCalls}${chalk.grey(")")}`;
   }
 
-  protected formatTaskTitle(
-    agent: Agent,
-    { usage }: { usage?: Pick<ContextUsage, "promptTokens" | "completionTokens"> } = {},
-  ) {
+  formatTaskTitle(agent: Agent, { usage }: { usage?: Partial<ContextUsage> } = {}) {
     let title = `call agent ${agent.name}`;
 
     if (usage) title += ` ${this.formatTokenUsage(usage)}`;

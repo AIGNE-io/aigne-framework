@@ -171,7 +171,7 @@ export class ClaudeChatModel extends ChatModel {
 
       return result;
     } catch (error) {
-      logger.debug("Failed to process Claude stream", { error, logs });
+      logger.core("Failed to process Claude stream", { error, logs });
       throw error;
     }
   }

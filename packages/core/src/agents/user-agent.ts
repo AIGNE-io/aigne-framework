@@ -1,10 +1,6 @@
 import { ReadableStream } from "node:stream/web";
-import type { Context } from "../execution-engine/context.js";
-import type {
-  MessagePayload,
-  MessageQueueListener,
-  Unsubscribe,
-} from "../execution-engine/message-queue.js";
+import { type Context, type Runnable, createPublishMessage } from "../execution-engine/context.js";
+import type { MessagePayload, Unsubscribe } from "../execution-engine/message-queue.js";
 import { type PromiseOrValue, orArrayToArray } from "../utils/type-utils.js";
 import { Agent, type AgentOptions, type Message } from "./agent.js";
 
@@ -12,6 +8,7 @@ export interface UserAgentOptions<I extends Message = Message, O extends Message
   extends AgentOptions<I, O> {
   context: Context;
   process?: (input: I, context: Context) => PromiseOrValue<O>;
+  activeAgent?: Runnable;
 }
 
 export class UserAgent<I extends Message = Message, O extends Message = Message> extends Agent<
@@ -25,21 +22,21 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
   }
 
   constructor(options: UserAgentOptions<I, O>) {
-    super({ ...options, disableLogging: true });
+    super({ ...options, noEmitEvents: true });
     this._process = options.process;
     this.context = options.context;
+    this.activeAgent = options.activeAgent;
   }
 
-  readonly context: Context;
-
-  private get ctx() {
-    if (!this.context) throw new Error("UserAgent must have a context");
-    return this.context;
-  }
+  context: Context;
 
   private _process?: (input: I, context: Context) => PromiseOrValue<O>;
 
+  private activeAgent?: Runnable;
+
   override call(input: string | I, context?: Context): Promise<O> {
+    if (!context) this.context = this.context.newContext();
+
     return super.call(input, context ?? this.context);
   }
 
@@ -48,31 +45,36 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
       return this._process(input, context);
     }
 
+    if (this.activeAgent) {
+      const [output, agent] = await context.call(this.activeAgent, input, {
+        returnActiveAgent: true,
+      });
+      this.activeAgent = agent;
+      return output as O;
+    }
+
     const publicTopic =
       typeof this.publishTopic === "function" ? await this.publishTopic(input) : this.publishTopic;
 
     if (publicTopic?.length) {
-      context.publish(publicTopic, input, this);
+      context.publish(publicTopic, createPublishMessage(input, this));
       return {} as O;
     }
 
     throw new Error("UserAgent must have a process function or a publishTopic");
   }
 
-  publish(topic: string | string[], message: Message | string) {
-    return this.ctx.publish(topic, message, this);
-  }
+  publish = ((...args) => {
+    return this.context.publish(...args);
+  }) as Context["publish"];
 
-  subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
-  subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>;
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload> {
-    return this.ctx.subscribe(topic, listener);
-  }
+  subscribe = ((...args) => {
+    return this.context.subscribe(...args);
+  }) as Context["subscribe"];
 
-  unsubscribe(topic: string, listener: MessageQueueListener) {
-    this.ctx.unsubscribe(topic, listener);
-  }
+  unsubscribe = ((...args) => {
+    this.context.unsubscribe(...args);
+  }) as Context["unsubscribe"];
 
   get stream() {
     let subscriptions: Unsubscribe[] = [];

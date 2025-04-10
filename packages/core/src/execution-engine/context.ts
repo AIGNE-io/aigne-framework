@@ -1,37 +1,57 @@
 import EventEmitter from "node:events";
+import { v7 } from "uuid";
 import { type ZodType, z } from "zod";
 import { Agent, type FunctionAgentFn, type Message } from "../agents/agent.js";
 import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
 import type { ChatModel } from "../models/chat-model.js";
 import { createMessage } from "../prompt/prompt-builder.js";
-import { checkArguments, isNil } from "../utils/type-utils.js";
+import {
+  type OmitPropertiesFromArrayFirstElement,
+  checkArguments,
+  isNil,
+} from "../utils/type-utils.js";
+import type { Args, Listener, TypedEventEmitter } from "../utils/typed-event-emtter.js";
 import {
   type MessagePayload,
   MessageQueue,
   type MessageQueueListener,
-  type MessageRequest,
   type Unsubscribe,
 } from "./message-queue.js";
+import { type ContextLimits, type ContextUsage, newEmptyContextUsage } from "./usage.js";
 
 export type Runnable<I extends Message = Message, O extends Message = Message> =
   | Agent<I, O>
   | FunctionAgentFn;
 
-export interface ContextUsage {
-  promptTokens: number;
-  completionTokens: number;
-  agentCalls: number;
+export interface AgentEvent {
+  parentContextId?: string;
+  contextId: string;
+  agent: Agent;
 }
 
-export interface ContextLimits {
-  maxTokens?: number;
-  maxAgentCalls?: number;
-  timeout?: number;
+export interface ContextEventMap {
+  agentStarted: [AgentEvent & { input: Message }];
+  agentSucceed: [AgentEvent & { output: Message }];
+  agentFailed: [AgentEvent & { error: Error }];
+  error: [Error];
 }
 
-export interface Context extends EventEmitter {
+export type ContextEmitEventMap = {
+  [K in keyof ContextEventMap]: OmitPropertiesFromArrayFirstElement<
+    ContextEventMap[K],
+    "contextId" | "parentContextId"
+  >;
+};
+
+export interface CallOptions {
+  returnActiveAgent?: boolean;
+  disableTransfer?: boolean;
+}
+
+export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitEventMap> {
   model?: ChatModel;
+
   tools?: Agent[];
 
   usage: ContextUsage;
@@ -47,16 +67,6 @@ export interface Context extends EventEmitter {
    */
   call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
   /**
-   * Call an agent with a message
-   * @param agent Agent to call
-   * @param message Message to pass to the agent
-   * @returns the output of the agent
-   */
-  call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
-    message: I | string,
-  ): Promise<O>;
-  /**
    * Call an agent with a message and return the output and the active agent
    * @param agent Agent to call
    * @param message Message to pass to the agent
@@ -66,61 +76,204 @@ export interface Context extends EventEmitter {
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options: { returnActiveAgent: true },
+    options: CallOptions & { returnActiveAgent: true },
   ): Promise<[O, Runnable]>;
+  /**
+   * Call an agent with a message
+   * @param agent Agent to call
+   * @param message Message to pass to the agent
+   * @returns the output of the agent
+   */
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options?: { returnActiveAgent?: boolean },
+    options?: CallOptions,
+  ): Promise<O>;
+  call<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    message?: I | string,
+    options?: CallOptions,
   ): UserAgent<I, O> | Promise<O | [O, Runnable]>;
 
   /**
    * Publish a message to a topic, the engine will call the listeners of the topic
    * @param topic topic name, or an array of topic names
-   * @param message message to publish
-   * @param from the agent who publish the message, if not provided, it will be treated as a user message
+   * @param payload message to publish
    */
-  publish(topic: string | string[], message: Message | string, from?: Agent): void;
+  publish(topic: string | string[], payload: Omit<MessagePayload, "context">): void;
 
   subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
   subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
   subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>;
+  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>;
 
   unsubscribe(topic: string, listener: MessageQueueListener): void;
+
+  /**
+   * Create a new context with a initial state (such as: usage)
+   * @returns new context
+   */
+  newContext(): Context;
 }
 
-export class ExecutionContext extends EventEmitter implements Context {
-  constructor(
-    private readonly engine?: {
-      model?: ChatModel;
-      tools?: Agent[];
-      limits?: ContextLimits;
-      messageQueue?: MessageQueue;
-      emit?: EventEmitter["emit"];
-    },
-  ) {
-    super();
-    this.limits = engine?.limits;
-    this.messageQueue = engine?.messageQueue ?? new MessageQueue();
+export function createPublishMessage(
+  message: string | Message,
+  from?: Agent,
+): Omit<MessagePayload, "context"> {
+  return {
+    role: !from || from instanceof UserAgent ? "user" : "agent",
+    source: from?.name,
+    message: createMessage(message),
+  };
+}
+
+export class ExecutionContext implements Context {
+  constructor(parent?: ConstructorParameters<typeof ExecutionContextInternal>[0]) {
+    if (parent instanceof ExecutionContext) {
+      this.parentId = parent.id;
+      this.internal = parent.internal;
+    } else {
+      this.internal = new ExecutionContextInternal(parent);
+    }
   }
 
-  private messageQueue: MessageQueue;
+  parentId?: string;
+
+  id = v7();
+
+  private readonly internal: ExecutionContextInternal;
 
   get model() {
-    return this.engine?.model;
+    return this.internal.model;
   }
 
   get tools() {
-    return this.engine?.tools;
+    return this.internal.tools;
   }
 
-  usage: ContextUsage = {
-    promptTokens: 0,
-    completionTokens: 0,
-    agentCalls: 0,
-  };
+  get limits() {
+    return this.internal.limits;
+  }
 
-  limits?: ContextLimits | undefined;
+  get status() {
+    return this.internal.status;
+  }
+
+  get usage() {
+    return this.internal.usage;
+  }
+
+  newContext() {
+    return new ExecutionContext(this.internal);
+  }
+
+  call = ((agent, message, options) => {
+    checkArguments("ExecutionContext.call", executionContextCallArgsSchema, {
+      agent,
+      message,
+      options,
+    });
+
+    if (isNil(message)) {
+      return UserAgent.from({
+        context: this,
+        activeAgent: agent,
+      });
+    }
+
+    const newContext = new ExecutionContext(this);
+    const msg = createMessage(message);
+
+    return newContext.internal
+      .call(agent, msg, newContext, options)
+      .then(async ({ output, agent: activeAgent }) => {
+        if (activeAgent instanceof Agent) {
+          const publishTopics =
+            typeof activeAgent.publishTopic === "function"
+              ? await activeAgent.publishTopic(output)
+              : activeAgent.publishTopic;
+
+          if (publishTopics?.length) {
+            newContext.publish(publishTopics, createPublishMessage(output, activeAgent));
+          }
+        }
+
+        if (options?.returnActiveAgent) {
+          return [output, activeAgent];
+        }
+
+        return output;
+      });
+  }) as Context["call"];
+
+  publish = ((topic, payload) => {
+    return this.internal.messageQueue.publish(topic, { ...payload, context: this });
+  }) as Context["publish"];
+
+  subscribe = ((...args: Parameters<Context["subscribe"]>) => {
+    return this.internal.messageQueue.subscribe(...args);
+  }) as Context["subscribe"];
+
+  unsubscribe = ((...args: Parameters<Context["unsubscribe"]>) => {
+    return this.internal.messageQueue.unsubscribe(...args);
+  }) as Context["unsubscribe"];
+
+  emit<K extends keyof ContextEmitEventMap>(
+    eventName: K,
+    ...args: Args<K, ContextEmitEventMap>
+  ): boolean {
+    const newArgs = [
+      { ...args[0], contextId: this.id, parentContextId: this.parentId },
+      ...args.slice(1),
+    ] as Args<K, ContextEventMap>;
+    return this.internal.events.emit(eventName, ...newArgs);
+  }
+
+  on<K extends keyof ContextEventMap>(eventName: K, listener: Listener<K, ContextEventMap>): this {
+    this.internal.events.on(eventName, listener);
+    return this;
+  }
+
+  once<K extends keyof ContextEventMap>(
+    eventName: K,
+    listener: Listener<K, ContextEventMap>,
+  ): this {
+    this.internal.events.once(eventName, listener);
+    return this;
+  }
+
+  off<K extends keyof ContextEventMap>(eventName: K, listener: Listener<K, ContextEventMap>): this {
+    this.internal.events.off(eventName, listener);
+    return this;
+  }
+}
+
+class ExecutionContextInternal {
+  constructor(
+    private readonly parent?: Pick<Context, "model" | "tools" | "limits"> & {
+      messageQueue?: MessageQueue;
+    },
+  ) {
+    this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
+  }
+
+  readonly messageQueue: MessageQueue;
+
+  readonly events = new EventEmitter<ContextEventMap>();
+
+  get model() {
+    return this.parent?.model;
+  }
+
+  get tools() {
+    return this.parent?.tools;
+  }
+
+  get limits() {
+    return this.parent?.limits;
+  }
+
+  usage: ContextUsage = newEmptyContextUsage();
 
   private abortController = new AbortController();
 
@@ -141,112 +294,26 @@ export class ExecutionContext extends EventEmitter implements Context {
     return this.abortController.signal.aborted ? "timeout" : "normal";
   }
 
-  call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
-  call<I extends Message, O extends Message>(
+  async call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
-    message: I | string,
-  ): Promise<O>;
-  call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
-    message: I | string,
-    options: { returnActiveAgent: true },
-  ): Promise<[O, Runnable]>;
-  call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
-    message?: I | string,
-    options?: { returnActiveAgent?: boolean },
-  ): UserAgent<I, O> | Promise<O | [O, Runnable]>;
-  call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
-    message?: I | string,
-    options?: { returnActiveAgent?: boolean },
-  ): UserAgent<I, O> | Promise<O | [O, Runnable]> {
-    checkArguments("ExecutionEngine._call", executionEngineCallArgsSchema, {
-      agent,
-      message,
-      options,
-    });
-
-    if (isNil(message)) {
-      let activeAgent: Runnable = agent;
-
-      return UserAgent.from<I, O>({
-        context: this,
-        process: async (input, context) => {
-          const [output, agent] = await context.call(activeAgent, input, {
-            returnActiveAgent: true,
-          });
-          activeAgent = agent;
-          return output as O;
-        },
-      });
-    }
+    input: I,
+    context: Context,
+    options?: CallOptions,
+  ): Promise<{ agent: Runnable; output: O }> {
+    this.initTimeout();
 
     return withAbortSignal(
       this.abortController.signal,
-      new Error("ExecutionEngine is timeout"),
-      async () => {
-        this.initTimeout();
-
-        const msg = createMessageFromInput(message);
-
-        return this.callAgent(agent, msg).then(async ({ output, agent: activeAgent }) => {
-          if (activeAgent instanceof Agent) {
-            const publishTopics =
-              typeof activeAgent.publishTopic === "function"
-                ? await activeAgent.publishTopic(output)
-                : activeAgent.publishTopic;
-
-            if (publishTopics?.length) {
-              this.publish(publishTopics, output, activeAgent);
-            }
-          }
-
-          if (options?.returnActiveAgent) {
-            return [output, activeAgent];
-          }
-
-          return output;
-        });
-      },
+      new Error("ExecutionContext is timeout"),
+      () => this.callAgent(agent, input, context, options),
     );
-  }
-
-  publish(topic: string | string[], message: Message | string, from?: Agent): void {
-    checkArguments("ExecutionEngineContext.publish", executionEnginePublishArgsSchema, {
-      topic,
-      message,
-      from,
-    });
-
-    const request: MessageRequest = {
-      role: !from || from instanceof UserAgent ? "user" : "agent",
-      source: from?.name,
-      message: createMessageFromInput(message),
-      context: this,
-    };
-
-    this.messageQueue.publish(topic, request);
-  }
-
-  subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
-  subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload> {
-    return this.messageQueue.subscribe(topic, listener);
-  }
-
-  unsubscribe(topic: string, listener: MessageQueueListener): void {
-    this.messageQueue.unsubscribe(topic, listener);
-  }
-
-  emit(eventName: string | symbol, ...args: unknown[]) {
-    if (this.engine?.emit) return this.engine.emit(eventName, ...args);
-    return super.emit(eventName, ...args);
   }
 
   private async callAgent<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     input: I,
+    context: Context,
+    options?: CallOptions,
   ): Promise<{ agent: Runnable; output: O }> {
     let activeAgent: Runnable = agent;
     let output: O | undefined;
@@ -255,25 +322,30 @@ export class ExecutionContext extends EventEmitter implements Context {
       let result: Message | Agent;
 
       if (typeof activeAgent === "function") {
-        result = await activeAgent(input, this);
+        result = await activeAgent(input, context);
       } else {
-        result = await activeAgent.call(input, this);
+        result = await activeAgent.call(input, context);
       }
 
-      if (!(result instanceof Agent)) output = result as O;
-
-      const transferToAgent =
-        result instanceof Agent
-          ? result
-          : isTransferAgentOutput(result)
-            ? result[transferAgentOutputKey].agent
-            : undefined;
-
-      if (transferToAgent) {
-        activeAgent = transferToAgent;
-      } else {
-        break;
+      if (result instanceof Agent) {
+        activeAgent = result;
+        continue;
       }
+
+      if (!options?.disableTransfer) {
+        const transferToAgent = isTransferAgentOutput(result)
+          ? result[transferAgentOutputKey].agent
+          : undefined;
+
+        if (transferToAgent) {
+          activeAgent = transferToAgent;
+          continue;
+        }
+      }
+
+      output = result as O;
+
+      break;
     }
 
     if (!output) throw new Error("Unexpected empty output");
@@ -299,17 +371,7 @@ function withAbortSignal<T>(signal: AbortSignal, error: Error, fn: () => Promise
   });
 }
 
-function createMessageFromInput(message: Message | string): Message {
-  return typeof message === "string" ? createMessage(message) : message;
-}
-
-const executionEnginePublishArgsSchema = z.object({
-  topic: z.union([z.string(), z.array(z.string())]),
-  message: z.union([z.string(), z.record(z.unknown())]),
-  from: z.instanceof(Agent).optional(),
-});
-
-const executionEngineCallArgsSchema = z.object({
+const executionContextCallArgsSchema = z.object({
   agent: z.union([z.function() as ZodType<FunctionAgentFn>, z.instanceof(Agent)]),
   message: z.union([z.record(z.unknown()), z.string()]).optional(),
   options: z.object({ returnActiveAgent: z.boolean().optional() }).optional(),

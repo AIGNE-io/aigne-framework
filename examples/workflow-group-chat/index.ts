@@ -12,7 +12,6 @@ import {
   getMessage,
 } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { logger } from "@aigne/core/utils/logger.js";
 import inquirer from "inquirer";
 import { z } from "zod";
 
@@ -93,7 +92,6 @@ const user = UserAgent.from({
   publishTopic: DEFAULT_TOPIC,
   memory: { subscribeTopic: DEFAULT_TOPIC },
   async process() {
-    logger.globalSpinner?.stop();
     const { question } = await inquirer.prompt([
       {
         type: "input",
@@ -106,7 +104,6 @@ const user = UserAgent.from({
       },
     ]);
     isFirstQuestion = false;
-    logger.globalSpinner?.start();
     return createMessage(question);
   },
 });

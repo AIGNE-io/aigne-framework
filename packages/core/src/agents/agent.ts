@@ -1,7 +1,7 @@
+import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";
 import { createMessage } from "../prompt/prompt-builder.js";
-import { logger } from "../utils/logger.js";
 import {
   type Nullish,
   type PromiseOrValue,
@@ -41,7 +41,7 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
 
   tools?: (Agent | FunctionAgentFn)[];
 
-  disableLogging?: boolean;
+  noEmitEvents?: boolean;
 
   memory?: AgentMemory | AgentMemoryOptions | true;
 }
@@ -59,7 +59,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     this.subscribeTopic = options.subscribeTopic;
     this.publishTopic = options.publishTopic as PublishTopic<Message>;
     if (options.tools?.length) this.tools.push(...options.tools.map(functionToAgent));
-    this.disableLogging = options.disableLogging;
+    this.noEmitEvents = options.noEmitEvents;
     if (options.memory) {
       this.memory =
         options.memory instanceof AgentMemory
@@ -109,7 +109,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
   readonly tools = createAccessorArray<Agent>([], (arr, name) => arr.find((t) => t.name === name));
 
-  private disableLogging?: boolean;
+  private noEmitEvents?: boolean;
 
   /**
    * Attach agent to context:
@@ -153,39 +153,35 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   }
 
   async call(input: I | string, context?: Context): Promise<O> {
-    const ctx = context ?? (await this.newDefaultContext());
+    const ctx: Context = context ?? (await this.newDefaultContext());
+    const message = typeof input === "string" ? createMessage(input) : input;
 
-    const _input = typeof input === "string" ? createMessage(input) : input;
+    if (!this.noEmitEvents) ctx.emit("agentStarted", { agent: this, input: message });
 
-    const parsedInput = this.inputSchema.parse(_input) as I;
+    try {
+      const parsedInput = this.inputSchema.parse(message) as I;
 
-    logger.debug("Call agent %s start with input: %O", this.name, input);
+      this.preprocess(parsedInput, ctx);
 
-    this.preprocess(parsedInput, ctx);
+      this.checkContextStatus(ctx);
 
-    this.checkContextStatus(ctx);
+      const output = await this.process(parsedInput, ctx)
+        .then((output) => {
+          const parsedOutput = this.outputSchema.parse(output) as O;
+          return this.includeInputInOutput ? { ...parsedInput, ...parsedOutput } : parsedOutput;
+        })
+        .then((output) => {
+          this.postprocess(parsedInput, output, ctx);
+          return output;
+        });
 
-    const result = this.process(parsedInput, ctx)
-      .then((output) => {
-        const parsedOutput = this.outputSchema.parse(output) as O;
-        return this.includeInputInOutput ? { ...parsedInput, ...parsedOutput } : parsedOutput;
-      })
-      .then((output) => {
-        this.postprocess(parsedInput, output, ctx);
-        return output;
-      });
+      if (!this.noEmitEvents) ctx.emit("agentSucceed", { agent: this, output });
 
-    return logger.debug.spinner(
-      result,
-      `Call agent ${this.name}`,
-      (output) =>
-        logger.debug(
-          "Call agent %s succeed with output: %O",
-          this.name,
-          replaceTransferAgentToName(output),
-        ),
-      { disabled: this.disableLogging },
-    );
+      return output;
+    } catch (error) {
+      if (!this.noEmitEvents) ctx.emit("agentFailed", { agent: this, error });
+      throw error;
+    }
   }
 
   protected preprocess(_: I, context: Context) {
@@ -216,6 +212,10 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
   async shutdown() {
     this.memory?.detach();
+  }
+
+  [inspect.custom]() {
+    return this.name;
   }
 }
 

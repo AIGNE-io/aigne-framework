@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.3.2...example-mcp-sqlite-v1.4.0) (2025-04-08)
+
+
+### Features
+
+* add agent library support ([#51](https://github.com/AIGNE-io/aigne-framework/issues/51)) ([1f0d34d](https://github.com/AIGNE-io/aigne-framework/commit/1f0d34ddda3154283a4bc958ddb9b68b4ac106b0))
+
 ## [1.3.2](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.3.1...example-mcp-sqlite-v1.3.2) (2025-03-27)
 
 

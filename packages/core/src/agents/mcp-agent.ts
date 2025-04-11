@@ -239,6 +239,7 @@ class ClientWithReconnect extends Client {
   }
 
   private shouldReconnect(error: Error): boolean {
+    debug("shouldReconnect: %O", error);
     const { transportCreator, shouldReconnect, maxReconnects } = this.reconnectOptions || {};
 
     if (!transportCreator || maxReconnects === 0) return false;

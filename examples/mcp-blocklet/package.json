@@ -1,0 +1,28 @@
+{
+  "name": "@aigne/example-mcp-blocklet",
+  "version": "1.4.0",
+  "description": "A demonstration of using AIGNE Framework and MCP Server hosted by the Blocklet platform",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-blocklet",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bin": "index.ts",
+  "files": [
+    ".env.local.example",
+    "*.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "npx -y bun run index.ts",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aigne/core": "workspace:^",
+    "@modelcontextprotocol/sdk": "^1.8.0",
+    "open": "^10.1.0",
+    "zod": "^3.24.2"
+  }
+}

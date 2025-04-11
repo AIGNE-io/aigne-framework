@@ -42,15 +42,15 @@ export const openAIChatModelOptionsSchema = z.object({
 
 export class OpenAIChatModel extends ChatModel {
   constructor(public options?: OpenAIChatModelOptions) {
-    if (options) checkArguments("OpenAIChatModel", openAIChatModelOptionsSchema, options);
     super();
+    if (options) checkArguments(this.name, openAIChatModelOptionsSchema, options);
   }
 
   protected _client?: OpenAI;
 
   get client() {
     const apiKey = this.options?.apiKey || process.env.OPENAI_API_KEY;
-    if (!apiKey) throw new Error("Api Key is required for OpenAIChatModel");
+    if (!apiKey) throw new Error(`Api Key is required for ${this.name}`);
 
     this._client ??= new OpenAI({
       baseURL: this.options?.baseURL,
@@ -151,14 +151,14 @@ export class OpenAIChatModel extends ChatModel {
   }
 }
 
-const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
+export const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
   system: "system",
   user: "user",
   agent: "assistant",
   tool: "tool",
 } as const;
 
-async function contentsFromInputMessages(
+export async function contentsFromInputMessages(
   messages: ChatModelInputMessage[],
 ): Promise<ChatCompletionMessageParam[]> {
   return messages.map(
@@ -194,7 +194,9 @@ async function contentsFromInputMessages(
   );
 }
 
-function toolsFromInputTools(tools?: ChatModelInputTool[]): ChatCompletionTool[] | undefined {
+export function toolsFromInputTools(
+  tools?: ChatModelInputTool[],
+): ChatCompletionTool[] | undefined {
   return tools?.length
     ? tools.map((i) => ({
         type: "function",
@@ -207,7 +209,9 @@ function toolsFromInputTools(tools?: ChatModelInputTool[]): ChatCompletionTool[]
     : undefined;
 }
 
-function jsonSchemaToOpenAIJsonSchema(schema: Record<string, unknown>): Record<string, unknown> {
+export function jsonSchemaToOpenAIJsonSchema(
+  schema: Record<string, unknown>,
+): Record<string, unknown> {
   if (schema?.type === "object") {
     const { required, properties } = schema as {
       required?: string[];

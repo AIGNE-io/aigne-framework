@@ -1,0 +1,4 @@
+data:{"choices":[{"delta":{"content":"{","role":"assistant"},"index":0}],"created":1744177105,"model":"gemini-2.0-flash","object":"chat.completion.chunk"}
+data:{"choices":[{"delta":{"content":"\n  \"","role":"assistant"},"index":0}],"created":1744177105,"model":"gemini-2.0-flash","object":"chat.completion.chunk"}
+data:{"choices":[{"delta":{"content":"text\": \"The temperature in New York is 20 degrees.\"\n}","role":"assistant"},"index":0}],"created":1744177105,"model":"gemini-2.0-flash","object":"chat.completion.chunk"}
+data:{"choices":[{"delta":{"role":"assistant"},"finish_reason":"stop","index":0}],"created":1744177105,"model":"gemini-2.0-flash","object":"chat.completion.chunk"}

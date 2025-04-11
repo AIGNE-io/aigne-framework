@@ -96,4 +96,8 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
       },
     });
   }
+
+  protected override checkUsageAgentCalls(_context: Context): void {
+    // ignore calls usage check for UserAgent
+  }
 }

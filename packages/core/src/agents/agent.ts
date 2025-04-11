@@ -184,17 +184,18 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     }
   }
 
+  protected checkUsageAgentCalls(context: Context) {
+    const { limits, usage } = context;
+    if (limits?.maxAgentCalls && usage.agentCalls >= limits.maxAgentCalls) {
+      throw new Error(`Exceeded max agent calls ${usage.agentCalls}/${limits.maxAgentCalls}`);
+    }
+
+    usage.agentCalls++;
+  }
+
   protected preprocess(_: I, context: Context) {
     this.checkContextStatus(context);
-
-    if (context) {
-      const { limits, usage } = context;
-      if (limits?.maxAgentCalls && usage.agentCalls >= limits.maxAgentCalls) {
-        throw new Error(`Exceeded max agent calls ${usage.agentCalls}/${limits.maxAgentCalls}`);
-      }
-
-      usage.agentCalls++;
-    }
+    this.checkUsageAgentCalls(context);
   }
 
   protected postprocess(input: I, output: O, context: Context) {

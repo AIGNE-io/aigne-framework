@@ -13,12 +13,12 @@ import {
   ListrDefaultRendererLogLevels,
   type ListrRenderer,
   type ListrTaskWrapper,
-  PRESET_TIMER,
   Spinner,
   figures,
 } from "@aigne/listr2";
 import chalk from "chalk";
 import { z } from "zod";
+import { parseDuration } from "../utils/time.js";
 
 const DEBUG_DEPTH = z.number().int().safeParse(Number(process.env.DEBUG_DEPTH)).data;
 
@@ -37,66 +37,79 @@ export class TerminalTracer {
 
       const listr = this.newListr();
 
-      context.on("agentStarted", async ({ contextId, parentContextId, agent, input }) => {
-        const task: Task = {
-          ...Promise.withResolvers(),
-          listr: Promise.withResolvers(),
-        };
-        this.tasks[contextId] = task;
+      context.on(
+        "agentStarted",
+        async ({ contextId, parentContextId, agent, input, timestamp }) => {
+          const task: Task = {
+            ...Promise.withResolvers(),
+            listr: Promise.withResolvers(),
+            startTime: timestamp,
+          };
+          this.tasks[contextId] = task;
 
-        const listrTask: Parameters<typeof listr.add>[0] = {
-          title: this.formatTaskTitle(agent),
-          task: (ctx, taskWrapper) => {
-            const subtask = taskWrapper.newListr([{ task: () => task.promise }]);
-            task.listr.resolve({ subtask, taskWrapper, ctx });
-            return subtask;
-          },
-          rendererOptions: {
-            persistentOutput: true,
-            outputBar: Number.POSITIVE_INFINITY,
-            bottomBar: Number.POSITIVE_INFINITY,
-          },
-        };
+          const listrTask: Parameters<typeof listr.add>[0] = {
+            title: this.formatTaskTitle(agent),
+            task: (ctx, taskWrapper) => {
+              const subtask = taskWrapper.newListr([{ task: () => task.promise }]);
+              task.listr.resolve({ subtask, taskWrapper, ctx });
+              return subtask;
+            },
+            rendererOptions: {
+              persistentOutput: true,
+              outputBar: Number.POSITIVE_INFINITY,
+              bottomBar: Number.POSITIVE_INFINITY,
+            },
+          };
 
-        const parentTask = parentContextId ? this.tasks[parentContextId] : undefined;
-        if (parentTask) {
-          parentTask.listr.promise.then(({ subtask }) => {
-            subtask.add(listrTask);
-          });
-        } else {
-          listr.add(listrTask);
-        }
+          const parentTask = parentContextId ? this.tasks[parentContextId] : undefined;
+          if (parentTask) {
+            parentTask.listr.promise.then(({ subtask }) => {
+              subtask.add(listrTask);
+            });
+          } else {
+            listr.add(listrTask);
+          }
 
-        const { taskWrapper } = await task.listr.promise;
+          const { taskWrapper } = await task.listr.promise;
 
-        taskWrapper.output = this.formatAgentStartedOutput(agent, input);
-      });
+          taskWrapper.output = this.formatAgentStartedOutput(agent, input);
+        },
+      );
 
-      context.on("agentSucceed", async ({ agent, contextId, parentContextId, output }) => {
+      context.on(
+        "agentSucceed",
+        async ({ agent, contextId, parentContextId, output, timestamp }) => {
+          const task = this.tasks[contextId];
+          if (!task) return;
+
+          task.endTime = timestamp;
+
+          const { taskWrapper, ctx } = await task.listr.promise;
+
+          if (agent instanceof ChatModel) {
+            const { usage } = output as ChatModelOutput;
+            task.usage = usage;
+          }
+
+          taskWrapper.title = this.formatTaskTitle(agent, { task, usage: true, time: true });
+          taskWrapper.output = this.formatAgentSucceedOutput(agent, output);
+
+          if (!parentContextId || !this.tasks[parentContextId]) {
+            Object.assign(ctx, output);
+          }
+
+          task.resolve();
+        },
+      );
+
+      context.on("agentFailed", async ({ agent, contextId, error, timestamp }) => {
         const task = this.tasks[contextId];
         if (!task) return;
 
-        const { taskWrapper, ctx } = await task.listr.promise;
-
-        if (agent instanceof ChatModel) {
-          const { usage } = output as ChatModelOutput;
-          if (usage) taskWrapper.title = this.formatTaskTitle(agent, { usage });
-        }
-
-        taskWrapper.output = this.formatAgentSucceedOutput(agent, output);
-
-        if (!parentContextId || !this.tasks[parentContextId]) {
-          Object.assign(ctx, output);
-        }
-
-        task.resolve();
-      });
-
-      context.on("agentFailed", async ({ agent, contextId, error }) => {
-        const task = this.tasks[contextId];
-        if (!task) return;
+        task.endTime = timestamp;
 
         const { taskWrapper } = await task.listr.promise;
+        taskWrapper.title = this.formatTaskTitle(agent, { task, usage: true, time: true });
         taskWrapper.output = this.formatAgentFailedOutput(agent, error);
 
         task.reject(error);
@@ -119,7 +132,6 @@ export class TerminalTracer {
     return new MyListr([], {
       concurrent: true,
       rendererOptions: {
-        timer: { ...PRESET_TIMER },
         collapseSubtasks: false,
         writeBottomBarDirectly: true,
         icon: {
@@ -152,16 +164,35 @@ ${this.formatMessage(data)}`;
     return inspect(data, { colors: true, depth: DEBUG_DEPTH });
   }
 
-  formatTokenUsage(usage: Partial<ContextUsage>, calls?: boolean) {
-    const formattedCalls =
-      usage.agentCalls && calls ? ` ${chalk.grey("calls:")} ${chalk.cyan(usage.agentCalls)}` : "";
-    return ` ${chalk.grey("(tokens:")} ${chalk.yellow(usage.promptTokens)}${chalk.grey("/")}${chalk.cyan(usage.completionTokens)}${formattedCalls}${chalk.grey(")")}`;
+  formatTokenUsage(usage: Partial<ContextUsage>) {
+    const items = [
+      [chalk.yellow(usage.promptTokens), chalk.grey("prompt tokens")],
+      [chalk.cyan(usage.completionTokens), chalk.grey("completion tokens")],
+      usage.agentCalls ? [chalk.magenta(usage.agentCalls), chalk.grey("agent calls")] : undefined,
+    ];
+
+    const content = items
+      .filter((i) => !!i)
+      .map((i) => i.join(" "))
+      .join(chalk.grey(", "));
+
+    return `${chalk.grey("(Usage: ")}${content}${chalk.grey(")")}`;
   }
 
-  formatTaskTitle(agent: Agent, { usage }: { usage?: Partial<ContextUsage> } = {}) {
+  formatTimeUsage(startTime: number, endTime: number) {
+    const duration = endTime - startTime;
+    return chalk.grey(`[${parseDuration(duration)}]`);
+  }
+
+  formatTaskTitle(
+    agent: Agent,
+    { task, usage, time }: { task?: Task; usage?: boolean; time?: boolean } = {},
+  ) {
     let title = `call agent ${agent.name}`;
 
-    if (usage) title += ` ${this.formatTokenUsage(usage)}`;
+    if (usage && task?.usage) title += ` ${this.formatTokenUsage(task.usage)}`;
+    if (time && task?.startTime && task.endTime)
+      title += ` ${this.formatTimeUsage(task.startTime, task.endTime)}`;
 
     return title;
   }
@@ -175,6 +206,9 @@ type Task = ReturnType<typeof Promise.withResolvers<void>> & {
       taskWrapper: ListrTaskWrapper<unknown, typeof DefaultRenderer, typeof ListrRenderer>;
     }>
   >;
+  startTime?: number;
+  endTime?: number;
+  usage?: Partial<ContextUsage>;
 };
 
 class MyListr extends Listr {

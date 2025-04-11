@@ -125,7 +125,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
         try {
           await context.call(this, message);
         } catch (error) {
-          context.emit("error", error);
+          context.emit("agentFailed", { agent: this, error });
         }
       });
     }

@@ -27,6 +27,7 @@ export type Runnable<I extends Message = Message, O extends Message = Message> =
 export interface AgentEvent {
   parentContextId?: string;
   contextId: string;
+  timestamp: number;
   agent: Agent;
 }
 
@@ -34,13 +35,12 @@ export interface ContextEventMap {
   agentStarted: [AgentEvent & { input: Message }];
   agentSucceed: [AgentEvent & { output: Message }];
   agentFailed: [AgentEvent & { error: Error }];
-  error: [Error];
 }
 
 export type ContextEmitEventMap = {
   [K in keyof ContextEventMap]: OmitPropertiesFromArrayFirstElement<
     ContextEventMap[K],
-    "contextId" | "parentContextId"
+    "contextId" | "parentContextId" | "timestamp"
   >;
 };
 
@@ -227,10 +227,15 @@ export class ExecutionContext implements Context {
     eventName: K,
     ...args: Args<K, ContextEmitEventMap>
   ): boolean {
-    const newArgs = [
-      { ...args[0], contextId: this.id, parentContextId: this.parentId },
-      ...args.slice(1),
-    ] as Args<K, ContextEventMap>;
+    const b: AgentEvent = {
+      ...args[0],
+      contextId: this.id,
+      parentContextId: this.parentId,
+      timestamp: Date.now(),
+    };
+
+    const newArgs = [b, ...args.slice(1)] as Args<K, ContextEventMap>;
+
     return this.internal.events.emit(eventName, ...newArgs);
   }
 

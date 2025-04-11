@@ -1,5 +1,5 @@
 import { inspect } from "node:util";
-import { type Message, createMessage, type UserAgent as input } from "@aigne/core";
+import { MESSAGE_KEY, type Message, createMessage, type UserAgent as input } from "@aigne/core";
 import { figures } from "@aigne/listr2";
 import chalk from "chalk";
 import inquirer from "inquirer";
@@ -65,8 +65,8 @@ async function callAgent(userAgent: input, input: Message | string, options: Cha
   console.log(
     `
 ${chalk.grey(figures.tick)} 💬 ${inspect(input, { colors: true })}
-${chalk.grey(figures.tick)} 🤖 ${tracer.formatTokenUsage(context.usage, true)}
-${inspect(result, { colors: true })}
+${chalk.grey(figures.tick)} 🤖 ${tracer.formatTokenUsage(context.usage)}
+${formatAIResponse(result)}
 `,
   );
 }
@@ -81,3 +81,9 @@ Commands:
 `,
   }),
 };
+
+function formatAIResponse({ [MESSAGE_KEY]: msg, ...message }: Message) {
+  const text = msg && typeof msg === "string" ? msg : undefined;
+  const json = Object.keys(message).length > 0 ? inspect(message, { colors: true }) : undefined;
+  return [text, json].filter(Boolean).join("\n");
+}

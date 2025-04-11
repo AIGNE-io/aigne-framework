@@ -1,5 +1,5 @@
 import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { SSEClientTransport, type SSEClientTransportOptions } from "@modelcontextprotocol/sdk/client/sse.js";
 import {
   StdioClientTransport,
   type StdioServerParameters,
@@ -46,6 +46,15 @@ export type MCPServerOptions = SSEServerParameters | StdioServerParameters;
 export type SSEServerParameters = {
   url: string;
   /**
+   * Additional options to pass to the SSEClientTransport.
+   */
+  opts?: SSEClientTransportOptions;
+  /**
+   * The timeout for requests to the server, in milliseconds.
+   * @default 10000
+   */
+  requestTimeout?: number;
+  /**
    * Whether to automatically reconnect to the server if the connection is lost.
    * @default 10 set to 0 to disable automatic reconnection
    */
@@ -88,7 +97,7 @@ export class MCPAgent extends Agent {
     checkArguments("MCPAgent.from", mcpAgentOptionsSchema, options);
 
     if (isSSEServerParameters(options)) {
-      const transport = () => new SSEClientTransport(new URL(options.url));
+      const transport = () => new SSEClientTransport(new URL(options.url), options.opts);
       return MCPAgent.fromTransport(transport, options);
     }
 
@@ -215,6 +224,7 @@ export class MCPAgent extends Agent {
 
 export interface ClientWithReconnectOptions {
   transportCreator?: () => PromiseOrValue<Transport>;
+  requestTimeout?: number;
   maxReconnects?: number;
   shouldReconnect?: (error: Error) => boolean;
 }
@@ -259,13 +269,17 @@ class ClientWithReconnect extends Client {
     resultSchema: T,
     options?: RequestOptions,
   ): Promise<z.infer<T>> {
+    const mergedOptions: RequestOptions = {
+      ...(options ?? {}),
+      timeout: options?.timeout ?? this.reconnectOptions?.requestTimeout ?? 10000,
+    };
     try {
-      return await super.request(request, resultSchema, options);
+      return await super.request(request, resultSchema, mergedOptions);
     } catch (error) {
       if (this.shouldReconnect(error)) {
         debug("Error occurred, reconnecting to MCP server: %O", error);
         await this.reconnect();
-        return await super.request(request, resultSchema, options);
+        return await super.request(request, resultSchema, mergedOptions);
       }
       throw error;
     }
@@ -361,6 +375,10 @@ const mcpAgentOptionsSchema: ZodType<
   }),
   z.object({
     url: z.string(),
+    opts: z.object({}).optional(),
+    requestTimeout: z.number().optional(),
+    maxReconnects: z.number().optional(),
+    shouldReconnect: z.function().args(z.instanceof(Error)).returns(z.boolean()).optional(),
   }),
   z.object({
     command: z.string(),

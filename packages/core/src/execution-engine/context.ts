@@ -110,10 +110,14 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   unsubscribe(topic: string, listener: MessageQueueListener): void;
 
   /**
-   * Create a new context with a initial state (such as: usage)
+   * Create a child context with the same configuration as the parent context.
+   * If `reset` is true, the child context will have a new state (such as: usage).
+   *
+   * @param options
+   * @param options.reset create a new context with initial state (such as: usage)
    * @returns new context
    */
-  newContext(): Context;
+  newContext(options?: { reset?: boolean }): Context;
 }
 
 export function createPublishMessage(
@@ -141,7 +145,7 @@ export class ExecutionContext implements Context {
 
   id = v7();
 
-  private readonly internal: ExecutionContextInternal;
+  readonly internal: ExecutionContextInternal;
 
   get model() {
     return this.internal.model;
@@ -163,8 +167,9 @@ export class ExecutionContext implements Context {
     return this.internal.usage;
   }
 
-  newContext() {
-    return new ExecutionContext(this.internal);
+  newContext({ reset }: { reset?: boolean } = {}) {
+    if (reset) return new ExecutionContext(this.internal);
+    return new ExecutionContext(this);
   }
 
   call = ((agent, message, options) => {
@@ -181,7 +186,7 @@ export class ExecutionContext implements Context {
       });
     }
 
-    const newContext = new ExecutionContext(this);
+    const newContext = this.newContext();
     const msg = createMessage(message);
 
     return newContext.internal

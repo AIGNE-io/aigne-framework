@@ -33,7 +33,7 @@ export class TerminalTracer {
     try {
       this.spinner.start();
 
-      const context = this.context.newContext();
+      const context = this.context.newContext({ reset: true });
 
       const listr = this.newListr();
 

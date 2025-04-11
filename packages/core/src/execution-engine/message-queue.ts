@@ -22,7 +22,7 @@ export type MessageQueueListener = (message: MessagePayload) => void;
 export type Unsubscribe = () => void;
 
 export class MessageQueue {
-  private events = new EventEmitter();
+  events = new EventEmitter();
 
   publish(topic: string | string[], payload: MessagePayload) {
     checkArguments("MessageQueue.publish", publishArgsSchema, {

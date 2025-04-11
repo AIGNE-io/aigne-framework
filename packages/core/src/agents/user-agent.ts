@@ -35,7 +35,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
   private activeAgent?: Runnable;
 
   override call(input: string | I, context?: Context): Promise<O> {
-    if (!context) this.context = this.context.newContext();
+    if (!context) this.context = this.context.newContext({ reset: true });
 
     return super.call(input, context ?? this.context);
   }

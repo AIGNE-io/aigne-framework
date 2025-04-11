@@ -139,20 +139,20 @@ test("ExecutionEngine should throw timeout error", async () => {
   expect(engine.call(agent, { timeout: 300 })).rejects.toThrow("ExecutionContext is timeout");
 });
 
-test("ExecutionEngineContext should subscribe/unsubscribe correctly", async () => {
-  const context = new ExecutionEngine({}).newContext();
+test("ExecutionContext should subscribe/unsubscribe correctly", async () => {
+  const engine = new ExecutionEngine({});
 
   const listener: MessageQueueListener = mock();
 
-  context.subscribe("test_topic", listener);
+  engine.subscribe("test_topic", listener);
 
-  context.publish("test_topic", createPublishMessage("hello"));
+  engine.publish("test_topic", createPublishMessage("hello"));
   expect(listener).toBeCalledTimes(1);
   expect(listener).toHaveBeenCalledWith(
     expect.objectContaining({ message: createMessage("hello") }),
   );
 
-  context.unsubscribe("test_topic", listener);
-  context.publish("test_topic", createPublishMessage("hello"));
+  engine.unsubscribe("test_topic", listener);
+  engine.publish("test_topic", createPublishMessage("hello"));
   expect(listener).toBeCalledTimes(1);
 });

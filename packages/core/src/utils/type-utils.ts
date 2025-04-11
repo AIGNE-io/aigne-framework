@@ -4,6 +4,11 @@ export type PromiseOrValue<T> = T | Promise<T>;
 
 export type Nullish<T> = T | null | undefined;
 
+export type OmitPropertiesFromArrayFirstElement<
+  T extends unknown[],
+  K extends string | number | symbol,
+> = T extends [infer U, ...infer Rest] ? [Omit<U, K>, ...Rest] : never;
+
 export function isNil(value: unknown): value is null | undefined {
   return value === null || value === undefined;
 }

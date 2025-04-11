@@ -1,5 +1,11 @@
 import { expect, test } from "bun:test";
-import { AgentMemory, ExecutionEngine, type Memory, createMessage } from "@aigne/core";
+import {
+  AgentMemory,
+  ExecutionEngine,
+  type Memory,
+  createMessage,
+  createPublishMessage,
+} from "@aigne/core";
 
 test("should add a new memory if it is not the same as the last one", () => {
   const agentMemory = new AgentMemory({});
@@ -42,7 +48,7 @@ test("should add memory after topic trigger", () => {
   });
 
   memory.attach(context);
-  context.publish("test_topic", "hello");
+  context.publish("test_topic", createPublishMessage("hello"));
   expect(memory.memories).toEqual([
     {
       role: "user",
@@ -52,7 +58,7 @@ test("should add memory after topic trigger", () => {
 
   // should not add memory if the memory is detached
   memory.detach();
-  context.publish("test_topic", "world");
+  context.publish("test_topic", createPublishMessage("world"));
   expect(memory.memories).toEqual([
     {
       role: "user",

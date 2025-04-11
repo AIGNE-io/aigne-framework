@@ -1,7 +1,7 @@
 import { isAbsolute, resolve } from "node:path";
 import { type Agent, ExecutionEngine } from "@aigne/core";
-import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
 import { Command, type OptionValues } from "commander";
+import { runChatLoopInTerminal } from "../utils/run-chat-loop.js";
 
 interface RunOptions extends OptionValues {
   agent?: string;
@@ -36,6 +36,8 @@ export function createRunCommand(): Command {
       const user = engine.call(agent);
 
       await runChatLoopInTerminal(user, {});
+
+      await engine.shutdown();
     })
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);

@@ -90,10 +90,10 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     const toolCallMessages: ChatModelInputMessage[] = [];
 
     for (;;) {
-      const { text, json, toolCalls } = await model.call(
-        { ...modelInput, messages: messages.concat(toolCallMessages) },
-        context,
-      );
+      const { text, json, toolCalls } = await context.call(model, {
+        ...modelInput,
+        messages: messages.concat(toolCallMessages),
+      });
 
       if (toolCalls?.length) {
         const executedToolCalls: {
@@ -107,7 +107,11 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
           if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
           // NOTE: should pass both arguments (model generated) and input (user provided) to the tool
-          const output = await tool.call({ ...call.function.arguments, ...input }, context);
+          const output = await context.call(
+            tool,
+            { ...call.function.arguments, ...input },
+            { disableTransfer: true },
+          );
 
           // NOTE: Return transfer output immediately
           if (isTransferAgentOutput(output)) {

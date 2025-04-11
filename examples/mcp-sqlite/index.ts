@@ -2,10 +2,10 @@
 
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder, getMessage } from "@aigne/core";
+import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
+import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { logger } from "@aigne/core/utils/logger.js";
-import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
@@ -43,7 +43,6 @@ const userAgent = engine.call(agent);
 
 await runChatLoopInTerminal(userAgent, {
   initialCall: {},
-  onResponse: (response) => console.log(getMessage(response)),
 });
 
 process.exit(0);

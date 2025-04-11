@@ -1,5 +1,11 @@
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, UserInputTopic, UserOutputTopic } from "@aigne/core";
+import {
+  AIAgent,
+  ExecutionEngine,
+  UserInputTopic,
+  UserOutputTopic,
+  createPublishMessage,
+} from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -69,7 +75,10 @@ Please review the code. If previous feedback was provided, see if it was address
 });
 
 const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
-engine.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
+engine.publish(
+  UserInputTopic,
+  createPublishMessage("Write a function to find the sum of all even numbers in a list."),
+);
 
 const { message } = await engine.subscribe(UserOutputTopic);
 console.log(message);

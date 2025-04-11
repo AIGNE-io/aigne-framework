@@ -25,8 +25,10 @@ import {
 export const MESSAGE_KEY = "$message";
 export const DEFAULT_MAX_HISTORY_MESSAGES = 10;
 
-export function createMessage(message: string | object): Message {
-  return { [MESSAGE_KEY]: message };
+export function createMessage<I extends Message>(message: string | I): I {
+  return typeof message === "string"
+    ? ({ [MESSAGE_KEY]: message } as unknown as I)
+    : { ...message };
 }
 
 export function getMessage(input: Message): string | undefined {

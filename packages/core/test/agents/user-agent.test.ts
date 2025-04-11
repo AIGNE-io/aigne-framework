@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { ExecutionEngine, UserAgent, createMessage } from "@aigne/core";
+import { ExecutionEngine, UserAgent, createMessage, createPublishMessage } from "@aigne/core";
 
 test("UserAgent.stream", async () => {
   const engine = new ExecutionEngine({});
@@ -11,7 +11,7 @@ test("UserAgent.stream", async () => {
   });
 
   const reader = userAgent.stream.getReader();
-  userAgent.publish("test_topic", "hello");
+  userAgent.publish("test_topic", createPublishMessage("hello", userAgent));
   expect(reader.read()).resolves.toEqual({
     value: {
       topic: "test_topic",

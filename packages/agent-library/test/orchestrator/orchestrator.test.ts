@@ -4,7 +4,7 @@ import {
   OrchestratorAgent,
   getFullPlanSchema,
 } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, ExecutionEngine, createMessage } from "@aigne/core";
+import { AIAgent, ExecutionEngine, MESSAGE_KEY, createMessage } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 test("AIAgent.call", async () => {
@@ -81,12 +81,12 @@ test("AIAgent.call", async () => {
   expect(result).toEqual(createMessage("Task finished"));
   expect(finderCall.mock.calls).toEqual([
     [
-      createMessage(expect.stringContaining("Find the closest match to a user's request")),
+      { [MESSAGE_KEY]: expect.stringContaining("Find the closest match to a user's request") },
       expect.anything(),
     ],
   ]);
   expect(writerCall.mock.calls).toEqual([
-    [createMessage(expect.stringContaining("Write to the filesystem")), expect.anything()],
+    [{ [MESSAGE_KEY]: expect.stringContaining("Write to the filesystem") }, expect.anything()],
   ]);
 });
 

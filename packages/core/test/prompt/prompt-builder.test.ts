@@ -56,10 +56,6 @@ test("PromptBuilder should build messages correctly", async () => {
       role: "system",
       content: "Test instructions",
     },
-    {
-      role: "user",
-      content: '{"name":"foo"}',
-    },
   ]);
 });
 

@@ -1,8 +1,10 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import {
   ensureZodUnionArray,
   outputSchemaToResponseFormatSchema,
+  parseJSON,
 } from "@aigne/core/utils/json-schema.js";
+import { logger } from "@aigne/core/utils/logger";
 import { z } from "zod";
 
 test("ensureZodUnionArray should throw error if the unions is empty array", async () => {
@@ -44,4 +46,16 @@ test("ensureZodUnionArray should work if the unions is not empty array", async (
       additionalProperties: false,
     }),
   );
+});
+
+test("parseJSON should throw error if the json is invalid", async () => {
+  const json = "{ foo: bar }";
+
+  const log = spyOn(logger, "core").mockReturnValue(undefined);
+
+  expect((async () => parseJSON(json))()).rejects.toThrowError("JSON Parse error");
+
+  expect(log).toHaveBeenCalledWith("Failed to parse JSON", expect.anything());
+
+  log.mockRestore();
 });

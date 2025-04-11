@@ -36,6 +36,8 @@ export function createRunCommand(): Command {
       const user = engine.call(agent);
 
       await runChatLoopInTerminal(user, {});
+
+      await engine.shutdown();
     })
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);

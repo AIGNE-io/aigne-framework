@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.3.0...example-workflow-reflection-v1.3.1) (2025-04-11)
+
+
+### Bug Fixes
+
+* remove usage of new Node.js exists API for compatibility ([#57](https://github.com/AIGNE-io/aigne-framework/issues/57)) ([c10cc08](https://github.com/AIGNE-io/aigne-framework/commit/c10cc086d8ecd0744f38cdb1367d4c8816b723b3))
+
 ## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.2.1...example-workflow-reflection-v1.3.0) (2025-04-08)
 
 

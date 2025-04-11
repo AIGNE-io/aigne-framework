@@ -2,6 +2,13 @@
 
 - chore: release 1.2.0
 
+## [1.4.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.4.0...agent-library-v1.4.1) (2025-04-11)
+
+
+### Bug Fixes
+
+* remove usage of new Node.js exists API for compatibility ([#57](https://github.com/AIGNE-io/aigne-framework/issues/57)) ([c10cc08](https://github.com/AIGNE-io/aigne-framework/commit/c10cc086d8ecd0744f38cdb1367d4c8816b723b3))
+
 ## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.3.2...agent-library-v1.4.0) (2025-04-08)
 
 

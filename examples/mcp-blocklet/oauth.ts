@@ -43,7 +43,7 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
       client_name: 'AIGNE Examples',
       client_uri: 'https://www.aigne.io/framework',
       logo_uri: 'https://www.aigne.io/.well-known/service/blocklet/logo',
-      scope: 'profile:read',
+      scope: 'profile:read blocklet:read blocklet:write',
       tos_uri: 'https://www.arcblock.io/en/termsofuse',
       policy_uri: 'https://www.arcblock.io/en/privacy',
       contacts: ['support@aigne.io'],

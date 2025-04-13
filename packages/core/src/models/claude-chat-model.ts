@@ -113,9 +113,11 @@ export class ClaudeChatModel extends ChatModel {
         args: string;
       })[] = [];
       let usage: ChatModelOutputUsage | undefined;
+      let model: string | undefined;
 
       for await (const chunk of stream) {
         if (chunk.type === "message_start") {
+          model ??= chunk.message.model;
           const { input_tokens, output_tokens } = chunk.message.usage;
 
           usage = {
@@ -154,7 +156,7 @@ export class ClaudeChatModel extends ChatModel {
         }
       }
 
-      const result: ChatModelOutput = { usage, text };
+      const result: ChatModelOutput = { usage, model, text };
 
       if (toolCalls.length) {
         result.toolCalls = toolCalls
@@ -207,6 +209,7 @@ export class ClaudeChatModel extends ChatModel {
     if (!jsonTool) throw new Error("Json tool not found");
     return {
       json: jsonTool.input as Message,
+      model: result.model,
       usage: {
         promptTokens: result.usage.input_tokens,
         completionTokens: result.usage.output_tokens,

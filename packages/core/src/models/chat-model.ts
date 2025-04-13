@@ -185,6 +185,7 @@ export interface ChatModelOutput extends Message {
   json?: object;
   toolCalls?: ChatModelOutputToolCall[];
   usage?: ChatModelOutputUsage;
+  model?: string;
 }
 
 export interface ChatModelOutputToolCall {
@@ -220,4 +221,5 @@ const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
   json: z.record(z.unknown()).optional(),
   toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
   usage: chatModelOutputUsageSchema.optional(),
+  model: z.string().optional(),
 });

@@ -96,8 +96,10 @@ export class TerminalTracer {
           const { taskWrapper, ctx } = await task.listr.promise;
 
           if (agent instanceof ChatModel) {
-            const { usage } = output as ChatModelOutput;
+            const { usage, model } = output as ChatModelOutput;
             task.usage = usage;
+            task.extraTitleMetadata ??= {};
+            if (model) task.extraTitleMetadata.model = model;
           }
 
           taskWrapper.title = this.formatTaskTitle(agent, { task, usage: true, time: true });
@@ -175,19 +177,24 @@ ${this.formatMessage(data)}`;
     return inspect(data, { colors: true, depth: DEBUG_DEPTH });
   }
 
-  formatTokenUsage(usage: Partial<ContextUsage>) {
+  formatTokenUsage(usage: Partial<ContextUsage>, extra?: { [key: string]: string }) {
     const items = [
       [chalk.yellow(usage.promptTokens), chalk.grey("prompt tokens")],
       [chalk.cyan(usage.completionTokens), chalk.grey("completion tokens")],
       usage.agentCalls ? [chalk.magenta(usage.agentCalls), chalk.grey("agent calls")] : undefined,
     ];
 
-    const content = items
-      .filter((i) => !!i)
-      .map((i) => i.join(" "))
-      .join(chalk.grey(", "));
+    const content = items.filter((i) => !!i).map((i) => i.join(" "));
 
-    return `${chalk.grey("(Usage: ")}${content}${chalk.grey(")")}`;
+    if (extra) {
+      content.unshift(
+        ...Object.entries(extra)
+          .filter(([k, v]) => k && v)
+          .map(([k, v]) => `${chalk.grey(k)}: ${v}`),
+      );
+    }
+
+    return `${chalk.grey("(")}${content.join(chalk.green(", "))}${chalk.grey(")")}`;
   }
 
   formatTimeUsage(startTime: number, endTime: number) {
@@ -201,7 +208,8 @@ ${this.formatMessage(data)}`;
   ) {
     let title = `call agent ${agent.name}`;
 
-    if (usage && task?.usage) title += ` ${this.formatTokenUsage(task.usage)}`;
+    if (usage && task?.usage)
+      title += ` ${this.formatTokenUsage(task.usage, task.extraTitleMetadata)}`;
     if (time && task?.startTime && task.endTime)
       title += ` ${this.formatTimeUsage(task.startTime, task.endTime)}`;
 
@@ -220,6 +228,7 @@ type Task = ReturnType<typeof Promise.withResolvers<void>> & {
   startTime?: number;
   endTime?: number;
   usage?: Partial<ContextUsage>;
+  extraTitleMetadata?: { [key: string]: string };
 };
 
 class MyListr extends Listr {

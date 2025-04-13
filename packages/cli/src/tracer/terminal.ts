@@ -22,8 +22,15 @@ import { parseDuration } from "../utils/time.js";
 
 const DEBUG_DEPTH = z.number().int().default(2).safeParse(Number(process.env.DEBUG_DEPTH)).data;
 
+export interface TerminalTracerOptions {
+  verbose?: boolean;
+}
+
 export class TerminalTracer {
-  constructor(public readonly context: Context) {}
+  constructor(
+    public readonly context: Context,
+    public readonly options: TerminalTracerOptions = {},
+  ) {}
 
   private spinner = new Spinner();
 
@@ -72,7 +79,9 @@ export class TerminalTracer {
 
           const { taskWrapper } = await task.listr.promise;
 
-          taskWrapper.output = this.formatAgentStartedOutput(agent, input);
+          if (this.options.verbose) {
+            taskWrapper.output = this.formatAgentStartedOutput(agent, input);
+          }
         },
       );
 
@@ -92,7 +101,9 @@ export class TerminalTracer {
           }
 
           taskWrapper.title = this.formatTaskTitle(agent, { task, usage: true, time: true });
-          taskWrapper.output = this.formatAgentSucceedOutput(agent, output);
+          if (this.options.verbose) {
+            taskWrapper.output = this.formatAgentSucceedOutput(agent, output);
+          }
 
           if (!parentContextId || !this.tasks[parentContextId]) {
             Object.assign(ctx, output);

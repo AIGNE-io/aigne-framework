@@ -17,7 +17,7 @@ test("TerminalTracer should work correctly", async () => {
 
   const userAgent = engine.call(testAgent);
 
-  const tracer = new TerminalTracer(context);
+  const tracer = new TerminalTracer(context, { verbose: true });
 
   const { result } = await tracer.run(userAgent, createMessage("hello"));
 
@@ -38,7 +38,7 @@ test("TerminalTracer should raise error correctly", async () => {
 
   const userAgent = engine.call(testAgent);
 
-  const tracer = new TerminalTracer(context);
+  const tracer = new TerminalTracer(context, { verbose: true });
 
   const result = tracer.run(userAgent, createMessage("hello"));
 

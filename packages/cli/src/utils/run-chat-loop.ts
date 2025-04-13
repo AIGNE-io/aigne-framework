@@ -11,9 +11,11 @@ export interface ChatLoopOptions {
   welcome?: string;
   defaultQuestion?: string;
   inputKey?: string;
+  verbose?: boolean;
 }
 
 export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopOptions = {}) {
+  options.verbose ??= logger.enabled("aigne:core");
   // Disable the logger, use TerminalTracer instead
   logger.disable();
 
@@ -57,7 +59,7 @@ export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopO
 }
 
 async function callAgent(userAgent: input, input: Message | string, options: ChatLoopOptions) {
-  const tracer = new TerminalTracer(userAgent.context);
+  const tracer = new TerminalTracer(userAgent.context, { verbose: options.verbose });
 
   const { result, context } = await tracer.run(
     userAgent,

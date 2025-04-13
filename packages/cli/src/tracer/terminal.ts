@@ -23,11 +23,11 @@ import { parseDuration } from "../utils/time.js";
 const DEBUG_DEPTH = z.number().int().safeParse(Number(process.env.DEBUG_DEPTH)).data;
 
 export class TerminalTracer {
+  constructor(public readonly context: Context) {}
+
   private spinner = new Spinner();
 
   private tasks: { [callId: string]: Task } = {};
-
-  constructor(public readonly context: Context) {}
 
   async run(agent: Agent, input: Message) {
     try {

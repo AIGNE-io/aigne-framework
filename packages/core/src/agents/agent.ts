@@ -2,6 +2,7 @@ import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";
 import { createMessage } from "../prompt/prompt-builder.js";
+import { logger } from "../utils/logger.js";
 import {
   type Nullish,
   type PromiseOrValue,
@@ -156,6 +157,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     const ctx: Context = context ?? (await this.newDefaultContext());
     const message = typeof input === "string" ? createMessage(input) : input;
 
+    logger.core("Call agent %s started with input: %O", this.name, input);
     if (!this.noEmitEvents) ctx.emit("agentStarted", { agent: this, input: message });
 
     try {
@@ -175,10 +177,12 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
           return output;
         });
 
+      logger.core("Call agent %s succeed with output: %O", this.name, input);
       if (!this.noEmitEvents) ctx.emit("agentSucceed", { agent: this, output });
 
       return output;
     } catch (error) {
+      logger.core("Call agent %s failed with error: %O", this.name, error);
       if (!this.noEmitEvents) ctx.emit("agentFailed", { agent: this, error });
       throw error;
     }

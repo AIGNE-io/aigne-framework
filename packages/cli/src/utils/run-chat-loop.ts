@@ -86,7 +86,7 @@ Commands:
   }),
 };
 
-function formatAIResponse({ [MESSAGE_KEY]: msg, ...message }: Message) {
+function formatAIResponse({ [MESSAGE_KEY]: msg, ...message }: Message = {}) {
   const text = msg && typeof msg === "string" ? msg : undefined;
   const json = Object.keys(message).length > 0 ? inspect(message, { colors: true }) : undefined;
   return [text, json].filter(Boolean).join("\n");

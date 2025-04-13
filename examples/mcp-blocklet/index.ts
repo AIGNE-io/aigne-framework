@@ -1,13 +1,15 @@
 #!/usr/bin/env npx -y bun
 
 import assert from 'node:assert';
+import JWT from 'jsonwebtoken';
 import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder, getMessage } from '@aigne/core';
 import { logger } from '@aigne/core/utils/logger.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { runChatLoopInTerminal } from '@aigne/core/utils/run-chat-loop.js';
 import { ClaudeChatModel } from '@aigne/core/models/claude-chat-model';
+import { refreshAuthorization, UnauthorizedError } from '@modelcontextprotocol/sdk/client/auth.js';
+
 import { TerminalOAuthProvider } from './oauth.js';
-import { UnauthorizedError } from '@modelcontextprotocol/sdk/client/auth.js';
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
@@ -30,12 +32,44 @@ const transport = new SSEClientTransport(appUrl, {
 });
 
 try {
-  const tokens = await provider.tokens();
-  if (!tokens) {
+  let tokens = await provider.tokens();
+  if (tokens) {
+    let decoded = JWT.decode(tokens.access_token);
+    console.info('Decoded access token:', decoded);
+    if (decoded) {
+      const now = Date.now();
+      const expiresAt = decoded.exp * 1000;
+      if (now < expiresAt) {
+        console.info('Tokens already exist and not expired, skipping authorization');
+      } else if (tokens.refresh_token) {
+        decoded = JWT.decode(tokens.refresh_token);
+        console.info('Decoded refresh token:', decoded);
+        if (decoded) {
+          const now = Date.now();
+          const expiresAt = decoded.exp * 1000;
+          if (now < expiresAt) {
+            console.info('Refresh token already exists and not expired, refreshing authorization');
+            try {
+              tokens = await refreshAuthorization(appUrl.href, {
+                clientInformation: (await provider.clientInformation())!,
+                refreshToken: tokens.refresh_token,
+              });
+              await provider.saveTokens(tokens);
+            } catch (error) {
+              console.error('Error refreshing authorization, resetting tokens and starting authorization', error);
+              await provider.saveTokens(undefined);
+              await transport.start();
+            }
+          } else {
+            console.info('Refresh token already expired, starting authorization');
+            await transport.start();
+          }
+        }
+      }
+    }
+  } else {
     console.info('No tokens found, starting authorization');
     await transport.start();
-  } else {
-    console.info('Tokens already exist, skipping authorization');
   }
 } catch (error) {
   if (error instanceof UnauthorizedError) {

@@ -66,10 +66,16 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
     return this._tokens;
   }
 
-  async saveTokens(tokens: OAuthTokens): Promise<void> {
-    console.log('Saving tokens:', tokens);
-    this._tokens = tokens;
-    this.persistTokens();
+  async saveTokens(tokens: OAuthTokens | undefined): Promise<void> {
+    if (tokens) {
+      console.log('Saving tokens:', tokens);
+      this._tokens = tokens;
+      this.persistTokens();
+    } else {
+      console.error('Reset tokens');
+      this._tokens = undefined;
+      this.persistTokens();
+    }
   }
 
   async redirectToAuthorization(authorizationUrl: URL): Promise<void> {

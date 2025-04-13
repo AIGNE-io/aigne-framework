@@ -20,7 +20,7 @@ import chalk from "chalk";
 import { z } from "zod";
 import { parseDuration } from "../utils/time.js";
 
-const DEBUG_DEPTH = z.number().int().safeParse(Number(process.env.DEBUG_DEPTH)).data;
+const DEBUG_DEPTH = z.number().int().default(2).safeParse(Number(process.env.DEBUG_DEPTH)).data;
 
 export class TerminalTracer {
   constructor(public readonly context: Context) {}

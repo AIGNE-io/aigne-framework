@@ -1,0 +1,115 @@
+name: Test Examples
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-examples:
+    runs-on: ubuntu-latest
+
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - provider: openai
+            model: gpt-4.1-mini
+          - provider: openai
+            model: gpt-4o-mini
+          - provider: openai
+            model: o3-mini
+          - provider: openai
+            model: o1-mini
+          - provider: anthropic
+            model: claude-3-7-sonnet-latest
+          - provider: anthropic
+            model: claude-3-5-haiku-latest
+          - provider: xai
+            model: grok-3-mini
+          - provider: xai
+            model: grok-2-latest
+          # - provider: gemini
+          #   model: gemini-2.0-flash
+          # - provider: deepseek
+          #   model: deepseek-chat
+          # - provider: open-router
+          #   model: openai/gpt-4o
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Get puppeteer version from @modelcontextprotocol/server-puppeteer
+        id: puppeteer-version
+        shell: bash
+        run: |
+          VERSION=$(pnpm view @modelcontextprotocol/server-puppeteer dependencies.puppeteer)
+          if [ -z "$VERSION" ]; then
+            echo "Error: puppeteer dependency not found in @modelcontextprotocol/server-puppeteer"
+            exit 1
+          fi
+          echo "version=$VERSION" >> ${GITHUB_OUTPUT}
+          echo "Puppeteer version: $VERSION"
+
+      - name: Cache Puppeteer
+        uses: actions/cache@v4
+        id: puppeteer-cache
+        with:
+          path: ~/.cache/puppeteer
+          key: ${{ runner.os }}-puppeteer-cache-${{ steps.puppeteer-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-puppeteer-cache-
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Run examples
+        env:
+          PUPPETEER_LAUNCH_OPTIONS: '{"headless": true, "args": ["--no-sandbox", "--disable-setuid-sandbox"]}'
+          ALLOW_DANGEROUS: "true"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODEL_PROVIDER: ${{ matrix.provider }}
+          MODEL: ${{ matrix.model }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          EXCLUDE_PATTERN="chat-bot\|mcp-blocklet\|workflow-group-chat"
+
+          for dir in examples/*; do
+            if echo "$dir" | grep -q "$EXCLUDE_PATTERN"; then
+              echo "Skipping $dir"
+            else
+              echo "Testing $dir with $MODEL_PROVIDER:$MODEL"
+              start_time=$(date +%s)
+              cd $dir
+              pnpm start || exit 1
+              cd ../..
+              end_time=$(date +%s)
+              duration=$((end_time - start_time))
+              echo "✅ $dir completed in $duration seconds"
+            fi
+          done

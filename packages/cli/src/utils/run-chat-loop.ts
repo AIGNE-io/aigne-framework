@@ -14,7 +14,22 @@ export interface ChatLoopOptions {
   verbose?: boolean;
 }
 
+export const is = {
+  CI: () => process.env.CI === "true",
+};
+
 export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopOptions = {}) {
+  if (is.CI()) {
+    if (options.initialCall) {
+      const result = await userAgent.call(options.initialCall);
+      console.log(result);
+    } else if (options.defaultQuestion) {
+      const result = await userAgent.call(options.defaultQuestion);
+      console.log(result);
+    }
+    return;
+  }
+
   options.verbose ??= logger.enabled("aigne:core");
   // Disable the logger, use TerminalTracer instead
   logger.disable();

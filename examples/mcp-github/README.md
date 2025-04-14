@@ -73,7 +73,7 @@ AI ->> User: Here's the README content: ...
 
 ```bash
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Setup your OpenAI API key
-export GITHUB_PERSONAL_ACCESS_TOKEN=YOUR_GITHUB_TOKEN # Setup your GitHub token
+export GITHUB_TOKEN=YOUR_GITHUB_TOKEN # Setup your GitHub token
 
 npx -y @aigne/example-mcp-github # Run the example
 ```
@@ -100,7 +100,7 @@ Setup your API keys in the `.env.local` file:
 
 ```bash
 OPENAI_API_KEY="" # Your OpenAI API key
-GITHUB_PERSONAL_ACCESS_TOKEN="" # Your GitHub Personal Access Token
+GITHUB_TOKEN="" # Your GitHub Personal Access Token
 ```
 
 ### Run the Example
@@ -119,9 +119,8 @@ The following example demonstrates how to use the GitHub MCP server to search fo
 import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
-
 // Load environment variables
-const { OPENAI_API_KEY, GITHUB_PERSONAL_ACCESS_TOKEN } = process.env;
+const { OPENAI_API_KEY, GITHUB_TOKEN } = process.env;
 
 // Initialize OpenAI model
 const model = new OpenAIChatModel({
@@ -133,7 +132,7 @@ const githubMCPAgent = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-github"],
   env: {
-    GITHUB_PERSONAL_ACCESS_TOKEN,
+    GITHUB_TOKEN,
   },
 });
 
@@ -162,7 +161,7 @@ Always provide clear, concise responses with relevant information from GitHub.
 // Example: Search for repositories
 const result = await engine.call(
   agent,
-  "Search for repositories related to 'modelcontextprotocol'",
+  "Search for repositories related to 'modelcontextprotocol'"
 );
 
 console.log(result);

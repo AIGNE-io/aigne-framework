@@ -3,7 +3,7 @@
 import assert from "node:assert";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { createAdaptiveModel } from "@aigne/core/utils/create-adaptive-model.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { UnauthorizedError, refreshAuthorization } from "@modelcontextprotocol/sdk/client/auth.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
@@ -14,8 +14,7 @@ import { TerminalOAuthProvider } from "./oauth.js";
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
-const { OPENAI_API_KEY, BLOCKLET_APP_URL } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
+const { BLOCKLET_APP_URL } = process.env;
 assert(BLOCKLET_APP_URL, "Please set the BLOCKLET_APP_URL environment variable");
 console.info("Connecting to blocklet app", BLOCKLET_APP_URL);
 
@@ -90,9 +89,7 @@ try {
 
 console.info("Starting connecting to blocklet mcp...");
 
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
+const model = createAdaptiveModel();
 
 const blocklet = await MCPAgent.from({
   url: appUrl.href,

@@ -1,16 +1,10 @@
 #!/usr/bin/env npx -y bun
 
-import assert from "node:assert";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { createAdaptiveModel } from "@aigne/core/utils/create-adaptive-model.js";
 
-const { OPENAI_API_KEY } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
-
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
+const model = createAdaptiveModel();
 
 const productSupport = AIAgent.from({
   name: "product_support",

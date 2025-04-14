@@ -1,16 +1,11 @@
-import { nanoid } from "nanoid";
 import OpenAI from "openai";
-import { parseJSON } from "../utils/json-schema.js";
-import {
-  type ChatModelInput,
-  type ChatModelOutput,
-  type ChatModelOutputUsage,
-  isJsonSchemaResponseFormat,
-} from "./chat-model.js";
+import { mergeUsage } from "../utils/model-utils.js";
+import type { ChatModelInput, ChatModelOutput } from "./chat-model.js";
 import {
   OpenAIChatModel,
   type OpenAIChatModelOptions,
   contentsFromInputMessages,
+  extractResultFromStream,
   jsonSchemaToOpenAIJsonSchema,
   toolsFromInputTools,
 } from "./openai-chat-model.js";
@@ -43,83 +38,78 @@ export class GeminiChatModel extends OpenAIChatModel {
   }
 
   async process(input: ChatModelInput): Promise<ChatModelOutput> {
-    const res = await this.client.chat.completions.create({
+    const messages = await contentsFromInputMessages(input.messages);
+    if (messages.length > 0 && messages[messages.length - 1]?.role !== "user") {
+      messages.push({ role: "user", content: " " });
+    }
+
+    const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model: this.options?.model || GEMINI_DEFAULT_CHAT_MODEL,
       temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
       top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       frequency_penalty:
         input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,
       presence_penalty: input.modelOptions?.presencePenalty ?? this.modelOptions?.presencePenalty,
-      messages: await contentsFromInputMessages(input.messages),
-      tools: isJsonSchemaResponseFormat(input.responseFormat)
-        ? undefined
-        : toolsFromInputTools(input.tools),
-      tool_choice: input.toolChoice,
-      parallel_tool_calls: !input.tools?.length
-        ? undefined
-        : (input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls),
-      response_format: isJsonSchemaResponseFormat(input.responseFormat)
-        ? {
-            type: "json_schema",
-            json_schema: {
-              ...input.responseFormat.jsonSchema,
-              schema: jsonSchemaToOpenAIJsonSchema(input.responseFormat.jsonSchema.schema),
-            },
-          }
-        : undefined,
+      messages,
+      stream_options: {
+        include_usage: true,
+      },
       stream: true,
-    });
-
-    let text = "";
-    const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-      args: string;
-    })[] = [];
-    let usage: ChatModelOutputUsage | undefined;
-
-    for await (const chunk of res) {
-      const choice = chunk.choices?.[0];
-
-      if (choice?.delta.tool_calls?.length) {
-        for (const call of choice.delta.tool_calls) {
-          toolCalls.push({
-            id: call.id || nanoid(),
-            type: "function" as const,
-            function: {
-              name: call.function?.name || "",
-              arguments: parseJSON(call.function?.arguments || "{}"),
-            },
-            args: call.function?.arguments || "",
-          });
-        }
-      }
-
-      if (choice?.delta.content) text += choice.delta.content;
-
-      if (chunk.usage) {
-        usage = {
-          promptTokens: chunk.usage.prompt_tokens,
-          completionTokens: chunk.usage.completion_tokens,
-        };
-      }
-    }
-
-    const result: ChatModelOutput = {
-      usage,
     };
 
-    if (isJsonSchemaResponseFormat(input.responseFormat) && text) {
-      result.json = parseJSON(text);
-    } else {
-      result.text = text;
-    }
+    const tools = toolsFromInputTools(input.tools);
+    const res = await this.client.chat.completions.create({
+      ...body,
+      response_format: tools?.length
+        ? undefined
+        : input.responseFormat?.type === "json_schema"
+          ? {
+              type: "json_schema",
+              json_schema: {
+                ...input.responseFormat.jsonSchema,
+                schema: jsonSchemaToOpenAIJsonSchema(input.responseFormat.jsonSchema.schema),
+              },
+            }
+          : undefined,
+      tools,
+      tool_choice: input.toolChoice,
+      parallel_tool_calls: !tools?.length
+        ? undefined
+        : (input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls),
+    });
 
-    if (toolCalls.length) {
-      result.toolCalls = toolCalls.map(({ args, ...c }) => ({
-        ...c,
-        function: { ...c.function, arguments: parseJSON(args) },
-      }));
-    }
+    const result = await extractResultFromStream(res);
 
+    if (!result.toolCalls?.length && input.responseFormat?.type === "json_schema" && result.text) {
+      const output = await this.requestStructuredOutput(body, input.responseFormat);
+
+      return {
+        ...output,
+        usage: mergeUsage(result.usage, output.usage),
+      };
+    }
     return result;
+  }
+
+  private async requestStructuredOutput(
+    body: OpenAI.Chat.ChatCompletionCreateParamsStreaming,
+    responseFormat: ChatModelInput["responseFormat"],
+  ): Promise<ChatModelOutput> {
+    if (responseFormat?.type !== "json_schema") {
+      throw new Error("Expected json_schema response format");
+    }
+
+    const res = await this.client.chat.completions.create({
+      ...body,
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          ...responseFormat.jsonSchema,
+          schema: jsonSchemaToOpenAIJsonSchema(responseFormat.jsonSchema.schema),
+        },
+      },
+    });
+
+    return extractResultFromStream(res, responseFormat?.type === "json_schema");
   }
 }

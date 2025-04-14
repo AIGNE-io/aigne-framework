@@ -1,6 +1,6 @@
 import { beforeEach, expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
-import { OpenRouterChatModel } from "@aigne/core/models/openrouter-chat-model.js";
+import { OpenRouterChatModel } from "@aigne/core/models/open-router-chat-model.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
 import {
   COMMON_RESPONSE_FORMAT,
@@ -14,7 +14,7 @@ let model: OpenRouterChatModel;
 
 beforeEach(() => {
   model = new OpenRouterChatModel({
-    apiKey: "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",
+    apiKey: "YOUR_API_KEY",
     model: "openai/gpt-4o",
   });
 });
@@ -22,7 +22,7 @@ beforeEach(() => {
 test("OpenRouterChatModel.call should return the correct tool", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
-      path: join(import.meta.dirname, "openai-streaming-response-1.txt"),
+      path: join(import.meta.dirname, "open-router-streaming-response-1.txt"),
     }),
   );
 
@@ -37,7 +37,7 @@ test("OpenRouterChatModel.call should return the correct tool", async () => {
 test("OpenRouterChatModel.call", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
-      path: join(import.meta.dirname, "openrouter-streaming-response-2.txt"),
+      path: join(import.meta.dirname, "open-router-streaming-response-2.txt"),
     }),
   );
 

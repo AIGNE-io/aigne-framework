@@ -110,18 +110,6 @@ export type ChatModelInputResponseFormat =
       };
     };
 
-export function isJsonSchemaResponseFormat(format?: ChatModelInputResponseFormat): format is {
-  type: "json_schema";
-  jsonSchema: {
-    name: string;
-    description?: string;
-    schema: Record<string, unknown>;
-    strict?: boolean;
-  };
-} {
-  return format?.type === "json_schema";
-}
-
 const chatModelInputResponseFormatSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("text") }),
   z.object({

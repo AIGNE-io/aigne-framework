@@ -1,13 +1,12 @@
-import { nanoid } from "nanoid";
 import { OpenAI } from "openai";
 import { SystemMessageTemplate } from "../prompt/template.js";
-import { parseJSON } from "../utils/json-schema.js";
 import { checkArguments } from "../utils/type-utils.js";
-import type { ChatModelInput, ChatModelOutput, ChatModelOutputUsage } from "./chat-model.js";
+import type { ChatModelInput, ChatModelOutput } from "./chat-model.js";
 import { ChatModel } from "./chat-model.js";
 import {
   type OpenAIChatModelOptions,
   contentsFromInputMessages,
+  extractResultFromStream,
   openAIChatModelOptionsSchema,
   toolsFromInputTools,
 } from "./openai-chat-model.js";
@@ -44,7 +43,7 @@ export class DeepSeekChatModel extends ChatModel {
 
     if (jsonMode) {
       const systemPrompt = SystemMessageTemplate.from(
-        `The response should be a JSON object following this schema: 
+        `You must respond with a JSON object that strictly follows this schema. Do not include the schema definition in your response. Only return the actual JSON data that matches the schema structure: 
         ${JSON.stringify(
           (
             input.responseFormat as {
@@ -64,7 +63,7 @@ export class DeepSeekChatModel extends ChatModel {
         input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,
       presence_penalty: input.modelOptions?.presencePenalty ?? this.modelOptions?.presencePenalty,
       messages: await contentsFromInputMessages(messages),
-      tools: toolsFromInputTools(input.tools),
+      tools: toolsFromInputTools(input.tools, { addTypeToEmptyParameters: true }),
       tool_choice: input.toolChoice,
       parallel_tool_calls: !input.tools?.length
         ? undefined
@@ -76,60 +75,6 @@ export class DeepSeekChatModel extends ChatModel {
       stream: true,
     });
 
-    let text = "";
-    const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-      args: string;
-    })[] = [];
-    let usage: ChatModelOutputUsage | undefined;
-
-    for await (const chunk of res) {
-      const choice = chunk.choices?.[0];
-
-      if (choice?.delta.tool_calls?.length) {
-        for (const call of choice.delta.tool_calls) {
-          toolCalls[call.index] ??= {
-            id: call.id || nanoid(),
-            type: "function" as const,
-            function: { name: "", arguments: {} },
-            args: "",
-          };
-          const c = toolCalls[call.index];
-          if (!c) throw new Error("Tool call not found");
-
-          if (call.type) c.type = call.type;
-
-          c.function.name = c.function.name + (call.function?.name || "");
-          c.args = c.args.concat(call.function?.arguments || "");
-        }
-      }
-
-      if (choice?.delta.content) text += choice.delta.content;
-
-      if (chunk.usage) {
-        usage = {
-          promptTokens: chunk.usage.prompt_tokens,
-          completionTokens: chunk.usage.completion_tokens,
-        };
-      }
-    }
-
-    const result: ChatModelOutput = {
-      usage,
-    };
-
-    if (jsonMode && text) {
-      result.json = parseJSON(text);
-    } else {
-      result.text = text;
-    }
-
-    if (toolCalls.length) {
-      result.toolCalls = toolCalls.map(({ args, ...c }) => ({
-        ...c,
-        function: { ...c.function, arguments: parseJSON(args) },
-      }));
-    }
-
-    return result;
+    return extractResultFromStream(res, jsonMode);
   }
 }

@@ -34,11 +34,13 @@ test("GeminiChatModel.call should return the correct tool", async () => {
 });
 
 test("GeminiChatModel.call", async () => {
-  spyOn(model.client.chat.completions, "create").mockReturnValue(
-    createMockEventStream({
-      path: join(import.meta.dirname, "gemini-streaming-response-2.txt"),
-    }),
-  );
+  spyOn(model.client.chat.completions, "create")
+    .mockReturnValueOnce(
+      createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-2.txt") }),
+    )
+    .mockReturnValueOnce(
+      createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-3.txt") }),
+    );
 
   const result = await model.call({
     messages: createWeatherToolCallMessages(),
@@ -48,6 +50,9 @@ test("GeminiChatModel.call", async () => {
 
   expect(result).toEqual({
     json: { text: "The temperature in New York is 20 degrees." },
-    usage: undefined,
+    usage: {
+      completionTokens: 32,
+      promptTokens: 66,
+    },
   });
 });

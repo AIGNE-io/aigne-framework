@@ -23,8 +23,4 @@ export class XAIChatModel extends OpenAIChatModel {
     });
     return this._client;
   }
-
-  get modelOptions() {
-    return this.options?.modelOptions;
-  }
 }

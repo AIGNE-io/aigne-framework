@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam, ChatCompletionTool } from "openai/resources";
+import type { Stream } from "openai/streaming.js";
 import { z } from "zod";
 import { parseJSON } from "../utils/json-schema.js";
 import { checkArguments, isNonNullable } from "../utils/type-utils.js";
@@ -93,61 +94,7 @@ export class OpenAIChatModel extends ChatModel {
       stream: true,
     });
 
-    let text = "";
-    const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-      args: string;
-    })[] = [];
-    let usage: ChatModelOutputUsage | undefined;
-
-    for await (const chunk of res) {
-      const choice = chunk.choices?.[0];
-
-      if (choice?.delta.tool_calls?.length) {
-        for (const call of choice.delta.tool_calls) {
-          toolCalls[call.index] ??= {
-            id: call.id || nanoid(),
-            type: "function" as const,
-            function: { name: "", arguments: {} },
-            args: "",
-          };
-          const c = toolCalls[call.index];
-          if (!c) throw new Error("Tool call not found");
-
-          if (call.type) c.type = call.type;
-
-          c.function.name = c.function.name + (call.function?.name || "");
-          c.args = c.args.concat(call.function?.arguments || "");
-        }
-      }
-
-      if (choice?.delta.content) text += choice.delta.content;
-
-      if (chunk.usage) {
-        usage = {
-          promptTokens: chunk.usage.prompt_tokens,
-          completionTokens: chunk.usage.completion_tokens,
-        };
-      }
-    }
-
-    const result: ChatModelOutput = {
-      usage,
-    };
-
-    if (input.responseFormat?.type === "json_schema" && text) {
-      result.json = parseJSON(text);
-    } else {
-      result.text = text;
-    }
-
-    if (toolCalls.length) {
-      result.toolCalls = toolCalls.map(({ args, ...c }) => ({
-        ...c,
-        function: { ...c.function, arguments: parseJSON(args) },
-      }));
-    }
-
-    return result;
+    return extractResultFromStream(res, input.responseFormat?.type === "json_schema");
   }
 }
 
@@ -196,16 +143,23 @@ export async function contentsFromInputMessages(
 
 export function toolsFromInputTools(
   tools?: ChatModelInputTool[],
+  options?: { addTypeToEmptyParameters?: boolean },
 ): ChatCompletionTool[] | undefined {
   return tools?.length
-    ? tools.map((i) => ({
-        type: "function",
-        function: {
-          name: i.function.name,
-          description: i.function.description,
-          parameters: i.function.parameters as Record<string, unknown>,
-        },
-      }))
+    ? tools.map((i) => {
+        const parameters = i.function.parameters as Record<string, unknown>;
+        if (options?.addTypeToEmptyParameters && Object.keys(parameters).length === 0) {
+          parameters.type = "object";
+        }
+        return {
+          type: "function",
+          function: {
+            name: i.function.name,
+            description: i.function.description,
+            parameters,
+          },
+        };
+      })
     : undefined;
 }
 
@@ -245,4 +199,89 @@ export function jsonSchemaToOpenAIJsonSchema(
   }
 
   return schema;
+}
+
+export async function extractResultFromStream(
+  stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+  jsonMode = false,
+) {
+  let text = "";
+  const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
+    args: string;
+  })[] = [];
+  let usage: ChatModelOutputUsage | undefined;
+
+  for await (const chunk of stream) {
+    const choice = chunk.choices?.[0];
+
+    if (choice?.delta.tool_calls?.length) {
+      for (const call of choice.delta.tool_calls) {
+        if (call.index !== undefined) {
+          handleToolCallDelta(toolCalls, call);
+        } else {
+          handleCompleteToolCall(toolCalls, call);
+        }
+      }
+    }
+
+    if (choice?.delta.content) text += choice.delta.content;
+
+    if (chunk.usage) {
+      usage = {
+        promptTokens: chunk.usage.prompt_tokens,
+        completionTokens: chunk.usage.completion_tokens,
+      };
+    }
+  }
+
+  const result: ChatModelOutput = { usage };
+
+  if (jsonMode && text) {
+    result.json = parseJSON(text);
+  } else {
+    result.text = text;
+  }
+
+  if (toolCalls.length) {
+    result.toolCalls = toolCalls.map(({ args, ...c }) => ({
+      ...c,
+      function: { ...c.function, arguments: parseJSON(args) },
+    }));
+  }
+
+  return result;
+}
+
+function handleToolCallDelta(
+  toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & { args: string })[],
+  call: OpenAI.Chat.Completions.ChatCompletionChunk.Choice.Delta.ToolCall & { index: number },
+) {
+  toolCalls[call.index] ??= {
+    id: call.id || nanoid(),
+    type: "function" as const,
+    function: { name: "", arguments: {} },
+    args: "",
+  };
+  const c = toolCalls[call.index];
+  if (!c) throw new Error("Tool call not found");
+
+  if (call.type) c.type = call.type;
+
+  c.function.name = c.function.name + (call.function?.name || "");
+  c.args = c.args.concat(call.function?.arguments || "");
+}
+
+function handleCompleteToolCall(
+  toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & { args: string })[],
+  call: OpenAI.Chat.Completions.ChatCompletionChunk.Choice.Delta.ToolCall,
+) {
+  toolCalls.push({
+    id: call.id || nanoid(),
+    type: "function" as const,
+    function: {
+      name: call.function?.name || "",
+      arguments: parseJSON(call.function?.arguments || "{}"),
+    },
+    args: call.function?.arguments || "",
+  });
 }

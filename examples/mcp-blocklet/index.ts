@@ -1,20 +1,21 @@
 #!/usr/bin/env npx -y bun
 
 import assert from 'node:assert';
+// @ts-ignore
 import JWT from 'jsonwebtoken';
 import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder, getMessage } from '@aigne/core';
 import { logger } from '@aigne/core/utils/logger.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { runChatLoopInTerminal } from '@aigne/core/utils/run-chat-loop.js';
-import { ClaudeChatModel } from '@aigne/core/models/claude-chat-model';
 import { refreshAuthorization, UnauthorizedError } from '@modelcontextprotocol/sdk/client/auth.js';
+import { OpenAIChatModel } from '@aigne/core/models/openai-chat-model.js';
 
 import { TerminalOAuthProvider } from './oauth.js';
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
-const { ANTHROPIC_API_KEY, BLOCKLET_APP_URL } = process.env;
-assert(ANTHROPIC_API_KEY, 'Please set the ANTHROPIC_API_KEY environment variable');
+const { OPENAI_API_KEY, BLOCKLET_APP_URL } = process.env;
+assert(OPENAI_API_KEY, 'Please set the OPENAI_API_KEY environment variable');
 assert(BLOCKLET_APP_URL, 'Please set the BLOCKLET_APP_URL environment variable');
 
 const appUrl = new URL(BLOCKLET_APP_URL);
@@ -85,8 +86,8 @@ try {
 
 console.info('Starting connecting to blocklet mcp...');
 
-const model = new ClaudeChatModel({
-  apiKey: ANTHROPIC_API_KEY,
+const model = new OpenAIChatModel({
+  apiKey: OPENAI_API_KEY,
 });
 
 const blocklet = await MCPAgent.from({

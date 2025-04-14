@@ -1,5 +1,8 @@
 import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport, type SSEClientTransportOptions } from "@modelcontextprotocol/sdk/client/sse.js";
+import {
+  SSEClientTransport,
+  type SSEClientTransportOptions,
+} from "@modelcontextprotocol/sdk/client/sse.js";
 import {
   StdioClientTransport,
   type StdioServerParameters,

@@ -1,20 +1,20 @@
-import open from 'open'; // You'll need to install this package
-import { createServer } from 'http';
-import { EventEmitter } from 'node:events';
-import {
-  OAuthTokens,
+import { EventEmitter } from "node:events";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createServer } from "node:http";
+import { join } from "node:path";
+import type { OAuthClientProvider } from "@modelcontextprotocol/sdk/client/auth.js";
+import type {
   OAuthClientInformation,
   OAuthClientInformationFull,
-} from '@modelcontextprotocol/sdk/shared/auth.js';
-import { OAuthClientProvider } from '@modelcontextprotocol/sdk/client/auth.js';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
+  OAuthTokens,
+} from "@modelcontextprotocol/sdk/shared/auth.js";
+import open from "open"; // You'll need to install this package
 
 export class TerminalOAuthProvider extends EventEmitter implements OAuthClientProvider {
   private _tokens: OAuthTokens | undefined;
   private _clientInformation: OAuthClientInformationFull | undefined;
 
-  private codeVerifierValue: string = '';
+  private codeVerifierValue = "";
   private localServerPort = 4444; // Choose an available port
   private tokenFilePath: string;
   private clientInfoPath: string;
@@ -22,10 +22,10 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
   constructor() {
     super();
 
-    this.tokenFilePath = join(process.cwd(), '.oauth/token.json');
-    this.clientInfoPath = join(process.cwd(), '.oauth/client.json');
+    this.tokenFilePath = join(process.cwd(), ".oauth/token.json");
+    this.clientInfoPath = join(process.cwd(), ".oauth/client.json");
 
-    mkdirSync(join(process.cwd(), '.oauth'), { recursive: true });
+    mkdirSync(join(process.cwd(), ".oauth"), { recursive: true });
 
     this.loadTokens();
     this.loadClientInfo();
@@ -38,17 +38,17 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
   get clientMetadata() {
     return {
       redirect_uris: [this.redirectUrl],
-      grant_types: ['authorization_code', 'refresh_token'],
-      response_types: ['code'],
-      client_name: 'AIGNE Examples',
-      client_uri: 'https://www.aigne.io/framework',
-      logo_uri: 'https://www.aigne.io/.well-known/service/blocklet/logo',
-      scope: 'profile:read blocklet:read blocklet:write',
-      tos_uri: 'https://www.arcblock.io/en/termsofuse',
-      policy_uri: 'https://www.arcblock.io/en/privacy',
-      contacts: ['support@aigne.io'],
-      software_id: 'AIGNE Framework',
-      software_version: '1.0.0',
+      grant_types: ["authorization_code", "refresh_token"],
+      response_types: ["code"],
+      client_name: "AIGNE Examples",
+      client_uri: "https://www.aigne.io/framework",
+      logo_uri: "https://www.aigne.io/.well-known/service/blocklet/logo",
+      scope: "profile:read blocklet:read blocklet:write",
+      tos_uri: "https://www.arcblock.io/en/termsofuse",
+      policy_uri: "https://www.arcblock.io/en/privacy",
+      contacts: ["support@aigne.io"],
+      software_id: "AIGNE Framework",
+      software_version: "1.0.0",
     };
   }
 
@@ -57,7 +57,7 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
   }
 
   async saveClientInformation(clientInformation: OAuthClientInformationFull): Promise<void> {
-    console.log('Saving client information:', clientInformation);
+    console.log("Saving client information:", clientInformation);
     this._clientInformation = clientInformation;
     this.persistClientInfo();
   }
@@ -68,11 +68,11 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
 
   async saveTokens(tokens: OAuthTokens | undefined): Promise<void> {
     if (tokens) {
-      console.log('Saving tokens:', tokens);
+      console.log("Saving tokens:", tokens);
       this._tokens = tokens;
       this.persistTokens();
     } else {
-      console.error('Reset tokens');
+      console.error("Reset tokens");
       this._tokens = undefined;
       this.persistTokens();
     }
@@ -82,14 +82,14 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
     // Create a local server to handle the callback
     return new Promise((resolve, reject) => {
       const server = createServer(async (req, res) => {
-        if (req.url?.startsWith('/callback')) {
+        if (req.url?.startsWith("/callback")) {
           const url = new URL(req.url, this.redirectUrl);
-          const code = url.searchParams.get('code');
-          const error = url.searchParams.get('error');
-          const errorDescription = url.searchParams.get('error_description');
+          const code = url.searchParams.get("code");
+          const error = url.searchParams.get("error");
+          const errorDescription = url.searchParams.get("error_description");
 
           // Send a response to close the browser window
-          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.writeHead(200, { "Content-Type": "text/html" });
           res.end(`
             <html>
               <head>
@@ -117,7 +117,7 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
                     width: 90%;
                   }
                   h1 {
-                    color: ${error ? '#dc3545' : '#28a745'};
+                    color: ${error ? "#dc3545" : "#28a745"};
                     margin-bottom: 1rem;
                   }
                   p {
@@ -132,9 +132,9 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
               </head>
               <body>
                 <div class="container">
-                  <div class="status-icon">${error ? '❌' : '✅'}</div>
-                  <h1>Authorization ${error ? 'Failed' : 'Successful'}!</h1>
-                  ${errorDescription ? `<p>${errorDescription}</p>` : ''}
+                  <div class="status-icon">${error ? "❌" : "✅"}</div>
+                  <h1>Authorization ${error ? "Failed" : "Successful"}!</h1>
+                  ${errorDescription ? `<p>${errorDescription}</p>` : ""}
                   <p>You can close this window and return to the application.</p>
                 </div>
                 <script>window.close()</script>
@@ -146,19 +146,19 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
           server.close();
 
           if (code) {
-            this.emit('authorized', code);
-            console.info('Authorization successful!', Date.now());
+            this.emit("authorized", code);
+            console.info("Authorization successful!", Date.now());
             resolve();
           } else {
-            this.emit('error', new Error('No authorization code received'));
-            reject(new Error('No authorization code received'));
+            this.emit("error", new Error("No authorization code received"));
+            reject(new Error("No authorization code received"));
           }
         }
       });
 
       // Start the local server
       server.listen(this.localServerPort, async () => {
-        console.log('Please authorize the application in your browser...');
+        console.log("Please authorize the application in your browser...");
         // Open the authorization URL in the default browser
         await open(authorizationUrl.toString());
       });
@@ -176,11 +176,11 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
   private loadTokens(): void {
     try {
       if (existsSync(this.tokenFilePath)) {
-        const data = readFileSync(this.tokenFilePath, 'utf8');
+        const data = readFileSync(this.tokenFilePath, "utf8");
         this._tokens = JSON.parse(data);
       }
     } catch (error) {
-      console.error('Error loading tokens:', error);
+      console.error("Error loading tokens:", error);
     }
   }
 
@@ -190,18 +190,18 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
         writeFileSync(this.tokenFilePath, JSON.stringify(this._tokens, null, 2));
       }
     } catch (error) {
-      console.error('Error persisting tokens:', error);
+      console.error("Error persisting tokens:", error);
     }
   }
 
   private loadClientInfo(): void {
     try {
       if (existsSync(this.clientInfoPath)) {
-        const data = readFileSync(this.clientInfoPath, 'utf8');
+        const data = readFileSync(this.clientInfoPath, "utf8");
         this._clientInformation = JSON.parse(data);
       }
     } catch (error) {
-      console.error('Error loading client information:', error);
+      console.error("Error loading client information:", error);
     }
   }
 
@@ -211,7 +211,7 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
         writeFileSync(this.clientInfoPath, JSON.stringify(this._clientInformation, null, 2));
       }
     } catch (error) {
-      console.error('Error persisting client information:', error);
+      console.error("Error persisting client information:", error);
     }
   }
 }

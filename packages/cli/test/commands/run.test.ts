@@ -63,7 +63,7 @@ test("run command should call run chat loop correctly", async () => {
 test("run command should download package and run correctly", async () => {
   const runChatLoopInTerminal = mock();
 
-  await using _ = await mockModule("@aigne/core/utils/run-chat-loop.js", () => {
+  await using _ = await mockModule("@aigne/cli/utils/run-chat-loop.js", () => {
     return { runChatLoopInTerminal };
   });
 

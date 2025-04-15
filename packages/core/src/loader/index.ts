@@ -69,6 +69,7 @@ export async function loadAgent(path: string): Promise<Agent> {
         tools: await Promise.all(
           (agent.tools ?? []).map((filename) => loadAgent(join(dirname(path), filename))),
         ),
+        toolChoice: agent.tool_choice,
       });
     }
     if (agent.type === "mcp") {

@@ -31,6 +31,10 @@ const agentFileSchema = z.discriminatedUnion("type", [
       .array(z.string())
       .nullish()
       .transform((v) => v ?? undefined),
+    tool_choice: z
+      .union([z.literal("auto"), z.literal("none"), z.literal("required"), z.literal("router")])
+      .nullish()
+      .transform((v) => v ?? undefined),
   }),
   z.object({
     type: z.literal("mcp"),

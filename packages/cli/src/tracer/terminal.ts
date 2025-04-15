@@ -179,8 +179,8 @@ ${this.formatMessage(data)}`;
 
   formatTokenUsage(usage: Partial<ContextUsage>, extra?: { [key: string]: string }) {
     const items = [
-      [chalk.yellow(usage.promptTokens), chalk.grey("prompt tokens")],
-      [chalk.cyan(usage.completionTokens), chalk.grey("completion tokens")],
+      [chalk.yellow(usage.inputTokens), chalk.grey("input tokens")],
+      [chalk.cyan(usage.outputTokens), chalk.grey("output tokens")],
       usage.agentCalls ? [chalk.magenta(usage.agentCalls), chalk.grey("agent calls")] : undefined,
     ];
 

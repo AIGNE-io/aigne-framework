@@ -126,8 +126,8 @@ export class OpenAIChatModel extends ChatModel {
 
       if (chunk.usage) {
         usage = {
-          promptTokens: chunk.usage.prompt_tokens,
-          completionTokens: chunk.usage.completion_tokens,
+          inputTokens: chunk.usage.prompt_tokens,
+          outputTokens: chunk.usage.completion_tokens,
         };
       }
     }

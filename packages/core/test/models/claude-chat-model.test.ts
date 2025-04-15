@@ -83,8 +83,8 @@ test("ClaudeChatModel.call", async () => {
         },
       ],
       usage: {
-        promptTokens: 416,
-        completionTokens: 54,
+        inputTokens: 416,
+        outputTokens: 54,
       },
     }),
   );
@@ -142,8 +142,8 @@ test("ClaudeChatModel.call", async () => {
     expect.objectContaining({
       json: { text: "The current temperature in New York is 20 degrees." },
       usage: {
-        promptTokens: 955,
-        completionTokens: 54,
+        inputTokens: 955,
+        outputTokens: 54,
       },
       model: expect.any(String),
     }),

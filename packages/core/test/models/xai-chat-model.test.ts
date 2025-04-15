@@ -73,8 +73,8 @@ test("XAIChatModel.call", async () => {
     expect.objectContaining({
       json: { text: "The temperature in New York is 20 degrees Celsius." },
       usage: {
-        promptTokens: 177,
-        completionTokens: 20,
+        inputTokens: 177,
+        outputTokens: 20,
       },
       model: expect.any(String),
     }),

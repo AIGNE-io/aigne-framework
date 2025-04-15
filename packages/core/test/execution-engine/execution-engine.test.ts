@@ -102,7 +102,7 @@ test("ExecutionEngine should throw error if reached max tokens", async () => {
   });
 
   spyOn(model.client.chat.completions, "create").mockImplementation(() =>
-    mockOpenAIStreaming({ text: "hello", promptTokens: 100, completeTokens: 200 }),
+    mockOpenAIStreaming({ text: "hello", inputTokens: 100, outputTokens: 200 }),
   );
 
   const agent = AIAgent.from({});

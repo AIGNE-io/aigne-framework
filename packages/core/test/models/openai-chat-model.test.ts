@@ -75,8 +75,8 @@ test("OpenAIChatModel.call", async () => {
     expect.objectContaining({
       json: { text: "The current temperature in New York is 20°C." },
       usage: {
-        promptTokens: 100,
-        completionTokens: 20,
+        inputTokens: 100,
+        outputTokens: 20,
       },
       model: expect.any(String),
     }),

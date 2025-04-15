@@ -42,7 +42,7 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
 
   tools?: (Agent | FunctionAgentFn)[];
 
-  noEmitEvents?: boolean;
+  disableEvents?: boolean;
 
   memory?: AgentMemory | AgentMemoryOptions | true;
 }
@@ -60,7 +60,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     this.subscribeTopic = options.subscribeTopic;
     this.publishTopic = options.publishTopic as PublishTopic<Message>;
     if (options.tools?.length) this.tools.push(...options.tools.map(functionToAgent));
-    this.noEmitEvents = options.noEmitEvents;
+    this.disableEvents = options.disableEvents;
     if (options.memory) {
       this.memory =
         options.memory instanceof AgentMemory
@@ -110,7 +110,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
   readonly tools = createAccessorArray<Agent>([], (arr, name) => arr.find((t) => t.name === name));
 
-  private noEmitEvents?: boolean;
+  private disableEvents?: boolean;
 
   /**
    * Attach agent to context:
@@ -158,7 +158,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     const message = typeof input === "string" ? createMessage(input) : input;
 
     logger.core("Call agent %s started with input: %O", this.name, input);
-    if (!this.noEmitEvents) ctx.emit("agentStarted", { agent: this, input: message });
+    if (!this.disableEvents) ctx.emit("agentStarted", { agent: this, input: message });
 
     try {
       const parsedInput = this.inputSchema.parse(message) as I;
@@ -178,12 +178,12 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
         });
 
       logger.core("Call agent %s succeed with output: %O", this.name, input);
-      if (!this.noEmitEvents) ctx.emit("agentSucceed", { agent: this, output });
+      if (!this.disableEvents) ctx.emit("agentSucceed", { agent: this, output });
 
       return output;
     } catch (error) {
       logger.core("Call agent %s failed with error: %O", this.name, error);
-      if (!this.noEmitEvents) ctx.emit("agentFailed", { agent: this, error });
+      if (!this.disableEvents) ctx.emit("agentFailed", { agent: this, error });
       throw error;
     }
   }

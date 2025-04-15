@@ -1,13 +1,13 @@
 export interface ContextUsage {
-  promptTokens: number;
-  completionTokens: number;
+  inputTokens: number;
+  outputTokens: number;
   agentCalls: number;
 }
 
 export function newEmptyContextUsage(): ContextUsage {
   return {
-    promptTokens: 0,
-    completionTokens: 0,
+    inputTokens: 0,
+    outputTokens: 0,
     agentCalls: 0,
   };
 }

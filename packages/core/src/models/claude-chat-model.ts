@@ -121,13 +121,13 @@ export class ClaudeChatModel extends ChatModel {
           const { input_tokens, output_tokens } = chunk.message.usage;
 
           usage = {
-            promptTokens: input_tokens,
-            completionTokens: output_tokens,
+            inputTokens: input_tokens,
+            outputTokens: output_tokens,
           };
         }
 
         if (chunk.type === "message_delta" && usage) {
-          usage.completionTokens = chunk.usage.output_tokens;
+          usage.outputTokens = chunk.usage.output_tokens;
         }
 
         logs.push(JSON.stringify(chunk));
@@ -211,8 +211,8 @@ export class ClaudeChatModel extends ChatModel {
       json: jsonTool.input as Message,
       model: result.model,
       usage: {
-        promptTokens: result.usage.input_tokens,
-        completionTokens: result.usage.output_tokens,
+        inputTokens: result.usage.input_tokens,
+        outputTokens: result.usage.output_tokens,
       },
     };
   }

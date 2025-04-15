@@ -22,7 +22,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
   }
 
   constructor(options: UserAgentOptions<I, O>) {
-    super({ ...options, noEmitEvents: true });
+    super({ ...options, disableEvents: true });
     this._process = options.process;
     this.context = options.context;
     this.activeAgent = options.activeAgent;

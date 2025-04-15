@@ -27,8 +27,8 @@ export class ExecutionEngine {
   }: { path: string } & ExecutionEngineOptions): Promise<ExecutionEngine> {
     const { model, agents, tools, ...aigne } = await load({ path });
     return new ExecutionEngine({
-      model,
       ...options,
+      model: options.model || model,
       name: options.name || aigne.name || undefined,
       description: options.description || aigne.description || undefined,
       agents: agents.concat(options.agents ?? []),

@@ -47,6 +47,9 @@
       "execution-engine/*": [
         "./lib/dts/execution-engine/*"
       ],
+      "loader/*": [
+        "./lib/dts/loader/*"
+      ],
       "models/*": [
         "./lib/dts/models/*"
       ],

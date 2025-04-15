@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { createRunCommand } from "@aigne/cli/commands/run.js";
 import { UserAgent } from "@aigne/core";
+import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
 import { mockAIGNEPackage } from "../_mocks_/mock-aigne-package.js";
 import { mockModule } from "../_mocks_/mock-module.js";
 
@@ -113,4 +114,39 @@ test("run command should download package to a special folder", async () => {
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+test("run command should parse model options correctly", async () => {
+  const runChatLoopInTerminal = mock();
+
+  await using _ = await mockModule("@aigne/cli/utils/run-chat-loop.js", () => {
+    return { runChatLoopInTerminal };
+  });
+
+  const testAgentsPath = join(import.meta.dirname, "../../test-agents");
+
+  const command = createRunCommand();
+
+  await command.parseAsync([
+    "",
+    "run",
+    testAgentsPath,
+    "--model-provider",
+    "xai",
+    "--model",
+    "test-model",
+  ]);
+
+  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      context: expect.objectContaining({
+        model: expect.any(XAIChatModel),
+      }),
+    }),
+    expect.objectContaining({}),
+  );
+
+  expect(command.parseAsync(["", "run", testAgentsPath, "--model", "test-model"])).rejects.toThrow(
+    "please specify --model-provider when using the --model option",
+  );
 });

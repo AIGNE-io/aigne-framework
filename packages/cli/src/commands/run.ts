@@ -3,6 +3,7 @@ import { mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { type Agent, ExecutionEngine } from "@aigne/core";
+import { loadModel } from "@aigne/core/loader/index.js";
 import { Command, type OptionValues } from "commander";
 import { downloadAndExtract } from "../utils/download.js";
 import { runChatLoopInTerminal } from "../utils/run-chat-loop.js";
@@ -10,6 +11,8 @@ import { runChatLoopInTerminal } from "../utils/run-chat-loop.js";
 interface RunOptions extends OptionValues {
   agent?: string;
   downloadDir?: string;
+  modelProvider?: string;
+  model?: string;
 }
 
 export function createRunCommand(): Command {
@@ -18,6 +21,14 @@ export function createRunCommand(): Command {
     .argument("[path]", "Path to the agents directory or URL to aigne project", ".")
     .option("--agent <agent>", "Name of the agent to use (defaults to the first agent found)")
     .option("--download-dir <dir>", "Directory to download the package to")
+    .option(
+      "--model-provider <provider>",
+      "Model provider to use, available providers: openai, claude, xai (defaults to the aigne.yaml definition or openai)",
+    )
+    .option(
+      "--model <model>",
+      "Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)",
+    )
     .action(async (path: string, options: RunOptions) => {
       if (path.startsWith("http")) {
         await downloadAndRunPackage(path, options);
@@ -33,7 +44,14 @@ export function createRunCommand(): Command {
 }
 
 async function runEngine(originalPath: string, path: string, options: RunOptions) {
-  const engine = await ExecutionEngine.load({ path });
+  if (options.model && !options.modelProvider) {
+    throw new Error("please specify --model-provider when using the --model option");
+  }
+
+  const model = options.modelProvider
+    ? await loadModel({ provider: options.modelProvider, name: options.model })
+    : undefined;
+  const engine = await ExecutionEngine.load({ path, model });
 
   let agent: Agent | undefined;
   if (options.agent) {

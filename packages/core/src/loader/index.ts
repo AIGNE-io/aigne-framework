@@ -91,13 +91,13 @@ export async function loadAgent(path: string): Promise<Agent> {
   throw new Error(`Unsupported agent file type: ${path}`);
 }
 
-async function loadModel(
+export async function loadModel(
   model: z.infer<typeof aigneFileSchema>["chat_model"],
 ): Promise<ChatModel | undefined> {
-  if (!model?.name) return undefined;
+  if (!model) return undefined;
 
   const params = {
-    model: model.name,
+    model: model.name ?? undefined,
     temperature: model.temperature ?? undefined,
     topP: model.top_p ?? undefined,
     frequencyPenalty: model.frequent_penalty ?? undefined,

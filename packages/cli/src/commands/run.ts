@@ -24,29 +24,29 @@ export function createRunCommand(): Command {
 
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
 
-      await runEngine(absolutePath, options);
+      await runEngine(path, absolutePath, options);
     })
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);
 }
 
-async function runEngine(path: string, options: RunOptions) {
+async function runEngine(originalPath: string, path: string, options: RunOptions) {
   const engine = await ExecutionEngine.load({ path });
 
   let agent: Agent | undefined;
   if (options.agent) {
     agent = engine.agents[options.agent];
     if (!agent) {
-      console.error(`Agent "${options.agent}" not found.`);
+      console.error(`Agent "${options.agent}" not found in ${originalPath}`);
       console.log("Available agents:");
       for (const agent of engine.agents) {
         console.log(`- ${agent.name}`);
       }
-      throw new Error(`Agent "${options.agent}" not found`);
+      throw new Error(`Agent "${options.agent}" not found in ${originalPath}`);
     }
   } else {
     agent = engine.agents[0];
-    if (!agent) throw new Error("No agents found in the specified path");
+    if (!agent) throw new Error(`No agents found in ${originalPath}`);
   }
 
   const user = engine.call(agent);
@@ -59,7 +59,7 @@ async function downloadAndRunPackage(url: string, options: RunOptions) {
   try {
     await mkdir(dir, { recursive: true });
     await downloadAndExtract(url, dir);
-    await runEngine(dir, options);
+    await runEngine(url, dir, options);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -42,6 +42,9 @@ aigne run [path] [options]
 #### Options
 
 - `--agent <agent>`: Name of the agent to use (defaults to the first agent found)
+- `--download-dir <dir>`: Directory to download the package to (when using a URL)
+- `--model-provider <provider>`: Model provider to use, available providers: openai, claude, xai (defaults to the aigne.yaml definition or openai)
+- `--model <model>`: Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)
 - `--help`: Display help for the command
 
 #### Examples

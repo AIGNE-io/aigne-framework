@@ -32,7 +32,7 @@ export async function loadAgentFromJsFile(path: string) {
   return tryOrThrow(
     () =>
       agentJsFileSchema.parse({
-        name: agent.name,
+        name: agent.agent_name || agent.name,
         description: agent.description,
         input_schema: agent.input_schema,
         output_schema: agent.output_schema,

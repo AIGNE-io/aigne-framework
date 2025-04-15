@@ -8,7 +8,7 @@ import type {
   OAuthClientInformationFull,
   OAuthTokens,
 } from "@modelcontextprotocol/sdk/shared/auth.js";
-import open from "open"; // You'll need to install this package
+import open from "open";
 
 export class TerminalOAuthProvider extends EventEmitter implements OAuthClientProvider {
   private _tokens: OAuthTokens | undefined;
@@ -19,13 +19,13 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
   private tokenFilePath: string;
   private clientInfoPath: string;
 
-  constructor() {
+  constructor(host: string) {
     super();
 
-    this.tokenFilePath = join(process.cwd(), ".oauth/token.json");
-    this.clientInfoPath = join(process.cwd(), ".oauth/client.json");
+    this.tokenFilePath = join(process.cwd(), ".oauth", host, "token.json");
+    this.clientInfoPath = join(process.cwd(), ".oauth", host, "client.json");
 
-    mkdirSync(join(process.cwd(), ".oauth"), { recursive: true });
+    mkdirSync(join(process.cwd(), ".oauth", host), { recursive: true });
 
     this.loadTokens();
     this.loadClientInfo();

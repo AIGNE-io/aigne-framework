@@ -17,11 +17,12 @@ logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 const { OPENAI_API_KEY, BLOCKLET_APP_URL } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 assert(BLOCKLET_APP_URL, "Please set the BLOCKLET_APP_URL environment variable");
+console.info("Connecting to blocklet app", BLOCKLET_APP_URL);
 
 const appUrl = new URL(BLOCKLET_APP_URL);
 appUrl.pathname = "/.well-known/service/mcp/sse";
 
-const provider = new TerminalOAuthProvider();
+const provider = new TerminalOAuthProvider(appUrl.host);
 const authCodePromise = new Promise((resolve, reject) => {
   console.info("Waiting for authorization code...", Date.now());
   provider.once("authorized", resolve);

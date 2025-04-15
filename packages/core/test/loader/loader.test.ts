@@ -85,10 +85,9 @@ test("loader should error if agent file is not supported", async () => {
 
 test("load should process path correctly", async () => {
   const stat = mock();
-  const exists = mock();
   const readFile = mock();
 
-  await using _ = await mockModule("node:fs/promises", () => ({ stat, exists, readFile }));
+  await using _ = await mockModule("node:fs/promises", () => ({ stat, readFile }));
 
   // mock a non-existing file
   stat.mockReturnValueOnce(Promise.reject(new Error("no such file or directory")));
@@ -110,7 +109,7 @@ test("load should process path correctly", async () => {
 
   // mock a directory with a .yaml file
   stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => true }));
-  exists.mockReturnValueOnce(Promise.resolve(true));
+  stat.mockReturnValueOnce(Promise.resolve({ isFile: () => true }));
   readFile.mockReturnValueOnce("chat_model: gpt-4o-mini");
   expect(load({ path: "foo" })).resolves.toEqual(
     expect.objectContaining({
@@ -123,7 +122,9 @@ test("load should process path correctly", async () => {
 
   // mock a directory with a .yml file
   stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => true }));
-  exists.mockReturnValueOnce(Promise.resolve(false)).mockReturnValueOnce(Promise.resolve(true));
+  stat
+    .mockReturnValueOnce(Promise.resolve({ isFile: () => false }))
+    .mockReturnValueOnce(Promise.resolve({ isFile: () => true }));
   readFile.mockReturnValueOnce("chat_model: gpt-4o-mini");
   expect(load({ path: "bar" })).resolves.toEqual(
     expect.objectContaining({

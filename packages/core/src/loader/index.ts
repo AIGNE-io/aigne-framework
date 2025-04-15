@@ -1,4 +1,4 @@
-import { exists, readFile, stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
 import { parse } from "yaml";
 import { z } from "zod";
@@ -157,7 +157,7 @@ async function getAIGNEFilePath(path: string) {
   if (s.isDirectory()) {
     for (const file of AIGNE_FILE_NAME) {
       const filePath = join(path, file);
-      if (await exists(filePath)) return filePath;
+      if ((await stat(filePath)).isFile()) return filePath;
     }
   }
 

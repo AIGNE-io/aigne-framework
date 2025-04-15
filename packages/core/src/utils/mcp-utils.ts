@@ -52,15 +52,7 @@ export function resourceFromMCPResource(
   options: MCPBaseOptions,
 ) {
   const [uri, variables] = isResourceTemplate(resource)
-    ? [
-        resource.uriTemplate,
-        // TODO: use template.variableNames when it's available https://github.com/modelcontextprotocol/typescript-sdk/pull/188
-        (
-          new UriTemplate(resource.uriTemplate) as unknown as {
-            parts: (string | { names: string[] })[];
-          }
-        ).parts.flatMap((i) => (typeof i === "object" ? i.names : [])),
-      ]
+    ? [resource.uriTemplate, new UriTemplate(resource.uriTemplate).variableNames]
     : [resource.uri, []];
 
   return new MCPResource({

@@ -9,6 +9,7 @@ import { runChatLoopInTerminal } from "../utils/run-chat-loop.js";
 
 interface RunOptions extends OptionValues {
   agent?: string;
+  downloadDir?: string;
 }
 
 export function createRunCommand(): Command {
@@ -16,6 +17,7 @@ export function createRunCommand(): Command {
     .description("Run a chat loop with the specified agent")
     .argument("[path]", "Path to the agents directory or URL to aigne project", ".")
     .option("--agent <agent>", "Name of the agent to use (defaults to the first agent found)")
+    .option("--download-dir <dir>", "Directory to download the package to")
     .action(async (path: string, options: RunOptions) => {
       if (path.startsWith("http")) {
         await downloadAndRunPackage(path, options);
@@ -55,12 +57,20 @@ async function runEngine(originalPath: string, path: string, options: RunOptions
 }
 
 async function downloadAndRunPackage(url: string, options: RunOptions) {
-  const dir = join(tmpdir(), randomUUID());
+  let dir: string;
+  if (options.downloadDir) {
+    dir = isAbsolute(options.downloadDir)
+      ? options.downloadDir
+      : resolve(process.cwd(), options.downloadDir);
+  } else {
+    dir = join(tmpdir(), randomUUID());
+  }
   try {
     await mkdir(dir, { recursive: true });
     await downloadAndExtract(url, dir);
     await runEngine(url, dir, options);
   } finally {
-    await rm(dir, { recursive: true, force: true });
+    // Clean up the temporary directory if it was created
+    if (!options.downloadDir) await rm(dir, { recursive: true, force: true });
   }
 }

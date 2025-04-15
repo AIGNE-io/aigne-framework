@@ -113,19 +113,21 @@ export class ClaudeChatModel extends ChatModel {
         args: string;
       })[] = [];
       let usage: ChatModelOutputUsage | undefined;
+      let model: string | undefined;
 
       for await (const chunk of stream) {
         if (chunk.type === "message_start") {
+          model ??= chunk.message.model;
           const { input_tokens, output_tokens } = chunk.message.usage;
 
           usage = {
-            promptTokens: input_tokens,
-            completionTokens: output_tokens,
+            inputTokens: input_tokens,
+            outputTokens: output_tokens,
           };
         }
 
         if (chunk.type === "message_delta" && usage) {
-          usage.completionTokens = chunk.usage.output_tokens;
+          usage.outputTokens = chunk.usage.output_tokens;
         }
 
         logs.push(JSON.stringify(chunk));
@@ -154,7 +156,7 @@ export class ClaudeChatModel extends ChatModel {
         }
       }
 
-      const result: ChatModelOutput = { usage, text };
+      const result: ChatModelOutput = { usage, model, text };
 
       if (toolCalls.length) {
         result.toolCalls = toolCalls
@@ -171,7 +173,7 @@ export class ClaudeChatModel extends ChatModel {
 
       return result;
     } catch (error) {
-      logger.debug("Failed to process Claude stream", { error, logs });
+      logger.core("Failed to process Claude stream", { error, logs });
       throw error;
     }
   }
@@ -207,9 +209,10 @@ export class ClaudeChatModel extends ChatModel {
     if (!jsonTool) throw new Error("Json tool not found");
     return {
       json: jsonTool.input as Message,
+      model: result.model,
       usage: {
-        promptTokens: result.usage.input_tokens,
-        completionTokens: result.usage.output_tokens,
+        inputTokens: result.usage.input_tokens,
+        outputTokens: result.usage.output_tokens,
       },
     };
   }

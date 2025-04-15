@@ -29,6 +29,9 @@ importers:
 
   examples/mcp-github:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -41,6 +44,9 @@ importers:
 
   examples/mcp-puppeteer:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -53,6 +59,9 @@ importers:
 
   examples/mcp-sqlite:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -65,6 +74,9 @@ importers:
 
   examples/workflow-code-execution:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -77,6 +89,9 @@ importers:
 
   examples/workflow-concurrency:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -89,6 +104,9 @@ importers:
 
   examples/workflow-group-chat:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -101,6 +119,9 @@ importers:
 
   examples/workflow-handoff:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -116,6 +137,9 @@ importers:
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../../packages/agent-library
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -128,6 +152,9 @@ importers:
 
   examples/workflow-reflection:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -140,6 +167,9 @@ importers:
 
   examples/workflow-router:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -152,6 +182,9 @@ importers:
 
   examples/workflow-sequential:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -192,6 +225,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
+      '@aigne/listr2':
+        specifier: ^1.0.7
+        version: 1.0.7
       '@modelcontextprotocol/sdk':
         specifier: ^1.9.0
         version: 1.9.0
@@ -280,12 +316,12 @@ importers:
       nanoid:
         specifier: ^5.1.5
         version: 5.1.5
-      ora:
-        specifier: ^8.2.0
-        version: 8.2.0
       p-retry:
         specifier: ^6.2.1
         version: 6.2.1
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
       yaml:
         specifier: ^2.7.1
         version: 2.7.1
@@ -358,6 +394,10 @@ packages:
     resolution: {integrity: sha512-8QsF5Vm/Znj16KAvfNIoXghSB7XzGGp+HHoI3CWyuFLX6DbI0YrzRm3EpKo87OhbpdtiWQurC0bidkH2cbsYNQ==}
     peerDependencies:
       zod: ^3.0.0
+
+  '@aigne/listr2@1.0.7':
+    resolution: {integrity: sha512-3NeMh7bouWX0f9XQMYOUApdYMoaumPzhmaeOP28uhyWDUvCJBnh0u/1/pn9n0kL+Jujkr5wj8MV82UiYwAkOoQ==}
+    engines: {node: '>=18.0.0'}
 
   '@anthropic-ai/sdk@0.39.0':
     resolution: {integrity: sha512-eMyDIPRZbt1CCLErRCi3exlAvNkBtRe+kW5vvJyef93PmNr/clstYgHhtvmkxN82nlKgzyGPCyGxrm0JQ1ZIdg==}
@@ -645,6 +685,10 @@ packages:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
     engines: {node: '>=8'}
 
+  ansi-escapes@7.0.0:
+    resolution: {integrity: sha512-GdYO7a61mR0fOlAsvC9/rIHf7L96sBc6dEWzeOu+KAea5bZyQRPIpojrVoI4AXGJS/ycu/fBTdLrUkA4ODrvjw==}
+    engines: {node: '>=18'}
+
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
@@ -761,9 +805,9 @@ packages:
     resolution: {integrity: sha512-aCj4O5wKyszjMmDT4tZj93kxyydN/K5zPWSCe6/0AV/AA1pqe5ZBIw0a2ZfPQV7lL5/yb5HsUreJ6UFAF1tEQw==}
     engines: {node: '>=18'}
 
-  cli-spinners@2.9.2:
-    resolution: {integrity: sha512-ywqV+5MmyL4E7ybXgKys4DugZbX0FC6LnwrhjuykIjnK9k8OQacQ7axGKnjDXWNhns0xot3bZI5h55H8yo9cJg==}
-    engines: {node: '>=6'}
+  cli-truncate@4.0.0:
+    resolution: {integrity: sha512-nPdaFdQ0h/GEigbPClz11D0v/ZJEwxmeVZGeMo3Z5StPtUTkA9o1lD6QwoirYiSDzbcwn2XcjwmCp68W1IS4TA==}
+    engines: {node: '>=18'}
 
   cli-width@4.1.0:
     resolution: {integrity: sha512-ouuZd4/dm2Sw5Gmqy6bGyNNNe1qt9RpmxveLSO7KcgsTnU7RXfsw+/bukWGo1abgBiMAic068rclZsO4IWmmxQ==}
@@ -781,6 +825,9 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  colorette@2.0.20:
+    resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
 
   combined-stream@1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
@@ -931,6 +978,10 @@ packages:
   entities@2.2.0:
     resolution: {integrity: sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==}
 
+  environment@1.1.0:
+    resolution: {integrity: sha512-xUtoPkMggbz0MPyPiIWr1Kp4aeWJjDZ6SMvURhimjdZgsRuDplF5/s9hcgGhyXMhs+6vpnuoiZ2kFiu3FMnS8Q==}
+    engines: {node: '>=18'}
+
   error-ex@1.3.2:
     resolution: {integrity: sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==}
 
@@ -972,6 +1023,9 @@ packages:
   event-target-shim@5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
     engines: {node: '>=6'}
+
+  eventemitter3@5.0.1:
+    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
 
   events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
@@ -1199,13 +1253,17 @@ packages:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
 
+  is-fullwidth-code-point@4.0.0:
+    resolution: {integrity: sha512-O4L094N2/dZ7xqVdrXhh9r1KODPJpFms8B5sGdJLPy664AgvXsreZUyCQQNItZRDlYug4xStLjNp/sz3HvBowQ==}
+    engines: {node: '>=12'}
+
+  is-fullwidth-code-point@5.0.0:
+    resolution: {integrity: sha512-OVa3u9kkBbw7b8Xw5F9P+D/T9X+Z4+JruYVNapTjPYZYUznQ5YfWeFkOj606XYYW8yugTfC8Pj0hYqvi4ryAhA==}
+    engines: {node: '>=18'}
+
   is-generator-function@1.1.0:
     resolution: {integrity: sha512-nPUB5km40q9e8UfN/Zc24eLlzdSf9OfKByBw9CIdw4H1giPMeA0OIJvbchsCu4npfI2QcMVBsGEBHKZ7wLTWmQ==}
     engines: {node: '>= 0.4'}
-
-  is-interactive@2.0.0:
-    resolution: {integrity: sha512-qP1vozQRI+BMOPcjFzrjXuQvdak2pHNUMZoeG2eRbiSqyvbEf/wQtEOTOX1guk6E3t36RkaqiSt8A/6YElNxLQ==}
-    engines: {node: '>=12'}
 
   is-map@2.0.3:
     resolution: {integrity: sha512-1Qed0/Hr2m+YqxnM09CjA2d/i6YZNfF6R2oRAOj36eUdS6qIV/huPJNSEpKbupewFs+ZsJlxsjjPbc0/afW6Lw==}
@@ -1250,14 +1308,6 @@ packages:
     resolution: {integrity: sha512-p3EcsicXjit7SaskXHs1hA91QxgTw46Fv6EFKKGS5DRFLD8yKnohjF3hxoju94b/OcMZoQukzpPpBE9uLVKzgQ==}
     engines: {node: '>= 0.4'}
 
-  is-unicode-supported@1.3.0:
-    resolution: {integrity: sha512-43r2mRvz+8JRIKnWJ+3j8JtjRKZ6GmjzfaE/qiBJnikNnYv/6bagRJ1kUhNk8R5EX/GkobD+r+sfxCPJsiKBLQ==}
-    engines: {node: '>=12'}
-
-  is-unicode-supported@2.1.0:
-    resolution: {integrity: sha512-mE00Gnza5EEB3Ds0HfMyllZzbBrmLOX3vfWoj9A9PEnTfratQ/BcaJOuMhnkhjXvb2+FkY3VuHqtAGpTPmglFQ==}
-    engines: {node: '>=18'}
-
   is-weakmap@2.0.2:
     resolution: {integrity: sha512-K5pXYOm9wqY1RgjpL3YTkF39tni1XajUIkawTLUo9EZEVUFga5gSQJF8nNS7ZwJQ02y+1YCNYcMh+HIf1ZqE+w==}
     engines: {node: '>= 0.4'}
@@ -1300,8 +1350,8 @@ packages:
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
-  log-symbols@6.0.0:
-    resolution: {integrity: sha512-i24m8rpwhmPIS4zscNzK6MSEhk0DUWa/8iYQWxhffV8jkI4Phvs3F+quL5xvS0gdQR0FyTCMMH33Y78dDTzzIw==}
+  log-update@6.1.0:
+    resolution: {integrity: sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==}
     engines: {node: '>=18'}
 
   lru-cache@10.4.3:
@@ -1465,10 +1515,6 @@ packages:
       zod:
         optional: true
 
-  ora@8.2.0:
-    resolution: {integrity: sha512-weP+BZ8MVNnlCm8c0Qdc1WSWq4Qn7I+9CJGm7Qali6g44e/PUzbjNqJX5NJ9ljlNMosfJvg1fKEGILklK9cwnw==}
-    engines: {node: '>=18'}
-
   os-tmpdir@1.0.2:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
     engines: {node: '>=0.10.0'}
@@ -1604,6 +1650,9 @@ packages:
     resolution: {integrity: sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
 
+  rfdc@1.4.1:
+    resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
+
   rimraf@6.0.1:
     resolution: {integrity: sha512-9dkvaxAsk/xNXSJzMgFqqMCuFgt2+KsOFek3TMLfo8NCPfWpBmqwyNn5Y+NX56QUYfCtsyhF3ayiboEoUmJk/A==}
     engines: {node: 20 || >=22}
@@ -1712,6 +1761,14 @@ packages:
     resolution: {integrity: sha512-NB3V4XyCOrWTIhjh85DyEoVlM3adHWwqQXKYHmuegy/108bJPP6YxuPGm4ZKBq1+GVKRbKJuzNY//09cMJYp+A==}
     hasBin: true
 
+  slice-ansi@5.0.0:
+    resolution: {integrity: sha512-FC+lgizVPfie0kkhqUScwRu1O/lF6NOgJmlCgK+/LYxDCTk8sGelYaHDhFcDN+Sn3Cv+3VSa4Byeo+IMCzpMgQ==}
+    engines: {node: '>=12'}
+
+  slice-ansi@7.1.0:
+    resolution: {integrity: sha512-bSiSngZ/jWeX93BqeIAbImyTbEihizcwNjFoRUIY/T1wWQsfsm2Vw1agPKylXvQTU7iASGdHhyqRlqQzfz+Htg==}
+    engines: {node: '>=18'}
+
   spdx-correct@3.2.0:
     resolution: {integrity: sha512-kN9dJbvnySHULIluDHy32WHRUu3Og7B9sbY7tsFLctQkIqnMh3hErYgdMjTYuqmcXX+lK5T1lnUt3G7zNswmZA==}
 
@@ -1727,10 +1784,6 @@ packages:
   statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
-
-  stdin-discarder@0.2.2:
-    resolution: {integrity: sha512-UhDfHmA92YAlNnCfhmq0VeNL5bDbiZGg7sZ2IvPsXubGkiNa9EC+tUTsjBRsYUAz87btI6/1wf4XoVvQ3uRnmQ==}
-    engines: {node: '>=18'}
 
   streamx@2.22.0:
     resolution: {integrity: sha512-sLh1evHOzBy/iWRiR6d1zRcLao4gGZr3C1kzNz4fopCOKJb6xD9ub8Mpi9Mr1R6id5o43S+d93fI48UC5uM9aw==}
@@ -1871,6 +1924,10 @@ packages:
   utila@0.4.0:
     resolution: {integrity: sha512-Z0DbgELS9/L/75wZbro8xAnT50pBVFQZ+hUEueGDU5FN51YSCYM+jdxsfCiHjwNP/4LCDD0i/graKpeBnOXKRA==}
 
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
 
@@ -1925,6 +1982,10 @@ packages:
     resolution: {integrity: sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ==}
     engines: {node: '>=12'}
 
+  wrap-ansi@9.0.0:
+    resolution: {integrity: sha512-G8ura3S+3Z2G+mkgNRq8dqaFZAuxfsxpBB8OCTGRTCtp+l/v9nbFNmCUP1BZMts3G1142MsZfn6eeUKrr4PD1Q==}
+    engines: {node: '>=18'}
+
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
@@ -1975,6 +2036,15 @@ snapshots:
   '@aigne/json-schema-to-zod@1.3.3(zod@3.24.2)':
     dependencies:
       zod: 3.24.2
+
+  '@aigne/listr2@1.0.7':
+    dependencies:
+      cli-truncate: 4.0.0
+      colorette: 2.0.20
+      eventemitter3: 5.0.1
+      log-update: 6.1.0
+      rfdc: 1.4.1
+      wrap-ansi: 9.0.0
 
   '@anthropic-ai/sdk@0.39.0(encoding@0.1.13)':
     dependencies:
@@ -2277,6 +2347,10 @@ snapshots:
     dependencies:
       type-fest: 0.21.3
 
+  ansi-escapes@7.0.0:
+    dependencies:
+      environment: 1.1.0
+
   ansi-regex@5.0.1: {}
 
   ansi-regex@6.1.0: {}
@@ -2415,7 +2489,10 @@ snapshots:
     dependencies:
       restore-cursor: 5.1.0
 
-  cli-spinners@2.9.2: {}
+  cli-truncate@4.0.0:
+    dependencies:
+      slice-ansi: 5.0.0
+      string-width: 7.2.0
 
   cli-width@4.1.0: {}
 
@@ -2430,6 +2507,8 @@ snapshots:
   color-name@1.1.3: {}
 
   color-name@1.1.4: {}
+
+  colorette@2.0.20: {}
 
   combined-stream@1.0.8:
     dependencies:
@@ -2584,6 +2663,8 @@ snapshots:
 
   entities@2.2.0: {}
 
+  environment@1.1.0: {}
+
   error-ex@1.3.2:
     dependencies:
       is-arrayish: 0.2.1
@@ -2670,6 +2751,8 @@ snapshots:
   etag@1.8.1: {}
 
   event-target-shim@5.0.1: {}
+
+  eventemitter3@5.0.1: {}
 
   events@3.3.0: {}
 
@@ -2957,14 +3040,18 @@ snapshots:
 
   is-fullwidth-code-point@3.0.0: {}
 
+  is-fullwidth-code-point@4.0.0: {}
+
+  is-fullwidth-code-point@5.0.0:
+    dependencies:
+      get-east-asian-width: 1.3.0
+
   is-generator-function@1.1.0:
     dependencies:
       call-bound: 1.0.3
       get-proto: 1.0.1
       has-tostringtag: 1.0.2
       safe-regex-test: 1.1.0
-
-  is-interactive@2.0.0: {}
 
   is-map@2.0.3: {}
 
@@ -3006,10 +3093,6 @@ snapshots:
   is-typed-array@1.1.15:
     dependencies:
       which-typed-array: 1.1.18
-
-  is-unicode-supported@1.3.0: {}
-
-  is-unicode-supported@2.1.0: {}
 
   is-weakmap@2.0.2: {}
 
@@ -3053,10 +3136,13 @@ snapshots:
 
   lodash@4.17.21: {}
 
-  log-symbols@6.0.0:
+  log-update@6.1.0:
     dependencies:
-      chalk: 5.4.1
-      is-unicode-supported: 1.3.0
+      ansi-escapes: 7.0.0
+      cli-cursor: 5.0.0
+      slice-ansi: 7.1.0
+      strip-ansi: 7.1.0
+      wrap-ansi: 9.0.0
 
   lru-cache@10.4.3: {}
 
@@ -3194,18 +3280,6 @@ snapshots:
       zod: 3.24.2
     transitivePeerDependencies:
       - encoding
-
-  ora@8.2.0:
-    dependencies:
-      chalk: 5.4.1
-      cli-cursor: 5.0.0
-      cli-spinners: 2.9.2
-      is-interactive: 2.0.0
-      is-unicode-supported: 2.1.0
-      log-symbols: 6.0.0
-      stdin-discarder: 0.2.2
-      string-width: 7.2.0
-      strip-ansi: 7.1.0
 
   os-tmpdir@1.0.2: {}
 
@@ -3358,6 +3432,8 @@ snapshots:
 
   reusify@1.1.0: {}
 
+  rfdc@1.4.1: {}
+
   rimraf@6.0.1:
     dependencies:
       glob: 11.0.1
@@ -3501,6 +3577,16 @@ snapshots:
 
   simple-git-hooks@2.12.1: {}
 
+  slice-ansi@5.0.0:
+    dependencies:
+      ansi-styles: 6.2.1
+      is-fullwidth-code-point: 4.0.0
+
+  slice-ansi@7.1.0:
+    dependencies:
+      ansi-styles: 6.2.1
+      is-fullwidth-code-point: 5.0.0
+
   spdx-correct@3.2.0:
     dependencies:
       spdx-expression-parse: 3.0.1
@@ -3516,8 +3602,6 @@ snapshots:
   spdx-license-ids@3.0.21: {}
 
   statuses@2.0.1: {}
-
-  stdin-discarder@0.2.2: {}
 
   streamx@2.22.0:
     dependencies:
@@ -3696,6 +3780,8 @@ snapshots:
 
   utila@0.4.0: {}
 
+  uuid@11.1.0: {}
+
   validate-npm-package-license@3.0.4:
     dependencies:
       spdx-correct: 3.2.0
@@ -3776,6 +3862,12 @@ snapshots:
     dependencies:
       ansi-styles: 6.2.1
       string-width: 5.1.2
+      strip-ansi: 7.1.0
+
+  wrap-ansi@9.0.0:
+    dependencies:
+      ansi-styles: 6.2.1
+      string-width: 7.2.0
       strip-ansi: 7.1.0
 
   wrappy@1.0.2: {}

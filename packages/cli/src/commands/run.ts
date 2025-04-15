@@ -3,9 +3,9 @@ import { mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { type Agent, ExecutionEngine } from "@aigne/core";
-import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
 import { Command, type OptionValues } from "commander";
 import { downloadAndExtract } from "../utils/download.js";
+import { runChatLoopInTerminal } from "../utils/run-chat-loop.js";
 
 interface RunOptions extends OptionValues {
   agent?: string;

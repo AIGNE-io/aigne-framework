@@ -75,8 +75,8 @@
     "inquirer": "^12.5.2",
     "mustache": "^4.2.0",
     "nanoid": "^5.1.5",
-    "ora": "^8.2.0",
     "p-retry": "^6.2.1",
+    "uuid": "^11.1.0",
     "yaml": "^2.7.1",
     "zod": "^3.24.2",
     "zod-to-json-schema": "^3.24.5"

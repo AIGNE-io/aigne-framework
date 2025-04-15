@@ -98,9 +98,11 @@ export class OpenAIChatModel extends ChatModel {
       args: string;
     })[] = [];
     let usage: ChatModelOutputUsage | undefined;
+    let model: string | undefined;
 
     for await (const chunk of res) {
       const choice = chunk.choices?.[0];
+      model ??= chunk.model;
 
       if (choice?.delta.tool_calls?.length) {
         for (const call of choice.delta.tool_calls) {
@@ -124,14 +126,15 @@ export class OpenAIChatModel extends ChatModel {
 
       if (chunk.usage) {
         usage = {
-          promptTokens: chunk.usage.prompt_tokens,
-          completionTokens: chunk.usage.completion_tokens,
+          inputTokens: chunk.usage.prompt_tokens,
+          outputTokens: chunk.usage.completion_tokens,
         };
       }
     }
 
     const result: ChatModelOutput = {
       usage,
+      model,
     };
 
     if (input.responseFormat?.type === "json_schema" && text) {

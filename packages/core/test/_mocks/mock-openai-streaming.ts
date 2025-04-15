@@ -3,9 +3,9 @@ import { createMockEventStream } from "../_utils/event-stream.js";
 
 export function mockOpenAIStreaming<T>({
   text,
-  promptTokens,
-  completeTokens,
-}: { text: string; promptTokens?: number; completeTokens?: number }): T {
+  inputTokens,
+  outputTokens,
+}: { text: string; inputTokens?: number; outputTokens?: number }): T {
   const id = nanoid();
   const segments = Array.from(new Intl.Segmenter(undefined, { granularity: "word" }).segment(text));
   const events: unknown[] = [];
@@ -34,9 +34,9 @@ export function mockOpenAIStreaming<T>({
     ...common,
     choices: [],
     usage: {
-      prompt_tokens: promptTokens || 0,
-      completion_tokens: completeTokens || segments.length,
-      total_tokens: (promptTokens || 0) + (completeTokens || segments.length),
+      prompt_tokens: inputTokens || 0,
+      completion_tokens: outputTokens || segments.length,
+      total_tokens: (inputTokens || 0) + (outputTokens || segments.length),
       prompt_tokens_details: { cached_tokens: 0, audio_tokens: 0 },
       completion_tokens_details: {
         reasoning_tokens: 0,

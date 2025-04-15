@@ -1,5 +1,5 @@
 import { expect, mock, spyOn, test } from "bun:test";
-import { join, relative } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { createRunCommand } from "@aigne/cli/commands/run.js";
 import { UserAgent } from "@aigne/core";
 import { mockAIGNEPackage } from "../_mocks_/mock-aigne-package.js";
@@ -8,9 +8,10 @@ import { mockModule } from "../_mocks_/mock-module.js";
 test("run command should call run chat loop correctly", async () => {
   const runChatLoopInTerminal = mock();
 
-  await using _ = await mockModule("@aigne/core/utils/run-chat-loop.js", () => {
-    return { runChatLoopInTerminal };
-  });
+  await using _ = await mockModule(
+    resolve(import.meta.dirname, "../../src/utils/run-chat-loop.js"),
+    () => ({ runChatLoopInTerminal }),
+  );
 
   const command = createRunCommand();
 

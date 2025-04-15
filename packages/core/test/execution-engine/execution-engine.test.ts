@@ -7,6 +7,7 @@ import {
   UserInputTopic,
   UserOutputTopic,
   createMessage,
+  createPublishMessage,
   sequential,
 } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
@@ -43,7 +44,7 @@ test("ExecutionEngine.call with reflection", async () => {
   });
 
   const engine = new ExecutionEngine({ agents: [plusOne, reviewer] });
-  engine.publish(UserInputTopic, { num: 1 });
+  engine.publish(UserInputTopic, createPublishMessage({ num: 1 }));
   const { message: result } = await engine.subscribe(UserOutputTopic);
 
   expect(result).toEqual({ num: 11, approval: "approve" });
@@ -101,7 +102,7 @@ test("ExecutionEngine should throw error if reached max tokens", async () => {
   });
 
   spyOn(model.client.chat.completions, "create").mockImplementation(() =>
-    mockOpenAIStreaming({ text: "hello", promptTokens: 100, completeTokens: 200 }),
+    mockOpenAIStreaming({ text: "hello", inputTokens: 100, outputTokens: 200 }),
   );
 
   const agent = AIAgent.from({});
@@ -135,23 +136,23 @@ test("ExecutionEngine should throw timeout error", async () => {
   });
 
   expect(engine.call(agent, { timeout: 100 })).resolves.toEqual({ timeout: 100 });
-  expect(engine.call(agent, { timeout: 300 })).rejects.toThrow("ExecutionEngine is timeout");
+  expect(engine.call(agent, { timeout: 300 })).rejects.toThrow("ExecutionContext is timeout");
 });
 
-test("ExecutionEngineContext should subscribe/unsubscribe correctly", async () => {
-  const context = new ExecutionEngine({}).newContext();
+test("ExecutionContext should subscribe/unsubscribe correctly", async () => {
+  const engine = new ExecutionEngine({});
 
   const listener: MessageQueueListener = mock();
 
-  context.subscribe("test_topic", listener);
+  engine.subscribe("test_topic", listener);
 
-  context.publish("test_topic", "hello");
+  engine.publish("test_topic", createPublishMessage("hello"));
   expect(listener).toBeCalledTimes(1);
   expect(listener).toHaveBeenCalledWith(
     expect.objectContaining({ message: createMessage("hello") }),
   );
 
-  context.unsubscribe("test_topic", listener);
-  context.publish("test_topic", "hello");
+  engine.unsubscribe("test_topic", listener);
+  engine.publish("test_topic", createPublishMessage("hello"));
   expect(listener).toBeCalledTimes(1);
 });

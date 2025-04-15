@@ -1,4 +1,7 @@
 import { expect, mock, spyOn, test } from "bun:test";
+import { randomUUID } from "node:crypto";
+import { rm, stat } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { createRunCommand } from "@aigne/cli/commands/run.js";
 import { UserAgent } from "@aigne/core";
@@ -81,4 +84,33 @@ test("run command should download package and run correctly", async () => {
     expect.any(UserAgent),
     expect.objectContaining({}),
   );
+});
+
+test("run command should download package to a special folder", async () => {
+  const runChatLoopInTerminal = mock();
+
+  await using _ = await mockModule("@aigne/cli/utils/run-chat-loop.js", () => {
+    return { runChatLoopInTerminal };
+  });
+
+  spyOn(globalThis, "fetch").mockReturnValueOnce(
+    Promise.resolve(new Response(await mockAIGNEPackage())),
+  );
+
+  const command = createRunCommand();
+
+  const url = "https://www.aigne.io/projects/xxx/test-agents.tgz";
+  const dir = join(tmpdir(), randomUUID());
+
+  try {
+    await command.parseAsync(["", "run", url, "--download-dir", dir]);
+
+    expect((await stat(join(dir, "aigne.yaml"))).isFile()).toBeTrue();
+    expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(
+      expect.any(UserAgent),
+      expect.objectContaining({}),
+    );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

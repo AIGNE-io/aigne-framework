@@ -1,8 +1,8 @@
 import { expect, mock, test } from "bun:test";
 import { join } from "node:path";
 import { createServeCommand } from "@aigne/cli/commands/serve.js";
-import { mockModule } from "@aigne/test-utils/mock-module.js";
 import { detect } from "detect-port";
+import { mockModule } from "../_mocks_/mock-module.js";
 
 test("serve-mcp command should work with default options", async () => {
   const mockListen = mock().mockImplementationOnce((_, cb) => cb());

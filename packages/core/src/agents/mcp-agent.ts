@@ -1,5 +1,8 @@
 import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import {
+  SSEClientTransport,
+  type SSEClientTransportOptions,
+} from "@modelcontextprotocol/sdk/client/sse.js";
 import {
   StdioClientTransport,
   type StdioServerParameters,
@@ -31,8 +34,6 @@ const MCP_AGENT_CLIENT_NAME = "MCPAgent";
 const MCP_AGENT_CLIENT_VERSION = "0.0.1";
 const DEFAULT_MAX_RECONNECTS = 10;
 
-const debug = logger.base.extend("mcp");
-
 export interface MCPAgentOptions extends AgentOptions {
   client: Client;
 
@@ -45,6 +46,15 @@ export type MCPServerOptions = SSEServerParameters | StdioServerParameters;
 
 export type SSEServerParameters = {
   url: string;
+  /**
+   * Additional options to pass to the SSEClientTransport.
+   */
+  opts?: SSEClientTransportOptions;
+  /**
+   * The timeout for requests to the server, in milliseconds.
+   * @default 10000
+   */
+  timeout?: number;
   /**
    * Whether to automatically reconnect to the server if the connection is lost.
    * @default 10 set to 0 to disable automatic reconnection
@@ -88,7 +98,7 @@ export class MCPAgent extends Agent {
     checkArguments("MCPAgent.from", mcpAgentOptionsSchema, options);
 
     if (isSSEServerParameters(options)) {
-      const transport = () => new SSEClientTransport(new URL(options.url));
+      const transport = () => new SSEClientTransport(new URL(options.url), options.opts);
       return MCPAgent.fromTransport(transport, options);
     }
 
@@ -123,10 +133,8 @@ export class MCPAgent extends Agent {
 
     const transport = transportCreator();
 
-    await debug.spinner(
-      client.connect(transport),
-      `Connecting to MCP server: ${getMCPServerString(options)}`,
-    );
+    logger.mcp(`Connecting to MCP server: ${getMCPServerString(options)}`);
+    await client.connect(transport);
 
     const mcpServer = getMCPServerName(client);
 
@@ -136,40 +144,45 @@ export class MCPAgent extends Agent {
       resources: isResourcesAvailable,
     } = client.getServerCapabilities() ?? {};
 
+    logger.mcp(`Listing tools from ${mcpServer}`);
     const tools = isToolsAvailable
-      ? await debug
-          .spinner(client.listTools(), `Listing tools from ${mcpServer}`, ({ tools }) =>
-            debug("%O", tools),
-          )
-          .then(({ tools }) => tools.map((tool) => toolFromMCPTool(tool, { client })))
+      ? await client.listTools().then(({ tools }) => {
+          logger.mcp(
+            `Listing tools from ${mcpServer} completed %O`,
+            tools?.map((i) => i.name),
+          );
+          return tools.map((tool) => toolFromMCPTool(tool, { client }));
+        })
       : undefined;
 
+    logger.mcp(`Listing prompts from ${mcpServer}`);
     const prompts = isPromptsAvailable
-      ? await debug
-          .spinner(client.listPrompts(), `Listing prompts from ${mcpServer}`, ({ prompts }) =>
-            debug("%O", prompts),
-          )
-          .then(({ prompts }) => prompts.map((prompt) => promptFromMCPPrompt(prompt, { client })))
+      ? await client.listPrompts().then(({ prompts }) => {
+          logger.mcp(
+            `Listing prompts from ${mcpServer} completed %O`,
+            prompts?.map((i) => i.name),
+          );
+          return prompts.map((prompt) => promptFromMCPPrompt(prompt, { client }));
+        })
       : undefined;
 
+    logger.mcp(`Listing resources from ${mcpServer}`);
+    // TODO: should conditionally call listResourceTemplates based on the server capabilities
+    // but the capability is not correct in the current SDK version
     const resources = isResourcesAvailable
-      ? await debug
-          .spinner(
-            // TODO: should conditionally call listResourceTemplates based on the server capabilities
-            // but the capability is not correct in the current SDK version
-            Promise.all([
-              client.listResources().catch(() => ({ resources: [] })),
-              client.listResourceTemplates().catch(() => ({ resourceTemplates: [] })),
-            ]),
-            `Listing resources from ${mcpServer}`,
-            ([{ resources }, { resourceTemplates }]) =>
-              debug("%O\n%O", resources, resourceTemplates),
-          )
-          .then(([{ resources }, { resourceTemplates }]) =>
-            [...resources, ...resourceTemplates].map((resource) =>
-              resourceFromMCPResource(resource, { client }),
-            ),
-          )
+      ? await Promise.all([
+          client.listResources().catch(() => ({ resources: [] })),
+          client.listResourceTemplates().catch(() => ({ resourceTemplates: [] })),
+        ]).then(([{ resources }, { resourceTemplates }]) => {
+          const result = [...resources, ...resourceTemplates].map((resource) =>
+            resourceFromMCPResource(resource, { client }),
+          );
+          logger.mcp(
+            `Listing resources from ${mcpServer} completed %O`,
+            result.map((i) => i.name),
+          );
+          return result;
+        })
       : undefined;
 
     return new MCPAgent({
@@ -215,6 +228,7 @@ export class MCPAgent extends Agent {
 
 export interface ClientWithReconnectOptions {
   transportCreator?: () => PromiseOrValue<Transport>;
+  timeout?: number;
   maxReconnects?: number;
   shouldReconnect?: (error: Error) => boolean;
 }
@@ -249,7 +263,7 @@ class ClientWithReconnect extends Client {
       {
         retries: this.reconnectOptions?.maxReconnects ?? DEFAULT_MAX_RECONNECTS,
         shouldRetry: this.shouldReconnect,
-        onFailedAttempt: (error) => debug("Reconnect attempt failed: %O", error),
+        onFailedAttempt: (error) => logger.mcp("Reconnect attempt failed: %O", error),
       },
     );
   }
@@ -259,13 +273,17 @@ class ClientWithReconnect extends Client {
     resultSchema: T,
     options?: RequestOptions,
   ): Promise<z.infer<T>> {
+    const mergedOptions: RequestOptions = {
+      ...(options ?? {}),
+      timeout: options?.timeout ?? this.reconnectOptions?.timeout ?? 10000,
+    };
     try {
-      return await super.request(request, resultSchema, options);
+      return await super.request(request, resultSchema, mergedOptions);
     } catch (error) {
       if (this.shouldReconnect(error)) {
-        debug("Error occurred, reconnecting to MCP server: %O", error);
+        logger.mcp("Error occurred, reconnecting to MCP server: %O", error);
         await this.reconnect();
-        return await super.request(request, resultSchema, options);
+        return await super.request(request, resultSchema, mergedOptions);
       }
       throw error;
     }
@@ -292,11 +310,7 @@ export abstract class MCPBase<I extends Message, O extends Message> extends Agen
 
 export class MCPTool extends MCPBase<Message, CallToolResult> {
   async process(input: Message): Promise<CallToolResult> {
-    const result = await debug.spinner(
-      this.client.callTool({ name: this.name, arguments: input }),
-      `Call tool ${this.name} from ${this.mcpServer}`,
-      (output) => debug("input: %O\noutput: %O", input, output),
-    );
+    const result = await this.client.callTool({ name: this.name, arguments: input });
 
     return result as CallToolResult;
   }
@@ -308,11 +322,7 @@ export interface MCPPromptInput extends Message {
 
 export class MCPPrompt extends MCPBase<MCPPromptInput, GetPromptResult> {
   async process(input: MCPPromptInput): Promise<GetPromptResult> {
-    const result = await debug.spinner(
-      this.client.getPrompt({ name: this.name, arguments: input }),
-      `Get prompt ${this.name} from ${this.mcpServer}`,
-      (output) => debug("input: %O\noutput: %O", input, output),
-    );
+    const result = await this.client.getPrompt({ name: this.name, arguments: input });
 
     return result;
   }
@@ -333,11 +343,7 @@ export class MCPResource extends MCPBase<MCPPromptInput, ReadResourceResult> {
   async process(input: MCPPromptInput): Promise<ReadResourceResult> {
     const uri = new UriTemplate(this.uri).expand(input);
 
-    const result = await debug.spinner(
-      this.client.readResource({ uri }),
-      `Read resource ${this.name} from ${this.mcpServer}`,
-      (output) => debug("input: %O\noutput: %O", input, output),
-    );
+    const result = await this.client.readResource({ uri });
 
     return result;
   }
@@ -361,6 +367,10 @@ const mcpAgentOptionsSchema: ZodType<
   }),
   z.object({
     url: z.string(),
+    opts: z.object({}).optional(),
+    timeout: z.number().optional(),
+    maxReconnects: z.number().optional(),
+    shouldReconnect: z.function().args(z.instanceof(Error)).returns(z.boolean()).optional(),
   }),
   z.object({
     command: z.string(),

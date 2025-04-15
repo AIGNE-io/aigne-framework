@@ -6,9 +6,9 @@ import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
-import { mockModule } from "@aigne/test-utils/mock-module.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { nanoid } from "nanoid";
+import { mockModule } from "../_mocks/mock-module.js";
 
 test("ExecutionEngine.load should load agents correctly", async () => {
   const engine = await ExecutionEngine.load({

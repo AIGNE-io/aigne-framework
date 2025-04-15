@@ -48,13 +48,16 @@ test("XAIChatModel.call", async () => {
     responseFormat: COMMON_RESPONSE_FORMAT,
   });
 
-  expect(result).toEqual({
-    json: { text: "The temperature in New York is 20 degrees Celsius." },
-    usage: {
-      promptTokens: 413,
-      completionTokens: 17,
-    },
-  });
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The temperature in New York is 20 degrees Celsius." },
+      usage: {
+        inputTokens: 177,
+        outputTokens: 20,
+      },
+      model: expect.any(String),
+    }),
+  );
 });
 
 test("XAIChatModel should initialize with correct options", () => {

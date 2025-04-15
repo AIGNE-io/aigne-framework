@@ -6,6 +6,7 @@
   "examples/mcp-github": "1.4.0",
   "examples/mcp-puppeteer": "1.4.0",
   "examples/mcp-sqlite": "1.4.0",
+  "examples/mcp-blocklet": "1.4.0",
   "examples/workflow-code-execution": "1.3.0",
   "examples/workflow-concurrency": "1.3.0",
   "examples/workflow-group-chat": "1.4.0",

@@ -38,6 +38,7 @@ Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
 OPENAI_API_KEY="" # setup your OpenAI API key here
+BLOCKLET_APP_URL="" # setup your Blocklet app URL here
 ```
 
 ### Run the Example

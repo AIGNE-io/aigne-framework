@@ -1,10 +1,10 @@
 #!/usr/bin/env npx -y bun
 
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder, getMessage } from "@aigne/core";
+import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
+import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { logger } from "@aigne/core/utils/logger.js";
-import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
 import { UnauthorizedError, refreshAuthorization } from "@modelcontextprotocol/sdk/client/auth.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 // @ts-ignore
@@ -24,7 +24,6 @@ appUrl.pathname = "/.well-known/service/mcp/sse";
 
 const provider = new TerminalOAuthProvider(appUrl.host);
 const authCodePromise = new Promise((resolve, reject) => {
-  console.info("Waiting for authorization code...", Date.now());
   provider.once("authorized", resolve);
   provider.once("error", reject);
 });
@@ -109,15 +108,18 @@ const engine = new ExecutionEngine({
 });
 
 const agent = AIAgent.from({
-  instructions: PromptBuilder.from("How many users are there in the database?"),
+  instructions: PromptBuilder.from(
+    "You are a helpful assistant that can help users query and analyze data from the blocklet. You can perform various database queries on the blocklet database, before performing any queries, please try to understand the user's request and generate a query base on the database schema.",
+  ),
   memory: true,
 });
 
 const userAgent = engine.call(agent);
 
 await runChatLoopInTerminal(userAgent, {
-  initialCall: {},
-  onResponse: (response) => console.log(getMessage(response)),
+  welcome:
+    "Hello! I'm a chatbot that can help you interact with the blocklet. Try asking me a question about the blocklet!",
+  defaultQuestion: "How many users are there in the database?",
 });
 
 process.exit(0);

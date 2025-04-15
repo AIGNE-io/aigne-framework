@@ -29,6 +29,9 @@ importers:
 
   examples/mcp-blocklet:
     dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core

@@ -9,6 +9,7 @@
     "examples/mcp-github": {},
     "examples/mcp-puppeteer": {},
     "examples/mcp-sqlite": {},
+    "examples/mcp-blocklet": {},
     "examples/workflow-code-execution": {},
     "examples/workflow-concurrency": {},
     "examples/workflow-group-chat": {},

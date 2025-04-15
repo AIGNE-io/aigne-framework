@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.4.0...example-mcp-puppeteer-v1.5.0) (2025-04-15)
+
+
+### Features
+
+* add TerminalTracer for better UX in terminal ([#56](https://github.com/AIGNE-io/aigne-framework/issues/56)) ([9875a5d](https://github.com/AIGNE-io/aigne-framework/commit/9875a5d46abb55073340ffae841fed6bd6b83ff4))
+
+
+### Bug Fixes
+
+* remove usage of new Node.js exists API for compatibility ([#57](https://github.com/AIGNE-io/aigne-framework/issues/57)) ([c10cc08](https://github.com/AIGNE-io/aigne-framework/commit/c10cc086d8ecd0744f38cdb1367d4c8816b723b3))
+
 ## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.3.2...example-mcp-puppeteer-v1.4.0) (2025-04-08)
 
 

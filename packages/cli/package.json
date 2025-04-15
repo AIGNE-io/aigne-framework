@@ -54,11 +54,11 @@
     "gradient-string": "^3.0.0",
     "inquirer": "^12.5.2",
     "openai": "^4.93.0",
+    "pretty-error": "^4.0.0",
     "tar": "^7.4.3",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@aigne/test-utils": "workspace:^",
     "@types/archiver": "^6.0.3",
     "@types/bun": "^1.2.9",
     "@types/express": "^5.0.1",

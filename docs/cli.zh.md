@@ -37,7 +37,7 @@ aigne run [路径] [选项]
 
 #### 参数
 
-- `路径`：代理目录的路径（默认为当前目录 `.`）
+- `路径`：代理目录的路径（默认为当前目录 `.`）或指向 AIGNE Studio 中项目的 URL
 
 #### 选项
 
@@ -62,6 +62,12 @@ aigne run ./my-agents
 
 ```bash
 aigne run --agent myAgent
+```
+
+从 AIGNE Studio 项目 URL 运行代理：
+
+```bash
+aigne run https://www.aigne.io/projects/xxx/xxx.tgz
 ```
 
 ### `aigne create`

@@ -210,12 +210,15 @@ export async function extractResultFromStream(
     args: string;
   })[] = [];
   let usage: ChatModelOutputUsage | undefined;
+  let model: string | undefined;
 
   for await (const chunk of stream) {
     const choice = chunk.choices?.[0];
+    model ??= chunk.model;
 
     if (choice?.delta.tool_calls?.length) {
       for (const call of choice.delta.tool_calls) {
+        // Gemini not support tool call delta
         if (call.index !== undefined) {
           handleToolCallDelta(toolCalls, call);
         } else {
@@ -228,13 +231,16 @@ export async function extractResultFromStream(
 
     if (chunk.usage) {
       usage = {
-        promptTokens: chunk.usage.prompt_tokens,
-        completionTokens: chunk.usage.completion_tokens,
+        inputTokens: chunk.usage.prompt_tokens,
+        outputTokens: chunk.usage.completion_tokens,
       };
     }
   }
 
-  const result: ChatModelOutput = { usage };
+  const result: ChatModelOutput = {
+    usage,
+    model,
+  };
 
   if (jsonMode && text) {
     result.json = parseJSON(text);

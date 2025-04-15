@@ -48,11 +48,13 @@ test("GeminiChatModel.call", async () => {
     responseFormat: COMMON_RESPONSE_FORMAT,
   });
 
-  expect(result).toEqual({
-    json: { text: "The temperature in New York is 20 degrees." },
-    usage: {
-      completionTokens: 32,
-      promptTokens: 66,
-    },
-  });
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The temperature in New York is 20 degrees." },
+      usage: {
+        inputTokens: 66,
+        outputTokens: 32,
+      },
+    }),
+  );
 });

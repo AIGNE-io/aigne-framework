@@ -14,7 +14,7 @@ export class OpenRouterChatModel extends OpenAIChatModel {
   }
 
   override get client() {
-    const apiKey = this.options?.apiKey || process.env.OPENROUTER_API_KEY;
+    const apiKey = this.options?.apiKey || process.env.OPEN_ROUTER_API_KEY;
     if (!apiKey) throw new Error("Api Key is required for OpenRouterChatModel");
 
     this._client ??= new OpenAI({

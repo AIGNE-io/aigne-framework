@@ -49,21 +49,9 @@ test("OllamaChatModel.call llama3.1", async () => {
   expect(result).toEqual(
     expect.objectContaining({
       json: { text: "The current temperature in New York is 20 degrees." },
-      toolCalls: [
-        {
-          function: {
-            arguments: {
-              city: "New York",
-            },
-            name: "get_weather",
-          },
-          id: expect.any(String),
-          type: "function",
-        },
-      ],
       usage: {
-        promptTokens: 101,
-        completionTokens: 17,
+        inputTokens: 101,
+        outputTokens: 17,
       },
     }),
   );

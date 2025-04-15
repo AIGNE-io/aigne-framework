@@ -46,11 +46,13 @@ test("DeepSeekChatModel.call", async () => {
     responseFormat: COMMON_RESPONSE_FORMAT,
   });
 
-  expect(result).toEqual({
-    json: { text: "The current temperature in New York is 20°C." },
-    usage: {
-      promptTokens: 193,
-      completionTokens: 16,
-    },
-  });
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The current temperature in New York is 20°C." },
+      usage: {
+        inputTokens: 193,
+        outputTokens: 16,
+      },
+    }),
+  );
 });

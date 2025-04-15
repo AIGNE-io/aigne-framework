@@ -83,8 +83,8 @@ test("ClaudeChatModel.call", async () => {
         },
       ],
       usage: {
-        promptTokens: 416,
-        completionTokens: 54,
+        inputTokens: 416,
+        outputTokens: 54,
       },
     }),
   );
@@ -138,13 +138,16 @@ test("ClaudeChatModel.call", async () => {
     },
   });
 
-  expect(result2).toEqual({
-    json: { text: "The current temperature in New York is 20 degrees." },
-    usage: {
-      promptTokens: 955,
-      completionTokens: 54,
-    },
-  });
+  expect(result2).toEqual(
+    expect.objectContaining({
+      json: { text: "The current temperature in New York is 20 degrees." },
+      usage: {
+        inputTokens: 955,
+        outputTokens: 54,
+      },
+      model: expect.any(String),
+    }),
+  );
 });
 
 test("ClaudeChatModel.call should pass system and messages to claude correctly", async () => {

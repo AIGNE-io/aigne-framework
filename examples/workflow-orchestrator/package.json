@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
+    "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
     "openai": "^4.93.0",
     "zod": "^3.24.2"

@@ -1,9 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "paths": {
-      "@aigne/core": ["../../packages/core/src"],
-      "@aigne/core/*": ["../../packages/core/src/*"]
-    }
+    "paths": {}
   }
 }

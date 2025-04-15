@@ -37,7 +37,7 @@ aigne run [path] [options]
 
 #### Arguments
 
-- `path`: Path to the agents directory (defaults to current directory `.`)
+- `path`: Path to the agents directory (defaults to current directory `.`) or URL to a project from AIGNE Studio
 
 #### Options
 
@@ -62,6 +62,12 @@ Run a specific agent:
 
 ```bash
 aigne run --agent myAgent
+```
+
+Run an agent from an AIGNE Studio project URL:
+
+```bash
+aigne run https://www.aigne.io/projects/xxx/xxx.tgz
 ```
 
 ### `aigne create`

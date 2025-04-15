@@ -13,7 +13,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   protected override preprocess(input: ChatModelInput, context: Context): void {
     super.preprocess(input, context);
     const { limits, usage } = context;
-    const usedTokens = usage.completionTokens + usage.promptTokens;
+    const usedTokens = usage.outputTokens + usage.inputTokens;
     if (limits?.maxTokens && usedTokens >= limits.maxTokens) {
       throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
     }
@@ -27,8 +27,8 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     super.postprocess(input, output, context);
     const { usage } = output;
     if (usage) {
-      context.usage.completionTokens += usage.completionTokens;
-      context.usage.promptTokens += usage.promptTokens;
+      context.usage.outputTokens += usage.outputTokens;
+      context.usage.inputTokens += usage.inputTokens;
     }
   }
 }
@@ -185,6 +185,7 @@ export interface ChatModelOutput extends Message {
   json?: object;
   toolCalls?: ChatModelOutputToolCall[];
   usage?: ChatModelOutputUsage;
+  model?: string;
 }
 
 export interface ChatModelOutputToolCall {
@@ -206,13 +207,13 @@ const chatModelOutputToolCallSchema = z.object({
 });
 
 export interface ChatModelOutputUsage {
-  promptTokens: number;
-  completionTokens: number;
+  inputTokens: number;
+  outputTokens: number;
 }
 
 const chatModelOutputUsageSchema = z.object({
-  promptTokens: z.number(),
-  completionTokens: z.number(),
+  inputTokens: z.number(),
+  outputTokens: z.number(),
 });
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
@@ -220,4 +221,5 @@ const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
   json: z.record(z.unknown()).optional(),
   toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
   usage: chatModelOutputUsageSchema.optional(),
+  model: z.string().optional(),
 });

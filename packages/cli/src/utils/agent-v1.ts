@@ -169,19 +169,39 @@ async function formatCode(code: string) {
 function convertInputSchema(agent: AgentV1) {
   const parameters = (agent.parameters ?? []).filter((i) => !!i.key && !i.hidden);
 
-  const properties = parameters.map((i) => [
-    i.key,
-    {
-      type: i.type || "string",
-      description: i.placeholder,
-    },
-  ]);
+  const properties = parameters.map((i) => [i.key, parameterToJsonSchema(i)]);
 
   return {
     type: "object",
     properties: Object.fromEntries(properties),
     required: parameters.filter((i) => i.required).map((i) => i.key),
   };
+}
+
+function parameterToJsonSchema(parameter: Parameter): object | undefined {
+  switch (parameter.type) {
+    case undefined:
+    case "string":
+    case "language":
+      return {
+        type: "string",
+        description: parameter.placeholder,
+      };
+    case "select":
+      return {
+        type: "string",
+        enum: parameter.options?.map((i) => i.value),
+        description: parameter.placeholder,
+      };
+    case "number":
+    case "boolean":
+      return {
+        type: parameter.type,
+        description: parameter.placeholder,
+      };
+    default:
+      throw new Error(`Unsupported parameter type: ${(parameter as Record<string, string>).type}`);
+  }
 }
 
 function convertOutputSchema(agent: AgentV1) {

@@ -49,7 +49,7 @@ export async function mockAIGNEV1Package() {
     { name: "project.yaml" },
   );
 
-  const llm: AgentV1 & { type: "prompt" } = {
+  const testInputOutput: AgentV1 & { type: "prompt" } = {
     id: randomId(),
     type: "prompt",
     name: "chat",
@@ -59,6 +59,35 @@ export async function mockAIGNEV1Package() {
         id: randomId(),
         key: "question",
         placeholder: "What are you searching for?",
+      },
+      {
+        id: randomId(),
+        key: "category",
+        type: "string",
+        placeholder: "Category of the question",
+      },
+      {
+        id: randomId(),
+        key: "language",
+        type: "language",
+        placeholder: "Language of the question",
+      },
+      {
+        id: randomId(),
+        key: "tags",
+        type: "select",
+        options: [
+          {
+            id: randomId(),
+            label: "tag1",
+            value: "tag1",
+          },
+          {
+            id: randomId(),
+            label: "tag2",
+            value: "tag2",
+          },
+        ],
       },
     ],
     outputVariables: [
@@ -90,6 +119,40 @@ export async function mockAIGNEV1Package() {
           description: "Tag of the question",
         },
         description: "Tags of the question",
+      },
+    ],
+    prompts: [
+      {
+        type: "message",
+        data: {
+          id: randomId(),
+          role: "system",
+          content: "You are a helpful assistant.",
+        },
+      },
+    ],
+  };
+  mockPackage.append(stringify(testInputOutput), {
+    name: "prompts/testInputOutput.yaml",
+  });
+
+  const llm: AgentV1 & { type: "prompt" } = {
+    id: randomId(),
+    type: "prompt",
+    name: "chat",
+    description: "A simple chat agent",
+    parameters: [
+      {
+        id: randomId(),
+        key: "question",
+        placeholder: "What are you searching for?",
+      },
+    ],
+    outputVariables: [
+      {
+        id: randomId(),
+        name: "$text",
+        type: "string",
       },
     ],
     prompts: [

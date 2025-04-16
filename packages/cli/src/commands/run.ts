@@ -1,9 +1,11 @@
-import { mkdir } from "node:fs/promises";
+import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { type Agent, ExecutionEngine } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
+import { isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Command, type OptionValues } from "commander";
+import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { runChatLoopInTerminal } from "../utils/run-chat-loop.js";
 
@@ -78,20 +80,36 @@ async function runEngine(originalPath: string, path: string, options: RunOptions
 
 async function downloadAndRunPackage(url: string, options: RunOptions) {
   let dir: string;
+  let downloadDir: string;
   if (options.downloadDir) {
     dir = isAbsolute(options.downloadDir)
       ? options.downloadDir
       : resolve(process.cwd(), options.downloadDir);
+    downloadDir = join(dir, ".download");
   } else {
     dir = getLocalPackagePathFromUrl(url);
+    downloadDir = getLocalPackagePathFromUrl(url, { subdir: ".download" });
   }
+
+  // clean up the download directory
+  await rm(downloadDir, { recursive: true, force: true });
+
   await mkdir(dir, { recursive: true });
-  await downloadAndExtract(url, dir);
+  await mkdir(downloadDir, { recursive: true });
+
+  await downloadAndExtract(url, downloadDir);
+
+  if (await isV1Package(downloadDir)) {
+    await toAIGNEPackage(downloadDir, dir);
+  } else {
+    await cp(downloadDir, dir, { recursive: true, force: true });
+  }
+
   await runEngine(url, dir, options);
 }
 
-function getLocalPackagePathFromUrl(url: string) {
-  const root = join(homedir(), ".aigne");
+function getLocalPackagePathFromUrl(url: string, { subdir }: { subdir?: string } = {}) {
+  const root = [homedir(), ".aigne", subdir].filter(isNonNullable);
   const u = new URL(url);
-  return join(root, u.hostname, u.pathname);
+  return join(...root, u.hostname, u.pathname);
 }

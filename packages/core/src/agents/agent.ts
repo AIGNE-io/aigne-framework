@@ -1,6 +1,7 @@
 import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../execution-engine/context.js";
+import { AgentMemory } from "../memory/memory.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
 import {
@@ -9,7 +10,6 @@ import {
   createAccessorArray,
   orArrayToArray,
 } from "../utils/type-utils.js";
-import { AgentMemory, type AgentMemoryOptions } from "./memory.js";
 import {
   type TransferAgentOutput,
   replaceTransferAgentToName,
@@ -44,7 +44,7 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
 
   disableEvents?: boolean;
 
-  memory?: AgentMemory | AgentMemoryOptions | true;
+  memory?: AgentMemory | AgentMemory[];
 }
 
 export abstract class Agent<I extends Message = Message, O extends Message = Message> {
@@ -61,17 +61,15 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     this.publishTopic = options.publishTopic as PublishTopic<Message>;
     if (options.tools?.length) this.tools.push(...options.tools.map(functionToAgent));
     this.disableEvents = options.disableEvents;
-    if (options.memory) {
-      this.memory =
-        options.memory instanceof AgentMemory
-          ? options.memory
-          : typeof options.memory === "boolean"
-            ? new AgentMemory({ enabled: options.memory })
-            : new AgentMemory(options.memory);
+
+    if (Array.isArray(options.memory)) {
+      this.memories.push(...options.memory);
+    } else if (options.memory instanceof AgentMemory) {
+      this.memories.push(options.memory);
     }
   }
 
-  readonly memory?: AgentMemory;
+  readonly memories: AgentMemory[] = [];
 
   readonly name: string;
 
@@ -119,7 +117,9 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @param context Context to attach
    */
   attach(context: Pick<Context, "subscribe">) {
-    this.memory?.attach(context);
+    for (const memory of this.memories) {
+      memory.attach(context);
+    }
 
     for (const topic of orArrayToArray(this.subscribeTopic).concat(this.topic)) {
       context.subscribe(topic, async ({ message, context }) => {
@@ -205,18 +205,27 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   protected postprocess(input: I, output: O, context: Context) {
     this.checkContextStatus(context);
 
-    this.memory?.addMemory({ role: "user", content: input });
-    this.memory?.addMemory({
-      role: "agent",
-      content: replaceTransferAgentToName(output),
-      source: this.name,
-    });
+    for (const memory of this.memories) {
+      memory.record(
+        [
+          { role: "user", content: input },
+          {
+            role: "agent",
+            content: replaceTransferAgentToName(output),
+            source: this.name,
+          },
+        ],
+        context,
+      );
+    }
   }
 
   abstract process(input: I, context: Context): Promise<O | TransferAgentOutput>;
 
   async shutdown() {
-    this.memory?.detach();
+    for (const m of this.memories) {
+      m.detach();
+    }
   }
 
   [inspect.custom]() {

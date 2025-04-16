@@ -55,9 +55,7 @@ test("ExecutionEngine.shutdown should shutdown all tools and agents", async () =
     sum: a + b,
   }));
 
-  const agent = AIAgent.from({
-    memory: { subscribeTopic: "test_topic" },
-  });
+  const agent = AIAgent.from({});
 
   const engine = new ExecutionEngine({
     tools: [plus],

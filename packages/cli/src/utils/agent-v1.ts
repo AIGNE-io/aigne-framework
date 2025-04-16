@@ -135,13 +135,15 @@ agent.output_schema = ${JSON.stringify(convertOutputSchema(agent))};
 };
 
 function getAgentFilename(agent: AgentV1) {
-  if (["prompt", "router"].includes(agent.type)) {
-    return `${agent.name || agent.id}.yaml`;
+  switch (agent.type) {
+    case "prompt":
+    case "router":
+      return `${agent.name || agent.id}.yaml`;
+    case "function":
+      return `${agent.name || agent.id}.js`;
+    default:
+      throw new Error(`Unsupported agent type: ${agent.type}`);
   }
-  if (["function"].includes(agent.type)) {
-    return `${agent.name || agent.id}.js`;
-  }
-  throw new Error(`Unsupported agent type: ${agent.type}`);
 }
 
 async function formatCode(code: string) {

@@ -1,5 +1,6 @@
-import { glob, readFile, stat, writeFile } from "node:fs/promises";
+import { readFile, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { glob } from "glob";
 import { parse, stringify } from "yaml";
 
 export async function isV1Package(src: string) {
@@ -32,7 +33,7 @@ export async function toAIGNEPackage(src: string, dst: string) {
 }
 
 async function loadAgentV1Package(path: string) {
-  const agentFilePaths = glob("prompts/**/*.yaml", {
+  const agentFilePaths = await glob("prompts/**/*.yaml", {
     cwd: path,
   });
 
@@ -45,7 +46,7 @@ async function loadAgentV1Package(path: string) {
     agents: [],
   };
 
-  for await (const filename of agentFilePaths) {
+  for (const filename of agentFilePaths) {
     const agent = parse(await readFile(join(path, filename), "utf8"));
     definition.agents.push(agent);
   }

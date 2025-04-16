@@ -1,6 +1,5 @@
-import { randomUUID } from "node:crypto";
-import { mkdir, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir } from "node:fs/promises";
+import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { type Agent, ExecutionEngine } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
@@ -12,7 +11,7 @@ interface RunOptions extends OptionValues {
   agent?: string;
   downloadDir?: string;
   modelProvider?: string;
-  model?: string;
+  modelName?: string;
 }
 
 export function createRunCommand(): Command {
@@ -20,13 +19,16 @@ export function createRunCommand(): Command {
     .description("Run a chat loop with the specified agent")
     .argument("[path]", "Path to the agents directory or URL to aigne project", ".")
     .option("--agent <agent>", "Name of the agent to use (defaults to the first agent found)")
-    .option("--download-dir <dir>", "Directory to download the package to")
+    .option(
+      "--download-dir <dir>",
+      "Directory to download the package to (defaults to the ~/.aigne/xxx)",
+    )
     .option(
       "--model-provider <provider>",
       "Model provider to use, available providers: openai, claude, xai (defaults to the aigne.yaml definition or openai)",
     )
     .option(
-      "--model <model>",
+      "--model-name <model>",
       "Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)",
     )
     .action(async (path: string, options: RunOptions) => {
@@ -44,12 +46,12 @@ export function createRunCommand(): Command {
 }
 
 async function runEngine(originalPath: string, path: string, options: RunOptions) {
-  if (options.model && !options.modelProvider) {
-    throw new Error("please specify --model-provider when using the --model option");
+  if (options.modelName && !options.modelProvider) {
+    throw new Error("please specify --model-provider when using the --model-name option");
   }
 
   const model = options.modelProvider
-    ? await loadModel({ provider: options.modelProvider, name: options.model })
+    ? await loadModel({ provider: options.modelProvider, name: options.modelName })
     : undefined;
   const engine = await ExecutionEngine.load({ path, model });
 
@@ -81,14 +83,15 @@ async function downloadAndRunPackage(url: string, options: RunOptions) {
       ? options.downloadDir
       : resolve(process.cwd(), options.downloadDir);
   } else {
-    dir = join(tmpdir(), randomUUID());
+    dir = getLocalPackagePathFromUrl(url);
   }
-  try {
-    await mkdir(dir, { recursive: true });
-    await downloadAndExtract(url, dir);
-    await runEngine(url, dir, options);
-  } finally {
-    // Clean up the temporary directory if it was created
-    if (!options.downloadDir) await rm(dir, { recursive: true, force: true });
-  }
+  await mkdir(dir, { recursive: true });
+  await downloadAndExtract(url, dir);
+  await runEngine(url, dir, options);
+}
+
+function getLocalPackagePathFromUrl(url: string) {
+  const root = join(homedir(), ".aigne");
+  const u = new URL(url);
+  return join(root, u.hostname, u.pathname);
 }

@@ -1,7 +1,7 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import { randomUUID } from "node:crypto";
 import { rm, stat } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { createRunCommand } from "@aigne/cli/commands/run.js";
 import { UserAgent } from "@aigne/core";
@@ -77,9 +77,12 @@ test("run command should download package and run correctly", async () => {
 
   const command = createRunCommand();
 
-  const url = "https://www.aigne.io/projects/xxx/test-agents.tgz";
+  const url = new URL("https://www.aigne.io/projects/xxx/test-agents.tgz");
 
-  await command.parseAsync(["", "run", url]);
+  await command.parseAsync(["", "run", url.toString()]);
+
+  const path = join(homedir(), ".aigne", url.hostname, url.pathname);
+  expect((await stat(join(path, "aigne.yaml"))).isFile()).toBeTrue();
 
   expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(
     expect.any(UserAgent),
@@ -133,7 +136,7 @@ test("run command should parse model options correctly", async () => {
     testAgentsPath,
     "--model-provider",
     "xai",
-    "--model",
+    "--model-name",
     "test-model",
   ]);
 
@@ -146,7 +149,7 @@ test("run command should parse model options correctly", async () => {
     expect.objectContaining({}),
   );
 
-  expect(command.parseAsync(["", "run", testAgentsPath, "--model", "test-model"])).rejects.toThrow(
-    "please specify --model-provider when using the --model option",
-  );
+  expect(
+    command.parseAsync(["", "run", testAgentsPath, "--model-name", "test-model"]),
+  ).rejects.toThrow("please specify --model-provider when using the --model-name option");
 });

@@ -42,7 +42,7 @@ aigne run [路径] [选项]
 #### 选项
 
 - `--agent <代理>`：要使用的代理名称（默认为找到的第一个代理）
-- `--download-dir <目录>`：下载包的目录（使用URL时）
+- `--download-dir <目录>`：下载包的目录（使用URL时），默认为 `~/.aigne/xxx`
 - `--model-provider <提供商>`：要使用的模型提供商，可用提供商：openai、claude、xai（默认为aigne.yaml定义或openai）
 - `--model-name <模型>`：要使用的模型名称，可用模型取决于提供商（默认为aigne.yaml定义或gpt-4o-mini）
 - `--help`：显示命令帮助
@@ -72,6 +72,24 @@ aigne run --agent myAgent
 ```bash
 aigne run https://www.aigne.io/projects/xxx/xxx.tgz
 ```
+
+#### 运行 AIGNE Studio 中的 Agents 的完整步骤
+
+1. 在 AIGNE Studio 创建一个项目：
+   - 登录 [AIGNE Studio](https://www.aigne.io)
+   - 点击创建新项目
+   - 添加所需的 Agents 到项目中
+
+2. 获取 CLI 命令：
+   - 在项目页面中，点击右上角的设置图标
+   - 在设置菜单中找到"集成"选项卡
+   - 在 AIGNE CLI 部分，如果没有链接则点击"生成链接"按钮
+   - 复制生成的 `aigne run` 命令（格式类似 `aigne run https://www.aigne.io/projects/xxx/xxx.tgz?secret=yyy&hash=zzz`）
+
+3. 运行命令：
+   - 打开终端
+   - 粘贴并运行复制的命令
+   - 系统将自动下载项目及其代理并启动聊天循环
 
 ### `aigne create`
 

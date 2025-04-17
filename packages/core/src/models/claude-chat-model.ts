@@ -55,7 +55,8 @@ export class ClaudeChatModel extends ChatModel {
   protected _client?: Anthropic;
 
   get client() {
-    const apiKey = this.options?.apiKey || process.env.CLAUDE_API_KEY;
+    const apiKey =
+      this.options?.apiKey || process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
     if (!apiKey) throw new Error("Api Key is required for ClaudeChatModel");
 
     this._client ??= new Anthropic({ apiKey });

@@ -43,6 +43,7 @@ Coder ->> User: The value of \(10!\) (10 factorial) is 3,628,800.
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
+- [Bun](https://bun.sh) installed on your machine
 - [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
 - [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
 

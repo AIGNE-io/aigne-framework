@@ -15,10 +15,6 @@ export interface ChatLoopOptions {
   skipLoop?: boolean;
 }
 
-export const is = {
-  CI: () => process.env.CI === "true",
-};
-
 export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopOptions = {}) {
   const { initialCall = process.env.INITIAL_CALL, skipLoop = process.env.SKIP_LOOP === "true" } =
     options;

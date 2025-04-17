@@ -75,6 +75,8 @@ aigne run https://www.aigne.io/projects/xxx/xxx.tgz
 
 #### Complete Steps for Running Agents via AIGNE Studio Integration
 
+![Run agents from AIGNE Studio](./assets/aigne-run-from-studio.gif)
+
 1. Create a project in AIGNE Studio:
    - Log in to [AIGNE Studio](https://www.aigne.io)
    - Click to create a new project

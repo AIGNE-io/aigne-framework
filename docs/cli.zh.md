@@ -75,6 +75,8 @@ aigne run https://www.aigne.io/projects/xxx/xxx.tgz
 
 #### 运行 AIGNE Studio 中的 Agents 的完整步骤
 
+![Run agents from AIGNE Studio](./assets/aigne-run-from-studio.gif)
+
 1. 在 AIGNE Studio 创建一个项目：
    - 登录 [AIGNE Studio](https://www.aigne.io)
    - 点击创建新项目

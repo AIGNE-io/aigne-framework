@@ -39,8 +39,8 @@ export class GeminiChatModel extends OpenAIChatModel {
 
   async process(input: ChatModelInput): Promise<ChatModelOutput> {
     const messages = await contentsFromInputMessages(input.messages);
-    if (messages.length > 0 && messages[messages.length - 1]?.role !== "user") {
-      messages.push({ role: "user", content: " " });
+    if (messages.length > 0 && messages.at(-1)?.role !== "user") {
+      messages.push({ role: "user", content: "" });
     }
 
     const body: OpenAI.Chat.ChatCompletionCreateParams = {

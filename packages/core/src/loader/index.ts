@@ -115,7 +115,7 @@ export async function loadModel(
     OpenRouterChatModel,
   ];
   const M = availableModels.find((m) =>
-    m.name.toLowerCase().includes(model?.provider || MODEL_PROVIDER),
+    m.name.toLowerCase().includes((model?.provider || MODEL_PROVIDER).toLowerCase()),
   );
   if (!M) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
   return new M({ model: params.model, modelOptions: { ...params, ...modelOptions } });

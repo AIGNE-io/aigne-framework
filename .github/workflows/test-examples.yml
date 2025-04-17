@@ -15,29 +15,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - provider: openai
+          - provider: OpenAI
             model: gpt-4.1-mini
-          - provider: openai
+          - provider: OpenAI
             model: gpt-4o-mini
-          - provider: openai
+          - provider: OpenAI
             model: o3-mini
-          - provider: openai
+          - provider: OpenAI
             model: o1-mini
-          - provider: claude
+          - provider: Claude
             model: claude-3-7-sonnet-latest
-          - provider: claude
+          - provider: Claude
             model: claude-3-5-haiku-latest
-          - provider: xai
+          - provider: XAI
             model: grok-3-mini
-          - provider: xai
+          - provider: XAI
             model: grok-2-latest
-          - provider: gemini
+          - provider: Gemini
             model: gemini-2.0-flash
-          - provider: gemini
+          - provider: Gemini
             model: gemini-1.5-flash
-          - provider: deepseek
+          - provider: DeepSeek
             model: deepseek-chat
-          - provider: open-router
+          - provider: OpenRouter
             model: openai/gpt-4o
 
     steps:

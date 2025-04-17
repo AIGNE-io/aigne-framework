@@ -1,6 +1,7 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
 import { MCPAgent } from "@aigne/core";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { detect } from "detect-port";
 import { mockMCPSSEServer } from "../_mocks/mock-mcp-server-sse.js";
 
@@ -147,6 +148,31 @@ test("MCPAgent should reconnect to mcp server automatically", async () => {
           },
         ],
       }),
+    );
+  } finally {
+    await mcp.shutdown();
+    mcpServer.closeAllConnections();
+    mcpServer.close();
+  }
+});
+
+test("MCPAgent should respect MCP_TIMEOUT and TIMEOUT env", async () => {
+  process.env.MCP_TIMEOUT = "1234";
+
+  const port = await detect();
+  const url = `http://localhost:${port}/sse`;
+
+  const mcpServer = mockMCPSSEServer(port);
+  const mcp = await MCPAgent.from({ url });
+
+  const request = spyOn(Client.prototype, "request");
+
+  try {
+    await mcp.tools.echo?.call({ message: "AIGNE" });
+    expect(request).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.objectContaining({ timeout: 1234 }),
     );
   } finally {
     await mcp.shutdown();

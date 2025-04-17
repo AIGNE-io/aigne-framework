@@ -42,6 +42,9 @@ aigne run [路径] [选项]
 #### 选项
 
 - `--agent <代理>`：要使用的代理名称（默认为找到的第一个代理）
+- `--download-dir <目录>`：下载包的目录（使用URL时）
+- `--model-provider <提供商>`：要使用的模型提供商，可用提供商：openai、claude、xai（默认为aigne.yaml定义或openai）
+- `--model-name <模型>`：要使用的模型名称，可用模型取决于提供商（默认为aigne.yaml定义或gpt-4o-mini）
 - `--help`：显示命令帮助
 
 #### 示例

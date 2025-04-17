@@ -1,0 +1,8 @@
+# Changelog
+
+## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.4.0...example-mcp-blocklet-v1.5.0) (2025-04-15)
+
+
+### Features
+
+* **core:** support oauth for McpAgent with example ([#55](https://github.com/AIGNE-io/aigne-framework/issues/55)) ([9420f3a](https://github.com/AIGNE-io/aigne-framework/commit/9420f3a56cf18986cd45f173044e660be76daab4))

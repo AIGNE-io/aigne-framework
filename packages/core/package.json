@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "AIGNE core library for building AI-powered applications",
   "publishConfig": {
     "access": "public"
@@ -47,6 +47,9 @@
       "execution-engine/*": [
         "./lib/dts/execution-engine/*"
       ],
+      "loader/*": [
+        "./lib/dts/loader/*"
+      ],
       "models/*": [
         "./lib/dts/models/*"
       ],
@@ -92,11 +95,11 @@
     "@types/bun": "^1.2.9",
     "@types/express": "^5.0.1",
     "@types/mustache": "^4.2.5",
-    "@types/node": "^22.14.0",
+    "@types/node": "^22.14.1",
     "detect-port": "^2.1.0",
     "express": "^5.1.0",
     "npm-run-all": "^4.1.5",
-    "openai": "^4.93.0",
+    "openai": "^4.94.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"
   }

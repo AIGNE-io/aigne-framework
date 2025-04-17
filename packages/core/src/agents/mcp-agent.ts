@@ -33,6 +33,12 @@ import { Agent, type AgentOptions, type Message } from "./agent.js";
 const MCP_AGENT_CLIENT_NAME = "MCPAgent";
 const MCP_AGENT_CLIENT_VERSION = "0.0.1";
 const DEFAULT_MAX_RECONNECTS = 10;
+const DEFAULT_TIMEOUT = () =>
+  z.coerce
+    .number()
+    .int()
+    .min(0)
+    .safeParse(process.env.MCP_TIMEOUT || process.env.TIMEOUT).data || 60e3;
 
 export interface MCPAgentOptions extends AgentOptions {
   client: Client;
@@ -52,7 +58,7 @@ export type SSEServerParameters = {
   opts?: SSEClientTransportOptions;
   /**
    * The timeout for requests to the server, in milliseconds.
-   * @default 10000
+   * @default 60000
    */
   timeout?: number;
   /**
@@ -202,7 +208,7 @@ export class MCPAgent extends Agent {
     if (options.resources?.length) this.resources.push(...options.resources);
   }
 
-  private client: Client;
+  client: Client;
 
   readonly prompts = createAccessorArray<MCPPrompt>([], (arr, name) =>
     arr.find((i) => i.name === name),
@@ -258,7 +264,9 @@ class ClientWithReconnect extends Client {
     await pRetry(
       async () => {
         await this.close();
-        await this.connect(await transportCreator());
+        await this.connect(await transportCreator(), {
+          timeout: this.reconnectOptions?.timeout ?? DEFAULT_TIMEOUT(),
+        });
       },
       {
         retries: this.reconnectOptions?.maxReconnects ?? DEFAULT_MAX_RECONNECTS,
@@ -274,9 +282,10 @@ class ClientWithReconnect extends Client {
     options?: RequestOptions,
   ): Promise<z.infer<T>> {
     const mergedOptions: RequestOptions = {
-      ...(options ?? {}),
-      timeout: options?.timeout ?? this.reconnectOptions?.timeout ?? 10000,
+      ...options,
+      timeout: options?.timeout ?? DEFAULT_TIMEOUT(),
     };
+
     try {
       return await super.request(request, resultSchema, mergedOptions);
     } catch (error) {
@@ -302,10 +311,6 @@ export abstract class MCPBase<I extends Message, O extends Message> extends Agen
   }
 
   protected client: ClientWithReconnect;
-
-  protected get mcpServer() {
-    return getMCPServerName(this.client);
-  }
 }
 
 export class MCPTool extends MCPBase<Message, CallToolResult> {

@@ -1,70 +1,15 @@
 name: Test Examples
 
 on:
-  issue_comment:
-    types: [created, edited]
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  check:
-    if: |
-      github.event.issue.pull_request &&
-      startsWith(github.event.comment.body, '/test-examples')
-    runs-on: ubuntu-latest
-    outputs:
-      skip_ci: ${{ steps.check-title.outputs.skip_ci }}
-      is_collaborator: ${{ steps.check-collab.outputs.is_collaborator }}
-
-    steps:
-      - name: Check if commenter is a collaborator
-        id: check-collab
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const commenter = context.payload.comment.user.login;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            try {
-              await github.rest.repos.checkCollaborator({
-                owner,
-                repo,
-                username: commenter,
-              });
-              console.log("✅ User is a collaborator.");
-              core.setOutput('is_collaborator', 'true');
-            } catch (error) {
-              console.log("❌ User is NOT a collaborator.");
-              core.setOutput('is_collaborator', 'false');
-              core.setFailed(`User ${commenter} is not authorized to trigger CI.`);
-            }
-
-      - name: Check PR title for [skip ci]
-        id: check-title
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const pr = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.issue.number,
-            });
-
-            const title = pr.data.title || '';
-            const skip = /\[skip ci\]/i.test(title);
-            console.log(`📝 PR Title: "${title}"`);
-            if (skip) {
-              console.log("🚫 Skip CI detected in PR title.");
-            } else {
-              console.log("✅ No skip directive found.");
-            }
-
-            core.setOutput('skip_ci', skip.toString());
-
   test-examples:
-    needs: check
-    if: ${{ needs.check.result == 'success' && needs.check.outputs.skip_ci != 'true' }}
     runs-on: ubuntu-latest
+
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     strategy:
       fail-fast: false
@@ -96,26 +41,6 @@ jobs:
             model: openai/gpt-4o
 
     steps:
-      - name: Check if commenter is a repository collaborator
-        id: permission-check
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const commenter = context.payload.comment.user.login;
-            const repoOwner = context.repo.owner;
-            const repoName = context.repo.repo;
-
-            try {
-              await github.rest.repos.checkCollaborator({
-                owner: repoOwner,
-                repo: repoName,
-                username: commenter,
-              });
-              console.log(`${commenter} is a collaborator.`);
-            } catch (error) {
-              core.setFailed(`User ${commenter} is NOT a collaborator.`);
-            }
-
       - name: Checkout repo
         uses: actions/checkout@v4
 

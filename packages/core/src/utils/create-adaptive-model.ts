@@ -4,14 +4,14 @@ import { XAIChatModel, type XAIChatModelOptions } from "../models/xai-chat-model
 
 export type ModelProvider = "openai" | "anthropic" | "xai";
 
-const { MODEL_PROVIDER = "openai", MODEL = "gpt-4o-mini" } = process.env;
+const { MODEL_PROVIDER = "openai", MODEL_NAME = "gpt-4o-mini" } = process.env;
 
 export function createAdaptiveModel(
   provider?: ModelProvider | null,
   options?: OpenAIChatModelOptions | XAIChatModelOptions | ClaudeChatModelOptions,
 ) {
   const mergedProvider = provider ?? MODEL_PROVIDER;
-  const mergedOptions = { model: MODEL, ...options };
+  const mergedOptions = { model: MODEL_NAME, ...options };
 
   switch (mergedProvider) {
     case "openai":

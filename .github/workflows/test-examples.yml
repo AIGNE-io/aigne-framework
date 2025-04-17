@@ -92,7 +92,7 @@ jobs:
           ALLOW_DANGEROUS: "true"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODEL_PROVIDER: ${{ matrix.provider }}
-          MODEL: ${{ matrix.model }}
+          MODEL_NAME: ${{ matrix.model }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
@@ -103,7 +103,7 @@ jobs:
             if echo "$dir" | grep -q "$EXCLUDE_PATTERN"; then
               echo "Skipping $dir"
             else
-              echo "Testing $dir with $MODEL_PROVIDER:$MODEL"
+              echo "Testing $dir with $MODEL_PROVIDER:$MODEL_NAME"
               start_time=$(date +%s)
               cd $dir
               pnpm start || exit 1

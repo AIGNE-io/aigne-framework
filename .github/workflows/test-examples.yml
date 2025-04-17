@@ -23,9 +23,9 @@ jobs:
             model: o3-mini
           - provider: openai
             model: o1-mini
-          - provider: anthropic
+          - provider: claude
             model: claude-3-7-sonnet-latest
-          - provider: anthropic
+          - provider: claude
             model: claude-3-5-haiku-latest
           - provider: xai
             model: grok-3-mini
@@ -99,7 +99,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
-          EXCLUDE_PATTERN="chat-bot\|mcp-blocklet\|workflow-group-chat"
+          EXCLUDE_PATTERN="mcp-blocklet\|workflow-group-chat"
 
           for dir in examples/*; do
             if echo "$dir" | grep -q "$EXCLUDE_PATTERN"; then

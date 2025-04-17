@@ -3,6 +3,20 @@
 - chore: release v1.2.0
 
 
+## [1.8.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.7.0...aigne-framework-v1.8.0) (2025-04-17)
+
+
+### Features
+
+* **ci:** support coverage examples with model matrix ([#59](https://github.com/AIGNE-io/aigne-framework/issues/59)) ([1edd704](https://github.com/AIGNE-io/aigne-framework/commit/1edd70426b80a69e3751b2d5fe818297711d0777))
+* **cli:** support convert agents from studio ([#64](https://github.com/AIGNE-io/aigne-framework/issues/64)) ([f544bc7](https://github.com/AIGNE-io/aigne-framework/commit/f544bc77a2fb07e034b317ceb6a46aadd35830c9))
+* **cli:** support model and download customization for aigne run ([#61](https://github.com/AIGNE-io/aigne-framework/issues/61)) ([51f6619](https://github.com/AIGNE-io/aigne-framework/commit/51f6619e6c591a84f1f2339b26ef66d89fa9486e))
+
+
+### Bug Fixes
+
+* **mcp:** set default timeout to 60s ([#67](https://github.com/AIGNE-io/aigne-framework/issues/67)) ([40dc029](https://github.com/AIGNE-io/aigne-framework/commit/40dc029b7795650283a505fd71b9566e5f0a4471))
+
 ## [1.7.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.6.0...aigne-framework-v1.7.0) (2025-04-15)
 
 

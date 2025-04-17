@@ -3,27 +3,22 @@
 import assert from "node:assert";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 
-const { OPENAI_API_KEY, GITHUB_PERSONAL_ACCESS_TOKEN } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
-assert(
-  GITHUB_PERSONAL_ACCESS_TOKEN,
-  "Please set the GITHUB_PERSONAL_ACCESS_TOKEN environment variable",
-);
+const { GITHUB_TOKEN } = process.env;
+
+assert(GITHUB_TOKEN, "Please set the GITHUB_TOKEN environment variable");
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
+const model = await loadModel();
 
 const github = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-github"],
   env: {
-    GITHUB_PERSONAL_ACCESS_TOKEN,
+    GITHUB_TOKEN,
   },
 });
 

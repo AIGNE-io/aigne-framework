@@ -1,23 +1,18 @@
 #!/usr/bin/env npx -y bun
 
-import assert from "node:assert";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
-
-const { OPENAI_API_KEY } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
+const model = await loadModel();
 
 const puppeteer = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
+  env: process.env as Record<string, string>,
 });
 
 const engine = new ExecutionEngine({

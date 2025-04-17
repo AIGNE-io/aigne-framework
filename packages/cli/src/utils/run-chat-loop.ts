@@ -12,9 +12,13 @@ export interface ChatLoopOptions {
   defaultQuestion?: string;
   inputKey?: string;
   verbose?: boolean;
+  skipLoop?: boolean;
 }
 
 export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopOptions = {}) {
+  const { initialCall = process.env.INITIAL_CALL, skipLoop = process.env.SKIP_LOOP === "true" } =
+    options;
+
   options.verbose ??= logger.enabled("aigne:core");
   // Disable the logger, use TerminalTracer instead
   logger.disable();
@@ -23,8 +27,9 @@ export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopO
 
   if (options?.welcome) console.log(options.welcome);
 
-  if (options?.initialCall) {
-    await callAgent(userAgent, options.initialCall, { ...options });
+  if (initialCall) {
+    await callAgent(userAgent, initialCall, { ...options });
+    if (skipLoop) return;
   }
 
   for (let i = 0; ; i++) {

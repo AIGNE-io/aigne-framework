@@ -2,13 +2,14 @@ name: Test Examples
 
 on:
   issue_comment:
-    types: [created]
+    types: [created, edited]
+  workflow_dispatch:
 
 jobs:
   check:
     if: |
       github.event.issue.pull_request &&
-      startsWith(github.event.comment.body, '/run-ci')
+      startsWith(github.event.comment.body, '/test-examples')
     runs-on: ubuntu-latest
     outputs:
       skip_ci: ${{ steps.check-title.outputs.skip_ci }}

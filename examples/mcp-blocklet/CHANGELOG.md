@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.5.0...example-mcp-blocklet-v1.6.0) (2025-04-17)
+
+
+### Features
+
+* **ci:** support coverage examples with model matrix ([#59](https://github.com/AIGNE-io/aigne-framework/issues/59)) ([1edd704](https://github.com/AIGNE-io/aigne-framework/commit/1edd70426b80a69e3751b2d5fe818297711d0777))
+
 ## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.4.0...example-mcp-blocklet-v1.5.0) (2025-04-15)
 
 

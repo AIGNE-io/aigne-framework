@@ -6,7 +6,7 @@ import { join, relative, resolve } from "node:path";
 import { createRunCommand } from "@aigne/cli/commands/run.js";
 import { UserAgent } from "@aigne/core";
 import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
-import { mockAIGNEPackage } from "../_mocks_/mock-aigne-package.js";
+import { mockAIGNEPackage, mockAIGNEV1Package } from "../_mocks_/mock-aigne-package.js";
 import { mockModule } from "../_mocks_/mock-module.js";
 
 test("run command should call run chat loop correctly", async () => {
@@ -73,6 +73,32 @@ test("run command should download package and run correctly", async () => {
 
   spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(await mockAIGNEPackage())),
+  );
+
+  const command = createRunCommand();
+
+  const url = new URL("https://www.aigne.io/projects/xxx/test-agents.tgz");
+
+  await command.parseAsync(["", "run", url.toString()]);
+
+  const path = join(homedir(), ".aigne", url.hostname, url.pathname);
+  expect((await stat(join(path, "aigne.yaml"))).isFile()).toBeTrue();
+
+  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(
+    expect.any(UserAgent),
+    expect.objectContaining({}),
+  );
+});
+
+test("run command should convert package from v1 and run correctly", async () => {
+  const runChatLoopInTerminal = mock();
+
+  await using _ = await mockModule("@aigne/cli/utils/run-chat-loop.js", () => {
+    return { runChatLoopInTerminal };
+  });
+
+  spyOn(globalThis, "fetch").mockReturnValueOnce(
+    Promise.resolve(new Response(await mockAIGNEV1Package())),
   );
 
   const command = createRunCommand();

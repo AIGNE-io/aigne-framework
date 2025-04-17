@@ -42,7 +42,7 @@ aigne run [path] [options]
 #### Options
 
 - `--agent <agent>`: Name of the agent to use (defaults to the first agent found)
-- `--download-dir <dir>`: Directory to download the package to (when using a URL)
+- `--download-dir <dir>`: Directory to download the package to (when using a URL), defaults to `~/.aigne/xxx`
 - `--model-provider <provider>`: Model provider to use, available providers: openai, claude, xai (defaults to the aigne.yaml definition or openai)
 - `--model-name <model>`: Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)
 - `--help`: Display help for the command
@@ -72,6 +72,26 @@ Run an agent from an AIGNE Studio project URL:
 ```bash
 aigne run https://www.aigne.io/projects/xxx/xxx.tgz
 ```
+
+#### Complete Steps for Running Agents via AIGNE Studio Integration
+
+https://github.com/user-attachments/assets/f528d1a1-31d1-48e5-b89e-e3d555c53649
+
+1. Create a project in AIGNE Studio:
+   - Log in to [AIGNE Studio](https://www.aigne.io)
+   - Click to create a new project
+   - Add the desired agents to your project
+
+2. Get the CLI command:
+   - In the project page, click the settings icon in the top-right corner
+   - Find the "Integration" tab in the settings menu
+   - In the AIGNE CLI section, click the "Generate Link" button if no link exists
+   - Copy the generated `aigne run` command (format like `aigne run https://www.aigne.io/projects/xxx/xxx.tgz?secret=yyy&hash=zzz`)
+
+3. Run the command:
+   - Open your terminal
+   - Paste and run the copied command
+   - The system will automatically download the project and its agents and start the chat loop
 
 ### `aigne create`
 

@@ -31,12 +31,14 @@ jobs:
             model: grok-3-mini
           - provider: xai
             model: grok-2-latest
-          # - provider: gemini
-          #   model: gemini-2.0-flash
-          # - provider: deepseek
-          #   model: deepseek-chat
-          # - provider: open-router
-          #   model: openai/gpt-4o
+          - provider: gemini
+            model: gemini-2.0-flash
+          - provider: gemini
+            model: gemini-1.5-flash
+          - provider: deepseek
+            model: deepseek-chat
+          - provider: open-router
+            model: openai/gpt-4o
 
     steps:
       - name: Checkout repo
@@ -83,6 +85,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Install aigne/cli
+        run: |
+          pnpm add -g @aigne/cli
+
       - name: Build
         run: pnpm build
 
@@ -98,6 +104,9 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
         run: |
           EXCLUDE_PATTERN="mcp-blocklet\|workflow-group-chat"
 

@@ -7,6 +7,9 @@ import { AIAgent } from "../agents/ai-agent.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
 import type { ChatModel, ChatModelOptions } from "../models/chat-model.js";
 import { ClaudeChatModel } from "../models/claude-chat-model.js";
+import { DeepSeekChatModel } from "../models/deepseek-chat-model.js";
+import { GeminiChatModel } from "../models/gemini-chat-model.js";
+import { OpenRouterChatModel } from "../models/open-router-chat-model.js";
 import { OpenAIChatModel } from "../models/openai-chat-model.js";
 import { XAIChatModel } from "../models/xai-chat-model.js";
 import { tryOrThrow } from "../utils/type-utils.js";
@@ -103,7 +106,14 @@ export async function loadModel(
     presencePenalty: model?.presence_penalty ?? undefined,
   };
 
-  const availableModels = [OpenAIChatModel, ClaudeChatModel, XAIChatModel];
+  const availableModels = [
+    OpenAIChatModel,
+    ClaudeChatModel,
+    XAIChatModel,
+    GeminiChatModel,
+    DeepSeekChatModel,
+    OpenRouterChatModel,
+  ];
   const M = availableModels.find((m) =>
     m.name.toLowerCase().includes(model?.provider || MODEL_PROVIDER),
   );

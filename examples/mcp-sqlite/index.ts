@@ -3,12 +3,12 @@
 import { join } from "node:path";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder } from "@aigne/core";
-import { createAdaptiveModel } from "@aigne/core/utils/create-adaptive-model.js";
+import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
-const model = createAdaptiveModel();
+const model = await loadModel();
 
 const sqlite = await MCPAgent.from({
   command: "uvx",

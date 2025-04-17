@@ -18,7 +18,7 @@
     "README.md"
   ],
   "scripts": {
-    "start": "npx -y bun run index.ts",
+    "start": "bun run index.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

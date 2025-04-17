@@ -3,7 +3,7 @@
 import assert from "node:assert";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder } from "@aigne/core";
-import { createAdaptiveModel } from "@aigne/core/utils/create-adaptive-model.js";
+import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { UnauthorizedError, refreshAuthorization } from "@modelcontextprotocol/sdk/client/auth.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
@@ -89,7 +89,7 @@ try {
 
 console.info("Starting connecting to blocklet mcp...");
 
-const model = createAdaptiveModel();
+const model = await loadModel();
 
 const blocklet = await MCPAgent.from({
   url: appUrl.href,

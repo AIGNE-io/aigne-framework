@@ -2,10 +2,10 @@
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine, UserAgent, UserInputTopic, UserOutputTopic } from "@aigne/core";
-import { createAdaptiveModel } from "@aigne/core/utils/create-adaptive-model.js";
+import { loadModel } from "@aigne/core/loader/index.js";
 import { z } from "zod";
 
-const model = createAdaptiveModel();
+const model = await loadModel();
 
 const coder = AIAgent.from({
   subscribeTopic: [UserInputTopic, "rewrite_request"],

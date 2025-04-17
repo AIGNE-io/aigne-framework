@@ -2,9 +2,9 @@
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine } from "@aigne/core";
-import { createAdaptiveModel } from "@aigne/core/utils/create-adaptive-model.js";
+import { loadModel } from "@aigne/core/loader/index.js";
 
-const model = createAdaptiveModel();
+const model = await loadModel();
 
 const productSupport = AIAgent.from({
   name: "product_support",

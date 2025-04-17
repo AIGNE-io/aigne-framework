@@ -5,15 +5,13 @@ import { z } from "zod";
 import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
-import type { ChatModel } from "../models/chat-model.js";
+import type { ChatModel, ChatModelOptions } from "../models/chat-model.js";
 import { ClaudeChatModel } from "../models/claude-chat-model.js";
 import { OpenAIChatModel } from "../models/openai-chat-model.js";
 import { XAIChatModel } from "../models/xai-chat-model.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { loadAgentFromYamlFile } from "./agent-yaml.js";
-
-const DEFAULT_MODEL_PROVIDER = "openai";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
@@ -91,25 +89,26 @@ export async function loadAgent(path: string): Promise<Agent> {
   throw new Error(`Unsupported agent file type: ${path}`);
 }
 
-export async function loadModel(
-  model: z.infer<typeof aigneFileSchema>["chat_model"],
-): Promise<ChatModel | undefined> {
-  if (!model) return undefined;
+const { MODEL_PROVIDER = "openai", MODEL_NAME = "gpt-4o-mini" } = process.env;
 
+export async function loadModel(
+  model?: z.infer<typeof aigneFileSchema>["chat_model"],
+  modelOptions?: ChatModelOptions,
+): Promise<ChatModel | undefined> {
   const params = {
-    model: model.name ?? undefined,
-    temperature: model.temperature ?? undefined,
-    topP: model.top_p ?? undefined,
-    frequencyPenalty: model.frequent_penalty ?? undefined,
-    presencePenalty: model.presence_penalty ?? undefined,
+    model: model?.name ?? MODEL_NAME,
+    temperature: model?.temperature ?? undefined,
+    topP: model?.top_p ?? undefined,
+    frequencyPenalty: model?.frequent_penalty ?? undefined,
+    presencePenalty: model?.presence_penalty ?? undefined,
   };
 
   const availableModels = [OpenAIChatModel, ClaudeChatModel, XAIChatModel];
   const M = availableModels.find((m) =>
-    m.name.toLowerCase().includes(model.provider || DEFAULT_MODEL_PROVIDER),
+    m.name.toLowerCase().includes(model?.provider || MODEL_PROVIDER),
   );
-  if (!M) throw new Error(`Unsupported model: ${model.provider} ${model.name}`);
-  return new M(params);
+  if (!M) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
+  return new M({ model: params.model, modelOptions: { ...params, ...modelOptions } });
 }
 
 const aigneFileSchema = z.object({

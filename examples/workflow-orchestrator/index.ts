@@ -3,13 +3,9 @@
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
-import { createAdaptiveModel } from "@aigne/core/utils/create-adaptive-model.js";
+import { loadModel } from "@aigne/core/loader/index.js";
 
-const model = createAdaptiveModel(null, {
-  modelOptions: {
-    parallelToolCalls: false, // puppeteer can only run one task at a time
-  },
-});
+const model = await loadModel(null, { parallelToolCalls: false });
 
 const puppeteer = await MCPAgent.from({
   command: "npx",

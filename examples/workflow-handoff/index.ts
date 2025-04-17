@@ -2,10 +2,10 @@
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, type Agent, ExecutionEngine, FunctionAgent } from "@aigne/core";
-import { createAdaptiveModel } from "@aigne/core/utils/create-adaptive-model.js";
+import { loadModel } from "@aigne/core/loader/index.js";
 import { z } from "zod";
 
-const model = createAdaptiveModel();
+const model = await loadModel();
 
 const execute_order_tool = FunctionAgent.from({
   name: "execute_order",

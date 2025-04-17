@@ -1,11 +1,9 @@
 import { expect, spyOn, test } from "bun:test";
-import { is, runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
+import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine, UserAgent, createMessage } from "@aigne/core";
 import inquirer from "inquirer";
 
 test("runChatLoopInTerminal should respond /help /exit commands", async () => {
-  spyOn(is, "CI").mockReturnValue(false);
-
   const engine = new ExecutionEngine({});
 
   const userAgent = UserAgent.from({
@@ -29,8 +27,6 @@ test("runChatLoopInTerminal should respond /help /exit commands", async () => {
 });
 
 test("runChatLoopInTerminal should trigger initial call", async () => {
-  spyOn(is, "CI").mockReturnValue(false);
-
   const engine = new ExecutionEngine({});
 
   const agent = AIAgent.from({});
@@ -56,8 +52,6 @@ test("runChatLoopInTerminal should trigger initial call", async () => {
 });
 
 test("runChatLoopInTerminal should call agent correctly", async () => {
-  spyOn(is, "CI").mockReturnValue(false);
-
   const agent = AIAgent.from({});
 
   const engine = new ExecutionEngine({});
@@ -84,30 +78,23 @@ test("runChatLoopInTerminal should call agent correctly", async () => {
   );
 });
 
-test("runChatLoopInTerminal should work in CI environment", async () => {
-  spyOn(is, "CI").mockReturnValue(true);
-
+test("runChatLoopInTerminal should skip loop If initialCall is provided and skipLoop is true", async () => {
   const engine = new ExecutionEngine({});
   const agent = AIAgent.from({});
   const userAgent = engine.call(agent);
 
   const call = spyOn(agent, "call").mockReturnValue(
-    Promise.resolve({ text: "CI environment response" }),
+    Promise.resolve({ text: "hello, this is a test response message" }),
   );
 
-  const log = spyOn(console, "log").mockImplementation(() => {});
-
   await runChatLoopInTerminal(userAgent, {
-    initialCall: "test message in CI",
+    initialCall: "hello, this is a test message",
+    skipLoop: true,
   });
 
-  expect(call).toHaveBeenCalledWith(createMessage("test message in CI"), expect.anything());
-  expect(log).toHaveBeenCalledWith({ text: "CI environment response" });
-
-  await runChatLoopInTerminal(userAgent, {
-    defaultQuestion: "default question in CI",
-  });
-
-  expect(call).toHaveBeenCalledWith(createMessage("default question in CI"), expect.anything());
-  expect(log).toHaveBeenCalledWith({ text: "CI environment response" });
+  expect(call).toHaveBeenCalledTimes(1);
+  expect(call).toHaveBeenCalledWith(
+    createMessage("hello, this is a test message"),
+    expect.anything(),
+  );
 });

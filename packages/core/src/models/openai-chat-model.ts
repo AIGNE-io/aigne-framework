@@ -92,9 +92,7 @@ export class OpenAIChatModel extends ChatModel {
         addTypeToEmptyParameters: !this.supportsToolsEmptyParameters,
       }),
       tool_choice: input.toolChoice,
-      parallel_tool_calls: !input.tools?.length
-        ? undefined
-        : (input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls),
+      parallel_tool_calls: this.getParallelToolCalls(input),
       response_format: responseFormat,
     });
 
@@ -113,10 +111,17 @@ export class OpenAIChatModel extends ChatModel {
     return result;
   }
 
-  protected supportsToolsEmptyParameters = true;
   protected supportsNativeStructuredOutputs = true;
   protected supportsEndWithSystemMessage = true;
   protected supportsToolsUseWithJsonSchema = true;
+  protected supportsParallelToolCalls = true;
+  protected supportsToolsEmptyParameters = true;
+
+  private getParallelToolCalls(input: ChatModelInput): boolean | undefined {
+    if (!this.supportsParallelToolCalls) return undefined;
+    if (!input.tools?.length) return undefined;
+    return input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls;
+  }
 
   private async getRunMessages(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {
     const messages = await contentsFromInputMessages(input.messages);

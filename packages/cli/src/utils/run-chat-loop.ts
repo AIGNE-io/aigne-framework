@@ -75,7 +75,6 @@ async function callAgent(userAgent: input, input: Message | string, options: Cha
 
   console.log(
     `
-${chalk.grey(figures.tick)} 💬 ${inspect(input, { colors: true })}
 ${chalk.grey(figures.tick)} 🤖 ${tracer.formatTokenUsage(context.usage)}
 ${formatAIResponse(result)}
 `,

@@ -85,12 +85,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Set execution permissions
+        run: |
+          chmod +x examples/chat-bot/node_modules/.bin/aigne
+
       - name: Build
         run: pnpm build
 
       - name: Run examples
         env:
-          INITIAL_CALL: "Hi, this is an initial test. Show your main function by performing a basic task you’re designed for."
+          INITIAL_CALL: "Hi, this is an initial test. Show your main function by performing a basic task you're designed for."
           SKIP_LOOP: "true"
           PUPPETEER_LAUNCH_OPTIONS: '{"headless": true, "args": ["--no-sandbox", "--disable-setuid-sandbox"]}'
           ALLOW_DANGEROUS: "true"

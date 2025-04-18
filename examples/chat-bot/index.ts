@@ -5,4 +5,5 @@ import { join } from "node:path";
 
 spawnSync("aigne", ["run", join(import.meta.dirname, "agents")], {
   stdio: "inherit",
+  env: process.env,
 });

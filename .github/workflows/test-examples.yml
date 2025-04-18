@@ -85,10 +85,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install aigne/cli
-        run: |
-          pnpm add -g @aigne/cli
-
       - name: Build
         run: pnpm build
 

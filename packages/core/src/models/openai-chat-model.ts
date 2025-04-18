@@ -78,7 +78,7 @@ export class OpenAIChatModel extends ChatModel {
       frequency_penalty:
         input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,
       presence_penalty: input.modelOptions?.presencePenalty ?? this.modelOptions?.presencePenalty,
-      messages: await this.getRunMessage(input),
+      messages: await this.getRunMessages(input),
       stream_options: {
         include_usage: true,
       },
@@ -118,7 +118,7 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsEndWithSystemMessage = true;
   protected supportsToolsUseWithJsonSchema = true;
 
-  private async getRunMessage(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {
+  private async getRunMessages(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {
     const messages = await contentsFromInputMessages(input.messages);
 
     if (!this.supportsEndWithSystemMessage && messages.at(-1)?.role !== "user") {

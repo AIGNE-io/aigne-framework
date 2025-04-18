@@ -92,14 +92,16 @@ export async function loadAgent(path: string): Promise<Agent> {
   throw new Error(`Unsupported agent file type: ${path}`);
 }
 
-const { MODEL_PROVIDER = "openai", MODEL_NAME = "gpt-4o-mini" } = process.env;
+const { MODEL_PROVIDER, MODEL_NAME } = process.env;
+const DEFAULT_MODEL_PROVIDER = "openai";
+const DEFAULT_MODEL_NAME = "gpt-4o-mini";
 
 export async function loadModel(
   model?: z.infer<typeof aigneFileSchema>["chat_model"],
   modelOptions?: ChatModelOptions,
 ): Promise<ChatModel | undefined> {
   const params = {
-    model: model?.name ?? MODEL_NAME,
+    model: MODEL_NAME ?? model?.name ?? DEFAULT_MODEL_NAME,
     temperature: model?.temperature ?? undefined,
     topP: model?.top_p ?? undefined,
     frequencyPenalty: model?.frequent_penalty ?? undefined,
@@ -115,7 +117,9 @@ export async function loadModel(
     OpenRouterChatModel,
   ];
   const M = availableModels.find((m) =>
-    m.name.toLowerCase().includes((model?.provider || MODEL_PROVIDER).toLowerCase()),
+    m.name
+      .toLowerCase()
+      .includes((MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER).toLowerCase()),
   );
   if (!M) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
   return new M({ model: params.model, modelOptions: { ...params, ...modelOptions } });

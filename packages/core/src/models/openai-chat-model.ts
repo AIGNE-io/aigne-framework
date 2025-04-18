@@ -54,9 +54,15 @@ export class OpenAIChatModel extends ChatModel {
   }
 
   protected _client?: OpenAI;
+  protected apiKeyEnvName = "OPENAI_API_KEY";
+  protected supportsNativeStructuredOutputs = true;
+  protected supportsEndWithSystemMessage = true;
+  protected supportsToolsUseWithJsonSchema = true;
+  protected supportsParallelToolCalls = true;
+  protected supportsToolsEmptyParameters = true;
 
   get client() {
-    const apiKey = this.options?.apiKey || process.env.OPENAI_API_KEY;
+    const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName];
     if (!apiKey) throw new Error(`Api Key is required for ${this.name}`);
 
     this._client ??= new OpenAI({
@@ -110,12 +116,6 @@ export class OpenAIChatModel extends ChatModel {
 
     return result;
   }
-
-  protected supportsNativeStructuredOutputs = true;
-  protected supportsEndWithSystemMessage = true;
-  protected supportsToolsUseWithJsonSchema = true;
-  protected supportsParallelToolCalls = true;
-  protected supportsToolsEmptyParameters = true;
 
   private getParallelToolCalls(input: ChatModelInput): boolean | undefined {
     if (!this.supportsParallelToolCalls) return undefined;

@@ -51,7 +51,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Get puppeteer version from @modelcontextprotocol/server-puppeteer
@@ -85,12 +85,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Set execution permissions
-        run: |
-          chmod +x examples/chat-bot/node_modules/.bin/aigne
-
       - name: Build
         run: pnpm build
+
+      - name: Chmod examples/chat-bot aigne
+        run: chmod +x examples/chat-bot/node_modules/@aigne/cli/dist/cli.js
 
       - name: Run examples
         env:

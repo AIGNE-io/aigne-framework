@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env npx -y bun
 
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";

@@ -135,6 +135,8 @@ async function downloadPackage(url: string, downloadDir: string) {
 }
 
 async function extractPackage(downloadDir: string, dir: string) {
+  await mkdir(dir, { recursive: true });
+
   if (await isV1Package(downloadDir)) {
     await toAIGNEPackage(downloadDir, dir);
   } else {

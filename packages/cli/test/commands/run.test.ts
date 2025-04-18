@@ -77,7 +77,7 @@ test("run command should download package and run correctly", async () => {
 
   const command = createRunCommand();
 
-  const url = new URL("https://www.aigne.io/projects/xxx/test-agents.tgz");
+  const url = new URL(`https://www.aigne.io/${randomUUID()}/test-agents.tgz`);
 
   await command.parseAsync(["", "run", url.toString()]);
 
@@ -103,7 +103,7 @@ test("run command should convert package from v1 and run correctly", async () =>
 
   const command = createRunCommand();
 
-  const url = new URL("https://www.aigne.io/projects/xxx/test-agents.tgz");
+  const url = new URL(`https://www.aigne.io/${randomUUID()}/test-agents.tgz`);
 
   await command.parseAsync(["", "run", url.toString()]);
 
@@ -129,7 +129,7 @@ test("run command should download package to a special folder", async () => {
 
   const command = createRunCommand();
 
-  const url = "https://www.aigne.io/projects/xxx/test-agents.tgz";
+  const url = `https://www.aigne.io/${randomUUID()}/test-agents.tgz`;
   const dir = join(tmpdir(), randomUUID());
 
   try {

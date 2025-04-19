@@ -224,7 +224,7 @@ export class PromptBuilder {
       toolAgents: toolAgents.length ? toolAgents : undefined,
       tools: tools.length ? tools : undefined,
       toolChoice,
-      modelOptions,
+      modelOptions: Object.keys(modelOptions).length ? modelOptions : undefined,
     };
   }
 }

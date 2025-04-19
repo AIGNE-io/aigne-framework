@@ -55,6 +55,7 @@ export class OpenAIChatModel extends ChatModel {
 
   protected _client?: OpenAI;
   protected apiKeyEnvName = "OPENAI_API_KEY";
+  protected apiKeyDefault: string | undefined;
   protected supportsNativeStructuredOutputs = true;
   protected supportsEndWithSystemMessage = true;
   protected supportsToolsUseWithJsonSchema = true;
@@ -62,7 +63,7 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsToolsEmptyParameters = true;
 
   get client() {
-    const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName];
+    const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault;
     if (!apiKey) throw new Error(`Api Key is required for ${this.name}`);
 
     this._client ??= new OpenAI({

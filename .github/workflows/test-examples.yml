@@ -39,6 +39,10 @@ jobs:
             model: deepseek-chat
           - provider: OpenRouter
             model: openai/gpt-4o
+          - provider: Ollama
+            model: llama3.2
+          - provider: Ollama
+            model: qwen2.5-coder
 
     steps:
       - name: Checkout repo
@@ -106,6 +110,8 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+          OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
         run: |
           EXCLUDE_PATTERN="mcp-blocklet\|workflow-group-chat"
 

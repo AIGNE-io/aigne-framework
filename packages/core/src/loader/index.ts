@@ -9,6 +9,7 @@ import type { ChatModel, ChatModelOptions } from "../models/chat-model.js";
 import { ClaudeChatModel } from "../models/claude-chat-model.js";
 import { DeepSeekChatModel } from "../models/deepseek-chat-model.js";
 import { GeminiChatModel } from "../models/gemini-chat-model.js";
+import { OllamaChatModel } from "../models/ollama-chat-model.js";
 import { OpenRouterChatModel } from "../models/open-router-chat-model.js";
 import { OpenAIChatModel } from "../models/openai-chat-model.js";
 import { XAIChatModel } from "../models/xai-chat-model.js";
@@ -115,6 +116,7 @@ export async function loadModel(
     GeminiChatModel,
     DeepSeekChatModel,
     OpenRouterChatModel,
+    OllamaChatModel,
   ];
   const M = availableModels.find((m) =>
     m.name

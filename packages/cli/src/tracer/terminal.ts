@@ -18,6 +18,7 @@ import {
 } from "@aigne/listr2";
 import chalk from "chalk";
 import { z } from "zod";
+import { promiseWithResolvers } from "../utils/promise-with-resolvers.js";
 import { parseDuration } from "../utils/time.js";
 
 const DEBUG_DEPTH = z.number().int().default(2).safeParse(Number(process.env.DEBUG_DEPTH)).data;
@@ -48,8 +49,8 @@ export class TerminalTracer {
         "agentStarted",
         async ({ contextId, parentContextId, agent, input, timestamp }) => {
           const task: Task = {
-            ...Promise.withResolvers(),
-            listr: Promise.withResolvers(),
+            ...promiseWithResolvers(),
+            listr: promiseWithResolvers(),
             startTime: timestamp,
           };
           this.tasks[contextId] = task;
@@ -217,9 +218,9 @@ ${this.formatMessage(data)}`;
   }
 }
 
-type Task = ReturnType<typeof Promise.withResolvers<void>> & {
+type Task = ReturnType<typeof promiseWithResolvers<void>> & {
   listr: ReturnType<
-    typeof Promise.withResolvers<{
+    typeof promiseWithResolvers<{
       ctx: object;
       subtask: Listr;
       taskWrapper: ListrTaskWrapper<unknown, typeof DefaultRenderer, typeof ListrRenderer>;
@@ -232,7 +233,7 @@ type Task = ReturnType<typeof Promise.withResolvers<void>> & {
 };
 
 class MyListr extends Listr {
-  private taskPromise = Promise.withResolvers();
+  private taskPromise = promiseWithResolvers();
   private isTaskPromiseResolved = false;
 
   resolveWaitingTask() {

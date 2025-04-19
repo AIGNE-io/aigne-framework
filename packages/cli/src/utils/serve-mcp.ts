@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import express, { type ErrorRequestHandler, type Request, type Response } from "express";
 import { ZodObject, type ZodRawShape } from "zod";
+import { promiseWithResolvers } from "./promise-with-resolvers.js";
 
 export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine; port: number }) {
   const server = new McpServer(
@@ -65,7 +66,7 @@ export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine
       .json({ error: { message: error.message } });
   }));
 
-  const { promise, resolve, reject } = Promise.withResolvers();
+  const { promise, resolve, reject } = promiseWithResolvers();
 
   const httpServer = app.listen(port, (error) => {
     if (error) reject(error);

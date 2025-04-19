@@ -3,8 +3,8 @@ import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { ZodObject, type ZodType } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
-import type { AgentMemory } from "../agents/memory.js";
 import type { Context } from "../execution-engine/context.js";
+import type { AgentMemory } from "../memory/memory.js";
 import type {
   ChatModel,
   ChatModelInput,
@@ -15,7 +15,7 @@ import type {
   ChatModelOptions,
 } from "../models/chat-model.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { isNil } from "../utils/type-utils.js";
+import { isNil, orArrayToArray } from "../utils/type-utils.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
@@ -24,7 +24,6 @@ import {
 } from "./template.js";
 
 export const MESSAGE_KEY = "$message";
-export const DEFAULT_MAX_HISTORY_MESSAGES = 10;
 
 export function createMessage<I extends Message>(message: string | I): I {
   return typeof message === "string"
@@ -44,8 +43,8 @@ export interface PromptBuilderOptions {
 }
 
 export interface PromptBuilderBuildOptions {
-  memory?: AgentMemory;
-  context?: Context;
+  memory?: AgentMemory | AgentMemory[];
+  context: Context;
   agent?: AIAgent;
   input?: Message;
   model?: ChatModel;
@@ -116,13 +115,15 @@ export class PromptBuilder {
     options: PromptBuilderBuildOptions,
   ): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
     return {
-      messages: this.buildMessages(options),
+      messages: await this.buildMessages(options),
       responseFormat: this.buildResponseFormat(options),
       ...this.buildTools(options),
     };
   }
 
-  private buildMessages(options: PromptBuilderBuildOptions): ChatModelInputMessage[] {
+  private async buildMessages(
+    options: PromptBuilderBuildOptions,
+  ): Promise<ChatModelInputMessage[]> {
     const { input } = options;
 
     const messages =
@@ -131,15 +132,12 @@ export class PromptBuilder {
         : this.instructions
       )?.format(options.input) ?? [];
 
-    const memory = options.memory ?? options.agent?.memory;
+    for (const memory of orArrayToArray(options.memory ?? options.agent?.memories)) {
+      const memories = (await memory.retrieve({}, options.context))?.memories;
 
-    if (memory?.enabled) {
-      const k = memory.maxMemoriesInChat ?? DEFAULT_MAX_HISTORY_MESSAGES;
-      const histories = memory.memories.slice(-k);
-
-      if (histories?.length)
+      if (memories?.length)
         messages.push(
-          ...histories.map((i) => ({
+          ...memories.map((i) => ({
             role: i.role,
             content: convertMessageToContent(i.content),
             name: i.source,

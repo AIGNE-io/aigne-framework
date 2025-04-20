@@ -32,6 +32,10 @@ jobs:
           - provider: XAI
             model: grok-2-latest
           - provider: Gemini
+            model: gemini-2.5-flash-preview-04-17
+          - provider: Gemini
+            model: gemini-2.5-pro-preview-03-25
+          - provider: Gemini
             model: gemini-2.0-flash
           - provider: Gemini
             model: gemini-1.5-flash

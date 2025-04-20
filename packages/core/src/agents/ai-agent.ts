@@ -163,7 +163,9 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
           // Return the output of the first tool if the toolChoice is "router"
           if (this.toolChoice === "router") {
             const output = executedToolCalls[0]?.output;
-            if (!output || executedToolCalls.length !== 1) {
+            const { supportsParallelToolCallsForRouter } = model.getModelCapabilities();
+
+            if (!output || (supportsParallelToolCallsForRouter && executedToolCalls.length !== 1)) {
               throw new Error("Router toolChoice requires exactly one tool to be executed");
             }
 

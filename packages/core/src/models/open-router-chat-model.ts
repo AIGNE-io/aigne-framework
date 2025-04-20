@@ -13,4 +13,5 @@ export class OpenRouterChatModel extends OpenAIChatModel {
   }
 
   protected apiKeyEnvName = "OPEN_ROUTER_API_KEY";
+  protected supportsParallelToolCallsForRouter = false;
 }

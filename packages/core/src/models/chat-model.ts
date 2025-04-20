@@ -10,6 +10,14 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     });
   }
 
+  protected supportsParallelToolCallsForRouter = true;
+
+  getModelCapabilities() {
+    return {
+      supportsParallelToolCallsForRouter: this.supportsParallelToolCallsForRouter,
+    };
+  }
+
   protected override preprocess(input: ChatModelInput, context: Context): void {
     super.preprocess(input, context);
     const { limits, usage } = context;

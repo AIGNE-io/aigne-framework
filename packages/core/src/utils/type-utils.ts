@@ -56,9 +56,9 @@ export function createAccessorArray<T>(
   }) as T[] & { [key: string]: T };
 }
 
-export function checkArguments<T>(prefix: string, schema: ZodType<T>, args: T) {
+export function checkArguments<T>(prefix: string, schema: ZodType<T>, args: T): T {
   try {
-    schema.parse(args, {
+    return schema.parse(args, {
       errorMap: (issue, ctx) => {
         if (issue.code === "invalid_union") {
           // handle all issues that are not invalid_type

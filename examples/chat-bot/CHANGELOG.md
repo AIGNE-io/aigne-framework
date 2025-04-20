@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.2.0...example-chat-bot-v1.3.0) (2025-04-20)
+
+
+### Features
+
+* **core:** add model adapters for DeepSeek, Gemini, OpenRouter, and Ollama ([#53](https://github.com/AIGNE-io/aigne-framework/issues/53)) ([5d40546](https://github.com/AIGNE-io/aigne-framework/commit/5d40546bd5ddb70233d27ea3b20e5711b2af320a))
+
 ## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.1.0...example-chat-bot-v1.2.0) (2025-04-17)
 
 

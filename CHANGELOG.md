@@ -3,6 +3,20 @@
 - chore: release v1.2.0
 
 
+## [1.9.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.8.0...aigne-framework-v1.9.0) (2025-04-20)
+
+
+### Features
+
+* **core:** add model adapters for DeepSeek, Gemini, OpenRouter, and Ollama ([#53](https://github.com/AIGNE-io/aigne-framework/issues/53)) ([5d40546](https://github.com/AIGNE-io/aigne-framework/commit/5d40546bd5ddb70233d27ea3b20e5711b2af320a))
+
+
+### Bug Fixes
+
+* **cli:** display progressing for `run` command ([#68](https://github.com/AIGNE-io/aigne-framework/issues/68)) ([e3d2193](https://github.com/AIGNE-io/aigne-framework/commit/e3d21930bc2cf20edeb0ad7123e9e87e3e0ea653))
+* **cli:** ensure dir exists before extract package ([#70](https://github.com/AIGNE-io/aigne-framework/issues/70)) ([5ebe56d](https://github.com/AIGNE-io/aigne-framework/commit/5ebe56d3483d4309d9e39ab0566d353b3787edce))
+* **dx:** custom error message for agent input/output validation ([#71](https://github.com/AIGNE-io/aigne-framework/issues/71)) ([5145673](https://github.com/AIGNE-io/aigne-framework/commit/5145673aaae2cd6665912e80b1c644e974c42b2f))
+
 ## [1.8.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.7.0...aigne-framework-v1.8.0) (2025-04-17)
 
 

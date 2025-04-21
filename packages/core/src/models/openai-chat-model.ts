@@ -32,11 +32,12 @@ export interface OpenAIChatModelCapabilities {
   supportsToolsUseWithJsonSchema: boolean;
   supportsParallelToolCalls: boolean;
   supportsToolsEmptyParameters: boolean;
+  supportsTemperature: boolean;
 }
 
 const OPENAI_CHAT_MODEL_PRESET: Record<string, Partial<OpenAIChatModelCapabilities>> = {
-  "o4-mini": { supportsParallelToolCalls: false },
-  "o3-mini": { supportsParallelToolCalls: false },
+  "o4-mini": { supportsParallelToolCalls: false, supportsTemperature: false },
+  "o3-mini": { supportsParallelToolCalls: false, supportsTemperature: false },
 };
 
 export interface OpenAIChatModelOptions {
@@ -79,6 +80,7 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsToolsUseWithJsonSchema = true;
   protected supportsParallelToolCalls = true;
   protected supportsToolsEmptyParameters = true;
+  protected supportsTemperature = true;
 
   get client() {
     const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault;
@@ -103,7 +105,9 @@ export class OpenAIChatModel extends ChatModel {
     const messages = await this.getRunMessages(input);
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
-      temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
+      temperature: this.supportsTemperature
+        ? (input.modelOptions?.temperature ?? this.modelOptions?.temperature)
+        : undefined,
       top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       frequency_penalty:
         input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,

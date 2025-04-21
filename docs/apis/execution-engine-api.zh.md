@@ -103,7 +103,18 @@ call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, 
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
+  options?: { stream?: false }
 ): Promise<O>;
+
+// 使用消息调用 Agent 并返回响应块流
+// 使用提供的消息调用指定的 Agent
+// 返回实时的响应块流，而不是等待完整响应
+// 适合实时处理或显示增量结果的场景
+call<I extends Message, O extends Message>(
+  agent: Runnable<I, O>,
+  message: I | string,
+  options: { stream: true }
+): Promise<AgentResponseStream<O>>;
 
 // 使用消息调用 Agent 并返回输出和活动的 Agent
 // 使用提供的消息调用指定的 Agent
@@ -112,8 +123,18 @@ call<I extends Message, O extends Message>(
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options: { returnActiveAgent?: true },
+  options: { returnActiveAgent: true; stream?: false },
 ): Promise<[O, Runnable]>;
+
+// 使用消息调用 Agent 并返回响应块流和活动 Agent 的 Promise
+// 使用提供的消息调用指定的 Agent
+// 返回响应块流和一个解析为最终活动 Agent 的 Promise
+// 适合在跟踪活动 Agent 的同时进行实时处理
+call<I extends Message, O extends Message>(
+  agent: Runnable<I, O>,
+  message: I | string,
+  options: { returnActiveAgent: true; stream: true },
+): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
 ```
 
 ##### 参数
@@ -230,6 +251,49 @@ interface UserAgentOptions<I extends Message = Message, O extends Message = Mess
 - `UserOutputTopic`：用户输出的主题
 
 ## 示例
+
+### 使用执行引擎的流式响应
+
+```typescript
+import { ExecutionEngine, AIAgent } from "@aigne/core";
+import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
+
+const engine = new ExecutionEngine();
+
+const agent = AIAgent.from({
+  model,
+  instructions: "..."
+})
+
+// 启用流式响应进行调用
+const stream = await engine.call(agent, "你好，请告诉我关于流式 API 的信息", { stream: true });
+
+const reader = stream.getReader();
+const result = {};
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+
+  mergeAgentResponseChunk(result, value);
+
+  console.log("收到块:", value);
+}
+console.log("最终结果:", result);
+
+// 同时获取流和活动 Agent（适用于更复杂的工作流）
+const [agentStream, activeAgentPromise] = await engine.call(
+  assistant,
+  "你好，请推荐一些书籍",
+  { stream: true, returnActiveAgent: true }
+);
+
+// 按照上面的方式处理流
+
+// 处理完成后获取活动 Agent
+const activeAgent = await activeAgentPromise;
+console.log("活动 Agent 是:", activeAgent.name);
+```
 
 ### 基本用法
 

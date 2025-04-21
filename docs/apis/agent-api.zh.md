@@ -54,16 +54,20 @@ constructor(options: AgentOptions<I, O>)
 
 ```typescript
 async call(input: I | string, context?: Context): Promise<O>
+async call(input: I | string, context: Context | undefined, options: AgentCallOptions & { stream: true }): Promise<AgentResponseStream<O>>
 ```
 
 ##### 参数
 
 - `input`: `I | string` - 输入数据或字符串
 - `context`: `Context` (可选) - 执行上下文
+- `options`: `AgentCallOptions` (可选) - 调用选项
+  - `stream`: `boolean` - 当设置为 `true` 时，返回响应块流而不是等待完整响应
 
 ##### 返回值
 
-- `Promise<O>` - 返回 Agent 的输出
+- `Promise<O>` - 非流式模式时返回 Agent 的完整输出
+- `Promise<AgentResponseStream<O>>` - 当 `options.stream` 为 `true` 时，返回响应块流
 
 #### `addTool`
 
@@ -140,6 +144,28 @@ type PublishTopic<O extends AgentOutput = AgentOutput> =
 ```
 
 ## 示例
+
+### 使用 Agent 的流式响应
+
+```typescript
+import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
+
+const stream = await agent.call(input, context, { stream: true });
+
+const reader = stream.getReader();
+const result = {};
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+
+  mergeAgentResponseChunk(result, value);
+
+  console.log("收到块:", value);
+}
+
+console.log("最终结果:", result);
+```
 
 ### 创建自定义 Agent
 

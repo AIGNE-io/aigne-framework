@@ -54,16 +54,20 @@ Calls the Agent to process the input and return output.
 
 ```typescript
 async call(input: I | string, context?: Context): Promise<O>
+async call(input: I | string, context: Context | undefined, options: AgentCallOptions & { stream: true }): Promise<AgentResponseStream<O>>
 ```
 
 ##### Parameters
 
 - `input`: `I | string` - Input data or string
 - `context`: `Context` (optional) - Execution context
+- `options`: `AgentCallOptions` (optional) - Call options
+  - `stream`: `boolean` - When set to `true`, returns a stream of response chunks instead of waiting for the complete response
 
 ##### Returns
 
-- `Promise<O>` - Returns the Agent's output
+- `Promise<O>` - Returns the Agent's output when not streaming
+- `Promise<AgentResponseStream<O>>` - Returns a stream of response chunks when `options.stream` is `true`
 
 #### `addTool`
 
@@ -140,6 +144,27 @@ type PublishTopic<O extends AgentOutput = AgentOutput> =
 ```
 
 ## Examples
+
+### Using Stream Response with Agent
+
+```typescript
+import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
+
+const stream = await agent.call(input, context, { stream: true });
+
+const reader = stream.getReader();
+const result = {};
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+
+  mergeAgentResponseChunk(result, value);
+
+  console.log("Received chunk:", value);
+}
+console.log("Final result:", finalResult);
+```
 
 ### Creating a Custom Agent
 

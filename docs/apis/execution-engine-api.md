@@ -103,7 +103,18 @@ call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, 
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
+  options?: { stream?: false }
 ): Promise<O>;
+
+// Call an agent with a message and return a stream of response chunks
+// Calls the specified agent with the provided message
+// Returns a stream of response chunks as they become available
+// Suitable for real-time processing or displaying incremental results
+call<I extends Message, O extends Message>(
+  agent: Runnable<I, O>,
+  message: I | string,
+  options: { stream: true }
+): Promise<AgentResponseStream<O>>;
 
 // Call an agent with a message and return the output and the active agent
 // Calls the specified agent with the provided message
@@ -112,8 +123,18 @@ call<I extends Message, O extends Message>(
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options: { returnActiveAgent?: true },
+  options: { returnActiveAgent: true; stream?: false },
 ): Promise<[O, Runnable]>;
+
+// Call an agent with a message and return a stream of response chunks and the active agent promise
+// Calls the specified agent with the provided message
+// Returns a stream of response chunks and a promise that resolves to the final active agent
+// Suitable for real-time processing while tracking the active agent
+call<I extends Message, O extends Message>(
+  agent: Runnable<I, O>,
+  message: I | string,
+  options: { returnActiveAgent: true; stream: true },
+): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
 ```
 
 ##### Parameters
@@ -230,6 +251,49 @@ Predefined special topics:
 - `UserOutputTopic`: Topic for user output
 
 ## Examples
+
+### Using Stream Response with Execution Engine
+
+```typescript
+import { ExecutionEngine, AIAgent } from "@aigne/core";
+import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
+
+const engine = new ExecutionEngine();
+
+const agent = AIAgent.from({
+  model,
+  instructions: "..."
+})
+
+// Call with streaming enabled
+const stream = await engine.call(agent, "Hello, tell me about streaming", { stream: true });
+
+const reader = stream.getReader();
+const result = {};
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+
+  mergeAgentResponseChunk(result, value);
+
+  console.log("Received chunk:", value);
+}
+console.log("Final result:", result);
+
+// Get both stream and active agent (for more complex workflows)
+const [agentStream, activeAgentPromise] = await engine.call(
+  assistant,
+  "Hello, please recommend some books",
+  { stream: true, returnActiveAgent: true }
+);
+
+// Process the stream as shown above
+
+// Get the active agent when processing is complete
+const activeAgent = await activeAgentPromise;
+console.log("The active agent is:", activeAgent.name);
+```
 
 ### Basic Usage
 

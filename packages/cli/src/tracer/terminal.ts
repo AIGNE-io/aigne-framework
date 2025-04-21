@@ -137,42 +137,46 @@ export class TerminalTracer {
         task.reject(error);
       });
 
-      const listrRunning = listr.waitTaskAndRun();
-
-      const stream = await context.call(agent, input, { stream: true });
-
-      const result: Message = {};
-
-      // Override the `create` method of renderer to customize the output
-      const renderer: DefaultRenderer = (listr as unknown as { renderer: DefaultRenderer })
-        .renderer;
-      const create = renderer.create;
-      renderer.create = (...args) => {
-        const [tasks, output] = create.call(renderer, ...args);
-        const l = [
-          "",
-          tasks,
-          "",
-          this.wrap(this.options.aiResponsePrefix?.(context) || ""),
-          this.wrap(this.formatAIResponse(result)),
-          "",
-        ];
-
-        return [l.join(EOL), output];
-      };
-
-      for await (const value of readableStreamToAsyncIterator(stream)) {
-        mergeAgentResponseChunk(result, value);
-      }
-
-      listr.resolveWaitingTask();
-
-      await listrRunning;
+      const [_, result] = await Promise.all([
+        listr.waitTaskAndRun(),
+        this.runAgent(listr, context, agent, input).finally(() => {
+          listr.resolveWaitingTask();
+        }),
+      ]);
 
       return { result, context };
     } finally {
       this.spinner.stop();
     }
+  }
+
+  protected async runAgent(listr: Listr, context: Context, agent: Agent, input: Message) {
+    const stream = await context.call(agent, input, { stream: true });
+
+    const result: Message = {};
+
+    // Override the `create` method of renderer to customize the output
+    const renderer: DefaultRenderer = (listr as unknown as { renderer: DefaultRenderer }).renderer;
+    const create = renderer.create;
+    renderer.create = (...args) => {
+      const [tasks, output] = create.call(renderer, ...args);
+      const l = [
+        "",
+        tasks,
+        "",
+        this.wrap(this.options.aiResponsePrefix?.(context) || ""),
+        this.wrap(this.formatAIResponse(result)),
+        "",
+      ];
+
+      return [l.join(EOL), output];
+    };
+
+    for await (const value of readableStreamToAsyncIterator(stream)) {
+      mergeAgentResponseChunk(result, value);
+    }
+
+    return result;
   }
 
   protected wrap(str: string) {

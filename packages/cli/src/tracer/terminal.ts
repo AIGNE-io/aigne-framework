@@ -137,12 +137,14 @@ export class TerminalTracer {
         task.reject(error);
       });
 
-      const [_, result] = await Promise.all([
-        listr.waitTaskAndRun(),
-        this.runAgent(listr, context, agent, input).finally(() => {
-          listr.resolveWaitingTask();
-        }),
-      ]);
+      listr.add({
+        task: () =>
+          this.runAgent(listr, context, agent, input).catch(() => {
+            // ignore error, the error is handled in the agentFailed event
+          }),
+      });
+
+      const result = await listr.run();
 
       return { result, context };
     } finally {
@@ -284,9 +286,6 @@ type Task = ReturnType<typeof promiseWithResolvers<void>> & {
 };
 
 class MyListr extends Listr {
-  private taskPromise = promiseWithResolvers();
-  private isTaskPromiseResolved = false;
-
   constructor(...args: ConstructorParameters<typeof Listr<unknown, "default", "simple">>) {
     super(...args);
 
@@ -294,24 +293,8 @@ class MyListr extends Listr {
     this.renderer = new this.rendererClass(this.tasks, this.rendererClassOptions, this.events);
   }
 
-  resolveWaitingTask() {
-    if (!this.isTaskPromiseResolved) {
-      this.taskPromise.resolve();
-      this.isTaskPromiseResolved = true;
-    }
-  }
-
   override add(...args: Parameters<Listr["add"]>): ReturnType<Listr["add"]> {
     const result = super.add(...args);
-    this.resolveWaitingTask();
     return result;
-  }
-
-  async waitTaskAndRun(ctx?: unknown) {
-    if (!this.tasks.length) await this.taskPromise.promise;
-
-    if (!this.tasks.length) return ctx;
-
-    return super.run(ctx);
   }
 }

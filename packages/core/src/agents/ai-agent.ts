@@ -142,8 +142,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
           // NOTE: Return transfer output immediately
           if (isTransferAgentOutput(output)) {
-            yield { delta: { json: output } };
-            return;
+            return output;
           }
 
           executedToolCalls.push({ call, output });
@@ -168,8 +167,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
               throw new Error("Router toolChoice requires exactly one tool to be executed");
             }
 
-            yield { delta: { json: output } };
-            return;
+            return output;
           }
 
           continue;

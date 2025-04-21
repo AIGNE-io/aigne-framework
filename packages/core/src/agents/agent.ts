@@ -212,13 +212,19 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
               ? asyncGeneratorToReadableStream(response)
               : objectToAgentResponseStream(response);
 
-        return onAgentResponseStreamEnd(stream, async (result) => {
-          try {
+        return onAgentResponseStreamEnd(
+          stream,
+          async (result) => {
             return await this.processAgentOutput(parsedInput, result, ctx);
-          } catch (error) {
-            this.processAgentError(error, ctx);
-          }
-        });
+          },
+          (error) => {
+            try {
+              this.processAgentError(error, ctx);
+            } catch (error) {
+              return error;
+            }
+          },
+        );
       }
 
       return await this.processAgentOutput(

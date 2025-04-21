@@ -15,7 +15,10 @@ export function objectToAgentResponseStream<T extends Message>(json: T): AgentRe
   });
 }
 
-function mergeResult<T extends Message>(output: T, chunk: AgentResponseChunk<T>) {
+export function mergeAgentResponseChunk<T extends Message>(
+  output: T,
+  chunk: AgentResponseChunk<T>,
+) {
   if (chunk.delta.text) {
     for (const [key, text] of Object.entries(chunk.delta.text)) {
       const original = output[key] as string | undefined;
@@ -42,7 +45,7 @@ export async function agentResponseStreamToObject<T extends Message>(
     for (;;) {
       const { value, done } = await reader.read();
       if (done) break;
-      mergeResult(json, value);
+      mergeAgentResponseChunk(json, value);
     }
   } else {
     for (;;) {
@@ -51,7 +54,7 @@ export async function agentResponseStreamToObject<T extends Message>(
         if (chunk.done) {
           Object.assign(json, chunk.value);
         } else {
-          mergeResult(json, chunk.value);
+          mergeAgentResponseChunk(json, chunk.value);
         }
       }
       if (chunk.done) break;
@@ -96,6 +99,7 @@ export function asyncGeneratorToReadableStream<T extends Message>(
 export function onAgentResponseStreamEnd<T extends Message>(
   stream: AgentResponseStream<T>,
   callback: (result: T) => unknown,
+  errorCallback: (error: Error) => Error = (e) => e,
 ) {
   return new ReadableStream({
     async start(controller) {
@@ -110,7 +114,7 @@ export function onAgentResponseStreamEnd<T extends Message>(
 
           controller.enqueue(value);
 
-          mergeResult(json, value);
+          mergeAgentResponseChunk(json, value);
         }
 
         const result = await callback(json);
@@ -119,7 +123,7 @@ export function onAgentResponseStreamEnd<T extends Message>(
           controller.enqueue({ delta: { json: result } });
         }
       } catch (error) {
-        controller.error(error);
+        controller.error(errorCallback(error));
       } finally {
         controller.close();
       }
@@ -159,4 +163,15 @@ export function arrayToAgentResponseStream<T>(
       controller.close();
     },
   });
+}
+
+export async function* readableStreamToAsyncIterator<T>(
+  stream: ReadableStream<T>,
+): AsyncIterable<T> {
+  const reader = stream.getReader();
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    yield value;
+  }
 }

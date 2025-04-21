@@ -1,12 +1,18 @@
+import { EOL } from "node:os";
 import { inspect } from "node:util";
 import {
   type Agent,
   ChatModel,
   type ChatModelOutput,
   type Context,
+  MESSAGE_KEY,
   type Message,
 } from "@aigne/core";
 import type { ContextUsage } from "@aigne/core/execution-engine/usage";
+import {
+  mergeAgentResponseChunk,
+  readableStreamToAsyncIterator,
+} from "@aigne/core/utils/stream-utils.js";
 import {
   type DefaultRenderer,
   Listr,
@@ -17,6 +23,7 @@ import {
   figures,
 } from "@aigne/listr2";
 import chalk from "chalk";
+import wrap from "wrap-ansi";
 import { z } from "zod";
 import { promiseWithResolvers } from "../utils/promise-with-resolvers.js";
 import { parseDuration } from "../utils/time.js";
@@ -25,6 +32,7 @@ const DEBUG_DEPTH = z.number().int().default(2).safeParse(Number(process.env.DEB
 
 export interface TerminalTracerOptions {
   verbose?: boolean;
+  aiResponsePrefix?: (context: Context) => string;
 }
 
 export class TerminalTracer {
@@ -129,17 +137,49 @@ export class TerminalTracer {
         task.reject(error);
       });
 
-      const [result] = await Promise.all([
-        listr.waitTaskAndRun(),
-        context.call(agent, input).finally(() => {
-          listr.resolveWaitingTask();
-        }),
-      ]);
+      const listrRunning = listr.waitTaskAndRun();
+
+      const stream = await context.call(agent, input, { stream: true });
+
+      const result: Message = {};
+
+      // Override the `create` method of renderer to customize the output
+      const renderer: DefaultRenderer = (listr as unknown as { renderer: DefaultRenderer })
+        .renderer;
+      const create = renderer.create;
+      renderer.create = (...args) => {
+        const [tasks, output] = create.call(renderer, ...args);
+        const l = [
+          "",
+          tasks,
+          "",
+          this.wrap(this.options.aiResponsePrefix?.(context) || ""),
+          this.wrap(this.formatAIResponse(result)),
+          "",
+        ];
+
+        return [l.join(EOL), output];
+      };
+
+      for await (const value of readableStreamToAsyncIterator(stream)) {
+        mergeAgentResponseChunk(result, value);
+      }
+
+      listr.resolveWaitingTask();
+
+      await listrRunning;
 
       return { result, context };
     } finally {
       this.spinner.stop();
     }
+  }
+
+  protected wrap(str: string) {
+    return wrap(str, process.stdout.columns ?? 80, {
+      hard: true,
+      trim: false,
+    });
   }
 
   protected newListr() {
@@ -215,6 +255,12 @@ ${this.formatMessage(data)}`;
       title += ` ${this.formatTimeUsage(task.startTime, task.endTime)}`;
 
     return title;
+  }
+
+  formatAIResponse({ [MESSAGE_KEY]: msg, ...message }: Message = {}) {
+    const text = msg && typeof msg === "string" ? msg : undefined;
+    const json = Object.keys(message).length > 0 ? inspect(message, { colors: true }) : undefined;
+    return [text, json].filter(Boolean).join("\n");
   }
 }
 

@@ -1,8 +1,16 @@
 import { ReadableStream } from "node:stream/web";
 import { type Context, type Runnable, createPublishMessage } from "../execution-engine/context.js";
 import type { MessagePayload, Unsubscribe } from "../execution-engine/message-queue.js";
+import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
 import { type PromiseOrValue, orArrayToArray } from "../utils/type-utils.js";
-import { Agent, type AgentCallOptions, type AgentOptions, type Message } from "./agent.js";
+import {
+  Agent,
+  type AgentCallOptions,
+  type AgentOptions,
+  type AgentProcessAsyncGenerator,
+  type AgentResponseStream,
+  type Message,
+} from "./agent.js";
 
 export interface UserAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
@@ -40,17 +48,22 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     return super.call(input, context ?? this.context, options);
   }) as Agent<I, O>["call"];
 
-  async process(input: I, context: Context): Promise<O> {
+  async *process(input: I, context: Context): AgentProcessAsyncGenerator<O> {
     if (this._process) {
-      return this._process(input, context);
+      yield { delta: { json: await this._process(input, context) } };
+      return;
     }
 
     if (this.activeAgent) {
       const [output, agent] = await context.call(this.activeAgent, input, {
         returnActiveAgent: true,
+        stream: true,
       });
-      this.activeAgent = agent;
-      return output as O;
+      agent.then((agent) => {
+        this.activeAgent = agent;
+      });
+      yield* readableStreamToAsyncIterator(output as AgentResponseStream<O>);
+      return;
     }
 
     const publicTopic =
@@ -58,7 +71,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
     if (publicTopic?.length) {
       context.publish(publicTopic, createPublishMessage(input, this));
-      return {} as O;
+      return;
     }
 
     throw new Error("UserAgent must have a process function or a publishTopic");

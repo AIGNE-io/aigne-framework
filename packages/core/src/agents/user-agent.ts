@@ -2,7 +2,7 @@ import { ReadableStream } from "node:stream/web";
 import { type Context, type Runnable, createPublishMessage } from "../execution-engine/context.js";
 import type { MessagePayload, Unsubscribe } from "../execution-engine/message-queue.js";
 import { type PromiseOrValue, orArrayToArray } from "../utils/type-utils.js";
-import { Agent, type AgentOptions, type Message } from "./agent.js";
+import { Agent, type AgentCallOptions, type AgentOptions, type Message } from "./agent.js";
 
 export interface UserAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
@@ -34,11 +34,11 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
   private activeAgent?: Runnable;
 
-  override call(input: string | I, context?: Context): Promise<O> {
+  override call = ((input: string | I, context?: Context, options?: AgentCallOptions) => {
     if (!context) this.context = this.context.newContext({ reset: true });
 
-    return super.call(input, context ?? this.context);
-  }
+    return super.call(input, context ?? this.context, options);
+  }) as Agent<I, O>["call"];
 
   async process(input: I, context: Context): Promise<O> {
     if (this._process) {

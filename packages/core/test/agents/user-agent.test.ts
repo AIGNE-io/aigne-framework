@@ -56,13 +56,17 @@ test("UserAgent.call should call activeAgent correctly", async () => {
     activeAgent: testAgent,
   });
 
-  const testAgentCall = spyOn(testAgent, "call").mockReturnValue(
-    Promise.resolve(createMessage("world")),
-  );
+  const testAgentCall = spyOn(testAgent, "process").mockImplementationOnce(async function* () {
+    yield { delta: { json: createMessage("world") } };
+  });
 
   const result = await engine.call(userAgent, "hello");
   expect(result).toEqual(createMessage("world"));
-  expect(testAgentCall).toHaveBeenLastCalledWith(createMessage("hello"), expect.anything());
+  expect(testAgentCall).toHaveBeenLastCalledWith(
+    createMessage("hello"),
+    expect.anything(),
+    expect.anything(),
+  );
 });
 
 test("UserAgent.call should publish topic correctly", async () => {

@@ -1,11 +1,20 @@
 import { z } from "zod";
 import type { Context } from "../execution-engine/context.js";
 import { ChatModel } from "../models/chat-model.js";
-import type { ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat-model.js";
+import type {
+  ChatModelInputMessage,
+  ChatModelOutput,
+  ChatModelOutputToolCall,
+} from "../models/chat-model.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
-import { Agent, type AgentOptions, type Message } from "./agent.js";
-import { isTransferAgentOutput } from "./types.js";
+import {
+  Agent,
+  type AgentOptions,
+  type AgentProcessAsyncGeneratorResult,
+  type Message,
+} from "./agent.js";
+import { type TransferAgentOutput, isTransferAgentOutput } from "./types.js";
 
 export interface AIAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
@@ -74,7 +83,10 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
   toolChoice?: AIAgentToolChoice;
 
-  async process(input: I, context: Context) {
+  async *process(
+    input: I,
+    context: Context,
+  ): AgentProcessAsyncGeneratorResult<O | TransferAgentOutput> {
     const model = context.model ?? this.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
@@ -88,12 +100,32 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     const toolsMap = new Map<string, Agent>(toolAgents?.map((i) => [i.name, i]));
 
     const toolCallMessages: ChatModelInputMessage[] = [];
+    const outputKey = this.outputKey || MESSAGE_KEY;
 
     for (;;) {
-      const { text, json, toolCalls } = await context.call(model, {
-        ...modelInput,
-        messages: messages.concat(toolCallMessages),
-      });
+      const modelOutput: ChatModelOutput = {};
+
+      const stream = await context.call(
+        model,
+        { ...modelInput, messages: messages.concat(toolCallMessages) },
+        { stream: true },
+      );
+
+      const reader = stream.getReader();
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        if (value.delta.text?.text) {
+          yield { delta: { text: { [outputKey]: value.delta.text.text } } };
+        }
+
+        if (value.delta.json) {
+          Object.assign(modelOutput, value.delta.json);
+        }
+      }
+
+      const { toolCalls, json, text } = modelOutput;
 
       if (toolCalls?.length) {
         const executedToolCalls: {
@@ -115,7 +147,8 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
           // NOTE: Return transfer output immediately
           if (isTransferAgentOutput(output)) {
-            return output;
+            yield { delta: { json: output } };
+            return;
           }
 
           executedToolCalls.push({ call, output });
@@ -140,7 +173,8 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
               throw new Error("Router toolChoice requires exactly one tool to be executed");
             }
 
-            return output as O;
+            yield { delta: { json: output } };
+            return;
           }
 
           continue;
@@ -152,11 +186,11 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
       if (modelInput.responseFormat?.type === "json_schema") {
         Object.assign(result, json);
       } else {
-        const outputKey = this.outputKey || MESSAGE_KEY;
         Object.assign(result, { [outputKey]: text });
       }
 
-      return result;
+      yield { delta: { json: result } };
+      return;
     }
   }
 }

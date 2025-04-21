@@ -38,7 +38,7 @@ test("ExecutionEngine.load should load agents correctly", async () => {
   expect(engine.model).toBeInstanceOf(ChatModel);
   assert(engine.model, "model should be defined");
 
-  spyOn(engine.model, "call")
+  spyOn(engine.model, "process")
     .mockReturnValueOnce(
       Promise.resolve({
         toolCalls: [

@@ -1,11 +1,24 @@
 import EventEmitter from "node:events";
 import { v7 } from "uuid";
 import { type ZodType, z } from "zod";
-import { Agent, type FunctionAgentFn, type Message } from "../agents/agent.js";
+import {
+  Agent,
+  type AgentCallOptions,
+  type AgentProcessAsyncGeneratorResult,
+  type AgentResponse,
+  type AgentResponseStream,
+  type FunctionAgentFn,
+  type Message,
+} from "../agents/agent.js";
 import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
 import type { ChatModel } from "../models/chat-model.js";
 import { createMessage } from "../prompt/prompt-builder.js";
+import {
+  agentResponseStreamToObject,
+  asyncGeneratorToReadableStream,
+  onAgentResponseStreamEnd,
+} from "../utils/stream-utils.js";
 import {
   type OmitPropertiesFromArrayFirstElement,
   checkArguments,
@@ -44,7 +57,7 @@ export type ContextEmitEventMap = {
   >;
 };
 
-export interface CallOptions {
+export interface CallOptions extends AgentCallOptions {
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
 }
@@ -76,8 +89,13 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options: CallOptions & { returnActiveAgent: true },
+    options: CallOptions & { returnActiveAgent: true; stream?: false },
   ): Promise<[O, Runnable]>;
+  call<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    message: I | string,
+    options: CallOptions & { returnActiveAgent: true; stream: true },
+  ): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
   /**
    * Call an agent with a message
    * @param agent Agent to call
@@ -87,13 +105,18 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options?: CallOptions,
+    options?: CallOptions & { stream?: false },
   ): Promise<O>;
+  call<I extends Message, O extends Message>(
+    agent: Runnable<I, O>,
+    message: I | string,
+    options: CallOptions & { stream: true },
+  ): Promise<AgentResponseStream<O>>;
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message?: I | string,
     options?: CallOptions,
-  ): UserAgent<I, O> | Promise<O | [O, Runnable]>;
+  ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Runnable]>;
 
   /**
    * Publish a message to a topic, the engine will call the listeners of the topic
@@ -189,27 +212,53 @@ export class ExecutionContext implements Context {
     const newContext = this.newContext();
     const msg = createMessage(message);
 
-    return newContext.internal
-      .call(agent, msg, newContext, options)
-      .then(async ({ output, agent: activeAgent }) => {
-        if (activeAgent instanceof Agent) {
-          const publishTopics =
-            typeof activeAgent.publishTopic === "function"
-              ? await activeAgent.publishTopic(output)
-              : activeAgent.publishTopic;
+    return Promise.resolve(newContext.internal.call(agent, msg, newContext, options)).then(
+      async (response) => {
+        if (!options?.stream) {
+          const { __activeAgent__: activeAgent, ...output } =
+            await agentResponseStreamToObject(response);
 
-          if (publishTopics?.length) {
-            newContext.publish(publishTopics, createPublishMessage(output, activeAgent));
+          this.onCallSuccess(activeAgent, output, newContext);
+
+          if (options?.returnActiveAgent) {
+            return [output, activeAgent];
           }
+
+          return output;
         }
 
-        if (options?.returnActiveAgent) {
-          return [output, activeAgent];
+        const activeAgentPromise = Promise.withResolvers<Runnable>();
+
+        const stream = onAgentResponseStreamEnd(
+          asyncGeneratorToReadableStream(response),
+          async ({ __activeAgent__: activeAgent, ...output }) => {
+            this.onCallSuccess(activeAgent, output, newContext);
+
+            activeAgentPromise.resolve(activeAgent);
+          },
+        );
+
+        if (options.returnActiveAgent) {
+          return [stream, activeAgentPromise.promise];
         }
 
-        return output;
-      });
+        return stream;
+      },
+    );
   }) as Context["call"];
+
+  private async onCallSuccess(activeAgent: Runnable, output: Message, context: Context) {
+    if (activeAgent instanceof Agent) {
+      const publishTopics =
+        typeof activeAgent.publishTopic === "function"
+          ? await activeAgent.publishTopic(output)
+          : activeAgent.publishTopic;
+
+      if (publishTopics?.length) {
+        context.publish(publishTopics, createPublishMessage(output, activeAgent));
+      }
+    }
+  }
 
   publish = ((topic, payload) => {
     return this.internal.messageQueue.publish(topic, { ...payload, context: this });
@@ -304,12 +353,12 @@ class ExecutionContextInternal {
     return this.abortController.signal.aborted ? "timeout" : "normal";
   }
 
-  async call<I extends Message, O extends Message>(
+  call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     input: I,
     context: Context,
     options?: CallOptions,
-  ): Promise<{ agent: Runnable; output: O }> {
+  ): AgentProcessAsyncGeneratorResult<O & { __activeAgent__: Runnable }> {
     this.initTimeout();
 
     return withAbortSignal(
@@ -319,22 +368,34 @@ class ExecutionContextInternal {
     );
   }
 
-  private async callAgent<I extends Message, O extends Message>(
+  private async *callAgent<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     input: I,
     context: Context,
     options?: CallOptions,
-  ): Promise<{ agent: Runnable; output: O }> {
+  ): AgentProcessAsyncGeneratorResult<O & { __activeAgent__: Runnable }> {
     let activeAgent: Runnable = agent;
     let output: O | undefined;
 
     for (;;) {
       let result: Message | Agent;
-
       if (typeof activeAgent === "function") {
         result = await activeAgent(input, context);
       } else {
-        result = await activeAgent.call(input, context);
+        result = {};
+
+        const stream = await activeAgent.call(input, context, { stream: true });
+        const reader = stream.getReader();
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value.delta.text) {
+            yield { delta: { text: value.delta.text } as Message };
+          }
+          if (value.delta.json) {
+            Object.assign(result, value.delta.json);
+          }
+        }
       }
 
       if (result instanceof Agent) {
@@ -346,39 +407,52 @@ class ExecutionContextInternal {
         const transferToAgent = isTransferAgentOutput(result)
           ? result[transferAgentOutputKey].agent
           : undefined;
-
         if (transferToAgent) {
           activeAgent = transferToAgent;
           continue;
         }
       }
-
       output = result as O;
-
       break;
     }
 
     if (!output) throw new Error("Unexpected empty output");
 
-    return {
-      agent: activeAgent,
-      output,
+    yield {
+      delta: {
+        json: {
+          ...output,
+          __activeAgent__: activeAgent,
+        },
+      },
     };
   }
 }
 
-function withAbortSignal<T>(signal: AbortSignal, error: Error, fn: () => Promise<T>): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const listener = () => reject(error);
+async function* withAbortSignal<T extends Message>(
+  signal: AbortSignal,
+  error: Error,
+  fn: () => AgentProcessAsyncGeneratorResult<T>,
+): AgentProcessAsyncGeneratorResult<T> {
+  const iterator = fn();
 
-    signal.addEventListener("abort", listener);
+  const timeoutPromise = Promise.withResolvers<never>();
 
-    fn()
-      .then(resolve, reject)
-      .finally(() => {
-        signal.removeEventListener("abort", listener);
-      });
-  });
+  const listener = () => {
+    timeoutPromise.reject(error);
+  };
+
+  signal.addEventListener("abort", listener);
+
+  try {
+    for (;;) {
+      const next = await Promise.race([iterator.next(), timeoutPromise.promise]);
+      if (next.done) break;
+      yield next.value;
+    }
+  } finally {
+    signal.removeEventListener("abort", listener);
+  }
 }
 
 const executionContextCallArgsSchema = z.object({

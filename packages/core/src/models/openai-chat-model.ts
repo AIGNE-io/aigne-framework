@@ -7,9 +7,12 @@ import type {
 } from "openai/resources";
 import type { Stream } from "openai/streaming.js";
 import { z } from "zod";
+import type { AgentCallOptions, AgentResponse, AgentResponseChunk } from "../agents/agent.js";
+import type { Context } from "../execution-engine/context.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { mergeUsage } from "../utils/model-utils.js";
 import { getJsonOutputPrompt } from "../utils/prompts.js";
+import { agentResponseStreamToObject } from "../utils/stream-utils.js";
 import { checkArguments, isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
@@ -18,7 +21,6 @@ import {
   type ChatModelInputTool,
   type ChatModelOptions,
   type ChatModelOutput,
-  type ChatModelOutputUsage,
   type Role,
 } from "./chat-model.js";
 
@@ -77,7 +79,11 @@ export class OpenAIChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  async process(input: ChatModelInput): Promise<ChatModelOutput> {
+  async process(
+    input: ChatModelInput,
+    _context: Context,
+    options?: AgentCallOptions,
+  ): Promise<AgentResponse<ChatModelOutput>> {
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
       temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
@@ -102,6 +108,10 @@ export class OpenAIChatModel extends ChatModel {
       parallel_tool_calls: this.getParallelToolCalls(input),
       response_format: responseFormat,
     });
+
+    if (options?.stream && input.responseFormat?.type !== "json_schema") {
+      return await extractResultFromStream(stream, false, true);
+    }
 
     const result = await extractResultFromStream(stream, jsonMode);
 
@@ -294,61 +304,112 @@ export function jsonSchemaToOpenAIJsonSchema(
   return schema;
 }
 
-export async function extractResultFromStream(
+async function extractResultFromStream(
+  stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+  jsonMode: boolean | undefined,
+  streaming: true,
+): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
+async function extractResultFromStream(
+  stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+  jsonMode?: boolean,
+  streaming?: false,
+): Promise<ChatModelOutput>;
+async function extractResultFromStream(
   stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
   jsonMode = false,
-) {
-  let text = "";
-  const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-    args: string;
-  })[] = [];
-  let usage: ChatModelOutputUsage | undefined;
-  let model: string | undefined;
+  streaming = false,
+): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
+  const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
+    async start(controller) {
+      try {
+        let text = "";
+        const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
+          args: string;
+        })[] = [];
+        let model: string | undefined;
 
-  for await (const chunk of stream) {
-    const choice = chunk.choices?.[0];
-    model ??= chunk.model;
+        for await (const chunk of stream) {
+          const choice = chunk.choices?.[0];
+          if (!model) {
+            model = chunk.model;
+            controller.enqueue({
+              delta: {
+                json: {
+                  model,
+                },
+              },
+            });
+          }
 
-    if (choice?.delta.tool_calls?.length) {
-      for (const call of choice.delta.tool_calls) {
-        // Gemini not support tool call delta
-        if (call.index !== undefined) {
-          handleToolCallDelta(toolCalls, call);
-        } else {
-          handleCompleteToolCall(toolCalls, call);
+          if (choice?.delta.tool_calls?.length) {
+            for (const call of choice.delta.tool_calls) {
+              // Gemini not support tool call delta
+              if (call.index !== undefined) {
+                handleToolCallDelta(toolCalls, call);
+              } else {
+                handleCompleteToolCall(toolCalls, call);
+              }
+            }
+          }
+
+          if (choice?.delta.content) {
+            text += choice.delta.content;
+            if (!jsonMode) {
+              controller.enqueue({
+                delta: {
+                  text: {
+                    text: choice.delta.content,
+                  },
+                },
+              });
+            }
+          }
+
+          if (chunk.usage) {
+            controller.enqueue({
+              delta: {
+                json: {
+                  usage: {
+                    inputTokens: chunk.usage.prompt_tokens,
+                    outputTokens: chunk.usage.completion_tokens,
+                  },
+                },
+              },
+            });
+          }
         }
+
+        if (jsonMode && text) {
+          controller.enqueue({
+            delta: {
+              json: {
+                json: parseJSON(text),
+              },
+            },
+          });
+        }
+
+        if (toolCalls.length) {
+          controller.enqueue({
+            delta: {
+              json: {
+                toolCalls: toolCalls.map(({ args, ...c }) => ({
+                  ...c,
+                  function: { ...c.function, arguments: parseJSON(args) },
+                })),
+              },
+            },
+          });
+        }
+      } catch (error) {
+        controller.error(error);
+      } finally {
+        controller.close();
       }
-    }
+    },
+  });
 
-    if (choice?.delta.content) text += choice.delta.content;
-
-    if (chunk.usage) {
-      usage = {
-        inputTokens: chunk.usage.prompt_tokens,
-        outputTokens: chunk.usage.completion_tokens,
-      };
-    }
-  }
-
-  const result: ChatModelOutput = {
-    usage,
-    model,
-  };
-
-  if (jsonMode && text) {
-    result.json = parseJSON(text);
-  } else {
-    result.text = text;
-  }
-
-  if (toolCalls.length) {
-    result.toolCalls = toolCalls.map(({ args, ...c }) => ({
-      ...c,
-      function: { ...c.function, arguments: parseJSON(args) },
-    }));
-  }
-
-  return result;
+  return streaming ? result : await agentResponseStreamToObject(result);
 }
 
 function handleToolCallDelta(

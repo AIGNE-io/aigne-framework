@@ -35,7 +35,7 @@ export interface OpenAIChatModelCapabilities {
   supportsTemperature: boolean;
 }
 
-const OPENAI_CHAT_MODEL_PRESET: Record<string, Partial<OpenAIChatModelCapabilities>> = {
+const OPENAI_CHAT_MODEL_CAPABILITIES: Record<string, Partial<OpenAIChatModelCapabilities>> = {
   "o4-mini": { supportsParallelToolCalls: false, supportsTemperature: false },
   "o3-mini": { supportsParallelToolCalls: false, supportsTemperature: false },
 };
@@ -68,7 +68,7 @@ export class OpenAIChatModel extends ChatModel {
     super();
     if (options) checkArguments(this.name, openAIChatModelOptionsSchema, options);
 
-    const preset = options?.model ? OPENAI_CHAT_MODEL_PRESET[options.model] : undefined;
+    const preset = options?.model ? OPENAI_CHAT_MODEL_CAPABILITIES[options.model] : undefined;
     Object.assign(this, preset);
   }
 

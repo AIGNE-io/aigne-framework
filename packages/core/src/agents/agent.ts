@@ -325,7 +325,7 @@ export interface AgentResponseDelta<T> {
 
 export type AgentProcessAsyncGenerator<O extends Message> = AsyncGenerator<
   AgentResponseChunk<O>,
-  O | undefined | void
+  Partial<O> | undefined | void
 >;
 
 export type AgentProcessResult<O extends Message> =

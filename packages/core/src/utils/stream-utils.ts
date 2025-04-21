@@ -33,6 +33,8 @@ export function mergeAgentResponseChunk<T extends Message>(
       Object.fromEntries(Object.entries(chunk.delta.json).filter(([_, v]) => v !== undefined)),
     );
   }
+
+  return output;
 }
 
 export async function agentResponseStreamToObject<T extends Message>(
@@ -67,22 +69,16 @@ export function asyncGeneratorToReadableStream<T extends Message>(
   return new ReadableStream({
     async start(controller) {
       try {
-        if (generator instanceof ReadableStream) {
-          for await (const value of generator) {
-            controller.enqueue(value);
-          }
-        } else {
-          for (;;) {
-            const chunk = await generator.next();
-            if (chunk.value) {
-              if (chunk.done) {
-                controller.enqueue({ delta: { json: chunk.value } });
-              } else {
-                controller.enqueue(chunk.value);
-              }
+        for (;;) {
+          const chunk = await generator.next();
+          if (chunk.value) {
+            if (chunk.done) {
+              controller.enqueue({ delta: { json: chunk.value } });
+            } else {
+              controller.enqueue(chunk.value);
             }
-            if (chunk.done) break;
           }
+          if (chunk.done) break;
         }
       } catch (error) {
         controller.error(error);
@@ -131,12 +127,14 @@ export function isAsyncGenerator<T extends AsyncGenerator>(
 
 export async function* arrayToAgentProcessAsyncGenerator<T extends Message>(
   chunks: (AgentResponseChunk<T> | Error)[],
+  result?: Partial<T>,
 ): AgentProcessAsyncGenerator<T> {
   for (const chunk of chunks) {
     if (chunk instanceof Error) throw chunk;
 
     yield chunk;
   }
+  if (result !== undefined) return result;
 }
 
 export function arrayToAgentResponseStream<T>(
@@ -147,7 +145,7 @@ export function arrayToAgentResponseStream<T>(
       for (const chunk of chunks) {
         if (chunk instanceof Error) {
           controller.error(chunk);
-          break;
+          return;
         }
 
         controller.enqueue(chunk);

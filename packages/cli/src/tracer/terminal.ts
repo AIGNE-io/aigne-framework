@@ -287,6 +287,13 @@ class MyListr extends Listr {
   private taskPromise = promiseWithResolvers();
   private isTaskPromiseResolved = false;
 
+  constructor(...args: ConstructorParameters<typeof Listr<unknown, "default", "simple">>) {
+    super(...args);
+
+    // @ts-ignore
+    this.renderer = new this.rendererClass(this.tasks, this.rendererClassOptions, this.events);
+  }
+
   resolveWaitingTask() {
     if (!this.isTaskPromiseResolved) {
       this.taskPromise.resolve();

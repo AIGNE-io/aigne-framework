@@ -10,11 +10,11 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     });
   }
 
-  protected supportsParallelToolCallsForRouter = true;
+  protected supportsParallelToolCalls = true;
 
   getModelCapabilities() {
     return {
-      supportsParallelToolCallsForRouter: this.supportsParallelToolCallsForRouter,
+      supportsParallelToolCalls: this.supportsParallelToolCalls,
     };
   }
 

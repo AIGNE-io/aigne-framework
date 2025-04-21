@@ -20,9 +20,9 @@ jobs:
           - provider: OpenAI
             model: gpt-4o-mini
           - provider: OpenAI
-            model: o3-mini
+            model: o4-mini
           - provider: OpenAI
-            model: o1-mini
+            model: o3-mini
           - provider: Claude
             model: claude-3-7-sonnet-latest
           - provider: Claude

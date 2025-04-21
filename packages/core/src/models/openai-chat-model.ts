@@ -26,6 +26,19 @@ import {
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 
+export interface OpenAIChatModelCapabilities {
+  supportsNativeStructuredOutputs: boolean;
+  supportsEndWithSystemMessage: boolean;
+  supportsToolsUseWithJsonSchema: boolean;
+  supportsParallelToolCalls: boolean;
+  supportsToolsEmptyParameters: boolean;
+}
+
+const OPENAI_CHAT_MODEL_PRESET: Record<string, Partial<OpenAIChatModelCapabilities>> = {
+  "o4-mini": { supportsParallelToolCalls: false },
+  "o3-mini": { supportsParallelToolCalls: false },
+};
+
 export interface OpenAIChatModelOptions {
   apiKey?: string;
   baseURL?: string;
@@ -53,6 +66,9 @@ export class OpenAIChatModel extends ChatModel {
   constructor(public options?: OpenAIChatModelOptions) {
     super();
     if (options) checkArguments(this.name, openAIChatModelOptionsSchema, options);
+
+    const preset = options?.model ? OPENAI_CHAT_MODEL_PRESET[options.model] : undefined;
+    Object.assign(this, preset);
   }
 
   protected _client?: OpenAI;
@@ -84,6 +100,7 @@ export class OpenAIChatModel extends ChatModel {
     _context: Context,
     options?: AgentCallOptions,
   ): Promise<AgentResponse<ChatModelOutput>> {
+    const messages = await this.getRunMessages(input);
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
       temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
@@ -91,7 +108,7 @@ export class OpenAIChatModel extends ChatModel {
       frequency_penalty:
         input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,
       presence_penalty: input.modelOptions?.presencePenalty ?? this.modelOptions?.presencePenalty,
-      messages: await this.getRunMessages(input),
+      messages,
       stream_options: {
         include_usage: true,
       },

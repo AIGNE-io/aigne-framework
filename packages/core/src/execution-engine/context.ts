@@ -18,6 +18,7 @@ import {
   agentResponseStreamToObject,
   asyncGeneratorToReadableStream,
   onAgentResponseStreamEnd,
+  readableStreamToAsyncIterator,
 } from "../utils/stream-utils.js";
 import {
   type OmitPropertiesFromArrayFirstElement,
@@ -385,10 +386,7 @@ class ExecutionContextInternal {
         result = {};
 
         const stream = await activeAgent.call(input, context, { stream: true });
-        const reader = stream.getReader();
-        for (;;) {
-          const { value, done } = await reader.read();
-          if (done) break;
+        for await (const value of readableStreamToAsyncIterator(stream)) {
           if (value.delta.text) {
             yield { delta: { text: value.delta.text } as Message };
           }

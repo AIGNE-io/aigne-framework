@@ -8,6 +8,7 @@ import type {
 } from "../models/chat-model.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
+import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
 import { isEmpty } from "../utils/type-utils.js";
 import {
   Agent,
@@ -109,11 +110,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
         { stream: true },
       );
 
-      const reader = stream.getReader();
-      for (;;) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
+      for await (const value of readableStreamToAsyncIterator(stream)) {
         if (value.delta.text?.text) {
           yield { delta: { text: { [outputKey]: value.delta.text.text } } };
         }

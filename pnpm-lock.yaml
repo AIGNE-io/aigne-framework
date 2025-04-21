@@ -247,8 +247,8 @@ importers:
         specifier: workspace:^
         version: link:../core
       '@aigne/listr2':
-        specifier: ^1.0.7
-        version: 1.0.7
+        specifier: ^1.0.8
+        version: 1.0.8
       '@modelcontextprotocol/sdk':
         specifier: ^1.9.0
         version: 1.9.0
@@ -409,8 +409,8 @@ packages:
     peerDependencies:
       zod: ^3.0.0
 
-  '@aigne/listr2@1.0.7':
-    resolution: {integrity: sha512-3NeMh7bouWX0f9XQMYOUApdYMoaumPzhmaeOP28uhyWDUvCJBnh0u/1/pn9n0kL+Jujkr5wj8MV82UiYwAkOoQ==}
+  '@aigne/listr2@1.0.8':
+    resolution: {integrity: sha512-tEAX2WSN78XaRJ1kv/w2IAvmeorh4/P+In0YyW7iafmHzn34dKwmzi3bXk1CDIfDG/Sr2fDdZ2tf0c/Vr43j9w==}
     engines: {node: '>=18.0.0'}
 
   '@anthropic-ai/sdk@0.39.0':
@@ -2145,7 +2145,7 @@ snapshots:
     dependencies:
       zod: 3.24.2
 
-  '@aigne/listr2@1.0.7':
+  '@aigne/listr2@1.0.8':
     dependencies:
       cli-truncate: 4.0.0
       colorette: 2.0.20

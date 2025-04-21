@@ -108,13 +108,15 @@ export function onAgentResponseStreamEnd<T extends Message>(
 
           controller.enqueue(chunk);
 
-          mergeAgentResponseChunk(json, chunk);
+          mergeAgentResponseChunk(json, value);
         }
 
         const result = await callback(json);
 
         if (result && !equal(result, json)) {
-          controller.enqueue({ delta: { json: result } });
+          let chunk: AgentResponseChunk<T> = { delta: { json: result } };
+          if (options?.processChunk) chunk = options.processChunk(chunk);
+          controller.enqueue(chunk);
         }
       } catch (error) {
         controller.error(options?.errorCallback?.(error) ?? error);

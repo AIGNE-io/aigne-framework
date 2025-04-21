@@ -4,7 +4,7 @@ import { type ZodType, z } from "zod";
 import {
   Agent,
   type AgentCallOptions,
-  type AgentProcessAsyncGeneratorResult,
+  type AgentProcessAsyncGenerator,
   type AgentResponse,
   type AgentResponseStream,
   type FunctionAgentFn,
@@ -358,7 +358,7 @@ class ExecutionContextInternal {
     input: I,
     context: Context,
     options?: CallOptions,
-  ): AgentProcessAsyncGeneratorResult<O & { __activeAgent__: Runnable }> {
+  ): AgentProcessAsyncGenerator<O & { __activeAgent__: Runnable }> {
     this.initTimeout();
 
     return withAbortSignal(
@@ -373,7 +373,7 @@ class ExecutionContextInternal {
     input: I,
     context: Context,
     options?: CallOptions,
-  ): AgentProcessAsyncGeneratorResult<O & { __activeAgent__: Runnable }> {
+  ): AgentProcessAsyncGenerator<O & { __activeAgent__: Runnable }> {
     let activeAgent: Runnable = agent;
     let output: O | undefined;
 
@@ -432,8 +432,8 @@ class ExecutionContextInternal {
 async function* withAbortSignal<T extends Message>(
   signal: AbortSignal,
   error: Error,
-  fn: () => AgentProcessAsyncGeneratorResult<T>,
-): AgentProcessAsyncGeneratorResult<T> {
+  fn: () => AgentProcessAsyncGenerator<T>,
+): AgentProcessAsyncGenerator<T> {
   const iterator = fn();
 
   const timeoutPromise = Promise.withResolvers<never>();

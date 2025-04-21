@@ -75,6 +75,7 @@
     "@modelcontextprotocol/sdk": "^1.9.0",
     "@types/debug": "^4.1.12",
     "debug": "^4.4.0",
+    "fast-deep-equal": "^3.1.3",
     "inquirer": "^12.5.2",
     "mustache": "^4.2.0",
     "nanoid": "^5.1.5",

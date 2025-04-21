@@ -2,6 +2,7 @@ import { expect, spyOn, test } from "bun:test";
 import { TerminalTracer } from "@aigne/cli/tracer/terminal.js";
 import { AIAgent, ExecutionEngine, createMessage } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 
 test("TerminalTracer should work correctly", async () => {
   const model = new OpenAIChatModel({});
@@ -34,7 +35,9 @@ test("TerminalTracer should raise error correctly", async () => {
 
   const testAgent = AIAgent.from({});
 
-  spyOn(testAgent, "process").mockReturnValue(Promise.reject(new Error("test error")));
+  spyOn(testAgent, "process").mockReturnValueOnce(
+    arrayToAgentProcessAsyncGenerator([new Error("test error")]),
+  );
 
   const userAgent = engine.call(testAgent);
 

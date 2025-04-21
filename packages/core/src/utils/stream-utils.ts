@@ -1,5 +1,6 @@
+import equal from "fast-deep-equal";
 import type {
-  AgentProcessAsyncGeneratorResult,
+  AgentProcessAsyncGenerator,
   AgentResponseChunk,
   AgentResponseStream,
   Message,
@@ -32,7 +33,7 @@ function mergeResult<T extends Message>(output: T, chunk: AgentResponseChunk<T>)
 }
 
 export async function agentResponseStreamToObject<T extends Message>(
-  stream: AgentResponseStream<T> | AgentProcessAsyncGeneratorResult<T>,
+  stream: AgentResponseStream<T> | AgentProcessAsyncGenerator<T>,
 ): Promise<T> {
   const json: T = {} as T;
 
@@ -61,7 +62,7 @@ export async function agentResponseStreamToObject<T extends Message>(
 }
 
 export function asyncGeneratorToReadableStream<T extends Message>(
-  generator: AgentProcessAsyncGeneratorResult<T>,
+  generator: AgentProcessAsyncGenerator<T>,
 ): AgentResponseStream<T> {
   return new ReadableStream({
     async start(controller) {
@@ -112,10 +113,11 @@ export function onAgentResponseStreamEnd<T extends Message>(
           mergeResult(json, value);
         }
 
-        Object.assign(json, await callback(json));
-        controller.enqueue({
-          delta: { json },
-        });
+        const result = await callback(json);
+
+        if (!equal(result, json)) {
+          controller.enqueue({ delta: { json: result } });
+        }
       } catch (error) {
         controller.error(error);
       } finally {
@@ -129,4 +131,32 @@ export function isAsyncGenerator<T extends AsyncGenerator>(
   value: AsyncGenerator | unknown,
 ): value is T {
   return typeof value === "object" && value !== null && Symbol.asyncIterator in value;
+}
+
+export async function* arrayToAgentProcessAsyncGenerator<T extends Message>(
+  chunks: (AgentResponseChunk<T> | Error)[],
+): AgentProcessAsyncGenerator<T> {
+  for (const chunk of chunks) {
+    if (chunk instanceof Error) throw chunk;
+
+    yield chunk;
+  }
+}
+
+export function arrayToAgentResponseStream<T>(
+  chunks: (AgentResponseChunk<T> | Error)[],
+): AgentResponseStream<T> {
+  return new ReadableStream({
+    start(controller) {
+      for (const chunk of chunks) {
+        if (chunk instanceof Error) {
+          controller.error(chunk);
+          break;
+        }
+
+        controller.enqueue(chunk);
+      }
+      controller.close();
+    },
+  });
 }

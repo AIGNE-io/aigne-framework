@@ -25,7 +25,7 @@ test("AIAgent.call", async () => {
     tools: [finder, writer],
   });
 
-  spyOn(model, "call")
+  spyOn(model, "process")
     .mockReturnValueOnce(
       Promise.resolve<{ json: FullPlanOutput }>({
         json: {
@@ -79,15 +79,16 @@ test("AIAgent.call", async () => {
   const result = await engine.call(agent, "Deep research ArcBlock and write a professional report");
 
   expect(result).toEqual(createMessage("Task finished"));
-  expect(finderCall.mock.calls).toEqual([
-    [
-      { [MESSAGE_KEY]: expect.stringContaining("Find the closest match to a user's request") },
-      expect.anything(),
-    ],
-  ]);
-  expect(writerCall.mock.calls).toEqual([
-    [{ [MESSAGE_KEY]: expect.stringContaining("Write to the filesystem") }, expect.anything()],
-  ]);
+  expect(finderCall).toHaveBeenLastCalledWith(
+    { [MESSAGE_KEY]: expect.stringContaining("Find the closest match to a user's request") },
+    expect.anything(),
+    expect.anything(),
+  );
+  expect(writerCall).toHaveBeenLastCalledWith(
+    { [MESSAGE_KEY]: expect.stringContaining("Write to the filesystem") },
+    expect.anything(),
+    expect.anything(),
+  );
 });
 
 test("getFullPlanSchema should throw error if tools name is not unique", async () => {

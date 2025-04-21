@@ -317,14 +317,14 @@ export interface AgentResponseDelta<T> {
   };
 }
 
-export type AgentProcessAsyncGeneratorResult<O extends Message> = AsyncGenerator<
+export type AgentProcessAsyncGenerator<O extends Message> = AsyncGenerator<
   AgentResponseChunk<O>,
   O | undefined | void
 >;
 
 export type AgentProcessResult<O extends Message> =
   | Promise<AgentResponse<O>>
-  | AgentProcessAsyncGeneratorResult<O>;
+  | AgentProcessAsyncGenerator<O>;
 
 export type AgentInputOutputSchema<I extends Message = Message> =
   | ZodType<I>

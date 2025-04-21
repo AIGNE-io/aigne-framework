@@ -8,10 +8,11 @@ import type {
 } from "../models/chat-model.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
+import { isEmpty } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentOptions,
-  type AgentProcessAsyncGeneratorResult,
+  type AgentProcessAsyncGenerator,
   type Message,
 } from "./agent.js";
 import { type TransferAgentOutput, isTransferAgentOutput } from "./types.js";
@@ -83,10 +84,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
   toolChoice?: AIAgentToolChoice;
 
-  async *process(
-    input: I,
-    context: Context,
-  ): AgentProcessAsyncGeneratorResult<O | TransferAgentOutput> {
+  async *process(input: I, context: Context): AgentProcessAsyncGenerator<O | TransferAgentOutput> {
     const model = context.model ?? this.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
@@ -185,11 +183,13 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
       if (modelInput.responseFormat?.type === "json_schema") {
         Object.assign(result, json);
-      } else {
+      } else if (text) {
         Object.assign(result, { [outputKey]: text });
       }
 
-      yield { delta: { json: result } };
+      if (!isEmpty(result)) {
+        yield { delta: { json: result } };
+      }
       return;
     }
   }

@@ -1,6 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
-import { AIAgent, ExecutionEngine, createMessage } from "@aigne/core";
+import { AIAgent, ExecutionEngine, MESSAGE_KEY, type Message, createMessage } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { arrayToAgentResponseStream } from "@aigne/core/utils/stream-utils";
 import { z } from "zod";
 
 test("AIAgent.call", async () => {
@@ -156,4 +157,35 @@ test("AIAgent with router toolChoice mode should return tool result", async () =
     expect.anything(),
   );
   expect(result).toEqual({ sum: 2 });
+});
+
+test("AIAgent.call with stream", async () => {
+  const model = new OpenAIChatModel();
+
+  const context = new ExecutionEngine({ model }).newContext();
+
+  const agent = AIAgent.from<Message, { [MESSAGE_KEY]: string }>({});
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve(
+      arrayToAgentResponseStream([
+        { delta: { text: { text: "Here " } } },
+        { delta: { text: { text: "is " } } },
+      ]),
+    ),
+  );
+
+  const result = await agent.call("write a long blog about arcblock", context, { stream: true });
+
+  const reader = result.getReader();
+
+  expect(reader.read()).resolves.toEqual({
+    done: false,
+    value: { delta: { text: createMessage("Here ") } },
+  });
+  expect(reader.read()).resolves.toEqual({
+    done: false,
+    value: { delta: { text: createMessage("is ") } },
+  });
+  expect(reader.read()).resolves.toEqual({ done: true, value: undefined });
 });

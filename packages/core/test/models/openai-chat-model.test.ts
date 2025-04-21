@@ -58,3 +58,47 @@ test("OpenAIChatModel.call", async () => {
     }),
   );
 });
+
+test("OpenAIChatModel.call with stream", async () => {
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
+    createMockEventStream({
+      path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
+    }),
+  );
+
+  const result = await model.call(
+    {
+      messages: [{ role: "user", content: "hello" }],
+    },
+    undefined,
+    { stream: true },
+  );
+
+  const reader = result.getReader();
+
+  expect(reader.read()).resolves.toEqual({
+    done: false,
+    value: { delta: { json: { model: expect.any(String) } } },
+  });
+
+  const texts = ["Hello", "!", " How", " can", " I", " assist", " you", " today", "?"];
+  for (const text of texts) {
+    expect(reader.read()).resolves.toEqual({
+      done: false,
+      value: { delta: { text: { text } } },
+    });
+  }
+
+  expect(reader.read()).resolves.toEqual({
+    done: false,
+    value: {
+      delta: {
+        json: { usage: { inputTokens: expect.any(Number), outputTokens: expect.any(Number) } },
+      },
+    },
+  });
+
+  expect(reader.read()).resolves.toEqual({
+    done: true,
+  });
+});

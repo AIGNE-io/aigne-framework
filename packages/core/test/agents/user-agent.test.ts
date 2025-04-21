@@ -6,6 +6,7 @@ import {
   createMessage,
   createPublishMessage,
 } from "@aigne/core";
+import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils";
 
 test("UserAgent.stream", async () => {
   const engine = new ExecutionEngine({});
@@ -56,9 +57,9 @@ test("UserAgent.call should call activeAgent correctly", async () => {
     activeAgent: testAgent,
   });
 
-  const testAgentCall = spyOn(testAgent, "process").mockImplementationOnce(async function* () {
-    yield { delta: { json: createMessage("world") } };
-  });
+  const testAgentCall = spyOn(testAgent, "process").mockReturnValueOnce(
+    arrayToAgentProcessAsyncGenerator([{ delta: { json: createMessage("world") } }]),
+  );
 
   const result = await engine.call(userAgent, "hello");
   expect(result).toEqual(createMessage("world"));

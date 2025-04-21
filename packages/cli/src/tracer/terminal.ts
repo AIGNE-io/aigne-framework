@@ -189,6 +189,7 @@ export class TerminalTracer {
   protected newListr() {
     return new MyListr([], {
       concurrent: true,
+      forceTTY: true,
       rendererOptions: {
         collapseSubtasks: false,
         writeBottomBarDirectly: true,

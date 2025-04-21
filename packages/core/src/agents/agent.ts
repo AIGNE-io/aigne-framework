@@ -217,12 +217,14 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
           async (result) => {
             return await this.processAgentOutput(parsedInput, result, ctx);
           },
-          (error) => {
-            try {
-              this.processAgentError(error, ctx);
-            } catch (error) {
-              return error;
-            }
+          {
+            errorCallback: (error) => {
+              try {
+                this.processAgentError(error, ctx);
+              } catch (error) {
+                return error;
+              }
+            },
           },
         );
       }

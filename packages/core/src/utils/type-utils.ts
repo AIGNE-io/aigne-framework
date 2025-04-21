@@ -42,6 +42,18 @@ export function duplicates<T>(arr: T[], key: (item: T) => unknown = (item: T) =>
   return Array.from(duplicates);
 }
 
+export function omitBy<T extends Record<string, unknown>, K extends keyof T>(
+  obj: T,
+  predicate: (value: T[K], key: K) => boolean,
+): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key, value]) => {
+      const k = key as K;
+      return !predicate(value as T[K], k);
+    }),
+  ) as Partial<T>;
+}
+
 export function orArrayToArray<T>(value?: T | T[]): T[] {
   if (isNil(value)) return [];
   return Array.isArray(value) ? value : [value];

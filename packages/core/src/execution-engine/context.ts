@@ -24,6 +24,7 @@ import {
   type OmitPropertiesFromArrayFirstElement,
   checkArguments,
   isNil,
+  omitBy,
 } from "../utils/type-utils.js";
 import type { Args, Listener, TypedEventEmitter } from "../utils/typed-event-emtter.js";
 import {
@@ -236,6 +237,20 @@ export class ExecutionContext implements Context {
             this.onCallSuccess(activeAgent, output, newContext);
 
             activeAgentPromise.resolve(activeAgent);
+          },
+          {
+            processChunk(chunk) {
+              if (chunk.delta.json) {
+                return {
+                  ...chunk,
+                  delta: {
+                    ...chunk.delta,
+                    json: omitBy(chunk.delta.json, (_, k) => k === "__activeAgent__"),
+                  },
+                };
+              }
+              return chunk;
+            },
           },
         );
 

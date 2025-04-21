@@ -7,6 +7,7 @@ import {
   isEmpty,
   isNil,
   isNonNullable,
+  omitBy,
   orArrayToArray,
   tryOrThrow,
 } from "@aigne/core/utils/type-utils.js";
@@ -43,6 +44,12 @@ test("type-utils.duplicates", async () => {
   expect(duplicated).toEqual([{ id: 1, name: "baz" }]);
 
   expect(duplicates(["foo", "bar", "baz", "foo"])).toEqual(["foo"]);
+});
+
+test("type-utils.omitBy", async () => {
+  expect(omitBy({ foo: 1, bar: 2 }, (value) => value === 1)).toEqual({ bar: 2 });
+
+  expect(omitBy({ foo: 1, bar: 2 }, (_, key) => key === "foo")).toEqual({ bar: 2 });
 });
 
 test("type-utils.orArrayToArray", async () => {

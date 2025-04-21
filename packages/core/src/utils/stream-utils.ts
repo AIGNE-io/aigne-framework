@@ -5,6 +5,7 @@ import type {
   AgentResponseStream,
   Message,
 } from "../agents/agent.js";
+import { type PromiseOrValue, omitBy } from "./type-utils.js";
 
 export function objectToAgentResponseStream<T extends Message>(json: T): AgentResponseStream<T> {
   return new ReadableStream({
@@ -30,7 +31,7 @@ export function mergeAgentResponseChunk<T extends Message>(
   if (chunk.delta.json) {
     Object.assign(
       output,
-      Object.fromEntries(Object.entries(chunk.delta.json).filter(([_, v]) => v !== undefined)),
+      omitBy(chunk.delta.json, (v) => v === undefined),
     );
   }
 
@@ -91,8 +92,11 @@ export function asyncGeneratorToReadableStream<T extends Message>(
 
 export function onAgentResponseStreamEnd<T extends Message>(
   stream: AgentResponseStream<T>,
-  callback: (result: T) => unknown,
-  errorCallback: (error: Error) => Error = (e) => e,
+  callback: (result: T) => PromiseOrValue<Partial<T> | void>,
+  options?: {
+    errorCallback?: (error: Error) => Error;
+    processChunk?: (chunk: AgentResponseChunk<T>) => AgentResponseChunk<T>;
+  },
 ) {
   return new ReadableStream({
     async start(controller) {
@@ -100,18 +104,20 @@ export function onAgentResponseStreamEnd<T extends Message>(
         const json: T = {} as T;
 
         for await (const value of readableStreamToAsyncIterator(stream)) {
-          controller.enqueue(value);
+          const chunk = options?.processChunk ? options.processChunk(value) : value;
 
-          mergeAgentResponseChunk(json, value);
+          controller.enqueue(chunk);
+
+          mergeAgentResponseChunk(json, chunk);
         }
 
         const result = await callback(json);
 
-        if (!equal(result, json)) {
+        if (result && !equal(result, json)) {
           controller.enqueue({ delta: { json: result } });
         }
       } catch (error) {
-        controller.error(errorCallback(error));
+        controller.error(options?.errorCallback?.(error) ?? error);
       } finally {
         controller.close();
       }

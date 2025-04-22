@@ -249,6 +249,9 @@ importers:
       '@aigne/listr2':
         specifier: ^1.0.8
         version: 1.0.8
+      '@aigne/marked-terminal':
+        specifier: ^7.3.1
+        version: 7.3.1(marked@15.0.9)
       '@modelcontextprotocol/sdk':
         specifier: ^1.9.0
         version: 1.9.0
@@ -273,9 +276,6 @@ importers:
       marked:
         specifier: ^15.0.9
         version: 15.0.9
-      marked-terminal:
-        specifier: ^7.3.0
-        version: 7.3.0(marked@15.0.9)
       openai:
         specifier: ^4.94.0
         version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
@@ -418,6 +418,12 @@ packages:
   '@aigne/listr2@1.0.8':
     resolution: {integrity: sha512-tEAX2WSN78XaRJ1kv/w2IAvmeorh4/P+In0YyW7iafmHzn34dKwmzi3bXk1CDIfDG/Sr2fDdZ2tf0c/Vr43j9w==}
     engines: {node: '>=18.0.0'}
+
+  '@aigne/marked-terminal@7.3.1':
+    resolution: {integrity: sha512-Rb7WSk+1k1zggBnArFLXEpmNnMvlj3JU6HKPmMRDbaVZRGu9X6LmN7W6JK7JNZsIi3dhBPxA/IfTx8Jhg+ckyA==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      marked: '>=1 <16'
 
   '@anthropic-ai/sdk@0.39.0':
     resolution: {integrity: sha512-eMyDIPRZbt1CCLErRCi3exlAvNkBtRe+kW5vvJyef93PmNr/clstYgHhtvmkxN82nlKgzyGPCyGxrm0JQ1ZIdg==}
@@ -1506,12 +1512,6 @@ packages:
     resolution: {integrity: sha512-123qHRfJBmo2jXDbo/a5YOQrJoHF/GNQTLzQ5+IdK5pWpceK17yRc6ozlWd25FxvGKQbIUs91fDFkXmDHTKcyA==}
     engines: {node: 20 || >=22}
 
-  marked-terminal@7.3.0:
-    resolution: {integrity: sha512-t4rBvPsHc57uE/2nJOLmMbZCQ4tgAccAED3ngXQqW6g+TxA488JzJ+FK3lQkzBQOI1mRV/r/Kq+1ZlJ4D0owQw==}
-    engines: {node: '>=16.0.0'}
-    peerDependencies:
-      marked: '>=1 <16'
-
   marked@15.0.9:
     resolution: {integrity: sha512-9AW/bn9DxQeZVjR52l5jsc0W2pwuhP04QaQewPvylil12Cfr2GBfWmgp6mu8i9Jy8UlBjqDZ9uMTDuJ8QOGZJA==}
     engines: {node: '>= 18'}
@@ -2274,6 +2274,17 @@ snapshots:
       log-update: 6.1.0
       rfdc: 1.4.1
       wrap-ansi: 9.0.0
+
+  '@aigne/marked-terminal@7.3.1(marked@15.0.9)':
+    dependencies:
+      ansi-escapes: 7.0.0
+      ansi-regex: 6.1.0
+      chalk: 5.4.1
+      cli-highlight: 2.1.11
+      cli-table3: 0.6.5
+      marked: 15.0.9
+      node-emoji: 2.2.0
+      supports-hyperlinks: 3.2.0
 
   '@anthropic-ai/sdk@0.39.0(encoding@0.1.13)':
     dependencies:
@@ -3497,17 +3508,6 @@ snapshots:
   lru-cache@10.4.3: {}
 
   lru-cache@11.0.2: {}
-
-  marked-terminal@7.3.0(marked@15.0.9):
-    dependencies:
-      ansi-escapes: 7.0.0
-      ansi-regex: 6.1.0
-      chalk: 5.4.1
-      cli-highlight: 2.1.11
-      cli-table3: 0.6.5
-      marked: 15.0.9
-      node-emoji: 2.2.0
-      supports-hyperlinks: 3.2.0
 
   marked@15.0.9: {}
 

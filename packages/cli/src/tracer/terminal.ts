@@ -25,9 +25,9 @@ import {
   type ListrTaskWrapper,
   Spinner,
 } from "@aigne/listr2";
+import { markedTerminal } from "@aigne/marked-terminal";
 import chalk from "chalk";
 import { Marked } from "marked";
-import { markedTerminal } from "marked-terminal";
 import wrap from "wrap-ansi";
 import { promiseWithResolvers } from "../utils/promise-with-resolvers.js";
 import { parseDuration } from "../utils/time.js";
@@ -54,10 +54,7 @@ export class TerminalTracer {
     const listr = new AIGNEListr(
       {
         formatResult: (result) => {
-          return [
-            this.wrap(this.options.aiResponsePrefix?.(context) || ""),
-            this.wrap(this.formatAIResponse(result)),
-          ];
+          return [this.options.aiResponsePrefix?.(context) || "", this.formatAIResponse(result)];
         },
       },
       [],
@@ -177,13 +174,6 @@ export class TerminalTracer {
     }
   }
 
-  protected wrap(str: string) {
-    return wrap(str, process.stdout.columns ?? 80, {
-      hard: true,
-      trim: false,
-    });
-  }
-
   formatTokenUsage(usage: Partial<ContextUsage>, extra?: { [key: string]: string }) {
     const items = [
       [chalk.yellow(usage.inputTokens), chalk.grey("input tokens")],
@@ -223,7 +213,7 @@ export class TerminalTracer {
     return title;
   }
 
-  private marked = new Marked().use(markedTerminal());
+  private marked = new Marked().use(markedTerminal({ forceHyperLink: false }));
 
   formatAIResponse({ [MESSAGE_KEY]: msg, ...message }: Message = {}) {
     const text =
@@ -256,7 +246,7 @@ class AIGNEListr extends Listr {
 
   constructor(
     public myOptions: {
-      formatResult: (result: Message) => string | string[];
+      formatResult: (result: Message) => string[];
     },
     ...args: ConstructorParameters<typeof Listr<unknown, "default", "simple">>
   ) {
@@ -278,7 +268,7 @@ class AIGNEListr extends Listr {
         "",
         tasks,
         "",
-        ...[this.myOptions.formatResult(this.result)].flat(),
+        ...this.myOptions.formatResult(this.result).map((i) => this.wrap(i)),
         this.isStreamRunning ? spinner.fetch() : "",
       ];
 
@@ -315,5 +305,12 @@ class AIGNEListr extends Listr {
     this.isStreamRunning = false;
 
     return this.result;
+  }
+
+  protected wrap(str: string) {
+    return wrap(str, process.stdout.columns ?? 80, {
+      hard: true,
+      trim: false,
+    });
   }
 }

@@ -18,7 +18,7 @@ test("TerminalTracer should work correctly", async () => {
 
   const userAgent = engine.call(testAgent);
 
-  const tracer = new TerminalTracer(context, { verbose: true });
+  const tracer = new TerminalTracer(context);
 
   const { result } = await tracer.run(userAgent, createMessage("hello"));
 
@@ -37,7 +37,7 @@ test("TerminalTracer should raise error correctly", async () => {
 
   const userAgent = engine.call(testAgent);
 
-  const tracer = new TerminalTracer(context, { verbose: true });
+  const tracer = new TerminalTracer(context);
 
   const result = tracer.run(userAgent, createMessage("hello"));
 
@@ -58,7 +58,7 @@ test("TerminalTracer should render output message with markdown highlight", asyn
 
   const userAgent = engine.call(testAgent);
 
-  const tracer = new TerminalTracer(context, { verbose: true });
+  const tracer = new TerminalTracer(context);
 
   const formatAIResponse = spyOn(tracer, "formatAIResponse");
 

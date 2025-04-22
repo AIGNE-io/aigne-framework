@@ -116,7 +116,7 @@ jobs:
           OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
           OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
         run: |
-          EXCLUDE_PATTERN="test-utils\|mcp-blocklet\|workflow-group-chat\|workflow-orchestrator"
+          EXCLUDE_PATTERN="mcp-blocklet\|workflow-group-chat\|workflow-orchestrator"
 
           for dir in examples/*; do
             echo "=========================================="

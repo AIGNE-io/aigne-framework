@@ -26,5 +26,8 @@
     "jsonwebtoken": "^9.0.2",
     "open": "^10.1.0",
     "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^"
   }
 }

@@ -4,6 +4,7 @@ import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { type Agent, ExecutionEngine } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import { isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { Command, type OptionValues } from "commander";
@@ -16,6 +17,7 @@ interface RunOptions extends OptionValues {
   downloadDir?: string;
   modelProvider?: string;
   modelName?: string;
+  verbose?: boolean;
 }
 
 export function createRunCommand(): Command {
@@ -35,7 +37,10 @@ export function createRunCommand(): Command {
       "--model-name <model>",
       "Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)",
     )
+    .option("--verbose", "Enable verbose logging", false)
     .action(async (path: string, options: RunOptions) => {
+      if (options.verbose) logger.enable("*");
+
       const { downloadDir, dir } = prepareDirs(path, options);
 
       const { engine, agent } = await new Listr<{
@@ -106,7 +111,7 @@ export function createRunCommand(): Command {
 
       const user = engine.call(agent);
 
-      await runChatLoopInTerminal(user, {});
+      await runChatLoopInTerminal(user);
 
       await engine.shutdown();
     })

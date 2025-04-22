@@ -57,7 +57,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     if (this.activeAgent) {
       const [output, agent] = await context.call(this.activeAgent, input, {
         returnActiveAgent: true,
-        stream: true,
+        streaming: true,
       });
       agent.then((agent) => {
         this.activeAgent = agent;

@@ -109,7 +109,7 @@ export class OpenAIChatModel extends ChatModel {
       response_format: responseFormat,
     });
 
-    if (options?.stream && input.responseFormat?.type !== "json_schema") {
+    if (options?.streaming && input.responseFormat?.type !== "json_schema") {
       return await extractResultFromStream(stream, false, true);
     }
 
@@ -316,8 +316,8 @@ async function extractResultFromStream(
 ): Promise<ChatModelOutput>;
 async function extractResultFromStream(
   stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
-  jsonMode = false,
-  streaming = false,
+  jsonMode?: boolean,
+  streaming?: boolean,
 ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
   const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
     async start(controller) {

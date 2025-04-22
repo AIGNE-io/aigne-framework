@@ -71,7 +71,7 @@ test("OpenAIChatModel.call with stream", async () => {
       messages: [{ role: "user", content: "hello" }],
     },
     undefined,
-    { stream: true },
+    { streaming: true },
   );
 
   const reader = result.getReader();

@@ -54,7 +54,7 @@ constructor(options: AgentOptions<I, O>)
 
 ```typescript
 async call(input: I | string, context?: Context): Promise<O>
-async call(input: I | string, context: Context | undefined, options: AgentCallOptions & { stream: true }): Promise<AgentResponseStream<O>>
+async call(input: I | string, context: Context | undefined, options: AgentCallOptions & { streaming: true }): Promise<AgentResponseStream<O>>
 ```
 
 ##### 参数
@@ -62,12 +62,12 @@ async call(input: I | string, context: Context | undefined, options: AgentCallOp
 - `input`: `I | string` - 输入数据或字符串
 - `context`: `Context` (可选) - 执行上下文
 - `options`: `AgentCallOptions` (可选) - 调用选项
-  - `stream`: `boolean` - 当设置为 `true` 时，返回响应块流而不是等待完整响应
+  - `streaming`: `boolean` - 当设置为 `true` 时，返回响应块流而不是等待完整响应
 
 ##### 返回值
 
 - `Promise<O>` - 非流式模式时返回 Agent 的完整输出
-- `Promise<AgentResponseStream<O>>` - 当 `options.stream` 为 `true` 时，返回响应块流
+- `Promise<AgentResponseStream<O>>` - 当 `options.streaming` 为 `true` 时，返回响应块流
 
 #### `addTool`
 
@@ -150,7 +150,7 @@ type PublishTopic<O extends AgentOutput = AgentOutput> =
 ```typescript
 import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
 
-const stream = await agent.call(input, context, { stream: true });
+const stream = await agent.call(input, context, { streaming: true });
 
 const reader = stream.getReader();
 const result = {};

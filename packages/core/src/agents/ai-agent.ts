@@ -107,7 +107,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
       const stream = await context.call(
         model,
         { ...modelInput, messages: messages.concat(toolCallMessages) },
-        { stream: true },
+        { streaming: true },
       );
 
       for await (const value of readableStreamToAsyncIterator(stream)) {

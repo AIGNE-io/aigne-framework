@@ -86,17 +86,18 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
    * @param agent Agent to call
    * @param message Message to pass to the agent
    * @param options.returnActiveAgent return the active agent
+   * @param options.streaming return a stream of the output
    * @returns the output of the agent and the final active agent
    */
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options: CallOptions & { returnActiveAgent: true; stream?: false },
+    options: CallOptions & { returnActiveAgent: true; streaming?: false },
   ): Promise<[O, Runnable]>;
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options: CallOptions & { returnActiveAgent: true; stream: true },
+    options: CallOptions & { returnActiveAgent: true; streaming: true },
   ): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
   /**
    * Call an agent with a message
@@ -107,12 +108,12 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options?: CallOptions & { stream?: false },
+    options?: CallOptions & { streaming?: false },
   ): Promise<O>;
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
     message: I | string,
-    options: CallOptions & { stream: true },
+    options: CallOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
   call<I extends Message, O extends Message>(
     agent: Runnable<I, O>,
@@ -216,7 +217,7 @@ export class ExecutionContext implements Context {
 
     return Promise.resolve(newContext.internal.call(agent, msg, newContext, options)).then(
       async (response) => {
-        if (!options?.stream) {
+        if (!options?.streaming) {
           const { __activeAgent__: activeAgent, ...output } =
             await agentResponseStreamToObject(response);
 
@@ -400,7 +401,7 @@ class ExecutionContextInternal {
       } else {
         result = {};
 
-        const stream = await activeAgent.call(input, context, { stream: true });
+        const stream = await activeAgent.call(input, context, { streaming: true });
         for await (const value of readableStreamToAsyncIterator(stream)) {
           if (value.delta.text) {
             yield { delta: { text: value.delta.text } as Message };

@@ -53,7 +53,7 @@ export class TerminalTracer {
 
     const context = this.context.newContext({ reset: true });
 
-    const listr = new MyListr(
+    const listr = new AIGNEListr(
       {
         formatResult: (result) => {
           return [
@@ -177,7 +177,7 @@ export class TerminalTracer {
     context.on("agentFailed", onAgentFailed);
 
     try {
-      const stream = await context.call(agent, input, { stream: true });
+      const stream = await context.call(agent, input, { streaming: true });
 
       const result = await listr.run(stream);
 
@@ -279,7 +279,7 @@ type Task = ReturnType<typeof promiseWithResolvers<void>> & {
   extraTitleMetadata?: { [key: string]: string };
 };
 
-class MyListr extends Listr {
+class AIGNEListr extends Listr {
   private result: Message = {};
 
   private isStreamRunning = false;
@@ -320,12 +320,12 @@ class MyListr extends Listr {
   }
 
   override async run(stream: AgentResponseStream<Message>): Promise<Message> {
-    this.add({ task: () => this.runAgent(stream) });
+    this.add({ task: () => this.extractStream(stream) });
 
     return await super.run().then(() => ({ ...this.result }));
   }
 
-  private async runAgent(stream: AgentResponseStream<Message>) {
+  private async extractStream(stream: AgentResponseStream<Message>) {
     this.isStreamRunning = true;
 
     this.result = {};

@@ -56,7 +56,7 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
 }
 
 export interface AgentCallOptions {
-  stream?: boolean;
+  streaming?: boolean;
 }
 
 export abstract class Agent<I extends Message = Message, O extends Message = Message> {
@@ -168,12 +168,12 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   async call(
     input: I | string,
     context: Context | undefined,
-    options: AgentCallOptions & { stream: true },
+    options: AgentCallOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
   async call(
     input: I | string,
     context?: Context,
-    options?: AgentCallOptions & { stream?: false },
+    options?: AgentCallOptions & { streaming?: false },
   ): Promise<O>;
   async call(
     input: I | string,
@@ -204,7 +204,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
       const response = await this.process(parsedInput, ctx, options);
 
-      if (options?.stream) {
+      if (options?.streaming) {
         const stream =
           response instanceof ReadableStream
             ? response
@@ -390,7 +390,7 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
       result = transferToAgentOutput(result);
     }
 
-    return options?.stream ? objectToAgentResponseStream(result) : result;
+    return options?.streaming ? objectToAgentResponseStream(result) : result;
   }
 }
 

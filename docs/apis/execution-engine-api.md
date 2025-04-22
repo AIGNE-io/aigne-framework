@@ -103,7 +103,7 @@ call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, 
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options?: { stream?: false }
+  options?: { streaming?: false }
 ): Promise<O>;
 
 // Call an agent with a message and return a stream of response chunks
@@ -113,7 +113,7 @@ call<I extends Message, O extends Message>(
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options: { stream: true }
+  options: { streaming: true }
 ): Promise<AgentResponseStream<O>>;
 
 // Call an agent with a message and return the output and the active agent
@@ -123,7 +123,7 @@ call<I extends Message, O extends Message>(
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options: { returnActiveAgent: true; stream?: false },
+  options: { returnActiveAgent: true; streaming?: false },
 ): Promise<[O, Runnable]>;
 
 // Call an agent with a message and return a stream of response chunks and the active agent promise
@@ -133,7 +133,7 @@ call<I extends Message, O extends Message>(
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options: { returnActiveAgent: true; stream: true },
+  options: { returnActiveAgent: true; streaming: true },
 ): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
 ```
 
@@ -266,7 +266,7 @@ const agent = AIAgent.from({
 })
 
 // Call with streaming enabled
-const stream = await engine.call(agent, "Hello, tell me about streaming", { stream: true });
+const stream = await engine.call(agent, "Hello, tell me about streaming", { streaming: true });
 
 const reader = stream.getReader();
 const result = {};
@@ -285,7 +285,7 @@ console.log("Final result:", result);
 const [agentStream, activeAgentPromise] = await engine.call(
   assistant,
   "Hello, please recommend some books",
-  { stream: true, returnActiveAgent: true }
+  { streaming: true, returnActiveAgent: true }
 );
 
 // Process the stream as shown above

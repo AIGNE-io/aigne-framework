@@ -103,7 +103,7 @@ call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, 
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options?: { stream?: false }
+  options?: { streaming?: false }
 ): Promise<O>;
 
 // 使用消息调用 Agent 并返回响应块流
@@ -113,7 +113,7 @@ call<I extends Message, O extends Message>(
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options: { stream: true }
+  options: { streaming: true }
 ): Promise<AgentResponseStream<O>>;
 
 // 使用消息调用 Agent 并返回输出和活动的 Agent
@@ -123,7 +123,7 @@ call<I extends Message, O extends Message>(
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options: { returnActiveAgent: true; stream?: false },
+  options: { returnActiveAgent: true; streaming?: false },
 ): Promise<[O, Runnable]>;
 
 // 使用消息调用 Agent 并返回响应块流和活动 Agent 的 Promise
@@ -133,7 +133,7 @@ call<I extends Message, O extends Message>(
 call<I extends Message, O extends Message>(
   agent: Runnable<I, O>,
   message: I | string,
-  options: { returnActiveAgent: true; stream: true },
+  options: { returnActiveAgent: true; streaming: true },
 ): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
 ```
 
@@ -266,7 +266,7 @@ const agent = AIAgent.from({
 })
 
 // 启用流式响应进行调用
-const stream = await engine.call(agent, "你好，请告诉我关于流式 API 的信息", { stream: true });
+const stream = await engine.call(agent, "你好，请告诉我关于流式 API 的信息", { streaming: true });
 
 const reader = stream.getReader();
 const result = {};
@@ -285,7 +285,7 @@ console.log("最终结果:", result);
 const [agentStream, activeAgentPromise] = await engine.call(
   assistant,
   "你好，请推荐一些书籍",
-  { stream: true, returnActiveAgent: true }
+  { streaming: true, returnActiveAgent: true }
 );
 
 // 按照上面的方式处理流

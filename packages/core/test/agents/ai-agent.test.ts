@@ -159,7 +159,7 @@ test("AIAgent with router toolChoice mode should return tool result", async () =
   expect(result).toEqual({ sum: 2 });
 });
 
-test("AIAgent.call with stream", async () => {
+test("AIAgent.call with streaming output", async () => {
   const model = new OpenAIChatModel();
 
   const context = new ExecutionEngine({ model }).newContext();
@@ -175,7 +175,7 @@ test("AIAgent.call with stream", async () => {
     ),
   );
 
-  const result = await agent.call("write a long blog about arcblock", context, { stream: true });
+  const result = await agent.call("write a long blog about arcblock", context, { streaming: true });
 
   const reader = result.getReader();
 

@@ -344,6 +344,7 @@ async function extractResultFromStream(
     async start(controller) {
       try {
         let text = "";
+        let refusal = "";
         const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
           args: string;
         })[] = [];
@@ -386,6 +387,17 @@ async function extractResultFromStream(
             }
           }
 
+          if (choice?.delta.refusal) {
+            refusal += choice.delta.refusal;
+            if (!jsonMode) {
+              controller.enqueue({
+                delta: {
+                  text: { text: choice.delta.refusal },
+                },
+              });
+            }
+          }
+
           if (chunk.usage) {
             controller.enqueue({
               delta: {
@@ -400,6 +412,7 @@ async function extractResultFromStream(
           }
         }
 
+        text = text || refusal;
         if (jsonMode && text) {
           controller.enqueue({
             delta: {

@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "start": "bun run index.ts",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:llm": "bun --cwd test test --timeout 60000"
   },
   "dependencies": {
     "@aigne/cli": "workspace:^"

@@ -45,6 +45,7 @@ aigne run [路径] [选项]
 - `--download-dir <目录>`：下载包的目录（使用URL时），默认为 `~/.aigne/xxx`
 - `--model-provider <提供商>`：要使用的模型提供商，可用提供商：openai、claude、xai（默认为aigne.yaml定义或openai）
 - `--model-name <模型>`：要使用的模型名称，可用模型取决于提供商（默认为aigne.yaml定义或gpt-4o-mini）
+- `--verbose`：启用详细输出模式，显示更多调试信息
 - `--help`：显示命令帮助
 
 #### 示例

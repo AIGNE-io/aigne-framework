@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.1](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.4.0...example-chat-bot-v1.4.1) (2025-04-22)
+
+
+### Bug Fixes
+
+* use bunwrapper launch examples ([#79](https://github.com/AIGNE-io/aigne-framework/issues/79)) ([55022e2](https://github.com/AIGNE-io/aigne-framework/commit/55022e20bb253bac608dad3024600da91e093a69))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.5.1
+
 ## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.3.1...example-chat-bot-v1.4.0) (2025-04-22)
 
 

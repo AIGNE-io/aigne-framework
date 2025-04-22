@@ -3,6 +3,13 @@
 - chore: release v1.2.0
 
 
+## [1.10.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.10.0...aigne-framework-v1.10.1) (2025-04-22)
+
+
+### Bug Fixes
+
+* use bunwrapper launch examples ([#79](https://github.com/AIGNE-io/aigne-framework/issues/79)) ([55022e2](https://github.com/AIGNE-io/aigne-framework/commit/55022e20bb253bac608dad3024600da91e093a69))
+
 ## [1.10.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.9.0...aigne-framework-v1.10.0) (2025-04-22)
 
 

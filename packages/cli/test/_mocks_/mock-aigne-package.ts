@@ -237,10 +237,10 @@ function archiverToReadableStream(archiver: archiver.Archiver) {
         for await (const a of archiver) {
           controller.enqueue(a);
         }
+        controller.close();
       } catch (error) {
         controller.error(error);
       }
-      controller.close();
     },
   });
 }

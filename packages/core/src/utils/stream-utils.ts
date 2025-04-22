@@ -81,10 +81,9 @@ export function asyncGeneratorToReadableStream<T extends Message>(
           }
           if (chunk.done) break;
         }
+        controller.close();
       } catch (error) {
         controller.error(error);
-      } finally {
-        controller.close();
       }
     },
   });

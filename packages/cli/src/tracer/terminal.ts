@@ -67,7 +67,7 @@ export class TerminalTracer {
       [],
       {
         concurrent: true,
-        forceTTY: process.env.CI === "true",
+        forceTTY: true,
         rendererOptions: {
           collapseSubtasks: false,
           writeBottomBarDirectly: true,

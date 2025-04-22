@@ -3,6 +3,13 @@
 - chore: release v1.2.0
 
 
+## [1.11.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.10.1...aigne-framework-v1.11.0) (2025-04-22)
+
+
+### Features
+
+* **cli:** add --verbose option for run command ([#82](https://github.com/AIGNE-io/aigne-framework/issues/82)) ([7adf8be](https://github.com/AIGNE-io/aigne-framework/commit/7adf8be34963e714268457ab8b2ffeb945da5721))
+
 ## [1.10.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.10.0...aigne-framework-v1.10.1) (2025-04-22)
 
 

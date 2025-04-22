@@ -3,6 +3,19 @@
 - chore: release v1.2.0
 
 
+## [1.10.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.9.0...aigne-framework-v1.10.0) (2025-04-22)
+
+
+### Features
+
+* **cli:** render output message with markdown highlight ([#76](https://github.com/AIGNE-io/aigne-framework/issues/76)) ([b2a793a](https://github.com/AIGNE-io/aigne-framework/commit/b2a793a638e5f95d3f68be80f907da40bd7e624a))
+* **stream:** add streaming output support for agent ([#73](https://github.com/AIGNE-io/aigne-framework/issues/73)) ([5f3ea4b](https://github.com/AIGNE-io/aigne-framework/commit/5f3ea4bccda7c8c457d6e9518b3d6a8b254ec041))
+
+
+### Bug Fixes
+
+* **core:** support dynamic model capability detection ([#72](https://github.com/AIGNE-io/aigne-framework/issues/72)) ([9d56d98](https://github.com/AIGNE-io/aigne-framework/commit/9d56d9885778962e5bef806445ad8c4d199f2c65))
+
 ## [1.9.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.8.0...aigne-framework-v1.9.0) (2025-04-20)
 
 

@@ -1,12 +1,12 @@
 import { beforeEach, expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { readableStreamToArray } from "@aigne/core/utils/stream-utils.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
 import {
   COMMON_RESPONSE_FORMAT,
   COMMON_TOOLS,
   createWeatherToolCallMessages,
-  createWeatherToolExpected,
   createWeatherToolMessages,
 } from "../_utils/openai-like-utils.js";
 
@@ -31,10 +31,10 @@ test("OpenAIChatModel.call should return the correct tool", async () => {
     tools: COMMON_TOOLS,
   });
 
-  expect(result).toEqual(createWeatherToolExpected());
+  expect(result).toMatchSnapshot();
 });
 
-test("OpenAIChatModel.call", async () => {
+test("OpenAIChatModel.call should return structured output", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-2.txt"),
@@ -47,26 +47,17 @@ test("OpenAIChatModel.call", async () => {
     responseFormat: COMMON_RESPONSE_FORMAT,
   });
 
-  expect(result).toEqual(
-    expect.objectContaining({
-      json: { text: "The current temperature in New York is 20°C." },
-      usage: {
-        inputTokens: 100,
-        outputTokens: 20,
-      },
-      model: expect.any(String),
-    }),
-  );
+  expect(result).toMatchSnapshot();
 });
 
-test("OpenAIChatModel.call with stream", async () => {
+test("OpenAIChatModel.call with streaming", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
     }),
   );
 
-  const result = await model.call(
+  const stream = await model.call(
     {
       messages: [{ role: "user", content: "hello" }],
     },
@@ -74,31 +65,19 @@ test("OpenAIChatModel.call with stream", async () => {
     { streaming: true },
   );
 
-  const reader = result.getReader();
+  expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
+});
 
-  expect(reader.read()).resolves.toEqual({
-    done: false,
-    value: { delta: { json: { model: expect.any(String) } } },
+test("OpenAIChatModel.call without streaming", async () => {
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
+    createMockEventStream({
+      path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
+    }),
+  );
+
+  const result = await model.call({
+    messages: [{ role: "user", content: "hello" }],
   });
 
-  const texts = ["Hello", "!", " How", " can", " I", " assist", " you", " today", "?"];
-  for (const text of texts) {
-    expect(reader.read()).resolves.toEqual({
-      done: false,
-      value: { delta: { text: { text } } },
-    });
-  }
-
-  expect(reader.read()).resolves.toEqual({
-    done: false,
-    value: {
-      delta: {
-        json: { usage: { inputTokens: expect.any(Number), outputTokens: expect.any(Number) } },
-      },
-    },
-  });
-
-  expect(reader.read()).resolves.toEqual({
-    done: true,
-  });
+  expect(result).toMatchSnapshot();
 });

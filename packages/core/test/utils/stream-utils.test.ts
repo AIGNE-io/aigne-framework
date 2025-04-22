@@ -6,16 +6,12 @@ import {
   asyncGeneratorToReadableStream,
   mergeAgentResponseChunk,
   objectToAgentResponseStream,
+  readableStreamToArray,
 } from "@aigne/core/utils/stream-utils.js";
 
 test("objectToAgentResponseStream should generate stream correctly", async () => {
   const stream = objectToAgentResponseStream({ foo: "foo", bar: "bar" });
-  const reader = stream.getReader();
-  expect(reader.read()).resolves.toEqual({
-    done: false,
-    value: { delta: { json: { foo: "foo", bar: "bar" } } },
-  });
-  expect(reader.read()).resolves.toEqual({ done: true, value: undefined });
+  expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });
 
 test("mergeAgentResponseChunk should merge correctly", async () => {
@@ -81,16 +77,7 @@ test("asyncGeneratorToReadableStream should process readableStream correctly", a
     }),
   );
 
-  const reader = stream.getReader();
-  expect(reader.read()).resolves.toEqual({
-    done: false,
-    value: { delta: { json: { text: "hello" } } },
-  });
-  expect(reader.read()).resolves.toEqual({
-    done: false,
-    value: { delta: { json: { text: "hello, world" } } },
-  });
-  expect(reader.read()).resolves.toEqual({ done: true, value: undefined });
+  expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });
 
 test("arrayToAgentResponseStream should enqueue error", async () => {
@@ -101,10 +88,13 @@ test("arrayToAgentResponseStream should enqueue error", async () => {
 
 test("arrayToAgentResponseStream should enqueue data", async () => {
   const stream = arrayToAgentResponseStream([{ delta: { json: { text: "hello" } } }]);
-  const reader = stream.getReader();
-  expect(reader.read()).resolves.toEqual({
-    done: false,
-    value: { delta: { json: { text: "hello" } } },
-  });
-  expect(reader.read()).resolves.toEqual({ done: true, value: undefined });
+  expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
+});
+
+test("readableStreamToArray should collect chunks correctly", async () => {
+  const stream = arrayToAgentResponseStream([
+    { delta: { text: { text: "hello" } } },
+    { delta: { text: { text: " world" } } },
+  ]);
+  expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });

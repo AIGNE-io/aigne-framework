@@ -1,0 +1,64 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`objectToAgentResponseStream should generate stream correctly 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "bar": "bar",
+        "foo": "foo",
+      },
+    },
+  },
+]
+`;
+
+exports[`asyncGeneratorToReadableStream should process readableStream correctly 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "text": "hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "text": "hello, world",
+      },
+    },
+  },
+]
+`;
+
+exports[`arrayToAgentResponseStream should enqueue data 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "text": "hello",
+      },
+    },
+  },
+]
+`;
+
+exports[`readableStreamToArray should collect chunks correctly 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " world",
+      },
+    },
+  },
+]
+`;

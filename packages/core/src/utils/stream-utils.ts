@@ -163,6 +163,14 @@ export function arrayToAgentResponseStream<T>(
   });
 }
 
+export async function readableStreamToArray<T>(stream: ReadableStream<T>): Promise<T[]> {
+  const result: T[] = [];
+  for await (const value of readableStreamToAsyncIterator(stream)) {
+    result.push(value);
+  }
+  return result;
+}
+
 export async function* readableStreamToAsyncIterator<T>(
   stream: ReadableStream<T>,
 ): AsyncIterable<T> {

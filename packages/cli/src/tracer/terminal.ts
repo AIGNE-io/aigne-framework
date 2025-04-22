@@ -26,6 +26,8 @@ import {
   figures,
 } from "@aigne/listr2";
 import chalk from "chalk";
+import { Marked } from "marked";
+import { markedTerminal } from "marked-terminal";
 import wrap from "wrap-ansi";
 import { z } from "zod";
 import { promiseWithResolvers } from "../utils/promise-with-resolvers.js";
@@ -258,8 +260,11 @@ ${this.formatMessage(data)}`;
     return title;
   }
 
+  private marked = new Marked().use(markedTerminal());
+
   formatAIResponse({ [MESSAGE_KEY]: msg, ...message }: Message = {}) {
-    const text = msg && typeof msg === "string" ? msg : undefined;
+    const text =
+      msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;
     const json = Object.keys(message).length > 0 ? inspect(message, { colors: true }) : undefined;
     return [text, json].filter(Boolean).join("\n");
   }

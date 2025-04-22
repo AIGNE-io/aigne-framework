@@ -55,6 +55,8 @@
     "glob": "^11.0.1",
     "gradient-string": "^3.0.0",
     "inquirer": "^12.5.2",
+    "marked": "^15.0.9",
+    "marked-terminal": "^7.3.0",
     "openai": "^4.94.0",
     "prettier": "^3.5.3",
     "pretty-error": "^4.0.0",

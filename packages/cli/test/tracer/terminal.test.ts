@@ -22,11 +22,7 @@ test("TerminalTracer should work correctly", async () => {
 
   const { result } = await tracer.run(userAgent, createMessage("hello"));
 
-  expect(result).toEqual(
-    expect.objectContaining({
-      $message: "hello, this is a test response message",
-    }),
-  );
+  expect(result).toMatchSnapshot();
 });
 
 test("TerminalTracer should raise error correctly", async () => {
@@ -46,4 +42,27 @@ test("TerminalTracer should raise error correctly", async () => {
   const result = tracer.run(userAgent, createMessage("hello"));
 
   expect(result).rejects.toThrowError("test error");
+});
+
+test("TerminalTracer should render output message with markdown highlight", async () => {
+  const model = new OpenAIChatModel({});
+
+  const engine = new ExecutionEngine({ model });
+  const context = engine.newContext();
+
+  const testAgent = AIAgent.from({});
+
+  spyOn(model, "process").mockReturnValue(
+    Promise.resolve({ text: "## Hello\nI am from [**AIGNE**](https://www.aigne.io)" }),
+  );
+
+  const userAgent = engine.call(testAgent);
+
+  const tracer = new TerminalTracer(context, { verbose: true });
+
+  const formatAIResponse = spyOn(tracer, "formatAIResponse");
+
+  await tracer.run(userAgent, createMessage("hello"));
+
+  expect(formatAIResponse.mock.results.at(-1)).toMatchSnapshot();
 });

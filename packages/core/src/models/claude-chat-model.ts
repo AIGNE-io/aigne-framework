@@ -9,10 +9,17 @@ import type {
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources/index.js";
 import { z } from "zod";
-import type { Message } from "../agents/agent.js";
+import type {
+  AgentCallOptions,
+  AgentResponse,
+  AgentResponseChunk,
+  Message,
+} from "../agents/agent.js";
+import type { Context } from "../execution-engine/context.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
 import { mergeUsage } from "../utils/model-utils.js";
+import { agentResponseStreamToObject } from "../utils/stream-utils.js";
 import { checkArguments, isEmpty, isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
@@ -67,7 +74,11 @@ export class ClaudeChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  async process(input: ChatModelInput): Promise<ChatModelOutput> {
+  async process(
+    input: ChatModelInput,
+    _context: Context,
+    options?: AgentCallOptions,
+  ): Promise<AgentResponse<ChatModelOutput>> {
     const model = this.options?.model || CHAT_MODEL_CLAUDE_DEFAULT_MODEL;
     const disableParallelToolUse =
       input.modelOptions?.parallelToolCalls === false ||
@@ -88,7 +99,11 @@ export class ClaudeChatModel extends ChatModel {
       stream: true,
     });
 
-    const result = await this.extractResultFromClaudeStream(stream);
+    if (options?.streaming && input.responseFormat?.type !== "json_schema") {
+      return this.extractResultFromClaudeStream(stream, true);
+    }
+
+    const result = await this.extractResultFromClaudeStream(stream, false);
 
     // Claude doesn't support json_schema response and tool calls in the same request,
     // so we need to make a separate request for json_schema response when the tool calls is empty
@@ -105,78 +120,103 @@ export class ClaudeChatModel extends ChatModel {
     return result;
   }
 
-  private async extractResultFromClaudeStream(stream: MessageStream) {
+  private async extractResultFromClaudeStream(
+    stream: MessageStream,
+    streaming: false,
+  ): Promise<ChatModelOutput>;
+  private async extractResultFromClaudeStream(
+    stream: MessageStream,
+    streaming: true,
+  ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
+  private async extractResultFromClaudeStream(
+    stream: MessageStream,
+    streaming?: boolean,
+  ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
     const logs: string[] = [];
 
-    try {
-      let text = "";
-      const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-        args: string;
-      })[] = [];
-      let usage: ChatModelOutputUsage | undefined;
-      let model: string | undefined;
+    const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
+      async start(controller) {
+        try {
+          const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
+            args: string;
+          })[] = [];
+          let usage: ChatModelOutputUsage | undefined;
+          let model: string | undefined;
 
-      for await (const chunk of stream) {
-        if (chunk.type === "message_start") {
-          model ??= chunk.message.model;
-          const { input_tokens, output_tokens } = chunk.message.usage;
+          for await (const chunk of stream) {
+            if (chunk.type === "message_start") {
+              if (!model) {
+                model = chunk.message.model;
+                controller.enqueue({ delta: { json: { model } } });
+              }
+              const { input_tokens, output_tokens } = chunk.message.usage;
 
-          usage = {
-            inputTokens: input_tokens,
-            outputTokens: output_tokens,
-          };
+              usage = {
+                inputTokens: input_tokens,
+                outputTokens: output_tokens,
+              };
+            }
+
+            if (chunk.type === "message_delta" && usage) {
+              usage.outputTokens = chunk.usage.output_tokens;
+            }
+
+            logs.push(JSON.stringify(chunk));
+
+            // handle streaming text
+            if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
+              controller.enqueue({ delta: { text: { text: chunk.delta.text } } });
+            }
+
+            if (chunk.type === "content_block_start" && chunk.content_block.type === "tool_use") {
+              toolCalls[chunk.index] = {
+                type: "function",
+                id: chunk.content_block.id,
+                function: {
+                  name: chunk.content_block.name,
+                  arguments: {},
+                },
+                args: "",
+              };
+            }
+
+            if (chunk.type === "content_block_delta" && chunk.delta.type === "input_json_delta") {
+              const call = toolCalls[chunk.index];
+              if (!call) throw new Error("Tool call not found");
+              call.args += chunk.delta.partial_json;
+            }
+          }
+
+          controller.enqueue({ delta: { json: { usage } } });
+
+          if (toolCalls.length) {
+            controller.enqueue({
+              delta: {
+                json: {
+                  toolCalls: toolCalls
+                    .map(({ args, ...c }) => ({
+                      ...c,
+                      function: {
+                        ...c.function,
+                        // NOTE: claude may return a blank string for empty object (the tool's input schema is a empty object)
+                        arguments: args.trim() ? parseJSON(args) : {},
+                      },
+                    }))
+                    .filter(isNonNullable),
+                },
+              },
+            });
+          }
+        } catch (error) {
+          logger.core("Failed to process Claude stream", { error, logs });
+          controller.error(error);
+        } finally {
+          controller.close();
         }
+      },
+    });
 
-        if (chunk.type === "message_delta" && usage) {
-          usage.outputTokens = chunk.usage.output_tokens;
-        }
-
-        logs.push(JSON.stringify(chunk));
-
-        // handle streaming text
-        if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-          text += chunk.delta.text;
-        }
-
-        if (chunk.type === "content_block_start" && chunk.content_block.type === "tool_use") {
-          toolCalls[chunk.index] = {
-            type: "function",
-            id: chunk.content_block.id,
-            function: {
-              name: chunk.content_block.name,
-              arguments: {},
-            },
-            args: "",
-          };
-        }
-
-        if (chunk.type === "content_block_delta" && chunk.delta.type === "input_json_delta") {
-          const call = toolCalls[chunk.index];
-          if (!call) throw new Error("Tool call not found");
-          call.args += chunk.delta.partial_json;
-        }
-      }
-
-      const result: ChatModelOutput = { usage, model, text };
-
-      if (toolCalls.length) {
-        result.toolCalls = toolCalls
-          .map(({ args, ...c }) => ({
-            ...c,
-            function: {
-              ...c.function,
-              // NOTE: claude may return a blank string for empty object (the tool's input schema is a empty object)
-              arguments: args.trim() ? parseJSON(args) : {},
-            },
-          }))
-          .filter(isNonNullable);
-      }
-
-      return result;
-    } catch (error) {
-      logger.core("Failed to process Claude stream", { error, logs });
-      throw error;
-    }
+    return streaming ? result : await agentResponseStreamToObject(result);
   }
 
   private async requestStructuredOutput(

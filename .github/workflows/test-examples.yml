@@ -101,7 +101,6 @@ jobs:
 
       - name: Run examples
         env:
-          INITIAL_CALL: "Hi, this is an initial test. Show your main function by performing a basic task you're designed for."
           SKIP_LOOP: "true"
           PUPPETEER_LAUNCH_OPTIONS: '{"headless": true, "args": ["--no-sandbox", "--disable-setuid-sandbox"]}'
           ALLOW_DANGEROUS: "true"
@@ -124,6 +123,23 @@ jobs:
               echo "Skipping $dir"
             else
               echo "Testing $dir with $MODEL_PROVIDER:$MODEL_NAME"
+              example_name=$(basename "$dir")
+              
+              # 设置 INITIAL_CALL
+              case "$example_name" in
+                "workflow-sequential") export INITIAL_CALL="AIGNE is a No-code Generative AI Apps Engine" ;;
+                "workflow-reflection") export INITIAL_CALL="Write a function to find the sum of all even numbers in a list." ;;
+                "workflow-router") export INITIAL_CALL="How do I use this product?" ;;
+                "workflow-handoff") export INITIAL_CALL="I want a refund" ;;
+                "workflow-code-execution") export INITIAL_CALL="10! = ?" ;;
+                "workflow-concurrency") export INITIAL_CALL="AIGNE is a No-code Generative AI Apps Engine" ;;
+                "mcp-github") export INITIAL_CALL="Search for repositories related to 'aigne-framework'" ;;
+                "mcp-puppeteer") export INITIAL_CALL="What is the content of https://www.arcblock.io" ;;
+                "chat-bot") export INITIAL_CALL="Hi, this is a chat bot test. Please demonstrate your chat capabilities." ;;
+                "mcp-sqlite") export INITIAL_CALL="Test the SQLite database operations." ;;
+                *) export INITIAL_CALL="Hi, this is an initial test. Show your main function by performing a basic task you're designed for." ;;
+              esac
+              
               start_time=$(date +%s)
               cd $dir
               pnpm start || exit 1

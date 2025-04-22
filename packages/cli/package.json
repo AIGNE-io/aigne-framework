@@ -20,7 +20,8 @@
     "templates"
   ],
   "bin": {
-    "aigne": "dist/cli.js"
+    "aigne": "dist/cli.js",
+    "bunwrapper": "dist/bunwrapper.js"
   },
   "type": "module",
   "exports": {

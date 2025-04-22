@@ -1,4 +1,4 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, ExecutionEngine } from "@aigne/core";

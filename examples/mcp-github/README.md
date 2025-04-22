@@ -65,16 +65,17 @@ AI ->> User: Here's the README content: ...
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
 - [GitHub Personal Access Token](https://github.com/settings/tokens) with appropriate permissions
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Setup your OpenAI API key
-export GITHUB_TOKEN=YOUR_GITHUB_TOKEN # Setup your GitHub token
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
+export GITHUB_TOKEN=YOUR_GITHUB_TOKEN # Set your GitHub token
 
 npx -y @aigne/example-mcp-github # Run the example
 ```
@@ -100,8 +101,8 @@ pnpm install
 Setup your API keys in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # Your OpenAI API key
-GITHUB_TOKEN="" # Your GitHub Personal Access Token
+OPENAI_API_KEY="" # Set your OpenAI API key here
+GITHUB_TOKEN="" # Set your GitHub Personal Access Token here
 ```
 
 ### Run the Example

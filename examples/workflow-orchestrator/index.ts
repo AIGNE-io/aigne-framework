@@ -1,4 +1,4 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";

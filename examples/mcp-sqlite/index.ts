@@ -1,4 +1,4 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { join } from "node:path";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";

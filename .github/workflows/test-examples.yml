@@ -94,7 +94,10 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: pnpm build
+        run: |
+          pnpm build
+          # run pnpm install again to make binaries (@aigne/cli: aigne,bunwrapper) available in node_modules/.bin
+          pnpm install
 
       - name: Chmod examples/chat-bot aigne
         run: chmod +x examples/chat-bot/node_modules/@aigne/cli/dist/cli.js

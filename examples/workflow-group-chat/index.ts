@@ -1,4 +1,4 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";

@@ -60,17 +60,18 @@ AI ->> User: There are 10 products in the database.
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
 - [uv](https://github.com/astral-sh/uv) python environment for running [MCP Server SQlite](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite)
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-mcp-sqlite # run the example
+npx -y @aigne/example-mcp-sqlite # Run the example
 ```
 
 ## Installation
@@ -94,7 +95,7 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 ### Run the Example

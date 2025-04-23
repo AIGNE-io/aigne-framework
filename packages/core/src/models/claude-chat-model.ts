@@ -17,7 +17,6 @@ import type {
 } from "../agents/agent.js";
 import type { Context } from "../execution-engine/context.js";
 import { parseJSON } from "../utils/json-schema.js";
-import { logger } from "../utils/logger.js";
 import { mergeUsage } from "../utils/model-utils.js";
 import { agentResponseStreamToObject } from "../utils/stream-utils.js";
 import { checkArguments, isEmpty, isNonNullable } from "../utils/type-utils.js";
@@ -103,7 +102,7 @@ export class ClaudeChatModel extends ChatModel {
       return this.extractResultFromClaudeStream(stream, true);
     }
 
-    const result = await this.extractResultFromClaudeStream(stream, false);
+    const result = await this.extractResultFromClaudeStream(stream);
 
     // Claude doesn't support json_schema response and tool calls in the same request,
     // so we need to make a separate request for json_schema response when the tool calls is empty
@@ -122,7 +121,7 @@ export class ClaudeChatModel extends ChatModel {
 
   private async extractResultFromClaudeStream(
     stream: MessageStream,
-    streaming: false,
+    streaming?: false,
   ): Promise<ChatModelOutput>;
   private async extractResultFromClaudeStream(
     stream: MessageStream,
@@ -209,7 +208,6 @@ export class ClaudeChatModel extends ChatModel {
           }
           controller.close();
         } catch (error) {
-          logger.core("Failed to process Claude stream", { error, logs });
           controller.error(error);
         }
       },

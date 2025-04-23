@@ -26,10 +26,6 @@ importers:
       '@aigne/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/mcp-blocklet:
     dependencies:
@@ -51,10 +47,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/mcp-github:
     dependencies:
@@ -70,10 +62,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/mcp-puppeteer:
     dependencies:
@@ -89,10 +77,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/mcp-sqlite:
     dependencies:
@@ -108,10 +92,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/workflow-code-execution:
     dependencies:
@@ -127,10 +107,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/workflow-concurrency:
     dependencies:
@@ -146,10 +122,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/workflow-group-chat:
     dependencies:
@@ -165,10 +137,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/workflow-handoff:
     dependencies:
@@ -184,10 +152,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/workflow-orchestrator:
     dependencies:
@@ -206,10 +170,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/workflow-reflection:
     dependencies:
@@ -225,10 +185,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/workflow-router:
     dependencies:
@@ -244,10 +200,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   examples/workflow-sequential:
     dependencies:
@@ -263,10 +215,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
 
   packages/agent-library:
     dependencies:
@@ -453,21 +401,6 @@ importers:
       openai:
         specifier: ^4.94.0
         version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/test-utils:
-    devDependencies:
-      '@types/bun':
-        specifier: ^1.2.9
-        version: 1.2.9
-      '@types/node':
-        specifier: ^22.14.1
-        version: 22.14.1
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1

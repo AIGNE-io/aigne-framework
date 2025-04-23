@@ -24,8 +24,5 @@
     "@aigne/core": "workspace:^",
     "openai": "^4.94.0",
     "zod": "^3.24.2"
-  },
-  "devDependencies": {
-    "@aigne/test-utils": "workspace:^"
   }
 }

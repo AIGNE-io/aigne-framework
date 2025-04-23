@@ -20,12 +20,9 @@
   "scripts": {
     "start": "bun run index.ts",
     "lint": "tsc --noEmit",
-    "test:llm": "bun --cwd test test"
+    "test:llm": "bun test index.test.ts"
   },
   "dependencies": {
     "@aigne/cli": "workspace:^"
-  },
-  "devDependencies": {
-    "@aigne/test-utils": "workspace:^"
   }
 }

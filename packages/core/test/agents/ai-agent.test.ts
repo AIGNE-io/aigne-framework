@@ -14,7 +14,7 @@ test.each([true, false])("AIAgent.call with streaming %p", async (streaming) => 
   const agent = AIAgent.from<Message, { [MESSAGE_KEY]: string }>({});
 
   spyOn(model, "process").mockReturnValueOnce(
-    Promise.resolve(stringToAgentResponseStream("Here is a beautify T-shirt")),
+    Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
   );
 
   const result = await agent.call("write a long blog about arcblock", context, { streaming });

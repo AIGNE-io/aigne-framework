@@ -47,7 +47,7 @@ exports[`AIAgent.call with streaming true 1`] = `
   {
     "delta": {
       "text": {
-        "$message": "beautify",
+        "$message": "beautiful",
       },
     },
   },
@@ -84,7 +84,7 @@ exports[`AIAgent.call with streaming true 1`] = `
 
 exports[`AIAgent.call with streaming false 1`] = `
 {
-  "$message": "Here is a beautify T-shirt",
+  "$message": "Here is a beautiful T-shirt",
 }
 `;
 

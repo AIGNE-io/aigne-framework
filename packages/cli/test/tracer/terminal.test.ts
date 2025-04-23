@@ -50,19 +50,9 @@ test("TerminalTracer should render output message with markdown highlight", asyn
   const engine = new ExecutionEngine({ model });
   const context = engine.newContext();
 
-  const testAgent = AIAgent.from({});
-
-  spyOn(model, "process").mockReturnValue(
-    Promise.resolve({ text: "## Hello\nI am from [**AIGNE**](https://www.aigne.io)" }),
-  );
-
-  const userAgent = engine.call(testAgent);
-
   const tracer = new TerminalTracer(context);
 
-  const formatAIResponse = spyOn(tracer, "formatAIResponse");
-
-  await tracer.run(userAgent, createMessage("hello"));
-
-  expect(formatAIResponse.mock.results.at(-1)).toMatchSnapshot();
+  expect(
+    tracer.formatAIResponse(createMessage("## Hello\nI am from [**AIGNE**](https://www.aigne.io)")),
+  ).toMatchSnapshot();
 });

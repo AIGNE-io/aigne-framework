@@ -60,7 +60,6 @@ export class TerminalTracer {
       [],
       {
         concurrent: true,
-        forceTTY: true,
         rendererOptions: {
           collapseSubtasks: false,
           writeBottomBarDirectly: true,

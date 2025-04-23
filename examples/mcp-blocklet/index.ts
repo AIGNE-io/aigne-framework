@@ -14,20 +14,25 @@ import { TerminalOAuthProvider } from "./oauth.js";
 
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
-const { BLOCKLET_APP_URL } = process.env;
-assert(BLOCKLET_APP_URL, "Please set the BLOCKLET_APP_URL environment variable");
-console.info("Connecting to blocklet app", BLOCKLET_APP_URL);
+const rawUrl = process.argv[2] || process.env.BLOCKLET_APP_URL;
+assert(rawUrl, "Please provide a blocklet url as an argument or set the BLOCKLET_APP_URL environment variable");
 
-const appUrl = new URL(BLOCKLET_APP_URL);
+const appUrl = new URL(rawUrl);
 appUrl.pathname = "/.well-known/service/mcp";
+console.info("Connecting to blocklet", appUrl.href);
+
+let transport: StreamableHTTPClientTransport;
 
 const provider = new TerminalOAuthProvider(appUrl.host);
 const authCodePromise = new Promise((resolve, reject) => {
-  provider.once("authorized", resolve);
+  provider.once("authorized", async (code) => {
+    await transport.finishAuth(code);
+    resolve(code);
+  });
   provider.once("error", reject);
 });
 
-const transport = new StreamableHTTPClientTransport(appUrl, {
+transport = new StreamableHTTPClientTransport(appUrl, {
   authProvider: provider,
 });
 
@@ -35,22 +40,25 @@ try {
   let tokens = await provider.tokens();
   if (tokens) {
     let decoded = JWT.decode(tokens.access_token);
-    console.info("Decoded access token:", decoded);
     if (decoded) {
       const now = Date.now();
       const expiresAt = decoded.exp * 1000;
       if (now < expiresAt) {
         console.info("Tokens already exist and not expired, skipping authorization");
       } else if (tokens.refresh_token) {
+        console.info("Access token expired:", { now, expiresAt, decoded });
         decoded = JWT.decode(tokens.refresh_token);
-        console.info("Decoded refresh token:", decoded);
         if (decoded) {
           const now = Date.now();
           const expiresAt = decoded.exp * 1000;
           if (now < expiresAt) {
             console.info("Refresh token already exists and not expired, refreshing authorization");
             try {
+              const oauthUrl = new URL(appUrl.href);
+              oauthUrl.pathname = "/.well-known/oauth-authorization-server";
+              const metadata = await fetch(oauthUrl.href).then((res) => res.json());
               tokens = await refreshAuthorization(appUrl.href, {
+                metadata,
                 // biome-ignore lint/style/noNonNullAssertion: <explanation>
                 clientInformation: (await provider.clientInformation())!,
                 refreshToken: tokens.refresh_token,
@@ -72,7 +80,7 @@ try {
       }
     }
   } else {
-    console.info("No tokens found, starting authorization");
+    console.info("No tokens found, starting authorization...");
     await transport.start();
   }
 } catch (error) {
@@ -87,9 +95,7 @@ try {
   }
 }
 
-console.info("Starting connecting to blocklet mcp...");
-
-const model = await loadModel({ provider: "claude" });
+const model = await loadModel();
 
 const blocklet = await MCPAgent.from({
   url: appUrl.href,

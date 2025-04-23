@@ -49,6 +49,12 @@ BLOCKLET_APP_URL="" # Set your Blocklet app URL here
 pnpm start
 ```
 
+or
+
+```bash
+pnpm start https://your-blocklet-app-url
+```
+
 ## License
 
 This project is licensed under the MIT License.

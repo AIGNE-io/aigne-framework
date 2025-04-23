@@ -1,24 +1,30 @@
 import { expect, spyOn, test } from "bun:test";
+import assert from "node:assert";
 import { AIAgent, ExecutionEngine, MESSAGE_KEY, type Message, createMessage } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { arrayToAgentResponseStream } from "@aigne/core/utils/stream-utils";
+import { readableStreamToArray, stringToAgentResponseStream } from "@aigne/core/utils/stream-utils";
 import { z } from "zod";
+import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 
-test("AIAgent.call", async () => {
+test.each([true, false])("AIAgent.call with streaming %p", async (streaming) => {
   const model = new OpenAIChatModel();
-  const engine = new ExecutionEngine({ model });
 
-  const agent = AIAgent.from({
-    instructions: "You are a friendly chatbot",
-  });
+  const context = new ExecutionEngine({ model }).newContext();
+
+  const agent = AIAgent.from<Message, { [MESSAGE_KEY]: string }>({});
 
   spyOn(model, "process").mockReturnValueOnce(
-    Promise.resolve({ text: "Hello, how can I help you?" }),
+    Promise.resolve(stringToAgentResponseStream("Here is a beautify T-shirt")),
   );
 
-  const result = await engine.call(agent, "hello");
+  const result = await agent.call("write a long blog about arcblock", context, { streaming });
 
-  expect(result).toEqual(createMessage("Hello, how can I help you?"));
+  if (streaming) {
+    assert(result instanceof ReadableStream);
+    expect(readableStreamToArray(result)).resolves.toMatchSnapshot();
+  } else {
+    expect(result).toMatchSnapshot();
+  }
 });
 
 test("AIAgent.call with structured output", async () => {
@@ -72,31 +78,10 @@ test("AIAgent should pass both arguments (model generated) and input (user provi
 
   spyOn(model, "process")
     .mockReturnValueOnce(
-      Promise.resolve({
-        toolCalls: [
-          {
-            id: "plus",
-            type: "function",
-            function: {
-              name: "plus",
-              arguments: { a: 1, b: 1 },
-            },
-          },
-        ],
-      }),
+      Promise.resolve({ toolCalls: [createToolCallResponse("plus", { a: 1, b: 1 })] }),
     )
-    .mockReturnValueOnce(
-      Promise.resolve({
-        json: {
-          sum: 2,
-        },
-      }),
-    )
-    .mockReturnValueOnce(
-      Promise.resolve({
-        text: "The sum is 2",
-      }),
-    );
+    .mockReturnValueOnce(Promise.resolve({ json: { sum: 2 } }))
+    .mockReturnValueOnce(Promise.resolve({ text: "The sum is 2" }));
 
   const result = await engine.call(agent, "1 + 1 = ?");
 
@@ -108,84 +93,42 @@ test("AIAgent should pass both arguments (model generated) and input (user provi
   expect(result).toEqual(createMessage("The sum is 2"));
 });
 
-test("AIAgent with router toolChoice mode should return tool result", async () => {
-  const model = new OpenAIChatModel();
-  const engine = new ExecutionEngine({ model });
+test.each([true, false])(
+  "AIAgent with router toolChoice should return router result with streaming %p",
+  async (streaming) => {
+    const model = new OpenAIChatModel();
+    const engine = new ExecutionEngine({ model });
 
-  const plus = AIAgent.from({
-    name: "plus",
-    instructions: "You are a calculator",
-    inputSchema: z.object({
-      a: z.number(),
-      b: z.number(),
-    }),
-    outputSchema: z.object({
-      sum: z.number(),
-    }),
-  });
+    const sales = AIAgent.from({ name: "sales", inputSchema: z.object({ indent: z.string() }) });
 
-  const agent = AIAgent.from({
-    instructions: "You are a friendly chatbot",
-    tools: [plus],
-    toolChoice: "router",
-  });
+    const agent = AIAgent.from({
+      tools: [sales],
+      toolChoice: "router",
+    });
 
-  const plusCall = spyOn(plus, "call");
+    const salesCall = spyOn(sales, "call");
 
-  spyOn(model, "process")
-    .mockReturnValueOnce(
-      Promise.resolve({
-        toolCalls: [
-          {
-            id: "plus",
-            type: "function",
-            function: {
-              name: "plus",
-              arguments: { a: 1, b: 1 },
-            },
-          },
-        ],
-      }),
-    )
-    .mockReturnValueOnce(Promise.resolve({ json: { sum: 2 } }));
+    spyOn(model, "process")
+      .mockReturnValueOnce(
+        Promise.resolve({ toolCalls: [createToolCallResponse("sales", { indent: "T-shirt" })] }),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
+      );
 
-  const result = await engine.call(agent, "1 + 1 = ?");
+    const result = await engine.call(agent, "Hello, I want to buy a T-shirt", { streaming });
 
-  expect(plusCall).toHaveBeenCalledWith(
-    { ...createMessage("1 + 1 = ?"), a: 1, b: 1 },
-    expect.anything(),
-    expect.anything(),
-  );
-  expect(result).toEqual({ sum: 2 });
-});
+    if (streaming) {
+      assert(result instanceof ReadableStream);
+      expect(readableStreamToArray(result)).resolves.toMatchSnapshot();
+    } else {
+      expect(result).toMatchSnapshot();
+    }
 
-test("AIAgent.call with streaming output", async () => {
-  const model = new OpenAIChatModel();
-
-  const context = new ExecutionEngine({ model }).newContext();
-
-  const agent = AIAgent.from<Message, { [MESSAGE_KEY]: string }>({});
-
-  spyOn(model, "process").mockReturnValueOnce(
-    Promise.resolve(
-      arrayToAgentResponseStream([
-        { delta: { text: { text: "Here " } } },
-        { delta: { text: { text: "is " } } },
-      ]),
-    ),
-  );
-
-  const result = await agent.call("write a long blog about arcblock", context, { streaming: true });
-
-  const reader = result.getReader();
-
-  expect(reader.read()).resolves.toEqual({
-    done: false,
-    value: { delta: { text: createMessage("Here ") } },
-  });
-  expect(reader.read()).resolves.toEqual({
-    done: false,
-    value: { delta: { text: createMessage("is ") } },
-  });
-  expect(reader.read()).resolves.toEqual({ done: true, value: undefined });
-});
+    expect(salesCall).toHaveBeenCalledWith(
+      { ...createMessage("Hello, I want to buy a T-shirt"), indent: "T-shirt" },
+      expect.anything(),
+      expect.anything(),
+    );
+  },
+);

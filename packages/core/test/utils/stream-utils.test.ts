@@ -7,6 +7,7 @@ import {
   mergeAgentResponseChunk,
   objectToAgentResponseStream,
   readableStreamToArray,
+  stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
 
 test("objectToAgentResponseStream should generate stream correctly", async () => {
@@ -97,4 +98,16 @@ test("readableStreamToArray should collect chunks correctly", async () => {
     { delta: { text: { text: " world" } } },
   ]);
   expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
+});
+
+test("stringToAgentResponseStream should generate stream correctly", async () => {
+  expect(
+    readableStreamToArray(stringToAgentResponseStream("Hello, How can I assist you today?")),
+  ).resolves.toMatchSnapshot();
+});
+
+test("stringToAgentResponseStream should generate stream with Chinese correctly", async () => {
+  expect(
+    readableStreamToArray(stringToAgentResponseStream("你好，我能帮你什么？", "custom_text")),
+  ).resolves.toMatchSnapshot();
 });

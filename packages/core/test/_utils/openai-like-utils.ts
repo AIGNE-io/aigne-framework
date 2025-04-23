@@ -2,6 +2,7 @@ import { expect } from "bun:test";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
+  type Message,
   SystemMessageTemplate,
   ToolMessageTemplate,
   UserMessageTemplate,
@@ -9,6 +10,7 @@ import {
 import type {
   ChatModelInputResponseFormat,
   ChatModelInputTool,
+  ChatModelOutputToolCall,
 } from "@aigne/core/models/chat-model";
 
 export const COMMON_TOOLS: ChatModelInputTool[] = [
@@ -83,3 +85,17 @@ export const createWeatherToolCallMessages = () =>
     ]),
     ToolMessageTemplate.from({ temperature: 20 }, "get_weather"),
   ]).format();
+
+export function createToolCallResponse(
+  functionName: string,
+  args: Message,
+): ChatModelOutputToolCall {
+  return {
+    id: functionName,
+    type: "function",
+    function: {
+      name: functionName,
+      arguments: args,
+    },
+  };
+}

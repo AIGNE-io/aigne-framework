@@ -1,10 +1,12 @@
 import equal from "fast-deep-equal";
-import type {
-  AgentProcessAsyncGenerator,
-  AgentResponseChunk,
-  AgentResponseStream,
-  Message,
+import {
+  type AgentProcessAsyncGenerator,
+  type AgentResponseChunk,
+  type AgentResponseStream,
+  type Message,
+  isEmptyChunk,
 } from "../agents/agent.js";
+import type { MESSAGE_KEY } from "../prompt/prompt-builder.js";
 import { type PromiseOrValue, omitBy } from "./type-utils.js";
 
 export function objectToAgentResponseStream<T extends Message>(json: T): AgentResponseStream<T> {
@@ -104,8 +106,7 @@ export function onAgentResponseStreamEnd<T extends Message>(
 
         for await (const value of readableStreamToAsyncIterator(stream)) {
           const chunk = options?.processChunk ? options.processChunk(value) : value;
-
-          controller.enqueue(chunk);
+          if (!isEmptyChunk(chunk)) controller.enqueue(chunk);
 
           mergeAgentResponseChunk(json, value);
         }
@@ -179,4 +180,16 @@ export async function* readableStreamToAsyncIterator<T>(
     if (done) break;
     yield value;
   }
+}
+
+export function stringToAgentResponseStream(
+  str: string,
+  key: "text" | typeof MESSAGE_KEY | string = "text",
+): AgentResponseStream<Message> {
+  const segmenter = new Intl.Segmenter(undefined, { granularity: "word" });
+  const segments = segmenter.segment(str);
+
+  return arrayToAgentResponseStream(
+    Array.from(segments).map((segment) => ({ delta: { text: { [key]: segment.segment } } })),
+  );
 }

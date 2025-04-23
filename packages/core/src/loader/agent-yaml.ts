@@ -38,15 +38,13 @@ const agentFileSchema = z.discriminatedUnion("type", [
       .transform((v) => v ?? undefined),
     memory: z
       .union([
-        z.boolean().transform((v) => v || undefined),
+        z.boolean(),
         z.object({
-          subscribe_topic: z
-            .array(z.string())
-            .nullish()
-            .transform((v) => v ?? undefined),
+          subscribe_topic: z.array(z.string()),
         }),
       ])
-      .transform((v) => v ?? undefined),
+      .nullish()
+      .transform((v) => v || undefined),
   }),
   z.object({
     type: z.literal("mcp"),

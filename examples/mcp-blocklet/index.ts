@@ -6,7 +6,7 @@ import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { UnauthorizedError, refreshAuthorization } from "@modelcontextprotocol/sdk/client/auth.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 // @ts-ignore
 import JWT from "jsonwebtoken";
 
@@ -19,7 +19,7 @@ assert(BLOCKLET_APP_URL, "Please set the BLOCKLET_APP_URL environment variable")
 console.info("Connecting to blocklet app", BLOCKLET_APP_URL);
 
 const appUrl = new URL(BLOCKLET_APP_URL);
-appUrl.pathname = "/.well-known/service/mcp/sse";
+appUrl.pathname = "/.well-known/service/mcp";
 
 const provider = new TerminalOAuthProvider(appUrl.host);
 const authCodePromise = new Promise((resolve, reject) => {
@@ -27,7 +27,7 @@ const authCodePromise = new Promise((resolve, reject) => {
   provider.once("error", reject);
 });
 
-const transport = new SSEClientTransport(appUrl, {
+const transport = new StreamableHTTPClientTransport(appUrl, {
   authProvider: provider,
 });
 
@@ -89,11 +89,12 @@ try {
 
 console.info("Starting connecting to blocklet mcp...");
 
-const model = await loadModel();
+const model = await loadModel({ provider: "claude" });
 
 const blocklet = await MCPAgent.from({
   url: appUrl.href,
   timeout: 8000,
+  transport: "streamableHttp",
   opts: {
     authProvider: provider,
   },

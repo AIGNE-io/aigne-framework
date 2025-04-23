@@ -37,7 +37,7 @@ importers:
         version: link:../../packages/core
       '@modelcontextprotocol/sdk':
         specifier: ^1.9.0
-        version: 1.9.0
+        version: 1.10.2
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -254,7 +254,7 @@ importers:
         version: 7.3.1(marked@15.0.9)
       '@modelcontextprotocol/sdk':
         specifier: ^1.9.0
-        version: 1.9.0
+        version: 1.10.2
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
@@ -335,8 +335,8 @@ importers:
         specifier: ^1.3.3
         version: 1.3.3(zod@3.24.2)
       '@modelcontextprotocol/sdk':
-        specifier: ^1.9.0
-        version: 1.9.0
+        specifier: ^1.10.2
+        version: 1.10.2
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -618,8 +618,8 @@ packages:
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
     engines: {node: '>=18.0.0'}
 
-  '@modelcontextprotocol/sdk@1.9.0':
-    resolution: {integrity: sha512-Jq2EUCQpe0iyO5FGpzVYDNFR6oR53AIrwph9yWl7uSc7IWUMsrmpmSaTGra5hQNunXpM+9oit85p924jWuHzUA==}
+  '@modelcontextprotocol/sdk@1.10.2':
+    resolution: {integrity: sha512-rb6AMp2DR4SN+kc6L1ta2NCpApyA9WYNx3CrTSZvGxq9wH71bRur+zRqPfg0vQ9mjywR7qZdX2RGHOPq3ss+tA==}
     engines: {node: '>=18'}
 
   '@pkgjs/parseargs@0.11.0':
@@ -2467,7 +2467,7 @@ snapshots:
     dependencies:
       minipass: 7.1.2
 
-  '@modelcontextprotocol/sdk@1.9.0':
+  '@modelcontextprotocol/sdk@1.10.2':
     dependencies:
       content-type: 1.0.5
       cors: 2.8.5

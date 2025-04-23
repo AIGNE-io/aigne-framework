@@ -34,7 +34,7 @@ import {
 import { type PromiseOrValue, checkArguments, createAccessorArray } from "../utils/type-utils.js";
 import { Agent, type AgentOptions, type Message } from "./agent.js";
 
-const MCP_AGENT_CLIENT_NAME = "AIGNEFramework/MCPAgent";
+const MCP_AGENT_CLIENT_NAME = "AIGNE/MCPAgent";
 const MCP_AGENT_CLIENT_VERSION = "1.10.0"; // This should match the version in package.json
 const DEFAULT_MAX_RECONNECTS = 10;
 const DEFAULT_TIMEOUT = () =>

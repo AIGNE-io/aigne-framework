@@ -353,7 +353,7 @@ function checkAgentInputOutputSchema<I extends Message>(
   | ZodObject<{ [key in keyof I]: ZodType<I[key]> }>
   | ((agent: Agent) => ZodType) {
   if (!(schema instanceof ZodObject) && typeof schema !== "function") {
-    throw new Error("schema must be a zod object or function return a zod object ");
+    throw new Error(`schema must be a zod object or function return a zod object, got: ${typeof schema}`);
   }
 }
 

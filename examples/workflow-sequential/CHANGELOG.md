@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.8.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.7.2...example-workflow-sequential-v1.8.0) (2025-04-23)
+
+
+### Features
+
+* **tests:** add example tests and update the ci configuration ([#81](https://github.com/AIGNE-io/aigne-framework/issues/81)) ([777bb8d](https://github.com/AIGNE-io/aigne-framework/commit/777bb8d184c21e74b3eb9bbb4a1003708409a338))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.7.0
+    * @aigne/core bumped to 1.11.0
+
 ## [1.7.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.7.1...example-workflow-sequential-v1.7.2) (2025-04-22)
 
 

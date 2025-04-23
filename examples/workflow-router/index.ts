@@ -12,7 +12,6 @@ const productSupport = AIAgent.from({
   instructions: `You are an agent capable of handling any product-related questions.
   Your goal is to provide accurate and helpful information about the product.
   Be polite, professional, and ensure the user feels supported.`,
-  outputKey: "product_support",
   memory: true,
 });
 
@@ -22,7 +21,6 @@ const feedback = AIAgent.from({
   instructions: `You are an agent capable of handling any feedback-related questions.
   Your goal is to listen to the user's feedback, acknowledge their input, and provide appropriate responses.
   Be empathetic, understanding, and ensure the user feels heard.`,
-  outputKey: "feedback",
   memory: true,
 });
 
@@ -32,7 +30,6 @@ const other = AIAgent.from({
   instructions: `You are an agent capable of handling any general questions.
   Your goal is to provide accurate and helpful information on a wide range of topics.
   Be friendly, knowledgeable, and ensure the user feels satisfied with the information provided.`,
-  outputKey: "other",
   memory: true,
 });
 

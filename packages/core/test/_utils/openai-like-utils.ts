@@ -29,24 +29,6 @@ export const COMMON_TOOLS: ChatModelInputTool[] = [
   },
 ];
 
-export const COMMON_RESPONSE_FORMAT: ChatModelInputResponseFormat = {
-  type: "json_schema",
-  jsonSchema: {
-    name: "output",
-    schema: {
-      type: "object",
-      properties: {
-        text: {
-          type: "string",
-        },
-      },
-      required: ["text"],
-      additionalProperties: false,
-    },
-    strict: true,
-  },
-};
-
 const createBaseMessages = () => [
   SystemMessageTemplate.from("You are a chatbot"),
   UserMessageTemplate.from([{ type: "text", text: "What is the weather in New York?" }]),
@@ -83,3 +65,21 @@ export const createWeatherToolCallMessages = () =>
     ]),
     ToolMessageTemplate.from({ temperature: 20 }, "get_weather"),
   ]).format();
+
+export const COMMON_RESPONSE_FORMAT: ChatModelInputResponseFormat = {
+  type: "json_schema",
+  jsonSchema: {
+    name: "output",
+    schema: {
+      type: "object",
+      properties: {
+        text: {
+          type: "string",
+        },
+      },
+      required: ["text"],
+      additionalProperties: false,
+    },
+    strict: true,
+  },
+};

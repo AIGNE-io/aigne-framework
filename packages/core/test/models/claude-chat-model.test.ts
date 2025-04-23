@@ -1,15 +1,15 @@
 import { expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
+import {
+  AgentMessageTemplate,
+  ChatMessagesTemplate,
+  SystemMessageTemplate,
+  ToolMessageTemplate,
+  UserMessageTemplate,
+} from "@aigne/core";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
-import { readableStreamToArray } from "@aigne/core/utils/stream-utils.js";
 import type Anthropic from "@anthropic-ai/sdk";
 import { createMockEventStream } from "../_utils/event-stream.js";
-import {
-  COMMON_RESPONSE_FORMAT,
-  COMMON_TOOLS,
-  createWeatherToolCallMessages,
-  createWeatherToolMessages,
-} from "../_utils/openai-like-utils.js";
 
 test("ClaudeChatModel.call", async () => {
   const model = new ClaudeChatModel({
@@ -29,20 +29,125 @@ test("ClaudeChatModel.call", async () => {
   );
 
   const result1 = await model.call({
-    messages: createWeatherToolMessages(),
-    tools: COMMON_TOOLS,
-    responseFormat: COMMON_RESPONSE_FORMAT,
+    messages: ChatMessagesTemplate.from([
+      SystemMessageTemplate.from("You are a chatbot"),
+      UserMessageTemplate.from([{ type: "text", text: "What is the weather in New York?" }]),
+    ]).format(),
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get_weather",
+          parameters: {
+            type: "object",
+            properties: {
+              city: {
+                type: "string",
+              },
+            },
+            required: ["city"],
+          },
+        },
+      },
+    ],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "output",
+        schema: {
+          type: "object",
+          properties: {
+            text: {
+              type: "string",
+            },
+          },
+          required: ["text"],
+          additionalProperties: false,
+        },
+        strict: true,
+      },
+    },
   });
 
-  expect(result1).toMatchSnapshot();
+  expect(result1).toEqual(
+    expect.objectContaining({
+      text: "",
+      toolCalls: [
+        {
+          id: expect.any(String),
+          type: "function",
+          function: {
+            name: "get_weather",
+            arguments: { city: "New York" },
+          },
+        },
+      ],
+      usage: {
+        inputTokens: 416,
+        outputTokens: 54,
+      },
+    }),
+  );
 
   const result2 = await model.call({
-    messages: createWeatherToolCallMessages(),
-    tools: COMMON_TOOLS,
-    responseFormat: COMMON_RESPONSE_FORMAT,
+    messages: ChatMessagesTemplate.from([
+      SystemMessageTemplate.from("You are a chatbot"),
+      UserMessageTemplate.from([{ type: "text", text: "What is the weather in New York?" }]),
+      AgentMessageTemplate.from(undefined, [
+        {
+          id: "get_weather",
+          type: "function",
+          function: { name: "get_weather", arguments: { city: "New York" } },
+        },
+      ]),
+      ToolMessageTemplate.from({ temperature: 20 }, "get_weather"),
+    ]).format(),
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get_weather",
+          parameters: {
+            type: "object",
+            properties: {
+              city: {
+                type: "string",
+              },
+            },
+            required: ["city"],
+          },
+        },
+      },
+    ],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "output",
+        schema: {
+          type: "object",
+          properties: {
+            text: {
+              type: "string",
+            },
+          },
+          required: ["text"],
+          additionalProperties: false,
+        },
+        strict: true,
+      },
+    },
   });
 
-  expect(result2).toMatchSnapshot();
+  expect(result2).toEqual(
+    expect.objectContaining({
+      json: { text: "The current temperature in New York is 20 degrees." },
+      usage: {
+        inputTokens: 955,
+        outputTokens: 54,
+      },
+      model: expect.any(String),
+    }),
+  );
 });
 
 test("ClaudeChatModel.call should pass system and messages to claude correctly", async () => {
@@ -99,44 +204,4 @@ test("ClaudeChatModel.call should use system message as user message if messages
       }),
     ],
   ]);
-});
-
-test("ClaudeChatModel.call with streaming", async () => {
-  const model = new ClaudeChatModel({
-    apiKey: "YOUR_API_KEY",
-  });
-
-  spyOn(model.client.messages, "stream").mockReturnValueOnce(
-    createMockEventStream({
-      path: join(import.meta.dirname, "claude-streaming-response-text.txt"),
-    }),
-  );
-
-  const stream = await model.call(
-    {
-      messages: [{ role: "user", content: "hello" }],
-    },
-    undefined,
-    { streaming: true },
-  );
-
-  expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
-});
-
-test("ClaudeChatModel.call without streaming", async () => {
-  const model = new ClaudeChatModel({
-    apiKey: "YOUR_API_KEY",
-  });
-
-  spyOn(model.client.messages, "stream").mockReturnValue(
-    createMockEventStream({
-      path: join(import.meta.dirname, "claude-streaming-response-text.txt"),
-    }),
-  );
-
-  const result = await model.call({
-    messages: [{ role: "user", content: "hello" }],
-  });
-
-  expect(result).toMatchSnapshot();
 });

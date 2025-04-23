@@ -87,6 +87,10 @@ tools:
   - `required`: 必须返回的参数列表
 - `output_key`: 【可选】输出文本的键名（默认为 `$message`，仅当没有 `output_schema` 时有效）
 - `tools`: 【可选】代理可以使用的工具列表（JavaScript 文件，实现特定功能）
+- `memory`: 【可选】启用代理的对话记忆功能。可以是：
+  - 布尔值（`true` 启用，`false` 禁用）
+  - 包含配置选项的对象：
+    - `subscribe_topic`: 代理应该订阅的记忆主题数组
 
 ## JavaScript 格式代理定义 (plus.js)
 

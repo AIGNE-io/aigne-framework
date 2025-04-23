@@ -16,18 +16,36 @@ AIGNE Framework 是一个功能型 AI 应用开发框架，旨在简化和加速
 
 - **模块化设计**：采用清晰的模块化结构，开发者可以轻松组织代码，提高开发效率，简化维护工作。
 - **TypeScript 支持**：提供全面的 TypeScript 类型定义，确保类型安全并增强开发体验。
+- **多种 AI 模型支持**：内置支持 OpenAI、Gemini、Claude 等主流 AI 模型，可轻松扩展支持其他模型。
+- **灵活的工作流模式**：支持顺序、并发、路由、交接等多种工作流模式，满足各种复杂应用场景需求。
+- **MCP 协议集成**：通过模型上下文协议（Model Context Protocol）支持与外部系统和服务的无缝集成。
+- **代码执行能力**：支持在安全沙箱中执行动态生成的代码，实现更强大的自动化能力。
 - **Blocklet 生态系统集成**：与 Blocklet 生态系统紧密集成，为开发者提供一站式开发和部署解决方案。
 
-## 使用示例
+## 快速开始
+
+### 安装
+
+```bash
+# 使用 npm
+npm install @aigne/core
+
+# 使用 yarn
+yarn add @aigne/core
+
+# 使用 pnpm
+pnpm add @aigne/core
+```
+
+### 使用示例
 
 ```ts
 import { AIAgent, ExecutionEngine } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
 
 const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-  model: DEFAULT_CHAT_MODEL,
+  apiKey: process.env.OPENAI_API_KEY,
+  model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
 });
 
 function transferToAgentB() {
@@ -74,17 +92,19 @@ const response = await userAgent.call("transfer to agent b");
 - [代理开发指南](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): 使用 YAML/JS 配置文件开发 AIGNE 代理的指南
 - [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): AIGNE Framework API 使用的实用方案和模式
 - API 参考:
-  - [Agent API](./docs/apis/agent-api.md) ([English](./docs/apis/agent-api.en.md) | [中文](./docs/apis/agent-api.zh.md))
-  - [AI Agent API](./docs/apis/ai-agent-api.md) ([English](./docs/apis/ai-agent-api.en.md) | [中文](./docs/apis/ai-agent-api.zh.md))
-  - [Function Agent API](./docs/apis/function-agent-api.md) ([English](./docs/apis/function-agent-api.en.md) | [中文](./docs/apis/function-agent-api.zh.md))
-  - [MCP Agent API](./docs/apis/mcp-agent-api.md) ([English](./docs/apis/mcp-agent-api.en.md) | [中文](./docs/apis/mcp-agent-api.zh.md))
-  - [Execution Engine API](./docs/apis/execution-engine-api.md) ([English](./docs/apis/execution-engine-api.en.md) | [中文](./docs/apis/execution-engine-api.zh.md))
+  - [Agent API](./docs/apis/agent-api.md) ([English](./docs/apis/agent-api.md) | [中文](./docs/apis/agent-api.zh.md))
+  - [AI Agent API](./docs/apis/ai-agent-api.md) ([English](./docs/apis/ai-agent-api.md) | [中文](./docs/apis/ai-agent-api.zh.md))
+  - [Function Agent API](./docs/apis/function-agent-api.md) ([English](./docs/apis/function-agent-api.md) | [中文](./docs/apis/function-agent-api.zh.md))
+  - [MCP Agent API](./docs/apis/mcp-agent-api.md) ([English](./docs/apis/mcp-agent-api.md) | [中文](./docs/apis/mcp-agent-api.zh.md))
+  - [Execution Engine API](./docs/apis/execution-engine-api.md) ([English](./docs/apis/execution-engine-api.md) | [中文](./docs/apis/execution-engine-api.zh.md))
 
 ## 架构
 
-AIGNE Framework 支持多种工作流模式，以满足不同 AI 应用需求：
+AIGNE Framework 支持多种工作流模式，以满足不同 AI 应用需求。每种工作流模式都针对特定的应用场景进行了优化：
 
-### 顺序工作流
+### 顺序工作流（Sequential Workflow）
+
+**适用场景**：处理需要按特定顺序执行的多步骤任务，如内容生成管道、多阶段数据处理等。
 
 ```mermaid
 flowchart LR
@@ -106,7 +126,9 @@ class writer processing
 class formatProof processing
 ```
 
-### 并发工作流
+### 并发工作流（Concurrent Workflow）
+
+**适用场景**：需要同时处理多个独立任务以提高效率的场景，如并行数据分析、多维度内容评估等。
 
 ```mermaid
 flowchart LR
@@ -130,7 +152,9 @@ class audienceAnalyzer processing
 class aggregator processing
 ```
 
-### 路由工作流
+### 路由工作流（Router Workflow）
+
+**适用场景**：根据输入内容类型将请求路由到不同专业处理器的场景，如智能客服系统、多功能助手等。
 
 ```mermaid
 flowchart LR
@@ -157,7 +181,9 @@ class feedback processing
 class other processing
 ```
 
-### 交接工作流
+### 交接工作流（Handoff Workflow）
+
+**适用场景**：需要在不同专业代理之间传递控制权以解决复杂问题的场景，如专家协作系统等。
 
 ```mermaid
 flowchart LR
@@ -178,7 +204,9 @@ class agentA processing
 class agentB processing
 ```
 
-### 反思工作流
+### 反思工作流（Reflection Workflow）
+
+**适用场景**：需要自我评估和迭代改进输出质量的场景，如代码审查、内容质量控制等。
 
 ```mermaid
 flowchart LR
@@ -199,7 +227,9 @@ class coder processing
 class reviewer processing
 ```
 
-### 代码执行工作流
+### 代码执行工作流（Code Execution Workflow）
+
+**适用场景**：需要动态生成并执行代码来解决问题的场景，如自动化数据分析、算法问题求解等。
 
 ```mermaid
 flowchart LR
@@ -259,7 +289,14 @@ Coder ->> User: 10!（10的阶乘）的值是 3,628,800。
 
 ## 贡献与发布
 
-AIGNE Framework 使用 [release-please](https://github.com/googleapis/release-please) 进行版本管理和发布自动化。有关发布流程和贡献指南的详细信息，请参阅 [RELEASING.zh.md](./RELEASING.zh.md) 和 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+AIGNE Framework 是一个开源项目，欢迎社区贡献。我们使用 [release-please](https://github.com/googleapis/release-please) 进行版本管理和发布自动化。
+
+- 贡献指南：请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md)
+- 发布流程：请参阅 [RELEASING.zh.md](./RELEASING.zh.md)
+
+## 许可证
+
+本项目采用 [MIT 许可证](./LICENSE) 授权 - 详情请查看 [LICENSE](./LICENSE) 文件。
 
 ## 社区与支持
 

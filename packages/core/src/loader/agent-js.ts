@@ -1,6 +1,7 @@
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { type ZodFunction, type ZodObject, type ZodTuple, type ZodType, z } from "zod";
 import type { Message } from "../agents/agent.js";
+import { customCamelize } from "../utils/camelize.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { inputOutputSchema } from "./schema.js";
 
@@ -31,13 +32,14 @@ export async function loadAgentFromJsFile(path: string) {
 
   return tryOrThrow(
     () =>
-      agentJsFileSchema.parse({
-        name: agent.agent_name || agent.name,
-        description: agent.description,
-        input_schema: agent.input_schema,
-        output_schema: agent.output_schema,
-        fn: agent,
-      }),
+      customCamelize(
+        agentJsFileSchema.parse({
+          ...agent,
+          name: agent.agent_name || agent.name,
+          fn: agent,
+        }),
+        { shallowKeys: ["input_schema", "output_schema"] },
+      ),
     (error) => new Error(`Failed to parse agent from ${path}: ${error.message}`),
   );
 }

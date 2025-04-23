@@ -6,7 +6,7 @@
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
 [![NPM Version](https://img.shields.io/npm/v/@aigne/core)](https://www.npmjs.com/package/@aigne/core)
-[![MIT licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
 ## AIGNE Framework 简介
 
@@ -296,7 +296,7 @@ AIGNE Framework 是一个开源项目，欢迎社区贡献。我们使用 [relea
 
 ## 许可证
 
-本项目采用 [MIT 许可证](./LICENSE) 授权 - 详情请查看 [LICENSE](./LICENSE) 文件。
+本项目采用 [Elastic-2.0](./LICENSE) 授权 - 详情请查看 [LICENSE](./LICENSE) 文件。
 
 ## 社区与支持
 

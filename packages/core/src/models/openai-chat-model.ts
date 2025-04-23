@@ -435,10 +435,9 @@ async function extractResultFromStream(
             },
           });
         }
+        controller.close();
       } catch (error) {
         controller.error(error);
-      } finally {
-        controller.close();
       }
     },
   });

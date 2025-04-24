@@ -17,49 +17,8 @@ export async function mockMCPStreamableHTTPServer(port: number) {
 
   const app = express();
 
-  // Serve Service MCP server
-  app.get("/mcp", (_: Request, res: Response) => {
-    res.writeHead(405).end(
-      JSON.stringify({
-        jsonrpc: "2.0",
-        error: {
-          code: -32000,
-          message: "Method not allowed.",
-        },
-        id: null,
-      }),
-    );
-  });
-
-  app.delete("/mcp", (_: Request, res: Response) => {
-    res.writeHead(405).end(
-      JSON.stringify({
-        jsonrpc: "2.0",
-        error: {
-          code: -32000,
-          message: "Method not allowed.",
-        },
-        id: null,
-      }),
-    );
-  });
-
   app.post("/mcp", async (req: Request, res: Response) => {
-    try {
-      await transport.handleRequest(req, res);
-    } catch (error) {
-      console.error("failed to handle MCP request", { request: req.body, error });
-      if (!res.headersSent) {
-        res.status(500).json({
-          jsonrpc: "2.0",
-          error: {
-            code: -32603,
-            message: "Internal server error",
-          },
-          id: null,
-        });
-      }
-    }
+    await transport.handleRequest(req, res);
   });
 
   await server.connect(transport);

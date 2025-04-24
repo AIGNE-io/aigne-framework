@@ -19,7 +19,17 @@ async function makeMcpAssertions(mcp: MCPAgent) {
     }),
   );
 
-  expect(mcp.tools.error?.call({ message: "Custom Error" })).rejects.toThrowError("Custom Error");
+  expect(await mcp.tools.error?.call({ message: "Custom Error" })).toEqual(
+    expect.objectContaining({
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: "Custom Error",
+        },
+      ],
+    }),
+  );
 
   expect(mcp.prompts.map((i) => i.name)).toEqual(["echo"]);
   const prompt = await mcp.prompts.echo?.call({ message: "AIGNE" });

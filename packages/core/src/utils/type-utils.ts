@@ -2,7 +2,7 @@ import { type ZodType, z } from "zod";
 
 export type PromiseOrValue<T> = T | Promise<T>;
 
-export type Nullish<T> = T | null | undefined;
+export type Nullish<T> = T | null | undefined | void;
 
 export type OmitPropertiesFromArrayFirstElement<
   T extends unknown[],
@@ -115,7 +115,15 @@ export function checkArguments<T>(prefix: string, schema: ZodType<T>, args: T): 
 export function tryOrThrow<P extends PromiseOrValue<unknown>>(
   fn: () => P,
   error: string | Error | ((error: Error) => Error),
-): P {
+): P;
+export function tryOrThrow<P extends PromiseOrValue<unknown>>(
+  fn: () => P,
+  error?: Nullish<string | Error | ((error: Error) => Nullish<Error>)>,
+): P | undefined;
+export function tryOrThrow<P extends PromiseOrValue<unknown>>(
+  fn: () => P,
+  error?: Nullish<string | Error | ((error: Error) => Nullish<Error>)>,
+): P | undefined {
   const createError = (e: Error) => {
     return typeof error === "function"
       ? error(e)
@@ -129,12 +137,14 @@ export function tryOrThrow<P extends PromiseOrValue<unknown>>(
 
     if (result instanceof Promise) {
       return result.catch((e) => {
-        throw createError(e);
+        const error = createError(e);
+        if (error) throw error;
       }) as P;
     }
 
     return result;
   } catch (e) {
-    throw createError(e);
+    const error = createError(e);
+    if (error) throw error;
   }
 }

@@ -1,0 +1,134 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExecutionEngineClient should return correct response for {
+  streaming: false,
+} 1`] = `
+{
+  "$message": "Hello! How can I assist you today?",
+}
+`;
+
+exports[`ExecutionEngineClient should return correct response for {
+  streaming: true,
+} 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello!",
+      },
+      "text": {
+        "$message": "!",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How",
+      },
+      "text": {
+        "$message": " How",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can",
+      },
+      "text": {
+        "$message": " can",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I",
+      },
+      "text": {
+        "$message": " I",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I assist",
+      },
+      "text": {
+        "$message": " assist",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I assist you",
+      },
+      "text": {
+        "$message": " you",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I assist you today",
+      },
+      "text": {
+        "$message": " today",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I assist you today?",
+      },
+      "text": {
+        "$message": "?",
+      },
+    },
+  },
+]
+`;
+
+exports[`ExecutionEngineClient should return error response for {
+  streaming: true,
+} 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello, world",
+      },
+      "text": {
+        "$message": ", world",
+      },
+    },
+  },
+  [Error: test error],
+]
+`;

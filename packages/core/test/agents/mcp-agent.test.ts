@@ -7,7 +7,7 @@ import { mockMCPSSEServer } from "../_mocks/mock-mcp-server-sse.js";
 import { mockMCPStreamableHTTPServer } from "../_mocks/mock-mcp-server-streamable-http.js";
 
 async function makeMcpAssertions(mcp: MCPAgent) {
-  expect(mcp.tools.map((i) => i.name)).toEqual(["echo"]);
+  expect(mcp.tools.map((i) => i.name)).toEqual(["echo", "error"]);
   expect(await mcp.tools.echo?.call({ message: "AIGNE" })).toEqual(
     expect.objectContaining({
       content: [
@@ -17,6 +17,10 @@ async function makeMcpAssertions(mcp: MCPAgent) {
         },
       ],
     }),
+  );
+
+  expect(mcp.tools.error?.call({ message: "Custom Error" })).rejects.toThrowError(
+    "Custom Error",
   );
 
   expect(mcp.prompts.map((i) => i.name)).toEqual(["echo"]);

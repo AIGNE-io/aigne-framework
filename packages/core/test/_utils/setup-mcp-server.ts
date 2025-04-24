@@ -19,6 +19,10 @@ export function setupMCPHandlers(server: McpServer) {
     content: [{ type: "text", text: `Tool echo: ${message}` }],
   }));
 
+  server.tool("error", { message: z.string() }, async ({ message }) => {
+    throw new Error(message);
+  });
+
   server.prompt("echo", { message: z.string() }, ({ message }) => ({
     messages: [
       {

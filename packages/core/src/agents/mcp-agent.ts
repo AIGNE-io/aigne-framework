@@ -15,12 +15,13 @@ import {
 import type { RequestOptions } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { UriTemplate } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
-import type {
-  CallToolResult,
-  GetPromptResult,
-  Implementation,
-  ReadResourceResult,
-  Request,
+import {
+  CallToolResultSchema,
+  type CallToolResult,
+  type GetPromptResult,
+  type Implementation,
+  type ReadResourceResult,
+  type Request,
 } from "@modelcontextprotocol/sdk/types.js";
 import pRetry from "p-retry";
 import { type ZodType, z } from "zod";
@@ -333,8 +334,17 @@ export abstract class MCPBase<I extends Message, O extends Message> extends Agen
 export class MCPTool extends MCPBase<Message, CallToolResult> {
   async process(input: Message): Promise<CallToolResult> {
     const result = await this.client.callTool({ name: this.name, arguments: input });
+    const parsed = CallToolResultSchema.safeParse(result);
+    if (parsed.success) {
+      logger.mcp("MCPTool result: %O", parsed.data);
+      if (parsed.data.isError) {
+        throw new Error(parsed.data.content.map((i) => i.text).join("\n"));
+      }
 
-    return result as CallToolResult;
+      return parsed.data;
+    }
+
+    throw parsed.error;
   }
 }
 

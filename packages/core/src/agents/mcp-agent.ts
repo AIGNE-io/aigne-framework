@@ -4,14 +4,14 @@ import {
   type SSEClientTransportOptions,
 } from "@modelcontextprotocol/sdk/client/sse.js";
 import {
-  StreamableHTTPClientTransport,
-  type StreamableHTTPClientTransportOptions,
-} from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import {
   StdioClientTransport,
   type StdioServerParameters,
   getDefaultEnvironment,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
+import {
+  StreamableHTTPClientTransport,
+  type StreamableHTTPClientTransportOptions,
+} from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import type { RequestOptions } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { UriTemplate } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";

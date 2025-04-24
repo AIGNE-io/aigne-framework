@@ -15,7 +15,10 @@ import { TerminalOAuthProvider } from "./oauth.js";
 logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
 const rawUrl = process.argv[2] || process.env.BLOCKLET_APP_URL;
-assert(rawUrl, "Please provide a blocklet url as an argument or set the BLOCKLET_APP_URL environment variable");
+assert(
+  rawUrl,
+  "Please provide a blocklet url as an argument or set the BLOCKLET_APP_URL environment variable",
+);
 
 const appUrl = new URL(rawUrl);
 appUrl.pathname = "/.well-known/service/mcp";

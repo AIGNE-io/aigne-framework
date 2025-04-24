@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { z, ZodFirstPartyTypeKind } from "zod";
-import { toolFromMCPTool } from "../../src/utils/mcp-utils.js";
 import type { ListToolsResult } from "@modelcontextprotocol/sdk/types.js";
+import { ZodFirstPartyTypeKind, z } from "zod";
 import type { MCPBaseOptions } from "../../src/agents/mcp-agent.js";
+import { toolFromMCPTool } from "../../src/utils/mcp-utils.js";
 
 describe("toolFromMCPTool", () => {
   const mockOptions: MCPBaseOptions = {

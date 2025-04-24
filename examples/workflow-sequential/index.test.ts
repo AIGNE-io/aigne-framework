@@ -1,8 +1,7 @@
 import { expect, test } from "bun:test";
 import { runExampleTest } from "@aigne/test-utils/run-example-test.js";
 
-test("should successfully run the workflow-sequential", () => {
-  const { output, status } = runExampleTest();
-  console.log(output.toString());
-  expect(status).toBe(0);
+test("should successfully run the workflow-sequential", async () => {
+  const { code } = await runExampleTest();
+  expect(code).toBe(0);
 });

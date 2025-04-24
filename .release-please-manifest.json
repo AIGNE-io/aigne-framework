@@ -3,6 +3,7 @@
   "packages/agent-library": "1.6.1",
   "packages/core": "1.11.0",
   "packages/cli": "1.7.0",
+  "packages/test-utils": "0.0.1",
   "examples/mcp-github": "1.8.0",
   "examples/mcp-puppeteer": "1.8.0",
   "examples/mcp-sqlite": "1.8.0",

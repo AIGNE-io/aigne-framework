@@ -20,7 +20,7 @@
   "scripts": {
     "start": "bun run index.ts",
     "lint": "tsc --noEmit",
-    "test:llm": "bun test index.test.ts --timeout 300000"
+    "test:llm": "bun test index.test.ts --timeout 600000"
   },
   "dependencies": {
     "@aigne/cli": "workspace:^"

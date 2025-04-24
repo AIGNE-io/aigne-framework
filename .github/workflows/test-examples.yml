@@ -99,9 +99,6 @@ jobs:
           # run pnpm install again to make binaries (@aigne/cli: aigne,bunwrapper) available in node_modules/.bin
           pnpm install
 
-      - name: Chmod examples/chat-bot aigne
-        run: chmod +x examples/chat-bot/node_modules/@aigne/cli/dist/cli.js
-
       - name: Run examples
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

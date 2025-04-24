@@ -87,6 +87,10 @@ tools:
   - `required`: List of parameters that must be returned
 - `output_key`: [Optional] Key name for output text (default is `$message`, only valid when there is no `output_schema`)
 - `tools`: [Optional] List of tools the agent can use (JavaScript files implementing specific functionality)
+- `memory`: [Optional] Enables conversation memory for the agent. Can be:
+  - A boolean value (`true` to enable, `false` to disable)
+  - An object with configuration options:
+    - `subscribe_topic`: Array of topics the agent should subscribe to for memory
 
 ## JavaScript Format Agent Definition (plus.js)
 

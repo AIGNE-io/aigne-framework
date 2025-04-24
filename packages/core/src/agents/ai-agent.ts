@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { Context } from "../execution-engine/context.js";
 import { ChatModel } from "../models/chat-model.js";
 import type {
+  ChatModelInput,
   ChatModelInputMessage,
   ChatModelOutput,
   ChatModelOutputToolCall,
@@ -89,7 +90,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     const model = context.model ?? this.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
-    const { toolAgents, messages, ...modelInput } = await this.instructions.build({
+    const { toolAgents, ...modelInput } = await this.instructions.build({
       agent: this,
       input,
       model,
@@ -97,6 +98,11 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     });
 
     const toolsMap = new Map<string, Agent>(toolAgents?.map((i) => [i.name, i]));
+
+    if (this.toolChoice === "router") {
+      yield* this.processRouter(input, model, modelInput, context, toolsMap);
+      return;
+    }
 
     const toolCallMessages: ChatModelInputMessage[] = [];
     const outputKey = this.outputKey || MESSAGE_KEY;
@@ -106,7 +112,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
       const stream = await context.call(
         model,
-        { ...modelInput, messages: messages.concat(toolCallMessages) },
+        { ...modelInput, messages: modelInput.messages.concat(toolCallMessages) },
         { streaming: true },
       );
 
@@ -160,18 +166,6 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
             ),
           );
 
-          // Return the output of the first tool if the toolChoice is "router"
-          if (this.toolChoice === "router") {
-            const output = executedToolCalls[0]?.output;
-            const { supportsParallelToolCalls } = model.getModelCapabilities();
-
-            if (!output || (supportsParallelToolCalls && executedToolCalls.length !== 1)) {
-              throw new Error("Router toolChoice requires exactly one tool to be executed");
-            }
-
-            return output;
-          }
-
           continue;
         }
       }
@@ -189,5 +183,32 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
       }
       return;
     }
+  }
+
+  async *processRouter(
+    input: I,
+    model: ChatModel,
+    modelInput: ChatModelInput,
+    context: Context,
+    toolsMap: Map<string, Agent>,
+  ): AgentProcessAsyncGenerator<O | TransferAgentOutput> {
+    const {
+      toolCalls: [call] = [],
+    } = await context.call(model, modelInput);
+
+    if (!call) {
+      throw new Error("Router toolChoice requires exactly one tool to be executed");
+    }
+
+    const tool = toolsMap.get(call.function.name);
+    if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
+
+    const stream = await context.call(
+      tool,
+      { ...call.function.arguments, ...input },
+      { streaming: true },
+    );
+
+    yield* readableStreamToAsyncIterator(stream);
   }
 }

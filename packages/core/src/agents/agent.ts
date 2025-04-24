@@ -15,6 +15,7 @@ import {
   type PromiseOrValue,
   checkArguments,
   createAccessorArray,
+  isEmpty,
   orArrayToArray,
 } from "../utils/type-utils.js";
 import { AgentMemory, type AgentMemoryOptions } from "./memory.js";
@@ -311,6 +312,10 @@ export type AgentResponse<T> = T | AgentResponseStream<T>;
 export type AgentResponseStream<T> = ReadableStream<AgentResponseChunk<T>>;
 
 export type AgentResponseChunk<T> = AgentResponseDelta<T>;
+
+export function isEmptyChunk<T>(chunk: AgentResponseChunk<T>): boolean {
+  return isEmpty(chunk.delta.json) && isEmpty(chunk.delta.text);
+}
 
 export interface AgentResponseDelta<T> {
   delta: {

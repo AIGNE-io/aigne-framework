@@ -49,29 +49,19 @@ export async function load(options: LoadOptions) {
 export async function loadAgent(path: string): Promise<Agent> {
   if (extname(path) === ".js") {
     const agent = await loadAgentFromJsFile(path);
-    return FunctionAgent.from({
-      name: agent.name,
-      description: agent.description,
-      inputSchema: agent.input_schema,
-      outputSchema: agent.output_schema,
-      fn: agent.fn,
-    });
+    return FunctionAgent.from(agent);
   }
 
   if (extname(path) === ".yaml" || extname(path) === ".yml") {
     const agent = await loadAgentFromYamlFile(path);
     if (agent.type === "ai") {
       return AIAgent.from({
-        name: agent.name,
-        description: agent.description,
-        instructions: agent.instructions,
-        inputSchema: agent.input_schema,
-        outputSchema: agent.output_schema,
-        outputKey: agent.output_key,
-        tools: await Promise.all(
-          (agent.tools ?? []).map((filename) => loadAgent(join(dirname(path), filename))),
-        ),
-        toolChoice: agent.tool_choice,
+        ...agent,
+        tools:
+          agent.tools &&
+          (await Promise.all(
+            agent.tools.map((filename) => loadAgent(join(dirname(path), filename))),
+          )),
       });
     }
     if (agent.type === "mcp") {

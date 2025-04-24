@@ -1,9 +1,0 @@
----
-description:
-globs:
-alwaysApply: true
----
-- Use `pnpm` to manage dependencies, and `pnpm workspaces` is used for inner repo dependencies
-- Use `biome` for formatting and linting, run `pnpm lint:fix` to format code
-- Use `bun` to run scripts or examples, please do not use `node`
-- Use `bun:test` to write unit tests

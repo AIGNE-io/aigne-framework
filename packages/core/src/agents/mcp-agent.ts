@@ -16,8 +16,8 @@ import type { RequestOptions } from "@modelcontextprotocol/sdk/shared/protocol.j
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { UriTemplate } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
 import {
-  CallToolResultSchema,
   type CallToolResult,
+  CallToolResultSchema,
   type GetPromptResult,
   type Implementation,
   type ReadResourceResult,

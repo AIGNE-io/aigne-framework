@@ -4,7 +4,7 @@ import {
   outputSchemaToResponseFormatSchema,
   parseJSON,
 } from "@aigne/core/utils/json-schema.js";
-import { logger } from "@aigne/core/utils/logger";
+import { logger } from "@aigne/core/utils/logger.js";
 import { z } from "zod";
 
 test("ensureZodUnionArray should throw error if the unions is empty array", async () => {

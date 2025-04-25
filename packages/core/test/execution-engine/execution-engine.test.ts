@@ -8,8 +8,8 @@ import {
   UserOutputTopic,
   createMessage,
   createPublishMessage,
-  sequential,
 } from "@aigne/core";
+import { TeamAgent } from "@aigne/core/agents/team-agent.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { mockOpenAIStreaming } from "../_mocks/mock-openai-streaming.js";
 
@@ -115,9 +115,14 @@ test("ExecutionEngine should throw error if reached max tokens", async () => {
   });
 
   expect(engine.call(agent, "test")).resolves.toEqual(createMessage("hello"));
-  expect(engine.call(sequential(agent, agent), "test")).rejects.toThrow(
-    "Exceeded max tokens 300/200",
-  );
+  expect(
+    engine.call(
+      TeamAgent.from({
+        tools: [agent, agent],
+      }),
+      "test",
+    ),
+  ).rejects.toThrow("Exceeded max tokens 300/200");
 });
 
 test("ExecutionEngine should throw timeout error", async () => {

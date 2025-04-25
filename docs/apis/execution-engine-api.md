@@ -94,14 +94,14 @@ Calls an agent with a message and returns the output. This method has multiple o
 // Create a user agent to consistently call an agent
 // Returns a UserAgent instance for continuous interaction with the execution engine
 // Suitable for scenarios requiring multi-turn dialogue or continuous interaction
-call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
+call<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
 
 // Call an agent with a message
 // Calls the specified agent with the provided message
 // Returns the output of the agent
 // Suitable for scenarios where a single interaction is needed
 call<I extends Message, O extends Message>(
-  agent: Runnable<I, O>,
+  agent: Agent<I, O>,
   message: I | string,
   options?: { streaming?: false }
 ): Promise<O>;
@@ -111,7 +111,7 @@ call<I extends Message, O extends Message>(
 // Returns a stream of response chunks as they become available
 // Suitable for real-time processing or displaying incremental results
 call<I extends Message, O extends Message>(
-  agent: Runnable<I, O>,
+  agent: Agent<I, O>,
   message: I | string,
   options: { streaming: true }
 ): Promise<AgentResponseStream<O>>;
@@ -121,25 +121,25 @@ call<I extends Message, O extends Message>(
 // Returns the output of the agent and the final active agent
 // Suitable for scenarios where the active agent needs to be tracked
 call<I extends Message, O extends Message>(
-  agent: Runnable<I, O>,
+  agent: Agent<I, O>,
   message: I | string,
   options: { returnActiveAgent: true; streaming?: false },
-): Promise<[O, Runnable]>;
+): Promise<[O, Agent]>;
 
 // Call an agent with a message and return a stream of response chunks and the active agent promise
 // Calls the specified agent with the provided message
 // Returns a stream of response chunks and a promise that resolves to the final active agent
 // Suitable for real-time processing while tracking the active agent
 call<I extends Message, O extends Message>(
-  agent: Runnable<I, O>,
+  agent: Agent<I, O>,
   message: I | string,
   options: { returnActiveAgent: true; streaming: true },
-): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
+): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
 ```
 
 ##### Parameters
 
-- `agent`: `Runnable<I, O>` - Agent or function to call
+- `agent`: `Agent<I, O>` - Agent to call
 - `message`: `I | string` - Message to pass to the agent
 - `options`: `{ returnActiveAgent?: boolean }` - Options for the call
 
@@ -147,7 +147,7 @@ call<I extends Message, O extends Message>(
 
 - `UserAgent<I, O>` - When only the agent parameter is provided, returns a UserAgent instance for continuous interaction
 - `Promise<O>` - When the message parameter is provided, returns the processing result
-- `Promise<[O, Runnable]>` - When the options parameter is provided, returns the processing result and the active agent
+- `Promise<[O, Agent]>` - When the options parameter is provided, returns the processing result and the active agent
 
 #### `shutdown`
 
@@ -159,47 +159,8 @@ async shutdown()
 
 ## Utility Functions
 
-### `sequential`
-
-Creates a function that executes multiple Agents sequentially.
-
-```typescript
-function sequential(...agents: [Runnable, ...Runnable[]]): FunctionAgentFn
-```
-
-#### Parameters
-
-- `agents`: `[Runnable, ...Runnable[]]` - List of Agents to execute sequentially
-
-#### Returns
-
-- `FunctionAgentFn` - Returns a function that executes the specified Agents sequentially and merges their outputs
-
-### `parallel`
-
-Creates a function that executes multiple Agents in parallel.
-
-```typescript
-function parallel(...agents: [Runnable, ...Runnable[]]): FunctionAgentFn
-```
-
-#### Parameters
-
-- `agents`: `[Runnable, ...Runnable[]]` - List of Agents to execute in parallel
-
-#### Returns
-
-- `FunctionAgentFn` - Returns a function that executes the specified Agents in parallel and merges their outputs
 
 ## Related Types
-
-### `Runnable`
-
-Defines the type of entities that can be run.
-
-```typescript
-type Runnable = Agent | FunctionAgentFn;
-```
 
 ### `UserAgent`
 

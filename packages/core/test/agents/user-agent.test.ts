@@ -6,7 +6,7 @@ import {
   createMessage,
   createPublishMessage,
 } from "@aigne/core";
-import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils";
+import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 
 test("UserAgent.stream", async () => {
   const engine = new ExecutionEngine({});

@@ -55,14 +55,14 @@ async function loadAgentV1Package(path: string) {
 }
 
 function assistantToAigneV2(agent: AgentV1, project: ProjectDefinitionV1) {
-  const converter = RUNNABLE_MAP[agent.type];
+  const converter = AGENT_MAP[agent.type];
 
-  if (!converter) throw new Error(`Unsupported runnable type: ${agent.type}`);
+  if (!converter) throw new Error(`Unsupported agent type: ${agent.type}`);
 
   return converter(agent, project);
 }
 
-const RUNNABLE_MAP: {
+const AGENT_MAP: {
   [key: string]: (
     agent: AgentV1,
     project: ProjectDefinitionV1,
@@ -70,7 +70,7 @@ const RUNNABLE_MAP: {
 } = {
   prompt: (agent: AgentV1) => {
     if (agent.type !== "prompt")
-      throw new Error(`Expected runnable type 'prompt', but got '${agent.type}'`);
+      throw new Error(`Expected agent type 'prompt', but got '${agent.type}'`);
 
     const obj = {
       name: agent.name || agent.id,
@@ -92,7 +92,7 @@ const RUNNABLE_MAP: {
   },
   function: async (agent: AgentV1) => {
     if (agent.type !== "function")
-      throw new Error(`Expected runnable type 'function', but got '${agent.type}'`);
+      throw new Error(`Expected agent type 'function', but got '${agent.type}'`);
 
     const inputNames = agent.parameters?.map((i) => i.key).filter(Boolean) ?? [];
 
@@ -114,7 +114,7 @@ agent.output_schema = ${JSON.stringify(convertOutputSchema(agent))};
   },
   router: (agent: AgentV1, project: ProjectDefinitionV1) => {
     if (agent.type !== "router")
-      throw new Error(`Expected runnable type 'router', but got '${agent.type}'`);
+      throw new Error(`Expected agent type 'router', but got '${agent.type}'`);
 
     return {
       content: stringify({

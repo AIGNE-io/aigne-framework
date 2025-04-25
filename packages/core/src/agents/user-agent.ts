@@ -1,28 +1,29 @@
 import { ReadableStream } from "node:stream/web";
-import { type Context, type Runnable, createPublishMessage } from "../execution-engine/context.js";
+import { type Context, createPublishMessage } from "../execution-engine/context.js";
 import type { MessagePayload, Unsubscribe } from "../execution-engine/message-queue.js";
-import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
-import { type PromiseOrValue, orArrayToArray } from "../utils/type-utils.js";
+import { orArrayToArray } from "../utils/type-utils.js";
 import {
-  Agent,
+  type Agent,
   type AgentCallOptions,
   type AgentOptions,
-  type AgentProcessAsyncGenerator,
+  type AgentProcessResult,
   type AgentResponseStream,
+  FunctionAgent,
+  type FunctionAgentFn,
   type Message,
 } from "./agent.js";
 
 export interface UserAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
   context: Context;
-  process?: (input: I, context: Context) => PromiseOrValue<O>;
-  activeAgent?: Runnable;
+  process?: FunctionAgentFn<I, O>;
+  activeAgent?: Agent;
 }
 
-export class UserAgent<I extends Message = Message, O extends Message = Message> extends Agent<
-  I,
-  O
-> {
+export class UserAgent<
+  I extends Message = Message,
+  O extends Message = Message,
+> extends FunctionAgent<I, O> {
   static from<I extends Message, O extends Message>(
     options: UserAgentOptions<I, O>,
   ): UserAgent<I, O> {
@@ -38,9 +39,9 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
   context: Context;
 
-  private _process?: (input: I, context: Context) => PromiseOrValue<O>;
+  private _process?: FunctionAgentFn<I, O>;
 
-  private activeAgent?: Runnable;
+  private activeAgent?: Agent;
 
   override call = ((input: string | I, context?: Context, options?: AgentCallOptions) => {
     if (!context) this.context = this.context.newContext({ reset: true });
@@ -48,10 +49,9 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     return super.call(input, context ?? this.context, options);
   }) as Agent<I, O>["call"];
 
-  async *process(input: I, context: Context): AgentProcessAsyncGenerator<O> {
+  async process(input: I, context: Context): Promise<AgentProcessResult<O>> {
     if (this._process) {
-      yield { delta: { json: await this._process(input, context) } };
-      return;
+      return this._process(input, context);
     }
 
     if (this.activeAgent) {
@@ -62,8 +62,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
       agent.then((agent) => {
         this.activeAgent = agent;
       });
-      yield* readableStreamToAsyncIterator(output as AgentResponseStream<O>);
-      return;
+      return output as AgentResponseStream<O>;
     }
 
     const publicTopic =
@@ -71,7 +70,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
     if (publicTopic?.length) {
       context.publish(publicTopic, createPublishMessage(input, this));
-      return;
+      return {} as AgentProcessResult<O>;
     }
 
     throw new Error("UserAgent must have a process function or a publishTopic");

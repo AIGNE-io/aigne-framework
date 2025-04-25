@@ -94,14 +94,14 @@ unsubscribe(topic: string, listener: (message: AgentOutput) => void)
 // 创建一个用户代理以持续调用 Agent
 // 返回一个 UserAgent 实例，用于持续与执行引擎交互
 // 适合需要多轮对话或持续交互的场景
-call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
+call<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
 
 // 使用消息调用 Agent
 // 使用提供的消息调用指定的 Agent
 // 返回 Agent 的输出
 // 适合需要单次交互的场景
 call<I extends Message, O extends Message>(
-  agent: Runnable<I, O>,
+  agent: Agent<I, O>,
   message: I | string,
   options?: { streaming?: false }
 ): Promise<O>;
@@ -111,7 +111,7 @@ call<I extends Message, O extends Message>(
 // 返回实时的响应块流，而不是等待完整响应
 // 适合实时处理或显示增量结果的场景
 call<I extends Message, O extends Message>(
-  agent: Runnable<I, O>,
+  agent: Agent<I, O>,
   message: I | string,
   options: { streaming: true }
 ): Promise<AgentResponseStream<O>>;
@@ -121,25 +121,25 @@ call<I extends Message, O extends Message>(
 // 返回 Agent 的输出和最终活动的 Agent
 // 适合需要跟踪活动 Agent 的场景
 call<I extends Message, O extends Message>(
-  agent: Runnable<I, O>,
+  agent: Agent<I, O>,
   message: I | string,
   options: { returnActiveAgent: true; streaming?: false },
-): Promise<[O, Runnable]>;
+): Promise<[O, Agent]>;
 
 // 使用消息调用 Agent 并返回响应块流和活动 Agent 的 Promise
 // 使用提供的消息调用指定的 Agent
 // 返回响应块流和一个解析为最终活动 Agent 的 Promise
 // 适合在跟踪活动 Agent 的同时进行实时处理
 call<I extends Message, O extends Message>(
-  agent: Runnable<I, O>,
+  agent: Agent<I, O>,
   message: I | string,
   options: { returnActiveAgent: true; streaming: true },
-): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
+): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
 ```
 
 ##### 参数
 
-- `agent`: `Runnable<I, O>` - 要调用的 Agent 或函数
+- `agent`: `Agent<I, O>` - 要调用的 Agent
 - `message`: `I | string` - 要传递给 Agent 的消息
 - `options`: `{ returnActiveAgent?: boolean }` - 调用选项
 
@@ -147,7 +147,7 @@ call<I extends Message, O extends Message>(
 
 - `UserAgent<I, O>` - 当仅提供 agent 参数时，返回可用于持续交互的 UserAgent 实例
 - `Promise<O>` - 当提供 message 参数时，返回处理结果
-- `Promise<[O, Runnable]>` - 当提供 options 参数时，返回处理结果和活动的 Agent
+- `Promise<[O, Agent]>` - 当提供 options 参数时，返回处理结果和活动的 Agent
 
 #### `shutdown`
 
@@ -157,49 +157,9 @@ call<I extends Message, O extends Message>(
 async shutdown()
 ```
 
-## 工具函数
 
-### `sequential`
-
-创建一个按顺序执行多个 Agent 的函数。
-
-```typescript
-function sequential(...agents: [Runnable, ...Runnable[]]): FunctionAgentFn
-```
-
-#### 参数
-
-- `agents`: `[Runnable, ...Runnable[]]` - 要按顺序执行的 Agent 列表
-
-#### 返回值
-
-- `FunctionAgentFn` - 返回一个函数，该函数按顺序执行指定的 Agent 并合并它们的输出
-
-### `parallel`
-
-创建一个并行执行多个 Agent 的函数。
-
-```typescript
-function parallel(...agents: [Runnable, ...Runnable[]]): FunctionAgentFn
-```
-
-#### 参数
-
-- `agents`: `[Runnable, ...Runnable[]]` - 要并行执行的 Agent 列表
-
-#### 返回值
-
-- `FunctionAgentFn` - 返回一个函数，该函数并行执行指定的 Agent 并合并它们的输出
 
 ## 相关类型
-
-### `Runnable`
-
-定义可运行的实体类型。
-
-```typescript
-type Runnable = Agent | FunctionAgentFn;
-```
 
 ### `UserAgent`
 

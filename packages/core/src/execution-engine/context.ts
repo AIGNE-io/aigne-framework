@@ -35,10 +35,6 @@ import {
 } from "./message-queue.js";
 import { type ContextLimits, type ContextUsage, newEmptyContextUsage } from "./usage.js";
 
-export type Runnable<I extends Message = Message, O extends Message = Message> =
-  | Agent<I, O>
-  | FunctionAgentFn;
-
 export interface AgentEvent {
   parentContextId?: string;
   contextId: string;
@@ -80,7 +76,7 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
    * @param agent Agent to call
    * @returns User agent
    */
-  call<I extends Message, O extends Message>(agent: Runnable<I, O>): UserAgent<I, O>;
+  call<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
   /**
    * Call an agent with a message and return the output and the active agent
    * @param agent Agent to call
@@ -90,15 +86,15 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
    * @returns the output of the agent and the final active agent
    */
   call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
+    agent: Agent<I, O>,
     message: I | string,
     options: CallOptions & { returnActiveAgent: true; streaming?: false },
-  ): Promise<[O, Runnable]>;
+  ): Promise<[O, Agent]>;
   call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
+    agent: Agent<I, O>,
     message: I | string,
     options: CallOptions & { returnActiveAgent: true; streaming: true },
-  ): Promise<[AgentResponseStream<O>, Promise<Runnable>]>;
+  ): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
   /**
    * Call an agent with a message
    * @param agent Agent to call
@@ -106,20 +102,20 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
    * @returns the output of the agent
    */
   call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
+    agent: Agent<I, O>,
     message: I | string,
     options?: CallOptions & { streaming?: false },
   ): Promise<O>;
   call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
+    agent: Agent<I, O>,
     message: I | string,
     options: CallOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
   call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
+    agent: Agent<I, O>,
     message?: I | string,
     options?: CallOptions,
-  ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Runnable]>;
+  ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]>;
 
   /**
    * Publish a message to a topic, the engine will call the listeners of the topic
@@ -230,7 +226,7 @@ export class ExecutionContext implements Context {
           return output;
         }
 
-        const activeAgentPromise = Promise.withResolvers<Runnable>();
+        const activeAgentPromise = Promise.withResolvers<Agent>();
 
         const stream = onAgentResponseStreamEnd(
           asyncGeneratorToReadableStream(response),
@@ -264,7 +260,7 @@ export class ExecutionContext implements Context {
     );
   }) as Context["call"];
 
-  private async onCallSuccess(activeAgent: Runnable, output: Message, context: Context) {
+  private async onCallSuccess(activeAgent: Agent, output: Message, context: Context) {
     if (activeAgent instanceof Agent) {
       const publishTopics =
         typeof activeAgent.publishTopic === "function"
@@ -371,11 +367,11 @@ class ExecutionContextInternal {
   }
 
   call<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
+    agent: Agent<I, O>,
     input: I,
     context: Context,
     options?: CallOptions,
-  ): AgentProcessAsyncGenerator<O & { __activeAgent__: Runnable }> {
+  ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
     this.initTimeout();
 
     return withAbortSignal(
@@ -386,35 +382,25 @@ class ExecutionContextInternal {
   }
 
   private async *callAgent<I extends Message, O extends Message>(
-    agent: Runnable<I, O>,
+    agent: Agent<I, O>,
     input: I,
     context: Context,
     options?: CallOptions,
-  ): AgentProcessAsyncGenerator<O & { __activeAgent__: Runnable }> {
-    let activeAgent: Runnable = agent;
+  ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
+    let activeAgent: Agent = agent;
     let output: O | undefined;
 
     for (;;) {
-      let result: Message | Agent;
-      if (typeof activeAgent === "function") {
-        result = await activeAgent(input, context);
-      } else {
-        result = {};
+      const result: Message = {};
 
-        const stream = await activeAgent.call(input, context, { streaming: true });
-        for await (const value of readableStreamToAsyncIterator(stream)) {
-          if (value.delta.text) {
-            yield { delta: { text: value.delta.text } as Message };
-          }
-          if (value.delta.json) {
-            Object.assign(result, value.delta.json);
-          }
+      const stream = await activeAgent.call(input, context, { streaming: true });
+      for await (const value of readableStreamToAsyncIterator(stream)) {
+        if (value.delta.text) {
+          yield { delta: { text: value.delta.text } as Message };
         }
-      }
-
-      if (result instanceof Agent) {
-        activeAgent = result;
-        continue;
+        if (value.delta.json) {
+          Object.assign(result, value.delta.json);
+        }
       }
 
       if (!options?.disableTransfer) {

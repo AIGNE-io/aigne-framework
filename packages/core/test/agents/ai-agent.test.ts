@@ -2,7 +2,10 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, ExecutionEngine, MESSAGE_KEY, type Message, createMessage } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { readableStreamToArray, stringToAgentResponseStream } from "@aigne/core/utils/stream-utils";
+import {
+  readableStreamToArray,
+  stringToAgentResponseStream,
+} from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
 import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 

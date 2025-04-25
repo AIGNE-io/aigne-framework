@@ -17,7 +17,7 @@ import {
   type AgentProcessAsyncGenerator,
   type Message,
 } from "./agent.js";
-import { type TransferAgentOutput, isTransferAgentOutput } from "./types.js";
+import { isTransferAgentOutput } from "./types.js";
 
 export interface AIAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
@@ -86,7 +86,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
   toolChoice?: AIAgentToolChoice;
 
-  async *process(input: I, context: Context): AgentProcessAsyncGenerator<O | TransferAgentOutput> {
+  async *process(input: I, context: Context): AgentProcessAsyncGenerator<O> {
     const model = context.model ?? this.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
@@ -191,7 +191,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     modelInput: ChatModelInput,
     context: Context,
     toolsMap: Map<string, Agent>,
-  ): AgentProcessAsyncGenerator<O | TransferAgentOutput> {
+  ): AgentProcessAsyncGenerator<O> {
     const {
       toolCalls: [call] = [],
     } = await context.call(model, modelInput);

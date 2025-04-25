@@ -203,7 +203,10 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
       this.checkContextStatus(ctx);
 
-      const response = await this.process(parsedInput, ctx, options);
+      let response = await this.process(parsedInput, ctx, options);
+      if (response instanceof Agent) {
+        response = transferToAgentOutput(response);
+      }
 
       if (options?.streaming) {
         const stream =
@@ -296,7 +299,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     input: I,
     context: Context,
     options?: AgentCallOptions,
-  ): AgentProcessResult<O | TransferAgentOutput>;
+  ): PromiseOrValue<AgentProcessResult<O>>;
 
   async shutdown() {
     this.memory?.detach();
@@ -307,7 +310,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   }
 }
 
-export type AgentResponse<T> = T | AgentResponseStream<T>;
+export type AgentResponse<T> = T | TransferAgentOutput | AgentResponseStream<T>;
 
 export type AgentResponseStream<T> = ReadableStream<AgentResponseChunk<T>>;
 
@@ -323,21 +326,22 @@ export interface AgentResponseDelta<T> {
       | Partial<{
           [key in keyof T as Extract<T[key], string> extends string ? key : never]: string;
         }>
-      | {
+      | Partial<{
           [key: string]: string;
-        };
-    json?: Partial<T>;
+        }>;
+    json?: Partial<T | TransferAgentOutput>;
   };
 }
 
 export type AgentProcessAsyncGenerator<O extends Message> = AsyncGenerator<
   AgentResponseChunk<O>,
-  Partial<O> | undefined | void
+  Partial<O | TransferAgentOutput> | undefined | void
 >;
 
 export type AgentProcessResult<O extends Message> =
-  | Promise<AgentResponse<O>>
-  | AgentProcessAsyncGenerator<O>;
+  | AgentResponse<O>
+  | AgentProcessAsyncGenerator<O>
+  | Agent;
 
 export type AgentInputOutputSchema<I extends Message = Message> =
   | ZodType<I>
@@ -386,25 +390,15 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
 
   fn: FunctionAgentFn<I, O>;
 
-  async process(
-    input: I,
-    context: Context,
-    options?: AgentCallOptions,
-  ): Promise<AgentResponse<O | TransferAgentOutput>> {
-    let result: O | TransferAgentOutput | Agent = await this.fn(input, context);
-
-    if (result instanceof Agent) {
-      result = transferToAgentOutput(result);
-    }
-
-    return options?.streaming ? objectToAgentResponseStream(result) : result;
+  process(input: I, context: Context) {
+    return this.fn(input, context);
   }
 }
 
 export type FunctionAgentFn<I extends Message = Message, O extends Message = Message> = (
   input: I,
   context: Context,
-) => O | Promise<O> | Agent | Promise<Agent>;
+) => PromiseOrValue<AgentProcessResult<O>>;
 
 function functionToAgent<I extends Message, O extends Message>(
   agent: FunctionAgentFn<I, O>,

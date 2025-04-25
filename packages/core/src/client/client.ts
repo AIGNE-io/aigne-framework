@@ -12,33 +12,39 @@ export interface AIGNEClientOptions {
   url: string;
 }
 
+export interface AIGNEClientCallOptions extends AgentCallOptions {
+  fetchOptions?: Partial<RequestInit>;
+}
+
 export class AIGNEClient {
   constructor(public options: AIGNEClientOptions) {}
 
   async call<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options: AgentCallOptions & { streaming: true },
+    options: AIGNEClientCallOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
   async call<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AgentCallOptions & { streaming?: false },
+    options?: AIGNEClientCallOptions & { streaming?: false },
   ): Promise<O>;
   async call<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AgentCallOptions,
+    options?: AIGNEClientCallOptions,
   ): Promise<AgentResponse<O>>;
   async call<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AgentCallOptions,
+    options?: AIGNEClientCallOptions,
   ): Promise<AgentResponse<O>> {
     const response = await this.fetch(this.options.url, {
+      ...options?.fetchOptions,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...options?.fetchOptions?.headers,
       },
       body: JSON.stringify({ agent, input, options }),
     });

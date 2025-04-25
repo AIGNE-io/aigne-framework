@@ -34,7 +34,7 @@ server.use(express.json());
 
 // 定义处理代理调用的端点
 server.post("/aigne/call", async (req, res) => {
-  await aigneServer.call(req.body, res);
+  await aigneServer.call(req, res);
 });
 
 // 启动服务器
@@ -68,9 +68,7 @@ const aigneServer = new AIGNEServer(engine);
 const app = new Hono();
 
 app.post("/aigne/call", async (c) => {
-  const payload = await c.req.json();
-  const response = await aigneServer.call(payload);
-  return response;
+  return aigneServer.call(c.req.raw);
 });
 
 export default app;
@@ -94,8 +92,7 @@ const aigneServer = new AIGNEServer(engine);
 
 // 在无服务器环境中
 export async function handler(request) {
-  const payload = await request.json();
-  return await aigneServer.call(payload);
+  return await aigneServer.call(request);
 }
 ```
 

@@ -34,7 +34,7 @@ server.use(express.json());
 
 // Define endpoint to handle agent calls
 server.post("/aigne/call", async (req, res) => {
-  await aigneServer.call(req.body, res);
+  await aigneServer.call(req, res);
 });
 
 // Start server
@@ -68,9 +68,7 @@ const aigneServer = new AIGNEServer(engine);
 const app = new Hono();
 
 app.post("/aigne/call", async (c) => {
-  const payload = await c.req.json();
-  const response = await aigneServer.call(payload);
-  return response;
+  return await aigneServer.call(c.req.raw);
 });
 
 export default app;
@@ -94,8 +92,7 @@ const aigneServer = new AIGNEServer(engine);
 
 // In serverless environments
 export async function handler(request) {
-  const payload = await request.json();
-  return await aigneServer.call(payload);
+  return await aigneServer.call(request);
 }
 ```
 

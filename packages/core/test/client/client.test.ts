@@ -16,6 +16,7 @@ import {
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils";
 import { serve } from "bun";
+import compression from "compression";
 import { detect } from "detect-port";
 import express from "express";
 import { Hono } from "hono";
@@ -28,6 +29,18 @@ interface Server {
 
 const servers: { name: string; createServer: () => Promise<Server> }[] = [
   { name: "express", createServer: createExpressServer },
+  {
+    name: "express (with json middleware)",
+    createServer: () => createExpressServer({ enableJSONMiddleware: true }),
+  },
+  {
+    name: "express (with compression middleware)",
+    createServer: () => createExpressServer({ enableCompression: true }),
+  },
+  {
+    name: "express (pass body directly)",
+    createServer: () => createExpressServer({ passBodyDirectly: true }),
+  },
   { name: "hono", createServer: createHonoServer },
 ];
 const options: AgentCallOptions[] = [{ streaming: true }, { streaming: false }];
@@ -114,6 +127,28 @@ test.each(table)(
 );
 
 test.each(table)(
+  "AIGNEClient should return error 'unsupported media type' with options %p for %s server",
+  async (options, _, createServer) => {
+    const { url, close } = await createServer();
+
+    try {
+      const client = new AIGNEClient({ url });
+
+      const response = client.call("chat", "invalid body" as unknown as Message, {
+        ...options,
+        fetchOptions: { headers: { "Content-Type": "text/plain" } },
+      });
+
+      expect(response).rejects.toThrow(
+        "status 415: Unsupported Media Type: Content-Type must be application/json",
+      );
+    } finally {
+      await close();
+    }
+  },
+);
+
+test.each(table)(
   "AIGNEClient should return error 'invalid request body' with options %p for %s server",
   async (options, _, createServer) => {
     const { url, close } = await createServer();
@@ -132,19 +167,28 @@ test.each(table)(
   },
 );
 
-async function createExpressServer() {
+async function createExpressServer({
+  enableCompression,
+  enableJSONMiddleware,
+  passBodyDirectly,
+}: {
+  enableCompression?: boolean;
+  enableJSONMiddleware?: boolean;
+  passBodyDirectly?: boolean;
+} = {}) {
   const port = await detect();
   const url = `http://localhost:${port}/aigne/call`;
 
   const server = express();
 
-  server.use(express.json());
+  if (enableJSONMiddleware || passBodyDirectly) server.use(express.json());
+  if (enableCompression) server.use(compression());
 
   const aigne = await createAIGNE();
   const aigneServer = new AIGNEServer(aigne);
 
   server.post("/aigne/call", async (req, res) => {
-    await aigneServer.call(req.body, res);
+    await aigneServer.call(passBodyDirectly ? req.body : req, res);
   });
 
   const httpServer = server.listen(port);
@@ -169,8 +213,7 @@ async function createHonoServer() {
   const aigneServer = new AIGNEServer(aigne);
 
   honoApp.post("/aigne/call", async (c) => {
-    const body = await c.req.json();
-    return aigneServer.call(body);
+    return aigneServer.call(c.req.raw);
   });
 
   const server = serve({ port, fetch: honoApp.fetch });

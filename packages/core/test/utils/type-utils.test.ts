@@ -7,6 +7,7 @@ import {
   isEmpty,
   isNil,
   isNonNullable,
+  isRecord,
   omitBy,
   orArrayToArray,
   tryOrThrow,
@@ -19,6 +20,17 @@ test("type-utils.isNonNullable", async () => {
 
 test("type-utils.isNil", async () => {
   expect([null, undefined, 0].filter((value) => !isNil(value))).toEqual([0]);
+});
+
+test("type-utils.isRecord", async () => {
+  expect(isRecord({})).toBe(true);
+  expect(isRecord({ foo: "bar" })).toBe(true);
+  expect(isRecord([])).toBe(false);
+  expect(isRecord("")).toBe(false);
+  expect(isRecord(null)).toBe(false);
+  expect(isRecord(undefined)).toBe(false);
+  expect(isRecord(1)).toBe(false);
+  expect(isRecord(true)).toBe(false);
 });
 
 test("types-utils.isEmpty", async () => {

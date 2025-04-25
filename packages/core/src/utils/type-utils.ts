@@ -13,6 +13,10 @@ export function isNil(value: unknown): value is null | undefined {
   return value === null || value === undefined;
 }
 
+export function isRecord<T>(value: unknown): value is Record<string, T> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
 export function isEmpty(obj: unknown): boolean {
   if (isNil(obj)) return true;
   if (typeof obj === "string" || Array.isArray(obj)) return obj.length === 0;

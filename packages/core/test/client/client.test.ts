@@ -173,7 +173,9 @@ async function createHonoServer() {
 }
 
 async function createAIGNE() {
-  const model = new OpenAIChatModel();
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_OPENAI_API_KEY",
+  });
 
   const chat = AIAgent.from({
     name: "chat",

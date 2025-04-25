@@ -7,7 +7,7 @@ import type { ExecutionEngine } from "../execution-engine/execution-engine.js";
 import { AgentResponseStreamSSE } from "../utils/event-stream.js";
 import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
 import { checkArguments, isRecord, tryOrThrow } from "../utils/type-utils.js";
-import { HttpError } from "./error.js";
+import { ServerError } from "./error.js";
 
 const DEFAULT_MAXIMUM_BODY_SIZE = "4mb";
 
@@ -77,11 +77,11 @@ export class AIGNEServer {
         options,
       } = tryOrThrow(
         () => checkArguments(`Call agent ${payload.agent}`, callPayloadSchema, payload),
-        (error) => new HttpError(400, error.message),
+        (error) => new ServerError(400, error.message),
       );
 
       const agent = engine.agents[agentName];
-      if (!agent) throw new HttpError(404, `Agent ${agentName} not found`);
+      if (!agent) throw new ServerError(404, `Agent ${agentName} not found`);
 
       if (!options?.streaming) {
         const result = await engine.call(agent, input);
@@ -100,7 +100,7 @@ export class AIGNEServer {
       });
     } catch (error) {
       return new Response(JSON.stringify({ error: { message: error.message } }), {
-        status: error instanceof HttpError ? error.status : 500,
+        status: error instanceof ServerError ? error.status : 500,
         headers: { "Content-Type": "application/json" },
       });
     }
@@ -109,7 +109,7 @@ export class AIGNEServer {
   async _prepareInput(
     request: Record<string, unknown> | Request | IncomingMessage,
   ): Promise<Record<string, unknown>> {
-    const contentTypeError = new HttpError(
+    const contentTypeError = new ServerError(
       415,
       "Unsupported Media Type: Content-Type must be application/json",
     );
@@ -137,7 +137,7 @@ export class AIGNEServer {
 
       return tryOrThrow(
         () => JSON.parse(raw.toString()),
-        (error) => new HttpError(400, `Parse request body to json error: ${error.message}`),
+        (error) => new ServerError(400, `Parse request body to json error: ${error.message}`),
       );
     }
 
@@ -171,7 +171,7 @@ export class AIGNEServer {
       }
     } catch (error) {
       if (!res.headersSent) {
-        res.writeHead(error instanceof HttpError ? error.status : 500, {
+        res.writeHead(error instanceof ServerError ? error.status : 500, {
           "Content-Type": "application/json",
         });
       }

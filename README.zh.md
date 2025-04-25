@@ -97,6 +97,7 @@ const response = await userAgent.call("transfer to agent b");
   - [Function Agent API](./docs/apis/function-agent-api.md) ([English](./docs/apis/function-agent-api.md) | [中文](./docs/apis/function-agent-api.zh.md))
   - [MCP Agent API](./docs/apis/mcp-agent-api.md) ([English](./docs/apis/mcp-agent-api.md) | [中文](./docs/apis/mcp-agent-api.zh.md))
   - [Execution Engine API](./docs/apis/execution-engine-api.md) ([English](./docs/apis/execution-engine-api.md) | [中文](./docs/apis/execution-engine-api.zh.md))
+  - [服务器/客户端 API](./docs/apis/server-client-api.md) ([English](./docs/apis/server-client-api.md) | [中文](./docs/apis/server-client-api.zh.md))
 
 ## 架构
 

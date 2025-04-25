@@ -1,3 +1,4 @@
+import { joinURL } from "ufo";
 import type {
   AgentCallOptions,
   AgentResponse,
@@ -34,12 +35,12 @@ export class ExecutionEngineClient {
     input: I,
     options?: AgentCallOptions,
   ): Promise<AgentResponse<O>> {
-    const response = await this.fetch(this.options.url, {
+    const response = await this.fetch(joinURL(this.options.url, "agents", agent, "call"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ agent, input, options }),
+      body: JSON.stringify({ input, options }),
     });
 
     if (!options?.streaming) {

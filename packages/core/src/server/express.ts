@@ -3,14 +3,13 @@ import express, { json, type RequestHandler } from "express";
 import { z } from "zod";
 import type { ExecutionEngine } from "../execution-engine/execution-engine.js";
 import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
-import { tryOrThrow } from "../utils/type-utils.js";
+import { checkArguments, tryOrThrow } from "../utils/type-utils.js";
 import { HttpError } from "./error.js";
 
 export function createExpressMiddleware(engine: ExecutionEngine): RequestHandler {
   const router = express.Router();
 
   const bodySchema = z.object({
-    agent: z.string(),
     input: z.record(z.string(), z.unknown()),
     options: z
       .object({
@@ -19,15 +18,18 @@ export function createExpressMiddleware(engine: ExecutionEngine): RequestHandler
       .nullish(),
   });
 
-  router.post("/", json(), compression(), async (req, res) => {
+  router.post("/agents/:agent/call", json(), compression(), async (req, res) => {
     try {
-      const { input, options, ...body } = tryOrThrow(
-        () => bodySchema.parse(req.body),
+      const { agent: agentName } = req.params;
+      if (!agentName) throw new HttpError(400, "Agent name is required");
+
+      const agent = engine.agents[agentName];
+      if (!agent) throw new HttpError(404, `Agent ${agentName} not found`);
+
+      const { input, options } = tryOrThrow(
+        () => checkArguments(`Call agent ${agentName}`, bodySchema, req.body),
         (error) => new HttpError(400, error.message),
       );
-
-      const agent = engine.agents[body.agent];
-      if (!agent) throw new HttpError(404, `Agent ${body.agent} not found`);
 
       if (!options?.streaming) {
         const result = await engine.call(agent, input);

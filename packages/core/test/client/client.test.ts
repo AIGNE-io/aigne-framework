@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import type { Server } from "node:http";
-import { AIAgent, type ChatModel, ExecutionEngine } from "@aigne/core";
+import { AIAgent, type ChatModel, ExecutionEngine, type Message } from "@aigne/core";
 import { ExecutionEngineClient } from "@aigne/core/client/client.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { createExpressMiddleware } from "@aigne/core/server/express.js";
@@ -81,3 +81,21 @@ test.each([{ streaming: false }, { streaming: true }])(
     }
   },
 );
+
+test("ExecutionEngineClient should return error response for not found agent", async () => {
+  const client = new ExecutionEngineClient({ url });
+
+  const response = client.call("not-exists-agent", [] as unknown as Message);
+
+  expect(response).rejects.toThrow("status 404: Agent not-exists-agent not found");
+});
+
+test("ExecutionEngineClient should return error response for invalid request body", async () => {
+  const client = new ExecutionEngineClient({ url });
+
+  const response = client.call("chat", [] as unknown as Message);
+
+  expect(response).rejects.toThrow(
+    "status 400: Call agent chat check arguments error: input: Expected object, received array",
+  );
+});

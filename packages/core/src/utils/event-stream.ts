@@ -1,6 +1,7 @@
 import { createParser } from "eventsource-parser";
 import { produce } from "immer";
 import type { AgentResponseChunk, Message } from "../agents/agent.js";
+import { tryOrThrow } from "./type-utils.js";
 
 export class EventSourceParserStream<T> extends TransformStream<string, T | Error> {
   constructor() {
@@ -10,19 +11,21 @@ export class EventSourceParserStream<T> extends TransformStream<string, T | Erro
       start(controller) {
         parser = createParser({
           onEvent: (event) => {
-            try {
-              const json = JSON.parse(event.data);
+            const json = tryOrThrow(
+              () => JSON.parse(event.data) as T | { message: string },
+              (e) => {
+                controller.enqueue(
+                  new Error(`Parse response chunk json error: ${e.message} ${event.data}`),
+                );
+              },
+            );
+            if (json) {
               if (event.event === "error") {
-                controller.enqueue(new Error(json.message));
+                controller.enqueue(new Error((json as { message: string }).message));
               } else {
-                controller.enqueue(json);
+                controller.enqueue(json as T);
               }
-            } catch (error) {
-              console.warn("parse chunk error", { error, data: event.data });
             }
-          },
-          onError: (error) => {
-            controller.error(error);
           },
         });
       },

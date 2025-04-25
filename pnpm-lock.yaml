@@ -373,6 +373,9 @@ importers:
       p-retry:
         specifier: ^6.2.1
         version: 6.2.1
+      ufo:
+        specifier: ^1.6.1
+        version: 1.6.1
       uuid:
         specifier: ^11.1.0
         version: 11.1.0

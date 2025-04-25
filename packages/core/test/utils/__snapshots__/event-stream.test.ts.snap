@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EventSourceParserStream should enqueue an error for invalid json 1`] = `
+exports[`EventStreamParser should enqueue an error for invalid json 1`] = `
 [
   {
     "delta": {
@@ -20,7 +20,7 @@ exports[`EventSourceParserStream should enqueue an error for invalid json 1`] = 
 ]
 `;
 
-exports[`EventSourceParserStream should enqueue an error for error event 1`] = `
+exports[`EventStreamParser should enqueue an error for error event 1`] = `
 [
   {
     "delta": {

@@ -1,9 +1,9 @@
 import { createParser } from "eventsource-parser";
 import { produce } from "immer";
-import type { AgentResponseChunk, Message } from "../agents/agent.js";
+import type { AgentResponseChunk, AgentResponseStream, Message } from "../agents/agent.js";
 import { tryOrThrow } from "./type-utils.js";
 
-export class EventSourceParserStream<T> extends TransformStream<string, T | Error> {
+export class EventStreamParser<T> extends TransformStream<string, T | Error> {
   constructor() {
     let parser: ReturnType<typeof createParser> | undefined;
 
@@ -70,6 +70,32 @@ export class AgentResponseStreamParser<O extends Message> extends TransformStrea
             json: this.json,
           },
         });
+      },
+    });
+  }
+}
+
+export class AgentResponseStreamSSE<O extends Message> extends ReadableStream<string> {
+  constructor(stream: AgentResponseStream<O>) {
+    let reader: ReadableStreamDefaultReader<AgentResponseChunk<O>> | undefined;
+
+    super({
+      async pull(controller) {
+        reader ??= stream.getReader();
+        try {
+          const { value, done } = await reader.read();
+          if (done) {
+            controller.close();
+            return;
+          }
+
+          controller.enqueue(`data: ${JSON.stringify(value)}\n\n`);
+        } catch (error) {
+          controller.enqueue(
+            `event: error\ndata: ${JSON.stringify({ message: error.message })}\n\n`,
+          );
+          controller.close();
+        }
       },
     });
   }

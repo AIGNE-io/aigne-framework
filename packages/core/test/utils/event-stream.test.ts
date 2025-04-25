@@ -1,27 +1,24 @@
 import { expect, test } from "bun:test";
 import type { AgentResponseChunk, Message } from "@aigne/core";
-import {
-  AgentResponseStreamParser,
-  EventSourceParserStream,
-} from "@aigne/core/utils/event-stream.js";
+import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
 import { arrayToReadableStream, readableStreamToArray } from "@aigne/core/utils/stream-utils";
 
-test("EventSourceParserStream should enqueue an error for invalid json", async () => {
+test("EventStreamParser should enqueue an error for invalid json", async () => {
   const stream = arrayToReadableStream([
     `data: {"delta": {"text": {"text": "hello"}}}\n\n`,
     `data: {"delta": {"text": {"text": " world"}}}\n\n`,
     "data: invalid json string\n\n",
-  ]).pipeThrough(new EventSourceParserStream());
+  ]).pipeThrough(new EventStreamParser());
 
   expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });
 
-test("EventSourceParserStream should enqueue an error for error event", async () => {
+test("EventStreamParser should enqueue an error for error event", async () => {
   const stream = arrayToReadableStream([
     `data: {"delta": {"text": {"text": "hello"}}}\n\n`,
     `data: {"delta": {"text": {"text": " world"}}}\n\n`,
     `event: error\ndata: {"message": "test error"}\n\n`,
-  ]).pipeThrough(new EventSourceParserStream());
+  ]).pipeThrough(new EventStreamParser());
 
   expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });

@@ -1,19 +1,19 @@
-import { joinURL } from "ufo";
 import type {
   AgentCallOptions,
   AgentResponse,
+  AgentResponseChunk,
   AgentResponseStream,
   Message,
 } from "../agents/agent.js";
-import { AgentResponseStreamParser, EventSourceParserStream } from "../utils/event-stream.js";
+import { AgentResponseStreamParser, EventStreamParser } from "../utils/event-stream.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 
-export interface ExecutionEngineClientOptions {
+export interface AIGNEClientOptions {
   url: string;
 }
 
-export class ExecutionEngineClient {
-  constructor(public options: ExecutionEngineClientOptions) {}
+export class AIGNEClient {
+  constructor(public options: AIGNEClientOptions) {}
 
   async call<I extends Message, O extends Message>(
     agent: string,
@@ -35,12 +35,12 @@ export class ExecutionEngineClient {
     input: I,
     options?: AgentCallOptions,
   ): Promise<AgentResponse<O>> {
-    const response = await this.fetch(joinURL(this.options.url, "agents", agent, "call"), {
+    const response = await this.fetch(this.options.url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ input, options }),
+      body: JSON.stringify({ agent, input, options }),
     });
 
     if (!options?.streaming) {
@@ -52,7 +52,7 @@ export class ExecutionEngineClient {
 
     return stream
       .pipeThrough(new TextDecoderStream())
-      .pipeThrough(new EventSourceParserStream())
+      .pipeThrough(new EventStreamParser<AgentResponseChunk<O>>())
       .pipeThrough(new AgentResponseStreamParser());
   }
 

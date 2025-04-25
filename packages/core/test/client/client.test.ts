@@ -2,9 +2,9 @@ import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import type { Server } from "node:http";
 import { AIAgent, type ChatModel, ExecutionEngine, type Message } from "@aigne/core";
-import { ExecutionEngineClient } from "@aigne/core/client/client.js";
+import { AIGNEClient } from "@aigne/core/client/client.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { createExpressMiddleware } from "@aigne/core/server/express.js";
+import { AIGNEServer } from "@aigne/core/server/server.js";
 import { arrayToReadableStream, readableStreamToArray } from "@aigne/core/utils/stream-utils";
 import { detect } from "detect-port";
 import express from "express";
@@ -25,15 +25,19 @@ beforeEach(async () => {
 
   const engine = new ExecutionEngine({ model, agents: [chat] });
 
+  const aigneServer = new AIGNEServer(engine);
+
   const server = express();
 
   server.use(express.json());
 
-  server.use(createExpressMiddleware(engine));
+  server.post("/aigne/call", async (req, res) => {
+    await aigneServer.call(req.body, res);
+  });
 
   httpServer = server.listen(port);
 
-  url = `http://localhost:${port}`;
+  url = `http://localhost:${port}/aigne/call`;
 });
 
 afterEach(async () => {
@@ -42,9 +46,9 @@ afterEach(async () => {
 });
 
 test.each([{ streaming: false }, { streaming: true }])(
-  "ExecutionEngineClient should return correct response for %p",
+  "AIGNEClient should return correct response for %p",
   async (options) => {
-    const client = new ExecutionEngineClient({ url });
+    const client = new AIGNEClient({ url });
     const response = await client.call("chat", { $message: "hello" }, options);
 
     if (options.streaming) {
@@ -57,7 +61,7 @@ test.each([{ streaming: false }, { streaming: true }])(
 );
 
 test.each([{ streaming: false }, { streaming: true }])(
-  "ExecutionEngineClient should return error response for %p",
+  "AIGNEClient should return error response for %p",
   async (options) => {
     spyOn(model, "process").mockReturnValueOnce(
       Promise.resolve(
@@ -69,7 +73,7 @@ test.each([{ streaming: false }, { streaming: true }])(
       ),
     );
 
-    const client = new ExecutionEngineClient({ url });
+    const client = new AIGNEClient({ url });
     const response = client.call("chat", { $message: "hello" }, options);
 
     if (options.streaming) {
@@ -82,16 +86,16 @@ test.each([{ streaming: false }, { streaming: true }])(
   },
 );
 
-test("ExecutionEngineClient should return error response for not found agent", async () => {
-  const client = new ExecutionEngineClient({ url });
+test("AIGNEClient should return error response for not found agent", async () => {
+  const client = new AIGNEClient({ url });
 
-  const response = client.call("not-exists-agent", [] as unknown as Message);
+  const response = client.call("not-exists-agent", {});
 
   expect(response).rejects.toThrow("status 404: Agent not-exists-agent not found");
 });
 
-test("ExecutionEngineClient should return error response for invalid request body", async () => {
-  const client = new ExecutionEngineClient({ url });
+test("AIGNEClient should return error response for invalid request body", async () => {
+  const client = new AIGNEClient({ url });
 
   const response = client.call("chat", [] as unknown as Message);
 

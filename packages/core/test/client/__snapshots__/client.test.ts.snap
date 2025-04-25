@@ -1,16 +1,8 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AIGNEClient should return correct response for {
-  streaming: false,
-} 1`] = `
-{
-  "$message": "Hello! How can I assist you today?",
-}
-`;
-
-exports[`AIGNEClient should return correct response for {
+exports[`AIGNEClient should return correct process options {
   streaming: true,
-} 1`] = `
+} for express server 1`] = `
 [
   {
     "delta": {
@@ -105,9 +97,122 @@ exports[`AIGNEClient should return correct response for {
 ]
 `;
 
-exports[`AIGNEClient should return error response for {
+exports[`AIGNEClient should return correct process options {
+  streaming: false,
+} for express server 1`] = `
+{
+  "$message": "Hello! How can I assist you today?",
+}
+`;
+
+exports[`AIGNEClient should return correct process options {
   streaming: true,
-} 1`] = `
+} for hono server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello!",
+      },
+      "text": {
+        "$message": "!",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How",
+      },
+      "text": {
+        "$message": " How",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can",
+      },
+      "text": {
+        "$message": " can",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I",
+      },
+      "text": {
+        "$message": " I",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I assist",
+      },
+      "text": {
+        "$message": " assist",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I assist you",
+      },
+      "text": {
+        "$message": " you",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I assist you today",
+      },
+      "text": {
+        "$message": " today",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello! How can I assist you today?",
+      },
+      "text": {
+        "$message": "?",
+      },
+    },
+  },
+]
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: false,
+} for hono server 1`] = `
+{
+  "$message": "Hello! How can I assist you today?",
+}
+`;
+
+exports[`AIGNEClient should return error with options {
+  streaming: true,
+} for express server 1`] = `
 [
   {
     "delta": {
@@ -129,6 +234,34 @@ exports[`AIGNEClient should return error response for {
       },
     },
   },
-  [Error: test error],
+  [Error: test llm model error],
+]
+`;
+
+exports[`AIGNEClient should return error with options {
+  streaming: true,
+} for hono server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello, world",
+      },
+      "text": {
+        "$message": ", world",
+      },
+    },
+  },
+  [Error: test llm model error],
 ]
 `;

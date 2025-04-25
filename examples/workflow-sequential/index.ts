@@ -1,7 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, sequential } from "@aigne/core";
+import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 
 const model = await loadModel();
@@ -50,7 +50,12 @@ Draft copy:
 
 const engine = new ExecutionEngine({ model });
 
-const userAgent = engine.call(sequential(conceptExtractor, writer, formatProof));
+const userAgent = engine.call(
+  TeamAgent.from({
+    tools: [conceptExtractor, writer, formatProof],
+    processMethod: "sequential",
+  }),
+);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a marketing assistant. I can help you with product descriptions, marketing copy, and editing.`,

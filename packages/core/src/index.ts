@@ -2,6 +2,7 @@ export * from "./agents/agent.js";
 export * from "./agents/ai-agent.js";
 export * from "./agents/mcp-agent.js";
 export * from "./agents/memory.js";
+export * from "./agents/team-agent.js";
 export * from "./agents/types.js";
 export * from "./agents/user-agent.js";
 export * from "./execution-engine/index.js";

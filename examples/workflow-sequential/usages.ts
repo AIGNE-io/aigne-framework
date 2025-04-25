@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, sequential } from "@aigne/core";
+import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -53,9 +53,15 @@ Draft copy:
 
 const engine = new ExecutionEngine({ model });
 
-const result = await engine.call(sequential(conceptExtractor, writer, formatProof), {
-  product: "AIGNE is a No-code Generative AI Apps Engine",
-});
+const result = await engine.call(
+  TeamAgent.from({
+    tools: [conceptExtractor, writer, formatProof],
+    processMethod: "sequential",
+  }),
+  {
+    product: "AIGNE is a No-code Generative AI Apps Engine",
+  },
+);
 
 console.log(result);
 

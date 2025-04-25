@@ -74,7 +74,7 @@ The following example demonstrates how to build a sequential workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, sequential } from "@aigne/core";
+import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -128,7 +128,13 @@ Draft copy:
 
 const engine = new ExecutionEngine({ model });
 
-const result = await engine.call(sequential(conceptExtractor, writer, formatProof), {
+// 创建一个 TeamAgent 来处理顺序工作流
+const teamAgent = TeamAgent.from({
+  tools: [conceptExtractor, writer, formatProof],
+  processMethod: "sequential" // 默认值，可以省略
+});
+
+const result = await engine.call(teamAgent, {
   product: "AIGNE is a No-code Generative AI Apps Engine",
 });
 

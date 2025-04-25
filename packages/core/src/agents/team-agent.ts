@@ -12,6 +12,12 @@ import {
 export type TeamAgentProcessMethod = "sequential" | "parallel";
 
 export interface TeamAgentOptions<I extends Message, O extends Message> extends AgentOptions<I, O> {
+  /**
+   * The method to process the agents in the team.
+   * - `sequential`: Process the agents one by one, passing the output of each agent to the next.
+   * - `parallel`: Process all agents in parallel, merging the output of all agents.
+   * @default "sequential"
+   */
   processMethod?: TeamAgentProcessMethod;
 }
 

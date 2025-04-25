@@ -17,80 +17,30 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello!",
+        "$message": "Hello ",
+      },
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world",
+      },
+      "text": {
+        "$message": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world!",
       },
       "text": {
         "$message": "!",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How",
-      },
-      "text": {
-        "$message": " How",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can",
-      },
-      "text": {
-        "$message": " can",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I",
-      },
-      "text": {
-        "$message": " I",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I assist",
-      },
-      "text": {
-        "$message": " assist",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I assist you",
-      },
-      "text": {
-        "$message": " you",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I assist you today",
-      },
-      "text": {
-        "$message": " today",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I assist you today?",
-      },
-      "text": {
-        "$message": "?",
       },
     },
   },
@@ -101,7 +51,7 @@ exports[`AIGNEClient should return correct process options {
   streaming: false,
 } for express server 1`] = `
 {
-  "$message": "Hello! How can I assist you today?",
+  "$message": "Hello world!",
 }
 `;
 
@@ -122,80 +72,30 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello!",
+        "$message": "Hello ",
+      },
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world",
+      },
+      "text": {
+        "$message": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world!",
       },
       "text": {
         "$message": "!",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How",
-      },
-      "text": {
-        "$message": " How",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can",
-      },
-      "text": {
-        "$message": " can",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I",
-      },
-      "text": {
-        "$message": " I",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I assist",
-      },
-      "text": {
-        "$message": " assist",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I assist you",
-      },
-      "text": {
-        "$message": " you",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I assist you today",
-      },
-      "text": {
-        "$message": " today",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "$message": "Hello! How can I assist you today?",
-      },
-      "text": {
-        "$message": "?",
       },
     },
   },
@@ -206,7 +106,7 @@ exports[`AIGNEClient should return correct process options {
   streaming: false,
 } for hono server 1`] = `
 {
-  "$message": "Hello! How can I assist you today?",
+  "$message": "Hello world!",
 }
 `;
 

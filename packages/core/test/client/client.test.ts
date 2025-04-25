@@ -10,7 +10,11 @@ import {
 import { AIGNEClient } from "@aigne/core/client/client.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { AIGNEServer } from "@aigne/core/server/server";
-import { arrayToReadableStream, readableStreamToArray } from "@aigne/core/utils/stream-utils";
+import {
+  arrayToReadableStream,
+  readableStreamToArray,
+  stringToAgentResponseStream,
+} from "@aigne/core/utils/stream-utils";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import express from "express";
@@ -35,8 +39,14 @@ const table = servers.flatMap((server) =>
 test.each(table)(
   "AIGNEClient should return correct process options %p for %s server",
   async (options, _, createServer) => {
-    const { url, close } = await createServer();
+    const { url, aigne, close } = await createServer();
     try {
+      assert(aigne.model instanceof ChatModel);
+
+      spyOn(aigne.model, "process").mockReturnValueOnce(
+        Promise.resolve(stringToAgentResponseStream("Hello world!")),
+      );
+
       const client = new AIGNEClient({ url });
       const response = await client.call("chat", { $message: "hello" }, options);
 

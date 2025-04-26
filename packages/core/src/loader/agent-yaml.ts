@@ -40,7 +40,10 @@ const agentFileSchema = z.discriminatedUnion("type", [
       .union([
         z.boolean(),
         z.object({
-          subscribe_topic: z.array(z.string()),
+          subscribe_topic: z
+            .array(z.string())
+            .nullish()
+            .transform((v) => v ?? undefined),
         }),
       ])
       .nullish()

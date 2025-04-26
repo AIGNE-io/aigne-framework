@@ -1,15 +1,96 @@
 import { type ExecutionEngine, getMessage } from "@aigne/core";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
-import express, { type ErrorRequestHandler, type Request, type Response } from "express";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import express, { type Request, type Response, Router, json } from "express";
 import { ZodObject, type ZodRawShape } from "zod";
+import { AIGNE_CLI_VERSION } from "../constants.js";
 import { promiseWithResolvers } from "./promise-with-resolvers.js";
 
-export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine; port: number }) {
+export async function serveMCPServer({
+  pathname = "/mcp",
+  engine,
+  port,
+}: { pathname?: string; engine: ExecutionEngine; port: number }) {
+  const app = express();
+
+  app.use(json());
+
+  const router = Router();
+
+  app.use(router);
+
+  router.post(pathname, async (req: Request, res: Response) => {
+    try {
+      const server = createMcpServer(engine);
+
+      const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+
+      await server.connect(transport);
+
+      await transport.handleRequest(req, res, req.body);
+
+      res.on("close", async () => {
+        await transport.close();
+        await server.close();
+      });
+    } catch (error) {
+      console.error("Error handling MCP request:", error);
+      if (!res.headersSent) {
+        res.status(500).json({
+          jsonrpc: "2.0",
+          error: {
+            code: -32603,
+            message: error.message,
+          },
+          id: null,
+        });
+      }
+    }
+  });
+
+  router.get(pathname, async (_: Request, res: Response) => {
+    res.writeHead(405).end(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        error: {
+          code: -32000,
+          message: "Method not allowed.",
+        },
+        id: null,
+      }),
+    );
+  });
+
+  router.delete(pathname, async (_: Request, res: Response) => {
+    res.writeHead(405).end(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        error: {
+          code: -32000,
+          message: "Method not allowed.",
+        },
+        id: null,
+      }),
+    );
+  });
+
+  const { promise, resolve, reject } = promiseWithResolvers();
+
+  const httpServer = app.listen(port, (error) => {
+    if (error) reject(error);
+    resolve();
+  });
+
+  await promise;
+
+  return httpServer;
+}
+
+export function createMcpServer(engine: ExecutionEngine) {
   const server = new McpServer(
     {
       name: engine.name || "aigne-mcp-server",
-      version: "1.0.0",
+      version: AIGNE_CLI_VERSION,
     },
     {
       capabilities: { tools: {} },
@@ -36,53 +117,5 @@ export async function serveMCPServer({ engine, port }: { engine: ExecutionEngine
     });
   }
 
-  const app = express();
-
-  const transports: { [sessionId: string]: SSEServerTransport } = {};
-
-  app.get("/sse", async (req: Request, res: Response) => {
-    const transport = new SSEServerTransport("/messages", res);
-    transports[transport.sessionId] = transport;
-    req.on("close", () => {
-      delete transports[transport.sessionId];
-    });
-    await server.connect(transport);
-  });
-
-  app.post("/messages", async (req: Request, res: Response) => {
-    const sessionId = req.query.sessionId as string;
-    const transport = transports[sessionId];
-    if (transport) {
-      await transport.handlePostMessage(req, res);
-    } else {
-      throw new HttpError(400, "No transport found for sessionId");
-    }
-  });
-
-  app.use(<ErrorRequestHandler>((error, _req, res, _next) => {
-    console.error("handle route error", { error });
-    res
-      .status(error instanceof HttpError ? error.status : 500)
-      .json({ error: { message: error.message } });
-  }));
-
-  const { promise, resolve, reject } = promiseWithResolvers();
-
-  const httpServer = app.listen(port, (error) => {
-    if (error) reject(error);
-    resolve();
-  });
-
-  await promise;
-
-  return httpServer;
-}
-
-class HttpError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-  ) {
-    super(message);
-  }
+  return server;
 }

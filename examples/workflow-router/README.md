@@ -79,7 +79,7 @@ The following example demonstrates how to build a router workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -125,21 +125,21 @@ const triage = AIAgent.from({
   toolChoice: "router", // Set toolChoice to "router" to enable router mode
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result1 = await engine.call(triage, "How to use this product?");
+const result1 = await aigne.call(triage, "How to use this product?");
 console.log(result1);
 // {
 //   product_support: "I’d be happy to help you with that! However, I need to know which specific product you’re referring to. Could you please provide me with the name or type of product you have in mind?",
 // }
 
-const result2 = await engine.call(triage, "I have feedback about the app.");
+const result2 = await aigne.call(triage, "I have feedback about the app.");
 console.log(result2);
 // {
 //   feedback: "Thank you for sharing your feedback! I'm here to listen. Please go ahead and let me know what you’d like to share about the app.",
 // }
 
-const result3 = await engine.call(triage, "What is the weather today?");
+const result3 = await aigne.call(triage, "What is the weather today?");
 console.log(result3);
 // {
 //   other: "I can't provide real-time weather updates. However, you can check a reliable weather website or a weather app on your phone for the current conditions in your area. If you tell me your location, I can suggest a few sources where you can find accurate weather information!",

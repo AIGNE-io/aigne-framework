@@ -38,7 +38,7 @@ pnpm add @aigne/agent-library @aigne/core
 ## Basic Usage
 
 ```typescript
-import { ExecutionEngine } from "@aigne/core";
+import { AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 
@@ -48,8 +48,8 @@ const model = new OpenAIChatModel({
   model: "gpt-4-turbo",
 });
 
-// Create execution engine
-const engine = new ExecutionEngine({ model });
+// Create AIGNE
+const aigne = new AIGNE({ model });
 
 // Create orchestrator agent
 const orchestrator = new OrchestratorAgent({
@@ -59,7 +59,7 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // Execute orchestration task
-const userAgent = await engine.call(orchestrator);
+const userAgent = await aigne.call(orchestrator);
 const result = await userAgent.call("Analyze this article and generate a summary and keywords");
 console.log(result);
 ```
@@ -75,7 +75,7 @@ The library currently provides one specialized agent implementation:
 ### Creating an Orchestration Workflow
 
 ```typescript
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 
@@ -114,8 +114,8 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // Use the orchestrator agent
-const engine = new ExecutionEngine({ model });
-const userAgent = await engine.call(orchestrator);
+const aigne = new AIGNE({ model });
+const userAgent = await aigne.call(orchestrator);
 const result = await userAgent.call("Applications of artificial intelligence in healthcare");
 console.log(result);
 ```

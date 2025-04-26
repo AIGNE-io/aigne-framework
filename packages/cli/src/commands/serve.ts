@@ -1,5 +1,5 @@
 import { isAbsolute, resolve } from "node:path";
-import { ExecutionEngine } from "@aigne/core";
+import { AIGNE } from "@aigne/core";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { Command, type OptionValues } from "commander";
 import { serveMCPServer } from "../utils/serve-mcp.js";
@@ -31,9 +31,9 @@ export function createServeCommand(): Command {
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
       const port = options.port || DEFAULT_PORT();
 
-      const engine = await ExecutionEngine.load({ path: absolutePath });
+      const aigne = await AIGNE.load({ path: absolutePath });
 
-      if (options.mcp) await serveMCPServer({ engine, port });
+      if (options.mcp) await serveMCPServer({ aigne, port });
       else throw new Error("Default server is not supported yet. Please use --mcp option");
     })
     .showHelpAfterError(true)

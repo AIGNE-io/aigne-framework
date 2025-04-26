@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
 
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor() {

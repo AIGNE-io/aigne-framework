@@ -1,17 +1,17 @@
-# 执行引擎 API 参考
+# AIGNE API 参考
 
-**中文** | [English](./execution-engine-api.md)
+**中文** | [English](./aigne-api.md)
 
 执行引擎是 AIGNE 框架的核心组件，负责协调 Agent 之间的交互和工作流程的执行。它提供了一个统一的接口来运行单个或多个 Agent，并管理它们之间的消息传递。
 
-## ExecutionEngine 类
+## AIGNE 类
 
-`ExecutionEngine` 继承自 `EventEmitter`，为 Agent 提供执行环境。它为每个操作创建一个执行上下文。
+`AIGNE` 继承自 `EventEmitter`，为 Agent 提供执行环境。它为每个操作创建一个执行上下文。
 
 ### 构造函数
 
 ```typescript
-constructor(options?: ExecutionEngineOptions)
+constructor(options?: AIGNEOptions)
 ```
 
 #### 参数
@@ -215,10 +215,10 @@ interface UserAgentOptions<I extends Message = Message, O extends Message = Mess
 ### 使用执行引擎的流式响应
 
 ```typescript
-import { ExecutionEngine, AIAgent } from "@aigne/core";
+import { AIGNE, AIAgent } from "@aigne/core";
 import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
 
-const engine = new ExecutionEngine();
+const aigne = new AIGNE();
 
 const agent = AIAgent.from({
   model,
@@ -226,7 +226,7 @@ const agent = AIAgent.from({
 })
 
 // 启用流式响应进行调用
-const stream = await engine.call(agent, "你好，请告诉我关于流式 API 的信息", { streaming: true });
+const stream = await aigne.call(agent, "你好，请告诉我关于流式 API 的信息", { streaming: true });
 
 const reader = stream.getReader();
 const result = {};
@@ -242,7 +242,7 @@ while (true) {
 console.log("最终结果:", result);
 
 // 同时获取流和活动 Agent（适用于更复杂的工作流）
-const [agentStream, activeAgentPromise] = await engine.call(
+const [agentStream, activeAgentPromise] = await aigne.call(
   assistant,
   "你好，请推荐一些书籍",
   { streaming: true, returnActiveAgent: true }
@@ -258,7 +258,7 @@ console.log("活动 Agent 是:", activeAgent.name);
 ### 基本用法
 
 ```typescript
-import { ExecutionEngine, AIAgent, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -273,14 +273,14 @@ const assistant = AIAgent.from({
 });
 
 // 创建执行引擎
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
 // 方法 1: 直接调用并获取结果
-const result = await engine.call(assistant, "你好，请告诉我今天的日期");
+const result = await aigne.call(assistant, "你好，请告诉我今天的日期");
 console.log(result);
 
 // 方法 2: 创建交互式会话
-const userAgent = engine.call(assistant);
+const userAgent = aigne.call(assistant);
 
 // 发送消息并获取回复
 const response1 = await userAgent.call("你好！");
@@ -290,13 +290,13 @@ const response2 = await userAgent.call("你能帮我写一首诗吗？");
 console.log(response2);
 
 // 关闭执行引擎
-await engine.shutdown();
+await aigne.shutdown();
 ```
 
 ### 顺序执行多个 Agent
 
 ```typescript
-import { ExecutionEngine, AIAgent, FunctionAgent, sequential, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, FunctionAgent, sequential, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -327,10 +327,10 @@ const summarizer = AIAgent.from({
 });
 
 // 创建执行引擎
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
 // 顺序执行 Agent
-const result = await engine.call(
+const result = await aigne.call(
   sequential(dataPrep, analyzer, summarizer),
   { data: [10, 20, 30, 40, 50] }
 );
@@ -341,7 +341,7 @@ console.log(result);
 ### 并行执行多个 Agent
 
 ```typescript
-import { ExecutionEngine, AIAgent, parallel, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, parallel, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -365,10 +365,10 @@ const storyteller = AIAgent.from({
 });
 
 // 创建执行引擎
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
 // 并行执行 Agent
-const result = await engine.call(
+const result = await aigne.call(
   parallel(poet, storyteller),
   { topic: "月亮" }
 );
@@ -380,7 +380,7 @@ console.log("故事:", result.story);
 ### 使用发布-订阅模式
 
 ```typescript
-import { ExecutionEngine, AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -412,13 +412,13 @@ const travelAgent = AIAgent.from({
 });
 
 // 创建执行引擎并添加 Agent
-const engine = new ExecutionEngine();
-engine.addAgent(weatherAgent, travelAgent);
+const aigne = new AIGNE();
+aigne.addAgent(weatherAgent, travelAgent);
 
 // 订阅最终结果
-engine.subscribe("travel.response", (response) => {
+aigne.subscribe("travel.response", (response) => {
   console.log("旅游建议:", response);
 });
 
 // 发布初始请求
-engine.publish("weather.request", { city: "北京" });
+aigne.publish("weather.request", { city: "北京" });

@@ -14,7 +14,7 @@ Currently, aigne-framework supports the following chat models:
 
 ## Model Initialization
 
-Create a ChatModel instance to use directly or provide to an ExecutionEngine:
+Create a ChatModel instance to use directly or provide to an AIGNE:
 
 ```typescript
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
@@ -40,14 +40,14 @@ const xaiModel = new XAIChatModel({
 });
 ```
 
-## Using with ExecutionEngine
+## Using with AIGNE
 
-ExecutionEngine is the recommended way to use ChatModel in aigne-framework, as it provides more advanced features such as tool integration, error handling, and state management:
+AIGNE is the recommended way to use ChatModel in aigne-framework, as it provides more advanced features such as tool integration, error handling, and state management:
 
 ```typescript
 import {
   AIAgent,
-  ExecutionEngine,
+  AIGNE,
 } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
@@ -56,8 +56,8 @@ const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Create execution engine
-const engine = new ExecutionEngine({
+// Create AIGNE
+const aigne = new AIGNE({
   model,
 });
 
@@ -68,7 +68,7 @@ const agent = AIAgent.from({
 });
 
 // Run AI Agent
-const result = engine.call(agent, "How do I use the AIGNE API?");
+const result = aigne.call(agent, "How do I use the AIGNE API?");
 console.log(result);
 ```
 
@@ -76,7 +76,7 @@ console.log(result);
 
 ### Basic Usage
 
-While ChatModel is typically used through ExecutionEngine in practical applications, you can also use the ChatModel class directly:
+While ChatModel is typically used through AIGNE in practical applications, you can also use the ChatModel class directly:
 
 ```typescript
 import {

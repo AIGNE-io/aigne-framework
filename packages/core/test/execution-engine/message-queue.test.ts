@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
-import { ExecutionEngine, MessageQueue, createMessage } from "@aigne/core";
+import { AIGNE, MessageQueue, createMessage } from "@aigne/core";
 
 test("MessageQueue.subscribe should resolve a message", async () => {
-  const context = new ExecutionEngine().newContext();
+  const context = new AIGNE().newContext();
 
   const messageQueue = new MessageQueue();
 

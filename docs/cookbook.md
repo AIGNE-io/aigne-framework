@@ -15,7 +15,7 @@
     - [Chat Model](#chat-model)
     - [Agent](#agent)
     - [Workflow](#workflow)
-    - [Execution Engine](#execution-engine)
+    - [AIGNE](#aigne)
   - [Workflow Patterns](#workflow-patterns)
     - [Code Execution Workflow](#code-execution-workflow)
     - [Sequential Workflow](#sequential-workflow)
@@ -113,7 +113,7 @@ In AIGNE Framework, ChatModel is an abstract base class for interacting with Lar
 - **ClaudeChatModel**: For communicating with Anthropic's Claude series models
 - **XAIChatModel**: For communicating with X.AI's Grok series models
 
-ChatModel can be used directly, but it's generally recommended to use it through ExecutionEngine to gain more advanced features like tool integration, error handling, and state management.
+ChatModel can be used directly, but it's generally recommended to use it through AIGNE to gain more advanced features like tool integration, error handling, and state management.
 
 **Example**:
 
@@ -140,8 +140,8 @@ const xaiModel = new XAIChatModel({
   model: "grok-2-latest", // Optional, defaults to "grok-2-latest"
 });
 
-// Use with ExecutionEngine
-const engine = new ExecutionEngine({ model: openaiModel });
+// Use with AIGNE
+const aigne = new AIGNE({ model: openaiModel });
 ```
 
 For more information, refer to the [ChatModel API documentation](./apis/chat-model.md).
@@ -165,12 +165,12 @@ AIGNE Framework supports multiple workflow patterns, each suitable for different
 - **Router Workflow**: Dynamically select Agents based on input
 - **Orchestrator Workflow**: Organize multiple Agents to work together
 
-### Execution Engine
+### AIGNE
 
-The ExecutionEngine is the runtime environment for workflows, responsible for coordinating communication and execution flow between Agents.
+The AIGNE is the runtime environment for workflows, responsible for coordinating communication and execution flow between Agents.
 
 ```typescript
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 ```
 
 ## Workflow Patterns
@@ -188,7 +188,7 @@ const engine = new ExecutionEngine({ model });
 **Example**:
 
 ```typescript
-import { AIAgent, ExecutionEngine, FunctionAgent } from "@aigne/core";
+import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -216,9 +216,9 @@ Work with the sandbox to execute your code.
   tools: [sandbox],
 });
 
-// Create execution engine and run
-const engine = new ExecutionEngine({ model });
-const result = await engine.call(coder, "10! = ?");
+// Create AIGNE and run
+const aigne = new AIGNE({ model });
+const result = await aigne.call(coder, "10! = ?");
 console.log(result);
 // Output: { text: "The value of \\(10!\\) (10 factorial) is 3,628,800." }
 ```
@@ -235,7 +235,7 @@ console.log(result);
 **Example**:
 
 ```typescript
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Concept extractor Agent
@@ -284,8 +284,8 @@ Draft copy:
 });
 
 // Execute three Agents in sequence
-const engine = new ExecutionEngine({ model });
-const result = await engine.call(sequential(conceptExtractor, writer, formatProof),
+const aigne = new AIGNE({ model });
+const result = await aigne.call(sequential(conceptExtractor, writer, formatProof),
   { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
 
@@ -305,7 +305,7 @@ console.log(result);
 **Example**:
 
 ```typescript
-import { AIAgent, ExecutionEngine, parallel } from "@aigne/core";
+import { AIAgent, AIGNE, parallel } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Feature extraction Agent
@@ -329,8 +329,8 @@ Product description:
 });
 
 // Execute two Agents in parallel
-const engine = new ExecutionEngine({ model });
-const result = await engine.call(
+const aigne = new AIGNE({ model });
+const result = await aigne.call(
   parallel(featureExtractor, audienceAnalyzer),
   { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
@@ -354,7 +354,7 @@ console.log(result);
 ```typescript
 import {
   AIAgent,
-  ExecutionEngine,
+  AIGNE,
   UserInputTopic,
   UserOutputTopic,
 } from "@aigne/core";
@@ -417,8 +417,8 @@ Please review the code. If previous feedback was provided, see if it was address
 });
 
 // Execute reflection workflow
-const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
-const result = await engine.call("Write a function to find the sum of all even numbers in a list.");
+const aigne = new AIGNE({ model, agents: [coder, reviewer] });
+const result = await aigne.call("Write a function to find the sum of all even numbers in a list.");
 console.log(result);
 // Output contains approved code and feedback
 ```
@@ -435,7 +435,7 @@ console.log(result);
 **Example**:
 
 ```typescript
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Function to transfer to Agent B
@@ -459,8 +459,8 @@ const agentB = AIAgent.from({
 });
 
 // Execute handoff workflow
-const engine = new ExecutionEngine({ model });
-const userAgent = await engine.call(agentA);
+const aigne = new AIGNE({ model });
+const userAgent = await aigne.call(agentA);
 
 // Transfer to Agent B
 const result1 = await userAgent.call("transfer to agent b");
@@ -485,7 +485,7 @@ console.log(result2);
 **Example**:
 
 ```typescript
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Product support Agent
@@ -532,20 +532,20 @@ const triage = AIAgent.from({
 });
 
 // Execute router workflow
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
 // Product-related questions automatically routed to product support
-const result1 = await engine.call(triage, "How to use this product?");
+const result1 = await aigne.call(triage, "How to use this product?");
 console.log(result1);
 // { product_support: "I'd be happy to help you with that! However, I need to know which specific product you're referring to..." }
 
 // Feedback-related questions automatically routed to feedback
-const result2 = await engine.call(triage, "I have feedback about the app.");
+const result2 = await aigne.call(triage, "I have feedback about the app.");
 console.log(result2);
 // { feedback: "Thank you for sharing your feedback! I'm here to listen..." }
 
 // General questions automatically routed to general query
-const result3 = await engine.call(triage, "What is the weather today?");
+const result3 = await aigne.call(triage, "What is the weather today?");
 console.log(result3);
 // { other: "I can't provide real-time weather updates. However, you can check a reliable weather website..." }
 ```
@@ -563,7 +563,7 @@ console.log(result3);
 
 ```typescript
 import { OrchestratorAgent } from "@aigne/agent-library";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Create specialized Agents
@@ -642,8 +642,8 @@ const agent = OrchestratorAgent.from({
 });
 
 // Execute orchestrator workflow
-const engine = new ExecutionEngine({ model });
-const result = await engine.call(
+const aigne = new AIGNE({ model });
+const result = await aigne.call(
   agent,
   `Conduct an in-depth research on ArcBlock using only the official website\
 (avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
@@ -671,7 +671,7 @@ The Puppeteer MCP server allows AIGNE Framework to access and manipulate web con
 ```typescript
 import {
   AIAgent,
-  ExecutionEngine,
+  AIGNE,
   MCPAgent,
 } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
@@ -682,8 +682,8 @@ const puppeteerMCPAgent = await MCPAgent.from({
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
 });
 
-// Create execution engine
-const engine = new ExecutionEngine({
+// Create AIGNE
+const aigne = new AIGNE({
   model,
   tools: [puppeteerMCPAgent],
 });
@@ -698,7 +698,7 @@ const agent = AIAgent.from({
 });
 
 // Execute content extraction
-const result = await engine.call(
+const result = await aigne.call(
   agent,
   "extract content from https://www.arcblock.io"
 );
@@ -706,7 +706,7 @@ const result = await engine.call(
 console.log(result);
 // Output extracted web content
 
-await engine.shutdown();
+await aigne.shutdown();
 ```
 
 ### SQLite MCP Server
@@ -726,7 +726,7 @@ The SQLite MCP server allows AIGNE Framework to interact with SQLite databases.
 import { join } from "node:path";
 import {
   AIAgent,
-  ExecutionEngine,
+  AIGNE,
   MCPAgent,
 } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
@@ -742,8 +742,8 @@ const sqlite = await MCPAgent.from({
   ],
 });
 
-// Create execution engine
-const engine = new ExecutionEngine({
+// Create AIGNE
+const aigne = new AIGNE({
   model,
   tools: [sqlite],
 });
@@ -755,20 +755,20 @@ const agent = AIAgent.from({
 
 // Create table
 console.log(
-  await engine.call(
+  await aigne.call(
     agent,
     "create a product table with columns name description and createdAt"
   )
 );
 
 // Insert data
-console.log(await engine.call(agent, "create 10 products for test"));
+console.log(await aigne.call(agent, "create 10 products for test"));
 
 // Query data
-console.log(await engine.call(agent, "how many products?"));
+console.log(await aigne.call(agent, "how many products?"));
 // Output: { text: "There are 10 products in the database." }
 
-await engine.shutdown();
+await aigne.shutdown();
 ```
 
 ## Usage Patterns and Best Practices
@@ -811,7 +811,7 @@ Complex applications may require combining multiple workflow patterns:
    - The next Agent can access this data via `{{key}}`
 
 2. **How to handle Agent failures or errors?**
-   - Use try/catch to wrap engine.call calls
+   - Use try/catch to wrap aigne.call calls
    - Consider possible failure paths when designing workflows, add error handling Agents
 
 3. **How to constrain Agent output format?**

@@ -92,7 +92,7 @@ The following example demonstrates how to build a handoff workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -119,9 +119,9 @@ const agentB = AIAgent.from({
   outputKey: "B",
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = engine.call(agentA);
+const userAgent = aigne.call(agentA);
 
 const result1 = await userAgent.call("transfer to agent b");
 console.log(result1);

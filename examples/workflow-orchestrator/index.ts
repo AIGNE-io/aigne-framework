@@ -2,7 +2,7 @@
 
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 
 const model = await loadModel(null, { parallelToolCalls: false });
@@ -50,9 +50,9 @@ const agent = OrchestratorAgent.from({
   tasksConcurrency: 1, // puppeteer can only run one task at a time
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = engine.call(agent);
+const userAgent = aigne.call(agent);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: "Welcome to the Orchestrator Agent!",

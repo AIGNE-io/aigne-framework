@@ -38,7 +38,7 @@ pnpm add @aigne/agent-library @aigne/core
 ## 基本用法
 
 ```typescript
-import { ExecutionEngine } from "@aigne/core";
+import { AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 
@@ -49,7 +49,7 @@ const model = new OpenAIChatModel({
 });
 
 // 创建执行引擎
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
 // 创建编排代理
 const orchestrator = new OrchestratorAgent({
@@ -59,7 +59,7 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // 执行编排任务
-const userAgent = await engine.call(orchestrator);
+const userAgent = await aigne.call(orchestrator);
 const result = await userAgent.call("分析这篇文章并生成摘要和关键词");
 console.log(result);
 ```
@@ -75,7 +75,7 @@ console.log(result);
 ### 创建编排工作流
 
 ```typescript
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 
@@ -114,8 +114,8 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // 使用编排代理
-const engine = new ExecutionEngine({ model });
-const userAgent = await engine.call(orchestrator);
+const aigne = new AIGNE({ model });
+const userAgent = await aigne.call(orchestrator);
 const result = await userAgent.call("关于人工智能在医疗领域的应用");
 console.log(result);
 ```

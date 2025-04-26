@@ -1,6 +1,6 @@
 import { type ZodType, z } from "zod";
-import type { Context } from "../execution-engine/context.js";
-import type { Unsubscribe } from "../execution-engine/message-queue.js";
+import type { Context } from "../aigne/context.js";
+import type { Unsubscribe } from "../aigne/message-queue.js";
 import { checkArguments, orArrayToArray } from "../utils/type-utils.js";
 import type { Message } from "./agent.js";
 

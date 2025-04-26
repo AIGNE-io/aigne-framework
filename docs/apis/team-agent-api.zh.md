@@ -71,7 +71,7 @@ type TeamAgentProcessMethod = "sequential" | "parallel";
 ### 顺序工作流
 
 ```typescript
-import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
 
 // 为特定任务创建单个代理
 const conceptExtractor = AIAgent.from({
@@ -96,14 +96,14 @@ const teamAgent = TeamAgent.from({
 });
 
 // 执行工作流
-const engine = new ExecutionEngine({ model });
-const result = await engine.call(teamAgent, { product: "产品描述" });
+const aigne = new AIGNE({ model });
+const result = await aigne.call(teamAgent, { product: "产品描述" });
 ```
 
 ### 并行工作流
 
 ```typescript
-import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
 
 // 创建用于并行任务的单个代理
 const featureExtractor = AIAgent.from({
@@ -123,5 +123,5 @@ const teamAgent = TeamAgent.from({
 });
 
 // 执行工作流
-const engine = new ExecutionEngine({ model });
-const result = await engine.call(teamAgent, { product: "产品描述" });
+const aigne = new AIGNE({ model });
+const result = await aigne.call(teamAgent, { product: "产品描述" });

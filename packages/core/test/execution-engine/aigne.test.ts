@@ -1,7 +1,7 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import {
   AIAgent,
-  ExecutionEngine,
+  AIGNE,
   FunctionAgent,
   type MessageQueueListener,
   UserInputTopic,
@@ -13,19 +13,19 @@ import { TeamAgent } from "@aigne/core/agents/team-agent.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { mockOpenAIStreaming } from "../_mocks/mock-openai-streaming.js";
 
-test("ExecutionEngine.call", async () => {
+test("AIGNE.call", async () => {
   const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
     sum: a + b,
   }));
 
-  const engine = new ExecutionEngine();
+  const aigne = new AIGNE();
 
-  const result = await engine.call(plus, { a: 1, b: 2 });
+  const result = await aigne.call(plus, { a: 1, b: 2 });
 
   expect(result).toEqual({ sum: 3 });
 });
 
-test("ExecutionEngine.call with reflection", async () => {
+test("AIGNE.call with reflection", async () => {
   const plusOne = FunctionAgent.from({
     subscribeTopic: [UserInputTopic, "revise"],
     publishTopic: "review_request",
@@ -43,14 +43,14 @@ test("ExecutionEngine.call with reflection", async () => {
     },
   });
 
-  const engine = new ExecutionEngine({ agents: [plusOne, reviewer] });
-  engine.publish(UserInputTopic, createPublishMessage({ num: 1 }));
-  const { message: result } = await engine.subscribe(UserOutputTopic);
+  const aigne = new AIGNE({ agents: [plusOne, reviewer] });
+  aigne.publish(UserInputTopic, createPublishMessage({ num: 1 }));
+  const { message: result } = await aigne.subscribe(UserOutputTopic);
 
   expect(result).toEqual({ num: 11, approval: "approve" });
 });
 
-test("ExecutionEngine.shutdown should shutdown all tools and agents", async () => {
+test("AIGNE.shutdown should shutdown all tools and agents", async () => {
   const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
     sum: a + b,
   }));
@@ -59,7 +59,7 @@ test("ExecutionEngine.shutdown should shutdown all tools and agents", async () =
     memory: { subscribeTopic: "test_topic" },
   });
 
-  const engine = new ExecutionEngine({
+  const aigne = new AIGNE({
     tools: [plus],
     agents: [agent],
   });
@@ -67,13 +67,13 @@ test("ExecutionEngine.shutdown should shutdown all tools and agents", async () =
   const plusShutdown = spyOn(plus, "shutdown");
   const agentShutdown = spyOn(agent, "shutdown");
 
-  await engine.shutdown();
+  await aigne.shutdown();
 
   expect(plusShutdown).toHaveBeenCalled();
   expect(agentShutdown).toHaveBeenCalled();
 });
 
-test("ExecutionEngine should throw error if reached max agent calls", async () => {
+test("AIGNE should throw error if reached max agent calls", async () => {
   const plus = FunctionAgent.from(
     async ({ num, times }: { num: number; times: number }, context): Promise<{ num: number }> => {
       if (times <= 1) {
@@ -84,19 +84,19 @@ test("ExecutionEngine should throw error if reached max agent calls", async () =
     },
   );
 
-  const engine = new ExecutionEngine({
+  const aigne = new AIGNE({
     limits: {
       maxAgentCalls: 2,
     },
   });
 
-  expect(engine.call(plus, { num: 0, times: 2 })).resolves.toEqual({ num: 2 });
-  expect(engine.call(plus, { num: 0, times: 3 })).rejects.toThrowError(
+  expect(aigne.call(plus, { num: 0, times: 2 })).resolves.toEqual({ num: 2 });
+  expect(aigne.call(plus, { num: 0, times: 3 })).rejects.toThrowError(
     "Exceeded max agent calls 2/2",
   );
 });
 
-test("ExecutionEngine should throw error if reached max tokens", async () => {
+test("AIGNE should throw error if reached max tokens", async () => {
   const model = new OpenAIChatModel({
     apiKey: "YOUR_API_KEY",
   });
@@ -107,16 +107,16 @@ test("ExecutionEngine should throw error if reached max tokens", async () => {
 
   const agent = AIAgent.from({});
 
-  const engine = new ExecutionEngine({
+  const aigne = new AIGNE({
     model,
     limits: {
       maxTokens: 200,
     },
   });
 
-  expect(engine.call(agent, "test")).resolves.toEqual(createMessage("hello"));
+  expect(aigne.call(agent, "test")).resolves.toEqual(createMessage("hello"));
   expect(
-    engine.call(
+    aigne.call(
       TeamAgent.from({
         tools: [agent, agent],
       }),
@@ -125,7 +125,7 @@ test("ExecutionEngine should throw error if reached max tokens", async () => {
   ).rejects.toThrow("Exceeded max tokens 300/200");
 });
 
-test("ExecutionEngine should throw timeout error", async () => {
+test("AIGNE should throw timeout error", async () => {
   const agent = FunctionAgent.from(async ({ timeout }: { timeout: number }) => {
     await new Promise((resolve) => {
       setTimeout(resolve, timeout);
@@ -134,30 +134,30 @@ test("ExecutionEngine should throw timeout error", async () => {
     return { timeout };
   });
 
-  const engine = new ExecutionEngine({
+  const aigne = new AIGNE({
     limits: {
       timeout: 200,
     },
   });
 
-  expect(engine.call(agent, { timeout: 100 })).resolves.toEqual({ timeout: 100 });
-  expect(engine.call(agent, { timeout: 300 })).rejects.toThrow("ExecutionContext is timeout");
+  expect(aigne.call(agent, { timeout: 100 })).resolves.toEqual({ timeout: 100 });
+  expect(aigne.call(agent, { timeout: 300 })).rejects.toThrow("AIGNEContext is timeout");
 });
 
-test("ExecutionContext should subscribe/unsubscribe correctly", async () => {
-  const engine = new ExecutionEngine({});
+test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
+  const aigne = new AIGNE({});
 
   const listener: MessageQueueListener = mock();
 
-  engine.subscribe("test_topic", listener);
+  aigne.subscribe("test_topic", listener);
 
-  engine.publish("test_topic", createPublishMessage("hello"));
+  aigne.publish("test_topic", createPublishMessage("hello"));
   expect(listener).toBeCalledTimes(1);
   expect(listener).toHaveBeenCalledWith(
     expect.objectContaining({ message: createMessage("hello") }),
   );
 
-  engine.unsubscribe("test_topic", listener);
-  engine.publish("test_topic", createPublishMessage("hello"));
+  aigne.unsubscribe("test_topic", listener);
+  aigne.publish("test_topic", createPublishMessage("hello"));
   expect(listener).toBeCalledTimes(1);
 });

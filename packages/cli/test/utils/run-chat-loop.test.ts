@@ -1,14 +1,14 @@
 import { expect, spyOn, test } from "bun:test";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, UserAgent, createMessage } from "@aigne/core";
+import { AIAgent, AIGNE, UserAgent, createMessage } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import inquirer from "inquirer";
 
 test("runChatLoopInTerminal should respond /help /exit commands", async () => {
-  const engine = new ExecutionEngine({});
+  const aigne = new AIGNE({});
 
   const userAgent = UserAgent.from({
-    context: engine.newContext(),
+    context: aigne.newContext(),
     process: () => ({ text: "hello" }),
   });
 
@@ -28,11 +28,11 @@ test("runChatLoopInTerminal should respond /help /exit commands", async () => {
 });
 
 test("runChatLoopInTerminal should trigger initial call", async () => {
-  const engine = new ExecutionEngine({});
+  const aigne = new AIGNE({});
 
   const agent = AIAgent.from({});
 
-  const user = engine.call(agent);
+  const user = aigne.call(agent);
 
   spyOn(inquirer, "prompt").mockReturnValueOnce(
     Promise.resolve({ question: "/exit" }) as unknown as ReturnType<typeof inquirer.prompt>,
@@ -58,9 +58,9 @@ test("runChatLoopInTerminal should trigger initial call", async () => {
 test("runChatLoopInTerminal should call agent correctly", async () => {
   const agent = AIAgent.from({});
 
-  const engine = new ExecutionEngine({});
+  const aigne = new AIGNE({});
 
-  const userAgent = engine.call(agent);
+  const userAgent = aigne.call(agent);
 
   spyOn(inquirer, "prompt").mockReturnValueOnce(
     Promise.resolve({ question: "hello, this is a test message" }) as unknown as ReturnType<
@@ -86,9 +86,9 @@ test("runChatLoopInTerminal should call agent correctly", async () => {
 });
 
 test("runChatLoopInTerminal should skip loop If initialCall is provided and skipLoop is true", async () => {
-  const engine = new ExecutionEngine({});
+  const aigne = new AIGNE({});
   const agent = AIAgent.from({});
-  const userAgent = engine.call(agent);
+  const userAgent = aigne.call(agent);
 
   const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
     arrayToAgentProcessAsyncGenerator([

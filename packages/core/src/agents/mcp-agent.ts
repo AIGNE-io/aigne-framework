@@ -24,7 +24,7 @@ import type {
 } from "@modelcontextprotocol/sdk/types.js";
 import pRetry from "p-retry";
 import { type ZodType, z } from "zod";
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
 import { logger } from "../utils/logger.js";
 import {
   promptFromMCPPrompt,

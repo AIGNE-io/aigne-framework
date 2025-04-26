@@ -44,8 +44,8 @@
       "agents/*": [
         "./lib/dts/agents/*"
       ],
-      "execution-engine/*": [
-        "./lib/dts/execution-engine/*"
+      "aigne/*": [
+        "./lib/dts/aigne/*"
       ],
       "loader/*": [
         "./lib/dts/loader/*"

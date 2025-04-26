@@ -39,7 +39,7 @@ pnpm add @aigne/core
 ## 基本用法
 
 ```typescript
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // 创建 AI 模型实例
@@ -55,10 +55,10 @@ const agent = AIAgent.from({
 });
 
 // 创建执行引擎
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
 // 使用执行引擎调用代理
-const userAgent = await engine.call(agent);
+const userAgent = await aigne.call(agent);
 
 // 向代理发送消息
 const response = await userAgent.call("你好，能帮我写一篇短文吗？");
@@ -68,7 +68,7 @@ console.log(response);
 ## 模块结构
 
 - `agents/`: 代理相关的实现，包括 AI 代理、函数代理、MCP 代理等
-- `execution-engine/`: 执行引擎的实现
+- `aigne/`: AIGNE 提供 Agents 执行环境
 - `loader/`: 加载器相关功能
 - `models/`: 各种 AI 模型的集成
 - `prompt/`: 提示词处理相关功能
@@ -82,7 +82,7 @@ console.log(response);
 - [AI Agent API](../../docs/apis/ai-agent-api.zh.md)
 - [Function Agent API](../../docs/apis/function-agent-api.zh.md)
 - [MCP Agent API](../../docs/apis/mcp-agent-api.zh.md)
-- [Execution Engine API](../../docs/apis/execution-engine-api.zh.md)
+- [AIGNE API](../../docs/apis/aigne-api.zh.md)
 
 ## 协议
 

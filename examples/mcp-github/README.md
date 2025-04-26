@@ -118,7 +118,7 @@ pnpm example # Run predefined examples
 The following example demonstrates how to use the GitHub MCP server to search for repositories:
 
 ```typescript
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Load environment variables
@@ -138,8 +138,8 @@ const githubMCPAgent = await MCPAgent.from({
   },
 });
 
-// Create execution engine
-const engine = new ExecutionEngine({
+// Create AIGNE
+const aigne = new AIGNE({
   model,
   tools: [githubMCPAgent],
 });
@@ -161,7 +161,7 @@ Always provide clear, concise responses with relevant information from GitHub.
 });
 
 // Example: Search for repositories
-const result = await engine.call(
+const result = await aigne.call(
   agent,
   "Search for repositories related to 'modelcontextprotocol'"
 );
@@ -174,8 +174,8 @@ console.log(result);
 // 2. **modelcontextprotocol/modelcontextprotocol** - The main ModelContextProtocol repository
 // ...
 
-// Shutdown the engine when done
-await engine.shutdown();
+// Shutdown the aigne when done
+await aigne.shutdown();
 ```
 
 ## Available GitHub Operations

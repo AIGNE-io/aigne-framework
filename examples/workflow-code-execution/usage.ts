@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, FunctionAgent } from "@aigne/core";
+import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -33,9 +33,9 @@ Work with the sandbox to execute your code.
   tools: [sandbox],
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(coder, "10! = ?");
+const result = await aigne.call(coder, "10! = ?");
 console.log(result);
 // Output:
 // {

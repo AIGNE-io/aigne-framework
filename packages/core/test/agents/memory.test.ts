@@ -1,11 +1,5 @@
 import { expect, test } from "bun:test";
-import {
-  AgentMemory,
-  ExecutionEngine,
-  type Memory,
-  createMessage,
-  createPublishMessage,
-} from "@aigne/core";
+import { AIGNE, AgentMemory, type Memory, createMessage, createPublishMessage } from "@aigne/core";
 
 test("should add a new memory if it is not the same as the last one", () => {
   const agentMemory = new AgentMemory({});
@@ -41,7 +35,7 @@ test("should add multiple different memories", () => {
 });
 
 test("should add memory after topic trigger", () => {
-  const context = new ExecutionEngine({});
+  const context = new AIGNE({});
 
   const memory = new AgentMemory({
     subscribeTopic: "test_topic",

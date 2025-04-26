@@ -71,7 +71,7 @@ type TeamAgentProcessMethod = "sequential" | "parallel";
 ### Sequential Workflow
 
 ```typescript
-import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
 
 // Create individual agents for specific tasks
 const conceptExtractor = AIAgent.from({
@@ -96,14 +96,14 @@ const teamAgent = TeamAgent.from({
 });
 
 // Execute the workflow
-const engine = new ExecutionEngine({ model });
-const result = await engine.call(teamAgent, { product: "Product description" });
+const aigne = new AIGNE({ model });
+const result = await aigne.call(teamAgent, { product: "Product description" });
 ```
 
 ### Parallel Workflow
 
 ```typescript
-import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
 
 // Create individual agents for parallel tasks
 const featureExtractor = AIAgent.from({
@@ -123,5 +123,5 @@ const teamAgent = TeamAgent.from({
 });
 
 // Execute the workflow
-const engine = new ExecutionEngine({ model });
-const result = await engine.call(teamAgent, { product: "Product description" });
+const aigne = new AIGNE({ model });
+const result = await aigne.call(teamAgent, { product: "Product description" });

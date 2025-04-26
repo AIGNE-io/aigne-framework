@@ -1,8 +1,8 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import {
   AIAgent,
+  AIGNE,
   type ContextEventMap,
-  ExecutionEngine,
   type MessageQueueListener,
   createMessage,
   createPublishMessage,
@@ -10,8 +10,8 @@ import {
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import type { Listener } from "@aigne/core/utils/typed-event-emtter";
 
-test("ExecutionContext should subscribe/unsubscribe correctly", async () => {
-  const context = new ExecutionEngine({}).newContext();
+test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
+  const context = new AIGNE({}).newContext();
 
   const listener: MessageQueueListener = mock();
 
@@ -28,11 +28,11 @@ test("ExecutionContext should subscribe/unsubscribe correctly", async () => {
   expect(listener).toBeCalledTimes(1);
 });
 
-test("ExecutionContext should emit/on correctly", async () => {
+test("AIGNEContext should emit/on correctly", async () => {
   for (const listenMethod of ["on", "once"] as const) {
     const agent = AIAgent.from({});
 
-    const parentContext = new ExecutionEngine({}).newContext();
+    const parentContext = new AIGNE({}).newContext();
     const context = parentContext.newContext();
 
     const onAgentStarted = mock();
@@ -85,10 +85,10 @@ test("ExecutionContext should emit/on correctly", async () => {
   }
 });
 
-test("ExecutionContext should receive agentStarted/agentSucceed/agentFailed message", async () => {
+test("AIGNEContext should receive agentStarted/agentSucceed/agentFailed message", async () => {
   const agent = AIAgent.from({});
 
-  const parentContext = new ExecutionEngine({}).newContext();
+  const parentContext = new AIGNE({}).newContext();
   const context = parentContext.newContext();
 
   const onAgentStarted: Listener<"agentStarted", ContextEventMap> = mock();

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
 import { ChatModel } from "../models/chat-model.js";
 import type {
   ChatModelInput,

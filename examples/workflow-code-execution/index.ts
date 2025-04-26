@@ -1,7 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, FunctionAgent } from "@aigne/core";
+import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { z } from "zod";
 
@@ -31,9 +31,9 @@ Work with the sandbox to execute your code.
   memory: true,
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const user = engine.call(coder);
+const user = aigne.call(coder);
 
 await runChatLoopInTerminal(user, {
   welcome:

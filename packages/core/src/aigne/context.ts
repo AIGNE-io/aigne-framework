@@ -118,7 +118,7 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]>;
 
   /**
-   * Publish a message to a topic, the engine will call the listeners of the topic
+   * Publish a message to a topic, the aigne will call the listeners of the topic
    * @param topic topic name, or an array of topic names
    * @param payload message to publish
    */
@@ -153,13 +153,13 @@ export function createPublishMessage(
   };
 }
 
-export class ExecutionContext implements Context {
-  constructor(parent?: ConstructorParameters<typeof ExecutionContextInternal>[0]) {
-    if (parent instanceof ExecutionContext) {
+export class AIGNEContext implements Context {
+  constructor(parent?: ConstructorParameters<typeof AIGNEContextInternal>[0]) {
+    if (parent instanceof AIGNEContext) {
       this.parentId = parent.id;
       this.internal = parent.internal;
     } else {
-      this.internal = new ExecutionContextInternal(parent);
+      this.internal = new AIGNEContextInternal(parent);
     }
   }
 
@@ -167,7 +167,7 @@ export class ExecutionContext implements Context {
 
   id = v7();
 
-  readonly internal: ExecutionContextInternal;
+  readonly internal: AIGNEContextInternal;
 
   get model() {
     return this.internal.model;
@@ -190,12 +190,12 @@ export class ExecutionContext implements Context {
   }
 
   newContext({ reset }: { reset?: boolean } = {}) {
-    if (reset) return new ExecutionContext(this.internal);
-    return new ExecutionContext(this);
+    if (reset) return new AIGNEContext(this.internal);
+    return new AIGNEContext(this);
   }
 
   call = ((agent, message, options) => {
-    checkArguments("ExecutionContext.call", executionContextCallArgsSchema, {
+    checkArguments("AIGNEContext.call", aigneContextCallArgsSchema, {
       agent,
       message,
       options,
@@ -320,7 +320,7 @@ export class ExecutionContext implements Context {
   }
 }
 
-class ExecutionContextInternal {
+class AIGNEContextInternal {
   constructor(
     private readonly parent?: Pick<Context, "model" | "tools" | "limits"> & {
       messageQueue?: MessageQueue;
@@ -374,10 +374,8 @@ class ExecutionContextInternal {
   ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
     this.initTimeout();
 
-    return withAbortSignal(
-      this.abortController.signal,
-      new Error("ExecutionContext is timeout"),
-      () => this.callAgent(agent, input, context, options),
+    return withAbortSignal(this.abortController.signal, new Error("AIGNEContext is timeout"), () =>
+      this.callAgent(agent, input, context, options),
     );
   }
 
@@ -455,7 +453,7 @@ async function* withAbortSignal<T extends Message>(
   }
 }
 
-const executionContextCallArgsSchema = z.object({
+const aigneContextCallArgsSchema = z.object({
   agent: z.union([z.function() as ZodType<FunctionAgentFn>, z.instanceof(Agent)]),
   message: z.union([z.record(z.unknown()), z.string()]).optional(),
   options: z.object({ returnActiveAgent: z.boolean().optional() }).optional(),

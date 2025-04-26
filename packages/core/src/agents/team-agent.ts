@@ -1,4 +1,4 @@
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
 import { mergeAgentResponseChunk, readableStreamToAsyncIterator } from "../utils/stream-utils.js";
 import { type PromiseOrValue, isEmpty } from "../utils/type-utils.js";
 import {

@@ -7,10 +7,10 @@ import {
   type ChatModelOutput,
   type Context,
   type ContextEventMap,
+  type ContextUsage,
   MESSAGE_KEY,
   type Message,
 } from "@aigne/core";
-import type { ContextUsage } from "@aigne/core/execution-engine/usage";
 import { logger } from "@aigne/core/utils/logger.js";
 import {
   mergeAgentResponseChunk,

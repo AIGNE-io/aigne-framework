@@ -157,7 +157,7 @@ console.log(userData); // { id: 123, name: "John Doe", email: "john@example.com"
 ### 在工具链中使用
 
 ```typescript
-import { ExecutionEngine, AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -190,10 +190,10 @@ const aiAgent = AIAgent.from({
 });
 
 // 创建执行引擎
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
 // 运行工作流
-const result = await engine.call(
+const result = await aigne.call(
   aiAgent,
   { data: [1, 2, 3, 4, 5] }
 );

@@ -1,6 +1,6 @@
 import { ReadableStream } from "node:stream/web";
-import { type Context, createPublishMessage } from "../execution-engine/context.js";
-import type { MessagePayload, Unsubscribe } from "../execution-engine/message-queue.js";
+import { type Context, createPublishMessage } from "../aigne/context.js";
+import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import { orArrayToArray } from "../utils/type-utils.js";
 import {
   type Agent,

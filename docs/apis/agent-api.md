@@ -60,7 +60,7 @@ async call(input: I | string, context: Context | undefined, options: AgentCallOp
 ##### Parameters
 
 - `input`: `I | string` - Input data or string
-- `context`: `Context` (optional) - Execution context
+- `context`: `Context` (optional) - AIGNE context
 - `options`: `AgentCallOptions` (optional) - Call options
   - `streaming`: `boolean` - When set to `true`, returns a stream of response chunks instead of waiting for the complete response
 
@@ -92,7 +92,7 @@ abstract process(input: I, context: Context): Promise<O>
 ##### Parameters
 
 - `input`: `I` - Input data
-- `context`: `Context` - Execution context
+- `context`: `Context` - AIGNE context
 
 ##### Returns
 

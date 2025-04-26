@@ -4,12 +4,12 @@ import {
   OrchestratorAgent,
   getFullPlanSchema,
 } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, ExecutionEngine, MESSAGE_KEY, createMessage } from "@aigne/core";
+import { AIAgent, AIGNE, MESSAGE_KEY, createMessage } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 test("AIAgent.call", async () => {
   const model = new OpenAIChatModel();
-  const engine = new ExecutionEngine({ model });
+  const aigne = new AIGNE({ model });
 
   const finder = AIAgent.from({
     name: "finder",
@@ -76,7 +76,7 @@ test("AIAgent.call", async () => {
   const finderCall = spyOn(finder, "call");
   const writerCall = spyOn(writer, "call");
 
-  const result = await engine.call(agent, "Deep research ArcBlock and write a professional report");
+  const result = await aigne.call(agent, "Deep research ArcBlock and write a professional report");
 
   expect(result).toEqual(createMessage("Task finished"));
   expect(finderCall).toHaveBeenLastCalledWith(

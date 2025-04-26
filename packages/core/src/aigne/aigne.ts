@@ -3,11 +3,11 @@ import { Agent } from "../agents/agent.js";
 import { load } from "../loader/index.js";
 import { ChatModel } from "../models/chat-model.js";
 import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
-import { type Context, ExecutionContext } from "./context.js";
+import { AIGNEContext, type Context } from "./context.js";
 import { MessageQueue } from "./message-queue.js";
 import type { ContextLimits } from "./usage.js";
 
-export interface ExecutionEngineOptions {
+export interface AIGNEOptions {
   name?: string;
   description?: string;
   model?: ChatModel;
@@ -16,17 +16,10 @@ export interface ExecutionEngineOptions {
   limits?: ContextLimits;
 }
 
-export interface ExecutionEngineRunOptions {
-  returnActiveAgent?: boolean;
-}
-
-export class ExecutionEngine {
-  static async load({
-    path,
-    ...options
-  }: { path: string } & ExecutionEngineOptions): Promise<ExecutionEngine> {
+export class AIGNE {
+  static async load({ path, ...options }: { path: string } & AIGNEOptions): Promise<AIGNE> {
     const { model, agents, tools, ...aigne } = await load({ path });
-    return new ExecutionEngine({
+    return new AIGNE({
       ...options,
       model: options.model || model,
       name: options.name || aigne.name || undefined,
@@ -36,8 +29,8 @@ export class ExecutionEngine {
     });
   }
 
-  constructor(options?: ExecutionEngineOptions) {
-    if (options) checkArguments("ExecutionEngine", executionEngineOptionsSchema, options);
+  constructor(options?: AIGNEOptions) {
+    if (options) checkArguments("AIGNE", aigneOptionsSchema, options);
 
     this.name = options?.name;
     this.description = options?.description;
@@ -64,7 +57,7 @@ export class ExecutionEngine {
   limits?: ContextLimits;
 
   addAgent(...agents: Agent[]) {
-    checkArguments("ExecutionEngine.addAgent", executionEngineAddAgentArgsSchema, agents);
+    checkArguments("AIGNE.addAgent", aigneAddAgentArgsSchema, agents);
 
     for (const agent of agents) {
       this.agents.push(agent);
@@ -74,15 +67,15 @@ export class ExecutionEngine {
   }
 
   newContext() {
-    return new ExecutionContext(this);
+    return new AIGNEContext(this);
   }
 
   publish = ((...args) => {
-    return new ExecutionContext(this).publish(...args);
+    return new AIGNEContext(this).publish(...args);
   }) as Context["publish"];
 
   call = ((...args: Parameters<Context["call"]>) => {
-    return new ExecutionContext(this).call(...args);
+    return new AIGNEContext(this).call(...args);
   }) as Context["call"];
 
   subscribe = ((...args) => {
@@ -109,10 +102,10 @@ export class ExecutionEngine {
   }
 }
 
-const executionEngineOptionsSchema = z.object({
+const aigneOptionsSchema = z.object({
   model: z.instanceof(ChatModel).optional(),
   tools: z.array(z.instanceof(Agent)).optional(),
   agents: z.array(z.instanceof(Agent)).optional(),
 });
 
-const executionEngineAddAgentArgsSchema = z.array(z.instanceof(Agent));
+const aigneAddAgentArgsSchema = z.array(z.instanceof(Agent));

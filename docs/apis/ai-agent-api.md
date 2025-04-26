@@ -69,7 +69,7 @@ async process(input: I, context: Context): Promise<O>
 ##### Parameters
 
 - `input`: `I` - Input data
-- `context`: `Context` - Execution context
+- `context`: `Context` - AIGNE context
 
 ##### Returns
 

@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { TeamAgent, type TeamAgentProcessMethod } from "@aigne/core/agents/team-agent";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import {
@@ -14,7 +14,7 @@ test.each(processMethods)(
   async (method) => {
     const model = new OpenAIChatModel();
 
-    const engine = new ExecutionEngine({ model });
+    const aigne = new AIGNE({ model });
 
     const first = AIAgent.from({
       outputKey: "first",
@@ -33,7 +33,7 @@ test.each(processMethods)(
       processMethod: method,
     });
 
-    const stream = await engine.call(team, "hello", { streaming: true });
+    const stream = await aigne.call(team, "hello", { streaming: true });
 
     expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
   },
@@ -44,7 +44,7 @@ test.each(processMethods)(
   async (method) => {
     const model = new OpenAIChatModel();
 
-    const engine = new ExecutionEngine({ model });
+    const aigne = new AIGNE({ model });
 
     const first = AIAgent.from({
       outputKey: "text",
@@ -63,7 +63,7 @@ test.each(processMethods)(
       processMethod: method,
     });
 
-    const stream = await engine.call(team, "hello", { streaming: true });
+    const stream = await aigne.call(team, "hello", { streaming: true });
 
     expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
   },

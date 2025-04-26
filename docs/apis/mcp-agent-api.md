@@ -187,7 +187,7 @@ The following example demonstrates how to use the AIGNE framework and Puppeteer 
 import {
   AIAgent,
   OpenAIChatModel,
-  ExecutionEngine,
+  AIGNE,
   MCPAgent
 } from "@aigne/core";
 
@@ -202,8 +202,8 @@ const puppeteerMCPAgent = await MCPAgent.from({
   args: ["-y", "@modelcontextprotocol/server-puppeteer"]
 });
 
-// Create execution engine and add Puppeteer MCP Agent as a tool
-const engine = new ExecutionEngine({
+// Create AIGNE and add Puppeteer MCP Agent as a tool
+const aigne = new AIGNE({
   model,
   tools: [puppeteerMCPAgent]
 });
@@ -218,7 +218,7 @@ const agent = AIAgent.from({
 });
 
 // Run Agent to extract content from specified website
-const result = await engine.call(
+const result = await aigne.call(
   agent,
   "extract content from https://www.arcblock.io"
 );
@@ -229,8 +229,8 @@ console.log(result);
 //   text: "The content extracted from the website [ArcBlock](https://www.arcblock.io) is as follows:\n\n---\n\n**Redefining Software Architect and Ecosystems**\n\nA total solution for building decentralized applications ..."
 // }
 
-// Shut down the execution engine
-await engine.shutdown();
+// Shut down the AIGNE
+await aigne.shutdown();
 ```
 
 ### Using Other MCP Servers

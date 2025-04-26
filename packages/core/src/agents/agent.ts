@@ -1,6 +1,6 @@
 import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
 import {
@@ -157,13 +157,13 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     if (context) {
       const { status } = context;
       if (status === "timeout") {
-        throw new Error(`ExecutionEngine for agent ${this.name} has timed out`);
+        throw new Error(`AIGNE for agent ${this.name} has timed out`);
       }
     }
   }
 
   private async newDefaultContext() {
-    return import("../execution-engine/context.js").then((m) => new m.ExecutionContext());
+    return import("../aigne/context.js").then((m) => new m.AIGNEContext());
   }
 
   async call(

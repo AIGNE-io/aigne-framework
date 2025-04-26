@@ -14,7 +14,7 @@ ChatModel 是 aigne-framework 中用于与 AI 大型语言模型交互的抽象�
 
 ## 模型初始化
 
-创建 ChatModel 实例，用于直接使用或提供给 ExecutionEngine：
+创建 ChatModel 实例，用于直接使用或提供给 AIGNE：
 
 ```typescript
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
@@ -40,14 +40,14 @@ const xaiModel = new XAIChatModel({
 });
 ```
 
-## 在 ExecutionEngine 中使用
+## 在 AIGNE 中使用
 
-ExecutionEngine 是 aigne-framework 中与 ChatModel 结合使用的推荐方式，它提供了更高级的功能，如工具集成、错误处理和状态管理等：
+AIGNE 是 aigne-framework 中与 ChatModel 结合使用的推荐方式，它提供了更高级的功能，如工具集成、错误处理和状态管理等：
 
 ```typescript
 import {
   AIAgent,
-  ExecutionEngine,
+  AIGNE,
 } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
@@ -57,7 +57,7 @@ const model = new OpenAIChatModel({
 });
 
 // 创建执行引擎
-const engine = new ExecutionEngine({
+const aigne = new AIGNE({
   model,
 });
 
@@ -68,7 +68,7 @@ const agent = AIAgent.from({
 });
 
 // 运行 AI Agent
-const result = engine.call(agent, "怎么使用 AIGNE API?");
+const result = aigne.call(agent, "怎么使用 AIGNE API?");
 console.log(result);
 ```
 
@@ -76,7 +76,7 @@ console.log(result);
 
 ### 基本用法
 
-尽管在实际应用中通常会通过 ExecutionEngine 使用 ChatModel，但您也可以直接使用 ChatModel 类：
+尽管在实际应用中通常会通过 AIGNE 使用 ChatModel，但您也可以直接使用 ChatModel 类：
 
 ```typescript
 import {

@@ -105,7 +105,7 @@ The following example demonstrates how to extract content from a website:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -120,7 +120,7 @@ const puppeteerMCPAgent = await MCPAgent.from({
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
 });
 
-const engine = new ExecutionEngine({
+const aigne = new AIGNE({
   model,
   tools: [puppeteerMCPAgent],
 });
@@ -133,7 +133,7 @@ const agent = AIAgent.from({
 `,
 });
 
-const result = await engine.call(agent, "extract content from https://www.arcblock.io");
+const result = await aigne.call(agent, "extract content from https://www.arcblock.io");
 
 console.log(result);
 // output:
@@ -141,7 +141,7 @@ console.log(result);
 //   $message: "The content extracted from the website [ArcBlock](https://www.arcblock.io) is as follows:\n\n---\n\n**Redefining Software Architect and Ecosystems**\n\nA total solution for building decentralized applications ...",
 // }
 
-await engine.shutdown();
+await aigne.shutdown();
 ```
 
 ## License

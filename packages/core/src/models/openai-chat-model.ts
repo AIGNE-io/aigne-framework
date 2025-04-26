@@ -8,7 +8,7 @@ import type {
 import type { Stream } from "openai/streaming.js";
 import { z } from "zod";
 import type { AgentCallOptions, AgentResponse, AgentResponseChunk } from "../agents/agent.js";
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { mergeUsage } from "../utils/model-utils.js";
 import { getJsonOutputPrompt } from "../utils/prompts.js";

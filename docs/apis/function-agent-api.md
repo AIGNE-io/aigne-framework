@@ -62,7 +62,7 @@ async process(input: I, context: Context): Promise<O>
 ##### Parameters
 
 - `input`: `I` - Input data
-- `context`: `Context` (optional) - Execution context
+- `context`: `Context` (optional) - AIGNE context
 
 ##### Returns
 
@@ -198,7 +198,7 @@ const result = await intentAnalyzer.call({ text: "I need some help" });
 ### Using in a Tool Chain
 
 ```typescript
-import { ExecutionEngine, AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, FunctionAgent, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -230,11 +230,11 @@ const aiAgent = AIAgent.from({
   tools: [processAgent]
 });
 
-// Create execution engine
-const engine = new ExecutionEngine({ model });
+// Create AIGNE
+const aigne = new AIGNE({ model });
 
 // Run the workflow
-const result = await engine.call(
+const result = await aigne.call(
   aiAgent,
   { data: [1, 2, 3, 4, 5] }
 );

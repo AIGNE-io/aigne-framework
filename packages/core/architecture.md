@@ -132,19 +132,13 @@ classDiagram
     class UserAgent {
     }
 
-    class ExecutionEngineRunOptions {
-        +boolean concurrency
-    }
 
-    ExecutionEngine --|> Context: inheritance
-    ExecutionEngine --|> EventEmitter: inheritance
-    ExecutionEngine ..> UserAgent: dependency
-    ExecutionEngine ..> ExecutionEngineRunOptions: dependency
-    class ExecutionEngine {
-        +run(Agent agent) UserAgent
-        +run(string input) object
-        +run(object input) object
-        +run(object input, Agent ...agents) object
-        +run(object input, ExecutionEngineRunOptions options, Agent ...agents) object
+    AIGNE --|> Context: inheritance
+    AIGNE --|> EventEmitter: inheritance
+    AIGNE ..> UserAgent: dependency
+    class AIGNE {
+        +call(Agent agent) UserAgent
+        +call(Agent agent, string input) object
+        +call(Agent agent, object input) object
     }
 ```

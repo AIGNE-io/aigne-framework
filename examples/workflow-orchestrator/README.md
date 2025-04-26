@@ -100,7 +100,7 @@ Here is the generated report for this example: [arcblock-deep-research.md](./gen
 ```typescript
 import assert from "node:assert";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -156,9 +156,9 @@ const agent = OrchestratorAgent.from({
   tasksConcurrency: 1, // puppeteer can only run one task at a time
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(
+const result = await aigne.call(
   agent,
   `\
 Conduct an in-depth research on ArcBlock using only the official website\

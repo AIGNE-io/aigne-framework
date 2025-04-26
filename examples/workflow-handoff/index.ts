@@ -1,7 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, type Agent, ExecutionEngine, FunctionAgent } from "@aigne/core";
+import { AIAgent, AIGNE, type Agent, FunctionAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { z } from "zod";
 
@@ -145,9 +145,9 @@ But make your questions subtle and natural.
   memory: true,
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = engine.call(triage);
+const userAgent = aigne.call(triage);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a customer service bot for ACME Inc. How can I help you today?`,

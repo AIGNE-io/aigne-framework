@@ -187,7 +187,7 @@ interface MCPResourceOptions extends MCPBaseOptions<MCPPromptInput, ReadResource
 import {
   AIAgent,
   OpenAIChatModel,
-  ExecutionEngine,
+  AIGNE,
   MCPAgent
 } from "@aigne/core";
 
@@ -203,7 +203,7 @@ const puppeteerMCPAgent = await MCPAgent.from({
 });
 
 // 创建执行引擎，并添加 Puppeteer MCP Agent 作为工具
-const engine = new ExecutionEngine({
+const aigne = new AIGNE({
   model,
   tools: [puppeteerMCPAgent]
 });
@@ -218,7 +218,7 @@ const agent = AIAgent.from({
 });
 
 // 运行 Agent 提取指定网站的内容
-const result = await engine.call(
+const result = await aigne.call(
   agent,
   "extract content from https://www.arcblock.io"
 );
@@ -230,7 +230,7 @@ console.log(result);
 // }
 
 // 关闭执行引擎
-await engine.shutdown();
+await aigne.shutdown();
 ```
 
 ### 使用其他 MCP 服务器

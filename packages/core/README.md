@@ -12,13 +12,13 @@ Core library of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) f
 
 ## Introduction
 
-`@aigne/core` is the foundation component of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing the essential modules and tools needed to build AI-driven applications. This package implements the core functionalities of the framework, including agent systems, execution engines, model integrations, and workflow pattern support.
+`@aigne/core` is the foundation component of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing the essential modules and tools needed to build AI-driven applications. This package implements the core functionalities of the framework, including agent systems, aigne environment, model integrations, and workflow pattern support.
 
 ## Features
 
 - **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, and other mainstream AI models, easily extensible to support additional models
 - **Agent System**: Powerful agent abstractions supporting AI agents, function agents, MCP agents, and more
-- **Execution Engine**: Flexible execution engine handling communication between agents and workflow execution
+- **AIGNE Environment**: Flexible handling communication between agents and workflow execution
 - **Workflow Patterns**: Support for sequential, concurrent, routing, handoff, and other workflow patterns
 - **MCP Protocol Integration**: Seamless integration with external systems through the Model Context Protocol
 - **TypeScript Support**: Comprehensive type definitions providing an excellent development experience
@@ -39,7 +39,7 @@ pnpm add @aigne/core
 ## Basic Usage
 
 ```typescript
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Create AI model instance
@@ -54,11 +54,11 @@ const agent = AIAgent.from({
   instructions: "You are a helpful assistant.",
 });
 
-// Create execution engine
-const engine = new ExecutionEngine({ model });
+// Create AIGNE
+const aigne = new AIGNE({ model });
 
-// Use the execution engine to call the agent
-const userAgent = await engine.call(agent);
+// Use the AIGNE to call the agent
+const userAgent = await aigne.call(agent);
 
 // Send a message to the agent
 const response = await userAgent.call("Hello, can you help me write a short article?");
@@ -68,7 +68,7 @@ console.log(response);
 ## Module Structure
 
 - `agents/`: Agent implementations, including AI agents, function agents, MCP agents, etc.
-- `execution-engine/`: Execution engine implementation
+- `aigne/`: AIGNE is agents execution environment
 - `loader/`: Loader-related functionality
 - `models/`: Integration with various AI models
 - `prompt/`: Prompt handling functionality
@@ -82,7 +82,7 @@ For more detailed API documentation, please refer to:
 - [AI Agent API](../../docs/apis/ai-agent-api.md)
 - [Function Agent API](../../docs/apis/function-agent-api.md)
 - [MCP Agent API](../../docs/apis/mcp-agent-api.md)
-- [Execution Engine API](../../docs/apis/execution-engine-api.md)
+- [AIGNE API](../../docs/apis/aigne-api.md)
 
 ## License
 

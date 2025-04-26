@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -27,9 +27,9 @@ Product description:
   outputKey: "audience",
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(
+const result = await aigne.call(
   TeamAgent.from({
     tools: [featureExtractor, audienceAnalyzer],
     processMethod: "parallel",

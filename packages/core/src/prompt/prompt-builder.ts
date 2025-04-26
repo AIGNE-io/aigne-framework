@@ -4,7 +4,7 @@ import { ZodObject, type ZodType } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
 import type { AgentMemory } from "../agents/memory.js";
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
 import type {
   ChatModel,
   ChatModelInput,

@@ -15,7 +15,7 @@ import type {
   AgentResponseChunk,
   Message,
 } from "../agents/agent.js";
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { mergeUsage } from "../utils/model-utils.js";
 import { agentResponseStreamToObject } from "../utils/stream-utils.js";

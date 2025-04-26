@@ -76,7 +76,7 @@ The following example demonstrates how to build a concurrency workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -104,7 +104,7 @@ Product description:
   outputKey: "audience",
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
 // 创建一个 TeamAgent 来处理并行工作流
 const teamAgent = TeamAgent.from({
@@ -112,7 +112,7 @@ const teamAgent = TeamAgent.from({
   processMethod: "parallel"
 });
 
-const result = await engine.call(teamAgent, {
+const result = await aigne.call(teamAgent, {
   product: "AIGNE is a No-code Generative AI Apps Engine",
 });
 

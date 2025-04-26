@@ -2,7 +2,6 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import contentType from "content-type";
 import getRawBody from "raw-body";
 import { z } from "zod";
-import type {} from "../agents/agent.js";
 import type { ExecutionEngine } from "../execution-engine/execution-engine.js";
 import { AgentResponseStreamSSE } from "../utils/event-stream.js";
 import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
@@ -96,6 +95,7 @@ export class AIGNEServer {
         headers: {
           "Content-Type": "text/event-stream",
           "Cache-Control": "no-cache",
+          "X-Accel-Buffering": "no",
         },
       });
     } catch (error) {

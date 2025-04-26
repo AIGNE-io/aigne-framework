@@ -9,8 +9,9 @@ import { promiseWithResolvers } from "./promise-with-resolvers.js";
 export async function serveMCPServer({
   pathname = "/mcp",
   engine,
+  host = "localhost",
   port,
-}: { pathname?: string; engine: ExecutionEngine; port: number }) {
+}: { pathname?: string; engine: ExecutionEngine; host?: string; port: number }) {
   const app = express();
 
   app.use(json());
@@ -76,7 +77,7 @@ export async function serveMCPServer({
 
   const { promise, resolve, reject } = promiseWithResolvers();
 
-  const httpServer = app.listen(port, (error) => {
+  const httpServer = app.listen(port, host, (error) => {
     if (error) reject(error);
     resolve();
   });

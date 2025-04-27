@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.5.0...example-chat-bot-v1.6.0) (2025-04-27)
+
+
+### Features
+
+* support TeamAgent and finalize API naming ([#91](https://github.com/AIGNE-io/aigne-framework/issues/91)) ([033d1b6](https://github.com/AIGNE-io/aigne-framework/commit/033d1b6a7dc5460807476abb35a413ba89a2a664))
+* **tests:** add @aigne/test-utils and update example test cases ([#95](https://github.com/AIGNE-io/aigne-framework/issues/95)) ([6be48d1](https://github.com/AIGNE-io/aigne-framework/commit/6be48d1895e990f68c4978018da1a53bb58c1c6d))
+
+
+### Bug Fixes
+
+* upgrade to streamable api for serve mcp command ([#98](https://github.com/AIGNE-io/aigne-framework/issues/98)) ([ae32bda](https://github.com/AIGNE-io/aigne-framework/commit/ae32bda20e57c2a2eb8b49fad034b0b2a5ebb15e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.8.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.1.0
+
 ## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.4.2...example-chat-bot-v1.5.0) (2025-04-23)
 
 

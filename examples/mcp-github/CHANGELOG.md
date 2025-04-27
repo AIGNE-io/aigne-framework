@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.9.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-github-v1.8.0...example-mcp-github-v1.9.0) (2025-04-27)
+
+
+### Features
+
+* support TeamAgent and finalize API naming ([#91](https://github.com/AIGNE-io/aigne-framework/issues/91)) ([033d1b6](https://github.com/AIGNE-io/aigne-framework/commit/033d1b6a7dc5460807476abb35a413ba89a2a664))
+* **tests:** add @aigne/test-utils and update example test cases ([#95](https://github.com/AIGNE-io/aigne-framework/issues/95)) ([6be48d1](https://github.com/AIGNE-io/aigne-framework/commit/6be48d1895e990f68c4978018da1a53bb58c1c6d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.8.0
+    * @aigne/core bumped to 1.12.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.1.0
+
 ## [1.8.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-github-v1.7.2...example-mcp-github-v1.8.0) (2025-04-23)
 
 

@@ -18,7 +18,7 @@
   "scripts": {
     "start": "bun run index.ts",
     "lint": "tsc --noEmit",
-    "test:llm": "bun test --timeout 600000"
+    "test:llm": "bun test"
   },
   "dependencies": {
     "@aigne/cli": "workspace:^",

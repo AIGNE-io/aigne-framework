@@ -3,8 +3,9 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "./src",
+    "outDir": "./lib",
     "noEmit": false,
-    "outDir": "./lib"
+    "declaration": true
   },
   "include": ["./src"]
 }

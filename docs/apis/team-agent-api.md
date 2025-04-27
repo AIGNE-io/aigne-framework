@@ -34,22 +34,18 @@ Defines the configuration options for TeamAgent.
 
 ```typescript
 interface TeamAgentOptions<I extends Message, O extends Message> extends AgentOptions<I, O> {
-  processMethod?: TeamAgentProcessMethod;
+  mode?: ProcessMode;
 }
 ```
 
-### `TeamAgentProcessMethod`
+### `ProcessMode`
 
 Defines the available processing methods for TeamAgent.
 
-```typescript
-type TeamAgentProcessMethod = "sequential" | "parallel";
-```
-
 | Value | Description |
 |-------|-------------|
-| `"sequential"` | Process agents one by one, passing the output of each agent to the next |
-| `"parallel"` | Process all agents in parallel, merging their outputs |
+| `sequential` | Process agents one by one, passing the output of each agent to the next |
+| `parallel` | Process all agents in parallel, merging their outputs |
 
 ## How It Works
 
@@ -71,7 +67,7 @@ type TeamAgentProcessMethod = "sequential" | "parallel";
 ### Sequential Workflow
 
 ```typescript
-import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent, ProcessMode } from "@aigne/core";
 
 // Create individual agents for specific tasks
 const conceptExtractor = AIAgent.from({
@@ -92,7 +88,7 @@ const editor = AIAgent.from({
 // Create a TeamAgent that processes agents sequentially
 const teamAgent = TeamAgent.from({
   skills: [conceptExtractor, writer, editor],
-  processMethod: "sequential" // Default, can be omitted
+  mode: ProcessMode.sequential // Default, can be omitted
 });
 
 // Execute the workflow
@@ -103,7 +99,7 @@ const result = await aigne.invoke(teamAgent, { product: "Product description" })
 ### Parallel Workflow
 
 ```typescript
-import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent, ProcessMode } from "@aigne/core";
 
 // Create individual agents for parallel tasks
 const featureExtractor = AIAgent.from({
@@ -119,7 +115,7 @@ const audienceAnalyzer = AIAgent.from({
 // Create a TeamAgent that processes agents in parallel
 const teamAgent = TeamAgent.from({
   skills: [featureExtractor, audienceAnalyzer],
-  processMethod: "parallel"
+  mode: ProcessMode.parallel // Process all agents in parallel
 });
 
 // Execute the workflow

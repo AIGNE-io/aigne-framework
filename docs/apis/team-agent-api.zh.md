@@ -34,22 +34,18 @@ static from<I extends Message, O extends Message>(options: TeamAgentOptions<I, O
 
 ```typescript
 interface TeamAgentOptions<I extends Message, O extends Message> extends AgentOptions<I, O> {
-  processMethod?: TeamAgentProcessMethod;
+  mode?: ProcessMode;
 }
 ```
 
-### `TeamAgentProcessMethod`
+### `ProcessMode`
 
 定义 TeamAgent 可用的处理方法。
 
-```typescript
-type TeamAgentProcessMethod = "sequential" | "parallel";
-```
-
 | 值 | 描述 |
 |-------|-------------|
-| `"sequential"` | 一个接一个地处理代理，将每个代理的输出传递给下一个 |
-| `"parallel"` | 并行处理所有代理，合并它们的输出 |
+| `sequential` | 一个接一个地处理代理，将每个代理的输出传递给下一个 |
+| `parallel` | 并行处理所有代理，合并它们的输出 |
 
 ## 工作原理
 
@@ -71,7 +67,7 @@ type TeamAgentProcessMethod = "sequential" | "parallel";
 ### 顺序工作流
 
 ```typescript
-import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent, ProcessMode } from "@aigne/core";
 
 // 为特定任务创建单个代理
 const conceptExtractor = AIAgent.from({
@@ -92,7 +88,7 @@ const editor = AIAgent.from({
 // 创建一个按顺序处理代理的 TeamAgent
 const teamAgent = TeamAgent.from({
   skills: [conceptExtractor, writer, editor],
-  processMethod: "sequential" // 默认值，可以省略
+  mode: ProcessMode.sequential // 默认值，可以省略
 });
 
 // 执行工作流
@@ -103,7 +99,7 @@ const result = await aigne.invoke(teamAgent, { product: "产品描述" });
 ### 并行工作流
 
 ```typescript
-import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent, ProcessMode } from "@aigne/core";
 
 // 创建用于并行任务的单个代理
 const featureExtractor = AIAgent.from({
@@ -119,7 +115,7 @@ const audienceAnalyzer = AIAgent.from({
 // 创建一个并行处理代理的 TeamAgent
 const teamAgent = TeamAgent.from({
   skills: [featureExtractor, audienceAnalyzer],
-  processMethod: "parallel"
+  mode: ProcessMode.parallel
 });
 
 // 执行工作流

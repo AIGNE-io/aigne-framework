@@ -9,7 +9,7 @@ import {
   type Message,
 } from "./agent.js";
 
-export enum ProcessMethod {
+export enum ProcessMode {
   /**
    * Process the agents one by one, passing the output of each agent to the next.
    */
@@ -24,9 +24,9 @@ export enum ProcessMethod {
 export interface TeamAgentOptions<I extends Message, O extends Message> extends AgentOptions<I, O> {
   /**
    * The method to process the agents in the team.
-   * @default {ProcessMethod.sequential}
+   * @default {ProcessMode.sequential}
    */
-  processMethod?: ProcessMethod;
+  mode?: ProcessMode;
 }
 
 export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O> {
@@ -36,16 +36,16 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
 
   constructor(options: TeamAgentOptions<I, O>) {
     super(options);
-    this.processMethod = options.processMethod ?? ProcessMethod.sequential;
+    this.mode = options.mode ?? ProcessMode.sequential;
   }
 
-  processMethod: ProcessMethod;
+  mode: ProcessMode;
 
   process(input: I, context: Context): PromiseOrValue<AgentProcessResult<O>> {
-    switch (this.processMethod) {
-      case ProcessMethod.sequential:
+    switch (this.mode) {
+      case ProcessMode.sequential:
         return this._processSequential(input, context);
-      case ProcessMethod.parallel:
+      case ProcessMode.parallel:
         return this._processParallel(input, context);
     }
   }

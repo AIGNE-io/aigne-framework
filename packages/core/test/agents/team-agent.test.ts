@@ -1,17 +1,17 @@
 import { expect, spyOn, test } from "bun:test";
 import { AIAgent, AIGNE } from "@aigne/core";
-import { ProcessMethod, TeamAgent } from "@aigne/core/agents/team-agent";
+import { ProcessMode, TeamAgent } from "@aigne/core/agents/team-agent";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
 
-const processMethods = Object.values(ProcessMethod);
+const processModes = Object.values(ProcessMode);
 
-test.each(processMethods)(
+test.each(processModes)(
   "TeamAgent should return streaming response with %s process method (multiple agent with different output keys)",
-  async (method) => {
+  async (mode) => {
     const model = new OpenAIChatModel();
 
     const aigne = new AIGNE({ model });
@@ -30,7 +30,7 @@ test.each(processMethods)(
 
     const team = TeamAgent.from({
       skills: [first, second],
-      processMethod: method,
+      mode,
     });
 
     const stream = await aigne.invoke(team, "hello", { streaming: true });
@@ -39,9 +39,9 @@ test.each(processMethods)(
   },
 );
 
-test.each(processMethods)(
+test.each(processModes)(
   "TeamAgent should return streaming response with %s process method (multiple agent with same output key)",
-  async (method) => {
+  async (mode) => {
     const model = new OpenAIChatModel();
 
     const aigne = new AIGNE({ model });
@@ -60,7 +60,7 @@ test.each(processMethods)(
 
     const team = TeamAgent.from({
       skills: [first, second],
-      processMethod: method,
+      mode,
     });
 
     const stream = await aigne.invoke(team, "hello", { streaming: true });

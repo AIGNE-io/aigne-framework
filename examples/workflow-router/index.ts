@@ -38,13 +38,13 @@ const triage = AIAgent.from({
   instructions: `You are an agent capable of routing questions to the appropriate agent.
   Your goal is to understand the user's query and direct them to the agent best suited to assist them.
   Be efficient, clear, and ensure the user is connected to the right resource quickly.`,
-  tools: [productSupport, feedback, other],
+  skills: [productSupport, feedback, other],
   toolChoice: "router",
 });
 
 const aigne = new AIGNE({ model });
 
-const userAgent = aigne.call(triage);
+const userAgent = aigne.invoke(triage);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Welcome to the support chat!

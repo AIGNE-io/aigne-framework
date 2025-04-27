@@ -58,10 +58,10 @@ const agent = AIAgent.from({
 const aigne = new AIGNE({ model });
 
 // 使用执行引擎调用代理
-const userAgent = await aigne.call(agent);
+const userAgent = await aigne.invoke(agent);
 
 // 向代理发送消息
-const response = await userAgent.call("你好，能帮我写一篇短文吗？");
+const response = await userAgent.invoke("你好，能帮我写一篇短文吗？");
 console.log(response);
 ```
 

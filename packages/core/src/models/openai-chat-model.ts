@@ -7,7 +7,7 @@ import type {
 } from "openai/resources";
 import type { Stream } from "openai/streaming.js";
 import { z } from "zod";
-import type { AgentCallOptions, AgentResponse, AgentResponseChunk } from "../agents/agent.js";
+import type { AgentInvokeOptions, AgentResponse, AgentResponseChunk } from "../agents/agent.js";
 import type { Context } from "../aigne/context.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { mergeUsage } from "../utils/model-utils.js";
@@ -100,7 +100,7 @@ export class OpenAIChatModel extends ChatModel {
   async process(
     input: ChatModelInput,
     _context: Context,
-    options?: AgentCallOptions,
+    options?: AgentInvokeOptions,
   ): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
     const body: OpenAI.Chat.ChatCompletionCreateParams = {

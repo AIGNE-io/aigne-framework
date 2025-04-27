@@ -17,7 +17,7 @@ const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  tools: [transfer_to_b],
+  skills: [transfer_to_b],
 });
 
 const agentB = AIAgent.from({
@@ -28,16 +28,16 @@ const agentB = AIAgent.from({
 
 const aigne = new AIGNE({ model });
 
-const userAgent = aigne.call(agentA);
+const userAgent = aigne.invoke(agentA);
 
-const result1 = await userAgent.call("transfer to agent b");
+const result1 = await userAgent.invoke("transfer to agent b");
 console.log(result1);
 // Output:
 // {
 //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
 // }
 
-const result2 = await userAgent.call("It's a beautiful day");
+const result2 = await userAgent.invoke("It's a beautiful day");
 console.log(result2);
 // Output:
 // {

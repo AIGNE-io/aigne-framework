@@ -111,7 +111,7 @@ const blocklet = await MCPAgent.from({
 
 const aigne = new AIGNE({
   model,
-  tools: [blocklet],
+  skills: [blocklet],
 });
 
 const agent = AIAgent.from({
@@ -121,7 +121,7 @@ const agent = AIAgent.from({
   memory: true,
 });
 
-const userAgent = aigne.call(agent);
+const userAgent = aigne.invoke(agent);
 
 await runChatLoopInTerminal(userAgent, {
   welcome:

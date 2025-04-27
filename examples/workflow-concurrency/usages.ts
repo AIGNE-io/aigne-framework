@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, ProcessMethod, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -29,10 +29,10 @@ Product description:
 
 const aigne = new AIGNE({ model });
 
-const result = await aigne.call(
+const result = await aigne.invoke(
   TeamAgent.from({
-    tools: [featureExtractor, audienceAnalyzer],
-    processMethod: "parallel",
+    skills: [featureExtractor, audienceAnalyzer],
+    processMethod: ProcessMethod.parallel,
   }),
   {
     product: "AIGNE is a No-code Generative AI Apps Engine",

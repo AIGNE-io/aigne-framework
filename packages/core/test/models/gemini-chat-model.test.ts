@@ -18,14 +18,14 @@ beforeEach(() => {
     model: "gemini-2.0-flash",
   });
 });
-test("GeminiChatModel.call should return the correct tool", async () => {
+test("GeminiChatModel.invoke should return the correct tool", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "gemini-streaming-response-1.txt"),
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
@@ -33,7 +33,7 @@ test("GeminiChatModel.call should return the correct tool", async () => {
   expect(result).toEqual(createWeatherToolExpected());
 });
 
-test("GeminiChatModel.call", async () => {
+test("GeminiChatModel.invoke", async () => {
   spyOn(model.client.chat.completions, "create")
     .mockReturnValueOnce(
       createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-2.txt") }),
@@ -42,7 +42,7 @@ test("GeminiChatModel.call", async () => {
       createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-3.txt") }),
     );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,

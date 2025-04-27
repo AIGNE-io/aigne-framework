@@ -23,7 +23,7 @@ export async function serveMCPServer({ aigne, port }: { aigne: AIGNE; port: numb
     if (!(schema instanceof ZodObject)) throw new Error("Agent input schema must be a ZodObject");
 
     server.tool(agent.name, agent.description || "", schema.shape as ZodRawShape, async (input) => {
-      const result = await aigne.call(agent, input);
+      const result = await aigne.invoke(agent, input);
 
       return {
         content: [

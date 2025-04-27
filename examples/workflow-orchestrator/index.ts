@@ -32,7 +32,7 @@ Rules:
 - if you want a url to some page, you should get all link and it's title of current(home) page,
 then you can use the title to search the url of the page you want to visit.
   `,
-  tools: [puppeteer, filesystem],
+  skills: [puppeteer, filesystem],
 });
 
 const writer = AIAgent.from({
@@ -41,18 +41,18 @@ const writer = AIAgent.from({
   instructions: `You are an agent that can write to the filesystem.
   You are tasked with taking the user's input, addressing it, and
   writing the result to disk in the appropriate location.`,
-  tools: [filesystem],
+  skills: [filesystem],
 });
 
 const agent = OrchestratorAgent.from({
-  tools: [finder, writer],
+  skills: [finder, writer],
   maxIterations: 3,
   tasksConcurrency: 1, // puppeteer can only run one task at a time
 });
 
 const aigne = new AIGNE({ model });
 
-const userAgent = aigne.call(agent);
+const userAgent = aigne.invoke(agent);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: "Welcome to the Orchestrator Agent!",

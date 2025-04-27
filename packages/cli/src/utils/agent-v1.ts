@@ -123,7 +123,7 @@ agent.output_schema = ${JSON.stringify(convertOutputSchema(agent))};
         instructions: agent.prompt,
         input_schema: convertInputSchema(agent),
         output_schema: convertOutputSchema(agent),
-        tools: agent.routes?.map((i) => {
+        skills: agent.routes?.map((i) => {
           const tool = project.agents.find((j) => j.id === i.id);
           if (!tool) throw new Error(`Tool ${i.id} not found in project definition`);
           return getAgentFilename(tool);

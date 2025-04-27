@@ -1,7 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIGNE, TeamAgent } from "@aigne/core";
+import { AIAgent, AIGNE, ProcessMethod, TeamAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 
 const model = await loadModel();
@@ -26,10 +26,10 @@ Product description:
 
 const aigne = new AIGNE({ model });
 
-const userAgent = aigne.call(
+const userAgent = aigne.invoke(
   TeamAgent.from({
-    tools: [featureExtractor, audienceAnalyzer],
-    processMethod: "parallel",
+    skills: [featureExtractor, audienceAnalyzer],
+    processMethod: ProcessMethod.parallel,
   }),
 );
 

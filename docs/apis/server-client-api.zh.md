@@ -33,8 +33,8 @@ const server = express();
 server.use(express.json());
 
 // 定义处理代理调用的端点
-server.post("/aigne/call", async (req, res) => {
-  await aigneServer.call(req, res);
+server.post("/aigne/invoke", async (req, res) => {
+  await aigneServer.invoke(req, res);
 });
 
 // 启动服务器
@@ -67,8 +67,8 @@ const aigneServer = new AIGNEServer(engine);
 // 设置 Hono 服务器
 const app = new Hono();
 
-app.post("/aigne/call", async (c) => {
-  return aigneServer.call(c.req.raw);
+app.post("/aigne/invoke", async (c) => {
+  return aigneServer.invoke(c.req.raw);
 });
 
 export default app;
@@ -92,7 +92,7 @@ const aigneServer = new AIGNEServer(engine);
 
 // 在无服务器环境中
 export async function handler(request) {
-  return await aigneServer.call(request);
+  return await aigneServer.invoke(request);
 }
 ```
 
@@ -105,15 +105,15 @@ import { AIGNEClient } from "@aigne/core/client/client.js";
 
 // 创建客户端
 const client = new AIGNEClient({
-  url: "http://localhost:3000/aigne/call",
+  url: "http://localhost:3000/aigne/invoke",
 });
 
 // 调用代理获取非流式响应
-const response = await client.call("chat", { $message: "你好，世界！" });
+const response = await client.invoke("chat", { $message: "你好，世界！" });
 console.log(response);
 
 // 调用代理获取流式响应
-const stream = await client.call("chat", { $message: "给我讲个故事" }, { streaming: true });
+const stream = await client.invoke("chat", { $message: "给我讲个故事" }, { streaming: true });
 for await (const chunk of stream) {
   console.log(chunk);
 }
@@ -127,14 +127,14 @@ for await (const chunk of stream) {
 
 ```typescript
 // 将完整响应作为单个对象返回
-const response = await client.call("chat", { $message: "你好" });
+const response = await client.invoke("chat", { $message: "你好" });
 ```
 
 ### 流式
 
 ```typescript
 // 返回响应块的 ReadableStream
-const stream = await client.call("chat", { $message: "你好" }, { streaming: true });
+const stream = await client.invoke("chat", { $message: "你好" }, { streaming: true });
 
 // 处理流块
 for await (const chunk of stream) {

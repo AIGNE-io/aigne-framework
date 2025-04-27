@@ -10,7 +10,7 @@ import type {
 } from "@anthropic-ai/sdk/resources/index.js";
 import { z } from "zod";
 import type {
-  AgentCallOptions,
+  AgentInvokeOptions,
   AgentResponse,
   AgentResponseChunk,
   Message,
@@ -76,7 +76,7 @@ export class ClaudeChatModel extends ChatModel {
   async process(
     input: ChatModelInput,
     _context: Context,
-    options?: AgentCallOptions,
+    options?: AgentInvokeOptions,
   ): Promise<AgentResponse<ChatModelOutput>> {
     const model = this.options?.model || CHAT_MODEL_CLAUDE_DEFAULT_MODEL;
     const disableParallelToolUse =

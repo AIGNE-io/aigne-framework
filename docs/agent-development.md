@@ -41,7 +41,7 @@ agents:
 
 ## YAML Format Agent Definition (chat.yaml)
 
-Agents can be defined through YAML files (such as `chat.yaml`), specifying the agent's basic information, instructions, and available tools.
+Agents can be defined through YAML files (such as `chat.yaml`), specifying the agent's basic information, instructions, and available skills.
 
 ### Basic Structure
 
@@ -68,7 +68,7 @@ output_schema:
   required:
     - "response"
 output_key: text
-tools:
+skills:
   - plus.js
 ```
 
@@ -86,7 +86,7 @@ tools:
   - `properties`: Detailed definition of output results
   - `required`: List of parameters that must be returned
 - `output_key`: [Optional] Key name for output text (default is `$message`, only valid when there is no `output_schema`)
-- `tools`: [Optional] List of tools the agent can use (JavaScript files implementing specific functionality)
+- `skills`: [Optional] List of skills the agent can use (JavaScript files implementing specific functionality)
 - `memory`: [Optional] Enables conversation memory for the agent. Can be:
   - A boolean value (`true` to enable, `false` to disable)
   - An object with configuration options:
@@ -125,8 +125,8 @@ plus.output_schema = {
 
 ### Structure Explained
 
-- `export default async function xxx()`: Main function of the tool, receives input parameters and returns results
-- `xxx.description`: Function description, providing a brief explanation of the tool
+- `export default async function xxx()`: Main function of the agent, receives input parameters and returns results
+- `xxx.description`: Function description, providing a brief explanation of the agent
 - `xxx.input_schema`: JSON Schema definition of input parameters, standard JSON Schema format
 - `xxx.output_schema`: JSON Schema definition of output results, standard JSON Schema format
 

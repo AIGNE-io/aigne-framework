@@ -130,11 +130,11 @@ const aigne = new AIGNE({ model });
 
 // 创建一个 TeamAgent 来处理顺序工作流
 const teamAgent = TeamAgent.from({
-  tools: [conceptExtractor, writer, formatProof],
+  skills: [conceptExtractor, writer, formatProof],
   processMethod: "sequential" // 默认值，可以省略
 });
 
-const result = await aigne.call(teamAgent, {
+const result = await aigne.invoke(teamAgent, {
   product: "AIGNE is a No-code Generative AI Apps Engine",
 });
 

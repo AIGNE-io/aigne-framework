@@ -16,7 +16,7 @@ test("TerminalTracer should work correctly", async () => {
     Promise.resolve({ text: "hello, this is a test response message" }),
   );
 
-  const userAgent = aigne.call(testAgent);
+  const userAgent = aigne.invoke(testAgent);
 
   const tracer = new TerminalTracer(context);
 
@@ -35,7 +35,7 @@ test("TerminalTracer should raise error correctly", async () => {
     arrayToAgentProcessAsyncGenerator([new Error("test error")]),
   );
 
-  const userAgent = aigne.call(testAgent);
+  const userAgent = aigne.invoke(testAgent);
 
   const tracer = new TerminalTracer(context);
 

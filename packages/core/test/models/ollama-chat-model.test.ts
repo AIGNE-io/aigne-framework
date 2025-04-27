@@ -18,14 +18,14 @@ beforeEach(() => {
   });
 });
 
-test("OllamaChatModel.call llama3.1 should return the correct tool", async () => {
+test("OllamaChatModel.invoke llama3.1 should return the correct tool", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "ollama-streaming-response-1.txt"),
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
@@ -33,14 +33,14 @@ test("OllamaChatModel.call llama3.1 should return the correct tool", async () =>
   expect(result).toEqual(createWeatherToolExpected());
 });
 
-test("OllamaChatModel.call llama3.1", async () => {
+test("OllamaChatModel.invoke llama3.1", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "ollama-streaming-response-2.txt"),
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,

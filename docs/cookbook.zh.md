@@ -214,12 +214,12 @@ const coder = AIAgent.from({
 You are a proficient coder. You write code to solve problems.
 Work with the sandbox to execute your code.
 `,
-  tools: [sandbox],
+  skills: [sandbox],
 });
 
 // 创建执行引擎并运行
 const aigne = new AIGNE({ model });
-const result = await aigne.call(coder, "10! = ?");
+const result = await aigne.invoke(coder, "10! = ?");
 console.log(result);
 // 输出: { text: "The value of \\(10!\\) (10 factorial) is 3,628,800." }
 ```
@@ -286,7 +286,7 @@ Draft copy:
 
 // 按顺序执行三个Agent
 const aigne = new AIGNE({ model });
-const result = await aigne.call(sequential(conceptExtractor, writer, formatProof),
+const result = await aigne.invoke(sequential(conceptExtractor, writer, formatProof),
   { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
 
@@ -331,7 +331,7 @@ Product description:
 
 // 并行执行两个Agent
 const aigne = new AIGNE({ model });
-const result = await aigne.call(
+const result = await aigne.invoke(
   parallel(featureExtractor, audienceAnalyzer),
   { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
@@ -419,7 +419,7 @@ Please review the code. If previous feedback was provided, see if it was address
 
 // 执行反思工作流
 const aigne = new AIGNE({ model, agents: [coder, reviewer] });
-const result = await aigne.call("Write a function to find the sum of all even numbers in a list.");
+const result = await aigne.invoke("Write a function to find the sum of all even numbers in a list.");
 console.log(result);
 // 输出包含通过审查的代码及反馈
 ```
@@ -449,7 +449,7 @@ const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  tools: [transfer_to_b],
+  skills: [transfer_to_b],
 });
 
 // Agent B
@@ -461,15 +461,15 @@ const agentB = AIAgent.from({
 
 // 执行交接工作流
 const aigne = new AIGNE({ model });
-const userAgent = await aigne.call(agentA);
+const userAgent = aigne.invoke(agentA);
 
 // 转交给Agent B
-const result1 = await userAgent.call("transfer to agent b");
+const result1 = await userAgent.invoke("transfer to agent b");
 console.log(result1);
 // { B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?" }
 
 // 继续与Agent B交互
-const result2 = await userAgent.call("It's a beautiful day");
+const result2 = await userAgent.invoke("It's a beautiful day");
 console.log(result2);
 // { B: "Sunshine warms the earth,  \nGentle breeze whispers softly,  \nNature sings with joy." }
 ```
@@ -528,7 +528,7 @@ const triage = AIAgent.from({
   instructions: `You are an agent capable of routing questions to the appropriate agent.
   Your goal is to understand the user's query and direct them to the agent best suited to assist them.
   Be efficient, clear, and ensure the user is connected to the right resource quickly.`,
-  tools: [productSupport, feedback, other],
+  skills: [productSupport, feedback, other],
   toolChoice: "router", // 设置为路由模式
 });
 
@@ -536,17 +536,17 @@ const triage = AIAgent.from({
 const aigne = new AIGNE({ model });
 
 // 产品相关问题自动路由到产品支持
-const result1 = await aigne.call(triage, "How to use this product?");
+const result1 = await aigne.invoke(triage, "How to use this product?");
 console.log(result1);
 // { product_support: "I'd be happy to help you with that! However, I need to know which specific product you're referring to..." }
 
 // 反馈相关问题自动路由到反馈
-const result2 = await aigne.call(triage, "I have feedback about the app.");
+const result2 = await aigne.invoke(triage, "I have feedback about the app.");
 console.log(result2);
 // { feedback: "Thank you for sharing your feedback! I'm here to listen..." }
 
 // 一般问题自动路由到一般查询
-const result3 = await aigne.call(triage, "What is the weather today?");
+const result3 = await aigne.invoke(triage, "What is the weather today?");
 console.log(result3);
 // { other: "I can't provide real-time weather updates. However, you can check a reliable weather website..." }
 ```
@@ -586,13 +586,13 @@ const finder = AIAgent.from({
   - if you want a url to some page, you should get all link and it's title of current(home) page,
   then you can use the title to search the url of the page you want to visit.
   `,
-  tools: [puppeteer],
+  skills: [puppeteer],
 });
 
 const enhancedFinder = OrchestratorAgent.from({
   name: "enhanced_finder",
-  description: "Enhanced finder with more tools",
-  tools: [finder],
+  description: "Enhanced finder with more skills",
+  skills: [finder],
 });
 
 const filesystem = await MCPAgent.from({
@@ -606,7 +606,7 @@ const writer = AIAgent.from({
   instructions: `You are an agent that can write to the filesystem.
   You are tasked with taking the user's input, addressing it, and
   writing the result to disk in the appropriate location.`,
-  tools: [filesystem],
+  skills: [filesystem],
 });
 
 // 各种审查Agent
@@ -616,7 +616,7 @@ const proofreader = AIAgent.from({
   instructions: `Review the short story for grammar, spelling, and punctuation errors.
   Identify any awkward phrasing or structural issues that could improve clarity.
   Provide detailed feedback on corrections.`,
-  tools: [],
+  skills: [],
 });
 
 const fact_checker = AIAgent.from({
@@ -625,7 +625,7 @@ const fact_checker = AIAgent.from({
   instructions: `Verify the factual consistency within the story. Identify any contradictions,
   logical inconsistencies, or inaccuracies in the plot, character actions, or setting.
   Highlight potential issues with reasoning or coherence.`,
-  tools: [],
+  skills: [],
 });
 
 const style_enforcer = AIAgent.from({
@@ -634,17 +634,17 @@ const style_enforcer = AIAgent.from({
   instructions: `Analyze the story for adherence to style guidelines.
   Evaluate the narrative flow, clarity of expression, and tone. Suggest improvements to
   enhance storytelling, readability, and engagement.`,
-  tools: [],
+  skills: [],
 });
 
 // 创建编排Agent
 const agent = OrchestratorAgent.from({
-  tools: [enhancedFinder, writer, proofreader, fact_checker, style_enforcer],
+  skills: [enhancedFinder, writer, proofreader, fact_checker, style_enforcer],
 });
 
 // 执行编排工作流
 const aigne = new AIGNE({ model });
-const result = await aigne.call(
+const result = await aigne.invoke(
   agent,
   `Conduct an in-depth research on ArcBlock using only the official website\
 (avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
@@ -686,7 +686,7 @@ const puppeteerMCPAgent = await MCPAgent.from({
 // 创建执行引擎
 const aigne = new AIGNE({
   model,
-  tools: [puppeteerMCPAgent],
+  skills: [puppeteerMCPAgent],
 });
 
 // 创建使用Puppeteer的Agent
@@ -699,7 +699,7 @@ const agent = AIAgent.from({
 });
 
 // 执行内容提取
-const result = await aigne.call(
+const result = await aigne.invoke(
   agent,
   "extract content from https://www.arcblock.io"
 );
@@ -746,7 +746,7 @@ const sqlite = await MCPAgent.from({
 // 创建执行引擎
 const aigne = new AIGNE({
   model,
-  tools: [sqlite],
+  skills: [sqlite],
 });
 
 // 创建数据库管理Agent
@@ -756,17 +756,17 @@ const agent = AIAgent.from({
 
 // 创建表
 console.log(
-  await aigne.call(
+  await aigne.invoke(
     agent,
     "create a product table with columns name description and createdAt"
   )
 );
 
 // 插入数据
-console.log(await aigne.call(agent, "create 10 products for test"));
+console.log(await aigne.invoke(agent, "create 10 products for test"));
 
 // 查询数据
-console.log(await aigne.call(agent, "how many products?"));
+console.log(await aigne.invoke(agent, "how many products?"));
 // 输出: { text: "There are 10 products in the database." }
 
 await aigne.shutdown();
@@ -803,7 +803,7 @@ await aigne.shutdown();
 1. **顺序+并发**: 某些步骤顺序执行，其中一个步骤内部并发执行多个任务
 2. **反思+顺序**: 顺序工作流的输出经过反思工作流改进
 3. **路由+专业Agent**: 使用路由选择合适的专业Agent处理请求
-4. **编排+所有其他**: 编排工作流可以协调使用所有其他工作流模式的Agent
+4. **编排+所有其他**: 编排工作流可以协调使用所有其他工作流模式
 
 ## 常见问题解答
 
@@ -812,7 +812,7 @@ await aigne.shutdown();
    - 下一个Agent可以通过`{{key}}`访问这些数据
 
 2. **如何处理Agent失败或错误？**
-   - 使用try/catch包装aigne.call调用
+   - 使用try/catch包装aigne.invoke调用
    - 设计工作流时考虑可能的失败路径，添加错误处理Agent
 
 3. **如何限制Agent的输出格式？**

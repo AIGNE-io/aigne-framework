@@ -1,13 +1,13 @@
 import { expect, spyOn, test } from "bun:test";
 import { AIAgent, AIGNE } from "@aigne/core";
-import { TeamAgent, type TeamAgentProcessMethod } from "@aigne/core/agents/team-agent";
+import { ProcessMethod, TeamAgent } from "@aigne/core/agents/team-agent";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
 
-const processMethods: TeamAgentProcessMethod[] = ["sequential", "parallel"];
+const processMethods = Object.values(ProcessMethod);
 
 test.each(processMethods)(
   "TeamAgent should return streaming response with %s process method (multiple agent with different output keys)",
@@ -29,11 +29,11 @@ test.each(processMethods)(
       .mockReturnValueOnce(Promise.resolve(stringToAgentResponseStream("Hello, world!")));
 
     const team = TeamAgent.from({
-      tools: [first, second],
+      skills: [first, second],
       processMethod: method,
     });
 
-    const stream = await aigne.call(team, "hello", { streaming: true });
+    const stream = await aigne.invoke(team, "hello", { streaming: true });
 
     expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
   },
@@ -59,11 +59,11 @@ test.each(processMethods)(
       .mockReturnValueOnce(Promise.resolve(stringToAgentResponseStream("Hello, world!")));
 
     const team = TeamAgent.from({
-      tools: [first, second],
+      skills: [first, second],
       processMethod: method,
     });
 
-    const stream = await aigne.call(team, "hello", { streaming: true });
+    const stream = await aigne.invoke(team, "hello", { streaming: true });
 
     expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
   },

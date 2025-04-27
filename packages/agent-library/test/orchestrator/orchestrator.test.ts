@@ -7,7 +7,7 @@ import {
 import { AIAgent, AIGNE, MESSAGE_KEY, createMessage } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
-test("AIAgent.call", async () => {
+test("AIAgent.invoke", async () => {
   const model = new OpenAIChatModel();
   const aigne = new AIGNE({ model });
 
@@ -22,7 +22,7 @@ test("AIAgent.call", async () => {
   });
 
   const agent = OrchestratorAgent.from({
-    tools: [finder, writer],
+    skills: [finder, writer],
   });
 
   spyOn(model, "process")
@@ -73,10 +73,13 @@ test("AIAgent.call", async () => {
     )
     .mockReturnValueOnce(Promise.resolve({ text: "Task finished" }));
 
-  const finderCall = spyOn(finder, "call");
-  const writerCall = spyOn(writer, "call");
+  const finderCall = spyOn(finder, "invoke");
+  const writerCall = spyOn(writer, "invoke");
 
-  const result = await aigne.call(agent, "Deep research ArcBlock and write a professional report");
+  const result = await aigne.invoke(
+    agent,
+    "Deep research ArcBlock and write a professional report",
+  );
 
   expect(result).toEqual(createMessage("Task finished"));
   expect(finderCall).toHaveBeenLastCalledWith(

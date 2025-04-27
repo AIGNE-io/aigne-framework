@@ -109,7 +109,7 @@ export function createRunCommand(): Command {
       assert(aigne);
       assert(agent);
 
-      const user = aigne.call(agent);
+      const user = aigne.invoke(agent);
 
       await runChatLoopInTerminal(user);
 

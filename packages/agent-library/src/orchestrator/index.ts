@@ -65,7 +65,7 @@ export class OrchestratorAgent<
     this.planner = new AIAgent<FullPlanInput, FullPlanOutput>({
       name: "llm_orchestration_planner",
       instructions: FULL_PLAN_PROMPT_TEMPLATE,
-      outputSchema: () => getFullPlanSchema(this.tools),
+      outputSchema: () => getFullPlanSchema(this.skills),
     });
 
     this.completer = new AIAgent({
@@ -125,10 +125,10 @@ export class OrchestratorAgent<
         status: planResult.status ? "Complete" : "In Progress",
         result: planResult.result || "No results yet",
       },
-      agents: this.tools.map((i) => ({
+      agents: this.skills.map((i) => ({
         name: i.name,
         description: i.description,
-        tools: i.tools.map((i) => ({ name: i.name, description: i.description })),
+        tools: i.skills.map((i) => ({ name: i.name, description: i.description })),
       })),
     };
   }
@@ -137,11 +137,11 @@ export class OrchestratorAgent<
     planResult: FullPlanWithResult,
     context: Context,
   ): Promise<FullPlanOutput> {
-    return context.call(this.planner, this.getFullPlanInput(planResult));
+    return context.invoke(this.planner, this.getFullPlanInput(planResult));
   }
 
   private async synthesizePlanResult(planResult: FullPlanWithResult, context: Context): Promise<O> {
-    return context.call(this.completer, {
+    return context.invoke(this.completer, {
       ...this.getFullPlanInput(planResult),
       ...createMessage(SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE),
     });
@@ -158,7 +158,7 @@ export class OrchestratorAgent<
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
     const queue = fastq.promise(async (task: Task) => {
-      const agent = this.tools.find((agent) => agent.name === task.agent);
+      const agent = this.skills.find((skill) => skill.name === task.agent);
       if (!agent) throw new Error(`Agent ${task.agent} not found`);
 
       const prompt = PromptTemplate.from(TASK_PROMPT_TEMPLATE).format(<TaskPromptInput>{
@@ -170,15 +170,15 @@ export class OrchestratorAgent<
 
       let result: string;
 
-      if (agent.isCallable) {
-        result = getMessageOrJsonString(await context.call(agent, prompt));
+      if (agent.isInvokable) {
+        result = getMessageOrJsonString(await context.invoke(agent, prompt));
       } else {
         const executor = AIAgent.from({
           name: "llm_orchestration_task_executor",
           instructions: prompt,
-          tools: agent.tools,
+          skills: agent.skills,
         });
-        result = getMessageOrJsonString(await context.call(executor, {}));
+        result = getMessageOrJsonString(await context.invoke(executor, {}));
       }
 
       return { task, result };
@@ -194,7 +194,7 @@ export class OrchestratorAgent<
     }
 
     const result = getMessageOrJsonString(
-      await context.call(
+      await context.invoke(
         AIAgent.from<SynthesizeStepPromptInput, Message>({
           name: "llm_orchestration_step_synthesizer",
           instructions: SYNTHESIZE_STEP_PROMPT_TEMPLATE,

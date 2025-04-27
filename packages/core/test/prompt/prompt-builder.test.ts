@@ -89,10 +89,10 @@ test("PromptBuilder should build response format correctly", async () => {
   });
 });
 
-test("PromptBuilder should build tools correctly", async () => {
-  const tool = FunctionAgent.from({
-    name: "TestTool",
-    description: "Test tool description",
+test("PromptBuilder should build skills correctly", async () => {
+  const skill = FunctionAgent.from({
+    name: "TestSkill",
+    description: "Test skill description",
     fn: () => ({}),
     inputSchema: z.object({
       name: z.string(),
@@ -103,8 +103,8 @@ test("PromptBuilder should build tools correctly", async () => {
   const agent = AIAgent.from({
     name: "TestAgent",
     instructions: "Test instructions",
-    tools: [tool],
-    toolChoice: tool,
+    skills: [skill],
+    toolChoice: skill,
   });
 
   const prompt = await agent.instructions.build({ input: {}, agent });
@@ -113,8 +113,8 @@ test("PromptBuilder should build tools correctly", async () => {
     {
       type: "function",
       function: {
-        name: "TestTool",
-        description: "Test tool description",
+        name: "TestSkill",
+        description: "Test skill description",
         parameters: expect.objectContaining({
           type: "object",
           properties: {
@@ -131,23 +131,23 @@ test("PromptBuilder should build tools correctly", async () => {
   expect(prompt.toolChoice).toEqual({
     type: "function",
     function: {
-      name: tool.name,
-      description: tool.description,
+      name: skill.name,
+      description: skill.description,
     },
   });
 });
 
 test("PromptBuilder should build toolChoice with router mode correctly", async () => {
-  const tool = FunctionAgent.from({
-    name: "TestTool",
-    description: "Test tool description",
+  const skill = FunctionAgent.from({
+    name: "TestSkill",
+    description: "Test skill description",
     fn: () => ({}),
   });
 
   const agent = AIAgent.from({
     name: "TestAgent",
     instructions: "Test instructions",
-    tools: [tool],
+    skills: [skill],
     toolChoice: "router",
   });
 

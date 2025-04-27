@@ -11,21 +11,21 @@ export interface AIGNEOptions {
   name?: string;
   description?: string;
   model?: ChatModel;
-  tools?: Agent[];
+  skills?: Agent[];
   agents?: Agent[];
   limits?: ContextLimits;
 }
 
 export class AIGNE {
   static async load({ path, ...options }: { path: string } & AIGNEOptions): Promise<AIGNE> {
-    const { model, agents, tools, ...aigne } = await load({ path });
+    const { model, agents, skills, ...aigne } = await load({ path });
     return new AIGNE({
       ...options,
       model: options.model || model,
       name: options.name || aigne.name || undefined,
       description: options.description || aigne.description || undefined,
       agents: agents.concat(options.agents ?? []),
-      tools: tools.concat(options.tools ?? []),
+      skills: skills.concat(options.skills ?? []),
     });
   }
 
@@ -36,7 +36,7 @@ export class AIGNE {
     this.description = options?.description;
     this.model = options?.model;
     this.limits = options?.limits;
-    if (options?.tools?.length) this.tools.push(...options.tools);
+    if (options?.skills?.length) this.skills.push(...options.skills);
     if (options?.agents?.length) this.addAgent(...options.agents);
 
     this.initProcessExitHandler();
@@ -50,7 +50,7 @@ export class AIGNE {
 
   model?: ChatModel;
 
-  readonly tools = createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name));
+  readonly skills = createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name));
 
   readonly agents = createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name));
 
@@ -74,9 +74,9 @@ export class AIGNE {
     return new AIGNEContext(this).publish(...args);
   }) as Context["publish"];
 
-  call = ((...args: Parameters<Context["call"]>) => {
-    return new AIGNEContext(this).call(...args);
-  }) as Context["call"];
+  invoke = ((...args: Parameters<Context["invoke"]>) => {
+    return new AIGNEContext(this).invoke(...args);
+  }) as Context["invoke"];
 
   subscribe = ((...args) => {
     return this.messageQueue.subscribe(...args);
@@ -87,7 +87,7 @@ export class AIGNE {
   }) as Context["unsubscribe"];
 
   async shutdown() {
-    for (const tool of this.tools) {
+    for (const tool of this.skills) {
       await tool.shutdown();
     }
     for (const agent of this.agents) {
@@ -104,7 +104,7 @@ export class AIGNE {
 
 const aigneOptionsSchema = z.object({
   model: z.instanceof(ChatModel).optional(),
-  tools: z.array(z.instanceof(Agent)).optional(),
+  skills: z.array(z.instanceof(Agent)).optional(),
   agents: z.array(z.instanceof(Agent)).optional(),
 });
 

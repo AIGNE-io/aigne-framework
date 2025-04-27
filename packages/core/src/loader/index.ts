@@ -34,15 +34,15 @@ export async function load(options: LoadOptions) {
   const agents = await Promise.all(
     (aigne.agents ?? []).map((filename) => loadAgent(join(rootDir, filename))),
   );
-  const tools = await Promise.all(
-    (aigne.tools ?? []).map((filename) => loadAgent(join(rootDir, filename))),
+  const skills = await Promise.all(
+    (aigne.skills ?? []).map((filename) => loadAgent(join(rootDir, filename))),
   );
 
   return {
     ...aigne,
     model: await loadModel(aigne.chat_model),
     agents,
-    tools,
+    skills,
   };
 }
 
@@ -57,10 +57,10 @@ export async function loadAgent(path: string): Promise<Agent> {
     if (agent.type === "ai") {
       return AIAgent.from({
         ...agent,
-        tools:
-          agent.tools &&
+        skills:
+          agent.skills &&
           (await Promise.all(
-            agent.tools.map((filename) => loadAgent(join(dirname(path), filename))),
+            agent.skills.map((filename) => loadAgent(join(dirname(path), filename))),
           )),
       });
     }
@@ -135,7 +135,7 @@ const aigneFileSchema = z.object({
     .nullish()
     .transform((v) => (typeof v === "string" ? { name: v } : v)),
   agents: z.array(z.string()).nullish(),
-  tools: z.array(z.string()).nullish(),
+  skills: z.array(z.string()).nullish(),
 });
 
 export async function loadAIGNEFile(path: string) {
@@ -150,7 +150,7 @@ export async function loadAIGNEFile(path: string) {
   );
 
   const agent = tryOrThrow(
-    () => aigneFileSchema.parse(json),
+    () => aigneFileSchema.parse({ ...json, skills: json.skills ?? json.tools }),
     (error) => new Error(`Failed to validate aigne.yaml from ${path}: ${error.message}`),
   );
 

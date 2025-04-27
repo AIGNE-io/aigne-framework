@@ -5,7 +5,7 @@ This is the default project template for the Aigne framework, providing a basic 
 ## Template Structure
 
 - `aigne.yaml` - Project configuration file that defines the chat model used and references to agents
-- `chat.yaml` - Chat agent configuration, including agent instructions and tools used
+- `chat.yaml` - Chat agent configuration, including agent instructions and skills used
 - `sandbox.js` - JavaScript code execution tool for running JavaScript code within conversations
 - `sandbox.test.js` - Test file to verify the functionality of the code execution tool
 

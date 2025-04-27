@@ -2,7 +2,7 @@
 
 **English** | [中文](./server-client-api.zh.md)
 
-The AIGNE framework provides a REST API server and a client for remote agent execution. This allows you to expose your agents as HTTP services and call them from other applications.
+The AIGNE framework provides a REST API server and a client for remote agent execution. This allows you to expose your agents as HTTP services and invoke them from other applications.
 
 ## Server Setup
 
@@ -33,8 +33,8 @@ const server = express();
 server.use(express.json());
 
 // Define endpoint to handle agent calls
-server.post("/aigne/call", async (req, res) => {
-  await aigneServer.call(req, res);
+server.post("/aigne/invoke", async (req, res) => {
+  await aigneServer.invoke(req, res);
 });
 
 // Start server
@@ -67,8 +67,8 @@ const aigneServer = new AIGNEServer(engine);
 // Set up Hono server
 const app = new Hono();
 
-app.post("/aigne/call", async (c) => {
-  return await aigneServer.call(c.req.raw);
+app.post("/aigne/invoke", async (c) => {
+  return await aigneServer.invoke(c.req.raw);
 });
 
 export default app;
@@ -92,28 +92,28 @@ const aigneServer = new AIGNEServer(engine);
 
 // In serverless environments
 export async function handler(request) {
-  return await aigneServer.call(request);
+  return await aigneServer.invoke(request);
 }
 ```
 
 ## Client Usage
 
-The `AIGNEClient` class provides a simple way to call agents on a remote server:
+The `AIGNEClient` class provides a simple way to invoke agents on a remote server:
 
 ```typescript
 import { AIGNEClient } from "@aigne/core/client/client.js";
 
 // Create client
 const client = new AIGNEClient({
-  url: "http://localhost:3000/aigne/call",
+  url: "http://localhost:3000/aigne/invoke",
 });
 
-// Call an agent with non-streaming response
-const response = await client.call("chat", { $message: "Hello, world!" });
+// Invoke an agent with non-streaming response
+const response = await client.invoke("chat", { $message: "Hello, world!" });
 console.log(response);
 
-// Call an agent with streaming response
-const stream = await client.call("chat", { $message: "Tell me a story" }, { streaming: true });
+// Invoke an agent with streaming response
+const stream = await client.invoke("chat", { $message: "Tell me a story" }, { streaming: true });
 for await (const chunk of stream) {
   console.log(chunk);
 }
@@ -127,14 +127,14 @@ The client supports both streaming and non-streaming responses:
 
 ```typescript
 // Returns the complete response as a single object
-const response = await client.call("chat", { $message: "Hello" });
+const response = await client.invoke("chat", { $message: "Hello" });
 ```
 
 ### Streaming
 
 ```typescript
 // Returns a ReadableStream of response chunks
-const stream = await client.call("chat", { $message: "Hello" }, { streaming: true });
+const stream = await client.invoke("chat", { $message: "Hello" }, { streaming: true });
 
 // Process the stream chunks
 for await (const chunk of stream) {

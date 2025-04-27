@@ -27,13 +27,13 @@ const coder = AIAgent.from({
 You are a proficient coder. You write code to solve problems.
 Work with the sandbox to execute your code.
 `,
-  tools: [sandbox],
+  skills: [sandbox],
   memory: true,
 });
 
 const aigne = new AIGNE({ model });
 
-const user = aigne.call(coder);
+const user = aigne.invoke(coder);
 
 await runChatLoopInTerminal(user, {
   welcome:

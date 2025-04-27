@@ -4,7 +4,7 @@ import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import { orArrayToArray } from "../utils/type-utils.js";
 import {
   type Agent,
-  type AgentCallOptions,
+  type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
   type AgentResponseStream,
@@ -43,11 +43,11 @@ export class UserAgent<
 
   private activeAgent?: Agent;
 
-  override call = ((input: string | I, context?: Context, options?: AgentCallOptions) => {
+  override invoke = ((input: string | I, context?: Context, options?: AgentInvokeOptions) => {
     if (!context) this.context = this.context.newContext({ reset: true });
 
-    return super.call(input, context ?? this.context, options);
-  }) as Agent<I, O>["call"];
+    return super.invoke(input, context ?? this.context, options);
+  }) as Agent<I, O>["invoke"];
 
   async process(input: I, context: Context): Promise<AgentProcessResult<O>> {
     if (this._process) {
@@ -55,7 +55,7 @@ export class UserAgent<
     }
 
     if (this.activeAgent) {
-      const [output, agent] = await context.call(this.activeAgent, input, {
+      const [output, agent] = await context.invoke(this.activeAgent, input, {
         returnActiveAgent: true,
         streaming: true,
       });
@@ -109,7 +109,7 @@ export class UserAgent<
     });
   }
 
-  protected override checkUsageAgentCalls(_context: Context): void {
+  protected override checkAgentInvokesUsage(_context: Context): void {
     // ignore calls usage check for UserAgent
   }
 }

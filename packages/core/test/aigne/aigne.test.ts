@@ -13,19 +13,19 @@ import { TeamAgent } from "@aigne/core/agents/team-agent.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { mockOpenAIStreaming } from "../_mocks/mock-openai-streaming.js";
 
-test("AIGNE.call", async () => {
+test("AIGNE.invoke", async () => {
   const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
     sum: a + b,
   }));
 
   const aigne = new AIGNE();
 
-  const result = await aigne.call(plus, { a: 1, b: 2 });
+  const result = await aigne.invoke(plus, { a: 1, b: 2 });
 
   expect(result).toEqual({ sum: 3 });
 });
 
-test("AIGNE.call with reflection", async () => {
+test("AIGNE.invoke with reflection", async () => {
   const plusOne = FunctionAgent.from({
     subscribeTopic: [UserInputTopic, "revise"],
     publishTopic: "review_request",
@@ -60,7 +60,7 @@ test("AIGNE.shutdown should shutdown all tools and agents", async () => {
   });
 
   const aigne = new AIGNE({
-    tools: [plus],
+    skills: [plus],
     agents: [agent],
   });
 
@@ -80,19 +80,19 @@ test("AIGNE should throw error if reached max agent calls", async () => {
         return { num: num + 1 };
       }
 
-      return context.call(plus, { num: num + 1, times: times - 1 });
+      return context.invoke(plus, { num: num + 1, times: times - 1 });
     },
   );
 
   const aigne = new AIGNE({
     limits: {
-      maxAgentCalls: 2,
+      maxAgentInvokes: 2,
     },
   });
 
-  expect(aigne.call(plus, { num: 0, times: 2 })).resolves.toEqual({ num: 2 });
-  expect(aigne.call(plus, { num: 0, times: 3 })).rejects.toThrowError(
-    "Exceeded max agent calls 2/2",
+  expect(aigne.invoke(plus, { num: 0, times: 2 })).resolves.toEqual({ num: 2 });
+  expect(aigne.invoke(plus, { num: 0, times: 3 })).rejects.toThrowError(
+    "Exceeded max agent invokes 2/2",
   );
 });
 
@@ -114,11 +114,11 @@ test("AIGNE should throw error if reached max tokens", async () => {
     },
   });
 
-  expect(aigne.call(agent, "test")).resolves.toEqual(createMessage("hello"));
+  expect(aigne.invoke(agent, "test")).resolves.toEqual(createMessage("hello"));
   expect(
-    aigne.call(
+    aigne.invoke(
       TeamAgent.from({
-        tools: [agent, agent],
+        skills: [agent, agent],
       }),
       "test",
     ),
@@ -140,8 +140,8 @@ test("AIGNE should throw timeout error", async () => {
     },
   });
 
-  expect(aigne.call(agent, { timeout: 100 })).resolves.toEqual({ timeout: 100 });
-  expect(aigne.call(agent, { timeout: 300 })).rejects.toThrow("AIGNEContext is timeout");
+  expect(aigne.invoke(agent, { timeout: 100 })).resolves.toEqual({ timeout: 100 });
+  expect(aigne.invoke(agent, { timeout: 300 })).rejects.toThrow("AIGNEContext is timeout");
 });
 
 test("AIGNEContext should subscribe/unsubscribe correctly", async () => {

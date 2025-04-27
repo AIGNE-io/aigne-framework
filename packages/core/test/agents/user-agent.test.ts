@@ -27,7 +27,7 @@ test("UserAgent.stream", async () => {
   reader.cancel();
 });
 
-test("UserAgent.call should call process correctly", async () => {
+test("UserAgent.invoke should invoke process correctly", async () => {
   const aigne = new AIGNE({});
 
   const userAgent = UserAgent.from({
@@ -36,11 +36,11 @@ test("UserAgent.call should call process correctly", async () => {
     process: (input) => input,
   });
 
-  const result = await aigne.call(userAgent, "hello");
+  const result = await aigne.invoke(userAgent, "hello");
   expect(result).toEqual(createMessage("hello"));
 });
 
-test("UserAgent.call should call activeAgent correctly", async () => {
+test("UserAgent.invoke should invoke activeAgent correctly", async () => {
   const aigne = new AIGNE({});
 
   const testAgent = AIAgent.from({});
@@ -55,7 +55,7 @@ test("UserAgent.call should call activeAgent correctly", async () => {
     arrayToAgentProcessAsyncGenerator([{ delta: { json: createMessage("world") } }]),
   );
 
-  const result = await aigne.call(userAgent, "hello");
+  const result = await aigne.invoke(userAgent, "hello");
   expect(result).toEqual(createMessage("world"));
   expect(testAgentCall).toHaveBeenLastCalledWith(
     createMessage("hello"),
@@ -64,7 +64,7 @@ test("UserAgent.call should call activeAgent correctly", async () => {
   );
 });
 
-test("UserAgent.call should publish topic correctly", async () => {
+test("UserAgent.invoke should publish topic correctly", async () => {
   const aigne = new AIGNE({});
 
   const userAgent = UserAgent.from({
@@ -75,7 +75,7 @@ test("UserAgent.call should publish topic correctly", async () => {
 
   const sub = aigne.subscribe("test_publish_topic");
 
-  await aigne.call(userAgent, "hello");
+  await aigne.invoke(userAgent, "hello");
 
   expect(sub).resolves.toEqual(
     expect.objectContaining({

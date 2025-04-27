@@ -60,21 +60,21 @@ const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  tools: [transferToAgentB],
+  skills: [transferToAgentB],
 });
 
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
-  tools: [transferToAgentA],
+  skills: [transferToAgentA],
 });
 
 const aigne = new AIGNE({ model });
 
-const userAgent = await aigne.call(agentA);
+const userAgent = aigne.invoke(agentA);
 
-const response = await userAgent.call("transfer to agent b");
+const response = await userAgent.invoke("transfer to agent b");
 // 输出
 // {
 //   B: "Agent B awaits here,  \nIn haikus I shall speak now,  \nWhat do you seek, friend?",

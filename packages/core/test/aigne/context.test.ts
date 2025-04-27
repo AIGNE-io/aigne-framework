@@ -107,7 +107,7 @@ test("AIGNEContext should receive agentStarted/agentSucceed/agentFailed message"
     )
     .mockReturnValueOnce(arrayToAgentProcessAsyncGenerator([new Error("test error")]));
 
-  const result1 = context.call(agent, "hello");
+  const result1 = context.invoke(agent, "hello");
 
   expect(result1).resolves.toEqual(createMessage("hello, this is a test response message"));
   expect(onAgentStarted).toHaveBeenLastCalledWith(
@@ -127,7 +127,7 @@ test("AIGNEContext should receive agentStarted/agentSucceed/agentFailed message"
     }),
   );
 
-  const result2 = context.call(agent, "hello");
+  const result2 = context.invoke(agent, "hello");
 
   expect(result2).rejects.toThrowError("test error");
   expect(onAgentFailed).toHaveBeenLastCalledWith(

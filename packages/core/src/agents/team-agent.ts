@@ -9,16 +9,24 @@ import {
   type Message,
 } from "./agent.js";
 
-export type TeamAgentProcessMethod = "sequential" | "parallel";
+export enum ProcessMethod {
+  /**
+   * Process the agents one by one, passing the output of each agent to the next.
+   */
+  sequential = "sequential",
+
+  /**
+   * Process all agents in parallel, merging the output of all agents.
+   */
+  parallel = "parallel",
+}
 
 export interface TeamAgentOptions<I extends Message, O extends Message> extends AgentOptions<I, O> {
   /**
    * The method to process the agents in the team.
-   * - `sequential`: Process the agents one by one, passing the output of each agent to the next.
-   * - `parallel`: Process all agents in parallel, merging the output of all agents.
-   * @default "sequential"
+   * @default {ProcessMethod.sequential}
    */
-  processMethod?: TeamAgentProcessMethod;
+  processMethod?: ProcessMethod;
 }
 
 export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O> {
@@ -28,16 +36,16 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
 
   constructor(options: TeamAgentOptions<I, O>) {
     super(options);
-    this.processMethod = options.processMethod ?? "sequential";
+    this.processMethod = options.processMethod ?? ProcessMethod.sequential;
   }
 
-  processMethod: TeamAgentProcessMethod;
+  processMethod: ProcessMethod;
 
   process(input: I, context: Context): PromiseOrValue<AgentProcessResult<O>> {
     switch (this.processMethod) {
-      case "sequential":
+      case ProcessMethod.sequential:
         return this._processSequential(input, context);
-      case "parallel":
+      case ProcessMethod.parallel:
         return this._processParallel(input, context);
     }
   }
@@ -46,11 +54,11 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     const output: Message = {};
 
     // Clone the agents to run, so that we can update the agents list during the loop
-    const agents = [...this.tools];
+    const agents = [...this.skills];
     const newAgents: Agent[] = [];
 
     for (const agent of agents) {
-      const [o, transferToAgent] = await context.call(
+      const [o, transferToAgent] = await context.invoke(
         agent,
         { ...input, ...output },
         { returnActiveAgent: true, streaming: true },
@@ -63,14 +71,14 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
       newAgents.push(await transferToAgent);
     }
 
-    this.tools.splice(0);
-    this.tools.push(...newAgents);
+    this.skills.splice(0);
+    this.skills.push(...newAgents);
   }
 
   async *_processParallel(input: I, context: Context): PromiseOrValue<AgentProcessResult<O>> {
     const result = await Promise.all(
-      this.tools.map((agent) =>
-        context.call(agent, input, { returnActiveAgent: true, streaming: true }),
+      this.skills.map((agent) =>
+        context.invoke(agent, input, { returnActiveAgent: true, streaming: true }),
       ),
     );
 
@@ -124,7 +132,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     }
 
     const agents = await Promise.all(result.map((i) => i[1]));
-    this.tools.splice(0);
-    this.tools.push(...agents);
+    this.skills.splice(0);
+    this.skills.push(...agents);
   }
 }

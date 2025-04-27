@@ -55,7 +55,7 @@ export const aiAgentOptionsSchema = z.object({
   publishTopic: z.union([z.string(), z.array(z.string()), z.function()]).optional(),
   name: z.string().optional(),
   description: z.string().optional(),
-  tools: z.array(z.union([z.instanceof(Agent), z.function()])).optional(),
+  skills: z.array(z.union([z.instanceof(Agent), z.function()])).optional(),
   disableLogging: z.boolean().optional(),
   memory: z.union([z.boolean(), z.any(), z.any()]).optional(),
 });
@@ -110,7 +110,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     for (;;) {
       const modelOutput: ChatModelOutput = {};
 
-      const stream = await context.call(
+      const stream = await context.invoke(
         model,
         { ...modelInput, messages: modelInput.messages.concat(toolCallMessages) },
         { streaming: true },
@@ -140,7 +140,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
           if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
           // NOTE: should pass both arguments (model generated) and input (user provided) to the tool
-          const output = await context.call(
+          const output = await context.invoke(
             tool,
             { ...call.function.arguments, ...input },
             { disableTransfer: true },
@@ -194,7 +194,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
   ): AgentProcessAsyncGenerator<O> {
     const {
       toolCalls: [call] = [],
-    } = await context.call(model, modelInput);
+    } = await context.invoke(model, modelInput);
 
     if (!call) {
       throw new Error("Router toolChoice requires exactly one tool to be executed");
@@ -203,7 +203,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     const tool = toolsMap.get(call.function.name);
     if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
-    const stream = await context.call(
+    const stream = await context.invoke(
       tool,
       { ...call.function.arguments, ...input },
       { streaming: true },

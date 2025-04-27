@@ -10,7 +10,7 @@ import { ServerError } from "./error.js";
 
 const DEFAULT_MAXIMUM_BODY_SIZE = "4mb";
 
-export const callPayloadSchema = z.object({
+export const invokePayloadSchema = z.object({
   agent: z.string(),
   input: z.record(z.string(), z.unknown()),
   options: z
@@ -36,25 +36,25 @@ export class AIGNEServer {
   ) {}
 
   /**
-   * Call the agent with the given input.
+   * Invoke the agent with the given input.
    * @param request - The request object, which can be a parsed JSON object, a Fetch API Request object, or a Node.js IncomingMessage object.
    * @returns The web standard response, you can return it directly in supported frameworks like hono.
    */
-  async call(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response>;
+  async invoke(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response>;
   /**
-   * Call the agent with the given input, and write the SSE response to the Node.js ServerResponse.
+   * Invoke the agent with the given input, and write the SSE response to the Node.js ServerResponse.
    * @param request - The request object, which can be a parsed JSON object, a Fetch API Request object, or a Node.js IncomingMessage object.
    * @param response - The Node.js ServerResponse object to write the SSE response to.
    */
-  async call(
+  async invoke(
     request: Record<string, unknown> | Request | IncomingMessage,
     response: ServerResponse,
   ): Promise<void>;
-  async call(
+  async invoke(
     request: Record<string, unknown> | Request | IncomingMessage,
     response?: ServerResponse,
   ): Promise<Response | void> {
-    const result = await this._call(request);
+    const result = await this._invoke(request);
 
     if (response instanceof ServerResponse) {
       await this._writeResponse(result, response);
@@ -64,7 +64,7 @@ export class AIGNEServer {
     return result;
   }
 
-  async _call(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response> {
+  async _invoke(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response> {
     const { engine } = this;
 
     try {
@@ -75,7 +75,7 @@ export class AIGNEServer {
         input,
         options,
       } = tryOrThrow(
-        () => checkArguments(`Call agent ${payload.agent}`, callPayloadSchema, payload),
+        () => checkArguments(`Invoke agent ${payload.agent}`, invokePayloadSchema, payload),
         (error) => new ServerError(400, error.message),
       );
 
@@ -83,13 +83,13 @@ export class AIGNEServer {
       if (!agent) throw new ServerError(404, `Agent ${agentName} not found`);
 
       if (!options?.streaming) {
-        const result = await engine.call(agent, input);
+        const result = await engine.invoke(agent, input);
         return new Response(JSON.stringify(result), {
           headers: { "Content-Type": "application/json" },
         });
       }
 
-      const stream = await engine.call(agent, input, { streaming: true });
+      const stream = await engine.invoke(agent, input, { streaming: true });
 
       return new Response(new AgentResponseStreamSSE(stream), {
         headers: {

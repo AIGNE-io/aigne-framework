@@ -91,13 +91,13 @@ const editor = AIAgent.from({
 
 // Create a TeamAgent that processes agents sequentially
 const teamAgent = TeamAgent.from({
-  tools: [conceptExtractor, writer, editor],
+  skills: [conceptExtractor, writer, editor],
   processMethod: "sequential" // Default, can be omitted
 });
 
 // Execute the workflow
 const aigne = new AIGNE({ model });
-const result = await aigne.call(teamAgent, { product: "Product description" });
+const result = await aigne.invoke(teamAgent, { product: "Product description" });
 ```
 
 ### Parallel Workflow
@@ -118,10 +118,10 @@ const audienceAnalyzer = AIAgent.from({
 
 // Create a TeamAgent that processes agents in parallel
 const teamAgent = TeamAgent.from({
-  tools: [featureExtractor, audienceAnalyzer],
+  skills: [featureExtractor, audienceAnalyzer],
   processMethod: "parallel"
 });
 
 // Execute the workflow
 const aigne = new AIGNE({ model });
-const result = await aigne.call(teamAgent, { product: "Product description" });
+const result = await aigne.invoke(teamAgent, { product: "Product description" });

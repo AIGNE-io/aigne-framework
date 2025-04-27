@@ -20,8 +20,8 @@ Agent 是 AIGNE 框架的核心概念，代表了一个能够接收输入并产�
 | `subscribeTopic` | `SubscribeTopic` | Agent 订阅的主题，用于实现 memory 功能，允许代理在指定主题上共享和接收信息 |
 | `publishTopic` | `PublishTopic<AgentOutput>` | 输出发布的主题 |
 | `memory` | `AgentMemory` | 用于配置 Agent 的记忆功能，类型为 `AgentMemory`。在配置参数中可以设置为 `true`，以便自动创建 `AgentMemory` 实例 |
-| `tools` | `Agent[]` | Agent 可以使用的工具列表 |
-| `isCallable` | `boolean` | 指示 Agent 是否可以被调用 |
+| `skills` | `Agent[]` | Agent 可以使用的工具列表 |
+| `isInvokable` | `boolean` | 指示 Agent 是否可以被调用 |
 
 ### 构造函数
 
@@ -43,25 +43,25 @@ constructor(options: AgentOptions<I, O>)
   | `outputSchema` | `ZodObject<{ [key in keyof O]: ZodType }>` | 验证输出的 Zod 模式 |
   | `includeInputInOutput` | `boolean` | 是否在输出中包含输入 |
   | `memory` | `AgentMemory` | 用于配置 Agent 的记忆功能，类型为 `AgentMemory`。在配置参数中可以设置为 `true`，以便自动创建 `AgentMemory` 实例 |
-| `tools` | `(Agent \| FunctionAgentFn)[]` | Agent 可以使用的工具列表 |
+| `skills` | `(Agent \| FunctionAgentFn)[]` | Agent 可以使用的工具列表 |
   | `disableLogging` | `boolean` | 是否禁用日志记录 |
 
 ### 方法
 
-#### `call`
+#### `invoke`
 
 调用 Agent 处理输入并返回输出。
 
 ```typescript
-async call(input: I | string, context?: Context): Promise<O>
-async call(input: I | string, context: Context | undefined, options: AgentCallOptions & { streaming: true }): Promise<AgentResponseStream<O>>
+async invoke(input: I | string, context?: Context): Promise<O>
+async invoke(input: I | string, context: Context | undefined, options: AgentInvokeOptions & { streaming: true }): Promise<AgentResponseStream<O>>
 ```
 
 ##### 参数
 
 - `input`: `I | string` - 输入数据或字符串
 - `context`: `Context` (可选) - 执行上下文
-- `options`: `AgentCallOptions` (可选) - 调用选项
+- `options`: `AgentInvokeOptions` (可选) - 调用选项
   - `streaming`: `boolean` - 当设置为 `true` 时，返回响应块流而不是等待完整响应
 
 ##### 返回值
@@ -69,17 +69,17 @@ async call(input: I | string, context: Context | undefined, options: AgentCallOp
 - `Promise<O>` - 非流式模式时返回 Agent 的完整输出
 - `Promise<AgentResponseStream<O>>` - 当 `options.streaming` 为 `true` 时，返回响应块流
 
-#### `addTool`
+#### `addSkill`
 
 向 Agent 添加一个工具。
 
 ```typescript
-addTool<I extends AgentInput, O extends AgentOutput>(tool: Agent<I, O> | FunctionAgentFn<I, O>)
+addSkill(...skills: (Agent | FunctionAgentFn)[])
 ```
 
 ##### 参数
 
-- `tool`: `Agent<I, O> | FunctionAgentFn<I, O>` - 要添加的工具
+- `skills`: `(Agent | FunctionAgentFn)[]` - 要添加的工具
 
 #### `process`
 
@@ -150,7 +150,7 @@ type PublishTopic<O extends AgentOutput = AgentOutput> =
 ```typescript
 import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
 
-const stream = await agent.call(input, context, { streaming: true });
+const stream = await agent.invoke(input, context, { streaming: true });
 
 const reader = stream.getReader();
 const result = {};
@@ -187,6 +187,5 @@ const agent = new GreetingAgent({
 });
 
 // 使用 Agent
-const output = await agent.call({ name: "John" });
+const output = await agent.invoke({ name: "John" });
 console.log(output); // { greeting: "Hello, John!" }
-```

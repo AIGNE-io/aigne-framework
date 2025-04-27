@@ -24,7 +24,7 @@ const github = await MCPAgent.from({
 
 const aigne = new AIGNE({
   model,
-  tools: [github],
+  skills: [github],
 });
 
 const agent = AIAgent.from({
@@ -43,7 +43,7 @@ Always provide clear, concise responses with relevant information from GitHub.
   memory: true,
 });
 
-const userAgent = aigne.call(agent);
+const userAgent = aigne.invoke(agent);
 
 await runChatLoopInTerminal(userAgent, {
   welcome:

@@ -10,7 +10,7 @@ import {
   createWeatherToolMessages,
 } from "../_utils/openai-like-utils.js";
 
-test("XAIChatModel.call should return the correct tool", async () => {
+test("XAIChatModel.invoke should return the correct tool", async () => {
   const model = new XAIChatModel({
     apiKey: "YOUR_API_KEY",
     model: "grok-2-latest",
@@ -22,7 +22,7 @@ test("XAIChatModel.call should return the correct tool", async () => {
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
@@ -30,7 +30,7 @@ test("XAIChatModel.call should return the correct tool", async () => {
   expect(result).toEqual(expect.objectContaining(createWeatherToolExpected()));
 });
 
-test("XAIChatModel.call", async () => {
+test("XAIChatModel.invoke", async () => {
   const model = new XAIChatModel({
     apiKey: "YOUR_API_KEY",
     model: "grok-2-latest",
@@ -42,7 +42,7 @@ test("XAIChatModel.call", async () => {
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,

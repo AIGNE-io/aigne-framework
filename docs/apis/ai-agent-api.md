@@ -102,9 +102,9 @@ type AIAgentToolChoice = "auto" | "none" | "required" | "router" | Agent;
 
 | Value | Description |
 |-------|-------------|
-| `"auto"` | The model decides whether to use tools |
-| `"none"` | No tools are used |
-| `"required"` | Tools must be used |
+| `"auto"` | The model decides whether to use skills |
+| `"none"` | No skills are used |
+| `"required"` | skills must be used |
 | `"router"` | Router mode, directly forwarding results to the first tool called |
 | `Agent` | Specify using a specific Agent as a tool |
 
@@ -137,11 +137,11 @@ const agent = AIAgent.from({
 });
 
 // Using AIAgent
-const output = await agent.call("Hello, can you tell me about the weather in Beijing?");
+const output = await agent.invoke("Hello, can you tell me about the weather in Beijing?");
 console.log(output.text); // Output of AI's response
 ```
 
-### Using AIAgent with Tools
+### Using AIAgent with skills
 
 ```typescript
 import { AIAgent, FunctionAgent } from "@aigne/core";
@@ -160,7 +160,7 @@ const weatherTool = FunctionAgent.from({
     city: z.string().describe("City name")
   }),
   fn: async (input) => {
-    // In a real application, this would call a weather API
+    // In a real application, this would invoke a weather API
     return {
       temperature: 24,
       conditions: "Sunny",
@@ -174,12 +174,12 @@ const agent = AIAgent.from({
   name: "WeatherAssistant",
   model,
   instructions: "You are a weather assistant that can answer questions about the weather.",
-  tools: [weatherTool],
-  toolChoice: "auto" // Allow the model to decide whether to use tools
+  skills: [weatherTool],
+  toolChoice: "auto" // Allow the model to decide whether to use skills
 });
 
-// Using AIAgent with tools
-const output = await agent.call("What's the weather like in Beijing today?");
+// Using AIAgent with skills
+const output = await agent.invoke("What's the weather like in Beijing today?");
 console.log(output.text); // "The weather in Beijing today is sunny with a temperature of 24°C and humidity of 60%."
 ```
 
@@ -215,11 +215,11 @@ const routerAgent = AIAgent.from({
   instructions: `You are a router responsible for deciding which expert assistant to route the user's question to.
     - For weather-related questions, use WeatherAssistant
     - For travel-related questions, use TravelAssistant`,
-  tools: [weatherAgent, travelAgent],
+  skills: [weatherAgent, travelAgent],
   toolChoice: "router" // Use router mode
 });
 
 // Using router Agent
-const output = await routerAgent.call("What are some good places to visit in Beijing?");
+const output = await routerAgent.invoke("What are some good places to visit in Beijing?");
 // Will automatically route to travelAgent for processing and return the response
 console.log(output);

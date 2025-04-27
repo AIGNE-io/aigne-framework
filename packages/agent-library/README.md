@@ -59,8 +59,8 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // Execute orchestration task
-const userAgent = await aigne.call(orchestrator);
-const result = await userAgent.call("Analyze this article and generate a summary and keywords");
+const userAgent = await aigne.invoke(orchestrator);
+const result = await userAgent.invoke("Analyze this article and generate a summary and keywords");
 console.log(result);
 ```
 
@@ -107,7 +107,7 @@ const editorAgent = AIAgent.from({
 const orchestrator = new OrchestratorAgent({
   name: "WorkflowOrchestrator",
   instructions: "You are responsible for coordinating research, writing, and editing processes.",
-  tools: [researchAgent, writerAgent, editorAgent],
+  skills: [researchAgent, writerAgent, editorAgent],
   // Optional configuration
   maxIterations: 30,      // Maximum number of iterations
   tasksConcurrency: 5,    // Task concurrency
@@ -115,8 +115,8 @@ const orchestrator = new OrchestratorAgent({
 
 // Use the orchestrator agent
 const aigne = new AIGNE({ model });
-const userAgent = await aigne.call(orchestrator);
-const result = await userAgent.call("Applications of artificial intelligence in healthcare");
+const userAgent = await aigne.invoke(orchestrator);
+const result = await userAgent.invoke("Applications of artificial intelligence in healthcare");
 console.log(result);
 ```
 

@@ -91,13 +91,13 @@ const editor = AIAgent.from({
 
 // 创建一个按顺序处理代理的 TeamAgent
 const teamAgent = TeamAgent.from({
-  tools: [conceptExtractor, writer, editor],
+  skills: [conceptExtractor, writer, editor],
   processMethod: "sequential" // 默认值，可以省略
 });
 
 // 执行工作流
 const aigne = new AIGNE({ model });
-const result = await aigne.call(teamAgent, { product: "产品描述" });
+const result = await aigne.invoke(teamAgent, { product: "产品描述" });
 ```
 
 ### 并行工作流
@@ -118,10 +118,10 @@ const audienceAnalyzer = AIAgent.from({
 
 // 创建一个并行处理代理的 TeamAgent
 const teamAgent = TeamAgent.from({
-  tools: [featureExtractor, audienceAnalyzer],
+  skills: [featureExtractor, audienceAnalyzer],
   processMethod: "parallel"
 });
 
 // 执行工作流
 const aigne = new AIGNE({ model });
-const result = await aigne.call(teamAgent, { product: "产品描述" });
+const result = await aigne.invoke(teamAgent, { product: "产品描述" });

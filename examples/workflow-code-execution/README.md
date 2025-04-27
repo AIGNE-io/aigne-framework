@@ -123,12 +123,12 @@ const coder = AIAgent.from({
 You are a proficient coder. You write code to solve problems.
 Work with the sandbox to execute your code.
 `,
-  tools: [sandbox],
+  skills: [sandbox],
 });
 
 const aigne = new AIGNE({ model });
 
-const result = await aigne.call(coder, "10! = ?");
+const result = await aigne.invoke(coder, "10! = ?");
 console.log(result);
 // Output:
 // {

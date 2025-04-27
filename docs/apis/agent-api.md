@@ -20,8 +20,8 @@ The Agent is a core concept in the AIGNE framework, representing an entity that 
 | `subscribeTopic` | `SubscribeTopic` | Topics the Agent subscribes to |
 | `publishTopic` | `PublishTopic<AgentOutput>` | Topics to publish the output to |
 | `memory` | `AgentMemory` | Configures the Agent's memory functionality, type is `AgentMemory`. Can be set to `true` in configuration to automatically create an `AgentMemory` instance |
-| `tools` | `Agent[]` | List of tools available to the Agent |
-| `isCallable` | `boolean` | Indicates whether the Agent can be called |
+| `skills` | `Agent[]` | List of skills available to the Agent |
+| `isInvokable` | `boolean` | Indicates whether the Agent can be invoked |
 
 ### Constructor
 
@@ -43,25 +43,25 @@ constructor(options: AgentOptions<I, O>)
   | `outputSchema` | `ZodObject<{ [key in keyof O]: ZodType }>` | Zod schema for validating output |
   | `includeInputInOutput` | `boolean` | Whether to include the input in the output |
   | `memory` | `AgentMemory` | Configures the Agent's memory functionality, type is `AgentMemory`. Can be set to `true` in configuration to automatically create an `AgentMemory` instance |
-| `tools` | `(Agent \| FunctionAgentFn)[]` | List of tools available to the Agent |
+| `skills` | `(Agent \| FunctionAgentFn)[]` | List of skills available to the Agent |
   | `disableLogging` | `boolean` | Whether to disable logging |
 
 ### Methods
 
-#### `call`
+#### `invoke`
 
-Calls the Agent to process the input and return output.
+Invokes the Agent to process the input and return output.
 
 ```typescript
-async call(input: I | string, context?: Context): Promise<O>
-async call(input: I | string, context: Context | undefined, options: AgentCallOptions & { streaming: true }): Promise<AgentResponseStream<O>>
+async invoke(input: I | string, context?: Context): Promise<O>
+async invoke(input: I | string, context: Context | undefined, options: AgentInvokeOptions & { streaming: true }): Promise<AgentResponseStream<O>>
 ```
 
 ##### Parameters
 
 - `input`: `I | string` - Input data or string
 - `context`: `Context` (optional) - AIGNE context
-- `options`: `AgentCallOptions` (optional) - Call options
+- `options`: `AgentInvokeOptions` (optional) - Invoke options
   - `streaming`: `boolean` - When set to `true`, returns a stream of response chunks instead of waiting for the complete response
 
 ##### Returns
@@ -69,17 +69,17 @@ async call(input: I | string, context: Context | undefined, options: AgentCallOp
 - `Promise<O>` - Returns the Agent's output when not streaming
 - `Promise<AgentResponseStream<O>>` - Returns a stream of response chunks when `options.streaming` is `true`
 
-#### `addTool`
+#### `addSkill`
 
-Adds a tool to the Agent.
+Adds a skill to the Agent.
 
 ```typescript
-addTool<I extends AgentInput, O extends AgentOutput>(tool: Agent<I, O> | FunctionAgentFn<I, O>)
+addSkill(...skills: (Agent | FunctionAgentFn)[])
 ```
 
 ##### Parameters
 
-- `tool`: `Agent<I, O> | FunctionAgentFn<I, O>` - The tool to add
+- `skills`: `(Agent | FunctionAgentFn)[]` - The skills to add
 
 #### `process`
 
@@ -150,7 +150,7 @@ type PublishTopic<O extends AgentOutput = AgentOutput> =
 ```typescript
 import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
 
-const stream = await agent.call(input, context, { streaming: true });
+const stream = await agent.invoke(input, context, { streaming: true });
 
 const reader = stream.getReader();
 const result = {};
@@ -186,11 +186,11 @@ const agent = new GreetingAgent({
 });
 
 // Using the Agent
-const output = await agent.call({ name: "John" });
+const output = await agent.invoke({ name: "John" });
 console.log(output); // { greeting: "Hello, John!" }
 ```
 
-### Using an Agent with Tools
+### Using an Agent with skills
 
 ```typescript
 import { Agent, FunctionAgent } from "@aigne/core";
@@ -205,10 +205,10 @@ const formatTool = FunctionAgent.from({
 
 class GreetingAgent extends Agent {
   async process(input, context) {
-    const formatTool = this.tools.formatGreeting;
+    const formatTool = this.skills.formatGreeting;
 
     if (formatTool) {
-      const result = await formatTool.call({
+      const result = await formatTool.invoke({
         prefix: input.prefix,
         name: input.name
       }, context);
@@ -224,12 +224,12 @@ class GreetingAgent extends Agent {
   }
 }
 
-// Create an Agent with tools
+// Create an Agent with skills
 const agent = new GreetingAgent({
   name: "Greeter",
-  tools: [formatTool]
+  skills: [formatTool]
 });
 
 // Using the Agent
-const output = await agent.call({ name: "John", prefix: "Welcome" });
+const output = await agent.invoke({ name: "John", prefix: "Welcome" });
 console.log(output); // { message: "Welcome, John!" }

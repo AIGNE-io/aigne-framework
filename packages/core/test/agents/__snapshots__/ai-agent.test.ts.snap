@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AIAgent.call with streaming true 1`] = `
+exports[`AIAgent.invoke with streaming true 1`] = `
 [
   {
     "delta": {
@@ -82,7 +82,7 @@ exports[`AIAgent.call with streaming true 1`] = `
 ]
 `;
 
-exports[`AIAgent.call with streaming false 1`] = `
+exports[`AIAgent.invoke with streaming false 1`] = `
 {
   "$message": "Here is a beautiful T-shirt",
 }

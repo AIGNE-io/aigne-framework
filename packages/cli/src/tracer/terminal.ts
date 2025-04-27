@@ -160,7 +160,7 @@ export class TerminalTracer {
     context.on("agentFailed", onAgentFailed);
 
     try {
-      const stream = await context.call(agent, input, { streaming: true });
+      const stream = await context.invoke(agent, input, { streaming: true });
 
       const result = await listr.run(stream);
 
@@ -202,7 +202,7 @@ export class TerminalTracer {
     agent: Agent,
     { task, usage, time }: { task?: Task; usage?: boolean; time?: boolean } = {},
   ) {
-    let title = `call agent ${agent.name}`;
+    let title = `invoke agent ${agent.name}`;
 
     if (usage && task?.usage)
       title += ` ${this.formatTokenUsage(task.usage, task.extraTitleMetadata)}`;

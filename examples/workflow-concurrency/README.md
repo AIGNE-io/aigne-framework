@@ -108,11 +108,11 @@ const aigne = new AIGNE({ model });
 
 // 创建一个 TeamAgent 来处理并行工作流
 const teamAgent = TeamAgent.from({
-  tools: [featureExtractor, audienceAnalyzer],
+  skills: [featureExtractor, audienceAnalyzer],
   processMethod: "parallel"
 });
 
-const result = await aigne.call(teamAgent, {
+const result = await aigne.invoke(teamAgent, {
   product: "AIGNE is a No-code Generative AI Apps Engine",
 });
 

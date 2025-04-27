@@ -20,12 +20,12 @@ const sqlite = await MCPAgent.from({
   ],
 });
 
-const prompt = await sqlite.prompts["mcp-demo"]?.call({ topic: "product service" });
+const prompt = await sqlite.prompts["mcp-demo"]?.invoke({ topic: "product service" });
 if (!prompt) throw new Error("Prompt mcp-demo not found");
 
 const aigne = new AIGNE({
   model,
-  tools: [sqlite],
+  skills: [sqlite],
 });
 
 const agent = AIAgent.from({
@@ -33,7 +33,7 @@ const agent = AIAgent.from({
   memory: true,
 });
 
-const userAgent = aigne.call(agent);
+const userAgent = aigne.invoke(agent);
 
 await runChatLoopInTerminal(userAgent, {
   initialCall: {},

@@ -59,8 +59,8 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // 执行编排任务
-const userAgent = await aigne.call(orchestrator);
-const result = await userAgent.call("分析这篇文章并生成摘要和关键词");
+const userAgent = await aigne.invoke(orchestrator);
+const result = await userAgent.invoke("分析这篇文章并生成摘要和关键词");
 console.log(result);
 ```
 
@@ -107,7 +107,7 @@ const editorAgent = AIAgent.from({
 const orchestrator = new OrchestratorAgent({
   name: "工作流编排器",
   instructions: "你负责协调研究、写作和编辑流程。",
-  tools: [researchAgent, writerAgent, editorAgent],
+  skills: [researchAgent, writerAgent, editorAgent],
   // 可选配置
   maxIterations: 30,      // 最大迭代次数
   tasksConcurrency: 5,    // 任务并发数
@@ -115,8 +115,8 @@ const orchestrator = new OrchestratorAgent({
 
 // 使用编排代理
 const aigne = new AIGNE({ model });
-const userAgent = await aigne.call(orchestrator);
-const result = await userAgent.call("关于人工智能在医疗领域的应用");
+const userAgent = await aigne.invoke(orchestrator);
+const result = await userAgent.invoke("关于人工智能在医疗领域的应用");
 console.log(result);
 ```
 

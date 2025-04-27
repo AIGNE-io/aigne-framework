@@ -68,7 +68,7 @@ const agent = AIAgent.from({
 });
 
 // Run AI Agent
-const result = aigne.call(agent, "How do I use the AIGNE API?");
+const result = aigne.invoke(agent, "How do I use the AIGNE API?");
 console.log(result);
 ```
 
@@ -92,7 +92,7 @@ const model = new ClaudeChatModel({
 });
 
 // Basic usage
-const result = await model.call({
+const result = await model.invoke({
   messages: ChatMessagesTemplate.from([
     SystemMessageTemplate.from("You are a helpful assistant"),
     UserMessageTemplate.from("Hello, what's the weather like today?")
@@ -107,7 +107,7 @@ console.log(result.text); // Output model response
 ChatModel supports requesting structured JSON output:
 
 ```typescript
-const result = await model.call({
+const result = await model.invoke({
   messages: messages,
   responseFormat: {
     type: "json_schema",

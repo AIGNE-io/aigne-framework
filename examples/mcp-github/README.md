@@ -141,7 +141,7 @@ const githubMCPAgent = await MCPAgent.from({
 // Create AIGNE
 const aigne = new AIGNE({
   model,
-  tools: [githubMCPAgent],
+  skills: [githubMCPAgent],
 });
 
 // Create AI agent with GitHub-specific instructions
@@ -161,7 +161,7 @@ Always provide clear, concise responses with relevant information from GitHub.
 });
 
 // Example: Search for repositories
-const result = await aigne.call(
+const result = await aigne.invoke(
   agent,
   "Search for repositories related to 'modelcontextprotocol'"
 );

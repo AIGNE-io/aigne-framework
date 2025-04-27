@@ -17,11 +17,11 @@ constructor(options?: AIGNEOptions)
 #### 参数
 
 - `model`: `ChatModel` - 默认的 AI 聊天模型实例
-- `tools`: `Agent[]` - 全局可用的工具列表
+- `skills`: `Agent[]` - 全局可用的工具列表
 - `agents`: `Agent[]` - 初始化时添加的 Agent 列表
 - `limits`: `ContextLimits` - 执行引擎的限制配置
   - `maxTokens`: `number` - 允许处理的最大 Token 数
-  - `maxAgentCalls`: `number` - 允许的最大 Agent 调用次数
+  - `maxAgentInvokes`: `number` - 允许的最大 Agent 调用次数
   - `timeout`: `number` - 执行超时时间（毫秒）
 
 ### 方法
@@ -86,7 +86,7 @@ unsubscribe(topic: string, listener: (message: AgentOutput) => void)
 - `topic`: `string` - 要取消订阅的主题
 - `listener`: `(message: AgentOutput) => void` - 之前注册的回调函数
 
-#### `call`
+#### `invoke`
 
 调用一个 Agent 并返回输出。此方法有多种重载方式，每种方式都有不同的用途。
 
@@ -94,13 +94,13 @@ unsubscribe(topic: string, listener: (message: AgentOutput) => void)
 // 创建一个用户代理以持续调用 Agent
 // 返回一个 UserAgent 实例，用于持续与执行引擎交互
 // 适合需要多轮对话或持续交互的场景
-call<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
+invoke<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
 
 // 使用消息调用 Agent
 // 使用提供的消息调用指定的 Agent
 // 返回 Agent 的输出
 // 适合需要单次交互的场景
-call<I extends Message, O extends Message>(
+invoke<I extends Message, O extends Message>(
   agent: Agent<I, O>,
   message: I | string,
   options?: { streaming?: false }
@@ -110,7 +110,7 @@ call<I extends Message, O extends Message>(
 // 使用提供的消息调用指定的 Agent
 // 返回实时的响应块流，而不是等待完整响应
 // 适合实时处理或显示增量结果的场景
-call<I extends Message, O extends Message>(
+invoke<I extends Message, O extends Message>(
   agent: Agent<I, O>,
   message: I | string,
   options: { streaming: true }
@@ -120,7 +120,7 @@ call<I extends Message, O extends Message>(
 // 使用提供的消息调用指定的 Agent
 // 返回 Agent 的输出和最终活动的 Agent
 // 适合需要跟踪活动 Agent 的场景
-call<I extends Message, O extends Message>(
+invoke<I extends Message, O extends Message>(
   agent: Agent<I, O>,
   message: I | string,
   options: { returnActiveAgent: true; streaming?: false },
@@ -130,7 +130,7 @@ call<I extends Message, O extends Message>(
 // 使用提供的消息调用指定的 Agent
 // 返回响应块流和一个解析为最终活动 Agent 的 Promise
 // 适合在跟踪活动 Agent 的同时进行实时处理
-call<I extends Message, O extends Message>(
+invoke<I extends Message, O extends Message>(
   agent: Agent<I, O>,
   message: I | string,
   options: { returnActiveAgent: true; streaming: true },
@@ -226,7 +226,7 @@ const agent = AIAgent.from({
 })
 
 // 启用流式响应进行调用
-const stream = await aigne.call(agent, "你好，请告诉我关于流式 API 的信息", { streaming: true });
+const stream = await aigne.invoke(agent, "你好，请告诉我关于流式 API 的信息", { streaming: true });
 
 const reader = stream.getReader();
 const result = {};
@@ -242,7 +242,7 @@ while (true) {
 console.log("最终结果:", result);
 
 // 同时获取流和活动 Agent（适用于更复杂的工作流）
-const [agentStream, activeAgentPromise] = await aigne.call(
+const [agentStream, activeAgentPromise] = await aigne.invoke(
   assistant,
   "你好，请推荐一些书籍",
   { streaming: true, returnActiveAgent: true }
@@ -276,17 +276,17 @@ const assistant = AIAgent.from({
 const aigne = new AIGNE({ model });
 
 // 方法 1: 直接调用并获取结果
-const result = await aigne.call(assistant, "你好，请告诉我今天的日期");
+const result = await aigne.invoke(assistant, "你好，请告诉我今天的日期");
 console.log(result);
 
 // 方法 2: 创建交互式会话
-const userAgent = aigne.call(assistant);
+const userAgent = aigne.invoke(assistant);
 
 // 发送消息并获取回复
-const response1 = await userAgent.call("你好！");
+const response1 = await userAgent.invoke("你好！");
 console.log(response1);
 
-const response2 = await userAgent.call("你能帮我写一首诗吗？");
+const response2 = await userAgent.invoke("你能帮我写一首诗吗？");
 console.log(response2);
 
 // 关闭执行引擎
@@ -330,7 +330,7 @@ const summarizer = AIAgent.from({
 const aigne = new AIGNE({ model });
 
 // 顺序执行 Agent
-const result = await aigne.call(
+const result = await aigne.invoke(
   sequential(dataPrep, analyzer, summarizer),
   { data: [10, 20, 30, 40, 50] }
 );
@@ -368,7 +368,7 @@ const storyteller = AIAgent.from({
 const aigne = new AIGNE({ model });
 
 // 并行执行 Agent
-const result = await aigne.call(
+const result = await aigne.invoke(
   parallel(poet, storyteller),
   { topic: "月亮" }
 );

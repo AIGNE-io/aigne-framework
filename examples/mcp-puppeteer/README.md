@@ -122,7 +122,7 @@ const puppeteerMCPAgent = await MCPAgent.from({
 
 const aigne = new AIGNE({
   model,
-  tools: [puppeteerMCPAgent],
+  skills: [puppeteerMCPAgent],
 });
 
 const agent = AIAgent.from({
@@ -133,7 +133,7 @@ const agent = AIAgent.from({
 `,
 });
 
-const result = await aigne.call(agent, "extract content from https://www.arcblock.io");
+const result = await aigne.invoke(agent, "extract content from https://www.arcblock.io");
 
 console.log(result);
 // output:

@@ -1,5 +1,5 @@
 import type {
-  AgentCallOptions,
+  AgentInvokeOptions,
   AgentResponse,
   AgentResponseChunk,
   AgentResponseStream,
@@ -12,32 +12,32 @@ export interface AIGNEClientOptions {
   url: string;
 }
 
-export interface AIGNEClientCallOptions extends AgentCallOptions {
+export interface AIGNEClientInvokeOptions extends AgentInvokeOptions {
   fetchOptions?: Partial<RequestInit>;
 }
 
 export class AIGNEClient {
   constructor(public options: AIGNEClientOptions) {}
 
-  async call<I extends Message, O extends Message>(
+  async invoke<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options: AIGNEClientCallOptions & { streaming: true },
+    options: AIGNEClientInvokeOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
-  async call<I extends Message, O extends Message>(
+  async invoke<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AIGNEClientCallOptions & { streaming?: false },
+    options?: AIGNEClientInvokeOptions & { streaming?: false },
   ): Promise<O>;
-  async call<I extends Message, O extends Message>(
+  async invoke<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AIGNEClientCallOptions,
+    options?: AIGNEClientInvokeOptions,
   ): Promise<AgentResponse<O>>;
-  async call<I extends Message, O extends Message>(
+  async invoke<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AIGNEClientCallOptions,
+    options?: AIGNEClientInvokeOptions,
   ): Promise<AgentResponse<O>> {
     const response = await this.fetch(this.options.url, {
       ...options?.fetchOptions,

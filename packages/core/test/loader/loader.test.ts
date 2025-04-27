@@ -32,8 +32,8 @@ test("AIGNE.load should load agents correctly", async () => {
   );
   assert(chat, "chat agent should be defined");
 
-  expect(chat.tools.length).toBe(1);
-  expect(chat.tools[0]).toEqual(expect.objectContaining({ name: "evaluateJs" }));
+  expect(chat.skills.length).toBe(1);
+  expect(chat.skills[0]).toEqual(expect.objectContaining({ name: "evaluateJs" }));
 
   expect(aigne.model).toBeInstanceOf(ChatModel);
   assert(aigne.model, "model should be defined");
@@ -52,20 +52,20 @@ test("AIGNE.load should load agents correctly", async () => {
     )
     .mockReturnValueOnce(Promise.resolve({ text: "1 + 2 = 3" }));
 
-  const result = await aigne.call(chat, "1 + 2 = ?");
+  const result = await aigne.invoke(chat, "1 + 2 = ?");
   expect(result).toEqual(expect.objectContaining(createMessage("1 + 2 = 3")));
 });
 
 test("loader should use override options", async () => {
   const model = new ClaudeChatModel({});
   const testAgent = AIAgent.from({ name: "test-agent" });
-  const testTool = AIAgent.from({ name: "test-tool" });
+  const testSkill = AIAgent.from({ name: "test-skill" });
 
   const aigne = await AIGNE.load({
     path: join(import.meta.dirname, "../../test-agents"),
     model,
     agents: [testAgent],
-    tools: [testTool],
+    skills: [testSkill],
   });
 
   expect(aigne.model).toBe(model);
@@ -75,7 +75,7 @@ test("loader should use override options", async () => {
     }),
     testAgent,
   ]);
-  expect([...aigne.tools]).toEqual([expect.objectContaining({ name: "evaluateJs" }), testTool]);
+  expect([...aigne.skills]).toEqual([expect.objectContaining({ name: "evaluateJs" }), testSkill]);
 });
 
 test("loader should error if agent file is not supported", async () => {
@@ -115,7 +115,7 @@ test("load should process path correctly", async () => {
     expect.objectContaining({
       model: expect.anything(),
       agents: [],
-      tools: [],
+      skills: [],
     }),
   );
   expect(readFile).toHaveBeenLastCalledWith("foo/aigne.yaml", "utf8");
@@ -130,7 +130,7 @@ test("load should process path correctly", async () => {
     expect.objectContaining({
       model: expect.anything(),
       agents: [],
-      tools: [],
+      skills: [],
     }),
   );
   expect(readFile).toHaveBeenLastCalledWith("bar/aigne.yml", "utf8");

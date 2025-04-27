@@ -32,7 +32,7 @@ test("runChatLoopInTerminal should trigger initial call", async () => {
 
   const agent = AIAgent.from({});
 
-  const user = aigne.call(agent);
+  const user = aigne.invoke(agent);
 
   spyOn(inquirer, "prompt").mockReturnValueOnce(
     Promise.resolve({ question: "/exit" }) as unknown as ReturnType<typeof inquirer.prompt>,
@@ -55,12 +55,12 @@ test("runChatLoopInTerminal should trigger initial call", async () => {
   );
 });
 
-test("runChatLoopInTerminal should call agent correctly", async () => {
+test("runChatLoopInTerminal should invoke agent correctly", async () => {
   const agent = AIAgent.from({});
 
   const aigne = new AIGNE({});
 
-  const userAgent = aigne.call(agent);
+  const userAgent = aigne.invoke(agent);
 
   spyOn(inquirer, "prompt").mockReturnValueOnce(
     Promise.resolve({ question: "hello, this is a test message" }) as unknown as ReturnType<
@@ -88,7 +88,7 @@ test("runChatLoopInTerminal should call agent correctly", async () => {
 test("runChatLoopInTerminal should skip loop If initialCall is provided and skipLoop is true", async () => {
   const aigne = new AIGNE({});
   const agent = AIAgent.from({});
-  const userAgent = aigne.call(agent);
+  const userAgent = aigne.invoke(agent);
 
   const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
     arrayToAgentProcessAsyncGenerator([

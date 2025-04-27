@@ -7,8 +7,8 @@ import { mockMCPSSEServer } from "../_mocks/mock-mcp-server-sse.js";
 import { mockMCPStreamableHTTPServer } from "../_mocks/mock-mcp-server-streamable-http.js";
 
 async function makeMcpAssertions(mcp: MCPAgent) {
-  expect(mcp.tools.map((i) => i.name)).toEqual(["echo", "error"]);
-  expect(await mcp.tools.echo?.call({ message: "AIGNE" })).toEqual(
+  expect(mcp.skills.map((i) => i.name)).toEqual(["echo", "error"]);
+  expect(await mcp.skills.echo?.invoke({ message: "AIGNE" })).toEqual(
     expect.objectContaining({
       content: [
         {
@@ -19,7 +19,7 @@ async function makeMcpAssertions(mcp: MCPAgent) {
     }),
   );
 
-  expect(await mcp.tools.error?.call({ message: "Custom Error" })).toEqual(
+  expect(await mcp.skills.error?.invoke({ message: "Custom Error" })).toEqual(
     expect.objectContaining({
       isError: true,
       content: [
@@ -32,7 +32,7 @@ async function makeMcpAssertions(mcp: MCPAgent) {
   );
 
   expect(mcp.prompts.map((i) => i.name)).toEqual(["echo"]);
-  const prompt = await mcp.prompts.echo?.call({ message: "AIGNE" });
+  const prompt = await mcp.prompts.echo?.invoke({ message: "AIGNE" });
   expect(prompt).toEqual(
     expect.objectContaining({
       messages: [
@@ -59,7 +59,7 @@ async function makeMcpAssertions(mcp: MCPAgent) {
   );
 
   expect(mcp.resources.map((i) => i.name)).toEqual(["echo"]);
-  const resource = await mcp.resources.echo?.call({ message: "AIGNE" });
+  const resource = await mcp.resources.echo?.invoke({ message: "AIGNE" });
   expect(resource).toEqual(
     expect.objectContaining({
       contents: [
@@ -72,15 +72,15 @@ async function makeMcpAssertions(mcp: MCPAgent) {
   );
 }
 
-test("MCPAgent should correctly call tool, get prompt and read resource", async () => {
+test("MCPAgent should correctly invoke skill, get prompt and read resource", async () => {
   const mcp = await MCPAgent.from({
     command: "bun",
     args: [join(import.meta.dir, "../_mocks/mock-mcp-server.ts")],
   });
 
   try {
-    expect(mcp.isCallable).toBe(false);
-    expect(mcp.call({})).rejects.toThrowError();
+    expect(mcp.isInvokable).toBe(false);
+    expect(mcp.invoke({})).rejects.toThrowError();
 
     await makeMcpAssertions(mcp);
   } finally {
@@ -105,7 +105,7 @@ test("MCPAgent should reconnect to mcp server automatically: sse", async () => {
     // restart the MCP server
     mcpServer = mockMCPSSEServer(port);
 
-    expect(await mcp.tools.echo?.call({ message: "AIGNE" })).toEqual(
+    expect(await mcp.skills.echo?.invoke({ message: "AIGNE" })).toEqual(
       expect.objectContaining({
         content: [
           {
@@ -134,7 +134,7 @@ test("MCPAgent should respect MCP_TIMEOUT and TIMEOUT env", async () => {
   const request = spyOn(Client.prototype, "request");
 
   try {
-    await mcp.tools.echo?.call({ message: "AIGNE" });
+    await mcp.skills.echo?.invoke({ message: "AIGNE" });
     expect(request).toHaveBeenLastCalledWith(
       expect.anything(),
       expect.anything(),
@@ -165,7 +165,7 @@ test("MCPAgent should reconnect to mcp server automatically: streamable http", a
     // restart the MCP server
     mcpServer = await mockMCPStreamableHTTPServer(port);
 
-    expect(await mcp.tools.echo?.call({ message: "AIGNE" })).toEqual(
+    expect(await mcp.skills.echo?.invoke({ message: "AIGNE" })).toEqual(
       expect.objectContaining({
         content: [
           {

@@ -68,7 +68,7 @@ const agent = AIAgent.from({
 });
 
 // 运行 AI Agent
-const result = aigne.call(agent, "怎么使用 AIGNE API?");
+const result = aigne.invoke(agent, "怎么使用 AIGNE API?");
 console.log(result);
 ```
 
@@ -92,7 +92,7 @@ const model = new ClaudeChatModel({
 });
 
 // 基本用法
-const result = await model.call({
+const result = await model.invoke({
   messages: ChatMessagesTemplate.from([
     SystemMessageTemplate.from("You are a helpful assistant"),
     UserMessageTemplate.from("Hello, what's the weather like today?")
@@ -107,7 +107,7 @@ console.log(result.text); // 输出模型回复
 ChatModel 支持请求结构化 JSON 输出：
 
 ```typescript
-const result = await model.call({
+const result = await model.invoke({
   messages: messages,
   responseFormat: {
     type: "json_schema",

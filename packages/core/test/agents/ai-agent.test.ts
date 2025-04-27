@@ -10,7 +10,7 @@ import {
 import { z } from "zod";
 import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 
-test.each([true, false])("AIAgent.call with streaming %p", async (streaming) => {
+test.each([true, false])("AIAgent.invoke with streaming %p", async (streaming) => {
   const model = new OpenAIChatModel();
 
   const context = new AIGNE({ model }).newContext();
@@ -21,7 +21,7 @@ test.each([true, false])("AIAgent.call with streaming %p", async (streaming) => 
     Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
   );
 
-  const result = await agent.call("write a long blog about arcblock", context, { streaming });
+  const result = await agent.invoke("write a long blog about arcblock", context, { streaming });
 
   if (streaming) {
     assert(result instanceof ReadableStream);
@@ -31,7 +31,7 @@ test.each([true, false])("AIAgent.call with streaming %p", async (streaming) => 
   }
 });
 
-test("AIAgent.call with structured output", async () => {
+test("AIAgent.invoke with structured output", async () => {
   const model = new OpenAIChatModel();
   const aigne = new AIGNE({ model });
 
@@ -52,7 +52,7 @@ test("AIAgent.call with structured output", async () => {
     }),
   );
 
-  const result = await aigne.call(agent, "hello, i'm Alice");
+  const result = await aigne.invoke(agent, "hello, i'm Alice");
 
   expect(result).toEqual({ username: "Alice", questionCategory: "greeting" });
 });
@@ -75,10 +75,10 @@ test("AIAgent should pass both arguments (model generated) and input (user provi
 
   const agent = AIAgent.from({
     instructions: "You are a friendly chatbot",
-    tools: [plus],
+    skills: [plus],
   });
 
-  const plusCall = spyOn(plus, "call");
+  const plusCall = spyOn(plus, "invoke");
 
   spyOn(model, "process")
     .mockReturnValueOnce(
@@ -87,7 +87,7 @@ test("AIAgent should pass both arguments (model generated) and input (user provi
     .mockReturnValueOnce(Promise.resolve({ json: { sum: 2 } }))
     .mockReturnValueOnce(Promise.resolve({ text: "The sum is 2" }));
 
-  const result = await aigne.call(agent, "1 + 1 = ?");
+  const result = await aigne.invoke(agent, "1 + 1 = ?");
 
   expect(plusCall).toHaveBeenCalledWith(
     { ...createMessage("1 + 1 = ?"), a: 1, b: 1 },
@@ -106,11 +106,11 @@ test.each([true, false])(
     const sales = AIAgent.from({ name: "sales", inputSchema: z.object({ indent: z.string() }) });
 
     const agent = AIAgent.from({
-      tools: [sales],
+      skills: [sales],
       toolChoice: "router",
     });
 
-    const salesCall = spyOn(sales, "call");
+    const salesCall = spyOn(sales, "invoke");
 
     spyOn(model, "process")
       .mockReturnValueOnce(
@@ -120,7 +120,7 @@ test.each([true, false])(
         Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
       );
 
-    const result = await aigne.call(agent, "Hello, I want to buy a T-shirt", { streaming });
+    const result = await aigne.invoke(agent, "Hello, I want to buy a T-shirt", { streaming });
 
     if (streaming) {
       assert(result instanceof ReadableStream);
@@ -153,6 +153,6 @@ test("AIAgent should use self model first and then use model from context", asyn
     Promise.resolve(stringToAgentResponseStream("Answer from claude model")),
   );
 
-  const result = await engine.call(agent, "Hello");
+  const result = await engine.invoke(agent, "Hello");
   expect(result).toEqual(createMessage("Answer from claude model"));
 });

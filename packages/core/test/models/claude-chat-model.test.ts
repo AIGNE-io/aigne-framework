@@ -11,7 +11,7 @@ import {
   createWeatherToolMessages,
 } from "../_utils/openai-like-utils.js";
 
-test("ClaudeChatModel.call", async () => {
+test("ClaudeChatModel.invoke", async () => {
   const model = new ClaudeChatModel({
     apiKey: "YOUR_API_KEY",
   });
@@ -28,7 +28,7 @@ test("ClaudeChatModel.call", async () => {
     (await import("./claude-structured-response-3.json")) as unknown as Anthropic.Messages.Message,
   );
 
-  const result1 = await model.call({
+  const result1 = await model.invoke({
     messages: createWeatherToolMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
@@ -36,7 +36,7 @@ test("ClaudeChatModel.call", async () => {
 
   expect(result1).toMatchSnapshot();
 
-  const result2 = await model.call({
+  const result2 = await model.invoke({
     messages: createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
@@ -45,7 +45,7 @@ test("ClaudeChatModel.call", async () => {
   expect(result2).toMatchSnapshot();
 });
 
-test("ClaudeChatModel.call should pass system and messages to claude correctly", async () => {
+test("ClaudeChatModel.invoke should pass system and messages to claude correctly", async () => {
   const model = new ClaudeChatModel({
     apiKey: "YOUR_API_KEY",
   });
@@ -54,7 +54,7 @@ test("ClaudeChatModel.call should pass system and messages to claude correctly",
     createMockEventStream({ path: join(import.meta.dirname, "claude-streaming-response-1.txt") }),
   );
 
-  await model.call({
+  await model.invoke({
     messages: [
       { role: "system", content: "You are a chatbot" },
       { role: "user", content: "hello" },
@@ -71,7 +71,7 @@ test("ClaudeChatModel.call should pass system and messages to claude correctly",
   ]);
 });
 
-test("ClaudeChatModel.call should use system message as user message if messages is empty", async () => {
+test("ClaudeChatModel.invoke should use system message as user message if messages is empty", async () => {
   const model = new ClaudeChatModel({
     apiKey: "YOUR_API_KEY",
   });
@@ -80,7 +80,7 @@ test("ClaudeChatModel.call should use system message as user message if messages
     createMockEventStream({ path: join(import.meta.dirname, "claude-streaming-response-1.txt") }),
   );
 
-  await model.call({
+  await model.invoke({
     messages: [{ role: "system", content: "You are a chatbot" }],
   });
 
@@ -101,7 +101,7 @@ test("ClaudeChatModel.call should use system message as user message if messages
   ]);
 });
 
-test("ClaudeChatModel.call with streaming", async () => {
+test("ClaudeChatModel.invoke with streaming", async () => {
   const model = new ClaudeChatModel({
     apiKey: "YOUR_API_KEY",
   });
@@ -112,7 +112,7 @@ test("ClaudeChatModel.call with streaming", async () => {
     }),
   );
 
-  const stream = await model.call(
+  const stream = await model.invoke(
     {
       messages: [{ role: "user", content: "hello" }],
     },
@@ -123,7 +123,7 @@ test("ClaudeChatModel.call with streaming", async () => {
   expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });
 
-test("ClaudeChatModel.call without streaming", async () => {
+test("ClaudeChatModel.invoke without streaming", async () => {
   const model = new ClaudeChatModel({
     apiKey: "YOUR_API_KEY",
   });
@@ -134,7 +134,7 @@ test("ClaudeChatModel.call without streaming", async () => {
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: [{ role: "user", content: "hello" }],
   });
 

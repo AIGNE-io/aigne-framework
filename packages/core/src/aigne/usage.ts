@@ -14,6 +14,6 @@ export function newEmptyContextUsage(): ContextUsage {
 
 export interface ContextLimits {
   maxTokens?: number;
-  maxAgentCalls?: number;
+  maxAgentInvokes?: number;
   timeout?: number;
 }

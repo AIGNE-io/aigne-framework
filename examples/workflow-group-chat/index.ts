@@ -70,7 +70,7 @@ const illustrator = AIAgent.from({
   instructions: `\
 You are an Illustrator. You use the generate_image tool to create images given user's requirement.
 Make sure the images have consistent characters and style.`,
-  tools: [generateImage],
+  skills: [generateImage],
   toolChoice: "auto",
   outputSchema: z.object({
     images: z
@@ -149,7 +149,7 @@ aigne.subscribe(DEFAULT_TOPIC, (message) => {
   );
 });
 
-await aigne.call(user, {});
+await aigne.invoke(user, {});
 
 function assertZodUnionArray<T extends z.ZodType>(union: T[]): [T, T, ...T[]] {
   if (!(union.length >= 2)) throw new Error("Union must have at least 2 items");

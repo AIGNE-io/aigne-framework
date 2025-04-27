@@ -19,14 +19,14 @@ beforeEach(() => {
   });
 });
 
-test("OpenAIChatModel.call should return the correct tool", async () => {
+test("OpenAIChatModel.invoke should return the correct tool", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-1.txt"),
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
@@ -34,14 +34,14 @@ test("OpenAIChatModel.call should return the correct tool", async () => {
   expect(result).toMatchSnapshot();
 });
 
-test("OpenAIChatModel.call should return structured output", async () => {
+test("OpenAIChatModel.invoke should return structured output", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-2.txt"),
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
@@ -50,14 +50,14 @@ test("OpenAIChatModel.call should return structured output", async () => {
   expect(result).toMatchSnapshot();
 });
 
-test("OpenAIChatModel.call with streaming", async () => {
+test("OpenAIChatModel.invoke with streaming", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
     }),
   );
 
-  const stream = await model.call(
+  const stream = await model.invoke(
     {
       messages: [{ role: "user", content: "hello" }],
     },
@@ -68,14 +68,14 @@ test("OpenAIChatModel.call with streaming", async () => {
   expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });
 
-test("OpenAIChatModel.call without streaming", async () => {
+test("OpenAIChatModel.invoke without streaming", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: [{ role: "user", content: "hello" }],
   });
 

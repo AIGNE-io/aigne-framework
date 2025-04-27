@@ -28,7 +28,7 @@ const agentFileSchema = z.discriminatedUnion("type", [
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
-    tools: z
+    skills: z
       .array(z.string())
       .nullish()
       .transform((v) => v ?? undefined),
@@ -76,9 +76,16 @@ export async function loadAgentFromYamlFile(path: string) {
 
   const agent = tryOrThrow(
     () =>
-      customCamelize(agentFileSchema.parse({ ...json, type: json.type ?? "ai" }), {
-        shallowKeys: ["input_schema", "output_schema"],
-      }),
+      customCamelize(
+        agentFileSchema.parse({
+          ...json,
+          type: json.type ?? "ai",
+          skills: json.skills ?? json.tools,
+        }),
+        {
+          shallowKeys: ["input_schema", "output_schema"],
+        },
+      ),
     (error) => new Error(`Failed to validate agent definition from ${path}: ${error.message}`),
   );
 

@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`OpenAIChatModel.call should return the correct tool 1`] = `
+exports[`OpenAIChatModel.invoke should return the correct tool 1`] = `
 {
   "model": "gpt-4o-mini-2024-07-18",
   "toolCalls": [
@@ -22,7 +22,7 @@ exports[`OpenAIChatModel.call should return the correct tool 1`] = `
 }
 `;
 
-exports[`OpenAIChatModel.call should return structured output 1`] = `
+exports[`OpenAIChatModel.invoke should return structured output 1`] = `
 {
   "json": {
     "text": "The current temperature in New York is 20°C.",
@@ -35,7 +35,7 @@ exports[`OpenAIChatModel.call should return structured output 1`] = `
 }
 `;
 
-exports[`OpenAIChatModel.call with streaming 1`] = `
+exports[`OpenAIChatModel.invoke with streaming 1`] = `
 [
   {
     "delta": {
@@ -120,7 +120,7 @@ exports[`OpenAIChatModel.call with streaming 1`] = `
 ]
 `;
 
-exports[`OpenAIChatModel.call without streaming 1`] = `
+exports[`OpenAIChatModel.invoke without streaming 1`] = `
 {
   "model": "gpt-4o-mini-2024-07-18",
   "text": "Hello! How can I assist you today?",

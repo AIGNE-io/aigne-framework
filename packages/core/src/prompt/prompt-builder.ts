@@ -178,10 +178,10 @@ export class PromptBuilder {
   private buildTools(
     options: PromptBuilderBuildOptions,
   ): Pick<ChatModelInput, "tools" | "toolChoice" | "modelOptions"> & { toolAgents?: Agent[] } {
-    const toolAgents = (options.context?.tools ?? [])
-      .concat(options.agent?.tools ?? [])
+    const toolAgents = (options.context?.skills ?? [])
+      .concat(options.agent?.skills ?? [])
       // TODO: support nested tools?
-      .flatMap((i) => (i.isCallable ? i.tools.concat(i) : i.tools));
+      .flatMap((i) => (i.isInvokable ? i.skills.concat(i) : i.skills));
 
     const tools: ChatModelInputTool[] = toolAgents.map((i) => ({
       type: "function",

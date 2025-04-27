@@ -122,7 +122,7 @@ const greetAgent2 = new FunctionAgent({
 });
 
 // 使用 FunctionAgent
-const output = await greetAgent1.call({ name: "John" });
+const output = await greetAgent1.invoke({ name: "John" });
 console.log(output); // { message: "Hello, John!" }
 ```
 
@@ -150,7 +150,7 @@ const userAgent = FunctionAgent.from({
 });
 
 // 使用异步 FunctionAgent
-const userData = await userAgent.call({ userId: 123 });
+const userData = await userAgent.invoke({ userId: 123 });
 console.log(userData); // { id: 123, name: "John Doe", email: "john@example.com" }
 ```
 
@@ -186,14 +186,14 @@ const aiAgent = AIAgent.from({
   name: "DataAnalyst",
   model,
   instructions: "你是一个数据分析助手，可以处理和分析数据。",
-  tools: [processAgent]
+  skills: [processAgent]
 });
 
 // 创建执行引擎
 const aigne = new AIGNE({ model });
 
 // 运行工作流
-const result = await aigne.call(
+const result = await aigne.invoke(
   aiAgent,
   { data: [1, 2, 3, 4, 5] }
 );

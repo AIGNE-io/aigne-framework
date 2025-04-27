@@ -122,7 +122,7 @@ const greetAgent2 = new FunctionAgent({
 });
 
 // Using FunctionAgent
-const output = await greetAgent1.call({ name: "John" });
+const output = await greetAgent1.invoke({ name: "John" });
 console.log(output); // { message: "Hello, John!" }
 ```
 
@@ -133,7 +133,7 @@ import { FunctionAgent } from "@aigne/core";
 
 // Create an asynchronous function
 async function fetchUserData(input) {
-  // In a real application, this would call an API
+  // In a real application, this would invoke an API
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   return {
@@ -150,7 +150,7 @@ const userAgent = FunctionAgent.from({
 });
 
 // Using async FunctionAgent
-const userData = await userAgent.call({ userId: 123 });
+const userData = await userAgent.invoke({ userId: 123 });
 console.log(userData); // { id: 123, name: "John Doe", email: "john@example.com" }
 ```
 
@@ -191,7 +191,7 @@ const intentAnalyzer = FunctionAgent.from({
 });
 
 // Using Agent transfer
-const result = await intentAnalyzer.call({ text: "I need some help" });
+const result = await intentAnalyzer.invoke({ text: "I need some help" });
 // Will transfer to helpfulAgent and return its response
 ```
 
@@ -227,14 +227,14 @@ const aiAgent = AIAgent.from({
   name: "DataAnalyst",
   model,
   instructions: "You are a data analysis assistant who can process and analyze data.",
-  tools: [processAgent]
+  skills: [processAgent]
 });
 
 // Create AIGNE
 const aigne = new AIGNE({ model });
 
 // Run the workflow
-const result = await aigne.call(
+const result = await aigne.invoke(
   aiAgent,
   { data: [1, 2, 3, 4, 5] }
 );

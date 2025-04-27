@@ -57,11 +57,11 @@ const agent = AIAgent.from({
 // Create AIGNE
 const aigne = new AIGNE({ model });
 
-// Use the AIGNE to call the agent
-const userAgent = await aigne.call(agent);
+// Use the AIGNE to invoke the agent
+const userAgent = await aigne.invoke(agent);
 
 // Send a message to the agent
-const response = await userAgent.call("Hello, can you help me write a short article?");
+const response = await userAgent.invoke("Hello, can you help me write a short article?");
 console.log(response);
 ```
 

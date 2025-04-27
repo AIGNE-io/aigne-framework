@@ -137,7 +137,7 @@ const agent = AIAgent.from({
 });
 
 // 使用 AIAgent
-const output = await agent.call("你好，请告诉我北京的天气如何？");
+const output = await agent.invoke("你好，请告诉我北京的天气如何？");
 console.log(output.text); // 输出 AI 的回复
 ```
 
@@ -174,12 +174,12 @@ const agent = AIAgent.from({
   name: "WeatherAssistant",
   model,
   instructions: "你是一个天气助手，可以回答有关天气的问题。",
-  tools: [weatherTool],
+  skills: [weatherTool],
   toolChoice: "auto" // 允许模型决定是否使用工具
 });
 
 // 使用带工具的 AIAgent
-const output = await agent.call("北京今天的天气怎么样？");
+const output = await agent.invoke("北京今天的天气怎么样？");
 console.log(output.text); // "北京今天天气晴朗，温度24°C，湿度60%。"
 ```
 
@@ -215,11 +215,11 @@ const routerAgent = AIAgent.from({
   instructions: `你是一个路由器，负责决定将用户的问题路由到哪个专家助手。
     - 对于天气相关的问题，使用 WeatherAssistant
     - 对于旅游相关的问题，使用 TravelAssistant`,
-  tools: [weatherAgent, travelAgent],
+  skills: [weatherAgent, travelAgent],
   toolChoice: "router" // 使用路由模式
 });
 
 // 使用路由 Agent
-const output = await routerAgent.call("北京有哪些好玩的地方？");
+const output = await routerAgent.invoke("北京有哪些好玩的地方？");
 // 将自动路由到 travelAgent 处理，并返回回复
 console.log(output);

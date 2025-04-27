@@ -18,14 +18,14 @@ beforeEach(() => {
   });
 });
 
-test("DeepSeekChatModel.call should return the correct tool", async () => {
+test("DeepSeekChatModel.invoke should return the correct tool", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "deepseek-streaming-response-1.txt"),
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
   });
@@ -33,14 +33,14 @@ test("DeepSeekChatModel.call should return the correct tool", async () => {
   expect(result).toEqual(createWeatherToolExpected());
 });
 
-test("DeepSeekChatModel.call", async () => {
+test("DeepSeekChatModel.invoke", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "deepseek-streaming-response-2.txt"),
     }),
   );
 
-  const result = await model.call({
+  const result = await model.invoke({
     messages: createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,

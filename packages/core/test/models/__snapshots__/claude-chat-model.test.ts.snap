@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ClaudeChatModel.call 1`] = `
+exports[`ClaudeChatModel.invoke 1`] = `
 {
   "model": "claude-3-7-sonnet-20250219",
   "toolCalls": [
@@ -22,7 +22,7 @@ exports[`ClaudeChatModel.call 1`] = `
 }
 `;
 
-exports[`ClaudeChatModel.call 2`] = `
+exports[`ClaudeChatModel.invoke 2`] = `
 {
   "json": {
     "text": "The current temperature in New York is 20 degrees.",
@@ -35,7 +35,7 @@ exports[`ClaudeChatModel.call 2`] = `
 }
 `;
 
-exports[`ClaudeChatModel.call with streaming 1`] = `
+exports[`ClaudeChatModel.invoke with streaming 1`] = `
 [
   {
     "delta": {
@@ -92,7 +92,7 @@ exports[`ClaudeChatModel.call with streaming 1`] = `
 ]
 `;
 
-exports[`ClaudeChatModel.call without streaming 1`] = `
+exports[`ClaudeChatModel.invoke without streaming 1`] = `
 {
   "model": "claude-3-7-sonnet-20250219",
   "text": "Hello! How can I assist you today? Whether you have a question, need information, or just want to chat, I'm here to help. Feel free to let me know what's on your mind.",

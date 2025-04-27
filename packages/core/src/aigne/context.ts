@@ -3,7 +3,7 @@ import { v7 } from "uuid";
 import { type ZodType, z } from "zod";
 import {
   Agent,
-  type AgentCallOptions,
+  type AgentInvokeOptions,
   type AgentProcessAsyncGenerator,
   type AgentResponse,
   type AgentResponseStream,
@@ -55,7 +55,7 @@ export type ContextEmitEventMap = {
   >;
 };
 
-export interface CallOptions extends AgentCallOptions {
+export interface InvokeOptions extends AgentInvokeOptions {
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
 }
@@ -63,7 +63,7 @@ export interface CallOptions extends AgentCallOptions {
 export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitEventMap> {
   model?: ChatModel;
 
-  tools?: Agent[];
+  skills?: Agent[];
 
   usage: ContextUsage;
 
@@ -72,53 +72,53 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   status?: "normal" | "timeout";
 
   /**
-   * Create a user agent to consistently call an agent
-   * @param agent Agent to call
+   * Create a user agent to consistently invoke an agent
+   * @param agent Agent to invoke
    * @returns User agent
    */
-  call<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
+  invoke<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
   /**
-   * Call an agent with a message and return the output and the active agent
-   * @param agent Agent to call
+   * Invoke an agent with a message and return the output and the active agent
+   * @param agent Agent to invoke
    * @param message Message to pass to the agent
    * @param options.returnActiveAgent return the active agent
    * @param options.streaming return a stream of the output
    * @returns the output of the agent and the final active agent
    */
-  call<I extends Message, O extends Message>(
+  invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
     message: I | string,
-    options: CallOptions & { returnActiveAgent: true; streaming?: false },
+    options: InvokeOptions & { returnActiveAgent: true; streaming?: false },
   ): Promise<[O, Agent]>;
-  call<I extends Message, O extends Message>(
+  invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
     message: I | string,
-    options: CallOptions & { returnActiveAgent: true; streaming: true },
+    options: InvokeOptions & { returnActiveAgent: true; streaming: true },
   ): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
   /**
-   * Call an agent with a message
-   * @param agent Agent to call
+   * Invoke an agent with a message
+   * @param agent Agent to invoke
    * @param message Message to pass to the agent
    * @returns the output of the agent
    */
-  call<I extends Message, O extends Message>(
+  invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
     message: I | string,
-    options?: CallOptions & { streaming?: false },
+    options?: InvokeOptions & { streaming?: false },
   ): Promise<O>;
-  call<I extends Message, O extends Message>(
+  invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
     message: I | string,
-    options: CallOptions & { streaming: true },
+    options: InvokeOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
-  call<I extends Message, O extends Message>(
+  invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
     message?: I | string,
-    options?: CallOptions,
+    options?: InvokeOptions,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]>;
 
   /**
-   * Publish a message to a topic, the aigne will call the listeners of the topic
+   * Publish a message to a topic, the aigne will invoke the listeners of the topic
    * @param topic topic name, or an array of topic names
    * @param payload message to publish
    */
@@ -173,8 +173,8 @@ export class AIGNEContext implements Context {
     return this.internal.model;
   }
 
-  get tools() {
-    return this.internal.tools;
+  get skills() {
+    return this.internal.skills;
   }
 
   get limits() {
@@ -194,8 +194,8 @@ export class AIGNEContext implements Context {
     return new AIGNEContext(this);
   }
 
-  call = ((agent, message, options) => {
-    checkArguments("AIGNEContext.call", aigneContextCallArgsSchema, {
+  invoke = ((agent, message, options) => {
+    checkArguments("AIGNEContext.invoke", aigneContextInvokeArgsSchema, {
       agent,
       message,
       options,
@@ -211,13 +211,13 @@ export class AIGNEContext implements Context {
     const newContext = this.newContext();
     const msg = createMessage(message);
 
-    return Promise.resolve(newContext.internal.call(agent, msg, newContext, options)).then(
+    return Promise.resolve(newContext.internal.invoke(agent, msg, newContext, options)).then(
       async (response) => {
         if (!options?.streaming) {
           const { __activeAgent__: activeAgent, ...output } =
             await agentResponseStreamToObject(response);
 
-          this.onCallSuccess(activeAgent, output, newContext);
+          this.onInvokeSuccess(activeAgent, output, newContext);
 
           if (options?.returnActiveAgent) {
             return [output, activeAgent];
@@ -231,7 +231,7 @@ export class AIGNEContext implements Context {
         const stream = onAgentResponseStreamEnd(
           asyncGeneratorToReadableStream(response),
           async ({ __activeAgent__: activeAgent, ...output }) => {
-            this.onCallSuccess(activeAgent, output, newContext);
+            this.onInvokeSuccess(activeAgent, output, newContext);
 
             activeAgentPromise.resolve(activeAgent);
           },
@@ -258,9 +258,9 @@ export class AIGNEContext implements Context {
         return stream;
       },
     );
-  }) as Context["call"];
+  }) as Context["invoke"];
 
-  private async onCallSuccess(activeAgent: Agent, output: Message, context: Context) {
+  private async onInvokeSuccess(activeAgent: Agent, output: Message, context: Context) {
     if (activeAgent instanceof Agent) {
       const publishTopics =
         typeof activeAgent.publishTopic === "function"
@@ -322,7 +322,7 @@ export class AIGNEContext implements Context {
 
 class AIGNEContextInternal {
   constructor(
-    private readonly parent?: Pick<Context, "model" | "tools" | "limits"> & {
+    private readonly parent?: Pick<Context, "model" | "skills" | "limits"> & {
       messageQueue?: MessageQueue;
     },
   ) {
@@ -337,8 +337,8 @@ class AIGNEContextInternal {
     return this.parent?.model;
   }
 
-  get tools() {
-    return this.parent?.tools;
+  get skills() {
+    return this.parent?.skills;
   }
 
   get limits() {
@@ -366,24 +366,24 @@ class AIGNEContextInternal {
     return this.abortController.signal.aborted ? "timeout" : "normal";
   }
 
-  call<I extends Message, O extends Message>(
+  invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
     input: I,
     context: Context,
-    options?: CallOptions,
+    options?: InvokeOptions,
   ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
     this.initTimeout();
 
     return withAbortSignal(this.abortController.signal, new Error("AIGNEContext is timeout"), () =>
-      this.callAgent(agent, input, context, options),
+      this.invokeAgent(agent, input, context, options),
     );
   }
 
-  private async *callAgent<I extends Message, O extends Message>(
+  private async *invokeAgent<I extends Message, O extends Message>(
     agent: Agent<I, O>,
     input: I,
     context: Context,
-    options?: CallOptions,
+    options?: InvokeOptions,
   ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
     let activeAgent: Agent = agent;
     let output: O | undefined;
@@ -391,7 +391,7 @@ class AIGNEContextInternal {
     for (;;) {
       const result: Message = {};
 
-      const stream = await activeAgent.call(input, context, { streaming: true });
+      const stream = await activeAgent.invoke(input, context, { streaming: true });
       for await (const value of readableStreamToAsyncIterator(stream)) {
         if (value.delta.text) {
           yield { delta: { text: value.delta.text } as Message };
@@ -453,7 +453,7 @@ async function* withAbortSignal<T extends Message>(
   }
 }
 
-const aigneContextCallArgsSchema = z.object({
+const aigneContextInvokeArgsSchema = z.object({
   agent: z.union([z.function() as ZodType<FunctionAgentFn>, z.instanceof(Agent)]),
   message: z.union([z.record(z.unknown()), z.string()]).optional(),
   options: z.object({ returnActiveAgent: z.boolean().optional() }).optional(),

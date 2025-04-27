@@ -17,11 +17,11 @@ constructor(options?: AIGNEOptions)
 #### Parameters
 
 - `model`: `ChatModel` - Default Chat model instance
-- `tools`: `Agent[]` - List of globally available tools
+- `skills`: `Agent[]` - List of globally available skills
 - `agents`: `Agent[]` - List of Agents to add at initialization
 - `limits`: `ContextLimits` - Context limits configuration
   - `maxTokens`: `number` - Maximum number of tokens allowed to be processed
-  - `maxAgentCalls`: `number` - Maximum number of agent calls allowed
+  - `maxAgentInvokes`: `number` - Maximum number of agent invocations allowed
   - `timeout`: `number` - Execution timeout in milliseconds
 
 ### Methods
@@ -86,51 +86,51 @@ unsubscribe(topic: string, listener: (message: AgentOutput) => void)
 - `topic`: `string` - Topic to unsubscribe from
 - `listener`: `(message: AgentOutput) => void` - Previously registered callback function
 
-#### `call`
+#### `invoke`
 
-Calls an agent with a message and returns the output. This method has multiple overloads, each with a different purpose.
+Invokes an agent with a message and returns the output. This method has multiple overloads, each with a different purpose.
 
 ```typescript
-// Create a user agent to consistently call an agent
+// Create a user agent to consistently invoke an agent
 // Returns a UserAgent instance for continuous interaction with the AIGNE
 // Suitable for scenarios requiring multi-turn dialogue or continuous interaction
-call<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
+invoke<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
 
-// Call an agent with a message
-// Calls the specified agent with the provided message
+// Invoke an agent with a message
+// Invokes the specified agent with the provided message
 // Returns the output of the agent
 // Suitable for scenarios where a single interaction is needed
-call<I extends Message, O extends Message>(
+invoke<I extends Message, O extends Message>(
   agent: Agent<I, O>,
   message: I | string,
   options?: { streaming?: false }
 ): Promise<O>;
 
-// Call an agent with a message and return a stream of response chunks
-// Calls the specified agent with the provided message
+// Invoke an agent with a message and return a stream of response chunks
+// Invokes the specified agent with the provided message
 // Returns a stream of response chunks as they become available
 // Suitable for real-time processing or displaying incremental results
-call<I extends Message, O extends Message>(
+invoke<I extends Message, O extends Message>(
   agent: Agent<I, O>,
   message: I | string,
   options: { streaming: true }
 ): Promise<AgentResponseStream<O>>;
 
-// Call an agent with a message and return the output and the active agent
-// Calls the specified agent with the provided message
+// Invoke an agent with a message and return the output and the active agent
+// Invokes the specified agent with the provided message
 // Returns the output of the agent and the final active agent
 // Suitable for scenarios where the active agent needs to be tracked
-call<I extends Message, O extends Message>(
+invoke<I extends Message, O extends Message>(
   agent: Agent<I, O>,
   message: I | string,
   options: { returnActiveAgent: true; streaming?: false },
 ): Promise<[O, Agent]>;
 
-// Call an agent with a message and return a stream of response chunks and the active agent promise
-// Calls the specified agent with the provided message
+// Invoke an agent with a message and return a stream of response chunks and the active agent promise
+// Invokes the specified agent with the provided message
 // Returns a stream of response chunks and a promise that resolves to the final active agent
 // Suitable for real-time processing while tracking the active agent
-call<I extends Message, O extends Message>(
+invoke<I extends Message, O extends Message>(
   agent: Agent<I, O>,
   message: I | string,
   options: { returnActiveAgent: true; streaming: true },
@@ -139,9 +139,9 @@ call<I extends Message, O extends Message>(
 
 ##### Parameters
 
-- `agent`: `Agent<I, O>` - Agent to call
+- `agent`: `Agent<I, O>` - Agent to invoke
 - `message`: `I | string` - Message to pass to the agent
-- `options`: `{ returnActiveAgent?: boolean }` - Options for the call
+- `options`: `{ returnActiveAgent?: boolean }` - Options for the invocation
 
 ##### Returns
 
@@ -226,8 +226,8 @@ const agent = AIAgent.from({
   instructions: "..."
 })
 
-// Call with streaming enabled
-const stream = await aigne.call(agent, "Hello, tell me about streaming", { streaming: true });
+// Invoke with streaming enabled
+const stream = await aigne.invoke(agent, "Hello, tell me about streaming", { streaming: true });
 
 const reader = stream.getReader();
 const result = {};
@@ -243,7 +243,7 @@ while (true) {
 console.log("Final result:", result);
 
 // Get both stream and active agent (for more complex workflows)
-const [agentStream, activeAgentPromise] = await aigne.call(
+const [agentStream, activeAgentPromise] = await aigne.invoke(
   assistant,
   "Hello, please recommend some books",
   { streaming: true, returnActiveAgent: true }
@@ -276,18 +276,18 @@ const assistant = AIAgent.from({
 // Create AIGNE
 const aigne = new AIGNE({ model });
 
-// Method 1: Call directly and get results
-const result = await aigne.call(assistant, "Hello, please tell me today's date");
+// Method 1: Invoke directly and get results
+const result = await aigne.invoke(assistant, "Hello, please tell me today's date");
 console.log(result);
 
 // Method 2: Create interactive session
-const userAgent = aigne.call(assistant);
+const userAgent = aigne.invoke(assistant);
 
 // Send messages and get replies
-const response1 = await userAgent.call("Hello!");
+const response1 = await userAgent.invoke("Hello!");
 console.log(response1);
 
-const response2 = await userAgent.call("Can you help me write a poem?");
+const response2 = await userAgent.invoke("Can you help me write a poem?");
 console.log(response2);
 
 // Shut down the AIGNE
@@ -331,7 +331,7 @@ const summarizer = AIAgent.from({
 const aigne = new AIGNE({ model });
 
 // Execute Agents sequentially
-const result = await aigne.call(
+const result = await aigne.invoke(
   sequential(dataPrep, analyzer, summarizer),
   { data: [10, 20, 30, 40, 50] }
 );
@@ -369,7 +369,7 @@ const storyteller = AIAgent.from({
 const aigne = new AIGNE({ model });
 
 // Execute Agents in parallel
-const result = await aigne.call(
+const result = await aigne.invoke(
   parallel(poet, storyteller),
   { topic: "Moon" }
 );
@@ -394,7 +394,7 @@ const weatherAgent = FunctionAgent.from({
   subscribeTopic: "weather.request",
   publishTopic: "weather.response",
   fn: async (input) => {
-    // In a real application, this would call a weather API
+    // In a real application, this would invoke a weather API
     return {
       city: input.city,
       temperature: 24,

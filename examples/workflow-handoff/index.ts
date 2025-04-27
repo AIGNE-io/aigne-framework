@@ -97,7 +97,7 @@ Follow the following routine with the user:
 4. Only after everything, and if the user says yes,
 tell them a crazy caveat and execute their order.
 `,
-  tools: [transfer_back_to_triage, execute_order_tool],
+  skills: [transfer_back_to_triage, execute_order_tool],
   outputKey: "sales",
   memory: true,
 });
@@ -114,7 +114,7 @@ Follow the following routine with the user:
 3. ONLY if not satisfied, offer a refund.
 4. If accepted, search for the ID and then execute refund.
 `,
-  tools: [transfer_back_to_triage, execute_refund_tool, look_up_item_tool],
+  skills: [transfer_back_to_triage, execute_refund_tool, look_up_item_tool],
   outputKey: "issuesAndRepairs",
   memory: true,
 });
@@ -127,7 +127,7 @@ You are a human manager for ACME Inc.
 Just chat with the user and help them with their problem.
 Only transfer to another agent if user explicitly asks for it.
 `,
-  tools: [transfer_back_to_triage, transfer_to_sales_agent, transfer_to_issues_and_repairs],
+  skills: [transfer_back_to_triage, transfer_to_sales_agent, transfer_to_issues_and_repairs],
   outputKey: "human",
   memory: true,
 });
@@ -140,14 +140,14 @@ Introduce yourself. Always be very brief.
 Gather information to direct the customer to the right department.
 But make your questions subtle and natural.
 `,
-  tools: [transfer_to_issues_and_repairs, transfer_to_sales_agent, transfer_to_human_manager],
+  skills: [transfer_to_issues_and_repairs, transfer_to_sales_agent, transfer_to_human_manager],
   outputKey: "triage",
   memory: true,
 });
 
 const aigne = new AIGNE({ model });
 
-const userAgent = aigne.call(triage);
+const userAgent = aigne.invoke(triage);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a customer service bot for ACME Inc. How can I help you today?`,

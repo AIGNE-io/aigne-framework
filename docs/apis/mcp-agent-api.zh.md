@@ -13,7 +13,7 @@ MCP Agent 是为了与符合 Model Context Protocol (MCP) 的服务器进行交�
 - `client`: `Client` - MCP 客户端实例，用于与 MCP 服务器通信
 - `prompts`: `MCPPrompt[]` - MCP 服务器提供的提示模板列表
 - `resources`: `MCPResource[]` - MCP 服务器提供的资源列表
-- `isCallable`: `boolean` - 始终为 false，因为 MCPAgent 本身不可直接调用
+- `isInvokable`: `boolean` - 始终为 false，因为 MCPAgent 本身不可直接调用
 
 ### 构造函数
 
@@ -205,7 +205,7 @@ const puppeteerMCPAgent = await MCPAgent.from({
 // 创建执行引擎，并添加 Puppeteer MCP Agent 作为工具
 const aigne = new AIGNE({
   model,
-  tools: [puppeteerMCPAgent]
+  skills: [puppeteerMCPAgent]
 });
 
 // 创建 AI Agent，添加提取网站内容的指令
@@ -218,7 +218,7 @@ const agent = AIAgent.from({
 });
 
 // 运行 Agent 提取指定网站的内容
-const result = await aigne.call(
+const result = await aigne.invoke(
   agent,
   "extract content from https://www.arcblock.io"
 );
@@ -247,12 +247,12 @@ const sqliteMCPAgent = await MCPAgent.from({
 });
 
 // 获取可用工具列表
-console.log("可用工具:", sqliteMCPAgent.tools.map(tool => tool.name));
+console.log("可用工具:", sqliteMCPAgent.skills.map(skill => skill.name));
 
 // 使用查询工具
-const queryTool = sqliteMCPAgent.tools.query;
-if (queryTool) {
-  const result = await queryTool.call({
+const querySkill = sqliteMCPAgent.skills.query;
+if (querySkill) {
+  const result = await querySkill.invoke({
     query: "SELECT * FROM users LIMIT 5"
   });
   console.log("查询结果:", result);

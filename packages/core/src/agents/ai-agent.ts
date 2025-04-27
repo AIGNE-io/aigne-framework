@@ -87,7 +87,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
   toolChoice?: AIAgentToolChoice;
 
   async *process(input: I, context: Context): AgentProcessAsyncGenerator<O> {
-    const model = context.model ?? this.model;
+    const model = this.model ?? context.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
     const { toolAgents, ...modelInput } = await this.instructions.build({

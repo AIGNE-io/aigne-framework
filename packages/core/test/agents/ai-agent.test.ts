@@ -1,6 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, MESSAGE_KEY, type Message, createMessage } from "@aigne/core";
+import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import {
   readableStreamToArray,
@@ -135,3 +136,23 @@ test.each([true, false])(
     );
   },
 );
+
+test("AIAgent should use self model first and then use model from context", async () => {
+  const openaiModel = new OpenAIChatModel();
+  const engine = new AIGNE({ model: openaiModel });
+
+  const claudeModel = new ClaudeChatModel();
+  const agent = AIAgent.from({
+    model: claudeModel,
+  });
+
+  spyOn(openaiModel, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Answer from openai model")),
+  );
+  spyOn(claudeModel, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Answer from claude model")),
+  );
+
+  const result = await engine.call(agent, "Hello");
+  expect(result).toEqual(createMessage("Answer from claude model"));
+});

@@ -97,6 +97,7 @@ const response = await userAgent.call("transfer to agent b");
   - [Function Agent API](./docs/apis/function-agent-api.md) ([English](./docs/apis/function-agent-api.md) | [中文](./docs/apis/function-agent-api.zh.md))
   - [MCP Agent API](./docs/apis/mcp-agent-api.md) ([English](./docs/apis/mcp-agent-api.md) | [中文](./docs/apis/mcp-agent-api.zh.md))
   - [AIGNE API](./docs/apis/aigne-api.md) ([English](./docs/apis/aigne-api.md) | [中文](./docs/apis/aigne-api.zh.md))
+  - [Server/Client API](./docs/apis/server-client-api.md) ([English](./docs/apis/server-client-api.md) | [中文](./docs/apis/server-client-api.zh.md))
 
 ## Architecture
 

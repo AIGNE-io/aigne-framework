@@ -11,7 +11,7 @@ import { type PromiseOrValue, omitBy } from "./type-utils.js";
 
 export function objectToAgentResponseStream<T extends Message>(json: T): AgentResponseStream<T> {
   return new ReadableStream({
-    start(controller) {
+    pull(controller) {
       controller.enqueue({ delta: { json } });
       controller.close();
     },
@@ -70,20 +70,20 @@ export function asyncGeneratorToReadableStream<T extends Message>(
   generator: AgentProcessAsyncGenerator<T>,
 ): AgentResponseStream<T> {
   return new ReadableStream({
-    async start(controller) {
+    async pull(controller) {
       try {
-        for (;;) {
-          const chunk = await generator.next();
-          if (chunk.value) {
-            if (chunk.done) {
-              controller.enqueue({ delta: { json: chunk.value } });
-            } else {
-              controller.enqueue(chunk.value);
-            }
+        const chunk = await generator.next();
+        if (chunk.value) {
+          if (chunk.done) {
+            controller.enqueue({ delta: { json: chunk.value } });
+          } else {
+            controller.enqueue(chunk.value);
           }
-          if (chunk.done) break;
         }
-        controller.close();
+
+        if (chunk.done) {
+          controller.close();
+        }
       } catch (error) {
         controller.error(error);
       }
@@ -99,18 +99,21 @@ export function onAgentResponseStreamEnd<T extends Message>(
     processChunk?: (chunk: AgentResponseChunk<T>) => AgentResponseChunk<T>;
   },
 ) {
-  return new ReadableStream({
-    async start(controller) {
-      try {
-        const json: T = {} as T;
+  const json: T = {} as T;
+  const reader = stream.getReader();
 
-        for await (const value of readableStreamToAsyncIterator(stream)) {
+  return new ReadableStream({
+    async pull(controller) {
+      try {
+        const { value, done } = await reader.read();
+
+        if (!done) {
           const chunk = options?.processChunk ? options.processChunk(value) : value;
           if (!isEmptyChunk(chunk)) controller.enqueue(chunk);
 
           mergeAgentResponseChunk(json, value);
+          return;
         }
-
         const result = await callback(json);
 
         if (result && !equal(result, json)) {
@@ -118,10 +121,10 @@ export function onAgentResponseStreamEnd<T extends Message>(
           if (options?.processChunk) chunk = options.processChunk(chunk);
           controller.enqueue(chunk);
         }
+
+        controller.close();
       } catch (error) {
         controller.error(options?.errorCallback?.(error) ?? error);
-      } finally {
-        controller.close();
       }
     },
   });
@@ -145,28 +148,48 @@ export async function* arrayToAgentProcessAsyncGenerator<T extends Message>(
   if (result !== undefined) return result;
 }
 
-export function arrayToAgentResponseStream<T>(
-  chunks: (AgentResponseChunk<T> | Error)[],
-): AgentResponseStream<T> {
-  return new ReadableStream({
-    start(controller) {
-      for (const chunk of chunks) {
-        if (chunk instanceof Error) {
-          controller.error(chunk);
-          return;
-        }
+export function arrayToReadableStream<T>(chunks: (T | Error)[]): ReadableStream<T> {
+  const list = [...chunks];
 
-        controller.enqueue(chunk);
+  return new ReadableStream({
+    pull(controller) {
+      const item = list.shift();
+      if (!item) {
+        controller.close();
+        return;
       }
-      controller.close();
+
+      if (item instanceof Error) {
+        controller.error(item);
+        return;
+      }
+
+      controller.enqueue(item);
     },
   });
 }
 
-export async function readableStreamToArray<T>(stream: ReadableStream<T>): Promise<T[]> {
+export async function readableStreamToArray<T>(
+  stream: ReadableStream<T>,
+  options: { catchError: true },
+): Promise<(T | Error)[]>;
+export async function readableStreamToArray<T>(
+  stream: ReadableStream<T>,
+  options?: { catchError?: false },
+): Promise<T[]>;
+export async function readableStreamToArray<T>(
+  stream: ReadableStream<T>,
+  options?: { catchError?: boolean },
+): Promise<(T | Error)[]> {
   const result: T[] = [];
-  for await (const value of readableStreamToAsyncIterator(stream)) {
-    result.push(value);
+  try {
+    for await (const value of readableStreamToAsyncIterator(stream)) {
+      result.push(value);
+    }
+  } catch (error) {
+    if (!options?.catchError) throw error;
+
+    result.push(error);
   }
   return result;
 }
@@ -189,7 +212,7 @@ export function stringToAgentResponseStream(
   const segmenter = new Intl.Segmenter(undefined, { granularity: "word" });
   const segments = segmenter.segment(str);
 
-  return arrayToAgentResponseStream(
+  return arrayToReadableStream(
     Array.from(segments).map((segment) => ({ delta: { text: { [key]: segment.segment } } })),
   );
 }

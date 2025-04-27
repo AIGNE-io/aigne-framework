@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import {
   agentResponseStreamToObject,
   arrayToAgentProcessAsyncGenerator,
-  arrayToAgentResponseStream,
+  arrayToReadableStream,
   asyncGeneratorToReadableStream,
   mergeAgentResponseChunk,
   objectToAgentResponseStream,
@@ -60,7 +60,7 @@ test("agentResponseStreamToObject should process asyncGenerator correctly", asyn
 
 test("agentResponseStreamToObject should process readableStream correctly", async () => {
   const result = await agentResponseStreamToObject(
-    arrayToAgentResponseStream([
+    arrayToReadableStream([
       { delta: { text: { text: "hello" } } },
       { delta: { text: { text: "," } } },
       { delta: { text: { text: " world" } } },
@@ -82,18 +82,18 @@ test("asyncGeneratorToReadableStream should process readableStream correctly", a
 });
 
 test("arrayToAgentResponseStream should enqueue error", async () => {
-  const stream = arrayToAgentResponseStream([new Error("test error")]);
+  const stream = arrayToReadableStream([new Error("test error")]);
   const reader = stream.getReader();
   expect(reader.read()).rejects.toThrowError("test error");
 });
 
 test("arrayToAgentResponseStream should enqueue data", async () => {
-  const stream = arrayToAgentResponseStream([{ delta: { json: { text: "hello" } } }]);
+  const stream = arrayToReadableStream([{ delta: { json: { text: "hello" } } }]);
   expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });
 
 test("readableStreamToArray should collect chunks correctly", async () => {
-  const stream = arrayToAgentResponseStream([
+  const stream = arrayToReadableStream([
     { delta: { text: { text: "hello" } } },
     { delta: { text: { text: " world" } } },
   ]);

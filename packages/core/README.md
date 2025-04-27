@@ -83,6 +83,7 @@ For more detailed API documentation, please refer to:
 - [Function Agent API](../../docs/apis/function-agent-api.md)
 - [MCP Agent API](../../docs/apis/mcp-agent-api.md)
 - [Execution Engine API](../../docs/apis/execution-engine-api.md)
+- [Server/Client API](../../docs/apis/server-client-api.md)
 
 ## License
 

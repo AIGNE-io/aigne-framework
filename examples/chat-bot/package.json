@@ -24,5 +24,8 @@
   },
   "dependencies": {
     "@aigne/cli": "workspace:^"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^"
   }
 }

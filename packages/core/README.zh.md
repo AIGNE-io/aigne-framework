@@ -83,6 +83,7 @@ console.log(response);
 - [Function Agent API](../../docs/apis/function-agent-api.zh.md)
 - [MCP Agent API](../../docs/apis/mcp-agent-api.zh.md)
 - [Execution Engine API](../../docs/apis/execution-engine-api.zh.md)
+- [服务器/客户端 API](../../docs/apis/server-client-api.zh.md)
 
 ## 协议
 

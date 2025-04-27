@@ -1,0 +1,41 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EventStreamParser should enqueue an error for invalid json 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " world",
+      },
+    },
+  },
+  [Error: Parse response chunk json error: JSON Parse error: Unexpected identifier "invalid" invalid json string],
+]
+`;
+
+exports[`EventStreamParser should enqueue an error for error event 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " world",
+      },
+    },
+  },
+  [Error: test error],
+]
+`;

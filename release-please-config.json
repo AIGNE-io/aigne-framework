@@ -6,6 +6,7 @@
     "packages/agent-library": {},
     "packages/core": {},
     "packages/cli": {},
+    "packages/test-utils": {},
     "examples/mcp-github": {},
     "examples/mcp-puppeteer": {},
     "examples/mcp-sqlite": {},

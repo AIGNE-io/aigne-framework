@@ -297,7 +297,7 @@ await aigne.shutdown();
 ### Sequential Execution of Multiple Agents
 
 ```typescript
-import { AIGNE, AIAgent, FunctionAgent, sequential, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, FunctionAgent, TeamAgent, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -332,7 +332,10 @@ const aigne = new AIGNE({ model });
 
 // Execute Agents sequentially
 const result = await aigne.invoke(
-  sequential(dataPrep, analyzer, summarizer),
+  TeamAgent.from({
+    skills: [dataPrep, analyzer, summarizer],
+    mode: ProcessMode.sequential,
+  }),
   { data: [10, 20, 30, 40, 50] }
 );
 
@@ -342,7 +345,7 @@ console.log(result);
 ### Parallel Execution of Multiple Agents
 
 ```typescript
-import { AIGNE, AIAgent, parallel, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, TeamAgent, ProcessMode, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -370,7 +373,10 @@ const aigne = new AIGNE({ model });
 
 // Execute Agents in parallel
 const result = await aigne.invoke(
-  parallel(poet, storyteller),
+  TeamAgent.from({
+    skills: [poet, storyteller],
+    mode: ProcessMode.parallel,
+  }),
   { topic: "Moon" }
 );
 

@@ -235,7 +235,7 @@ console.log(result);
 **Example**:
 
 ```typescript
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent, ProcessMode } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Concept extractor Agent
@@ -285,7 +285,11 @@ Draft copy:
 
 // Execute three Agents in sequence
 const aigne = new AIGNE({ model });
-const result = await aigne.invoke(sequential(conceptExtractor, writer, formatProof),
+const result = await aigne.invoke(
+  TeamAgent.from({
+    skills: [conceptExtractor, writer, formatProof],
+    mode: ProcessMode.sequential,
+  }),
   { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
 
@@ -305,7 +309,7 @@ console.log(result);
 **Example**:
 
 ```typescript
-import { AIAgent, AIGNE, parallel } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent, ProcessMode } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Feature extraction Agent
@@ -331,7 +335,10 @@ Product description:
 // Execute two Agents in parallel
 const aigne = new AIGNE({ model });
 const result = await aigne.invoke(
-  parallel(featureExtractor, audienceAnalyzer),
+  TeamAgent.from({
+    skills: [featureExtractor, audienceAnalyzer],
+    mode: ProcessMode.parallel,
+  }),
   { product: "AIGNE is a No-code Generative AI Apps Engine" }
 );
 

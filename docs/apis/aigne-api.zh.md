@@ -296,7 +296,7 @@ await aigne.shutdown();
 ### 顺序执行多个 Agent
 
 ```typescript
-import { AIGNE, AIAgent, FunctionAgent, sequential, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, FunctionAgent, TeamAgent, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -331,7 +331,10 @@ const aigne = new AIGNE({ model });
 
 // 顺序执行 Agent
 const result = await aigne.invoke(
-  sequential(dataPrep, analyzer, summarizer),
+  TeamAgent.from({
+    skills: [dataPrep, analyzer, summarizer],
+    mode: ProcessMode.sequential
+  }),
   { data: [10, 20, 30, 40, 50] }
 );
 
@@ -341,7 +344,7 @@ console.log(result);
 ### 并行执行多个 Agent
 
 ```typescript
-import { AIGNE, AIAgent, parallel, OpenAIChatModel } from "@aigne/core";
+import { AIGNE, AIAgent, TeamAgent, ProcessMode, OpenAIChatModel } from "@aigne/core";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
@@ -369,7 +372,10 @@ const aigne = new AIGNE({ model });
 
 // 并行执行 Agent
 const result = await aigne.invoke(
-  parallel(poet, storyteller),
+  TeamAgent.from({
+    skills: [poet, storyteller],
+    mode: ProcessMode.parallel,
+  }),
   { topic: "月亮" }
 );
 

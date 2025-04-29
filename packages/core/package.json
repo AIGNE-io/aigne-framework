@@ -61,6 +61,12 @@
       ],
       "utils/*": [
         "./lib/dts/utils/*"
+      ],
+      "client/*": [
+        "./lib/dts/client/*"
+      ],
+      "server/*": [
+        "./lib/dts/server/*"
       ]
     }
   },

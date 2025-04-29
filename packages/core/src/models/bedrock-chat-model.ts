@@ -135,7 +135,7 @@ export class BedrockChatModel extends ChatModel {
             if (chunk.contentBlockStart?.start?.toolUse) {
               const toolUse = chunk.contentBlockStart.start.toolUse;
               if (!toolUse.name) throw new Error("Tool use is invalid");
-              if (!chunk.contentBlockStart.contentBlockIndex)
+              if (chunk.contentBlockStart.contentBlockIndex === undefined)
                 throw new Error("Tool use content block index is required");
 
               toolCalls[chunk.contentBlockStart.contentBlockIndex] = {
@@ -159,7 +159,8 @@ export class BedrockChatModel extends ChatModel {
               }
 
               if (delta?.toolUse) {
-                if (!block.contentBlockIndex) throw new Error("Content block index is required");
+                if (block.contentBlockIndex === undefined)
+                  throw new Error("Content block index is required");
                 const call = toolCalls[block.contentBlockIndex];
                 if (!call) throw new Error("Tool call not found");
                 call.args += delta.toolUse.input;
@@ -225,14 +226,23 @@ const getRunMessages = ({
     } else if (msg.role === "tool") {
       if (!msg.toolCallId) throw new Error("Tool message must have toolCallId");
       if (typeof msg.content !== "string") throw new Error("Tool message must have string content");
-      messages.push({
-        role: "user",
-        content: [
-          {
-            toolResult: { toolUseId: msg.toolCallId, content: [{ json: parseJSON(msg.content) }] },
-          },
-        ],
-      });
+      if (messages.at(-1)?.role === "user") {
+        messages.at(-1)?.content?.push({
+          toolResult: { toolUseId: msg.toolCallId, content: [{ json: parseJSON(msg.content) }] },
+        });
+      } else {
+        messages.push({
+          role: "user",
+          content: [
+            {
+              toolResult: {
+                toolUseId: msg.toolCallId,
+                content: [{ json: parseJSON(msg.content) }],
+              },
+            },
+          ],
+        });
+      }
     } else if (msg.role === "user") {
       if (!msg.content) throw new Error("User message must have content");
 
@@ -252,12 +262,16 @@ const getRunMessages = ({
               }) as ContentBlock.ToolUseMember,
           ),
         });
+      } else if (msg.content) {
+        messages.push({ role: "assistant", content: convertContent(msg.content) });
+      } else {
+        throw new Error("Agent message must have content or toolCalls");
       }
-    } else if (msg.content) {
-      messages.push({ role: "assistant", content: convertContent(msg.content) });
-    } else {
-      throw new Error("Agent message must have content or toolCalls");
     }
+  }
+
+  if (messages.at(0)?.role !== "user") {
+    messages.unshift({ role: "user", content: [{ text: "." }] });
   }
 
   if (responseFormat?.type === "json_schema") {
@@ -297,11 +311,15 @@ function convertTools({ tools, toolChoice }: ChatModelInput): ConverseStreamRequ
 
   return {
     tools: tools.map((i) => {
+      const parameters = i.function.parameters as Record<string, unknown>;
+      if (Object.keys(parameters).length === 0) {
+        parameters.type = "object";
+      }
       return {
         toolSpec: {
           name: i.function.name,
           description: i.function.description,
-          inputSchema: { json: i.function.parameters },
+          inputSchema: { json: parameters },
         },
       } as Tool;
     }),

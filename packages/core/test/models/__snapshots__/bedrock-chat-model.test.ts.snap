@@ -13,6 +13,32 @@ exports[`BedrockChatModel.invoke 1 1`] = `
 }
 `;
 
+exports[`BedrockChatModel.invoke 2 1`] = `
+{
+  "model": "us.amazon.nova-lite-v1:0",
+  "text": 
+"<thinking>The User has asked for the current weather in New York. I need to use the 'get_weather' tool to get this information. I will call the tool with the required 'city' parameter.</thinking>
+"
+,
+  "toolCalls": [
+    {
+      "function": {
+        "arguments": {
+          "city": "New York",
+        },
+        "name": "get_weather",
+      },
+      "id": "tooluse_yPoXvCWrSCScmmoH4UCWOA",
+      "type": "function",
+    },
+  ],
+  "usage": {
+    "inputTokens": 392,
+    "outputTokens": 80,
+  },
+}
+`;
+
 exports[`BedrockChatModel.invoke with streaming 1`] = `
 [
   {
@@ -46,14 +72,7 @@ exports[`BedrockChatModel.invoke with streaming 1`] = `
   {
     "delta": {
       "text": {
-        "text": " any questions or need",
-      },
-    },
-  },
-  {
-    "delta": {
-      "text": {
-        "text": " information",
+        "text": " any questions or need information",
       },
     },
   },

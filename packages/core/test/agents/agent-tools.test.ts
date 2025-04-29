@@ -4,20 +4,21 @@ import { FunctionAgent } from "@aigne/core";
 test("Agent.skills", async () => {
   const greeting = FunctionAgent.from({
     name: "greeting",
-    fn: ({ name }: { name: string }) => ({
+    process: ({ name }: { name: string }) => ({
       greeting: `Hello, ${name}!`,
     }),
   });
 
   const bye = FunctionAgent.from({
     name: "bye",
-    fn: ({ name }: { name: string }) => ({
+    process: ({ name }: { name: string }) => ({
       greeting: `Bye, ${name}!`,
     }),
   });
 
   const agent = FunctionAgent.from({
     skills: [greeting, bye],
+    process: () => ({}),
   });
 
   expect(await agent.skills.greeting?.invoke({ name: "Alice" })).toEqual({

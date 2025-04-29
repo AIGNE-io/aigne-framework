@@ -1,12 +1,13 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, type AgentInvokeOptions, ChatModel, type Message } from "@aigne/core";
-import { AIGNEClient } from "@aigne/core/client/client.js";
+import { AIGNEClient } from "@aigne/core/client/index.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { AIGNEServer } from "@aigne/core/server/server";
+import { AIGNEServer } from "@aigne/core/server/index.js";
 import {
   arrayToReadableStream,
   readableStreamToArray,
+  readableStreamToAsyncIterator,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils";
 import { serve } from "bun";
@@ -14,6 +15,59 @@ import compression from "compression";
 import { detect } from "detect-port";
 import express from "express";
 import { Hono } from "hono";
+
+test("AIGNEClient example simple", async () => {
+  const { url, aigne, close } = await createHonoServer();
+
+  assert(aigne.model instanceof ChatModel);
+
+  spyOn(aigne.model, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Hello world!")),
+  );
+
+  // #region example-aigne-client-simple
+
+  const client = new AIGNEClient({ url });
+
+  const response = await client.invoke("chat", { $message: "hello" });
+
+  console.log(response); // Output: {$message: "Hello world!"}
+
+  expect(response).toEqual({ $message: "Hello world!" });
+
+  // #endregion example-aigne-client-simple
+
+  await close();
+});
+
+test("AIGNEClient example with streaming", async () => {
+  const { url, aigne, close } = await createHonoServer();
+
+  assert(aigne.model instanceof ChatModel);
+
+  spyOn(aigne.model, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Hello world!")),
+  );
+
+  // #region example-aigne-client-streaming
+
+  const client = new AIGNEClient({ url });
+
+  const stream = await client.invoke("chat", { $message: "hello" }, { streaming: true });
+
+  let text = "";
+  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+    if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+  }
+
+  console.log(text); // Output: "Hello world!"
+
+  expect(text).toEqual("Hello world!");
+
+  // #endregion example-aigne-client-streaming
+
+  await close();
+});
 
 interface Server {
   url: string;

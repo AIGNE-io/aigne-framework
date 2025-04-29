@@ -6,8 +6,6 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/core)](https://www.npmjs.com/package/@aigne/core)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
-**English** | [中文](README.zh.md)
-
 Core library of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) for building AI-powered applications.
 
 ## Introduction
@@ -67,23 +65,13 @@ console.log(response);
 
 ## Module Structure
 
-- `agents/`: Agent implementations, including AI agents, function agents, MCP agents, etc.
-- `aigne/`: AIGNE is agents execution environment
-- `loader/`: Loader-related functionality
+- `aigne/`: AIGNE is the core of the framework, providing the environment for agent execution
+- `agents/`: Agent implementations, including AIAgent, FunctionAgent, MCPAgent, TeamAgent, etc.
 - `models/`: Integration with various AI models
 - `prompt/`: Prompt handling functionality
+- `server/`: Server-side components for handling requests and responses
+- `client/`: Client-side components for interacting with the AIGNE framework
 - `utils/`: Utility functions and helper methods
-
-## Documentation
-
-For more detailed API documentation, please refer to:
-
-- [Agent API](../../docs/apis/agent-api.md)
-- [AI Agent API](../../docs/apis/ai-agent-api.md)
-- [Function Agent API](../../docs/apis/function-agent-api.md)
-- [MCP Agent API](../../docs/apis/mcp-agent-api.md)
-- [AIGNE API](../../docs/apis/aigne-api.md)
-- [Server/Client API](../../docs/apis/server-client-api.md)
 
 ## License
 

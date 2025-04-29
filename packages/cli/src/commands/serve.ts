@@ -39,7 +39,7 @@ export function createServeCommand(): Command {
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
       const port = options.port || DEFAULT_PORT();
 
-      const aigne = await AIGNE.load({ path: absolutePath });
+      const aigne = await AIGNE.load(absolutePath);
 
       if (options.mcp)
         await serveMCPServer({

@@ -11,9 +11,7 @@ import { nanoid } from "nanoid";
 import { mockModule } from "../_mocks/mock-module.js";
 
 test("AIGNE.load should load agents correctly", async () => {
-  const aigne = await AIGNE.load({
-    path: join(import.meta.dirname, "../../test-agents"),
-  });
+  const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"));
 
   expect(aigne).toEqual(
     expect.objectContaining({
@@ -61,8 +59,7 @@ test("loader should use override options", async () => {
   const testAgent = AIAgent.from({ name: "test-agent" });
   const testSkill = AIAgent.from({ name: "test-skill" });
 
-  const aigne = await AIGNE.load({
-    path: join(import.meta.dirname, "../../test-agents"),
+  const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
     model,
     agents: [testAgent],
     skills: [testSkill],

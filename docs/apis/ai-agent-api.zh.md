@@ -159,7 +159,7 @@ const weatherTool = FunctionAgent.from({
   inputSchema: z.object({
     city: z.string().describe("城市名称")
   }),
-  fn: async (input) => {
+  process: async (input) => {
     // 在实际应用中，这里会调用天气 API
     return {
       temperature: 24,

@@ -51,7 +51,6 @@ test("runChatLoopInTerminal should trigger initial call", async () => {
   expect(agentProcess).toHaveBeenCalledWith(
     createMessage("hello, this is a test message"),
     expect.anything(),
-    expect.anything(),
   );
 });
 
@@ -81,7 +80,6 @@ test("runChatLoopInTerminal should invoke agent correctly", async () => {
   expect(agentProcess).toHaveBeenCalledWith(
     createMessage("hello, this is a test message"),
     expect.anything(),
-    expect.anything(),
   );
 });
 
@@ -104,7 +102,6 @@ test("runChatLoopInTerminal should skip loop If initialCall is provided and skip
   expect(agentProcess).toHaveBeenCalledTimes(1);
   expect(agentProcess).toHaveBeenCalledWith(
     createMessage("hello, this is a test message"),
-    expect.anything(),
     expect.anything(),
   );
 });

@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-node@v4
         if: ${{ steps.release.outputs.release_created }}
         with:
-          node-version: 22
+          node-version: 23
           cache: pnpm
 
       - name: Setup bun
@@ -43,8 +43,10 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Build
-        run: pnpm build
         if: ${{ steps.release.outputs.release_created }}
+        run: |
+          pnpm build
+          pnpm build:docs
 
       - name: Lint
         run: pnpm lint
@@ -64,3 +66,10 @@ jobs:
         run: |
           npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
           pnpm -F "@aigne/*" publish --access public --no-git-checks
+
+      - name: Deploy to GitHub Pages
+        if: ${{ steps.release.outputs.release_created }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./packages/core/docs

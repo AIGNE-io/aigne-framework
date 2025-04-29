@@ -8,8 +8,18 @@ import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
 import { checkArguments, isRecord, tryOrThrow } from "../utils/type-utils.js";
 import { ServerError } from "./error.js";
 
+/**
+ * Default maximum allowed size for request bodies when parsing raw HTTP requests.
+ * This limits the amount of data that can be uploaded to protect against denial of service attacks.
+ * Can be overridden via AIGNEServerOptions.
+ * @internal
+ */
 const DEFAULT_MAXIMUM_BODY_SIZE = "4mb";
 
+/**
+ * Schema for validating agent invocation payloads.
+ * Defines the expected structure for requests to invoke an agent.
+ */
 export const invokePayloadSchema = z.object({
   agent: z.string(),
   input: z.record(z.string(), z.unknown()),
@@ -20,31 +30,80 @@ export const invokePayloadSchema = z.object({
     .nullish(),
 });
 
+/**
+ * Configuration options for the AIGNEServer.
+ * These options control various aspects of server behavior including
+ * request parsing, payload limits, and response handling.
+ */
 export interface AIGNEServerOptions {
   /**
-   * Maximum body size for the request.
-   * Only used when the request is a Node.js IncomingMessage and no `body` property is present.
+   * Maximum body size for incoming HTTP requests.
+   * This controls the upper limit of request payload size when parsing raw HTTP requests.
+   * Only used when working with Node.js IncomingMessage objects that don't already have
+   * a pre-parsed body property (e.g., when not using Express middleware).
+   *
    * @default "4mb"
    */
   maximumBodySize?: string;
 }
 
+/**
+ * AIGNEServer provides HTTP API access to AIGNE capabilities.
+ * It handles requests to invoke agents, manages response streaming,
+ * and supports multiple HTTP server frameworks including Node.js http,
+ * Express, and Fetch API compatible environments.
+ *
+ * @example
+ * Here's a simple example of how to use AIGNEServer with express:
+ * {@includeCode ../../test/server/server.test.ts#example-aigne-server-express}
+ *
+ * @example
+ * Here's an example of how to use AIGNEServer with Hono:
+ * {@includeCode ../../test/server/server.test.ts#example-aigne-server-hono}
+ */
 export class AIGNEServer {
+  /**
+   * Creates a new AIGNEServer instance.
+   *
+   * @param engine - The AIGNE engine instance that will process agent invocations
+   * @param options - Configuration options for the server
+   */
   constructor(
     public engine: AIGNE,
     public options?: AIGNEServerOptions,
   ) {}
 
   /**
-   * Invoke the agent with the given input.
-   * @param request - The request object, which can be a parsed JSON object, a Fetch API Request object, or a Node.js IncomingMessage object.
-   * @returns The web standard response, you can return it directly in supported frameworks like hono.
+   * Invokes an agent with the provided input and returns a standard web Response.
+   * This method serves as the primary API endpoint for agent invocation.
+   *
+   * The request can be provided in various formats to support different integration scenarios:
+   * - As a pre-parsed JavaScript object
+   * - As a Fetch API Request instance (for modern web frameworks)
+   * - As a Node.js IncomingMessage (for Express, Fastify, etc.)
+   *
+   * @param request - The agent invocation request in any supported format
+   * @returns A web standard Response object that can be returned directly in frameworks
+   *          like Hono, Next.js, or any Fetch API compatible environment
+   *
+   * @example
+   * Here's a simple example of how to use AIGNEServer with Hono:
+   * {@includeCode ../../test/server/server.test.ts#example-aigne-server-hono}
    */
   async invoke(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response>;
   /**
-   * Invoke the agent with the given input, and write the SSE response to the Node.js ServerResponse.
-   * @param request - The request object, which can be a parsed JSON object, a Fetch API Request object, or a Node.js IncomingMessage object.
-   * @param response - The Node.js ServerResponse object to write the SSE response to.
+   * Invokes an agent with the provided input and streams the response to a Node.js ServerResponse.
+   * This overload is specifically designed for Node.js HTTP server environments.
+   *
+   * The method handles both regular JSON responses and streaming Server-Sent Events (SSE)
+   * responses based on the options specified in the request.
+   *
+   * @param request - The agent invocation request in any supported format
+   * @param response - The Node.js ServerResponse object to write the response to
+   *
+   * @example
+   * Here's a simple example of how to use AIGNEServer with express:
+   * {@includeCode ../../test/server/server.test.ts#example-aigne-server-express}
    */
   async invoke(
     request: Record<string, unknown> | Request | IncomingMessage,
@@ -64,6 +123,15 @@ export class AIGNEServer {
     return result;
   }
 
+  /**
+   * Internal method that handles the core logic of processing an agent invocation request.
+   * Validates the request payload, finds the requested agent, and processes the invocation
+   * with either streaming or non-streaming response handling.
+   *
+   * @param request - The parsed or raw request to process
+   * @returns A standard Response object with the invocation result
+   * @private
+   */
   async _invoke(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response> {
     const { engine } = this;
 
@@ -106,6 +174,15 @@ export class AIGNEServer {
     }
   }
 
+  /**
+   * Prepares and normalizes the input from various request types.
+   * Handles different request formats (Node.js IncomingMessage, Fetch API Request,
+   * or already parsed object) and extracts the JSON payload.
+   *
+   * @param request - The request object in any supported format
+   * @returns The normalized payload as a JavaScript object
+   * @private
+   */
   async _prepareInput(
     request: Record<string, unknown> | Request | IncomingMessage,
   ): Promise<Record<string, unknown>> {
@@ -154,6 +231,14 @@ export class AIGNEServer {
     return request;
   }
 
+  /**
+   * Writes a web standard Response object to a Node.js ServerResponse.
+   * Handles streaming responses and error conditions appropriately.
+   *
+   * @param response - The web standard Response object to write
+   * @param res - The Node.js ServerResponse to write to
+   * @private
+   */
   async _writeResponse(response: Response, res: ServerResponse): Promise<void> {
     try {
       res.writeHead(response.status, response.headers.toJSON());

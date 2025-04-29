@@ -11,31 +11,125 @@ import {
 } from "@aigne/core";
 import { TeamAgent } from "@aigne/core/agents/team-agent.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import {
+  readableStreamToAsyncIterator,
+  stringToAgentResponseStream,
+} from "@aigne/core/utils/stream-utils.js";
 import { mockOpenAIStreaming } from "../_mocks/mock-openai-streaming.js";
 
-test("AIGNE.invoke", async () => {
-  const plus = FunctionAgent.from(({ a, b }: { a: number; b: number }) => ({
-    sum: a + b,
-  }));
+test("AIGNE simple example", async () => {
+  // #region example-simple
+  const model = new OpenAIChatModel();
 
-  const aigne = new AIGNE();
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Hello, How can I assist you today?")),
+  );
 
-  const result = await aigne.invoke(plus, { a: 1, b: 2 });
+  const aigne = new AIGNE({
+    model,
+  });
 
-  expect(result).toEqual({ sum: 3 });
+  const agent = AIAgent.from({
+    name: "chat",
+    description: "A chat agent",
+  });
+
+  const result = await aigne.invoke(agent, "hello");
+  console.log(result); // { $message: "Hello, How can I assist you today?" }
+
+  expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
+  // #endregion example-simple
+});
+
+test("AIGNE example with streaming response", async () => {
+  // #region example-streaming
+  const model = new OpenAIChatModel();
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Hello, How can I assist you today?")),
+  );
+
+  const aigne = new AIGNE({
+    model,
+  });
+
+  const agent = AIAgent.from({
+    name: "chat",
+    description: "A chat agent",
+  });
+
+  let text = "";
+
+  const stream = await aigne.invoke(agent, "hello", { streaming: true });
+  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+    if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+  }
+  console.log(text);
+  // Output: Hello, How can I assist you today?
+
+  expect(text).toEqual("Hello, How can I assist you today?");
+
+  // #endregion example-streaming
+});
+
+test("AIGNE example shutdown", async () => {
+  // #region example-shutdown
+  const model = new OpenAIChatModel();
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Hello, How can I assist you today?")),
+  );
+
+  const aigne = new AIGNE({
+    model,
+  });
+
+  const agent = AIAgent.from({
+    name: "chat",
+    description: "A chat agent",
+  });
+
+  await aigne.invoke(agent, "hello");
+
+  await aigne.shutdown();
+  // #endregion example-shutdown
+});
+
+test("AIGNE example shutdown by `using` statement", async () => {
+  // #region example-shutdown-using
+  const model = new OpenAIChatModel();
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Hello, How can I assist you today?")),
+  );
+
+  await using aigne = new AIGNE({
+    model,
+  });
+
+  const agent = AIAgent.from({
+    name: "chat",
+    description: "A chat agent",
+  });
+
+  await aigne.invoke(agent, "hello");
+
+  // aigne will be automatically shutdown when exiting the using block
+
+  // #endregion example-shutdown-using
 });
 
 test("AIGNE.invoke with reflection", async () => {
   const plusOne = FunctionAgent.from({
     subscribeTopic: [UserInputTopic, "revise"],
     publishTopic: "review_request",
-    fn: (input: { num: number }) => ({ num: input.num + 1 }),
+    process: (input: { num: number }) => ({ num: input.num + 1 }),
   });
 
   const reviewer = FunctionAgent.from({
     subscribeTopic: "review_request",
     publishTopic: (output) => (output.num > 10 ? UserOutputTopic : "revise"),
-    fn: ({ num }: { num: number }) => {
+    process: ({ num }: { num: number }) => {
       return {
         num,
         approval: num > 10 ? "approve" : "revise",

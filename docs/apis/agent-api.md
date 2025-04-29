@@ -198,7 +198,7 @@ import { Agent, FunctionAgent } from "@aigne/core";
 // Create a tool Agent
 const formatTool = FunctionAgent.from({
   name: "formatGreeting",
-  fn: (input) => ({
+  process: (input) => ({
     formatted: `${input.prefix || "Hello"}, ${input.name}!`
   })
 });

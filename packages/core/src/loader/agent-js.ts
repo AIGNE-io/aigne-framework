@@ -17,7 +17,7 @@ const agentJsFileSchema = z.object({
   output_schema: inputOutputSchema
     .nullish()
     .transform((v) => (v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined)),
-  fn: z.function() as unknown as ZodFunction<ZodTuple<[ZodType<Message>]>, ZodType<Message>>,
+  process: z.function() as unknown as ZodFunction<ZodTuple<[ZodType<Message>]>, ZodType<Message>>,
 });
 
 export async function loadAgentFromJsFile(path: string) {
@@ -36,7 +36,7 @@ export async function loadAgentFromJsFile(path: string) {
         agentJsFileSchema.parse({
           ...agent,
           name: agent.agent_name || agent.name,
-          fn: agent,
+          process: agent,
         }),
         { shallowKeys: ["input_schema", "output_schema"] },
       ),

@@ -1,7 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIAgentToolChoice, AIGNE } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 
 const model = await loadModel();
@@ -39,7 +39,7 @@ const triage = AIAgent.from({
   Your goal is to understand the user's query and direct them to the agent best suited to assist them.
   Be efficient, clear, and ensure the user is connected to the right resource quickly.`,
   skills: [productSupport, feedback, other],
-  toolChoice: "router",
+  toolChoice: AIAgentToolChoice.router,
 });
 
 const aigne = new AIGNE({ model });

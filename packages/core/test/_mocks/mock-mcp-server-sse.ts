@@ -32,5 +32,14 @@ export function mockMCPSSEServer(port: number) {
     }
   });
 
-  return app.listen(port);
+  const httpServer = app.listen(port);
+
+  Object.assign(httpServer, {
+    [Symbol.asyncDispose]: async () => {
+      httpServer.closeAllConnections();
+      httpServer.close();
+    },
+  });
+
+  return httpServer;
 }

@@ -14,6 +14,7 @@
     "lint": "biome check && pnpm -r run lint",
     "lint:fix": "biome check --write && pnpm -r run lint",
     "build": "pnpm build:libs",
+    "build:docs": "pnpm -r run build:docs",
     "clean": "pnpm -r run clean",
     "build:libs": "pnpm -F @aigne/* build",
     "update:deps": "npx -y taze latest -r -w && pnpm install && pnpm dedupe",

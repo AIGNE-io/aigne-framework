@@ -4,6 +4,7 @@ import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import {
   AIAgent,
+  AIAgentToolChoice,
   AIGNE,
   FunctionAgent,
   PromptTemplate,
@@ -57,7 +58,7 @@ const generateImage = FunctionAgent.from({
     worn_and_carried: z.string(),
     scenario: z.string(),
   }),
-  fn: (input) => {
+  process: (input) => {
     return { ...input, url: `https://example.com/${randomUUID()}.jpg` };
   },
 });
@@ -71,7 +72,7 @@ const illustrator = AIAgent.from({
 You are an Illustrator. You use the generate_image tool to create images given user's requirement.
 Make sure the images have consistent characters and style.`,
   skills: [generateImage],
-  toolChoice: "auto",
+  toolChoice: AIAgentToolChoice.auto,
   outputSchema: z.object({
     images: z
       .array(

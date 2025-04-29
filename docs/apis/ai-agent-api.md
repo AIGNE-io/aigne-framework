@@ -159,7 +159,7 @@ const weatherTool = FunctionAgent.from({
   inputSchema: z.object({
     city: z.string().describe("City name")
   }),
-  fn: async (input) => {
+  process: async (input) => {
     // In a real application, this would invoke a weather API
     return {
       temperature: 24,

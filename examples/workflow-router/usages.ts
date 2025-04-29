@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIAgentToolChoice, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -42,7 +42,7 @@ const triage = AIAgent.from({
   Your goal is to understand the user's query and direct them to the agent best suited to assist them.
   Be efficient, clear, and ensure the user is connected to the right resource quickly.`,
   skills: [productSupport, feedback, other],
-  toolChoice: "router", // Set toolChoice to "router" to enable router mode
+  toolChoice: AIAgentToolChoice.router, // Set toolChoice to "router" to enable router mode
 });
 
 const aigne = new AIGNE({ model });

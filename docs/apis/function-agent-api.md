@@ -118,7 +118,7 @@ const greetAgent1 = FunctionAgent.from(greet);
 const greetAgent2 = new FunctionAgent({
   name: "Greeter",
   description: "A simple greeting agent",
-  fn: greet
+  process: greet
 });
 
 // Using FunctionAgent
@@ -146,7 +146,7 @@ async function fetchUserData(input) {
 const userAgent = FunctionAgent.from({
   name: "UserDataFetcher",
   description: "Fetches user data from an API",
-  fn: fetchUserData
+  process: fetchUserData
 });
 
 // Using async FunctionAgent
@@ -187,7 +187,7 @@ function analyzeIntent(input) {
 
 const intentAnalyzer = FunctionAgent.from({
   name: "IntentAnalyzer",
-  fn: analyzeIntent
+  process: analyzeIntent
 });
 
 // Using Agent transfer
@@ -219,7 +219,7 @@ function processData(input) {
 // Convert function to Agent
 const processAgent = FunctionAgent.from({
   name: "DataProcessor",
-  fn: processData
+  process: processData
 });
 
 // Create an AI Agent using the process Agent as a tool

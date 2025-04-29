@@ -1,7 +1,37 @@
+/**
+ * @module core/models/ChatModel
+ */
+
 import { z } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import type { Context } from "../aigne/context.js";
 
+/**
+ * ChatModel is an abstract base class for interacting with Large Language Models (LLMs).
+ *
+ * This class extends the Agent class and provides a common interface for handling model inputs,
+ * outputs, and capabilities. Specific model implementations (like OpenAI, Anthropic, etc.)
+ * should inherit from this class and implement their specific functionalities.
+ *
+ * @template ChatModelInput The input message type for the model
+ * @template ChatModelOutput The output message type from the model
+ *
+ * @example
+ * Here's how to implement a custom ChatModel:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model}
+ *
+ * @example
+ * Here's an example showing streaming response:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-streaming}
+ *
+ * @example
+ * Here's an example showing streaming response:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-streaming-async-generator}
+ *
+ * @example
+ * Here's an example with tool calls:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-tools}
+ */
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor() {
     super({
@@ -10,14 +40,36 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     });
   }
 
+  /**
+   * Indicates whether the model supports parallel tool calls
+   *
+   * Defaults to true, subclasses can override this property based on
+   * specific model capabilities
+   */
   protected supportsParallelToolCalls = true;
 
+  /**
+   * Gets the model's supported capabilities
+   *
+   * Currently returns capabilities including: whether parallel tool calls are supported
+   *
+   * @returns An object containing model capabilities
+   */
   getModelCapabilities() {
     return {
       supportsParallelToolCalls: this.supportsParallelToolCalls,
     };
   }
 
+  /**
+   * Performs preprocessing operations before handling input
+   *
+   * Primarily checks if token usage exceeds limits, throwing an exception if limits are exceeded
+   *
+   * @param input Input message
+   * @param context Execution context
+   * @throws Error if token usage exceeds maximum limit
+   */
   protected override preprocess(input: ChatModelInput, context: Context): void {
     super.preprocess(input, context);
     const { limits, usage } = context;
@@ -27,6 +79,15 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     }
   }
 
+  /**
+   * Performs postprocessing operations after handling output
+   *
+   * Primarily updates token usage statistics in the context
+   *
+   * @param input Input message
+   * @param output Output message
+   * @param context Execution context
+   */
   protected override postprocess(
     input: ChatModelInput,
     output: ChatModelOutput,
@@ -41,40 +102,113 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   }
 }
 
+/**
+ * Input message format for ChatModel
+ *
+ * Contains an array of messages to send to the model, response format settings,
+ * tool definitions, and model-specific options
+ *
+ * @example
+ * Here's a basic ChatModel input example:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model}
+ *
+ * @example
+ * Here's an example with tool calling:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-tools}
+ */
 export interface ChatModelInput extends Message {
+  /**
+   * Array of messages to send to the model
+   */
   messages: ChatModelInputMessage[];
 
+  /**
+   * Specifies the expected response format
+   */
   responseFormat?: ChatModelInputResponseFormat;
 
+  /**
+   * List of tools available for the model to use
+   */
   tools?: ChatModelInputTool[];
 
+  /**
+   * Specifies the tool selection strategy
+   */
   toolChoice?: ChatModelInputToolChoice;
 
+  /**
+   * Model-specific configuration options
+   */
   modelOptions?: ChatModelOptions;
 }
 
+/**
+ * Message role types
+ *
+ * - system: System instructions
+ * - user: User messages
+ * - agent: Agent/assistant messages
+ * - tool: Tool call responses
+ */
 export type Role = "system" | "user" | "agent" | "tool";
 
+/**
+ * Structure of input messages
+ *
+ * Defines the format of each message sent to the model, including
+ * role, content, and tool call related information
+ */
 export interface ChatModelInputMessage {
+  /**
+   * Role of the message (system, user, agent, or tool)
+   */
   role: Role;
 
+  /**
+   * Message content, can be text or multimodal content array
+   */
   content?: ChatModelInputMessageContent;
 
+  /**
+   * Tool call details when the agent wants to execute tool calls
+   */
   toolCalls?: {
     id: string;
     type: "function";
     function: { name: string; arguments: Message };
   }[];
 
+  /**
+   * For tool response messages, specifies the corresponding tool call ID
+   */
   toolCallId?: string;
 
+  /**
+   * Name of the message sender (for multi-agent scenarios)
+   */
   name?: string;
 }
 
+/**
+ * Type of input message content
+ *
+ * Can be a simple string, or a mixed array of text and image content
+ */
 export type ChatModelInputMessageContent = string | (TextContent | ImageUrlContent)[];
 
+/**
+ * Text content type
+ *
+ * Used for text parts of message content
+ */
 export type TextContent = { type: "text"; text: string };
 
+/**
+ * Image URL content type
+ *
+ * Used for image parts of message content, referencing images via URL
+ */
 export type ImageUrlContent = { type: "image_url"; url: string };
 
 const chatModelInputMessageSchema = z.object({
@@ -106,6 +240,11 @@ const chatModelInputMessageSchema = z.object({
   name: z.string().optional(),
 });
 
+/**
+ * Model response format settings
+ *
+ * Can be specified as plain text format or according to a JSON Schema
+ */
 export type ChatModelInputResponseFormat =
   | { type: "text" }
   | {
@@ -131,11 +270,38 @@ const chatModelInputResponseFormatSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
+/**
+ * Tool definition provided to the model
+ *
+ * Defines a function tool, including name, description and parameter structure
+ *
+ * @example
+ * Here's an example showing how to use tools:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-tools}
+ */
 export interface ChatModelInputTool {
+  /**
+   * Tool type, currently only "function" is supported
+   */
   type: "function";
+
+  /**
+   * Function tool definition
+   */
   function: {
+    /**
+     * Function name
+     */
     name: string;
+
+    /**
+     * Function description
+     */
     description?: string;
+
+    /**
+     * Function parameter structure definition
+     */
     parameters: object;
   };
 }
@@ -149,6 +315,19 @@ const chatModelInputToolSchema = z.object({
   }),
 });
 
+/**
+ * Tool selection strategy
+ *
+ * Determines how the model selects and uses tools:
+ * - "auto": Automatically decides whether to use tools
+ * - "none": Does not use any tools
+ * - "required": Must use tools
+ * - object: Specifies a particular tool function
+ *
+ * @example
+ * Here's an example showing how to use tools:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-tools}
+ */
 export type ChatModelInputToolChoice =
   | "auto"
   | "none"
@@ -162,12 +341,40 @@ const chatModelInputToolChoiceSchema = z.union([
   chatModelInputToolSchema,
 ]);
 
+/**
+ * Model-specific configuration options
+ *
+ * Contains various parameters for controlling model behavior, such as model name, temperature, etc.
+ */
 export interface ChatModelOptions {
+  /**
+   * Model name or version
+   */
   model?: string;
+
+  /**
+   * Temperature parameter, controls randomness (0-1)
+   */
   temperature?: number;
+
+  /**
+   * Top-p parameter, controls vocabulary diversity
+   */
   topP?: number;
+
+  /**
+   * Frequency penalty parameter, reduces repetition
+   */
   frequencyPenalty?: number;
+
+  /**
+   * Presence penalty parameter, encourages diversity
+   */
   presencePenalty?: number;
+
+  /**
+   * Whether to allow parallel tool calls
+   */
   parallelToolCalls?: boolean;
 }
 
@@ -188,19 +395,78 @@ const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({
   modelOptions: chatModelOptionsSchema.optional(),
 });
 
+/**
+ * Output message format for ChatModel
+ *
+ * Contains model response content, which can be text, JSON data, tool calls, and usage statistics
+ *
+ * @example
+ * Here's a basic output example:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model}
+ *
+ * @example
+ * Here's an example with tool calls:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-tools}
+ */
 export interface ChatModelOutput extends Message {
+  /**
+   * Text format response content
+   */
   text?: string;
+
+  /**
+   * JSON format response content
+   */
   json?: object;
+
+  /**
+   * List of tools the model requested to call
+   */
   toolCalls?: ChatModelOutputToolCall[];
+
+  /**
+   * Token usage statistics
+   */
   usage?: ChatModelOutputUsage;
+
+  /**
+   * Model name or version used
+   */
   model?: string;
 }
 
+/**
+ * Tool call information in model output
+ *
+ * Describes tool calls requested by the model, including tool ID and call parameters
+ *
+ * @example
+ * Here's an example with tool calls:
+ * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-tools}
+ */
 export interface ChatModelOutputToolCall {
+  /**
+   * Unique ID of the tool call
+   */
   id: string;
+
+  /**
+   * Tool type, currently only "function" is supported
+   */
   type: "function";
+
+  /**
+   * Function call details
+   */
   function: {
+    /**
+     * Name of the function being called
+     */
     name: string;
+
+    /**
+     * Arguments for the function call
+     */
     arguments: Message;
   };
 }
@@ -214,8 +480,20 @@ const chatModelOutputToolCallSchema = z.object({
   }),
 });
 
+/**
+ * Model usage statistics
+ *
+ * Records the number of input and output tokens for tracking model usage
+ */
 export interface ChatModelOutputUsage {
+  /**
+   * Number of input tokens
+   */
   inputTokens: number;
+
+  /**
+   * Number of output tokens
+   */
   outputTokens: number;
 }
 

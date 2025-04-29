@@ -118,7 +118,7 @@ const greetAgent1 = FunctionAgent.from(greet);
 const greetAgent2 = new FunctionAgent({
   name: "Greeter",
   description: "A simple greeting agent",
-  fn: greet
+  process: greet
 });
 
 // 使用 FunctionAgent
@@ -146,7 +146,7 @@ async function fetchUserData(input) {
 const userAgent = FunctionAgent.from({
   name: "UserDataFetcher",
   description: "Fetches user data from an API",
-  fn: fetchUserData
+  process: fetchUserData
 });
 
 // 使用异步 FunctionAgent
@@ -178,7 +178,7 @@ function processData(input) {
 // 将函数转换为 Agent
 const processAgent = FunctionAgent.from({
   name: "DataProcessor",
-  fn: processData
+  process: processData
 });
 
 // 创建一个 AI Agent，使用处理 Agent 作为工具

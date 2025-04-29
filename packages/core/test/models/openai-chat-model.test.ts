@@ -1,7 +1,11 @@
 import { beforeEach, expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
+import { textDelta } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { readableStreamToArray } from "@aigne/core/utils/stream-utils.js";
+import {
+  readableStreamToArray,
+  readableStreamToAsyncIterator,
+} from "@aigne/core/utils/stream-utils.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
 import {
   COMMON_RESPONSE_FORMAT,
@@ -9,6 +13,103 @@ import {
   createWeatherToolCallMessages,
   createWeatherToolMessages,
 } from "../_utils/openai-like-utils.js";
+
+test("OpenAI chat model basic usage", async () => {
+  // #region example-openai-chat-model
+  const model = new OpenAIChatModel({
+    // Provide API key directly or use environment variable OPENAI_API_KEY
+    apiKey: "your-api-key", // Optional if set in env variables
+    model: "gpt-4o", // Defaults to "gpt-4o-mini" if not specified
+    modelOptions: {
+      temperature: 0.7,
+    },
+  });
+
+  spyOn(model, "process").mockReturnValueOnce({
+    text: "Hello! How can I assist you today?",
+    model: "gpt-4o",
+    usage: {
+      inputTokens: 10,
+      outputTokens: 9,
+    },
+  });
+
+  const result = await model.invoke({
+    messages: [{ role: "user", content: "Hello, who are you?" }],
+  });
+
+  console.log(result);
+  /* Output:
+  {
+    text: "Hello! How can I assist you today?",
+    model: "gpt-4o",
+    usage: {
+      inputTokens: 10,
+      outputTokens: 9
+    }
+  }
+  */
+
+  expect(result).toEqual({
+    text: "Hello! How can I assist you today?",
+    model: "gpt-4o",
+    usage: {
+      inputTokens: 10,
+      outputTokens: 9,
+    },
+  });
+  // #endregion example-openai-chat-model
+});
+
+test("OpenAI chat model with streaming using async generator", async () => {
+  // #region example-openai-chat-model-streaming
+  const model = new OpenAIChatModel({
+    apiKey: "your-api-key",
+    model: "gpt-4o",
+  });
+
+  spyOn(model, "process").mockImplementationOnce(async function* () {
+    yield textDelta({ text: "Hello!" });
+    yield textDelta({ text: " How" });
+    yield textDelta({ text: " can" });
+    yield textDelta({ text: " I" });
+    yield textDelta({ text: " assist" });
+    yield textDelta({ text: " you" });
+    yield textDelta({ text: " today?" });
+
+    return {
+      model: "gpt-4o",
+      usage: { inputTokens: 10, outputTokens: 9 },
+    };
+  });
+
+  const stream = await model.invoke(
+    {
+      messages: [{ role: "user", content: "Hello, who are you?" }],
+    },
+    undefined,
+    { streaming: true },
+  );
+
+  let fullText = "";
+  const json = {};
+
+  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
+
+  console.log(fullText); // Output: "Hello! How can I assist you today?"
+  console.log(json); // { model: "gpt-4o", usage: { inputTokens: 10, outputTokens: 9 } }
+
+  expect(fullText).toBe("Hello! How can I assist you today?");
+  expect(json).toEqual({
+    model: "gpt-4o",
+    usage: { inputTokens: 10, outputTokens: 9 },
+  });
+  // #endregion example-openai-chat-model-streaming
+});
 
 let model: OpenAIChatModel;
 

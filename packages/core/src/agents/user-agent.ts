@@ -1,14 +1,17 @@
+/**
+ * @module core/agents/UserAgent
+ */
+
 import { ReadableStream } from "node:stream/web";
 import { type Context, createPublishMessage } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import { orArrayToArray } from "../utils/type-utils.js";
 import {
-  type Agent,
+  Agent,
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
   type AgentResponseStream,
-  FunctionAgent,
   type FunctionAgentFn,
   type Message,
 } from "./agent.js";
@@ -20,10 +23,10 @@ export interface UserAgentOptions<I extends Message = Message, O extends Message
   activeAgent?: Agent;
 }
 
-export class UserAgent<
-  I extends Message = Message,
-  O extends Message = Message,
-> extends FunctionAgent<I, O> {
+export class UserAgent<I extends Message = Message, O extends Message = Message> extends Agent<
+  I,
+  O
+> {
   static from<I extends Message, O extends Message>(
     options: UserAgentOptions<I, O>,
   ): UserAgent<I, O> {

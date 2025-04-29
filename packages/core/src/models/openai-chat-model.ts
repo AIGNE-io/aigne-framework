@@ -1,3 +1,7 @@
+/**
+ * @module core/models/OpenaiChatModel
+ */
+
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
 import type {
@@ -7,13 +11,12 @@ import type {
 } from "openai/resources";
 import type { Stream } from "openai/streaming.js";
 import { z } from "zod";
-import type { AgentInvokeOptions, AgentResponse, AgentResponseChunk } from "../agents/agent.js";
-import type { Context } from "../aigne/context.js";
+import type { AgentProcessResult, AgentResponse, AgentResponseChunk } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { mergeUsage } from "../utils/model-utils.js";
 import { getJsonOutputPrompt } from "../utils/prompts.js";
 import { agentResponseStreamToObject } from "../utils/stream-utils.js";
-import { checkArguments, isNonNullable } from "../utils/type-utils.js";
+import { type PromiseOrValue, checkArguments, isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
   type ChatModelInput,
@@ -40,10 +43,34 @@ const OPENAI_CHAT_MODEL_CAPABILITIES: Record<string, Partial<OpenAIChatModelCapa
   "o3-mini": { supportsParallelToolCalls: false, supportsTemperature: false },
 };
 
+/**
+ * Configuration options for OpenAI Chat Model
+ */
 export interface OpenAIChatModelOptions {
+  /**
+   * API key for OpenAI API
+   *
+   * If not provided, will look for OPENAI_API_KEY in environment variables
+   */
   apiKey?: string;
+
+  /**
+   * Base URL for OpenAI API
+   *
+   * Useful for proxies or alternate endpoints
+   */
   baseURL?: string;
+
+  /**
+   * OpenAI model to use
+   *
+   * Defaults to 'gpt-4o-mini'
+   */
   model?: string;
+
+  /**
+   * Additional model options to control behavior
+   */
   modelOptions?: ChatModelOptions;
 }
 
@@ -63,6 +90,25 @@ export const openAIChatModelOptionsSchema = z.object({
     .optional(),
 });
 
+/**
+ * Implementation of the ChatModel interface for OpenAI's API
+ *
+ * This model provides access to OpenAI's capabilities including:
+ * - Text generation
+ * - Tool use with parallel tool calls
+ * - JSON structured output
+ * - Image understanding
+ *
+ * Default model: 'gpt-4o-mini'
+ *
+ * @example
+ * Here's how to create and use an OpenAI chat model:
+ * {@includeCode ../../test/models/openai-chat-model.test.ts#example-openai-chat-model}
+ *
+ * @example
+ * Here's an example with streaming response:
+ * {@includeCode ../../test/models/openai-chat-model.test.ts#example-openai-chat-model-streaming}
+ */
 export class OpenAIChatModel extends ChatModel {
   constructor(public options?: OpenAIChatModelOptions) {
     super();
@@ -97,11 +143,16 @@ export class OpenAIChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  async process(
-    input: ChatModelInput,
-    _context: Context,
-    options?: AgentInvokeOptions,
-  ): Promise<AgentResponse<ChatModelOutput>> {
+  /**
+   * Process the input and generate a response
+   * @param input The input to process
+   * @returns The generated response
+   */
+  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this._process(input);
+  }
+
+  private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
@@ -130,7 +181,7 @@ export class OpenAIChatModel extends ChatModel {
       response_format: responseFormat,
     });
 
-    if (options?.streaming && input.responseFormat?.type !== "json_schema") {
+    if (input.responseFormat?.type !== "json_schema") {
       return await extractResultFromStream(stream, false, true);
     }
 

@@ -306,7 +306,7 @@ const model = new OpenAIChatModel({
 // 创建数据准备 Agent
 const dataPrep = FunctionAgent.from({
   name: "DataPreparation",
-  fn: (input) => ({
+  process: (input) => ({
     ...input,
     formattedData: `Processed: ${JSON.stringify(input.data)}`
   })
@@ -398,7 +398,7 @@ const weatherAgent = FunctionAgent.from({
   name: "WeatherAgent",
   subscribeTopic: "weather.request",
   publishTopic: "weather.response",
-  fn: async (input) => {
+  process: async (input) => {
     // 在实际应用中，这里会调用天气 API
     return {
       city: input.city,

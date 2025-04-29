@@ -16,7 +16,7 @@ const sandbox = FunctionAgent.from({
   inputSchema: z.object({
     code: z.string().describe("The code to run"),
   }),
-  fn: async (input: { code: string }) => {
+  process: async (input: { code: string }) => {
     const { code } = input;
     // biome-ignore lint/security/noGlobalEval: <explanation>
     const result = eval(code);

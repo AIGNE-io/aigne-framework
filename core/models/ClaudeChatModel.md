@@ -1,10 +1,10 @@
-[**@aigne/core**](../README.md)
+[**@aigne/core**](../../README.md)
 
 ---
 
-[@aigne/core](../README.md) / models/claude-chat-model
+[@aigne/core](../../README.md) / core/models/ClaudeChatModel
 
-# models/claude-chat-model
+# core/models/ClaudeChatModel
 
 ## Classes
 
@@ -76,7 +76,7 @@ console.log(json); // { model: "claude-3-haiku-20240307", usage: { inputTokens: 
 
 #### Extends
 
-- [`ChatModel`](chat-model.md#chatmodel)
+- [`ChatModel`](ChatModel.md#chatmodel)
 
 #### Constructors
 
@@ -96,7 +96,7 @@ console.log(json); // { model: "claude-3-haiku-20240307", usage: { inputTokens: 
 
 ###### Overrides
 
-[`ChatModel`](chat-model.md#chatmodel).[`constructor`](chat-model.md#chatmodel#constructor)
+[`ChatModel`](ChatModel.md#chatmodel).[`constructor`](ChatModel.md#chatmodel#constructor)
 
 #### Properties
 
@@ -121,29 +121,29 @@ console.log(json); // { model: "claude-3-haiku-20240307", usage: { inputTokens: 
 
 ###### Get Signature
 
-> **get** **modelOptions**(): `undefined` \| [`ChatModelOptions`](chat-model.md#chatmodeloptions)
+> **get** **modelOptions**(): `undefined` \| [`ChatModelOptions`](ChatModel.md#chatmodeloptions)
 
 ###### Returns
 
-`undefined` \| [`ChatModelOptions`](chat-model.md#chatmodeloptions)
+`undefined` \| [`ChatModelOptions`](ChatModel.md#chatmodeloptions)
 
 #### Methods
 
 ##### process()
 
-> **process**(`input`): `PromiseOrValue`\<[`AgentProcessResult`](../index.md#agentprocessresult)\<[`ChatModelOutput`](chat-model.md#chatmodeloutput)\>\>
+> **process**(`input`): `PromiseOrValue`\<[`AgentProcessResult`](../agents/Agent.md#agentprocessresult)\<[`ChatModelOutput`](ChatModel.md#chatmodeloutput)\>\>
 
 Process the input using Claude's chat model
 
 ###### Parameters
 
-| Parameter | Type                                             | Description          |
-| --------- | ------------------------------------------------ | -------------------- |
-| `input`   | [`ChatModelInput`](chat-model.md#chatmodelinput) | The input to process |
+| Parameter | Type                                            | Description          |
+| --------- | ----------------------------------------------- | -------------------- |
+| `input`   | [`ChatModelInput`](ChatModel.md#chatmodelinput) | The input to process |
 
 ###### Returns
 
-`PromiseOrValue`\<[`AgentProcessResult`](../index.md#agentprocessresult)\<[`ChatModelOutput`](chat-model.md#chatmodeloutput)\>\>
+`PromiseOrValue`\<[`AgentProcessResult`](../agents/Agent.md#agentprocessresult)\<[`ChatModelOutput`](ChatModel.md#chatmodeloutput)\>\>
 
 The processed output from the model
 
@@ -159,11 +159,11 @@ Configuration options for Claude Chat Model
 
 #### Properties
 
-| Property                                  | Type                                                 | Description                                                                                                                    |
-| ----------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| <a id="apikey"></a> `apiKey?`             | `string`                                             | API key for Anthropic's Claude API If not provided, will look for ANTHROPIC_API_KEY or CLAUDE_API_KEY in environment variables |
-| <a id="model"></a> `model?`               | `string`                                             | Claude model to use Defaults to 'claude-3-7-sonnet-latest'                                                                     |
-| <a id="modeloptions"></a> `modelOptions?` | [`ChatModelOptions`](chat-model.md#chatmodeloptions) | Additional model options to control behavior                                                                                   |
+| Property                                  | Type                                                | Description                                                                                                                    |
+| ----------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| <a id="apikey"></a> `apiKey?`             | `string`                                            | API key for Anthropic's Claude API If not provided, will look for ANTHROPIC_API_KEY or CLAUDE_API_KEY in environment variables |
+| <a id="model"></a> `model?`               | `string`                                            | Claude model to use Defaults to 'claude-3-7-sonnet-latest'                                                                     |
+| <a id="modeloptions"></a> `modelOptions?` | [`ChatModelOptions`](ChatModel.md#chatmodeloptions) | Additional model options to control behavior                                                                                   |
 
 ## Variables
 

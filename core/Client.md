@@ -1,10 +1,10 @@
-[**@aigne/core**](README.md)
+[**@aigne/core**](../README.md)
 
 ---
 
-[@aigne/core](README.md) / client
+[@aigne/core](../README.md) / core/Client
 
-# client
+# core/Client
 
 ## Classes
 
@@ -82,10 +82,10 @@ Invokes an agent in non-streaming mode and returns the complete response.
 
 ###### Type Parameters
 
-| Type Parameter                              |
-| ------------------------------------------- |
-| `I` _extends_ [`Message`](index.md#message) |
-| `O` _extends_ [`Message`](index.md#message) |
+| Type Parameter                                     |
+| -------------------------------------------------- |
+| `I` _extends_ [`Message`](agents/Agent.md#message) |
+| `O` _extends_ [`Message`](agents/Agent.md#message) |
 
 ###### Parameters
 
@@ -115,16 +115,16 @@ console.log(response); // Output: {$message: "Hello world!"}
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `input`, `options`): `Promise`\<[`AgentResponseStream`](index.md#agentresponsestream)\<`O`\>\>
+> **invoke**\<`I`, `O`\>(`agent`, `input`, `options`): `Promise`\<[`AgentResponseStream`](agents/Agent.md#agentresponsestream)\<`O`\>\>
 
 Invokes an agent with streaming mode enabled and returns a stream of response chunks.
 
 ###### Type Parameters
 
-| Type Parameter                              |
-| ------------------------------------------- |
-| `I` _extends_ [`Message`](index.md#message) |
-| `O` _extends_ [`Message`](index.md#message) |
+| Type Parameter                                     |
+| -------------------------------------------------- |
+| `I` _extends_ [`Message`](agents/Agent.md#message) |
+| `O` _extends_ [`Message`](agents/Agent.md#message) |
 
 ###### Parameters
 
@@ -136,7 +136,7 @@ Invokes an agent with streaming mode enabled and returns a stream of response ch
 
 ###### Returns
 
-`Promise`\<[`AgentResponseStream`](index.md#agentresponsestream)\<`O`\>\>
+`Promise`\<[`AgentResponseStream`](agents/Agent.md#agentresponsestream)\<`O`\>\>
 
 A stream of agent response chunks
 
@@ -164,16 +164,16 @@ console.log(text); // Output: "Hello world!"
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `input`, `options?`): `Promise`\<[`AgentResponse`](index.md#agentresponse)\<`O`\>\>
+> **invoke**\<`I`, `O`\>(`agent`, `input`, `options?`): `Promise`\<[`AgentResponse`](agents/Agent.md#agentresponse)\<`O`\>\>
 
 Invokes an agent with the given input and options.
 
 ###### Type Parameters
 
-| Type Parameter                              |
-| ------------------------------------------- |
-| `I` _extends_ [`Message`](index.md#message) |
-| `O` _extends_ [`Message`](index.md#message) |
+| Type Parameter                                     |
+| -------------------------------------------------- |
+| `I` _extends_ [`Message`](agents/Agent.md#message) |
+| `O` _extends_ [`Message`](agents/Agent.md#message) |
 
 ###### Parameters
 
@@ -185,7 +185,7 @@ Invokes an agent with the given input and options.
 
 ###### Returns
 
-`Promise`\<[`AgentResponse`](index.md#agentresponse)\<`O`\>\>
+`Promise`\<[`AgentResponse`](agents/Agent.md#agentresponse)\<`O`\>\>
 
 Either a complete response or a response stream depending on the streaming option
 
@@ -210,7 +210,7 @@ Extends the standard AgentInvokeOptions with client-specific options.
 
 #### Extends
 
-- [`AgentInvokeOptions`](index.md#agentinvokeoptions)
+- [`AgentInvokeOptions`](agents/Agent.md#agentinvokeoptions)
 
 #### Properties
 

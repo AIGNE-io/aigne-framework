@@ -1,10 +1,10 @@
-[**@aigne/core**](../README.md)
+[**@aigne/core**](../../README.md)
 
 ---
 
-[@aigne/core](../README.md) / models/xai-chat-model
+[@aigne/core](../../README.md) / core/models/XAIChatModel
 
-# models/xai-chat-model
+# core/models/XAIChatModel
 
 ## Classes
 
@@ -72,7 +72,7 @@ console.log(json); // { model: "grok-2-latest", usage: { inputTokens: 6, outputT
 
 #### Extends
 
-- [`OpenAIChatModel`](openai-chat-model.md#openaichatmodel)
+- [`OpenAIChatModel`](OpenaiChatModel.md#openaichatmodel)
 
 #### Constructors
 
@@ -82,9 +82,9 @@ console.log(json); // { model: "grok-2-latest", usage: { inputTokens: 6, outputT
 
 ###### Parameters
 
-| Parameter  | Type                                                                    |
-| ---------- | ----------------------------------------------------------------------- |
-| `options?` | [`OpenAIChatModelOptions`](openai-chat-model.md#openaichatmodeloptions) |
+| Parameter  | Type                                                                  |
+| ---------- | --------------------------------------------------------------------- |
+| `options?` | [`OpenAIChatModelOptions`](OpenaiChatModel.md#openaichatmodeloptions) |
 
 ###### Returns
 
@@ -92,10 +92,10 @@ console.log(json); // { model: "grok-2-latest", usage: { inputTokens: 6, outputT
 
 ###### Overrides
 
-[`OpenAIChatModel`](openai-chat-model.md#openaichatmodel).[`constructor`](openai-chat-model.md#openaichatmodel#constructor)
+[`OpenAIChatModel`](OpenaiChatModel.md#openaichatmodel).[`constructor`](OpenaiChatModel.md#openaichatmodel#constructor)
 
 #### Properties
 
-| Property                                   | Type     | Default value   | Overrides                                                                                                                       |
-| ------------------------------------------ | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="apikeyenvname"></a> `apiKeyEnvName` | `string` | `"XAI_API_KEY"` | [`OpenAIChatModel`](openai-chat-model.md#openaichatmodel).[`apiKeyEnvName`](openai-chat-model.md#openaichatmodel#apikeyenvname) |
+| Property                                   | Type     | Default value   | Overrides                                                                                                                   |
+| ------------------------------------------ | -------- | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| <a id="apikeyenvname"></a> `apiKeyEnvName` | `string` | `"XAI_API_KEY"` | [`OpenAIChatModel`](OpenaiChatModel.md#openaichatmodel).[`apiKeyEnvName`](OpenaiChatModel.md#openaichatmodel#apikeyenvname) |

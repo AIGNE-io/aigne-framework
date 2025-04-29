@@ -1,10 +1,10 @@
-[**@aigne/core**](../README.md)
+[**@aigne/core**](../../README.md)
 
 ---
 
-[@aigne/core](../README.md) / models/chat-model
+[@aigne/core](../../README.md) / core/models/ChatModel
 
-# models/chat-model
+# core/models/ChatModel
 
 ## Classes
 
@@ -194,12 +194,12 @@ console.log(result);
 
 #### Extends
 
-- [`Agent`](../index.md#agent)\<[`ChatModelInput`](#chatmodelinput), [`ChatModelOutput`](#chatmodeloutput)\>
+- [`Agent`](../agents/Agent.md#agent)\<[`ChatModelInput`](#chatmodelinput), [`ChatModelOutput`](#chatmodeloutput)\>
 
 #### Extended by
 
-- [`ClaudeChatModel`](claude-chat-model.md#claudechatmodel)
-- [`OpenAIChatModel`](openai-chat-model.md#openaichatmodel)
+- [`ClaudeChatModel`](ClaudeChatModel.md#claudechatmodel)
+- [`OpenAIChatModel`](OpenaiChatModel.md#openaichatmodel)
 
 #### Constructors
 
@@ -213,7 +213,7 @@ console.log(result);
 
 ###### Overrides
 
-[`Agent`](../index.md#agent).[`constructor`](../index.md#agent#constructor)
+[`Agent`](../agents/Agent.md#agent).[`constructor`](../agents/Agent.md#agent#constructor)
 
 #### Properties
 
@@ -254,7 +254,7 @@ Primarily checks if token usage exceeds limits, throwing an exception if limits 
 | Parameter | Type                                | Description       |
 | --------- | ----------------------------------- | ----------------- |
 | `input`   | [`ChatModelInput`](#chatmodelinput) | Input message     |
-| `context` | [`Context`](../index.md#context-2)  | Execution context |
+| `context` | [`Context`](../aigne.md#context)    | Execution context |
 
 ###### Returns
 
@@ -266,7 +266,7 @@ Error if token usage exceeds maximum limit
 
 ###### Overrides
 
-[`Agent`](../index.md#agent).[`preprocess`](../index.md#agent#preprocess)
+[`Agent`](../agents/Agent.md#agent).[`preprocess`](../agents/Agent.md#agent#preprocess)
 
 ##### postprocess()
 
@@ -282,7 +282,7 @@ Primarily updates token usage statistics in the context
 | --------- | ------------------------------------- | ----------------- |
 | `input`   | [`ChatModelInput`](#chatmodelinput)   | Input message     |
 | `output`  | [`ChatModelOutput`](#chatmodeloutput) | Output message    |
-| `context` | [`Context`](../index.md#context-2)    | Execution context |
+| `context` | [`Context`](../aigne.md#context)      | Execution context |
 
 ###### Returns
 
@@ -290,7 +290,7 @@ Primarily updates token usage statistics in the context
 
 ###### Overrides
 
-[`Agent`](../index.md#agent).[`postprocess`](../index.md#agent#postprocess)
+[`Agent`](../agents/Agent.md#agent).[`postprocess`](../agents/Agent.md#agent#postprocess)
 
 ## Interfaces
 
@@ -385,7 +385,7 @@ console.log(result);
 
 #### Extends
 
-- [`Message`](../index.md#message)
+- [`Message`](../agents/Agent.md#message)
 
 #### Indexable
 
@@ -412,13 +412,13 @@ role, content, and tool call related information
 
 #### Properties
 
-| Property                              | Type                                                                                                                              | Description                                                          |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| <a id="role-1"></a> `role`            | [`Role`](#role)                                                                                                                   | Role of the message (system, user, agent, or tool)                   |
-| <a id="content"></a> `content?`       | [`ChatModelInputMessageContent`](#chatmodelinputmessagecontent-1)                                                                 | Message content, can be text or multimodal content array             |
-| <a id="toolcalls"></a> `toolCalls?`   | \{ `id`: `string`; `type`: `"function"`; `function`: \{ `name`: `string`; `arguments`: [`Message`](../index.md#message); \}; \}[] | Tool call details when the agent wants to execute tool calls         |
-| <a id="toolcallid"></a> `toolCallId?` | `string`                                                                                                                          | For tool response messages, specifies the corresponding tool call ID |
-| <a id="name"></a> `name?`             | `string`                                                                                                                          | Name of the message sender (for multi-agent scenarios)               |
+| Property                              | Type                                                                                                                                     | Description                                                          |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| <a id="role-1"></a> `role`            | [`Role`](#role)                                                                                                                          | Role of the message (system, user, agent, or tool)                   |
+| <a id="content"></a> `content?`       | [`ChatModelInputMessageContent`](#chatmodelinputmessagecontent-1)                                                                        | Message content, can be text or multimodal content array             |
+| <a id="toolcalls"></a> `toolCalls?`   | \{ `id`: `string`; `type`: `"function"`; `function`: \{ `name`: `string`; `arguments`: [`Message`](../agents/Agent.md#message); \}; \}[] | Tool call details when the agent wants to execute tool calls         |
+| <a id="toolcallid"></a> `toolCallId?` | `string`                                                                                                                                 | For tool response messages, specifies the corresponding tool call ID |
+| <a id="name"></a> `name?`             | `string`                                                                                                                                 | Name of the message sender (for multi-agent scenarios)               |
 
 ---
 
@@ -605,7 +605,7 @@ console.log(result);
 
 #### Extends
 
-- [`Message`](../index.md#message)
+- [`Message`](../agents/Agent.md#message)
 
 #### Indexable
 
@@ -687,13 +687,13 @@ console.log(result);
 
 #### Properties
 
-| Property                           | Type                                                                   | Description                                       |
-| ---------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------- |
-| <a id="id"></a> `id`               | `string`                                                               | Unique ID of the tool call                        |
-| <a id="type-3"></a> `type`         | `"function"`                                                           | Tool type, currently only "function" is supported |
-| <a id="function-1"></a> `function` | \{ `name`: `string`; `arguments`: [`Message`](../index.md#message); \} | Function call details                             |
-| `function.name`                    | `string`                                                               | Name of the function being called                 |
-| `function.arguments`               | [`Message`](../index.md#message)                                       | Arguments for the function call                   |
+| Property                           | Type                                                                          | Description                                       |
+| ---------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------- |
+| <a id="id"></a> `id`               | `string`                                                                      | Unique ID of the tool call                        |
+| <a id="type-3"></a> `type`         | `"function"`                                                                  | Tool type, currently only "function" is supported |
+| <a id="function-1"></a> `function` | \{ `name`: `string`; `arguments`: [`Message`](../agents/Agent.md#message); \} | Function call details                             |
+| `function.name`                    | `string`                                                                      | Name of the function being called                 |
+| `function.arguments`               | [`Message`](../agents/Agent.md#message)                                       | Arguments for the function call                   |
 
 ---
 

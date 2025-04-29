@@ -1,10 +1,10 @@
-[**@aigne/core**](../README.md)
+[**@aigne/core**](../../README.md)
 
 ---
 
-[@aigne/core](../README.md) / models/ollama-chat-model
+[@aigne/core](../../README.md) / core/models/OllamaChatModel
 
-# models/ollama-chat-model
+# core/models/OllamaChatModel
 
 ## Classes
 
@@ -72,7 +72,7 @@ console.log(json); // { model: "llama3" }
 
 #### Extends
 
-- [`OpenAIChatModel`](openai-chat-model.md#openaichatmodel)
+- [`OpenAIChatModel`](OpenaiChatModel.md#openaichatmodel)
 
 #### Constructors
 
@@ -82,9 +82,9 @@ console.log(json); // { model: "llama3" }
 
 ###### Parameters
 
-| Parameter  | Type                                                                    |
-| ---------- | ----------------------------------------------------------------------- |
-| `options?` | [`OpenAIChatModelOptions`](openai-chat-model.md#openaichatmodeloptions) |
+| Parameter  | Type                                                                  |
+| ---------- | --------------------------------------------------------------------- |
+| `options?` | [`OpenAIChatModelOptions`](OpenaiChatModel.md#openaichatmodeloptions) |
 
 ###### Returns
 
@@ -92,11 +92,11 @@ console.log(json); // { model: "llama3" }
 
 ###### Overrides
 
-[`OpenAIChatModel`](openai-chat-model.md#openaichatmodel).[`constructor`](openai-chat-model.md#openaichatmodel#constructor)
+[`OpenAIChatModel`](OpenaiChatModel.md#openaichatmodel).[`constructor`](OpenaiChatModel.md#openaichatmodel#constructor)
 
 #### Properties
 
-| Property                                   | Type     | Default value      | Overrides                                                                                                                       |
-| ------------------------------------------ | -------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="apikeyenvname"></a> `apiKeyEnvName` | `string` | `"OLLAMA_API_KEY"` | [`OpenAIChatModel`](openai-chat-model.md#openaichatmodel).[`apiKeyEnvName`](openai-chat-model.md#openaichatmodel#apikeyenvname) |
-| <a id="apikeydefault"></a> `apiKeyDefault` | `string` | `"ollama"`         | [`OpenAIChatModel`](openai-chat-model.md#openaichatmodel).[`apiKeyDefault`](openai-chat-model.md#openaichatmodel#apikeydefault) |
+| Property                                   | Type     | Default value      | Overrides                                                                                                                   |
+| ------------------------------------------ | -------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| <a id="apikeyenvname"></a> `apiKeyEnvName` | `string` | `"OLLAMA_API_KEY"` | [`OpenAIChatModel`](OpenaiChatModel.md#openaichatmodel).[`apiKeyEnvName`](OpenaiChatModel.md#openaichatmodel#apikeyenvname) |
+| <a id="apikeydefault"></a> `apiKeyDefault` | `string` | `"ollama"`         | [`OpenAIChatModel`](OpenaiChatModel.md#openaichatmodel).[`apiKeyDefault`](OpenaiChatModel.md#openaichatmodel#apikeydefault) |

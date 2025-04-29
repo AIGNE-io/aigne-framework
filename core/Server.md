@@ -1,10 +1,10 @@
-[**@aigne/core**](README.md)
+[**@aigne/core**](../README.md)
 
 ---
 
-[@aigne/core](README.md) / server
+[@aigne/core](../README.md) / core/Server
 
-# server
+# core/Server
 
 ## Classes
 
@@ -136,7 +136,7 @@ Creates a new AIGNEServer instance.
 
 | Parameter  | Type                                        | Description                                                   |
 | ---------- | ------------------------------------------- | ------------------------------------------------------------- |
-| `engine`   | [`AIGNE`](index.md#aigne)                   | The AIGNE engine instance that will process agent invocations |
+| `engine`   | [`AIGNE`](aigne.md#aigne)                   | The AIGNE engine instance that will process agent invocations |
 | `options?` | [`AIGNEServerOptions`](#aigneserveroptions) | Configuration options for the server                          |
 
 ###### Returns
@@ -147,7 +147,7 @@ Creates a new AIGNEServer instance.
 
 | Property                        | Type                                        | Description                                                   |
 | ------------------------------- | ------------------------------------------- | ------------------------------------------------------------- |
-| <a id="engine"></a> `engine`    | [`AIGNE`](index.md#aigne)                   | The AIGNE engine instance that will process agent invocations |
+| <a id="engine"></a> `engine`    | [`AIGNE`](aigne.md#aigne)                   | The AIGNE engine instance that will process agent invocations |
 | <a id="options"></a> `options?` | [`AIGNEServerOptions`](#aigneserveroptions) | Configuration options for the server                          |
 
 #### Methods

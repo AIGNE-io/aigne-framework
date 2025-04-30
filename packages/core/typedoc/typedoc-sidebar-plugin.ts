@@ -19,6 +19,8 @@ function navigationToMarkdown(navigation?: NavigationItem[], level = 0, maxLevel
     const title = item.path ? `- [${item.title}](${item.path || ""})` : `- ${item.title}`;
     const children = navigationToMarkdown(item.children, level + 1, maxLevel);
 
-    return [title, ...children.map((i) => `${" ".repeat((level + 1) * 2)}${i}`)].join("\n");
+    return [title, ...children.map((i) => `${" ".repeat((level + 1) * 2)}${i}`)].join(
+      level === 0 ? "\n\n" : "\n",
+    );
   });
 }

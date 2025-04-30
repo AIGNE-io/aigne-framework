@@ -9,7 +9,6 @@ const config = {
     "./typedoc/typedoc-sidebar-plugin.ts",
   ],
   entryPoints: [
-    "README.md",
     "src/aigne/index.ts",
     "src/agents/*agent.ts",
     "src/models/*.ts",
@@ -22,6 +21,8 @@ const config = {
   jsDocCompatibility: {
     exampleTag: false,
   },
+  readme: "README.md",
+  mergeReadme: true,
   router: "module",
   cleanOutputDir: true,
   disableSources: true,
@@ -29,7 +30,7 @@ const config = {
   formatWithPrettier: true,
   useCodeBlocks: false,
   expandObjects: true,
-  hidePageHeader: false,
+  hidePageHeader: true,
   indexFormat: "list",
   parametersFormat: "table",
   interfacePropertiesFormat: "table",

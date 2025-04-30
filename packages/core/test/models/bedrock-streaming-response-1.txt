@@ -1,0 +1,23 @@
+data: {"messageStart":{"p":"abcdefghijklmnopq","role":"assistant"}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"<thinking"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"> I"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" have the"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" weather information"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" for New"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" York. I can"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" now provide"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" the temperature"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" to the User"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":". </"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"thinking"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":">\n"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"{\"text"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"\": \"The"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" current"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" temperature in New York is"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" 20 degrees"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" Celsius"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":".\"}"}}}
+data: {"contentBlockStop":{"contentBlockIndex":0,"p":"abcdefghijklmn"}}
+data: {"messageStop":{"stopReason":"end_turn"}}
+data: {"metadata":{"metrics":{"latencyMs":710},"usage":{"inputTokens":487,"outputTokens":43,"totalTokens":530}}}

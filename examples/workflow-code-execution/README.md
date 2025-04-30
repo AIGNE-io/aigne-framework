@@ -26,7 +26,6 @@ class sandbox processing
 
 Workflow of a code-execution between user and coder using a sandbox:
 
-
 ```mermaid
 sequenceDiagram
 
@@ -104,7 +103,7 @@ const model = new OpenAIChatModel({
 });
 
 const sandbox = FunctionAgent.from({
-  name: "js-sandbox",
+  name: "evaluateJs",
   description: "A js sandbox for running javascript code",
   inputSchema: z.object({
     code: z.string().describe("The code to run"),

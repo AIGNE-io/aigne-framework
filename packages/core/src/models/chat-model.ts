@@ -57,6 +57,16 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     };
   }
 
+  private validateToolNames(tools?: ChatModelInputTool[]) {
+    for (const tool of tools ?? []) {
+      if (!/^[a-zA-Z0-9_]+$/.test(tool.function.name)) {
+        throw new Error(
+          `Tool name "${tool.function.name}" can only contain letters, numbers, and underscores`,
+        );
+      }
+    }
+  }
+
   /**
    * Performs preprocessing operations before handling input
    *
@@ -73,6 +83,8 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     if (limits?.maxTokens && usedTokens >= limits.maxTokens) {
       throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
     }
+
+    this.validateToolNames(input.tools);
   }
 
   /**

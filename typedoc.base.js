@@ -26,7 +26,7 @@ const config = {
   indexFormat: "list",
   parametersFormat: "table",
   interfacePropertiesFormat: "table",
-  classPropertiesFormat: "table",
+  classPropertiesFormat: "list",
   typeAliasPropertiesFormat: "table",
   enumMembersFormat: "table",
   propertyMembersFormat: "table",

@@ -138,6 +138,24 @@ test("PromptBuilder should build skills correctly", async () => {
   });
 });
 
+test("PromptBuilder should unique skills correctly", async () => {
+  const skill = FunctionAgent.from({
+    name: "TestSkill",
+    description: "Test skill description",
+    process: () => ({}),
+  });
+
+  const agent = AIAgent.from({
+    name: "TestAgent",
+    instructions: "Test instructions",
+    skills: [skill, skill],
+  });
+
+  const prompt = await agent.instructions.build({ input: {}, agent });
+
+  expect(prompt.tools).toHaveLength(1);
+});
+
 test("PromptBuilder should build toolChoice with router mode correctly", async () => {
   const skill = FunctionAgent.from({
     name: "TestSkill",

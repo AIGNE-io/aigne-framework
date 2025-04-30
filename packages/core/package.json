@@ -99,6 +99,7 @@
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.796.0",
     "@google/generative-ai": "^0.24.0",
     "openai": "^4.87.3"
   },

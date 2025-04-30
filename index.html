@@ -30,7 +30,14 @@
       alias: {
         '/.*/_sidebar.md': '/_sidebar.md'
       },
-      relativePath: true
+      relativePath: true,
+      basePath: "/typedoc/",
+      sidebarDisplayLevel: 1, // set sidebar display level
+      repo:'true', // set the docsify show the corner
+      corner: {
+        url: "https://github.com/AIGNE-io/aigne-framework",
+        icon: "github",
+      },
     };
   </script>
 
@@ -42,6 +49,9 @@
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
 
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-typescript.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-corner/dist/docsify-corner.min.js"></script>
 </body>
 
 </html>

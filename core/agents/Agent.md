@@ -1,7 +1,3 @@
-[**@aigne/core**](../../README.md)
-
----
-
 [@aigne/core](../../README.md) / core/agents/Agent
 
 # core/agents/Agent

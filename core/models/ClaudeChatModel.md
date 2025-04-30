@@ -1,7 +1,3 @@
-[**@aigne/core**](../../README.md)
-
----
-
 [@aigne/core](../../README.md) / core/models/ClaudeChatModel
 
 # core/models/ClaudeChatModel

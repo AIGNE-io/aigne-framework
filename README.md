@@ -1,7 +1,3 @@
-**@aigne/core**
-
----
-
 # @aigne/core
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)

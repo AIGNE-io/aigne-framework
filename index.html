@@ -9,11 +9,7 @@
   <meta name="description" content="">
   <title></title>
 
-  <!-- Themes (light + dark) -->
-  <link rel="stylesheet" media="(prefers-color-scheme: dark)"
-    href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
-  <link rel="stylesheet" media="(prefers-color-scheme: light)"
-    href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/themes/buble.css" />
 
   <!-- Custom Styles -->
   <style>
@@ -29,14 +25,16 @@
   <script>
     // Docsify Configuration
     window.$docsify = {
+      name: 'AIGNE Framework',
       loadSidebar: true,
-      subMaxLevel: 1
+      alias: {
+        '/.*/_sidebar.md': '/_sidebar.md'
+      }
     };
   </script>
 
   <!-- Required -->
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/js/docsify-themeable.min.js"></script>
 
   <!-- Recommended -->
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script>

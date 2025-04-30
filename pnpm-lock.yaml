@@ -8,12 +8,24 @@ importers:
 
   .:
     devDependencies:
+      '@aigne/typedoc-plugin-example-utils-ts':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@biomejs/biome':
         specifier: ^1.9.4
         version: 1.9.4
       simple-git-hooks:
         specifier: ^2.12.1
         version: 2.12.1
+      typedoc:
+        specifier: ^0.28.3
+        version: 0.28.3(typescript@5.8.3)
+      typedoc-plugin-markdown:
+        specifier: ^4.6.3
+        version: 4.6.3(typedoc@0.28.3(typescript@5.8.3))
+      typedoc-plugin-no-inherit:
+        specifier: ^1.6.1
+        version: 1.6.1(typedoc@0.28.3(typescript@5.8.3))
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -441,18 +453,12 @@ importers:
         specifier: ^3.24.5
         version: 3.24.5(zod@3.24.3)
     devDependencies:
-      '@aigne/typedoc-plugin-example-utils-ts':
-        specifier: ^1.0.2
-        version: 1.0.2
       '@anthropic-ai/sdk':
         specifier: ^0.39.0
         version: 0.39.0(encoding@0.1.13)
       '@google/generative-ai':
         specifier: ^0.24.0
         version: 0.24.0
-      '@microsoft/tsdoc':
-        specifier: ^0.15.1
-        version: 0.15.1
       '@types/bun':
         specifier: ^1.2.9
         version: 1.2.9
@@ -489,21 +495,9 @@ importers:
       openai:
         specifier: ^4.94.0
         version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.3)
-      prettier:
-        specifier: ^3.5.3
-        version: 3.5.3
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
-      typedoc:
-        specifier: ^0.28.3
-        version: 0.28.3(typescript@5.8.3)
-      typedoc-plugin-markdown:
-        specifier: ^4.6.3
-        version: 4.6.3(typedoc@0.28.3(typescript@5.8.3))
-      typedoc-plugin-no-inherit:
-        specifier: ^1.6.1
-        version: 1.6.1(typedoc@0.28.3(typescript@5.8.3))
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -738,9 +732,6 @@ packages:
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
     engines: {node: '>=18.0.0'}
-
-  '@microsoft/tsdoc@0.15.1':
-    resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
   '@modelcontextprotocol/sdk@1.10.2':
     resolution: {integrity: sha512-rb6AMp2DR4SN+kc6L1ta2NCpApyA9WYNx3CrTSZvGxq9wH71bRur+zRqPfg0vQ9mjywR7qZdX2RGHOPq3ss+tA==}
@@ -2714,8 +2705,6 @@ snapshots:
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
       minipass: 7.1.2
-
-  '@microsoft/tsdoc@0.15.1': {}
 
   '@modelcontextprotocol/sdk@1.10.2':
     dependencies:

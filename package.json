@@ -14,7 +14,7 @@
     "lint": "biome check && pnpm -r run lint",
     "lint:fix": "biome check --write && pnpm -r run lint",
     "build": "pnpm build:libs",
-    "build:docs": "pnpm -r run build:docs",
+    "build:docs": "typedoc",
     "clean": "pnpm -r run clean",
     "build:libs": "pnpm -F @aigne/* build",
     "update:deps": "npx -y taze latest -r -w && pnpm install && pnpm dedupe",
@@ -23,8 +23,12 @@
     "postinstall": "npx simple-git-hooks"
   },
   "devDependencies": {
+    "@aigne/typedoc-plugin-example-utils-ts": "^1.0.2",
     "@biomejs/biome": "^1.9.4",
     "simple-git-hooks": "^2.12.1",
+    "typedoc": "^0.28.3",
+    "typedoc-plugin-markdown": "^4.6.3",
+    "typedoc-plugin-no-inherit": "^1.6.1",
     "typescript": "^5.8.3",
     "zx": "^8.5.2"
   },

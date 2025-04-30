@@ -27,13 +27,7 @@ import {
 } from "./chat-model.js";
 
 export function extractLastJsonObject(text: string): string | null {
-  const cleaned = text.replace(/<thinking>[\s\S]*?<\/thinking>/g, "").trim();
-  try {
-    parseJSON(cleaned);
-    return cleaned;
-  } catch {
-    return null;
-  }
+  return text.replace(/<thinking>[\s\S]*?<\/thinking>/g, "").trim();
 }
 
 const BEDROCK_DEFAULT_CHAT_MODEL = "us.amazon.nova-lite-v1:0";

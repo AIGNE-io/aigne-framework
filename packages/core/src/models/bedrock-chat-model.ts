@@ -324,11 +324,6 @@ function convertTools({ tools, toolChoice }: ChatModelInput): ConverseStreamRequ
 
   return {
     tools: tools.map((i) => {
-      if (!/^[a-zA-Z0-9_]+$/.test(i.function.name)) {
-        throw new Error(
-          `Tool name "${i.function.name}" can only contain letters, numbers, and underscores`,
-        );
-      }
       const parameters = i.function.parameters as Record<string, unknown>;
       if (Object.keys(parameters).length === 0) {
         parameters.type = "object";

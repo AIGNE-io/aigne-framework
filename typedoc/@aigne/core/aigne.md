@@ -75,52 +75,41 @@ Creates a new AIGNE instance with the specified options.
 
 #### Properties
 
-| Property                                 | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="agents"></a> `agents`             | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>; \}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Collection of primary agents managed by this AIGNE instance. Provides indexed access by agent name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| <a id="description"></a> `description?`  | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional description of this AIGNE instance's purpose or functionality.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| <a id="invoke"></a> `invoke`             | \{\<`I`, `O`\>(`agent`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\>\]\>; \<`I`, `O`\>(`agent`, `message`, `options?`): `Promise`\<`O`\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>\>; \<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>; \} | Invokes an agent with the specified input and options. This is a shorthand method that creates a new context and immediately invokes an agent. **Param** Arguments passed to the Context's invoke method. **Examples** Here's a simple example of how to invoke an agent: `const model = new OpenAIChatModel(); const aigne = new AIGNE({ model, }); const agent = AIAgent.from({ name: "chat", description: "A chat agent", }); const result = await aigne.invoke(agent, "hello"); console.log(result); // { $message: "Hello, How can I assist you today?" }` Here's an example of how to invoke an agent with streaming response: `const model = new OpenAIChatModel(); const aigne = new AIGNE({ model, }); const agent = AIAgent.from({ name: "chat", description: "A chat agent", }); let text = ""; const stream = await aigne.invoke(agent, "hello", { streaming: true }); for await (const chunk of readableStreamToAsyncIterator(stream)) { if (chunk.delta.text?.$message) text += chunk.delta.text.$message; } console.log(text);` |
-| <a id="limits"></a> `limits?`            | [`ContextLimits`](#contextlimits-1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Usage limits applied to this AIGNE instance's execution.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| <a id="messagequeue"></a> `messageQueue` | [`MessageQueue`](#messagequeue-1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Message queue for handling inter-agent communication.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| <a id="model"></a> `model?`              | [`ChatModel`](models/chat-model.md#chatmodel)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Global model to use for all agents that don't specify their own model.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| <a id="name"></a> `name?`                | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional name identifier for this AIGNE instance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| <a id="publish"></a> `publish`           | (`topic`, `payload`) => `void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Publishes a message to the message queue. This is a shorthand method that creates a new context and publishes a message. **Param** Arguments passed to the Context's publish method.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| <a id="skills"></a> `skills`             | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>; \}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Collection of skill agents available to this AIGNE instance. Provides indexed access by skill name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| <a id="subscribe"></a> `subscribe`       | \{(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\>; (`topic`, `listener`): [`Unsubscribe`](#unsubscribe-6); (`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6); (`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6); \}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Subscribes to messages in the message queue. This allows for receiving messages from agents and other components. **Param** Arguments passed to the MessageQueue's subscribe method.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| <a id="unsubscribe"></a> `unsubscribe`   | (`topic`, `listener`) => `void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Unsubscribes from messages in the message queue. This cancels a previous subscription to stop receiving messages.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Property                                  | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="name-1"></a> `name?`               | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional name identifier for this AIGNE instance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| <a id="description-1"></a> `description?` | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional description of this AIGNE instance's purpose or functionality.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| <a id="model-1"></a> `model?`             | [`ChatModel`](models/chat-model.md#chatmodel)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Global model to use for all agents that don't specify their own model.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| <a id="limits-1"></a> `limits?`           | [`ContextLimits`](#contextlimits-1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Usage limits applied to this AIGNE instance's execution.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| <a id="messagequeue"></a> `messageQueue`  | [`MessageQueue`](#messagequeue-1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Message queue for handling inter-agent communication.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| <a id="skills-1"></a> `skills`            | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>; \}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Collection of skill agents available to this AIGNE instance. Provides indexed access by skill name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| <a id="agents-1"></a> `agents`            | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>; \}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Collection of primary agents managed by this AIGNE instance. Provides indexed access by agent name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| <a id="invoke"></a> `invoke`              | \{\<`I`, `O`\>(`agent`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\>\]\>; \<`I`, `O`\>(`agent`, `message`, `options?`): `Promise`\<`O`\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>\>; \<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>; \} | Invokes an agent with the specified input and options. This is a shorthand method that creates a new context and immediately invokes an agent. **Param** Arguments passed to the Context's invoke method. **Examples** Here's a simple example of how to invoke an agent: `const model = new OpenAIChatModel(); const aigne = new AIGNE({ model, }); const agent = AIAgent.from({ name: "chat", description: "A chat agent", }); const result = await aigne.invoke(agent, "hello"); console.log(result); // { $message: "Hello, How can I assist you today?" }` Here's an example of how to invoke an agent with streaming response: `const model = new OpenAIChatModel(); const aigne = new AIGNE({ model, }); const agent = AIAgent.from({ name: "chat", description: "A chat agent", }); let text = ""; const stream = await aigne.invoke(agent, "hello", { streaming: true }); for await (const chunk of readableStreamToAsyncIterator(stream)) { if (chunk.delta.text?.$message) text += chunk.delta.text.$message; } console.log(text);` |
+| <a id="publish"></a> `publish`            | (`topic`, `payload`) => `void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Publishes a message to the message queue. This is a shorthand method that creates a new context and publishes a message. **Param** Arguments passed to the Context's publish method.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| <a id="subscribe"></a> `subscribe`        | \{(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\>; (`topic`, `listener`): [`Unsubscribe`](#unsubscribe-4); (`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4); (`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4); \}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Subscribes to messages in the message queue. This allows for receiving messages from agents and other components. **Param** Arguments passed to the MessageQueue's subscribe method.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| <a id="unsubscribe"></a> `unsubscribe`    | (`topic`, `listener`) => `void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Unsubscribes from messages in the message queue. This cancels a previous subscription to stop receiving messages.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 #### Methods
 
-##### \[asyncDispose\]()
+##### load()
 
-> **\[asyncDispose\]**(): `Promise`\<`void`\>
+> `static` **load**(`path`, `options?`): `Promise`\<[`AIGNE`](#aigne)\>
 
-Asynchronous dispose method for the AIGNE instance.
+Loads an AIGNE instance from a directory containing an aigne.yaml file and agent definitions.
+This static method provides a convenient way to initialize an AIGNE system from configuration files.
+
+###### Parameters
+
+| Parameter  | Type                            | Description                                           |
+| ---------- | ------------------------------- | ----------------------------------------------------- |
+| `path`     | `string`                        | Path to the directory containing the aigne.yaml file. |
+| `options?` | [`AIGNEOptions`](#aigneoptions) | Options to override the loaded configuration.         |
 
 ###### Returns
 
-`Promise`\<`void`\>
+`Promise`\<[`AIGNE`](#aigne)\>
 
-###### Example
-
-Here's an example of using async dispose:
-
-```ts
-const model = new OpenAIChatModel();
-
-await using aigne = new AIGNE({
-  model,
-});
-
-const agent = AIAgent.from({
-  name: "chat",
-  description: "A chat agent",
-});
-
-await aigne.invoke(agent, "hello");
-
-// aigne will be automatically shutdown when exiting the using block
-```
+A fully initialized AIGNE instance with configured agents and skills.
 
 ##### addAgent()
 
@@ -205,25 +194,36 @@ await aigne.invoke(agent, "hello");
 // aigne will be automatically shutdown when exiting the using block
 ```
 
-##### load()
+##### \[asyncDispose\]()
 
-> `static` **load**(`path`, `options?`): `Promise`\<[`AIGNE`](#aigne)\>
+> **\[asyncDispose\]**(): `Promise`\<`void`\>
 
-Loads an AIGNE instance from a directory containing an aigne.yaml file and agent definitions.
-This static method provides a convenient way to initialize an AIGNE system from configuration files.
-
-###### Parameters
-
-| Parameter  | Type                            | Description                                           |
-| ---------- | ------------------------------- | ----------------------------------------------------- |
-| `path`     | `string`                        | Path to the directory containing the aigne.yaml file. |
-| `options?` | [`AIGNEOptions`](#aigneoptions) | Options to override the loaded configuration.         |
+Asynchronous dispose method for the AIGNE instance.
 
 ###### Returns
 
-`Promise`\<[`AIGNE`](#aigne)\>
+`Promise`\<`void`\>
 
-A fully initialized AIGNE instance with configured agents and skills.
+###### Example
+
+Here's an example of using async dispose:
+
+```ts
+const model = new OpenAIChatModel();
+
+await using aigne = new AIGNE({
+  model,
+});
+
+const agent = AIAgent.from({
+  name: "chat",
+  description: "A chat agent",
+});
+
+await aigne.invoke(agent, "hello");
+
+// aigne will be automatically shutdown when exiting the using block
+```
 
 ---
 
@@ -253,29 +253,15 @@ A fully initialized AIGNE instance with configured agents and skills.
 
 | Property                                 | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Description                                                                    |
 | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| <a id="parentid"></a> `parentId?`        | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | -                                                                              |
 | <a id="id"></a> `id`                     | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | -                                                                              |
 | <a id="internal"></a> `internal`         | `AIGNEContextInternal`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | -                                                                              |
-| <a id="invoke-1"></a> `invoke`           | \{\<`I`, `O`\>(`agent`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\>\]\>; \<`I`, `O`\>(`agent`, `message`, `options?`): `Promise`\<`O`\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>\>; \<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>; \} | Create a user agent to consistently invoke an agent **Param** Agent to invoke  |
-| <a id="parentid"></a> `parentId?`        | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | -                                                                              |
-| <a id="publish-1"></a> `publish`         | (`topic`, `payload`) => `void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Publish a message to a topic, the aigne will invoke the listeners of the topic |
-| <a id="subscribe-1"></a> `subscribe`     | \{(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\>; (`topic`, `listener`): [`Unsubscribe`](#unsubscribe-6); (`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6); (`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6); \}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | -                                                                              |
-| <a id="unsubscribe-1"></a> `unsubscribe` | (`topic`, `listener`) => `void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | -                                                                              |
+| <a id="invoke-8"></a> `invoke`           | \{\<`I`, `O`\>(`agent`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\>\]\>; \<`I`, `O`\>(`agent`, `message`, `options?`): `Promise`\<`O`\>; \<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>\>; \<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>; \} | Create a user agent to consistently invoke an agent **Param** Agent to invoke  |
+| <a id="publish-3"></a> `publish`         | (`topic`, `payload`) => `void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Publish a message to a topic, the aigne will invoke the listeners of the topic |
+| <a id="subscribe-6"></a> `subscribe`     | \{(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\>; (`topic`, `listener`): [`Unsubscribe`](#unsubscribe-4); (`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4); (`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4); \}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | -                                                                              |
+| <a id="unsubscribe-3"></a> `unsubscribe` | (`topic`, `listener`) => `void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | -                                                                              |
 
 #### Accessors
-
-##### limits
-
-###### Get Signature
-
-> **get** **limits**(): `undefined` \| [`ContextLimits`](#contextlimits-1)
-
-###### Returns
-
-`undefined` \| [`ContextLimits`](#contextlimits-1)
-
-###### Implementation of
-
-[`Context`](#context).[`limits`](#limits-3)
 
 ##### model
 
@@ -289,7 +275,7 @@ A fully initialized AIGNE instance with configured agents and skills.
 
 ###### Implementation of
 
-[`Context`](#context).[`model`](#model-3)
+[`Context`](#context).[`model`](#model-2)
 
 ##### skills
 
@@ -303,7 +289,21 @@ A fully initialized AIGNE instance with configured agents and skills.
 
 ###### Implementation of
 
-[`Context`](#context).[`skills`](#skills-3)
+[`Context`](#context).[`skills`](#skills-2)
+
+##### limits
+
+###### Get Signature
+
+> **get** **limits**(): `undefined` \| [`ContextLimits`](#contextlimits-1)
+
+###### Returns
+
+`undefined` \| [`ContextLimits`](#contextlimits-1)
+
+###### Implementation of
+
+[`Context`](#context).[`limits`](#limits-2)
 
 ##### status
 
@@ -317,7 +317,7 @@ A fully initialized AIGNE instance with configured agents and skills.
 
 ###### Implementation of
 
-[`Context`](#context).[`status`](#status-1)
+[`Context`](#context).[`status`](#status)
 
 ##### usage
 
@@ -331,9 +331,33 @@ A fully initialized AIGNE instance with configured agents and skills.
 
 ###### Implementation of
 
-[`Context`](#context).[`usage`](#usage-1)
+[`Context`](#context).[`usage`](#usage)
 
 #### Methods
+
+##### newContext()
+
+> **newContext**(`options`): [`AIGNEContext`](#aignecontext)
+
+Create a child context with the same configuration as the parent context.
+If `reset` is true, the child context will have a new state (such as: usage).
+
+###### Parameters
+
+| Parameter        | Type                       | Description                                              |
+| ---------------- | -------------------------- | -------------------------------------------------------- |
+| `options`        | \{ `reset?`: `boolean`; \} | -                                                        |
+| `options.reset?` | `boolean`                  | create a new context with initial state (such as: usage) |
+
+###### Returns
+
+[`AIGNEContext`](#aignecontext)
+
+new context
+
+###### Implementation of
+
+[`Context`](#context).[`newContext`](#newcontext-2)
 
 ##### emit()
 
@@ -358,56 +382,7 @@ A fully initialized AIGNE instance with configured agents and skills.
 
 ###### Implementation of
 
-[`Context`](#context).[`emit`](#emit-2)
-
-##### newContext()
-
-> **newContext**(`options`): [`AIGNEContext`](#aignecontext)
-
-Create a child context with the same configuration as the parent context.
-If `reset` is true, the child context will have a new state (such as: usage).
-
-###### Parameters
-
-| Parameter        | Type                       | Description                                              |
-| ---------------- | -------------------------- | -------------------------------------------------------- |
-| `options`        | \{ `reset?`: `boolean`; \} | -                                                        |
-| `options.reset?` | `boolean`                  | create a new context with initial state (such as: usage) |
-
-###### Returns
-
-[`AIGNEContext`](#aignecontext)
-
-new context
-
-###### Implementation of
-
-[`Context`](#context).[`newContext`](#newcontext-4)
-
-##### off()
-
-> **off**\<`K`\>(`eventName`, `listener`): `this`
-
-###### Type Parameters
-
-| Type Parameter                                            |
-| --------------------------------------------------------- |
-| `K` _extends_ keyof [`ContextEventMap`](#contexteventmap) |
-
-###### Parameters
-
-| Parameter   | Type                                                     |
-| ----------- | -------------------------------------------------------- |
-| `eventName` | `K`                                                      |
-| `listener`  | `Listener`\<`K`, [`ContextEventMap`](#contexteventmap)\> |
-
-###### Returns
-
-`this`
-
-###### Implementation of
-
-[`Context`](#context).[`off`](#off-2)
+`Context.emit`
 
 ##### on()
 
@@ -432,7 +407,7 @@ new context
 
 ###### Implementation of
 
-[`Context`](#context).[`on`](#on-2)
+`Context.on`
 
 ##### once()
 
@@ -457,7 +432,32 @@ new context
 
 ###### Implementation of
 
-[`Context`](#context).[`once`](#once-2)
+`Context.once`
+
+##### off()
+
+> **off**\<`K`\>(`eventName`, `listener`): `this`
+
+###### Type Parameters
+
+| Type Parameter                                            |
+| --------------------------------------------------------- |
+| `K` _extends_ keyof [`ContextEventMap`](#contexteventmap) |
+
+###### Parameters
+
+| Parameter   | Type                                                     |
+| ----------- | -------------------------------------------------------- |
+| `eventName` | `K`                                                      |
+| `listener`  | `Listener`\<`K`, [`ContextEventMap`](#contexteventmap)\> |
+
+###### Returns
+
+`this`
+
+###### Implementation of
+
+`Context.off`
 
 ---
 
@@ -481,20 +481,6 @@ new context
 
 #### Methods
 
-##### error()
-
-> **error**(`error`): `void`
-
-###### Parameters
-
-| Parameter | Type    |
-| --------- | ------- |
-| `error`   | `Error` |
-
-###### Returns
-
-`void`
-
 ##### publish()
 
 > **publish**(`topic`, `payload`): `void`
@@ -505,6 +491,20 @@ new context
 | --------- | ----------------------------------- |
 | `topic`   | `string` \| `string`[]              |
 | `payload` | [`MessagePayload`](#messagepayload) |
+
+###### Returns
+
+`void`
+
+##### error()
+
+> **error**(`error`): `void`
+
+###### Parameters
+
+| Parameter | Type    |
+| --------- | ------- |
+| `error`   | `Error` |
 
 ###### Returns
 
@@ -529,7 +529,7 @@ new context
 
 ###### Call Signature
 
-> **subscribe**(`topic`, `listener`): [`Unsubscribe`](#unsubscribe-6)
+> **subscribe**(`topic`, `listener`): [`Unsubscribe`](#unsubscribe-4)
 
 ###### Parameters
 
@@ -540,11 +540,11 @@ new context
 
 ###### Returns
 
-[`Unsubscribe`](#unsubscribe-6)
+[`Unsubscribe`](#unsubscribe-4)
 
 ###### Call Signature
 
-> **subscribe**(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6)
+> **subscribe**(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4)
 
 ###### Parameters
 
@@ -555,7 +555,7 @@ new context
 
 ###### Returns
 
-`Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6)
+`Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4)
 
 ##### unsubscribe()
 
@@ -574,33 +574,62 @@ new context
 
 ## Interfaces
 
-### AgentEvent
-
-#### Properties
-
-| Property                                        | Type                             |
-| ----------------------------------------------- | -------------------------------- |
-| <a id="agent"></a> `agent`                      | [`Agent`](agents/agent.md#agent) |
-| <a id="contextid"></a> `contextId`              | `string`                         |
-| <a id="parentcontextid"></a> `parentContextId?` | `string`                         |
-| <a id="timestamp"></a> `timestamp`              | `number`                         |
-
----
-
 ### AIGNEOptions
 
 Options for the AIGNE class.
 
 #### Properties
 
-| Property                                  | Type                                                                                                             | Description                                                                       |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| <a id="agents-1"></a> `agents?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Agents to use for the AIGNE instance.                                             |
-| <a id="description-1"></a> `description?` | `string`                                                                                                         | The description of the AIGNE instance.                                            |
-| <a id="limits-2"></a> `limits?`           | [`ContextLimits`](#contextlimits-1)                                                                              | Limits for the AIGNE instance, such as timeout, max tokens, max invocations, etc. |
-| <a id="model-2"></a> `model?`             | [`ChatModel`](models/chat-model.md#chatmodel)                                                                    | Global model to use for all agents not specifying a model.                        |
-| <a id="name-1"></a> `name?`               | `string`                                                                                                         | The name of the AIGNE instance.                                                   |
-| <a id="skills-2"></a> `skills?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Skills to use for the AIGNE instance.                                             |
+| Property                                | Type                                                                                                             | Description                                                                       |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| <a id="name"></a> `name?`               | `string`                                                                                                         | The name of the AIGNE instance.                                                   |
+| <a id="description"></a> `description?` | `string`                                                                                                         | The description of the AIGNE instance.                                            |
+| <a id="model"></a> `model?`             | [`ChatModel`](models/chat-model.md#chatmodel)                                                                    | Global model to use for all agents not specifying a model.                        |
+| <a id="skills"></a> `skills?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Skills to use for the AIGNE instance.                                             |
+| <a id="agents"></a> `agents?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Agents to use for the AIGNE instance.                                             |
+| <a id="limits"></a> `limits?`           | [`ContextLimits`](#contextlimits-1)                                                                              | Limits for the AIGNE instance, such as timeout, max tokens, max invocations, etc. |
+
+---
+
+### AgentEvent
+
+#### Properties
+
+| Property                                        | Type                             |
+| ----------------------------------------------- | -------------------------------- |
+| <a id="parentcontextid"></a> `parentContextId?` | `string`                         |
+| <a id="contextid"></a> `contextId`              | `string`                         |
+| <a id="timestamp"></a> `timestamp`              | `number`                         |
+| <a id="agent"></a> `agent`                      | [`Agent`](agents/agent.md#agent) |
+
+---
+
+### ContextEventMap
+
+#### Properties
+
+| Property                                 | Type                                                                                    |
+| ---------------------------------------- | --------------------------------------------------------------------------------------- |
+| <a id="agentstarted"></a> `agentStarted` | \[[`AgentEvent`](#agentevent) & \{ `input`: [`Message`](agents/agent.md#message); \}\]  |
+| <a id="agentsucceed"></a> `agentSucceed` | \[[`AgentEvent`](#agentevent) & \{ `output`: [`Message`](agents/agent.md#message); \}\] |
+| <a id="agentfailed"></a> `agentFailed`   | \[[`AgentEvent`](#agentevent) & \{ `error`: `Error`; \}\]                               |
+
+---
+
+### InvokeOptions
+
+Options for invoking an agent
+
+#### Extends
+
+- [`AgentInvokeOptions`](agents/agent.md#agentinvokeoptions)
+
+#### Properties
+
+| Property                                            | Type      |
+| --------------------------------------------------- | --------- |
+| <a id="returnactiveagent"></a> `returnActiveAgent?` | `boolean` |
+| <a id="disabletransfer"></a> `disableTransfer?`     | `boolean` |
 
 ---
 
@@ -614,38 +643,13 @@ Options for the AIGNE class.
 
 | Property                        | Type                                                                                                             |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| <a id="limits-3"></a> `limits?` | [`ContextLimits`](#contextlimits-1)                                                                              |
-| <a id="model-3"></a> `model?`   | [`ChatModel`](models/chat-model.md#chatmodel)                                                                    |
-| <a id="skills-3"></a> `skills?` | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] |
-| <a id="status-1"></a> `status?` | `"normal"` \| `"timeout"`                                                                                        |
-| <a id="usage-1"></a> `usage`    | [`ContextUsage`](#contextusage-1)                                                                                |
+| <a id="model-2"></a> `model?`   | [`ChatModel`](models/chat-model.md#chatmodel)                                                                    |
+| <a id="skills-2"></a> `skills?` | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] |
+| <a id="usage"></a> `usage`      | [`ContextUsage`](#contextusage-1)                                                                                |
+| <a id="limits-2"></a> `limits?` | [`ContextLimits`](#contextlimits-1)                                                                              |
+| <a id="status"></a> `status?`   | `"normal"` \| `"timeout"`                                                                                        |
 
 #### Methods
-
-##### emit()
-
-> **emit**\<`K`\>(`eventName`, ...`args`): `boolean`
-
-###### Type Parameters
-
-| Type Parameter                                            |
-| --------------------------------------------------------- |
-| `K` _extends_ keyof [`ContextEventMap`](#contexteventmap) |
-
-###### Parameters
-
-| Parameter   | Type                                                         |
-| ----------- | ------------------------------------------------------------ |
-| `eventName` | `K`                                                          |
-| ...`args`   | `Args`\<`K`, [`ContextEmitEventMap`](#contextemiteventmap)\> |
-
-###### Returns
-
-`boolean`
-
-###### Inherited from
-
-`TypedEventEmitter.emit`
 
 ##### invoke()
 
@@ -797,101 +801,6 @@ the output of the agent
 
 [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
 
-##### newContext()
-
-> **newContext**(`options?`): [`Context`](#context)
-
-Create a child context with the same configuration as the parent context.
-If `reset` is true, the child context will have a new state (such as: usage).
-
-###### Parameters
-
-| Parameter        | Type                       | Description                                              |
-| ---------------- | -------------------------- | -------------------------------------------------------- |
-| `options?`       | \{ `reset?`: `boolean`; \} | -                                                        |
-| `options.reset?` | `boolean`                  | create a new context with initial state (such as: usage) |
-
-###### Returns
-
-[`Context`](#context)
-
-new context
-
-##### off()
-
-> **off**\<`K`\>(`eventName`, `listener`): `this`
-
-###### Type Parameters
-
-| Type Parameter                                            |
-| --------------------------------------------------------- |
-| `K` _extends_ keyof [`ContextEventMap`](#contexteventmap) |
-
-###### Parameters
-
-| Parameter   | Type                                                     |
-| ----------- | -------------------------------------------------------- |
-| `eventName` | `K`                                                      |
-| `listener`  | `Listener`\<`K`, [`ContextEventMap`](#contexteventmap)\> |
-
-###### Returns
-
-`this`
-
-###### Inherited from
-
-`TypedEventEmitter.off`
-
-##### on()
-
-> **on**\<`K`\>(`eventName`, `listener`): `this`
-
-###### Type Parameters
-
-| Type Parameter                                            |
-| --------------------------------------------------------- |
-| `K` _extends_ keyof [`ContextEventMap`](#contexteventmap) |
-
-###### Parameters
-
-| Parameter   | Type                                                     |
-| ----------- | -------------------------------------------------------- |
-| `eventName` | `K`                                                      |
-| `listener`  | `Listener`\<`K`, [`ContextEventMap`](#contexteventmap)\> |
-
-###### Returns
-
-`this`
-
-###### Inherited from
-
-`TypedEventEmitter.on`
-
-##### once()
-
-> **once**\<`K`\>(`eventName`, `listener`): `this`
-
-###### Type Parameters
-
-| Type Parameter                                            |
-| --------------------------------------------------------- |
-| `K` _extends_ keyof [`ContextEventMap`](#contexteventmap) |
-
-###### Parameters
-
-| Parameter   | Type                                                     |
-| ----------- | -------------------------------------------------------- |
-| `eventName` | `K`                                                      |
-| `listener`  | `Listener`\<`K`, [`ContextEventMap`](#contexteventmap)\> |
-
-###### Returns
-
-`this`
-
-###### Inherited from
-
-`TypedEventEmitter.once`
-
 ##### publish()
 
 > **publish**(`topic`, `payload`): `void`
@@ -928,7 +837,7 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Call Signature
 
-> **subscribe**(`topic`, `listener`): [`Unsubscribe`](#unsubscribe-6)
+> **subscribe**(`topic`, `listener`): [`Unsubscribe`](#unsubscribe-4)
 
 ###### Parameters
 
@@ -939,11 +848,11 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Returns
 
-[`Unsubscribe`](#unsubscribe-6)
+[`Unsubscribe`](#unsubscribe-4)
 
 ###### Call Signature
 
-> **subscribe**(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6)
+> **subscribe**(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4)
 
 ###### Parameters
 
@@ -954,11 +863,11 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Returns
 
-`Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6)
+`Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4)
 
 ###### Call Signature
 
-> **subscribe**(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6)
+> **subscribe**(`topic`, `listener?`): `Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4)
 
 ###### Parameters
 
@@ -969,7 +878,7 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Returns
 
-`Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-6)
+`Promise`\<[`MessagePayload`](#messagepayload)\> \| [`Unsubscribe`](#unsubscribe-4)
 
 ##### unsubscribe()
 
@@ -986,59 +895,25 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 `void`
 
----
+##### newContext()
 
-### ContextEventMap
+> **newContext**(`options?`): [`Context`](#context)
 
-#### Properties
+Create a child context with the same configuration as the parent context.
+If `reset` is true, the child context will have a new state (such as: usage).
 
-| Property                                 | Type                                                                                    |
-| ---------------------------------------- | --------------------------------------------------------------------------------------- |
-| <a id="agentfailed"></a> `agentFailed`   | \[[`AgentEvent`](#agentevent) & \{ `error`: `Error`; \}\]                               |
-| <a id="agentstarted"></a> `agentStarted` | \[[`AgentEvent`](#agentevent) & \{ `input`: [`Message`](agents/agent.md#message); \}\]  |
-| <a id="agentsucceed"></a> `agentSucceed` | \[[`AgentEvent`](#agentevent) & \{ `output`: [`Message`](agents/agent.md#message); \}\] |
+###### Parameters
 
----
+| Parameter        | Type                       | Description                                              |
+| ---------------- | -------------------------- | -------------------------------------------------------- |
+| `options?`       | \{ `reset?`: `boolean`; \} | -                                                        |
+| `options.reset?` | `boolean`                  | create a new context with initial state (such as: usage) |
 
-### ContextLimits
+###### Returns
 
-#### Properties
+[`Context`](#context)
 
-| Property                                        | Type     |
-| ----------------------------------------------- | -------- |
-| <a id="maxagentinvokes"></a> `maxAgentInvokes?` | `number` |
-| <a id="maxtokens"></a> `maxTokens?`             | `number` |
-| <a id="timeout"></a> `timeout?`                 | `number` |
-
----
-
-### ContextUsage
-
-#### Properties
-
-| Property                                 | Type     |
-| ---------------------------------------- | -------- |
-| <a id="agentcalls"></a> `agentCalls`     | `number` |
-| <a id="inputtokens"></a> `inputTokens`   | `number` |
-| <a id="outputtokens"></a> `outputTokens` | `number` |
-
----
-
-### InvokeOptions
-
-Options for invoking an agent
-
-#### Extends
-
-- [`AgentInvokeOptions`](agents/agent.md#agentinvokeoptions)
-
-#### Properties
-
-| Property                                            | Type      | Description                                                                                                                                                                                                                                                                                             | Inherited from                                                                                                         |
-| --------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| <a id="disabletransfer"></a> `disableTransfer?`     | `boolean` | -                                                                                                                                                                                                                                                                                                       | -                                                                                                                      |
-| <a id="returnactiveagent"></a> `returnActiveAgent?` | `boolean` | -                                                                                                                                                                                                                                                                                                       | -                                                                                                                      |
-| <a id="streaming"></a> `streaming?`                 | `boolean` | Whether to enable streaming response When true, the invoke method returns a ReadableStream that emits chunks of the response as they become available, allowing for real-time display of results When false or undefined, the invoke method waits for full completion and returns the final JSON result | [`AgentInvokeOptions`](agents/agent.md#agentinvokeoptions).[`streaming`](agents/agent.md#agentinvokeoptions#streaming) |
+new context
 
 ---
 
@@ -1048,10 +923,34 @@ Options for invoking an agent
 
 | Property                         | Type                                 |
 | -------------------------------- | ------------------------------------ |
-| <a id="context-1"></a> `context` | [`Context`](#context)                |
-| <a id="message"></a> `message`   | [`Message`](agents/agent.md#message) |
 | <a id="role"></a> `role`         | `"agent"` \| `"user"`                |
 | <a id="source"></a> `source?`    | `string`                             |
+| <a id="message"></a> `message`   | [`Message`](agents/agent.md#message) |
+| <a id="context-1"></a> `context` | [`Context`](#context)                |
+
+---
+
+### ContextUsage
+
+#### Properties
+
+| Property                                 | Type     |
+| ---------------------------------------- | -------- |
+| <a id="inputtokens"></a> `inputTokens`   | `number` |
+| <a id="outputtokens"></a> `outputTokens` | `number` |
+| <a id="agentcalls"></a> `agentCalls`     | `number` |
+
+---
+
+### ContextLimits
+
+#### Properties
+
+| Property                                        | Type     |
+| ----------------------------------------------- | -------- |
+| <a id="maxtokens"></a> `maxTokens?`             | `number` |
+| <a id="maxagentinvokes"></a> `maxAgentInvokes?` | `number` |
+| <a id="timeout"></a> `timeout?`                 | `number` |
 
 ## Type Aliases
 

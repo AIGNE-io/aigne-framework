@@ -52,9 +52,9 @@ Creates a new AIGNEClient instance.
 
 ###### Parameters
 
-| Parameter | Type                                          | Description                                              |
-| --------- | --------------------------------------------- | -------------------------------------------------------- |
-| `options` | [`AIGNEClientOptions`](#aigneclientoptions-1) | Configuration options for connecting to the AIGNE server |
+| Parameter | Type                                        | Description                                              |
+| --------- | ------------------------------------------- | -------------------------------------------------------- |
+| `options` | [`AIGNEClientOptions`](#aigneclientoptions) | Configuration options for connecting to the AIGNE server |
 
 ###### Returns
 
@@ -62,9 +62,9 @@ Creates a new AIGNEClient instance.
 
 #### Properties
 
-| Property                       | Type                                          | Description                                              |
-| ------------------------------ | --------------------------------------------- | -------------------------------------------------------- |
-| <a id="options"></a> `options` | [`AIGNEClientOptions`](#aigneclientoptions-1) | Configuration options for connecting to the AIGNE server |
+| Property                       | Type                                        | Description                                              |
+| ------------------------------ | ------------------------------------------- | -------------------------------------------------------- |
+| <a id="options"></a> `options` | [`AIGNEClientOptions`](#aigneclientoptions) | Configuration options for connecting to the AIGNE server |
 
 #### Methods
 
@@ -187,6 +187,18 @@ Either a complete response or a response stream depending on the streaming optio
 
 ## Interfaces
 
+### AIGNEClientOptions
+
+Configuration options for the AIGNEClient.
+
+#### Properties
+
+| Property               | Type     | Description                                                                                                        |
+| ---------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| <a id="url"></a> `url` | `string` | The URL of the AIGNE server to connect to. This should point to the base endpoint where the AIGNEServer is hosted. |
+
+---
+
 ### AIGNEClientInvokeOptions
 
 Options for invoking an agent through the AIGNEClient.
@@ -198,19 +210,6 @@ Extends the standard AgentInvokeOptions with client-specific options.
 
 #### Properties
 
-| Property                                  | Type                       | Description                                                                                                                                                                                                                                                                                             | Inherited from                                                                                                         |
-| ----------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| <a id="fetchoptions"></a> `fetchOptions?` | `Partial`\<`RequestInit`\> | Additional fetch API options to customize the HTTP request. These options will be merged with the default options used by the client.                                                                                                                                                                   | -                                                                                                                      |
-| <a id="streaming"></a> `streaming?`       | `boolean`                  | Whether to enable streaming response When true, the invoke method returns a ReadableStream that emits chunks of the response as they become available, allowing for real-time display of results When false or undefined, the invoke method waits for full completion and returns the final JSON result | [`AgentInvokeOptions`](agents/agent.md#agentinvokeoptions).[`streaming`](agents/agent.md#agentinvokeoptions#streaming) |
-
----
-
-### AIGNEClientOptions
-
-Configuration options for the AIGNEClient.
-
-#### Properties
-
-| Property               | Type     | Description                                                                                                        |
-| ---------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
-| <a id="url"></a> `url` | `string` | The URL of the AIGNE server to connect to. This should point to the base endpoint where the AIGNEServer is hosted. |
+| Property                                  | Type                       | Description                                                                                                                           |
+| ----------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="fetchoptions"></a> `fetchOptions?` | `Partial`\<`RequestInit`\> | Additional fetch API options to customize the HTTP request. These options will be merged with the default options used by the client. |

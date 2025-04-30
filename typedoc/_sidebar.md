@@ -1,13 +1,12 @@
 - [@aigne/core](/@aigne/core/README.md)
 
+  - [aigne](/@aigne/core/aigne.md)
   - agents
     - [agent](/@aigne/core/agents/agent.md)
     - [ai-agent](/@aigne/core/agents/ai-agent.md)
     - [mcp-agent](/@aigne/core/agents/mcp-agent.md)
     - [team-agent](/@aigne/core/agents/team-agent.md)
     - [user-agent](/@aigne/core/agents/user-agent.md)
-  - [aigne](/@aigne/core/aigne.md)
-  - [client](/@aigne/core/client.md)
   - models
     - [chat-model](/@aigne/core/models/chat-model.md)
     - [claude-chat-model](/@aigne/core/models/claude-chat-model.md)
@@ -18,5 +17,6 @@
     - [openai-chat-model](/@aigne/core/models/openai-chat-model.md)
     - [xai-chat-model](/@aigne/core/models/xai-chat-model.md)
   - [server](/@aigne/core/server.md)
+  - [client](/@aigne/core/client.md)
 - [@aigne/agent-library](/@aigne/agent-library.md)
 - [@aigne/cli](/@aigne/cli.md)

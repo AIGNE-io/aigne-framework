@@ -4,6 +4,47 @@
 
 ## Classes
 
+### ServerError
+
+Custom error class for AIGNEServer HTTP-related errors.
+Extends the standard Error class with an HTTP status code property.
+This allows error responses to include appropriate HTTP status codes.
+
+#### Extends
+
+- `Error`
+
+#### Constructors
+
+##### Constructor
+
+> **new ServerError**(`status`, `message`): [`ServerError`](#servererror)
+
+Creates a new ServerError instance.
+
+###### Parameters
+
+| Parameter | Type     | Description                                               |
+| --------- | -------- | --------------------------------------------------------- |
+| `status`  | `number` | The HTTP status code for this error (e.g., 400, 404, 500) |
+| `message` | `string` | The error message describing what went wrong              |
+
+###### Returns
+
+[`ServerError`](#servererror)
+
+###### Overrides
+
+`Error.constructor`
+
+#### Properties
+
+| Property                     | Type     | Description                                               |
+| ---------------------------- | -------- | --------------------------------------------------------- |
+| <a id="status"></a> `status` | `number` | The HTTP status code for this error (e.g., 400, 404, 500) |
+
+---
+
 ### AIGNEServer
 
 AIGNEServer provides HTTP API access to AIGNE capabilities.
@@ -89,10 +130,10 @@ Creates a new AIGNEServer instance.
 
 ###### Parameters
 
-| Parameter  | Type                                          | Description                                                   |
-| ---------- | --------------------------------------------- | ------------------------------------------------------------- |
-| `engine`   | [`AIGNE`](aigne.md#aigne)                     | The AIGNE engine instance that will process agent invocations |
-| `options?` | [`AIGNEServerOptions`](#aigneserveroptions-1) | Configuration options for the server                          |
+| Parameter  | Type                                        | Description                                                   |
+| ---------- | ------------------------------------------- | ------------------------------------------------------------- |
+| `engine`   | [`AIGNE`](aigne.md#aigne)                   | The AIGNE engine instance that will process agent invocations |
+| `options?` | [`AIGNEServerOptions`](#aigneserveroptions) | Configuration options for the server                          |
 
 ###### Returns
 
@@ -100,10 +141,10 @@ Creates a new AIGNEServer instance.
 
 #### Properties
 
-| Property                        | Type                                          | Description                                                   |
-| ------------------------------- | --------------------------------------------- | ------------------------------------------------------------- |
-| <a id="engine"></a> `engine`    | [`AIGNE`](aigne.md#aigne)                     | The AIGNE engine instance that will process agent invocations |
-| <a id="options"></a> `options?` | [`AIGNEServerOptions`](#aigneserveroptions-1) | Configuration options for the server                          |
+| Property                        | Type                                        | Description                                                   |
+| ------------------------------- | ------------------------------------------- | ------------------------------------------------------------- |
+| <a id="engine"></a> `engine`    | [`AIGNE`](aigne.md#aigne)                   | The AIGNE engine instance that will process agent invocations |
+| <a id="options"></a> `options?` | [`AIGNEServerOptions`](#aigneserveroptions) | Configuration options for the server                          |
 
 #### Methods
 
@@ -225,117 +266,6 @@ const response = await client.invoke("chat", { $message: "hello" });
 
 console.log(response); // Output: {$message: "Hello world!"}
 ```
-
----
-
-### ServerError
-
-Custom error class for AIGNEServer HTTP-related errors.
-Extends the standard Error class with an HTTP status code property.
-This allows error responses to include appropriate HTTP status codes.
-
-#### Extends
-
-- `Error`
-
-#### Constructors
-
-##### Constructor
-
-> **new ServerError**(`status`, `message`): [`ServerError`](#servererror)
-
-Creates a new ServerError instance.
-
-###### Parameters
-
-| Parameter | Type     | Description                                               |
-| --------- | -------- | --------------------------------------------------------- |
-| `status`  | `number` | The HTTP status code for this error (e.g., 400, 404, 500) |
-| `message` | `string` | The error message describing what went wrong              |
-
-###### Returns
-
-[`ServerError`](#servererror)
-
-###### Overrides
-
-`Error.constructor`
-
-#### Properties
-
-| Property                                            | Type                            | Description                                                                                                        | Inherited from            |
-| --------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------- |
-| <a id="cause"></a> `cause?`                         | `unknown`                       | -                                                                                                                  | `Error.cause`             |
-| <a id="message"></a> `message`                      | `string`                        | -                                                                                                                  | `Error.message`           |
-| <a id="name"></a> `name`                            | `string`                        | -                                                                                                                  | `Error.name`              |
-| <a id="stack"></a> `stack?`                         | `string`                        | -                                                                                                                  | `Error.stack`             |
-| <a id="status"></a> `status`                        | `number`                        | The HTTP status code for this error (e.g., 400, 404, 500)                                                          | -                         |
-| <a id="preparestacktrace"></a> `prepareStackTrace?` | (`err`, `stackTraces`) => `any` | Optional override for formatting stack traces **See** https://v8.dev/docs/stack-trace-api#customizing-stack-traces | `Error.prepareStackTrace` |
-| <a id="stacktracelimit"></a> `stackTraceLimit`      | `number`                        | The maximum number of stack frames to capture.                                                                     | `Error.stackTraceLimit`   |
-
-#### Methods
-
-##### captureStackTrace()
-
-###### Call Signature
-
-> `static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
-
-Create .stack property on a target object
-
-###### Parameters
-
-| Parameter         | Type       |
-| ----------------- | ---------- |
-| `targetObject`    | `object`   |
-| `constructorOpt?` | `Function` |
-
-###### Returns
-
-`void`
-
-###### Inherited from
-
-`Error.captureStackTrace`
-
-###### Call Signature
-
-> `static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
-
-Create .stack property on a target object
-
-###### Parameters
-
-| Parameter         | Type       |
-| ----------------- | ---------- |
-| `targetObject`    | `object`   |
-| `constructorOpt?` | `Function` |
-
-###### Returns
-
-`void`
-
-###### Inherited from
-
-`Error.captureStackTrace`
-
-##### isError()
-
-> `static` **isError**(`value`): `value is Error`
-
-###### Parameters
-
-| Parameter | Type      |
-| --------- | --------- |
-| `value`   | `unknown` |
-
-###### Returns
-
-`value is Error`
-
-###### Inherited from
-
-`Error.isError`
 
 ## Interfaces
 

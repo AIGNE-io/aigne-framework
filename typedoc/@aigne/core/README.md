@@ -83,13 +83,12 @@ Elastic-2.0
 
 ## Modules
 
+- [aigne](aigne.md)
 - [agents/agent](agents/agent.md)
 - [agents/ai-agent](agents/ai-agent.md)
 - [agents/mcp-agent](agents/mcp-agent.md)
 - [agents/team-agent](agents/team-agent.md)
 - [agents/user-agent](agents/user-agent.md)
-- [aigne](aigne.md)
-- [client](client.md)
 - [models/chat-model](models/chat-model.md)
 - [models/claude-chat-model](models/claude-chat-model.md)
 - [models/deepseek-chat-model](models/deepseek-chat-model.md)
@@ -99,3 +98,4 @@ Elastic-2.0
 - [models/openai-chat-model](models/openai-chat-model.md)
 - [models/xai-chat-model](models/xai-chat-model.md)
 - [server](server.md)
+- [client](client.md)

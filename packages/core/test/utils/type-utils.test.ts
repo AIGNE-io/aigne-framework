@@ -11,6 +11,7 @@ import {
   omitBy,
   orArrayToArray,
   tryOrThrow,
+  unique,
 } from "@aigne/core/utils/type-utils.js";
 import { type ZodType, z } from "zod";
 
@@ -56,6 +57,15 @@ test("type-utils.duplicates", async () => {
   expect(duplicated).toEqual([{ id: 1, name: "baz" }]);
 
   expect(duplicates(["foo", "bar", "baz", "foo"])).toEqual(["foo"]);
+});
+
+test("type-utils.unique", async () => {
+  expect(unique([1, 2, 3, 1, 2, 3])).toEqual([1, 2, 3]);
+
+  expect(unique([{ id: 1 }, { id: 2 }, { id: 1 }], (item) => item.id)).toEqual([
+    { id: 1 },
+    { id: 2 },
+  ]);
 });
 
 test("type-utils.omitBy", async () => {

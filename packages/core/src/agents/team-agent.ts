@@ -1,7 +1,3 @@
-/**
- * @module core/agents/TeamAgent
- */
-
 import type { Context } from "../aigne/context.js";
 import { mergeAgentResponseChunk, readableStreamToAsyncIterator } from "../utils/stream-utils.js";
 import { type PromiseOrValue, isEmpty } from "../utils/type-utils.js";

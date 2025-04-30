@@ -1,7 +1,3 @@
-/**
- * @module core/models/ClaudeChatModel
- */
-
 import Anthropic from "@anthropic-ai/sdk";
 import type { MessageStream } from "@anthropic-ai/sdk/lib/MessageStream.js";
 import type {

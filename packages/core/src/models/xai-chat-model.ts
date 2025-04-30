@@ -1,7 +1,3 @@
-/**
- * @module core/models/XAIChatModel
- */
-
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "./openai-chat-model.js";
 
 const XAI_DEFAULT_CHAT_MODEL = "grok-2-latest";

@@ -1,7 +1,3 @@
-/**
- * @module core/models/OpenRouterChatModel
- */
-
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "./openai-chat-model.js";
 
 const OPEN_ROUTER_DEFAULT_CHAT_MODEL = "openai/gpt-4o";

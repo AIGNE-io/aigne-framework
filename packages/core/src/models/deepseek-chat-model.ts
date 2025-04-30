@@ -1,7 +1,3 @@
-/**
- * @module core/models/DeepSeekChatModel
- */
-
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "./openai-chat-model.js";
 
 const DEEPSEEK_DEFAULT_CHAT_MODEL = "deepseek-chat";

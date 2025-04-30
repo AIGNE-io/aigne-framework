@@ -1,7 +1,3 @@
-/**
- * @module core/agents/Agent
- */
-
 import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../aigne/context.js";

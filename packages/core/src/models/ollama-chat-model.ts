@@ -1,7 +1,3 @@
-/**
- * @module core/models/OllamaChatModel
- */
-
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "./openai-chat-model.js";
 
 const OLLAMA_DEFAULT_BASE_URL = "http://localhost:11434/v1";

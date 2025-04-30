@@ -1,7 +1,3 @@
-/**
- * @module core/models/GeminiChatModel
- */
-
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "./openai-chat-model.js";
 
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai";

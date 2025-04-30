@@ -1,4 +1,5 @@
 import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import type { Application } from "typedoc";
 import type { MarkdownRendererEvent } from "typedoc-plugin-markdown/dist/events/markdown-renderer-event.js";
 import type { NavigationItem } from "typedoc-plugin-markdown/dist/public-api.js";
@@ -16,11 +17,11 @@ function navigationToMarkdown(navigation?: NavigationItem[], level = 0, maxLevel
   if (!navigation || level >= maxLevel) return [];
 
   return navigation.map((item) => {
-    const title = item.path ? `- [${item.title}](${item.path || ""})` : `- ${item.title}`;
+    const title = item.path ? `- [${item.title}](${join("/", item.path)})` : `- ${item.title}`;
     const children = navigationToMarkdown(item.children, level + 1, maxLevel);
 
-    return [title, ...children.map((i) => `${" ".repeat((level + 1) * 2)}${i}`)].join(
-      level === 0 ? "\n\n" : "\n",
-    );
+    return [title, children.map((i) => `${" ".repeat((level + 1) * 2)}${i}`).join("\n")]
+      .filter(Boolean)
+      .join(level === 0 ? "\n\n" : "\n");
   });
 }

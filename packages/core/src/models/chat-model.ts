@@ -1,7 +1,3 @@
-/**
- * @module core/models/ChatModel
- */
-
 import { z } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import type { Context } from "../aigne/context.js";

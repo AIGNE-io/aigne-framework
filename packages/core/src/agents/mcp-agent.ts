@@ -1,7 +1,3 @@
-/**
- * @module core/agents/MCPAgent
- */
-
 import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
 import {
   SSEClientTransport,

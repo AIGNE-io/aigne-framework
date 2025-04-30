@@ -1,7 +1,3 @@
-/**
- * @module core/models/OpenaiChatModel
- */
-
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
 import type {

@@ -37,12 +37,6 @@ server.post("/aigne/invoke", async (req, res) => {
 
 const httpServer = server.listen(port);
 
-assert(aigne.model instanceof ChatModel);
-
-spyOn(aigne.model, "process").mockReturnValueOnce(
-  Promise.resolve(stringToAgentResponseStream("Hello world!")),
-);
-
 // Create an AIGNEClient instance
 const client = new AIGNEClient({ url });
 
@@ -50,8 +44,6 @@ const client = new AIGNEClient({ url });
 const response = await client.invoke("chat", { $message: "hello" });
 
 console.log(response); // Output: {$message: "Hello world!"}
-
-expect(response).toMatchSnapshot();
 ```
 
 Here's an example of how to use AIGNEServer with Hono:
@@ -78,12 +70,6 @@ honoApp.post("/aigne/invoke", async (c) => {
 
 const server = serve({ port, fetch: honoApp.fetch });
 
-assert(aigne.model instanceof ChatModel);
-
-spyOn(aigne.model, "process").mockReturnValueOnce(
-  Promise.resolve(stringToAgentResponseStream("Hello world!")),
-);
-
 // Create an AIGNEClient instance
 const client = new AIGNEClient({ url });
 
@@ -91,8 +77,6 @@ const client = new AIGNEClient({ url });
 const response = await client.invoke("chat", { $message: "hello" });
 
 console.log(response); // Output: {$message: "Hello world!"}
-
-expect(response).toMatchSnapshot();
 ```
 
 #### Constructors
@@ -177,12 +161,6 @@ honoApp.post("/aigne/invoke", async (c) => {
 
 const server = serve({ port, fetch: honoApp.fetch });
 
-assert(aigne.model instanceof ChatModel);
-
-spyOn(aigne.model, "process").mockReturnValueOnce(
-  Promise.resolve(stringToAgentResponseStream("Hello world!")),
-);
-
 // Create an AIGNEClient instance
 const client = new AIGNEClient({ url });
 
@@ -190,8 +168,6 @@ const client = new AIGNEClient({ url });
 const response = await client.invoke("chat", { $message: "hello" });
 
 console.log(response); // Output: {$message: "Hello world!"}
-
-expect(response).toMatchSnapshot();
 ```
 
 ###### Call Signature
@@ -241,12 +217,6 @@ server.post("/aigne/invoke", async (req, res) => {
 
 const httpServer = server.listen(port);
 
-assert(aigne.model instanceof ChatModel);
-
-spyOn(aigne.model, "process").mockReturnValueOnce(
-  Promise.resolve(stringToAgentResponseStream("Hello world!")),
-);
-
 // Create an AIGNEClient instance
 const client = new AIGNEClient({ url });
 
@@ -254,8 +224,6 @@ const client = new AIGNEClient({ url });
 const response = await client.invoke("chat", { $message: "hello" });
 
 console.log(response); // Output: {$message: "Hello world!"}
-
-expect(response).toMatchSnapshot();
 ```
 
 ---

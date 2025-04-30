@@ -40,8 +40,6 @@ const agent = new MyAgent();
 const result = await agent.invoke("hello");
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ text: "Hello, How can I assist you today?" });
 ```
 
 #### Extended by
@@ -185,10 +183,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ##### \[custom\]()
@@ -303,12 +297,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -324,8 +312,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Call Signature
@@ -361,12 +347,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -392,8 +372,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Call Signature
@@ -511,12 +489,6 @@ const agent = new DirectResponseAgent();
 const result = await agent.invoke({ message: "Hello" });
 
 console.log(result); // { text: "Hello, I received your message: { message: 'Hello' }", confidence: 0.95, timestamp: "2023-10-01T12:00:00Z" }
-
-expect(result).toEqual({
-  text: expect.stringContaining("Hello, I received your message:"),
-  confidence: 0.95,
-  timestamp: expect.any(String),
-});
 ```
 
 Example of returning a streaming response:
@@ -550,8 +522,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Hello, This is..."
-
-expect(fullText).toBe("Hello, This is...");
 ```
 
 Example of using an async generator:
@@ -592,10 +562,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
 
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
-
-expect(message).toEqual(["This", ",", " ", "This", " ", "is", "..."]);
-
-expect(json).toEqual({ time: expect.any(String) });
 ```
 
 Example of transfer to another agent:
@@ -624,11 +590,6 @@ const mainAgent = new MainAgent();
 const result = await aigne.invoke(mainAgent, "technical question");
 
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
-
-expect(result).toEqual({
-  response: "This is a specialist response",
-  expertise: "technical",
-});
 ```
 
 ##### shutdown()
@@ -660,11 +621,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -682,10 +639,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ---
@@ -711,8 +664,6 @@ const agent = FunctionAgent.from(({ name }: { name: string }) => {
 const result = await agent.invoke({ name: "Alice" });
 
 console.log(result); // Output: { greeting: "Hello, Alice!" }
-
-expect(result).toEqual({ greeting: "Hello, Alice!" });
 ```
 
 #### Extends
@@ -872,10 +823,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -1010,12 +957,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -1031,8 +972,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -1072,12 +1011,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -1103,8 +1036,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -1242,11 +1173,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -1264,10 +1191,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -1313,8 +1236,6 @@ const agent = FunctionAgent.from(({ a, b }: { a: number; b: number }) => {
 const result = await agent.invoke({ a: 5, b: 10 });
 
 console.log(result); // Output: { sum: 15 }
-
-expect(result).toEqual({ sum: 15 });
 ```
 
 Here's an example of creating a function agent without basic agent options:
@@ -1329,8 +1250,6 @@ const agent = FunctionAgent.from(({ name }: { name: string }) => {
 const result = await agent.invoke({ name: "Alice" });
 
 console.log(result); // Output: { greeting: "Hello, Alice!" }
-
-expect(result).toEqual({ greeting: "Hello, Alice!" });
 ```
 
 Here's an example of creating a function agent from a function returning a stream:
@@ -1351,8 +1270,6 @@ const agent = FunctionAgent.from(({ name }: { name: string }) => {
 const result = await agent.invoke({ name: "Alice" });
 
 console.log(result); // Output: { text: "Hello, Alice!" }
-
-expect(result).toEqual({ text: "Hello, Alice!" });
 ```
 
 Here's an example of creating a function agent from a function returning an async generator:
@@ -1368,8 +1285,6 @@ const agent = FunctionAgent.from(async function* ({ name }: { name: string }) {
 const result = await agent.invoke({ name: "Alice" });
 
 console.log(result); // Output: { text: "Hello, Alice!" }
-
-expect(result).toEqual({ text: "Hello, Alice!" });
 ```
 
 ## Interfaces

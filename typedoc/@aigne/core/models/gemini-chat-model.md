@@ -26,27 +26,11 @@ const model = new GeminiChatModel({
   },
 });
 
-spyOn(model, "process").mockReturnValueOnce({
-  text: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?",
-  model: "gemini-1.5-flash",
-});
-
 const result = await model.invoke({
   messages: [{ role: "user", content: "Hi there, introduce yourself" }],
 });
 
 console.log(result);
-
-/* Output:
-{
-  text: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?",
-  model: "gemini-1.5-flash"
-}
-*/
-expect(result).toEqual({
-  text: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?",
-  model: "gemini-1.5-flash",
-});
 ```
 
 Here's an example with streaming response:
@@ -55,17 +39,6 @@ Here's an example with streaming response:
 const model = new GeminiChatModel({
   apiKey: "your-api-key",
   model: "gemini-1.5-flash",
-});
-
-spyOn(model, "process").mockImplementationOnce(async function* () {
-  yield textDelta({ text: "Hello from Gemini!" });
-  yield textDelta({ text: " I'm Google's" });
-  yield textDelta({ text: " helpful AI" });
-  yield textDelta({ text: " assistant." });
-  yield textDelta({ text: " How can I assist you today?" });
-  return {
-    model: "gemini-1.5-flash",
-  };
 });
 
 const stream = await model.invoke(
@@ -89,14 +62,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(fullText); // Output: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?"
 
 console.log(json); // { model: "gemini-1.5-flash" }
-
-expect(fullText).toBe(
-  "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?",
-);
-
-expect(json).toEqual({
-  model: "gemini-1.5-flash",
-});
 ```
 
 #### Extends
@@ -285,10 +250,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -445,12 +406,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -466,8 +421,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -507,12 +460,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -538,8 +485,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -674,11 +619,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -696,10 +637,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from

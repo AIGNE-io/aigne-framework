@@ -32,39 +32,11 @@ const model = new ClaudeChatModel({
   },
 });
 
-spyOn(model, "process").mockReturnValueOnce({
-  text: "I'm Claude, an AI assistant created by Anthropic. How can I help you today?",
-  model: "claude-3-haiku-20240307",
-  usage: {
-    inputTokens: 8,
-    outputTokens: 15,
-  },
-});
-
 const result = await model.invoke({
   messages: [{ role: "user", content: "Tell me about yourself" }],
 });
 
 console.log(result);
-
-/* Output:
-{
-  text: "I'm Claude, an AI assistant created by Anthropic. How can I help you today?",
-  model: "claude-3-haiku-20240307",
-  usage: {
-    inputTokens: 8,
-    outputTokens: 15
-  }
-}
-*/
-expect(result).toEqual({
-  text: "I'm Claude, an AI assistant created by Anthropic. How can I help you today?",
-  model: "claude-3-haiku-20240307",
-  usage: {
-    inputTokens: 8,
-    outputTokens: 15,
-  },
-});
 ```
 
 Here's an example with streaming response:
@@ -73,17 +45,6 @@ Here's an example with streaming response:
 const model = new ClaudeChatModel({
   apiKey: "your-api-key",
   model: "claude-3-haiku-20240307",
-});
-
-spyOn(model, "process").mockImplementationOnce(async function* () {
-  yield textDelta({ text: "I'm Claude" });
-  yield textDelta({ text: ", an AI assistant" });
-  yield textDelta({ text: " created by Anthropic." });
-  yield textDelta({ text: " How can I help you today?" });
-  return {
-    model: "claude-3-haiku-20240307",
-    usage: { inputTokens: 8, outputTokens: 15 },
-  };
 });
 
 const stream = await model.invoke(
@@ -107,15 +68,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(fullText); // Output: "I'm Claude, an AI assistant created by Anthropic. How can I help you today?"
 
 console.log(json); // { model: "claude-3-haiku-20240307", usage: { inputTokens: 8, outputTokens: 15 } }
-
-expect(fullText).toBe(
-  "I'm Claude, an AI assistant created by Anthropic. How can I help you today?",
-);
-
-expect(json).toEqual({
-  model: "claude-3-haiku-20240307",
-  usage: { inputTokens: 8, outputTokens: 15 },
-});
 ```
 
 #### Extends
@@ -289,10 +241,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -449,12 +397,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -470,8 +412,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -511,12 +451,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -542,8 +476,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -678,11 +610,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -700,10 +628,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from

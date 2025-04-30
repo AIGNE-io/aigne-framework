@@ -46,21 +46,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-// Output:
-// {
-//   text: "Processed: Hello",
-//   model: "gpt-4o",
-//   usage: {
-//     inputTokens: 5,
-//     outputTokens: 10
-//   }
-// }
-expect(result).toEqual({
-  text: "Processed: Hello",
-  model: "gpt-4o",
-  usage: { inputTokens: 5, outputTokens: 10 },
-});
 ```
 
 Here's an example showing streaming response:
@@ -109,13 +94,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(fullText); // Output: "Processing your request..."
 
 console.log(json); // // Output: { model: "gpt-4o", usage: { inputTokens: 5, outputTokens: 10 } }
-
-expect(fullText).toBe("Processing your request...");
-
-expect(json).toEqual({
-  model: "gpt-4o",
-  usage: { inputTokens: 5, outputTokens: 10 },
-});
 ```
 
 Here's an example showing streaming response:
@@ -154,13 +132,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(fullText); // Output: "Processing your request..."
 
 console.log(json); // // Output: { model: "gpt-4o", usage: { inputTokens: 5, outputTokens: 10 } }
-
-expect(fullText).toBe("Processing your request...");
-
-expect(json).toEqual({
-  model: "gpt-4o",
-  usage: { inputTokens: 5, outputTokens: 10 },
-});
 ```
 
 Here's an example with tool calls:
@@ -215,33 +186,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-/* Output:
-{
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" }
-      }
-    }
-  ]
-}
-*/
-expect(result).toEqual({
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" },
-      },
-    },
-  ],
-});
 ```
 
 #### Extends
@@ -392,10 +336,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -548,12 +488,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -569,8 +503,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -610,12 +542,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -641,8 +567,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -774,12 +698,6 @@ const agent = new DirectResponseAgent();
 const result = await agent.invoke({ message: "Hello" });
 
 console.log(result); // { text: "Hello, I received your message: { message: 'Hello' }", confidence: 0.95, timestamp: "2023-10-01T12:00:00Z" }
-
-expect(result).toEqual({
-  text: expect.stringContaining("Hello, I received your message:"),
-  confidence: 0.95,
-  timestamp: expect.any(String),
-});
 ```
 
 Example of returning a streaming response:
@@ -813,8 +731,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Hello, This is..."
-
-expect(fullText).toBe("Hello, This is...");
 ```
 
 Example of using an async generator:
@@ -855,10 +771,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
 
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
-
-expect(message).toEqual(["This", ",", " ", "This", " ", "is", "..."]);
-
-expect(json).toEqual({ time: expect.any(String) });
 ```
 
 Example of transfer to another agent:
@@ -887,11 +799,6 @@ const mainAgent = new MainAgent();
 const result = await aigne.invoke(mainAgent, "technical question");
 
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
-
-expect(result).toEqual({
-  response: "This is a specialist response",
-  expertise: "technical",
-});
 ```
 
 ###### Inherited from
@@ -927,11 +834,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -949,10 +852,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -994,21 +893,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-// Output:
-// {
-//   text: "Processed: Hello",
-//   model: "gpt-4o",
-//   usage: {
-//     inputTokens: 5,
-//     outputTokens: 10
-//   }
-// }
-expect(result).toEqual({
-  text: "Processed: Hello",
-  model: "gpt-4o",
-  usage: { inputTokens: 5, outputTokens: 10 },
-});
 ```
 
 Here's an example with tool calling:
@@ -1063,33 +947,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-/* Output:
-{
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" }
-      }
-    }
-  ]
-}
-*/
-expect(result).toEqual({
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" },
-      },
-    },
-  ],
-});
 ```
 
 #### Extends
@@ -1191,33 +1048,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-/* Output:
-{
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" }
-      }
-    }
-  ]
-}
-*/
-expect(result).toEqual({
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" },
-      },
-    },
-  ],
-});
 ```
 
 #### Properties
@@ -1283,21 +1113,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-// Output:
-// {
-//   text: "Processed: Hello",
-//   model: "gpt-4o",
-//   usage: {
-//     inputTokens: 5,
-//     outputTokens: 10
-//   }
-// }
-expect(result).toEqual({
-  text: "Processed: Hello",
-  model: "gpt-4o",
-  usage: { inputTokens: 5, outputTokens: 10 },
-});
 ```
 
 Here's an example with tool calls:
@@ -1352,33 +1167,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-/* Output:
-{
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" }
-      }
-    }
-  ]
-}
-*/
-expect(result).toEqual({
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" },
-      },
-    },
-  ],
-});
 ```
 
 #### Extends
@@ -1461,33 +1249,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-/* Output:
-{
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" }
-      }
-    }
-  ]
-}
-*/
-expect(result).toEqual({
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" },
-      },
-    },
-  ],
-});
 ```
 
 #### Properties
@@ -1604,33 +1365,6 @@ const result = await model.invoke({
 });
 
 console.log(result);
-
-/* Output:
-{
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" }
-      }
-    }
-  ]
-}
-*/
-expect(result).toEqual({
-  toolCalls: [
-    {
-      id: "call_123",
-      type: "function",
-      function: {
-        name: "get_weather",
-        arguments: { param: "value" },
-      },
-    },
-  ],
-});
 ```
 
 ---

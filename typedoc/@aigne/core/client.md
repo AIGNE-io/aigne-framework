@@ -20,8 +20,6 @@ const client = new AIGNEClient({ url });
 const response = await client.invoke("chat", { $message: "hello" });
 
 console.log(response); // Output: {$message: "Hello world!"}
-
-expect(response).toEqual({ $message: "Hello world!" });
 ```
 
 Here's an example of how to use AIGNEClient with streaming response:
@@ -42,8 +40,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(text); // Output: "Hello world!"
-
-expect(text).toEqual("Hello world!");
 ```
 
 #### Constructors
@@ -111,8 +107,6 @@ const client = new AIGNEClient({ url });
 const response = await client.invoke("chat", { $message: "hello" });
 
 console.log(response); // Output: {$message: "Hello world!"}
-
-expect(response).toEqual({ $message: "Hello world!" });
 ```
 
 ###### Call Signature
@@ -162,8 +156,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(text); // Output: "Hello world!"
-
-expect(text).toEqual("Hello world!");
 ```
 
 ###### Call Signature

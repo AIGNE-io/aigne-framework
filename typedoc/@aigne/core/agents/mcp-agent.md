@@ -37,18 +37,6 @@ if (!echo) throw new Error("Skill not found");
 const result = await echo.invoke({ message: "Hello!" });
 
 console.log(result);
-
-// {
-//   "content": [
-//     {
-//       "text": "Tool echo: Hello!",
-//       "type": "text",
-//     },
-//   ],
-// }
-expect(mcpAgent.name).toBe("example-server");
-
-expect(result).toMatchSnapshot();
 ```
 
 #### Extends
@@ -95,8 +83,6 @@ await using mcpAgent = MCPAgent.from({
 });
 
 console.log(mcpAgent.name); // Output: "example-server"
-
-expect(mcpAgent.name).toBe("example-server");
 ```
 
 ###### Overrides
@@ -105,18 +91,18 @@ expect(mcpAgent.name).toBe("example-server");
 
 #### Properties
 
-| Property                                                  | Type                                                                                                                                                                                                             | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Inherited from                                                                          |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| <a id="client"></a> `client`                              | `Client`                                                                                                                                                                                                         | The MCP client instance used for communication with the MCP server. This client manages the connection to the MCP server and provides methods for interacting with server-provided functionality.                                                                                                                                                                                                                                                                                                                                                                                                                                                    | -                                                                                       |
-| <a id="description"></a> `description?`                   | `string`                                                                                                                                                                                                         | Description of the agent's purpose and capabilities Useful for documentation and when agents need to understand each other's roles in a multi-agent system                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | [`Agent`](agent.md#agent).[`description`](agent.md#agent#description)                   |
-| <a id="includeinputinoutput"></a> `includeInputInOutput?` | `boolean`                                                                                                                                                                                                        | Whether to include the original input in the output When true, the agent will merge input fields into the output object                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | [`Agent`](agent.md#agent).[`includeInputInOutput`](agent.md#agent#includeinputinoutput) |
-| <a id="memory"></a> `memory?`                             | `AgentMemory`                                                                                                                                                                                                    | Agent's memory instance for storing conversation history When enabled, allows the agent to remember past interactions and use them for context in future processing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | [`Agent`](agent.md#agent).[`memory`](agent.md#agent#memory)                             |
-| <a id="name"></a> `name`                                  | `string`                                                                                                                                                                                                         | Name of the agent, used for identification and logging Defaults to the class constructor name if not specified in options                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | [`Agent`](agent.md#agent).[`name`](agent.md#agent#name)                                 |
-| <a id="prompts"></a> `prompts`                            | [`MCPPrompt`](#mcpprompt)[] & \{[`key`: `string`]: [`MCPPrompt`](#mcpprompt); \}                                                                                                                                 | Array of MCP prompts available from the connected server. Prompts can be accessed by index or by name. **Example** Here's an example of accessing prompts: `await using mcpAgent = await MCPAgent.from({ url: `http://localhost:${port}/mcp`, transport: "streamableHttp", }); const echo = mcpAgent.prompts.echo; if (!echo) throw new Error("Prompt not found"); const result = await echo.invoke({ message: "Hello!" }); console.log(result); // { // "messages": [ // { // "content": { // "text": "Please process this message: Hello!", // "type": "text", // }, // "role": "user", // }, // ... // ], // } expect(result).toMatchSnapshot();` | -                                                                                       |
-| <a id="publishtopic"></a> `publishTopic?`                 | [`PublishTopic`](agent.md#publishtopic-4)\<[`Message`](agent.md#message)\>                                                                                                                                       | Topics the agent publishes to for sending messages Can be a string, array of strings, or a function that determines topics based on the output                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [`Agent`](agent.md#agent).[`publishTopic`](agent.md#agent#publishtopic)                 |
-| <a id="resources"></a> `resources`                        | [`MCPResource`](#mcpresource)[] & \{[`key`: `string`]: [`MCPResource`](#mcpresource); \}                                                                                                                         | Array of MCP resources available from the connected server. Resources can be accessed by index or by name. **Example** Here's an example of accessing resources: `await using mcpAgent = await MCPAgent.from({ url: `http://localhost:${port}/mcp`, transport: "streamableHttp", }); const echo = mcpAgent.resources.echo; if (!echo) throw new Error("Resource not found"); const result = await echo.invoke({ message: "Hello!" }); console.log(result); // { // "contents": [ // { // "text": "Resource echo: Hello!", // "uri": "echo://Hello!", // }, // ], // } expect(result).toMatchSnapshot();`                                             | -                                                                                       |
-| <a id="skills"></a> `skills`                              | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\>; \} | Collection of skills (other agents) this agent can use Skills can be accessed by name or by array index, allowing the agent to delegate tasks to specialized sub-agents                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | [`Agent`](agent.md#agent).[`skills`](agent.md#agent#skills)                             |
-| <a id="subscribetopic"></a> `subscribeTopic?`             | [`SubscribeTopic`](agent.md#subscribetopic-4)                                                                                                                                                                    | Topics the agent subscribes to for receiving messages Can be a single topic string or an array of topic strings                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | [`Agent`](agent.md#agent).[`subscribeTopic`](agent.md#agent#subscribetopic)             |
+| Property                                                  | Type                                                                                                                                                                                                             | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Inherited from                                                                          |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| <a id="client"></a> `client`                              | `Client`                                                                                                                                                                                                         | The MCP client instance used for communication with the MCP server. This client manages the connection to the MCP server and provides methods for interacting with server-provided functionality.                                                                                                                                                                                                                                                           | -                                                                                       |
+| <a id="description"></a> `description?`                   | `string`                                                                                                                                                                                                         | Description of the agent's purpose and capabilities Useful for documentation and when agents need to understand each other's roles in a multi-agent system                                                                                                                                                                                                                                                                                                  | [`Agent`](agent.md#agent).[`description`](agent.md#agent#description)                   |
+| <a id="includeinputinoutput"></a> `includeInputInOutput?` | `boolean`                                                                                                                                                                                                        | Whether to include the original input in the output When true, the agent will merge input fields into the output object                                                                                                                                                                                                                                                                                                                                     | [`Agent`](agent.md#agent).[`includeInputInOutput`](agent.md#agent#includeinputinoutput) |
+| <a id="memory"></a> `memory?`                             | `AgentMemory`                                                                                                                                                                                                    | Agent's memory instance for storing conversation history When enabled, allows the agent to remember past interactions and use them for context in future processing                                                                                                                                                                                                                                                                                         | [`Agent`](agent.md#agent).[`memory`](agent.md#agent#memory)                             |
+| <a id="name"></a> `name`                                  | `string`                                                                                                                                                                                                         | Name of the agent, used for identification and logging Defaults to the class constructor name if not specified in options                                                                                                                                                                                                                                                                                                                                   | [`Agent`](agent.md#agent).[`name`](agent.md#agent#name)                                 |
+| <a id="prompts"></a> `prompts`                            | [`MCPPrompt`](#mcpprompt)[] & \{[`key`: `string`]: [`MCPPrompt`](#mcpprompt); \}                                                                                                                                 | Array of MCP prompts available from the connected server. Prompts can be accessed by index or by name. **Example** Here's an example of accessing prompts: `await using mcpAgent = await MCPAgent.from({ url: `http://localhost:${port}/mcp`, transport: "streamableHttp", }); const echo = mcpAgent.prompts.echo; if (!echo) throw new Error("Prompt not found"); const result = await echo.invoke({ message: "Hello!" }); console.log(result);`           | -                                                                                       |
+| <a id="publishtopic"></a> `publishTopic?`                 | [`PublishTopic`](agent.md#publishtopic-4)\<[`Message`](agent.md#message)\>                                                                                                                                       | Topics the agent publishes to for sending messages Can be a string, array of strings, or a function that determines topics based on the output                                                                                                                                                                                                                                                                                                              | [`Agent`](agent.md#agent).[`publishTopic`](agent.md#agent#publishtopic)                 |
+| <a id="resources"></a> `resources`                        | [`MCPResource`](#mcpresource)[] & \{[`key`: `string`]: [`MCPResource`](#mcpresource); \}                                                                                                                         | Array of MCP resources available from the connected server. Resources can be accessed by index or by name. **Example** Here's an example of accessing resources: `await using mcpAgent = await MCPAgent.from({ url: `http://localhost:${port}/mcp`, transport: "streamableHttp", }); const echo = mcpAgent.resources.echo; if (!echo) throw new Error("Resource not found"); const result = await echo.invoke({ message: "Hello!" }); console.log(result);` | -                                                                                       |
+| <a id="skills"></a> `skills`                              | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\>; \} | Collection of skills (other agents) this agent can use Skills can be accessed by name or by array index, allowing the agent to delegate tasks to specialized sub-agents                                                                                                                                                                                                                                                                                     | [`Agent`](agent.md#agent).[`skills`](agent.md#agent#skills)                             |
+| <a id="subscribetopic"></a> `subscribeTopic?`             | [`SubscribeTopic`](agent.md#subscribetopic-4)                                                                                                                                                                    | Topics the agent subscribes to for receiving messages Can be a single topic string or an array of topic strings                                                                                                                                                                                                                                                                                                                                             | [`Agent`](agent.md#agent).[`subscribeTopic`](agent.md#agent#subscribetopic)             |
 
 #### Accessors
 
@@ -231,10 +217,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -369,12 +351,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -390,8 +366,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -431,12 +405,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -462,8 +430,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -600,11 +566,7 @@ const mcpAgent = await MCPAgent.from({
   transport: "streamableHttp",
 });
 
-const close = spyOn(mcpAgent.client, "close");
-
 await mcpAgent.shutdown();
-
-expect(close).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an MCPAgent by using statement:
@@ -615,10 +577,6 @@ await using _mcpAgent = await MCPAgent.from({
   url: `http://localhost:${port}/mcp`,
   transport: "streamableHttp",
 });
-
-const close = spyOn(_mcpAgent.client, "close");
-
-expect(close).not.toHaveBeenCalled();
 ```
 
 ###### Overrides
@@ -668,18 +626,6 @@ if (!echo) throw new Error("Skill not found");
 const result = await echo.invoke({ message: "Hello!" });
 
 console.log(result);
-
-// {
-//   "content": [
-//     {
-//       "text": "Tool echo: Hello!",
-//       "type": "text",
-//     },
-//   ],
-// }
-expect(mcpAgent.name).toBe("example-server-streamable-http");
-
-expect(result).toMatchSnapshot();
 ```
 
 Here's an example of creating an MCPAgent with SSE transport:
@@ -700,18 +646,6 @@ if (!echo) throw new Error("Skill not found");
 const result = await echo.invoke({ message: "Hello!" });
 
 console.log(result);
-
-// {
-//   "content": [
-//     {
-//       "text": "Tool echo: Hello!",
-//       "type": "text",
-//     },
-//   ],
-// }
-expect(mcpAgent.name).toBe("example-server");
-
-expect(result).toMatchSnapshot();
 ```
 
 Here's an example of creating an MCPAgent with Stdio transport:
@@ -732,18 +666,6 @@ if (!echo) throw new Error("Skill not found");
 const result = await echo.invoke({ message: "Hello!" });
 
 console.log(result);
-
-// {
-//   "content": [
-//     {
-//       "text": "Tool echo: Hello!",
-//       "type": "text",
-//     },
-//   ],
-// }
-expect(mcpAgent.name).toBe("example-server");
-
-expect(result).toMatchSnapshot();
 ```
 
 ###### Call Signature
@@ -789,8 +711,6 @@ await using mcpAgent = MCPAgent.from({
 });
 
 console.log(mcpAgent.name); // Output: "example-server"
-
-expect(mcpAgent.name).toBe("example-server");
 ```
 
 ---
@@ -831,8 +751,6 @@ const agent = new MyAgent();
 const result = await agent.invoke("hello");
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ text: "Hello, How can I assist you today?" });
 ```
 
 #### Extends
@@ -997,10 +915,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -1135,12 +1049,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -1156,8 +1064,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -1197,12 +1103,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -1228,8 +1128,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -1363,12 +1261,6 @@ const agent = new DirectResponseAgent();
 const result = await agent.invoke({ message: "Hello" });
 
 console.log(result); // { text: "Hello, I received your message: { message: 'Hello' }", confidence: 0.95, timestamp: "2023-10-01T12:00:00Z" }
-
-expect(result).toEqual({
-  text: expect.stringContaining("Hello, I received your message:"),
-  confidence: 0.95,
-  timestamp: expect.any(String),
-});
 ```
 
 Example of returning a streaming response:
@@ -1402,8 +1294,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Hello, This is..."
-
-expect(fullText).toBe("Hello, This is...");
 ```
 
 Example of using an async generator:
@@ -1444,10 +1334,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
 
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
-
-expect(message).toEqual(["This", ",", " ", "This", " ", "is", "..."]);
-
-expect(json).toEqual({ time: expect.any(String) });
 ```
 
 Example of transfer to another agent:
@@ -1476,11 +1362,6 @@ const mainAgent = new MainAgent();
 const result = await aigne.invoke(mainAgent, "technical question");
 
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
-
-expect(result).toEqual({
-  response: "This is a specialist response",
-  expertise: "technical",
-});
 ```
 
 ###### Inherited from
@@ -1516,11 +1397,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -1538,10 +1415,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -1586,8 +1459,6 @@ const agent = new MyAgent();
 const result = await agent.invoke("hello");
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ text: "Hello, How can I assist you today?" });
 ```
 
 #### Extends
@@ -1739,10 +1610,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -1877,12 +1744,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -1898,8 +1759,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -1939,12 +1798,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -1970,8 +1823,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -2107,12 +1958,6 @@ const agent = new DirectResponseAgent();
 const result = await agent.invoke({ message: "Hello" });
 
 console.log(result); // { text: "Hello, I received your message: { message: 'Hello' }", confidence: 0.95, timestamp: "2023-10-01T12:00:00Z" }
-
-expect(result).toEqual({
-  text: expect.stringContaining("Hello, I received your message:"),
-  confidence: 0.95,
-  timestamp: expect.any(String),
-});
 ```
 
 Example of returning a streaming response:
@@ -2146,8 +1991,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Hello, This is..."
-
-expect(fullText).toBe("Hello, This is...");
 ```
 
 Example of using an async generator:
@@ -2188,10 +2031,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
 
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
-
-expect(message).toEqual(["This", ",", " ", "This", " ", "is", "..."]);
-
-expect(json).toEqual({ time: expect.any(String) });
 ```
 
 Example of transfer to another agent:
@@ -2220,11 +2059,6 @@ const mainAgent = new MainAgent();
 const result = await aigne.invoke(mainAgent, "technical question");
 
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
-
-expect(result).toEqual({
-  response: "This is a specialist response",
-  expertise: "technical",
-});
 ```
 
 ###### Overrides
@@ -2260,11 +2094,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -2282,10 +2112,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -2330,8 +2156,6 @@ const agent = new MyAgent();
 const result = await agent.invoke("hello");
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ text: "Hello, How can I assist you today?" });
 ```
 
 #### Extends
@@ -2484,10 +2308,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -2622,12 +2442,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -2643,8 +2457,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -2684,12 +2496,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -2715,8 +2521,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -2851,12 +2655,6 @@ const agent = new DirectResponseAgent();
 const result = await agent.invoke({ message: "Hello" });
 
 console.log(result); // { text: "Hello, I received your message: { message: 'Hello' }", confidence: 0.95, timestamp: "2023-10-01T12:00:00Z" }
-
-expect(result).toEqual({
-  text: expect.stringContaining("Hello, I received your message:"),
-  confidence: 0.95,
-  timestamp: expect.any(String),
-});
 ```
 
 Example of returning a streaming response:
@@ -2890,8 +2688,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Hello, This is..."
-
-expect(fullText).toBe("Hello, This is...");
 ```
 
 Example of using an async generator:
@@ -2932,10 +2728,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
 
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
-
-expect(message).toEqual(["This", ",", " ", "This", " ", "is", "..."]);
-
-expect(json).toEqual({ time: expect.any(String) });
 ```
 
 Example of transfer to another agent:
@@ -2964,11 +2756,6 @@ const mainAgent = new MainAgent();
 const result = await aigne.invoke(mainAgent, "technical question");
 
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
-
-expect(result).toEqual({
-  response: "This is a specialist response",
-  expertise: "technical",
-});
 ```
 
 ###### Overrides
@@ -3004,11 +2791,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -3026,10 +2809,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -3074,8 +2853,6 @@ const agent = new MyAgent();
 const result = await agent.invoke("hello");
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ text: "Hello, How can I assist you today?" });
 ```
 
 #### Extends
@@ -3227,10 +3004,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -3365,12 +3138,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -3386,8 +3153,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -3427,12 +3192,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -3458,8 +3217,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -3595,12 +3352,6 @@ const agent = new DirectResponseAgent();
 const result = await agent.invoke({ message: "Hello" });
 
 console.log(result); // { text: "Hello, I received your message: { message: 'Hello' }", confidence: 0.95, timestamp: "2023-10-01T12:00:00Z" }
-
-expect(result).toEqual({
-  text: expect.stringContaining("Hello, I received your message:"),
-  confidence: 0.95,
-  timestamp: expect.any(String),
-});
 ```
 
 Example of returning a streaming response:
@@ -3634,8 +3385,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Hello, This is..."
-
-expect(fullText).toBe("Hello, This is...");
 ```
 
 Example of using an async generator:
@@ -3676,10 +3425,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
 
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
-
-expect(message).toEqual(["This", ",", " ", "This", " ", "is", "..."]);
-
-expect(json).toEqual({ time: expect.any(String) });
 ```
 
 Example of transfer to another agent:
@@ -3708,11 +3453,6 @@ const mainAgent = new MainAgent();
 const result = await aigne.invoke(mainAgent, "technical question");
 
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
-
-expect(result).toEqual({
-  response: "This is a specialist response",
-  expertise: "technical",
-});
 ```
 
 ###### Overrides
@@ -3748,11 +3488,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -3770,10 +3506,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from

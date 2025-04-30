@@ -28,39 +28,11 @@ const model = new DeepSeekChatModel({
   },
 });
 
-spyOn(model, "process").mockReturnValueOnce({
-  text: "Hello! I'm an AI assistant powered by DeepSeek's language model.",
-  model: "deepseek-chat",
-  usage: {
-    inputTokens: 7,
-    outputTokens: 12,
-  },
-});
-
 const result = await model.invoke({
   messages: [{ role: "user", content: "Introduce yourself" }],
 });
 
 console.log(result);
-
-/* Output:
-{
-  text: "Hello! I'm an AI assistant powered by DeepSeek's language model.",
-  model: "deepseek-chat",
-  usage: {
-    inputTokens: 7,
-    outputTokens: 12
-  }
-}
-*/
-expect(result).toEqual({
-  text: "Hello! I'm an AI assistant powered by DeepSeek's language model.",
-  model: "deepseek-chat",
-  usage: {
-    inputTokens: 7,
-    outputTokens: 12,
-  },
-});
 ```
 
 Here's an example with streaming response:
@@ -69,18 +41,6 @@ Here's an example with streaming response:
 const model = new DeepSeekChatModel({
   apiKey: "your-api-key",
   model: "deepseek-chat",
-});
-
-spyOn(model, "process").mockImplementationOnce(async function* () {
-  yield textDelta({ text: "Hello!" });
-  yield textDelta({ text: " I'm an AI" });
-  yield textDelta({ text: " assistant" });
-  yield textDelta({ text: " powered by" });
-  yield textDelta({ text: " DeepSeek's language model." });
-  return {
-    model: "deepseek-chat",
-    usage: { inputTokens: 7, outputTokens: 12 },
-  };
 });
 
 const stream = await model.invoke(
@@ -104,15 +64,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 console.log(fullText); // Output: "Hello! I'm an AI assistant powered by DeepSeek's language model."
 
 console.log(json); // { model: "deepseek-chat", usage: { inputTokens: 7, outputTokens: 12 } }
-
-expect(fullText).toBe(
-  "Hello! I'm an AI assistant powered by DeepSeek's language model.",
-);
-
-expect(json).toEqual({
-  model: "deepseek-chat",
-  usage: { inputTokens: 7, outputTokens: 12 },
-});
 ```
 
 #### Extends
@@ -301,10 +252,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from
@@ -461,12 +408,6 @@ Here's an example of invoking an agent with regular mode:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -482,8 +423,6 @@ const agent = AIAgent.from({
 const result = await aigne.invoke(agent, "hello");
 
 console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
-
-expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
 ```
 
 ###### Inherited from
@@ -523,12 +462,6 @@ Here's an example of invoking an agent with streaming response:
 // Create a chat model
 const model = new OpenAIChatModel();
 
-spyOn(model, "process").mockReturnValueOnce(
-  Promise.resolve(
-    stringToAgentResponseStream("Hello, How can I assist you today?"),
-  ),
-);
-
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({
   model,
@@ -554,8 +487,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I", " ", "assist", " ", "you", " ", "today", "?"]
-
-expect(chunks).toMatchSnapshot();
 ```
 
 ###### Inherited from
@@ -690,11 +621,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const shutdown = spyOn(agent, "shutdown");
-
 await agent.shutdown();
-
-expect(shutdown).toHaveBeenCalled();
 ```
 
 Here's an example of shutting down an agent by using statement:
@@ -712,10 +639,6 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
-
-const shutdown = spyOn(agent, "shutdown");
-
-expect(shutdown).not.toHaveBeenCalled();
 ```
 
 ###### Inherited from

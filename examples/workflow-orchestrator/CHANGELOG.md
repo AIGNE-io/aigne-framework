@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.9.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.8.0...example-workflow-orchestrator-v1.9.0) (2025-04-30)
+
+
+### Features
+
+* **core:** add BedrockChatModel support ([#101](https://github.com/AIGNE-io/aigne-framework/issues/101)) ([a0b98f0](https://github.com/AIGNE-io/aigne-framework/commit/a0b98f01bd78a135232226548848fa35a64982d1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.7.1
+    * @aigne/cli bumped to 1.8.1
+    * @aigne/core bumped to 1.13.0
+
 ## [1.8.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.7.3...example-workflow-orchestrator-v1.8.0) (2025-04-27)
 
 

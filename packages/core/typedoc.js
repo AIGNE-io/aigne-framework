@@ -1,7 +1,10 @@
+import base from "../../typedoc.base.js";
+
 /**
  * @type {import('typedoc').TypeDocOptions}
  */
 const config = {
+  ...base,
   entryPoints: [
     "src/aigne/index.ts",
     "src/agents/*agent.ts",
@@ -9,11 +12,6 @@ const config = {
     "src/server/index.ts",
     "src/client/index.ts",
   ],
-  entryPointStrategy: "expand",
-  jsDocCompatibility: {
-    exampleTag: false,
-  },
-  removeExpressionsFromExamples: ["spyOn", "expect", "mock", "assert"],
 };
 
 export default config;

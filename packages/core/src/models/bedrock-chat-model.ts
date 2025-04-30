@@ -26,27 +26,14 @@ import {
   type ChatModelOutput,
 } from "./chat-model.js";
 
-export function extractLastJsonObject(text: string): RegExpMatchArray | null {
-  const stack: number[] = [];
-  const candidates: string[] = [];
-
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === "{") {
-      stack.push(i);
-    } else if (text[i] === "}") {
-      const start = stack.pop();
-      if (start !== undefined) {
-        const jsonStr = text.slice(start, i + 1);
-        try {
-          parseJSON(jsonStr);
-          candidates.push(jsonStr);
-        } catch (_) {}
-      }
-    }
+export function extractLastJsonObject(text: string): string | null {
+  const cleaned = text.replace(/<thinking>[\s\S]*?<\/thinking>/g, "").trim();
+  try {
+    parseJSON(cleaned);
+    return cleaned;
+  } catch {
+    return null;
   }
-
-  const last = candidates[candidates.length - 1];
-  return last ? [last] : null;
 }
 
 const BEDROCK_DEFAULT_CHAT_MODEL = "us.amazon.nova-lite-v1:0";
@@ -210,7 +197,7 @@ export class BedrockChatModel extends ChatModel {
             if (!match) throw new Error("Failed to extract JSON object from model output");
 
             controller.enqueue({
-              delta: { json: { json: parseJSON(match[0]) } },
+              delta: { json: { json: parseJSON(match) } },
             });
           }
 
@@ -343,8 +330,10 @@ function convertTools({ tools, toolChoice }: ChatModelInput): ConverseStreamRequ
 
   return {
     tools: tools.map((i) => {
-      if (i.function.name.includes("-")) {
-        throw new Error(`Tool name "${i.function.name}" cannot contain hyphens`);
+      if (!/^[a-zA-Z0-9_]+$/.test(i.function.name)) {
+        throw new Error(
+          `Tool name "${i.function.name}" can only contain letters, numbers, and underscores`,
+        );
       }
       const parameters = i.function.parameters as Record<string, unknown>;
       if (Object.keys(parameters).length === 0) {

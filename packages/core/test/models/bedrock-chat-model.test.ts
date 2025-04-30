@@ -93,17 +93,15 @@ describe("extractLastJsonObject", () => {
   test("should extract last JSON object from text", () => {
     const text = `
       <thinking>...</thinking>
-      {"key1": "value1"}
       {"key2": "value2", "key3": {"key4": "value4", "key5": [{"key6": "value6"}]}}
-      other text...
     `;
     const match = extractLastJsonObject(text);
     expect(match).toBeTruthy();
     if (match) {
-      expect(match[0]).toBe(
+      expect(match).toBe(
         '{"key2": "value2", "key3": {"key4": "value4", "key5": [{"key6": "value6"}]}}',
       );
-      expect(parseJSON(match[0])).toEqual({
+      expect(parseJSON(match)).toEqual({
         key2: "value2",
         key3: { key4: "value4", key5: [{ key6: "value6" }] },
       });

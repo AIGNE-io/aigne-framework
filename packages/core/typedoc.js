@@ -13,6 +13,7 @@ const config = {
   jsDocCompatibility: {
     exampleTag: false,
   },
+  removeExpressionsFromExamples: ["spyOn", "expect", "mock", "assert"],
 };
 
 export default config;

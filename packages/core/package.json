@@ -73,7 +73,7 @@
     "clean": "rimraf lib test/coverage",
     "prepublishOnly": "run-s clean build",
     "test": "bun --cwd test test",
-    "test:coverage": "bun --cwd test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test:coverage": "bun --cwd test test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {

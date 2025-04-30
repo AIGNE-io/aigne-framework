@@ -26,6 +26,29 @@ import {
   type ChatModelOutput,
 } from "./chat-model.js";
 
+export function extractLastJsonObject(text: string): RegExpMatchArray | null {
+  const stack: number[] = [];
+  const candidates: string[] = [];
+
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === "{") {
+      stack.push(i);
+    } else if (text[i] === "}") {
+      const start = stack.pop();
+      if (start !== undefined) {
+        const jsonStr = text.slice(start, i + 1);
+        try {
+          parseJSON(jsonStr);
+          candidates.push(jsonStr);
+        } catch (_) {}
+      }
+    }
+  }
+
+  const last = candidates[candidates.length - 1];
+  return last ? [last] : null;
+}
+
 const BEDROCK_DEFAULT_CHAT_MODEL = "us.amazon.nova-lite-v1:0";
 
 export interface BedrockChatModelOptions {
@@ -183,9 +206,7 @@ export class BedrockChatModel extends ChatModel {
           }
 
           if (jsonMode && text) {
-            console.log("text", text);
-            // Nova model may include Chain of Thought (COT) output, so we need to extract the last JSON object
-            const match = text.trim().match(/\{[\s\S]*\}$/);
+            const match = extractLastJsonObject(text);
             if (!match) throw new Error("Failed to extract JSON object from model output");
 
             controller.enqueue({
@@ -322,6 +343,9 @@ function convertTools({ tools, toolChoice }: ChatModelInput): ConverseStreamRequ
 
   return {
     tools: tools.map((i) => {
+      if (i.function.name.includes("-")) {
+        throw new Error(`Tool name "${i.function.name}" cannot contain hyphens`);
+      }
       const parameters = i.function.parameters as Record<string, unknown>;
       if (Object.keys(parameters).length === 0) {
         parameters.type = "object";

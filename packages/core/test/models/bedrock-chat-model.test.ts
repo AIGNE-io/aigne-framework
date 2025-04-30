@@ -1,6 +1,7 @@
-import { expect, spyOn, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
-import { BedrockChatModel } from "@aigne/core/models/bedrock-chat-model.js";
+import { BedrockChatModel, extractLastJsonObject } from "@aigne/core/models/bedrock-chat-model.js";
+import { parseJSON } from "@aigne/core/utils/json-schema.js";
 import { readableStreamToArray } from "@aigne/core/utils/stream-utils.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
 import {
@@ -86,4 +87,26 @@ test("BedrockChatModel.invoke without streaming", async () => {
   });
 
   expect(result).toMatchSnapshot();
+});
+
+describe("extractLastJsonObject", () => {
+  test("should extract last JSON object from text", () => {
+    const text = `
+      <thinking>...</thinking>
+      {"key1": "value1"}
+      {"key2": "value2", "key3": {"key4": "value4", "key5": [{"key6": "value6"}]}}
+      other text...
+    `;
+    const match = extractLastJsonObject(text);
+    expect(match).toBeTruthy();
+    if (match) {
+      expect(match[0]).toBe(
+        '{"key2": "value2", "key3": {"key4": "value4", "key5": [{"key6": "value6"}]}}',
+      );
+      expect(parseJSON(match[0])).toEqual({
+        key2: "value2",
+        key3: { key4: "value4", key5: [{ key6: "value6" }] },
+      });
+    }
+  });
 });

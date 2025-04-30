@@ -8,15 +8,15 @@ import { z } from "zod";
 const model = await loadModel();
 
 const sandbox = FunctionAgent.from({
-  name: "js-sandbox",
-  description: "A js sandbox for running javascript code",
+  name: "evaluateJs",
+  description: "Run JavaScript code in a sandboxed environment and return the result.",
   inputSchema: z.object({
-    code: z.string().describe("The code to run"),
+    jsCode: z.string().describe("The code to run"),
   }),
-  fn: async (input: { code: string }) => {
-    const { code } = input;
+  fn: async (input: { jsCode: string }) => {
+    const { jsCode } = input;
     // biome-ignore lint/security/noGlobalEval: <explanation>
-    const result = eval(code);
+    const result = eval(jsCode);
     return { result };
   },
 });

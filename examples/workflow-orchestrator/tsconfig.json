@@ -1,8 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "paths": {
-      "@aigne/agent-library/*": ["../../packages/agent-library/src/*"]
-    }
-  }
+  "compilerOptions": {}
 }

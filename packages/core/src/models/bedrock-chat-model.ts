@@ -29,6 +29,8 @@ import {
 const BEDROCK_DEFAULT_CHAT_MODEL = "us.amazon.nova-lite-v1:0";
 
 export interface BedrockChatModelOptions {
+  accessKeyId?: string;
+  secretAccessKey?: string;
   region?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
@@ -58,8 +60,16 @@ export class BedrockChatModel extends ChatModel {
   protected _client?: BedrockRuntimeClient;
 
   get client() {
+    const credentials =
+      this.options?.accessKeyId && this.options?.secretAccessKey
+        ? {
+            accessKeyId: this.options.accessKeyId,
+            secretAccessKey: this.options.secretAccessKey,
+          }
+        : undefined;
     this._client ??= new BedrockRuntimeClient({
       region: this.options?.region,
+      credentials,
     });
     return this._client;
   }
@@ -173,6 +183,7 @@ export class BedrockChatModel extends ChatModel {
           }
 
           if (jsonMode && text) {
+            console.log("text", text);
             // Nova model may include Chain of Thought (COT) output, so we need to extract the last JSON object
             const match = text.trim().match(/\{[\s\S]*\}$/);
             if (!match) throw new Error("Failed to extract JSON object from model output");

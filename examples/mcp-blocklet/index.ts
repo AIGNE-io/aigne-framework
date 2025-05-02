@@ -33,7 +33,6 @@ try {
   process.exit(1);
 }
 
-console.info("Connecting to blocklet", appUrl.href);
 appUrl.pathname = "/.well-known/service/mcp";
 console.info("Connecting to blocklet", appUrl.href);
 
@@ -116,7 +115,6 @@ const model = await loadModel();
 
 const blocklet = await MCPAgent.from({
   url: appUrl.href,
-  timeout: 8000,
   transport: "streamableHttp",
   opts: {
     authProvider: provider,

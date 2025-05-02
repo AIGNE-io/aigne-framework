@@ -21,12 +21,26 @@ assert(
 );
 
 const appUrl = new URL(rawUrl);
+try {
+  appUrl.pathname = "/__blocklet__.js";
+  const result = await fetch(appUrl.href);
+  if (result.status !== 200) {
+    console.error("Seems like the provided url is not a valid blocklet url: ", rawUrl);
+    process.exit(1);
+  }
+} catch (error) {
+  console.error("Error verifying blocklet url", error);
+  process.exit(1);
+}
+
+console.info("Connecting to blocklet", appUrl.href);
 appUrl.pathname = "/.well-known/service/mcp";
 console.info("Connecting to blocklet", appUrl.href);
 
 let transport: StreamableHTTPClientTransport;
 
 const provider = new TerminalOAuthProvider(appUrl.host);
+
 const authCodePromise = new Promise((resolve, reject) => {
   provider.once("authorized", async (code) => {
     await transport.finishAuth(code);

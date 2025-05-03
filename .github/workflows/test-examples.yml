@@ -84,16 +84,22 @@ jobs:
         run: |
           if [ "${{ matrix.provider }}" = "OpenAI" ]; then
             MODELS="gpt-4.1-mini gpt-4o-mini o4-mini o3-mini"
+            SLEEP_SECONDS=0
           elif [ "${{ matrix.provider }}" = "Claude" ]; then
             MODELS="claude-3-7-sonnet-latest claude-3-5-haiku-latest"
+            SLEEP_SECONDS=0
           elif [ "${{ matrix.provider }}" = "XAI" ]; then
             MODELS="grok-3-mini grok-2-latest"
+            SLEEP_SECONDS=0
           elif [ "${{ matrix.provider }}" = "Gemini" ]; then
             MODELS="gemini-2.5-flash-preview-04-17 gemini-2.5-pro-preview-03-25 gemini-2.0-flash gemini-1.5-flash"
+            SLEEP_SECONDS=10
           elif [ "${{ matrix.provider }}" = "DeepSeek" ]; then
             MODELS="deepseek-chat"
+            SLEEP_SECONDS=0
           elif [ "${{ matrix.provider }}" = "OpenRouter" ]; then
             MODELS="openai/gpt-4o"
+            SLEEP_SECONDS=0
           fi
 
           EXCLUDE_PATTERN="mcp-blocklet\|workflow-group-chat\|workflow-orchestrator"
@@ -104,9 +110,14 @@ jobs:
               if echo "$dir" | grep -q "$EXCLUDE_PATTERN"; then
                 echo "Skipping $dir"
               else
+                if [ "$SLEEP_SECONDS" -gt 0 ]; then
+                  echo "Waiting $SLEEP_SECONDS seconds before starting test..."
+                  sleep $SLEEP_SECONDS
+                fi
                 echo "Testing $dir with ${{ matrix.provider }}:$MODEL"
                 start_time=$(date +%s)
                 cd $dir
+                echo "MODEL_PROVIDER=${{ matrix.provider }} MODEL_NAME=$MODEL pnpm test:llm"
                 MODEL_PROVIDER=${{ matrix.provider }} MODEL_NAME=$MODEL pnpm test:llm || exit 1
                 cd ../..
                 end_time=$(date +%s)

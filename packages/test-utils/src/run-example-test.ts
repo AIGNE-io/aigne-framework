@@ -23,7 +23,7 @@ export function runExampleTest(
     let stderr = "";
 
     child.stdout.on("data", (data) => {
-      process.stdout.write(data);
+      // GitHub Action runner is not a TTY, avoid writing to stdout to prevent long ANSI output. https://github.com/actions/runner/issues/241
       stdout += data;
     });
 

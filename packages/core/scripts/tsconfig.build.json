@@ -8,7 +8,6 @@
     "paths": {}
   },
   "include": ["../src"],
-  "exclude": ["../src/**/*.test.ts"],
   "references": [
     { "path": "./tsconfig.build.cjs.json" },
     { "path": "./tsconfig.build.esm.json" },

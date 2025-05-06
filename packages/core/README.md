@@ -14,7 +14,7 @@ Core library of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) f
 
 ## Features
 
-- **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, and other mainstream AI models, easily extensible to support additional models
+- **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, Nova, and other mainstream AI models, easily extensible to support additional models
 - **Agent System**: Powerful agent abstractions supporting AI agents, function agents, MCP agents, and more
 - **AIGNE Environment**: Flexible handling communication between agents and workflow execution
 - **Workflow Patterns**: Support for sequential, concurrent, routing, handoff, and other workflow patterns

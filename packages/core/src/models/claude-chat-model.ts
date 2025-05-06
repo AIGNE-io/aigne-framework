@@ -59,6 +59,9 @@ export interface ClaudeChatModelOptions {
   modelOptions?: ChatModelOptions;
 }
 
+/**
+ * @hidden
+ */
 export const claudeChatModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   model: z.string().optional(),
@@ -98,6 +101,9 @@ export class ClaudeChatModel extends ChatModel {
     super();
   }
 
+  /**
+   * @hidden
+   */
   protected _client?: Anthropic;
 
   get client() {

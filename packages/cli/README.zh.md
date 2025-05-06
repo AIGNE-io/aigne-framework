@@ -25,14 +25,21 @@
 
 ## 安装
 
+### 使用 npm
+
 ```bash
-# 使用 npm
 npm install -g @aigne/cli
+```
 
-# 使用 yarn
+### 使用 yarn
+
+```bash
 yarn global add @aigne/cli
+```
 
-# 使用 pnpm
+### 使用 pnpm
+
+```bash
 pnpm add -g @aigne/cli
 ```
 
@@ -121,14 +128,6 @@ aigne serve --mcp --port 3001
 # 为指定路径的代理启动 MCP 服务器
 aigne serve path/to/agents --mcp
 ```
-
-## 文档
-
-更多详细的 CLI 使用指南，请参考：
-
-- [CLI 指南](../../docs/cli.zh.md)
-- [代理开发指南](../../docs/agent-development.zh.md)
-- [Cookbook](../../docs/cookbook.zh.md)
 
 ## 协议
 

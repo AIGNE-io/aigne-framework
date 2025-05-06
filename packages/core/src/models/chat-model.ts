@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { Agent, type Message } from "../agents/agent.js";
+import { Agent, type AgentProcessResult, type Message } from "../agents/agent.js";
 import type { Context } from "../aigne/context.js";
+import type { PromiseOrValue } from "../utils/type-utils.js";
 
 /**
  * ChatModel is an abstract base class for interacting with Large Language Models (LLMs).
@@ -9,19 +10,16 @@ import type { Context } from "../aigne/context.js";
  * outputs, and capabilities. Specific model implementations (like OpenAI, Anthropic, etc.)
  * should inherit from this class and implement their specific functionalities.
  *
- * @template ChatModelInput The input message type for the model
- * @template ChatModelOutput The output message type from the model
- *
  * @example
  * Here's how to implement a custom ChatModel:
  * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model}
  *
  * @example
- * Here's an example showing streaming response:
+ * Here's an example showing streaming response with readable stream:
  * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-streaming}
  *
  * @example
- * Here's an example showing streaming response:
+ * Here's an example showing streaming response with async generator:
  * {@includeCode ../../test/models/chat-model.test.ts#example-chat-model-streaming-async-generator}
  *
  * @example
@@ -108,6 +106,31 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       context.usage.inputTokens += usage.inputTokens;
     }
   }
+
+  /**
+   * Processes input messages and generates model responses
+   *
+   * This is the core method that must be implemented by all ChatModel subclasses.
+   * It handles the communication with the underlying language model,
+   * processes the input messages, and generates appropriate responses.
+   *
+   * Implementations should handle:
+   * - Conversion of input format to model-specific format
+   * - Sending requests to the language model
+   * - Processing model responses
+   * - Handling streaming responses if supported
+   * - Proper error handling and retries
+   * - Token counting and usage tracking
+   * - Tool call processing if applicable
+   *
+   * @param input - The standardized input containing messages and model options
+   * @param context - The execution context with settings and state
+   * @returns A promise or direct value containing the model's response
+   */
+  abstract process(
+    input: ChatModelInput,
+    context: Context,
+  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>>;
 }
 
 /**

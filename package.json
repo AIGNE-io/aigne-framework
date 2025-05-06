@@ -20,7 +20,8 @@
     "update:deps": "npx -y taze latest -r -w && pnpm install && pnpm dedupe",
     "test": "pnpm -r run test",
     "test:coverage": "pnpm -r run test:coverage",
-    "postinstall": "npx simple-git-hooks"
+    "postinstall": "npx simple-git-hooks",
+    "postbuild:docs": "node scripts/post-build-docs.js"
   },
   "devDependencies": {
     "@aigne/typedoc-plugin-example-utils-ts": "^1.0.2",

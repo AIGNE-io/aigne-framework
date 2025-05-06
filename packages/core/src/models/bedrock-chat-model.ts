@@ -26,6 +26,9 @@ import {
   type ChatModelOutput,
 } from "./chat-model.js";
 
+/**
+ * @hidden
+ */
 export function extractLastJsonObject(text: string): string | null {
   return text.replace(/<thinking>[\s\S]*?<\/thinking>/g, "").trim();
 }
@@ -40,6 +43,9 @@ export interface BedrockChatModelOptions {
   modelOptions?: ChatModelOptions;
 }
 
+/**
+ * @hidden
+ */
 export const bedrockChatModelOptionsSchema = z.object({
   region: z.string().optional(),
   model: z.string().optional(),
@@ -61,6 +67,9 @@ export class BedrockChatModel extends ChatModel {
     super();
   }
 
+  /**
+   * @hidden
+   */
   protected _client?: BedrockRuntimeClient;
 
   get client() {

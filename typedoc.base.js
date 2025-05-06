@@ -14,7 +14,7 @@ const config = {
   jsDocCompatibility: {
     exampleTag: false,
   },
-  readme: "README.md",
+  readme: "none",
   mergeReadme: true,
   router: "module",
   disableSources: true,

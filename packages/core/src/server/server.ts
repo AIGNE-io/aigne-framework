@@ -19,6 +19,8 @@ const DEFAULT_MAXIMUM_BODY_SIZE = "4mb";
 /**
  * Schema for validating agent invocation payloads.
  * Defines the expected structure for requests to invoke an agent.
+ *
+ * @hidden
  */
 export const invokePayloadSchema = z.object({
   agent: z.string(),

@@ -135,6 +135,9 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   memory?: AgentMemory | AgentMemoryOptions | boolean;
 }
 
+/**
+ * @hidden
+ */
 export const agentOptionsSchema: ZodObject<{
   [key in keyof AgentOptions]: ZodType<AgentOptions[key]>;
 }> = z.object({
@@ -412,6 +415,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     context?: Context,
     options?: AgentInvokeOptions & { streaming?: false },
   ): Promise<O>;
+
   /**
    * Invoke the agent with streaming response
    *
@@ -433,6 +437,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     context: Context | undefined,
     options: { streaming: true },
   ): Promise<AgentResponseStream<O>>;
+
   /**
    * General signature for invoking the agent
    *
@@ -448,6 +453,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     context?: Context,
     options?: AgentInvokeOptions,
   ): Promise<AgentResponse<O>>;
+
   async invoke(
     input: I | string,
     context?: Context,

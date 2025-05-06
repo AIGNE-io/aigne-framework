@@ -6,7 +6,7 @@
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
 [![NPM Version](https://img.shields.io/npm/v/@aigne/core)](https://www.npmjs.com/package/@aigne/core)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
 ## What is AIGNE Framework
 
@@ -26,14 +26,21 @@ AIGNE Framework is a functional AI application development framework designed to
 
 ### Installation
 
+#### Using npm
+
 ```bash
-# Using npm
 npm install @aigne/core
+```
 
-# Using yarn
+#### Using yarn
+
+```bash
 yarn add @aigne/core
+```
 
-# Using pnpm
+#### Using pnpm
+
+```bash
 pnpm add @aigne/core
 ```
 
@@ -85,13 +92,15 @@ const response = await userAgent.invoke("transfer to agent b");
 
 - [examples](./examples) - Example project demonstrating how to use different agents to handle various tasks.
 - [packages/core](./packages/core) - Core package providing the foundation for building AIGNE applications.
+- [packages/agent-library](./packages/agent-library) - AIGNE agent library, providing a variety of specialized agents for different tasks.
+- [packages/cli](./packages/cli) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
 
 ## Documentation
 
 - [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): Practical recipes and patterns for AIGNE Framework API usage
 - [CLI Guide](./docs/cli.md) ([中文](./docs/cli.zh.md)): Comprehensive guide to the AIGNE CLI tool
 - [Agent Development Guide](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): Guide to developing AIGNE agents using YAML/JS configuration files
-- [API References](https://aigne-io.github.io/aigne-framework)
+- [API References](https://aigne-io.github.io/#/api/@aigne/core/README)
 
 ## Architecture
 
@@ -276,11 +285,11 @@ AIGNE Framework is an open source project and welcomes community contributions. 
 
 ## License
 
-This project is licensed under the [Elastic-2.0](./LICENSE) - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the [Elastic-2.0](./LICENSE.md) - see the [LICENSE](./LICENSE.md) file for details.
 
 ## Community and Support
 
 AIGNE Framework has a vibrant developer community offering various support channels:
 
-- [Documentation Center](https://www.arcblock.io/docs/aigne-framework/introduce): Comprehensive official documentation to help developers get started quickly.
+- [Documentation Center](https://aigne-io.github.io/#/api/@aigne/core/README): Comprehensive official documentation to help developers get started quickly.
 - [Technical Forum](https://community.arcblock.io/discussions/boards/aigne): Exchange experiences with global developers and solve technical problems.

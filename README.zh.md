@@ -6,7 +6,7 @@
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
 [![NPM Version](https://img.shields.io/npm/v/@aigne/core)](https://www.npmjs.com/package/@aigne/core)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
 ## AIGNE Framework 简介
 
@@ -26,14 +26,21 @@ AIGNE Framework 是一个功能型 AI 应用开发框架，旨在简化和加速
 
 ### 安装
 
+#### 使用 npm
+
 ```bash
-# 使用 npm
 npm install @aigne/core
+```
 
-# 使用 yarn
+#### 使用 yarn
+
+```bash
 yarn add @aigne/core
+```
 
-# 使用 pnpm
+#### 使用 pnpm
+
+```bash
 pnpm add @aigne/core
 ```
 
@@ -85,13 +92,15 @@ const response = await userAgent.invoke("transfer to agent b");
 
 - [examples](./examples) - 示例项目，演示如何使用不同的代理处理各种任务。
 - [packages/core](./packages/core) - 核心包，为构建 AIGNE 应用程序提供基础。
+- [packages/agent-library](./packages/agent-library) - 提供多种代理实现，简化代理的创建和管理。
+- [packages/cli](./packages/cli) - 命令行工具，提供便捷的命令行界面，简化开发和调试过程。
 
 ## 文档
 
 - [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): AIGNE Framework API 使用的实用方案和模式
 - [CLI 指南](./docs/cli.md) ([中文](./docs/cli.zh.md)): AIGNE CLI 工具的全面指南
 - [代理开发指南](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): 使用 YAML/JS 配置文件开发 AIGNE 代理的指南
-- [API 参考](https://aigne-io.github.io/aigne-framework)
+- [API 参考](https://aigne-io.github.io/#/api/@aigne/core/README)
 
 ## 架构
 
@@ -291,11 +300,11 @@ AIGNE Framework 是一个开源项目，欢迎社区贡献。我们使用 [relea
 
 ## 许可证
 
-本项目采用 [Elastic-2.0](./LICENSE) 授权 - 详情请查看 [LICENSE](./LICENSE) 文件。
+本项目采用 [Elastic-2.0](./LICENSE.md) 授权 - 详情请查看 [LICENSE](./LICENSE.md) 文件。
 
 ## 社区与支持
 
 AIGNE Framework 拥有活跃的开发者社区，提供多种支持渠道：
 
-- [文档中心](https://www.arcblock.io/docs/aigne-framework/introduce)：全面的官方文档，帮助开发者快速入门。
+- [文档中心](https://aigne-io.github.io/#/api/@aigne/core/README)：全面的官方文档，帮助开发者快速入门。
 - [技术论坛](https://community.arcblock.io/discussions/boards/aigne)：与全球开发者交流经验，解决技术问题。

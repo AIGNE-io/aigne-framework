@@ -1,10 +1,21 @@
 import { z } from "zod";
-import { Agent } from "../agents/agent.js";
+import {
+  Agent,
+  type AgentResponse,
+  type AgentResponseStream,
+  type Message,
+} from "../agents/agent.js";
+import type { UserAgent } from "../agents/user-agent.js";
 import { load } from "../loader/index.js";
 import { ChatModel } from "../models/chat-model.js";
 import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
-import { AIGNEContext, type Context } from "./context.js";
-import { MessageQueue } from "./message-queue.js";
+import { AIGNEContext, type InvokeOptions } from "./context.js";
+import {
+  type MessagePayload,
+  MessageQueue,
+  type MessageQueueListener,
+  type Unsubscribe,
+} from "./message-queue.js";
 import type { ContextLimits } from "./usage.js";
 
 /**
@@ -115,6 +126,8 @@ export class AIGNE {
 
   /**
    * Message queue for handling inter-agent communication.
+   *
+   * @hidden
    */
   readonly messageQueue = new MessageQueue();
 
@@ -157,55 +170,185 @@ export class AIGNE {
   }
 
   /**
-   * Invokes an agent with the specified input and options.
-   * This is a shorthand method that creates a new context and immediately invokes an agent.
+   * Creates a user agent for consistent interactions with a specified agent.
+   * This method allows you to create a wrapper around an agent for repeated invocations.
    *
-   * @param args - Arguments passed to the Context's invoke method.
-   * @returns The result of the agent invocation.
+   * @param agent - Target agent to be wrapped for consistent invocation
+   * @returns A user agent instance that provides a convenient interface for interacting with the target agent
+   *
+   * @example
+   * Here's an example of how to create a user agent and invoke it consistently:
+   * {@includeCode ../../test/aigne/aigne.test.ts#example-user-agent}
+   */
+  invoke<I extends Message, O extends Message>(agent: Agent<I, O>): UserAgent<I, O>;
+
+  /**
+   * Invokes an agent with a message and returns both the output and the active agent.
+   * This overload is useful when you need to track which agent was ultimately responsible for generating the response.
+   *
+   * @param agent - Target agent to invoke
+   * @param message - Input message to send to the agent (can be a string or a structured message object)
+   * @param options.returnActiveAgent - Must be true to return the final active agent
+   * @param options.streaming - Must be false to return a response stream
+   * @returns A promise resolving to a tuple containing the agent's response and the final active agent
+   */
+  invoke<I extends Message, O extends Message>(
+    agent: Agent<I, O>,
+    message: I | string,
+    options: InvokeOptions & { returnActiveAgent: true; streaming?: false },
+  ): Promise<[O, Agent]>;
+
+  /**
+   * Invokes an agent with a message and returns both a stream of the response and the active agent.
+   * This overload is useful when you need streaming responses while also tracking which agent provided them.
+   *
+   * @param agent - Target agent to invoke
+   * @param message - Input message to send to the agent (can be a string or a structured message object)
+   * @param options.returnActiveAgent - Must be true to return the final active agent
+   * @param options.streaming - Must be true to return a response stream
+   * @returns A promise resolving to a tuple containing the agent's response stream and a promise for the final agent
+   */
+  invoke<I extends Message, O extends Message>(
+    agent: Agent<I, O>,
+    message: I | string,
+    options: InvokeOptions & { returnActiveAgent: true; streaming: true },
+  ): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
+
+  /**
+   * Invokes an agent with a message and returns just the output.
+   * This is the standard way to invoke an agent when you only need the response.
+   *
+   * @param agent - Target agent to invoke
+   * @param message - Input message to send to the agent (can be a string or a structured message object)
+   * @param options - Optional configuration parameters for the invocation
+   * @returns A promise resolving to the agent's complete response
    *
    * @example
    * Here's a simple example of how to invoke an agent:
    * {@includeCode ../../test/aigne/aigne.test.ts#example-simple}
+   */
+  invoke<I extends Message, O extends Message>(
+    agent: Agent<I, O>,
+    message: I | string,
+    options?: InvokeOptions & { returnActiveAgent?: false; streaming?: false },
+  ): Promise<O>;
+
+  /**
+   * Invokes an agent with a message and returns a stream of the response.
+   * This allows processing the response incrementally as it's being generated.
+   *
+   * @param agent - Target agent to invoke
+   * @param message - Input message to send to the agent (can be a string or a structured message object)
+   * @param options - Configuration with streaming enabled to receive incremental response chunks
+   * @returns A promise resolving to a stream of the agent's response that can be consumed incrementally
    *
    * @example
    * Here's an example of how to invoke an agent with streaming response:
    * {@includeCode ../../test/aigne/aigne.test.ts#example-streaming}
    */
-  invoke = ((...args: Parameters<Context["invoke"]>) => {
-    return new AIGNEContext(this).invoke(...args);
-  }) as Context["invoke"];
+  invoke<I extends Message, O extends Message>(
+    agent: Agent<I, O>,
+    message: I | string,
+    options: InvokeOptions & { returnActiveAgent?: false; streaming: true },
+  ): Promise<AgentResponseStream<O>>;
 
   /**
-   * Publishes a message to the message queue.
-   * This is a shorthand method that creates a new context and publishes a message.
+   * General implementation signature that handles all overload cases.
+   * This unified signature supports all the different invocation patterns defined by the overloads.
    *
-   * @param args - Arguments passed to the Context's publish method.
-   * @returns The result of the publish operation.
+   * @param agent - Target agent to invoke or wrap
+   * @param message - Optional input message to send to the agent
+   * @param options - Optional configuration parameters for the invocation
+   * @returns Either a UserAgent (when no message provided) or a promise resolving to the agent's response
+   * with optional active agent information based on the provided options
    */
-  publish = ((...args) => {
-    return new AIGNEContext(this).publish(...args);
-  }) as Context["publish"];
+  invoke<I extends Message, O extends Message>(
+    agent: Agent<I, O>,
+    message?: I | string,
+    options?: InvokeOptions,
+  ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]>;
+
+  invoke<I extends Message, O extends Message>(
+    agent: Agent<I, O>,
+    message?: I | string,
+    options?: InvokeOptions,
+  ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]> {
+    return new AIGNEContext(this).invoke(agent, message, options);
+  }
 
   /**
-   * Subscribes to messages in the message queue.
-   * This allows for receiving messages from agents and other components.
+   * Publishes a message to the message queue for inter-agent communication.
+   * This method broadcasts a message to all subscribers of the specified topic(s).
+   * It creates a new context internally and delegates to the context's publish method.
    *
-   * @param args - Arguments passed to the MessageQueue's subscribe method.
-   * @returns A subscription that can be used to unsubscribe.
+   * @param topic - The topic or array of topics to publish the message to
+   * @param payload - The message payload to be delivered to subscribers
+   *
+   * @example
+   * Here's an example of how to publish a message:
+   * {@includeCode ../../test/aigne/aigne.test.ts#example-publish-message}
    */
-  subscribe = ((...args) => {
-    return this.messageQueue.subscribe(...args);
-  }) as Context["subscribe"];
+  publish(topic: string | string[], payload: Omit<MessagePayload, "context">) {
+    return new AIGNEContext(this).publish(topic, payload);
+  }
 
   /**
-   * Unsubscribes from messages in the message queue.
-   * This cancels a previous subscription to stop receiving messages.
+   * Subscribes to receive the next message on a specific topic.
+   * This overload returns a Promise that resolves with the next message published to the topic.
+   * It's useful for one-time message handling or when using async/await patterns.
    *
-   * @param args - Arguments passed to the MessageQueue's unsubscribe method.
+   * @param topic - The topic to subscribe to
+   * @returns A Promise that resolves with the next message payload published to the specified topic
+   *
+   * @example
+   * Here's an example of how to subscribe to a topic and receive the next message:
+   * {@includeCode ../../test/aigne/aigne.test.ts#example-publish-message}
    */
-  unsubscribe = ((...args) => {
-    this.messageQueue.unsubscribe(...args);
-  }) as Context["unsubscribe"];
+  subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
+
+  /**
+   * Subscribes to messages on a specific topic with a listener callback.
+   * This overload registers a listener function that will be called for each message published to the topic.
+   * It's useful for continuous message handling or event-driven architectures.
+   *
+   * @param topic - The topic to subscribe to
+   * @param listener - Callback function that will be invoked when messages arrive on the specified topic
+   * @returns An Unsubscribe function that can be called to cancel the subscription
+   *
+   * @example
+   * Here's an example of how to subscribe to a topic with a listener:
+   * {@includeCode ../../test/aigne/aigne.test.ts#example-subscribe-topic}
+   */
+  subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
+
+  /**
+   * Generic subscribe signature that handles both Promise and listener patterns.
+   * This is the implementation signature that supports both overloaded behaviors.
+   *
+   * @param topic - The topic to subscribe to
+   * @param listener - Optional callback function
+   * @returns Either a Promise for the next message or an Unsubscribe function
+   */
+  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>;
+  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload> {
+    return this.messageQueue.subscribe(topic, listener);
+  }
+
+  /**
+   * Unsubscribes a listener from a specific topic in the message queue.
+   * This method stops a previously registered listener from receiving further messages.
+   * It should be called when message processing is complete or when the component is no longer interested
+   * in messages published to the specified topic.
+   *
+   * @param topic - The topic to unsubscribe from
+   * @param listener - The listener function that was previously subscribed to the topic
+   *
+   * @example
+   * {@includeCode ../../test/aigne/aigne.test.ts#example-subscribe-topic}
+   */
+  unsubscribe(topic: string, listener: MessageQueueListener) {
+    this.messageQueue.unsubscribe(topic, listener);
+  }
 
   /**
    * Gracefully shuts down the AIGNE instance and all its agents and skills.
@@ -216,10 +359,6 @@ export class AIGNE {
    * @example
    * Here's an example of shutdown an AIGNE instance:
    * {@includeCode ../../test/aigne/aigne.test.ts#example-shutdown}
-   *
-   * @example
-   * Here's an example of using async dispose:
-   * {@includeCode ../../test/aigne/aigne.test.ts#example-shutdown-using}
    */
   async shutdown() {
     for (const tool of this.skills) {

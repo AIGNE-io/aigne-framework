@@ -35,6 +35,9 @@ import {
 } from "./message-queue.js";
 import { type ContextLimits, type ContextUsage, newEmptyContextUsage } from "./usage.js";
 
+/**
+ * @hidden
+ */
 export interface AgentEvent {
   parentContextId?: string;
   contextId: string;
@@ -42,12 +45,18 @@ export interface AgentEvent {
   agent: Agent;
 }
 
+/**
+ * @hidden
+ */
 export interface ContextEventMap {
   agentStarted: [AgentEvent & { input: Message }];
   agentSucceed: [AgentEvent & { output: Message }];
   agentFailed: [AgentEvent & { error: Error }];
 }
 
+/**
+ * @hidden
+ */
 export type ContextEmitEventMap = {
   [K in keyof ContextEventMap]: OmitPropertiesFromArrayFirstElement<
     ContextEventMap[K],
@@ -55,11 +64,17 @@ export type ContextEmitEventMap = {
   >;
 };
 
+/**
+ * @hidden
+ */
 export interface InvokeOptions extends AgentInvokeOptions {
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
 }
 
+/**
+ * @hidden
+ */
 export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitEventMap> {
   model?: ChatModel;
 
@@ -142,6 +157,9 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   newContext(options?: { reset?: boolean }): Context;
 }
 
+/**
+ * @hidden
+ */
 export function createPublishMessage(
   message: string | Message,
   from?: Agent,
@@ -153,6 +171,9 @@ export function createPublishMessage(
   };
 }
 
+/**
+ * @hidden
+ */
 export class AIGNEContext implements Context {
   constructor(parent?: ConstructorParameters<typeof AIGNEContextInternal>[0]) {
     if (parent instanceof AIGNEContext) {

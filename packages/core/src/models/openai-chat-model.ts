@@ -71,6 +71,9 @@ export interface OpenAIChatModelOptions {
   modelOptions?: ChatModelOptions;
 }
 
+/**
+ * @hidden
+ */
 export const openAIChatModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
@@ -115,7 +118,11 @@ export class OpenAIChatModel extends ChatModel {
     Object.assign(this, preset);
   }
 
+  /**
+   * @hidden
+   */
   protected _client?: OpenAI;
+
   protected apiKeyEnvName = "OPENAI_API_KEY";
   protected apiKeyDefault: string | undefined;
   protected supportsNativeStructuredOutputs = true;
@@ -390,6 +397,9 @@ export class OpenAIChatModel extends ChatModel {
   }
 }
 
+/**
+ * @hidden
+ */
 export const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
   system: "system",
   user: "user",
@@ -397,6 +407,9 @@ export const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
   tool: "tool",
 } as const;
 
+/**
+ * @hidden
+ */
 export async function contentsFromInputMessages(
   messages: ChatModelInputMessage[],
 ): Promise<ChatCompletionMessageParam[]> {
@@ -433,6 +446,9 @@ export async function contentsFromInputMessages(
   );
 }
 
+/**
+ * @hidden
+ */
 export function toolsFromInputTools(
   tools?: ChatModelInputTool[],
   options?: { addTypeToEmptyParameters?: boolean },
@@ -455,6 +471,9 @@ export function toolsFromInputTools(
     : undefined;
 }
 
+/**
+ * @hidden
+ */
 export function jsonSchemaToOpenAIJsonSchema(
   schema: Record<string, unknown>,
 ): Record<string, unknown> {

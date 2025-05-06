@@ -24,14 +24,21 @@
 
 ## 安装
 
+#### 使用 npm
+
 ```bash
-# 使用 npm
 npm install @aigne/agent-library @aigne/core
+```
 
-# 使用 yarn
+### 使用 yarn
+
+```bash
 yarn add @aigne/agent-library @aigne/core
+```
 
-# 使用 pnpm
+### 使用 pnpm
+
+```bash
 pnpm add @aigne/agent-library @aigne/core
 ```
 
@@ -59,8 +66,8 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // 执行编排任务
-const userAgent = await aigne.invoke(orchestrator);
-const result = await userAgent.invoke("分析这篇文章并生成摘要和关键词");
+const result = await aigne.invoke(orchestrator, "分析这篇文章并生成摘要和关键词");
+
 console.log(result);
 ```
 
@@ -115,18 +122,10 @@ const orchestrator = new OrchestratorAgent({
 
 // 使用编排代理
 const aigne = new AIGNE({ model });
-const userAgent = await aigne.invoke(orchestrator);
-const result = await userAgent.invoke("关于人工智能在医疗领域的应用");
+const result = await aigne.invoke(orchestrator, "关于人工智能在医疗领域的应用");
+
 console.log(result);
 ```
-
-## 文档
-
-更多详细的 API 文档和使用指南，请参考：
-
-- [代理开发指南](../../docs/agent-development.zh.md)
-- [Agent API](../../docs/apis/agent-api.zh.md)
-- [AI Agent API](../../docs/apis/ai-agent-api.zh.md)
 
 ## 协议
 

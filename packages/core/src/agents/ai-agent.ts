@@ -92,6 +92,8 @@ export enum AIAgentToolChoice {
  * Zod schema for validating AIAgentToolChoice values
  *
  * Used to ensure that toolChoice receives valid values
+ *
+ * @hidden
  */
 export const aiAgentToolChoiceSchema = z.union(
   [
@@ -108,6 +110,8 @@ export const aiAgentToolChoiceSchema = z.union(
  * Zod schema for validating AIAgentOptions
  *
  * Extends the base agent options schema with AI-specific parameters
+ *
+ * @hidden
  */
 export const aiAgentOptionsSchema = agentOptionsSchema.extend({
   model: z.instanceof(ChatModel).optional(),

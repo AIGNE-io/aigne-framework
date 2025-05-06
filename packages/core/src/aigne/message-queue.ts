@@ -4,10 +4,19 @@ import type { Message } from "../agents/agent.js";
 import { checkArguments, orArrayToArray } from "../utils/type-utils.js";
 import type { Context } from "./context.js";
 
+/**
+ * @hidden
+ */
 export const UserInputTopic = "UserInputTopic";
 
+/**
+ * @hidden
+ */
 export const UserOutputTopic = "UserOutputTopic";
 
+/**
+ * @hidden
+ */
 export interface MessagePayload {
   role: "user" | "agent";
   source?: string;
@@ -17,10 +26,19 @@ export interface MessagePayload {
   context: Context;
 }
 
+/**
+ * @hidden
+ */
 export type MessageQueueListener = (message: MessagePayload) => void;
 
+/**
+ * @hidden
+ */
 export type Unsubscribe = () => void;
 
+/**
+ * @hidden
+ */
 export class MessageQueue {
   events = new EventEmitter();
 

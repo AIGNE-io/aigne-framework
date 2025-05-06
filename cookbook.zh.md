@@ -1,7 +1,6 @@
 # AIGNE Framework Cookbook
 
-> 📖 本文档也提供以下语言版本：
-> - [English (英文)](./cookbook.md)
+[English](./cookbook.md) | **中文**
 
 ## 目录
 

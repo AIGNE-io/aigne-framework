@@ -1,7 +1,6 @@
 # AIGNE Framework Cookbook
 
-> 📖 This document is also available in:
-> - [中文 (Chinese)](./cookbook.zh.md)
+**English** | [中文](./cookbook.zh.md)
 
 ## Table of Contents
 

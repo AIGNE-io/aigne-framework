@@ -8,9 +8,10 @@ const apiSidebar = readFileSync(join(root, "docs/api/_sidebar.md"), "utf-8");
 const sidebarTemplate = readFileSync(join(root, "docs/sidebar.md"), "utf-8");
 const sidebarPath = join(root, "docs/_sidebar.md");
 
-const sidebarContent = sidebarTemplate.replace(
-  "<!-- api reference -->",
-  `\
+const sidebarContent = sidebarTemplate
+  .replace(
+    "<!-- api reference -->",
+    `\
 - API Reference\n
 ${apiSidebar
   .trim()
@@ -18,7 +19,8 @@ ${apiSidebar
   .map((line) => `${" ".repeat(2)}${line}`.trimEnd())
   .join("\n")}
 `,
-);
+  )
+  .replaceAll(/\n\n+/g, "\n\n");
 
 writeFileSync(sidebarPath, sidebarContent);
 

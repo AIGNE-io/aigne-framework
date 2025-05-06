@@ -88,16 +88,10 @@ const response = await userAgent.invoke("transfer to agent b");
 
 ## 文档
 
+- [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): AIGNE Framework API 使用的实用方案和模式
 - [CLI 指南](./docs/cli.md) ([中文](./docs/cli.zh.md)): AIGNE CLI 工具的全面指南
 - [代理开发指南](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): 使用 YAML/JS 配置文件开发 AIGNE 代理的指南
-- [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): AIGNE Framework API 使用的实用方案和模式
-- API 参考:
-  - [Agent API](./docs/apis/agent-api.md) ([English](./docs/apis/agent-api.md) | [中文](./docs/apis/agent-api.zh.md))
-  - [AI Agent API](./docs/apis/ai-agent-api.md) ([English](./docs/apis/ai-agent-api.md) | [中文](./docs/apis/ai-agent-api.zh.md))
-  - [Function Agent API](./docs/apis/function-agent-api.md) ([English](./docs/apis/function-agent-api.md) | [中文](./docs/apis/function-agent-api.zh.md))
-  - [MCP Agent API](./docs/apis/mcp-agent-api.md) ([English](./docs/apis/mcp-agent-api.md) | [中文](./docs/apis/mcp-agent-api.zh.md))
-  - [AIGNE API](./docs/apis/aigne-api.md) ([English](./docs/apis/aigne-api.md) | [中文](./docs/apis/aigne-api.zh.md))
-  - [服务器/客户端 API](./docs/apis/server-client-api.md) ([English](./docs/apis/server-client-api.md) | [中文](./docs/apis/server-client-api.zh.md))
+- [API 参考](https://aigne-io.github.io/aigne-framework)
 
 ## 架构
 

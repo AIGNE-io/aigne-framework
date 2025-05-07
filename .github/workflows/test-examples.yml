@@ -18,6 +18,7 @@ jobs:
           - Gemini
           - DeepSeek
           - OpenRouter
+          - Bedrock
 
     steps:
       - name: Checkout repo
@@ -73,6 +74,9 @@ jobs:
       - name: Run models for ${{ matrix.provider }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
@@ -82,33 +86,37 @@ jobs:
           OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
           OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
         run: |
+          DEFAULT_SLEEP_SECONDS=0
+
+          declare -A PROVIDER_SLEEP_SECONDS
+          PROVIDER_SLEEP_SECONDS["Gemini"]=10
+          PROVIDER_SLEEP_SECONDS["Claude"]=10
+          PROVIDER_SLEEP_SECONDS["Bedrock"]=10
+
           if [ "${{ matrix.provider }}" = "OpenAI" ]; then
             MODELS="gpt-4.1-mini gpt-4o-mini o4-mini o3-mini"
-            SLEEP_SECONDS=0
           elif [ "${{ matrix.provider }}" = "Claude" ]; then
             MODELS="claude-3-7-sonnet-latest claude-3-5-haiku-latest"
-            SLEEP_SECONDS=0
           elif [ "${{ matrix.provider }}" = "XAI" ]; then
-            MODELS="grok-3-mini grok-2-latest"
-            SLEEP_SECONDS=0
+            MODELS="grok-3 grok-2"
           elif [ "${{ matrix.provider }}" = "Gemini" ]; then
-            MODELS="gemini-2.5-flash-preview-04-17 gemini-2.5-pro-preview-03-25 gemini-2.0-flash gemini-1.5-flash"
-            SLEEP_SECONDS=10
+            MODELS="gemini-2.5-flash-preview-04-17 gemini-2.0-flash gemini-1.5-flash"
           elif [ "${{ matrix.provider }}" = "DeepSeek" ]; then
             MODELS="deepseek-chat"
-            SLEEP_SECONDS=0
           elif [ "${{ matrix.provider }}" = "OpenRouter" ]; then
             MODELS="openai/gpt-4o"
-            SLEEP_SECONDS=0
+          elif [ "${{ matrix.provider }}" = "Bedrock" ]; then
+            MODELS="us.amazon.nova-premier-v1:0 us.amazon.nova-pro-v1:0 us.amazon.nova-lite-v1:0 us.amazon.nova-micro-v1:0"
           fi
 
-          EXCLUDE_PATTERN="mcp-blocklet\|workflow-group-chat\|workflow-orchestrator"
+          DEFAULT_EXCLUDE_PATTERN="mcp-blocklet|workflow-group-chat|workflow-orchestrator|workflow-reflection"
 
           for MODEL in $MODELS; do
+            SLEEP_SECONDS=${PROVIDER_SLEEP_SECONDS[${{ matrix.provider }}]:-$DEFAULT_SLEEP_SECONDS}
             for dir in examples/*; do
               echo "=========================================="
-              if echo "$dir" | grep -q "$EXCLUDE_PATTERN"; then
-                echo "Skipping $dir"
+              if echo "$dir" | grep -E -q "$DEFAULT_EXCLUDE_PATTERN"; then
+                echo "Skipping $dir (default exclude)"
               else
                 if [ "$SLEEP_SECONDS" -gt 0 ]; then
                   echo "Waiting $SLEEP_SECONDS seconds before starting test..."

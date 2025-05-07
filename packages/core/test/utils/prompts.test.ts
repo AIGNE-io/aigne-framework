@@ -8,7 +8,8 @@ describe("getJsonOutputPrompt", () => {
 <json_fields>
 name: string
 age: number
-</json_fields>`;
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON.`;
 
     expect(getJsonOutputPrompt(schema)).toBe(expected);
   });
@@ -25,7 +26,8 @@ age: number
     const expected = `Output must be a JSON object containing the following fields only.
 <json_fields>
 {"name":"string","age":"number","address":{"city":"string","country":"string"}}
-</json_fields>`;
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON.`;
 
     expect(getJsonOutputPrompt(schema)).toBe(expected);
   });
@@ -35,7 +37,8 @@ age: number
     const expected = `Output must be a JSON object containing the following fields only.
 <json_fields>
 {}
-</json_fields>`;
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON.`;
 
     expect(getJsonOutputPrompt(schema)).toBe(expected);
   });
@@ -45,7 +48,8 @@ age: number
     const expected = `Output must be a JSON object containing the following fields only.
 <json_fields>
 
-</json_fields>`;
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON.`;
 
     expect(getJsonOutputPrompt(schema)).toBe(expected);
   });

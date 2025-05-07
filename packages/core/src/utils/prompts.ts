@@ -5,5 +5,7 @@ export function getJsonOutputPrompt(schema: Record<string, unknown> | string) {
   } else {
     prompt += `\n<json_fields>\n${JSON.stringify(schema)}\n</json_fields>`;
   }
+  prompt +=
+    "\nDo not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON.";
   return prompt;
 }

@@ -1,4 +1,4 @@
-![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner&title=AIGNE%20Framework&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize&w=160&h=160&v=0.4.227)
+![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner\&title=AIGNE%20Framework\&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize\&w=160\&h=160\&v=0.4.227)
 
 [English](./README.md) | [中文](./README.zh.md)
 
@@ -14,13 +14,13 @@ AIGNE Framework is a functional AI application development framework designed to
 
 ## Key Features
 
-- **Modular Design**: With a clear modular structure, developers can easily organize code, improve development efficiency, and simplify maintenance.
-- **TypeScript Support**: Comprehensive TypeScript type definitions are provided, ensuring type safety and enhancing the developer experience.
-- **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, Nova and other mainstream AI models, easily extensible to support additional models.
-- **Flexible Workflow Patterns**: Support for sequential, concurrent, routing, handoff and other workflow patterns to meet various complex application requirements.
-- **MCP Protocol Integration**: Seamless integration with external systems and services through the Model Context Protocol.
-- **Code Execution Capabilities**: Support for executing dynamically generated code in a secure sandbox, enabling more powerful automation capabilities.
-- **Blocklet Ecosystem Integration**: Closely integrated with the Blocklet ecosystem, providing developers with a one-stop solution for development and deployment.
+* **Modular Design**: With a clear modular structure, developers can easily organize code, improve development efficiency, and simplify maintenance.
+* **TypeScript Support**: Comprehensive TypeScript type definitions are provided, ensuring type safety and enhancing the developer experience.
+* **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, Nova and other mainstream AI models, easily extensible to support additional models.
+* **Flexible Workflow Patterns**: Support for sequential, concurrent, routing, handoff and other workflow patterns to meet various complex application requirements.
+* **MCP Protocol Integration**: Seamless integration with external systems and services through the Model Context Protocol.
+* **Code Execution Capabilities**: Support for executing dynamically generated code in a secure sandbox, enabling more powerful automation capabilities.
+* **Blocklet Ecosystem Integration**: Closely integrated with the Blocklet ecosystem, providing developers with a one-stop solution for development and deployment.
 
 ## Quick Start
 
@@ -46,61 +46,65 @@ pnpm add @aigne/core
 
 ### Usage Example
 
-```ts
+```ts file=examples/workflow-handoff/usages.ts
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
+const { OPENAI_API_KEY } = process.env;
+
 const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
+  apiKey: OPENAI_API_KEY,
 });
 
-function transferToAgentB() {
+function transfer_to_b() {
   return agentB;
-}
-
-function transferToAgentA() {
-  return agentA;
 }
 
 const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  skills: [transferToAgentB],
+  skills: [transfer_to_b],
 });
 
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
-  skills: [transferToAgentA],
 });
 
 const aigne = new AIGNE({ model });
 
 const userAgent = aigne.invoke(agentA);
 
-const response = await userAgent.invoke("transfer to agent b");
-// output
+const result1 = await userAgent.invoke("transfer to agent b");
+console.log(result1);
+// Output:
 // {
-//   B: "Agent B awaits here,  \nIn haikus I shall speak now,  \nWhat do you seek, friend?",
+//   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
+// }
+
+const result2 = await userAgent.invoke("It's a beautiful day");
+console.log(result2);
+// Output:
+// {
+//   B: "Sunshine warms the earth,  \nGentle breeze whispers softly,  \nNature sings with joy.  ",
 // }
 ```
 
 ## Packages
 
-- [examples](./examples) - Example project demonstrating how to use different agents to handle various tasks.
-- [packages/core](./packages/core) - Core package providing the foundation for building AIGNE applications.
-- [packages/agent-library](./packages/agent-library) - AIGNE agent library, providing a variety of specialized agents for different tasks.
-- [packages/cli](./packages/cli) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
+* [examples](./examples) - Example project demonstrating how to use different agents to handle various tasks.
+* [packages/core](./packages/core) - Core package providing the foundation for building AIGNE applications.
+* [packages/agent-library](./packages/agent-library) - AIGNE agent library, providing a variety of specialized agents for different tasks.
+* [packages/cli](./packages/cli) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
 
 ## Documentation
 
-- [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): Practical recipes and patterns for AIGNE Framework API usage
-- [CLI Guide](./docs/cli.md) ([中文](./docs/cli.zh.md)): Comprehensive guide to the AIGNE CLI tool
-- [Agent Development Guide](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): Guide to developing AIGNE agents using YAML/JS configuration files
-- [API References](https://aigne-io.github.io/#/api/@aigne/core/README)
+* [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): Practical recipes and patterns for AIGNE Framework API usage
+* [CLI Guide](./docs/cli.md) ([中文](./docs/cli.zh.md)): Comprehensive guide to the AIGNE CLI tool
+* [Agent Development Guide](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): Guide to developing AIGNE agents using YAML/JS configuration files
+* [API References](https://aigne-io.github.io/#/api/@aigne/core/README)
 
 ## Architecture
 
@@ -261,27 +265,27 @@ class sandbox processing
 
 ### MCP Server Integration
 
-- [Puppeteer MCP Server](./examples/mcp-puppeteer) - Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.
-- [SQLite MCP Server](./examples/mcp-sqlite) - Explore database operations by connecting to SQLite through the Model Context Protocol.
-- [Github](./examples/mcp-github) - Interact with GitHub repositories using the GitHub MCP Server.
+* [Puppeteer MCP Server](./examples/mcp-puppeteer) - Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.
+* [SQLite MCP Server](./examples/mcp-sqlite) - Explore database operations by connecting to SQLite through the Model Context Protocol.
+* [Github](./examples/mcp-github) - Interact with GitHub repositories using the GitHub MCP Server.
 
 ### Workflow Patterns
 
-- [Workflow Router](./examples/workflow-router) - Implement intelligent routing logic to direct requests to appropriate handlers based on content.
-- [Workflow Sequential](./examples/workflow-sequential) - Build step-by-step processing pipelines with guaranteed execution order.
-- [Workflow Concurrency](./examples/workflow-concurrency) - Optimize performance by processing multiple tasks simultaneously with parallel execution.
-- [Workflow Handoff](./examples/workflow-handoff) - Create seamless transitions between specialized agents to solve complex problems.
-- [Workflow Reflection](./examples/workflow-reflection) - Enable self-improvement through output evaluation and refinement capabilities.
-- [Workflow Orchestration](./examples/workflow-orchestration) - Coordinate multiple agents working together in sophisticated processing pipelines.
-- [Workflow Code Execution](./examples/workflow-code-execution) - Safely execute dynamically generated code within AI-driven workflows.
-- [Workflow Group Chat](./examples/workflow-group-chat) - Share messages and interact with multiple agents in a group chat environment.
+* [Workflow Router](./examples/workflow-router) - Implement intelligent routing logic to direct requests to appropriate handlers based on content.
+* [Workflow Sequential](./examples/workflow-sequential) - Build step-by-step processing pipelines with guaranteed execution order.
+* [Workflow Concurrency](./examples/workflow-concurrency) - Optimize performance by processing multiple tasks simultaneously with parallel execution.
+* [Workflow Handoff](./examples/workflow-handoff) - Create seamless transitions between specialized agents to solve complex problems.
+* [Workflow Reflection](./examples/workflow-reflection) - Enable self-improvement through output evaluation and refinement capabilities.
+* [Workflow Orchestration](./examples/workflow-orchestration) - Coordinate multiple agents working together in sophisticated processing pipelines.
+* [Workflow Code Execution](./examples/workflow-code-execution) - Safely execute dynamically generated code within AI-driven workflows.
+* [Workflow Group Chat](./examples/workflow-group-chat) - Share messages and interact with multiple agents in a group chat environment.
 
 ## Contributing and Releasing
 
 AIGNE Framework is an open source project and welcomes community contributions. We use [release-please](https://github.com/googleapis/release-please) for version management and release automation.
 
-- Contributing Guidelines: See [CONTRIBUTING.md](./CONTRIBUTING.md)
-- Release Process: See [RELEASING.md](./RELEASING.md)
+* Contributing Guidelines: See [CONTRIBUTING.md](./CONTRIBUTING.md)
+* Release Process: See [RELEASING.md](./RELEASING.md)
 
 ## License
 
@@ -291,5 +295,5 @@ This project is licensed under the [Elastic-2.0](./LICENSE.md) - see the [LICENS
 
 AIGNE Framework has a vibrant developer community offering various support channels:
 
-- [Documentation Center](https://aigne-io.github.io/#/api/@aigne/core/README): Comprehensive official documentation to help developers get started quickly.
-- [Technical Forum](https://community.arcblock.io/discussions/boards/aigne): Exchange experiences with global developers and solve technical problems.
+* [Documentation Center](https://aigne-io.github.io/#/api/@aigne/core/README): Comprehensive official documentation to help developers get started quickly.
+* [Technical Forum](https://community.arcblock.io/discussions/boards/aigne): Exchange experiences with global developers and solve technical problems.

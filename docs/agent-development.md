@@ -6,12 +6,12 @@ The AIGNE framework enables developers to create powerful AI agents through simp
 
 ## Table of Contents
 
-- [Project Configuration File (aigne.yaml)](#project-configuration-file-aigneyaml)
-- [YAML Format Agent Definition (chat.yaml)](#yaml-format-agent-definition-chatyaml)
-- [JavaScript Format Agent Definition (plus.js)](#javascript-format-agent-definition-plusjs)
-- [MCP Format Agent Definition (filesystem.yaml)](#mcp-format-agent-definition-filesystemyaml)
-- [Agent Test File (plus.test.js)](#agent-test-file-plustestjs)
-- [Development Process and Best Practices](#development-process-and-best-practices)
+* [Project Configuration File (aigne.yaml)](#project-configuration-file-aigneyaml)
+* [YAML Format Agent Definition (chat.yaml)](#yaml-format-agent-definition-chatyaml)
+* [JavaScript Format Agent Definition (plus.js)](#javascript-format-agent-definition-plusjs)
+* [MCP Format Agent Definition (filesystem.yaml)](#mcp-format-agent-definition-filesystemyaml)
+* [Agent Test File (plus.test.js)](#agent-test-file-plustestjs)
+* [Development Process and Best Practices](#development-process-and-best-practices)
 
 ## Project Configuration File (aigne.yaml)
 
@@ -30,14 +30,14 @@ agents:
 
 ### Configuration Options Explained
 
-- `chat_model`: Defines the default AI model configuration
-  - `provider`: [Optional] Model provider, possible values are `openai`, `claude`, `xai`
-  - `name`: Model name (such as `gpt-4o-mini`, `gpt-4o`, etc.)
-  - `temperature`: Randomness of the model output (0.0-1.0). Lower values produce more deterministic outputs; higher values produce more diverse and innovative outputs.
-  - `top_p`: [Optional] Number of highest probability tokens to consider during sampling
-  - `frequency_penalty`: [Optional] Reduces the probability of repeating tokens
-  - `presence_penalty`: [Optional] Increases the probability of new tokens appearing
-- `agents`: List of paths to all agent configuration files included in the project
+* `chat_model`: Defines the default AI model configuration
+  * `provider`: \[Optional] Model provider, possible values are `openai`, `claude`, `xai`
+  * `name`: Model name (such as `gpt-4o-mini`, `gpt-4o`, etc.)
+  * `temperature`: Randomness of the model output (0.0-1.0). Lower values produce more deterministic outputs; higher values produce more diverse and innovative outputs.
+  * `top_p`: \[Optional] Number of highest probability tokens to consider during sampling
+  * `frequency_penalty`: \[Optional] Reduces the probability of repeating tokens
+  * `presence_penalty`: \[Optional] Increases the probability of new tokens appearing
+* `agents`: List of paths to all agent configuration files included in the project
 
 ## YAML Format Agent Definition (chat.yaml)
 
@@ -74,23 +74,23 @@ skills:
 
 ### Configuration Options Explained
 
-- `name`: Unique identifier for the agent, used to reference the agent in the system
-- `description`: Brief description of the agent's functionality and purpose
-- `instructions`: Detailed instructions guiding the agent's behavior (using YAML's multi-line text format)
-- `input_schema`: [Optional] JSON Schema definition of input parameters
-  - `type`: Type of input data (top level must be `object`)
-  - `properties`: Detailed definition of input parameters
-  - `required`: List of parameters that must be provided
-- `output_schema`: [Optional] JSON Schema definition of output results (only used when structured data output is needed)
-  - `type`: Type of output data (top level must be `object`)
-  - `properties`: Detailed definition of output results
-  - `required`: List of parameters that must be returned
-- `output_key`: [Optional] Key name for output text (default is `$message`, only valid when there is no `output_schema`)
-- `skills`: [Optional] List of skills the agent can use (JavaScript files implementing specific functionality)
-- `memory`: [Optional] Enables conversation memory for the agent. Can be:
-  - A boolean value (`true` to enable, `false` to disable)
-  - An object with configuration options:
-    - `subscribe_topic`: Array of topics the agent should subscribe to for memory
+* `name`: Unique identifier for the agent, used to reference the agent in the system
+* `description`: Brief description of the agent's functionality and purpose
+* `instructions`: Detailed instructions guiding the agent's behavior (using YAML's multi-line text format)
+* `input_schema`: \[Optional] JSON Schema definition of input parameters
+  * `type`: Type of input data (top level must be `object`)
+  * `properties`: Detailed definition of input parameters
+  * `required`: List of parameters that must be provided
+* `output_schema`: \[Optional] JSON Schema definition of output results (only used when structured data output is needed)
+  * `type`: Type of output data (top level must be `object`)
+  * `properties`: Detailed definition of output results
+  * `required`: List of parameters that must be returned
+* `output_key`: \[Optional] Key name for output text (default is `$message`, only valid when there is no `output_schema`)
+* `skills`: \[Optional] List of skills the agent can use (JavaScript files implementing specific functionality)
+* `memory`: \[Optional] Enables conversation memory for the agent. Can be:
+  * A boolean value (`true` to enable, `false` to disable)
+  * An object with configuration options:
+    * `subscribe_topic`: Array of topics the agent should subscribe to for memory
 
 ## JavaScript Format Agent Definition (plus.js)
 
@@ -125,10 +125,10 @@ plus.output_schema = {
 
 ### Structure Explained
 
-- `export default async function xxx()`: Main function of the agent, receives input parameters and returns results
-- `xxx.description`: Function description, providing a brief explanation of the agent
-- `xxx.input_schema`: JSON Schema definition of input parameters, standard JSON Schema format
-- `xxx.output_schema`: JSON Schema definition of output results, standard JSON Schema format
+* `export default async function xxx()`: Main function of the agent, receives input parameters and returns results
+* `xxx.description`: Function description, providing a brief explanation of the agent
+* `xxx.input_schema`: JSON Schema definition of input parameters, standard JSON Schema format
+* `xxx.output_schema`: JSON Schema definition of output results, standard JSON Schema format
 
 ## MCP Format Agent Definition (filesystem.yaml)
 
@@ -156,15 +156,17 @@ url: "http://localhost:3000"
 ### Configuration Options Explained
 
 When using a local command:
-- `type`: Must be set to `mcp` to indicate this is an MCP agent
-- `command`: The base command to run the MCP server
-- `args`: Array of arguments to pass to the command
-  - The first element is often a package name that implements an MCP server
-  - Additional arguments can be passed as needed by the specific MCP server
+
+* `type`: Must be set to `mcp` to indicate this is an MCP agent
+* `command`: The base command to run the MCP server
+* `args`: Array of arguments to pass to the command
+  * The first element is often a package name that implements an MCP server
+  * Additional arguments can be passed as needed by the specific MCP server
 
 When connecting to a remote server:
-- `type`: Must be set to `mcp` to indicate this is an MCP agent
-- `url`: URL of the remote MCP server to connect to
+
+* `type`: Must be set to `mcp` to indicate this is an MCP agent
+* `url`: URL of the remote MCP server to connect to
 
 ### How MCP Agents Work
 
@@ -186,12 +188,9 @@ AIGNE supports writing tests using the built-in Node.js test framework. Test fil
 
 ```javascript
 import assert from "node:assert";
-import test from "node:test";
 import plus from "./plus.js";
 
-test("plus should add two numbers correctly", async () => {
-  assert.deepEqual(await plus({ a: 1, b: 2 }), { sum: 3 });
-});
+assert.deepEqual(await plus({ a: 1, b: 2 }), { sum: 3 });
 ```
 
 ## Development Process and Best Practices
@@ -202,8 +201,8 @@ test("plus should add two numbers correctly", async () => {
 2. Create a project using AIGNE CLI: `aigne create my-project`
 3. Modify the `aigne.yaml` configuration according to your needs
 4. Create or modify agent definition files:
-   - YAML format agents (such as `chat.yaml`)
-   - JavaScript format agents (such as `plus.js`)
+   * YAML format agents (such as `chat.yaml`)
+   * JavaScript format agents (such as `plus.js`)
 5. Write test files to verify functionality
 6. Use `aigne run` to run the agent, or `aigne test` to execute tests
 
@@ -220,7 +219,7 @@ aigne run
 aigne test
 ```
 
----
+***
 
 With this guide, you should be able to start developing and testing AIGNE agents. As you deepen your understanding of the framework, you can create more complex and powerful agent systems.
 

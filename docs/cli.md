@@ -24,8 +24,8 @@ The AIGNE CLI provides the following commands:
 
 ### Global Options
 
-- `--version`: Display the CLI version
-- `--help`: Display help information
+* `--version`: Display the CLI version
+* `--help`: Display help information
 
 ### `aigne run`
 
@@ -37,16 +37,16 @@ aigne run [path] [options]
 
 #### Arguments
 
-- `path`: Path to the agents directory (defaults to current directory `.`) or URL to a project from AIGNE Studio
+* `path`: Path to the agents directory (defaults to current directory `.`) or URL to a project from AIGNE Studio
 
 #### Options
 
-- `--agent <agent>`: Name of the agent to use (defaults to the first agent found)
-- `--download-dir <dir>`: Directory to download the package to (when using a URL), defaults to `~/.aigne/xxx`
-- `--model-provider <provider>`: Model provider to use, available providers: openai, claude, xai (defaults to the aigne.yaml definition or openai)
-- `--model-name <model>`: Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)
-- `--verbose`: Enable verbose output mode for additional debugging information
-- `--help`: Display help for the command
+* `--agent <agent>`: Name of the agent to use (defaults to the first agent found)
+* `--download-dir <dir>`: Directory to download the package to (when using a URL), defaults to `~/.aigne/xxx`
+* `--model-provider <provider>`: Model provider to use, available providers: openai, claude, xai (defaults to the aigne.yaml definition or openai)
+* `--model-name <model>`: Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)
+* `--verbose`: Enable verbose output mode for additional debugging information
+* `--help`: Display help for the command
 
 #### Examples
 
@@ -79,20 +79,20 @@ aigne run https://www.aigne.io/projects/xxx/xxx.tgz
 https://github.com/user-attachments/assets/f528d1a1-31d1-48e5-b89e-e3d555c53649
 
 1. Create a project in AIGNE Studio:
-   - Log in to [AIGNE Studio](https://www.aigne.io)
-   - Click to create a new project
-   - Add the desired agents to your project
+   * Log in to [AIGNE Studio](https://www.aigne.io)
+   * Click to create a new project
+   * Add the desired agents to your project
 
 2. Get the CLI command:
-   - In the project page, click the settings icon in the top-right corner
-   - Find the "Integration" tab in the settings menu
-   - In the AIGNE CLI section, click the "Generate Link" button if no link exists
-   - Copy the generated `aigne run` command (format like `aigne run https://www.aigne.io/projects/xxx/xxx.tgz?secret=yyy&hash=zzz`)
+   * In the project page, click the settings icon in the top-right corner
+   * Find the "Integration" tab in the settings menu
+   * In the AIGNE CLI section, click the "Generate Link" button if no link exists
+   * Copy the generated `aigne run` command (format like `aigne run https://www.aigne.io/projects/xxx/xxx.tgz?secret=yyy&hash=zzz`)
 
 3. Run the command:
-   - Open your terminal
-   - Paste and run the copied command
-   - The system will automatically download the project and its agents and start the chat loop
+   * Open your terminal
+   * Paste and run the copied command
+   * The system will automatically download the project and its agents and start the chat loop
 
 ### `aigne create`
 
@@ -104,11 +104,11 @@ aigne create [path]
 
 #### Arguments
 
-- `path`: Optional path to create the project directory (will be used as default project name in prompt)
+* `path`: Optional path to create the project directory (will be used as default project name in prompt)
 
 #### Options
 
-- `--help`: Display help for the command
+* `--help`: Display help for the command
 
 #### Examples
 
@@ -136,11 +136,11 @@ aigne test [path]
 
 #### Arguments
 
-- `path`: Path to the agents directory (defaults to current directory `.`)
+* `path`: Path to the agents directory (defaults to current directory `.`)
 
 #### Options
 
-- `--help`: Display help for the command
+* `--help`: Display help for the command
 
 #### Examples
 
@@ -166,15 +166,15 @@ aigne serve [path] [options]
 
 #### Arguments
 
-- `path`: Path to the agents directory (defaults to current directory `.`)
+* `path`: Path to the agents directory (defaults to current directory `.`)
 
 #### Options
 
-- `--mcp`: Serve the agents as a MCP server (required at this time)
-- `--host <host>`: Host to run the MCP server on (defaults to "localhost"), use "0.0.0.0" to publicly expose the server
-- `--port <port>`: Port to run the MCP server on (defaults to the PORT environment variable if set, or 3000)
-- `--pathname <pathname>`: URL pathname for the MCP server endpoint (defaults to "/mcp")
-- `--help`: Display help for the command
+* `--mcp`: Serve the agents as a MCP server (required at this time)
+* `--host <host>`: Host to run the MCP server on (defaults to "localhost"), use "0.0.0.0" to publicly expose the server
+* `--port <port>`: Port to run the MCP server on (defaults to the PORT environment variable if set, or 3000)
+* `--pathname <pathname>`: URL pathname for the MCP server endpoint (defaults to "/mcp")
+* `--help`: Display help for the command
 
 #### Examples
 
@@ -233,5 +233,5 @@ The AIGNE CLI inherits any environment variables needed by your agents. Make sur
 
 For more information about developing agents, refer to the following resources:
 
-- [Agent Development Guide](./agent-development.md): Guide to developing AIGNE agents using YAML/JS configuration files
-- [AIGNE Framework Documentation](./cookbook.md): Official framework documentation
+* [Agent Development Guide](./agent-development.md): Guide to developing AIGNE agents using YAML/JS configuration files
+* [AIGNE Framework Documentation](./cookbook.md): Official framework documentation

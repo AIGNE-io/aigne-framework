@@ -6,7 +6,7 @@ const config = {
     "typedoc-plugin-no-inherit",
     "typedoc-plugin-markdown",
     "@aigne/typedoc-plugin-example-utils-ts",
-    "./typedoc/typedoc-plugin-sidebar.ts",
+    "./scripts/typedoc-plugin-sidebar.ts",
   ],
   entryPointStrategy: "expand",
   sortEntryPoints: false,

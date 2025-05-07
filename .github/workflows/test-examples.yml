@@ -8,45 +8,16 @@ on:
 jobs:
   test-examples:
     runs-on: ubuntu-latest
-
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - provider: OpenAI
-            model: gpt-4.1-mini
-          - provider: OpenAI
-            model: gpt-4o-mini
-          - provider: OpenAI
-            model: o4-mini
-          - provider: OpenAI
-            model: o3-mini
-          - provider: Claude
-            model: claude-3-7-sonnet-latest
-          - provider: Claude
-            model: claude-3-5-haiku-latest
-          - provider: XAI
-            model: grok-3-mini
-          - provider: XAI
-            model: grok-2-latest
-          - provider: Gemini
-            model: gemini-2.5-flash-preview-04-17
-          - provider: Gemini
-            model: gemini-2.5-pro-preview-03-25
-          - provider: Gemini
-            model: gemini-2.0-flash
-          - provider: Gemini
-            model: gemini-1.5-flash
-          - provider: DeepSeek
-            model: deepseek-chat
-          - provider: OpenRouter
-            model: openai/gpt-4o
-          - provider: Ollama
-            model: llama3.2
-          - provider: Ollama
-            model: qwen2.5-coder
+        provider:
+          - OpenAI
+          - Claude
+          - XAI
+          - Gemini
+          - DeepSeek
+          - OpenRouter
 
     steps:
       - name: Checkout repo
@@ -99,11 +70,9 @@ jobs:
           # run pnpm install again to make binaries (@aigne/cli: aigne,bunwrapper) available in node_modules/.bin
           pnpm install
 
-      - name: Run examples
+      - name: Run models for ${{ matrix.provider }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MODEL_PROVIDER: ${{ matrix.provider }}
-          MODEL_NAME: ${{ matrix.model }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
@@ -113,20 +82,36 @@ jobs:
           OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
           OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
         run: |
+          if [ "${{ matrix.provider }}" = "OpenAI" ]; then
+            MODELS="gpt-4.1-mini gpt-4o-mini o4-mini o3-mini"
+          elif [ "${{ matrix.provider }}" = "Claude" ]; then
+            MODELS="claude-3-7-sonnet-latest claude-3-5-haiku-latest"
+          elif [ "${{ matrix.provider }}" = "XAI" ]; then
+            MODELS="grok-3-mini grok-2-latest"
+          elif [ "${{ matrix.provider }}" = "Gemini" ]; then
+            MODELS="gemini-2.5-flash-preview-04-17 gemini-2.5-pro-preview-03-25 gemini-2.0-flash gemini-1.5-flash"
+          elif [ "${{ matrix.provider }}" = "DeepSeek" ]; then
+            MODELS="deepseek-chat"
+          elif [ "${{ matrix.provider }}" = "OpenRouter" ]; then
+            MODELS="openai/gpt-4o"
+          fi
+
           EXCLUDE_PATTERN="mcp-blocklet\|workflow-group-chat\|workflow-orchestrator"
 
-          for dir in examples/*; do
-            echo "=========================================="
-            if echo "$dir" | grep -q "$EXCLUDE_PATTERN"; then
-              echo "Skipping $dir"
-            else
-              echo "Testing $dir with $MODEL_PROVIDER:$MODEL_NAME"
-              start_time=$(date +%s)
-              cd $dir
-              pnpm test:llm || exit 1
-              cd ../..
-              end_time=$(date +%s)
-              duration=$((end_time - start_time))
-              echo "✅ $dir completed in $duration seconds"
-            fi
+          for MODEL in $MODELS; do
+            for dir in examples/*; do
+              echo "=========================================="
+              if echo "$dir" | grep -q "$EXCLUDE_PATTERN"; then
+                echo "Skipping $dir"
+              else
+                echo "Testing $dir with ${{ matrix.provider }}:$MODEL"
+                start_time=$(date +%s)
+                cd $dir
+                MODEL_PROVIDER=${{ matrix.provider }} MODEL_NAME=$MODEL pnpm test:llm || exit 1
+                cd ../..
+                end_time=$(date +%s)
+                duration=$((end_time - start_time))
+                echo "✅ $dir $MODEL completed in $duration seconds"
+              fi
+            done
           done

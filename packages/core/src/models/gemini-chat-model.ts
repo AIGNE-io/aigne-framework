@@ -16,4 +16,5 @@ export class GeminiChatModel extends OpenAIChatModel {
   protected supportsEndWithSystemMessage = false;
   protected supportsToolsUseWithJsonSchema = false;
   protected supportsParallelToolCalls = false;
+  protected supportsToolStreaming = false;
 }

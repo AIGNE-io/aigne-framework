@@ -12,6 +12,7 @@ import {
   orArrayToArray,
   remove,
   tryOrThrow,
+  unique,
 } from "@aigne/core/utils/type-utils.js";
 import { type ZodType, z } from "zod";
 
@@ -67,6 +68,15 @@ test("test-utils.remove", async () => {
   const array2 = [1, 2, 3, 4, 5];
   expect(remove(array2, (item) => item > 3)).toEqual([4, 5]);
   expect(array2).toEqual([1, 2, 3]);
+});
+
+test("type-utils.unique", async () => {
+  expect(unique([1, 2, 3, 1, 2, 3])).toEqual([1, 2, 3]);
+
+  expect(unique([{ id: 1 }, { id: 2 }, { id: 1 }], (item) => item.id)).toEqual([
+    { id: 1 },
+    { id: 2 },
+  ]);
 });
 
 test("type-utils.omitBy", async () => {

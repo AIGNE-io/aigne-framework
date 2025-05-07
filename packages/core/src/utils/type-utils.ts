@@ -64,6 +64,20 @@ export function remove<T>(arr: T[], remove: T[] | ((item: T) => boolean)): T[] {
   return removed;
 }
 
+export function unique<T>(arr: T[], key: (item: T) => unknown = (item: T) => item): T[] {
+  const seen = new Set();
+
+  return arr.filter((item) => {
+    const k = key(item);
+    if (seen.has(k)) {
+      return false;
+    }
+
+    seen.add(k);
+    return true;
+  });
+}
+
 export function omitBy<T extends Record<string, unknown>, K extends keyof T>(
   obj: T,
   predicate: (value: T[K], key: K) => boolean,

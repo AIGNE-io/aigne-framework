@@ -1,0 +1,26 @@
+data: {"messageStart":{"p":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM","role":"assistant"}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"<thinking"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":">The"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" User"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" has"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" asked for the current weather in"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" New York."}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" I need to use"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" the '"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"get_weather' tool"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" to get this"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" information. I"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" will"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" call"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" the"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" tool"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" with the required '"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"city' parameter.</"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"thinking"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":">\n"}}}
+data: {"contentBlockStop":{"contentBlockIndex":0,"p":"abcd"}}
+data: {"contentBlockStart":{"contentBlockIndex":1,"p":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567","start":{"toolUse":{"name":"get_weather","toolUseId":"tooluse_yPoXvCWrSCScmmoH4UCWOA"}}}}
+data: {"contentBlockDelta":{"contentBlockIndex":1,"delta":{"toolUse":{"input":"{\"city\":\"New York\"}"}}}}
+data: {"contentBlockStop":{"contentBlockIndex":1,"p":"abcdefghijklmnop"}}
+data: {"messageStop":{"stopReason":"tool_use"}}
+data: {"metadata":{"metrics":{"latencyMs":546},"usage":{"inputTokens":392,"outputTokens":80,"totalTokens":472}}}

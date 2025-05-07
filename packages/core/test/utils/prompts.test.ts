@@ -4,7 +4,7 @@ import { getJsonOutputPrompt } from "../../src/utils/prompts.js";
 describe("getJsonOutputPrompt", () => {
   test("should return correct prompt with string schema", () => {
     const schema = "name: string\nage: number";
-    const expected = `Provide your output as a JSON containing the following fields:
+    const expected = `Output must be a JSON object containing the following fields only.
 <json_fields>
 name: string
 age: number
@@ -22,7 +22,7 @@ age: number
         country: "string",
       },
     };
-    const expected = `Provide your output as a JSON containing the following fields:
+    const expected = `Output must be a JSON object containing the following fields only.
 <json_fields>
 {"name":"string","age":"number","address":{"city":"string","country":"string"}}
 </json_fields>`;
@@ -32,7 +32,7 @@ age: number
 
   test("should handle empty schema", () => {
     const schema = {};
-    const expected = `Provide your output as a JSON containing the following fields:
+    const expected = `Output must be a JSON object containing the following fields only.
 <json_fields>
 {}
 </json_fields>`;
@@ -42,7 +42,7 @@ age: number
 
   test("should handle empty string schema", () => {
     const schema = "";
-    const expected = `Provide your output as a JSON containing the following fields:
+    const expected = `Output must be a JSON object containing the following fields only.
 <json_fields>
 
 </json_fields>`;

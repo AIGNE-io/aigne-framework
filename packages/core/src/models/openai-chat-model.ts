@@ -32,6 +32,7 @@ export interface OpenAIChatModelCapabilities {
   supportsToolsUseWithJsonSchema: boolean;
   supportsParallelToolCalls: boolean;
   supportsToolsEmptyParameters: boolean;
+  supportsToolStreaming: boolean;
   supportsTemperature: boolean;
 }
 
@@ -80,6 +81,7 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsToolsUseWithJsonSchema = true;
   protected supportsParallelToolCalls = true;
   protected supportsToolsEmptyParameters = true;
+  protected supportsToolStreaming = true;
   protected supportsTemperature = true;
 
   get client() {
@@ -131,10 +133,10 @@ export class OpenAIChatModel extends ChatModel {
     });
 
     if (options?.streaming && input.responseFormat?.type !== "json_schema") {
-      return await extractResultFromStream(stream, false, true);
+      return await this.extractResultFromStream(stream, false, true);
     }
 
-    const result = await extractResultFromStream(stream, jsonMode);
+    const result = await this.extractResultFromStream(stream, jsonMode);
 
     if (
       !this.supportsToolsUseWithJsonSchema &&
@@ -218,7 +220,126 @@ export class OpenAIChatModel extends ChatModel {
       response_format: resolvedResponseFormat,
     });
 
-    return extractResultFromStream(res, jsonMode);
+    return this.extractResultFromStream(res, jsonMode);
+  }
+
+  private async extractResultFromStream(
+    stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+    jsonMode: boolean | undefined,
+    streaming: true,
+  ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
+  private async extractResultFromStream(
+    stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+    jsonMode?: boolean,
+    streaming?: false,
+  ): Promise<ChatModelOutput>;
+  private async extractResultFromStream(
+    stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+    jsonMode?: boolean,
+    streaming?: boolean,
+  ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
+    const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
+      start: async (controller) => {
+        try {
+          let text = "";
+          let refusal = "";
+          const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
+            args: string;
+          })[] = [];
+          let model: string | undefined;
+
+          for await (const chunk of stream) {
+            const choice = chunk.choices?.[0];
+            if (!model) {
+              model = chunk.model;
+              controller.enqueue({
+                delta: {
+                  json: {
+                    model,
+                  },
+                },
+              });
+            }
+
+            if (choice?.delta.tool_calls?.length) {
+              for (const call of choice.delta.tool_calls) {
+                if (this.supportsToolStreaming && call.index !== undefined) {
+                  handleToolCallDelta(toolCalls, call);
+                } else {
+                  handleCompleteToolCall(toolCalls, call);
+                }
+              }
+            }
+
+            if (choice?.delta.content) {
+              text += choice.delta.content;
+              if (!jsonMode) {
+                controller.enqueue({
+                  delta: {
+                    text: {
+                      text: choice.delta.content,
+                    },
+                  },
+                });
+              }
+            }
+
+            if (choice?.delta.refusal) {
+              refusal += choice.delta.refusal;
+              if (!jsonMode) {
+                controller.enqueue({
+                  delta: {
+                    text: { text: choice.delta.refusal },
+                  },
+                });
+              }
+            }
+
+            if (chunk.usage) {
+              controller.enqueue({
+                delta: {
+                  json: {
+                    usage: {
+                      inputTokens: chunk.usage.prompt_tokens,
+                      outputTokens: chunk.usage.completion_tokens,
+                    },
+                  },
+                },
+              });
+            }
+          }
+
+          text = text || refusal;
+          if (jsonMode && text) {
+            controller.enqueue({
+              delta: {
+                json: {
+                  json: parseJSON(text),
+                },
+              },
+            });
+          }
+
+          if (toolCalls.length) {
+            controller.enqueue({
+              delta: {
+                json: {
+                  toolCalls: toolCalls.map(({ args, ...c }) => ({
+                    ...c,
+                    function: { ...c.function, arguments: parseJSON(args) },
+                  })),
+                },
+              },
+            });
+          }
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+
+    return streaming ? result : await agentResponseStreamToObject(result);
   }
 }
 
@@ -323,126 +444,6 @@ export function jsonSchemaToOpenAIJsonSchema(
   }
 
   return schema;
-}
-
-async function extractResultFromStream(
-  stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
-  jsonMode: boolean | undefined,
-  streaming: true,
-): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
-async function extractResultFromStream(
-  stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
-  jsonMode?: boolean,
-  streaming?: false,
-): Promise<ChatModelOutput>;
-async function extractResultFromStream(
-  stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
-  jsonMode?: boolean,
-  streaming?: boolean,
-): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
-  const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
-    async start(controller) {
-      try {
-        let text = "";
-        let refusal = "";
-        const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-          args: string;
-        })[] = [];
-        let model: string | undefined;
-
-        for await (const chunk of stream) {
-          const choice = chunk.choices?.[0];
-          if (!model) {
-            model = chunk.model;
-            controller.enqueue({
-              delta: {
-                json: {
-                  model,
-                },
-              },
-            });
-          }
-
-          if (choice?.delta.tool_calls?.length) {
-            for (const call of choice.delta.tool_calls) {
-              // Gemini not support tool call delta
-              if (call.index !== undefined) {
-                handleToolCallDelta(toolCalls, call);
-              } else {
-                handleCompleteToolCall(toolCalls, call);
-              }
-            }
-          }
-
-          if (choice?.delta.content) {
-            text += choice.delta.content;
-            if (!jsonMode) {
-              controller.enqueue({
-                delta: {
-                  text: {
-                    text: choice.delta.content,
-                  },
-                },
-              });
-            }
-          }
-
-          if (choice?.delta.refusal) {
-            refusal += choice.delta.refusal;
-            if (!jsonMode) {
-              controller.enqueue({
-                delta: {
-                  text: { text: choice.delta.refusal },
-                },
-              });
-            }
-          }
-
-          if (chunk.usage) {
-            controller.enqueue({
-              delta: {
-                json: {
-                  usage: {
-                    inputTokens: chunk.usage.prompt_tokens,
-                    outputTokens: chunk.usage.completion_tokens,
-                  },
-                },
-              },
-            });
-          }
-        }
-
-        text = text || refusal;
-        if (jsonMode && text) {
-          controller.enqueue({
-            delta: {
-              json: {
-                json: parseJSON(text),
-              },
-            },
-          });
-        }
-
-        if (toolCalls.length) {
-          controller.enqueue({
-            delta: {
-              json: {
-                toolCalls: toolCalls.map(({ args, ...c }) => ({
-                  ...c,
-                  function: { ...c.function, arguments: parseJSON(args) },
-                })),
-              },
-            },
-          });
-        }
-        controller.close();
-      } catch (error) {
-        controller.error(error);
-      }
-    },
-  });
-
-  return streaming ? result : await agentResponseStreamToObject(result);
 }
 
 function handleToolCallDelta(

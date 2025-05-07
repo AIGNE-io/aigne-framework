@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.6.0...example-chat-bot-v1.7.0) (2025-04-30)
+
+
+### Features
+
+* **core:** add BedrockChatModel support ([#101](https://github.com/AIGNE-io/aigne-framework/issues/101)) ([a0b98f0](https://github.com/AIGNE-io/aigne-framework/commit/a0b98f01bd78a135232226548848fa35a64982d1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.8.1
+
 ## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.5.0...example-chat-bot-v1.6.0) (2025-04-27)
 
 

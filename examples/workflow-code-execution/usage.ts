@@ -11,7 +11,7 @@ const model = new OpenAIChatModel({
 });
 
 const sandbox = FunctionAgent.from({
-  name: "js-sandbox",
+  name: "evaluateJs",
   description: "A js sandbox for running javascript code",
   inputSchema: z.object({
     code: z.string().describe("The code to run"),

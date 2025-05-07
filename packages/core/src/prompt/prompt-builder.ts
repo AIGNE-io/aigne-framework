@@ -16,7 +16,7 @@ import type {
   ChatModelOptions,
 } from "../models/chat-model.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { isNil, orArrayToArray } from "../utils/type-utils.js";
+import { isNil, orArrayToArray, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import {
   AgentMessageTemplate,
@@ -190,11 +190,14 @@ export class PromptBuilder {
   private buildTools(
     options: PromptBuilderBuildOptions,
   ): Pick<ChatModelInput, "tools" | "toolChoice" | "modelOptions"> & { toolAgents?: Agent[] } {
-    const toolAgents = (options.context?.skills ?? [])
-      .concat(options.agent?.skills ?? [])
-      .concat(options.agent?.memoryAgentsAsTools ? options.agent.memories : [])
-      // TODO: support nested tools?
-      .flatMap((i) => (i.isInvokable ? i.skills.concat(i) : i.skills));
+    const toolAgents = unique(
+      (options.context?.skills ?? [])
+        .concat(options.agent?.skills ?? [])
+        .concat(options.agent?.memoryAgentsAsTools ? options.agent.memories : [])
+        // TODO: support nested tools?
+        .flatMap((i) => (i.isInvokable ? i.skills.concat(i) : i.skills)),
+      (i) => i.name,
+    );
 
     const tools: ChatModelInputTool[] = toolAgents.map((i) => ({
       type: "function",

@@ -3,6 +3,19 @@
 - chore: release v1.2.0
 
 
+## [1.14.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.13.0...aigne-framework-v1.14.0) (2025-04-30)
+
+
+### Features
+
+* **core:** add BedrockChatModel support ([#101](https://github.com/AIGNE-io/aigne-framework/issues/101)) ([a0b98f0](https://github.com/AIGNE-io/aigne-framework/commit/a0b98f01bd78a135232226548848fa35a64982d1))
+
+
+### Bug Fixes
+
+* **core:** deduplicate tools for chat model ([#103](https://github.com/AIGNE-io/aigne-framework/issues/103)) ([570be6d](https://github.com/AIGNE-io/aigne-framework/commit/570be6d8620ab5b9a0149f835ecd4641009a8654))
+* export server/client api types ([93e5341](https://github.com/AIGNE-io/aigne-framework/commit/93e5341dde7a6851f08a3d4e2f6c1a1db91765e9))
+
 ## [1.13.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.12.0...aigne-framework-v1.13.0) (2025-04-27)
 
 

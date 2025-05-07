@@ -5,6 +5,7 @@ import { z } from "zod";
 import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
+import { BedrockChatModel } from "../models/bedrock-chat-model.js";
 import type { ChatModel, ChatModelOptions } from "../models/chat-model.js";
 import { ClaudeChatModel } from "../models/claude-chat-model.js";
 import { DeepSeekChatModel } from "../models/deepseek-chat-model.js";
@@ -107,6 +108,7 @@ export async function loadModel(
     DeepSeekChatModel,
     OpenRouterChatModel,
     OllamaChatModel,
+    BedrockChatModel,
   ];
   const M = availableModels.find((m) =>
     m.name

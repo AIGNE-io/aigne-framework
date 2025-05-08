@@ -22,6 +22,7 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a database administrator",
+  memory: true,
 });
 
 console.log(

@@ -6,7 +6,7 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/core)](https://www.npmjs.com/package/@aigne/core)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
-**English** | [中文](README.zh.md)
+**English** | [中文](./README.zh.md)
 
 Core library of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) for building AI-powered applications.
 
@@ -25,14 +25,21 @@ Core library of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) f
 
 ## Installation
 
+### Using npm
+
 ```bash
-# Using npm
 npm install @aigne/core
+```
 
-# Using yarn
+### Using yarn
+
+```bash
 yarn add @aigne/core
+```
 
-# Using pnpm
+### Using pnpm
+
+```bash
 pnpm add @aigne/core
 ```
 
@@ -54,7 +61,7 @@ const agent = AIAgent.from({
   instructions: "You are a helpful assistant.",
 });
 
-// Create AIGNE
+// AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({ model });
 
 // Use the AIGNE to invoke the agent
@@ -64,26 +71,6 @@ const userAgent = await aigne.invoke(agent);
 const response = await userAgent.invoke("Hello, can you help me write a short article?");
 console.log(response);
 ```
-
-## Module Structure
-
-- `agents/`: Agent implementations, including AI agents, function agents, MCP agents, etc.
-- `aigne/`: AIGNE is agents execution environment
-- `loader/`: Loader-related functionality
-- `models/`: Integration with various AI models
-- `prompt/`: Prompt handling functionality
-- `utils/`: Utility functions and helper methods
-
-## Documentation
-
-For more detailed API documentation, please refer to:
-
-- [Agent API](../../docs/apis/agent-api.md)
-- [AI Agent API](../../docs/apis/ai-agent-api.md)
-- [Function Agent API](../../docs/apis/function-agent-api.md)
-- [MCP Agent API](../../docs/apis/mcp-agent-api.md)
-- [AIGNE API](../../docs/apis/aigne-api.md)
-- [Server/Client API](../../docs/apis/server-client-api.md)
 
 ## License
 

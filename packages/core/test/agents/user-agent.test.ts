@@ -51,17 +51,13 @@ test("UserAgent.invoke should invoke activeAgent correctly", async () => {
     activeAgent: testAgent,
   });
 
-  const testAgentCall = spyOn(testAgent, "process").mockReturnValueOnce(
+  const testAgentProcess = spyOn(testAgent, "process").mockReturnValueOnce(
     arrayToAgentProcessAsyncGenerator([{ delta: { json: createMessage("world") } }]),
   );
 
   const result = await aigne.invoke(userAgent, "hello");
   expect(result).toEqual(createMessage("world"));
-  expect(testAgentCall).toHaveBeenLastCalledWith(
-    createMessage("hello"),
-    expect.anything(),
-    expect.anything(),
-  );
+  expect(testAgentProcess).toHaveBeenLastCalledWith(createMessage("hello"), expect.anything());
 });
 
 test("UserAgent.invoke should publish topic correctly", async () => {

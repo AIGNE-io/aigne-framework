@@ -25,6 +25,7 @@ const agent = AIAgent.from({
 1. navigate to the url
 2. evaluate document.body.innerText to get the content
 `,
+  memory: true,
 });
 
 const result = await aigne.invoke(agent, "extract content from https://www.arcblock.io");

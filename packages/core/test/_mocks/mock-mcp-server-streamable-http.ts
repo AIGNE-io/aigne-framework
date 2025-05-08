@@ -22,5 +22,15 @@ export async function mockMCPStreamableHTTPServer(port: number) {
   });
 
   await server.connect(transport);
-  return app.listen(port);
+
+  const httpServer = app.listen(port);
+
+  Object.assign(httpServer, {
+    [Symbol.asyncDispose]: async () => {
+      httpServer.closeAllConnections();
+      httpServer.close();
+    },
+  });
+
+  return httpServer;
 }

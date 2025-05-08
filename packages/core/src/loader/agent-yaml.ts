@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { parse } from "yaml";
 import { type ZodObject, type ZodType, z } from "zod";
+import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { customCamelize } from "../utils/camelize.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { inputOutputSchema } from "./schema.js";
@@ -33,7 +34,7 @@ const agentFileSchema = z.discriminatedUnion("type", [
       .nullish()
       .transform((v) => v ?? undefined),
     tool_choice: z
-      .union([z.literal("auto"), z.literal("none"), z.literal("required"), z.literal("router")])
+      .nativeEnum(AIAgentToolChoice)
       .nullish()
       .transform((v) => v ?? undefined),
     memory: z

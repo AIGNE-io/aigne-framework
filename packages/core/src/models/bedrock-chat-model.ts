@@ -12,8 +12,7 @@ import {
 } from "@aws-sdk/client-bedrock-runtime";
 import { nanoid } from "nanoid";
 import { z } from "zod";
-import type { AgentInvokeOptions, AgentResponse, AgentResponseChunk } from "../agents/agent.js";
-import type { Context } from "../aigne/context.js";
+import type { AgentResponse, AgentResponseChunk } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { getJsonOutputPrompt } from "../utils/prompts.js";
 import { agentResponseStreamToObject } from "../utils/stream-utils.js";
@@ -26,6 +25,9 @@ import {
   type ChatModelOutput,
 } from "./chat-model.js";
 
+/**
+ * @hidden
+ */
 export function extractLastJsonObject(text: string): string | null {
   return text.replace(/<thinking>[\s\S]*?<\/thinking>/g, "").trim();
 }
@@ -40,6 +42,9 @@ export interface BedrockChatModelOptions {
   modelOptions?: ChatModelOptions;
 }
 
+/**
+ * @hidden
+ */
 export const bedrockChatModelOptionsSchema = z.object({
   region: z.string().optional(),
   model: z.string().optional(),
@@ -61,6 +66,9 @@ export class BedrockChatModel extends ChatModel {
     super();
   }
 
+  /**
+   * @hidden
+   */
   protected _client?: BedrockRuntimeClient;
 
   get client() {
@@ -82,11 +90,7 @@ export class BedrockChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  async process(
-    input: ChatModelInput,
-    _context: Context,
-    options?: AgentInvokeOptions,
-  ): Promise<AgentResponse<ChatModelOutput>> {
+  async process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const modelId =
       input.modelOptions?.model ?? this.modelOptions?.model ?? BEDROCK_DEFAULT_CHAT_MODEL;
 
@@ -106,7 +110,7 @@ export class BedrockChatModel extends ChatModel {
     const command = new ConverseStreamCommand(body);
     const response = await this.client.send(command);
     const jsonMode = input.responseFormat?.type === "json_schema";
-    if (options?.streaming && !jsonMode) {
+    if (!jsonMode) {
       return this.extractResultFromStream(response.stream, modelId, false, true);
     }
 

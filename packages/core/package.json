@@ -107,14 +107,14 @@
     "openai": "^4.87.3"
   },
   "devDependencies": {
-    "@anthropic-ai/sdk": "^0.40.1",
+    "@anthropic-ai/sdk": "^0.41.0",
     "@google/generative-ai": "^0.24.1",
     "@types/bun": "^1.2.12",
     "@types/compression": "^1.7.5",
     "@types/content-type": "^1.1.8",
     "@types/express": "^5.0.1",
     "@types/mustache": "^4.2.6",
-    "@types/node": "^22.15.12",
+    "@types/node": "^22.15.15",
     "compression": "^1.8.0",
     "detect-port": "^2.1.0",
     "express": "^5.1.0",

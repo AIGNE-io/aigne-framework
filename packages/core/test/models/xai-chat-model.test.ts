@@ -1,6 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
+import { textDelta } from "@aigne/core";
 import { XAIChatModel } from "@aigne/core/models/xai-chat-model.js";
+import { readableStreamToAsyncIterator } from "@aigne/core/utils/stream-utils.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
 import {
   COMMON_RESPONSE_FORMAT,
@@ -9,6 +11,104 @@ import {
   createWeatherToolExpected,
   createWeatherToolMessages,
 } from "../_utils/openai-like-utils.js";
+
+test("XAI chat model basic usage", async () => {
+  // #region example-xai-chat-model
+  const model = new XAIChatModel({
+    // Provide API key directly or use environment variable XAI_API_KEY
+    apiKey: "your-api-key", // Optional if set in env variables
+    // Specify model (defaults to 'grok-2-latest')
+    model: "grok-2-latest",
+    modelOptions: {
+      temperature: 0.8,
+    },
+  });
+
+  spyOn(model, "process").mockReturnValueOnce({
+    text: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
+    model: "grok-2-latest",
+    usage: {
+      inputTokens: 6,
+      outputTokens: 17,
+    },
+  });
+
+  const result = await model.invoke({
+    messages: [{ role: "user", content: "Tell me about yourself" }],
+  });
+
+  console.log(result);
+  /* Output:
+  {
+    text: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
+    model: "grok-2-latest",
+    usage: {
+      inputTokens: 6,
+      outputTokens: 17
+    }
+  }
+  */
+
+  expect(result).toEqual({
+    text: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
+    model: "grok-2-latest",
+    usage: {
+      inputTokens: 6,
+      outputTokens: 17,
+    },
+  });
+  // #endregion example-xai-chat-model
+});
+
+test("X.AI chat model with streaming using async generator", async () => {
+  // #region example-xai-chat-model-streaming
+  const model = new XAIChatModel({
+    apiKey: "your-api-key",
+    model: "grok-2-latest",
+  });
+
+  spyOn(model, "process").mockImplementationOnce(async function* () {
+    yield textDelta({ text: "I'm Grok," });
+    yield textDelta({ text: " an AI assistant" });
+    yield textDelta({ text: " from X.AI." });
+    yield textDelta({ text: " I'm here to assist" });
+    yield textDelta({ text: " with a touch of humor and wit!" });
+
+    return {
+      model: "grok-2-latest",
+      usage: { inputTokens: 6, outputTokens: 17 },
+    };
+  });
+
+  const stream = await model.invoke(
+    {
+      messages: [{ role: "user", content: "Tell me about yourself" }],
+    },
+    undefined,
+    { streaming: true },
+  );
+
+  let fullText = "";
+  const json = {};
+
+  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
+
+  console.log(fullText); // Output: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!"
+  console.log(json); // { model: "grok-2-latest", usage: { inputTokens: 6, outputTokens: 17 } }
+
+  expect(fullText).toBe(
+    "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
+  );
+  expect(json).toEqual({
+    model: "grok-2-latest",
+    usage: { inputTokens: 6, outputTokens: 17 },
+  });
+  // #endregion example-xai-chat-model-streaming
+});
 
 test("XAIChatModel.invoke should return the correct tool", async () => {
   const model = new XAIChatModel({

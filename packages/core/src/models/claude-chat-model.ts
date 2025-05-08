@@ -10,16 +10,20 @@ import type {
 } from "@anthropic-ai/sdk/resources/index.js";
 import { z } from "zod";
 import type {
-  AgentInvokeOptions,
+  AgentProcessResult,
   AgentResponse,
   AgentResponseChunk,
   Message,
 } from "../agents/agent.js";
-import type { Context } from "../aigne/context.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { mergeUsage } from "../utils/model-utils.js";
 import { agentResponseStreamToObject } from "../utils/stream-utils.js";
-import { checkArguments, isEmpty, isNonNullable } from "../utils/type-utils.js";
+import {
+  type PromiseOrValue,
+  checkArguments,
+  isEmpty,
+  isNonNullable,
+} from "../utils/type-utils.js";
 import {
   ChatModel,
   type ChatModelInput,
@@ -31,12 +35,33 @@ import {
 
 const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
 
+/**
+ * Configuration options for Claude Chat Model
+ */
 export interface ClaudeChatModelOptions {
+  /**
+   * API key for Anthropic's Claude API
+   *
+   * If not provided, will look for ANTHROPIC_API_KEY or CLAUDE_API_KEY in environment variables
+   */
   apiKey?: string;
+
+  /**
+   * Claude model to use
+   *
+   * Defaults to 'claude-3-7-sonnet-latest'
+   */
   model?: string;
+
+  /**
+   * Additional model options to control behavior
+   */
   modelOptions?: ChatModelOptions;
 }
 
+/**
+ * @hidden
+ */
 export const claudeChatModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   model: z.string().optional(),
@@ -52,12 +77,33 @@ export const claudeChatModelOptionsSchema = z.object({
     .optional(),
 });
 
+/**
+ * Implementation of the ChatModel interface for Anthropic's Claude API
+ *
+ * This model provides access to Claude's capabilities including:
+ * - Text generation
+ * - Tool use
+ * - JSON structured output
+ *
+ * Default model: 'claude-3-7-sonnet-latest'
+ *
+ * @example
+ * Here's how to create and use a Claude chat model:
+ * {@includeCode ../../test/models/claude-chat-model.test.ts#example-claude-chat-model}
+ *
+ * @example
+ * Here's an example with streaming response:
+ * {@includeCode ../../test/models/claude-chat-model.test.ts#example-claude-chat-model-streaming-async-generator}
+ */
 export class ClaudeChatModel extends ChatModel {
   constructor(public options?: ClaudeChatModelOptions) {
     if (options) checkArguments("ClaudeChatModel", claudeChatModelOptionsSchema, options);
     super();
   }
 
+  /**
+   * @hidden
+   */
   protected _client?: Anthropic;
 
   get client() {
@@ -73,11 +119,16 @@ export class ClaudeChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  async process(
-    input: ChatModelInput,
-    _context: Context,
-    options?: AgentInvokeOptions,
-  ): Promise<AgentResponse<ChatModelOutput>> {
+  /**
+   * Process the input using Claude's chat model
+   * @param input - The input to process
+   * @returns The processed output from the model
+   */
+  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this._process(input);
+  }
+
+  private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const model = this.options?.model || CHAT_MODEL_CLAUDE_DEFAULT_MODEL;
     const disableParallelToolUse =
       input.modelOptions?.parallelToolCalls === false ||
@@ -98,7 +149,7 @@ export class ClaudeChatModel extends ChatModel {
       stream: true,
     });
 
-    if (options?.streaming && input.responseFormat?.type !== "json_schema") {
+    if (input.responseFormat?.type !== "json_schema") {
       return this.extractResultFromClaudeStream(stream, true);
     }
 

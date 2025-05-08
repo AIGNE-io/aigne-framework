@@ -14,7 +14,7 @@ const execute_order_tool = FunctionAgent.from({
     product: z.string(),
     price: z.number(),
   }),
-  fn: ({ product, price }: { product: string; price: number }) => {
+  process: ({ product, price }: { product: string; price: number }) => {
     console.log("\n\n=== Order Summary ===");
     console.log(`Product: ${product}`);
     console.log(`Price: $${price}`);
@@ -35,7 +35,7 @@ const look_up_item_tool = FunctionAgent.from({
   inputSchema: z.object({
     search_query: z.string(),
   }),
-  fn: ({ search_query }: { search_query: string }) => {
+  process: ({ search_query }: { search_query: string }) => {
     const item_id = "item_132612938";
     console.log(`Found item for: ${search_query}`, item_id);
     return { item_id };
@@ -49,7 +49,7 @@ const execute_refund_tool = FunctionAgent.from({
     item_id: z.string(),
     reason: z.string().optional(),
   }),
-  fn: ({ item_id, reason }: { item_id: string; reason?: string }) => {
+  process: ({ item_id, reason }: { item_id: string; reason?: string }) => {
     console.log("\n\n=== Refund Summary ===");
     console.log(`Item ID: ${item_id}`);
     console.log(`Reason: ${reason ?? "not provided"}`);
@@ -62,26 +62,26 @@ const execute_refund_tool = FunctionAgent.from({
 const transfer_to_issues_and_repairs = FunctionAgent.from({
   name: "transfer_to_issues_and_repairs",
   description: "Use for issues, repairs, or refunds.",
-  fn: (): Agent => issuesAndRepairs,
+  process: (): Agent => issuesAndRepairs,
 });
 
 const transfer_to_sales_agent = FunctionAgent.from({
   name: "transfer_to_sales_agent",
   description: "Use for anything sales or buying related.",
-  fn: (): Agent => sales,
+  process: (): Agent => sales,
 });
 
 const transfer_back_to_triage = FunctionAgent.from({
   name: "transfer_back_to_triage",
   description:
     "Call this if the user brings up a topic outside of your purview,\nincluding escalating to human.",
-  fn: (): Agent => triage,
+  process: (): Agent => triage,
 });
 
 const transfer_to_human_manager = FunctionAgent.from({
   name: "transfer_to_human_manager",
   description: "Only call this if explicitly asked to.",
-  fn: (): Agent => humanAgent,
+  process: (): Agent => humanAgent,
 });
 
 const sales = AIAgent.from({

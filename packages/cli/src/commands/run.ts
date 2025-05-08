@@ -128,7 +128,7 @@ async function loadAIGNE(path: string, options: RunOptions) {
     ? await loadModel({ provider: options.modelProvider, name: options.modelName })
     : undefined;
 
-  return await AIGNE.load({ path, model });
+  return await AIGNE.load(path, { model });
 }
 
 async function downloadPackage(url: string, downloadDir: string) {

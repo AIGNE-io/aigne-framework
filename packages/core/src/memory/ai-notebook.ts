@@ -255,7 +255,7 @@ export class FilesystemAgent extends Agent {
               )
               .describe("List all files in the directory recursively, including subdirectories"),
           }),
-          fn: async ({ path }) => {
+          process: async ({ path }) => {
             const p = join(rootDir, path);
             await validatePath(p, [rootDir]);
 
@@ -277,7 +277,7 @@ export class FilesystemAgent extends Agent {
           outputSchema: z.object({
             result: z.string().describe("Content of the file"),
           }),
-          fn: async ({ path }) => {
+          process: async ({ path }) => {
             const p = join(rootDir, path);
             await validatePath(p, [rootDir]);
 
@@ -295,7 +295,7 @@ export class FilesystemAgent extends Agent {
           outputSchema: z.object({
             result: z.string().describe("Confirmation message"),
           }),
-          fn: async ({ path, content }) => {
+          process: async ({ path, content }) => {
             const p = join(rootDir, path);
             await validatePath(p, [rootDir]);
 
@@ -313,7 +313,7 @@ export class FilesystemAgent extends Agent {
           outputSchema: z.object({
             result: z.string().describe("Confirmation message"),
           }),
-          fn: async ({ path, recursive }) => {
+          process: async ({ path, recursive }) => {
             const p = join(rootDir, path);
             await validatePath(p, [rootDir]);
 

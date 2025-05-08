@@ -13,7 +13,7 @@ test("FunctionAgent from a function", async () => {
 
 test("FunctionAgent from FunctionAgentOptions", async () => {
   const plus = FunctionAgent.from({
-    fn: ({ a, b }: { a: number; b: number }) => ({
+    process: ({ a, b }: { a: number; b: number }) => ({
       sum: a + b,
     }),
   });

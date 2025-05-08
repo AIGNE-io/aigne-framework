@@ -24,14 +24,21 @@ Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/
 
 ## Installation
 
+### Using npm
+
 ```bash
-# Using npm
 npm install @aigne/agent-library @aigne/core
+```
 
-# Using yarn
+### Using yarn
+
+```bash
 yarn add @aigne/agent-library @aigne/core
+```
 
-# Using pnpm
+### Using pnpm
+
+```bash
 pnpm add @aigne/agent-library @aigne/core
 ```
 
@@ -59,8 +66,7 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // Execute orchestration task
-const userAgent = await aigne.invoke(orchestrator);
-const result = await userAgent.invoke("Analyze this article and generate a summary and keywords");
+const result = await aigne.invoke(orchestrator, "Analyze this article and generate a summary and keywords");
 console.log(result);
 ```
 
@@ -115,18 +121,11 @@ const orchestrator = new OrchestratorAgent({
 
 // Use the orchestrator agent
 const aigne = new AIGNE({ model });
-const userAgent = await aigne.invoke(orchestrator);
-const result = await userAgent.invoke("Applications of artificial intelligence in healthcare");
+
+const result = await aigne.invoke(orchestrator, "Applications of artificial intelligence in healthcare");
+
 console.log(result);
 ```
-
-## Documentation
-
-For more detailed API documentation and usage guides, please refer to:
-
-- [Agent Development Guide](../../docs/agent-development.md)
-- [Agent API](../../docs/apis/agent-api.md)
-- [AI Agent API](../../docs/apis/ai-agent-api.md)
 
 ## License
 

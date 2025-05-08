@@ -1,4 +1,4 @@
-![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner&title=AIGNE%20Framework&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize&w=160&h=160&v=0.4.227)
+![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner\&title=AIGNE%20Framework\&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize\&w=160\&h=160\&v=0.4.227)
 
 [English](./README.md) | [中文](./README.zh.md)
 
@@ -6,7 +6,7 @@
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
 [![NPM Version](https://img.shields.io/npm/v/@aigne/core)](https://www.npmjs.com/package/@aigne/core)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
 ## AIGNE Framework 简介
 
@@ -14,90 +14,97 @@ AIGNE Framework 是一个功能型 AI 应用开发框架，旨在简化和加速
 
 ## 核心特性
 
-- **模块化设计**：采用清晰的模块化结构，开发者可以轻松组织代码，提高开发效率，简化维护工作。
-- **TypeScript 支持**：提供全面的 TypeScript 类型定义，确保类型安全并增强开发体验。
-- **多种 AI 模型支持**：内置支持 OpenAI、Gemini、Claude、Nova 等主流 AI 模型，可轻松扩展支持其他模型。
-- **灵活的工作流模式**：支持顺序、并发、路由、交接等多种工作流模式，满足各种复杂应用场景需求。
-- **MCP 协议集成**：通过模型上下文协议（Model Context Protocol）支持与外部系统和服务的无缝集成。
-- **代码执行能力**：支持在安全沙箱中执行动态生成的代码，实现更强大的自动化能力。
-- **Blocklet 生态系统集成**：与 Blocklet 生态系统紧密集成，为开发者提供一站式开发和部署解决方案。
+* **模块化设计**：采用清晰的模块化结构，开发者可以轻松组织代码，提高开发效率，简化维护工作。
+* **TypeScript 支持**：提供全面的 TypeScript 类型定义，确保类型安全并增强开发体验。
+* **多种 AI 模型支持**：内置支持 OpenAI、Gemini、Claude、Nova 等主流 AI 模型，可轻松扩展支持其他模型。
+* **灵活的工作流模式**：支持顺序、并发、路由、交接等多种工作流模式，满足各种复杂应用场景需求。
+* **MCP 协议集成**：通过模型上下文协议（Model Context Protocol）支持与外部系统和服务的无缝集成。
+* **代码执行能力**：支持在安全沙箱中执行动态生成的代码，实现更强大的自动化能力。
+* **Blocklet 生态系统集成**：与 Blocklet 生态系统紧密集成，为开发者提供一站式开发和部署解决方案。
 
 ## 快速开始
 
 ### 安装
 
+#### 使用 npm
+
 ```bash
-# 使用 npm
 npm install @aigne/core
+```
 
-# 使用 yarn
+#### 使用 yarn
+
+```bash
 yarn add @aigne/core
+```
 
-# 使用 pnpm
+#### 使用 pnpm
+
+```bash
 pnpm add @aigne/core
 ```
 
 ### 使用示例
 
-```ts
+```ts file=examples/workflow-handoff/usages.ts
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
+const { OPENAI_API_KEY } = process.env;
+
 const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
+  apiKey: OPENAI_API_KEY,
 });
 
-function transferToAgentB() {
+function transfer_to_b() {
   return agentB;
-}
-
-function transferToAgentA() {
-  return agentA;
 }
 
 const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  skills: [transferToAgentB],
+  skills: [transfer_to_b],
 });
 
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
-  skills: [transferToAgentA],
 });
 
 const aigne = new AIGNE({ model });
 
 const userAgent = aigne.invoke(agentA);
 
-const response = await userAgent.invoke("transfer to agent b");
-// 输出
+const result1 = await userAgent.invoke("transfer to agent b");
+console.log(result1);
+// Output:
 // {
-//   B: "Agent B awaits here,  \nIn haikus I shall speak now,  \nWhat do you seek, friend?",
+//   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
+// }
+
+const result2 = await userAgent.invoke("It's a beautiful day");
+console.log(result2);
+// Output:
+// {
+//   B: "Sunshine warms the earth,  \nGentle breeze whispers softly,  \nNature sings with joy.  ",
 // }
 ```
 
 ## 包结构
 
-- [examples](./examples) - 示例项目，演示如何使用不同的代理处理各种任务。
-- [packages/core](./packages/core) - 核心包，为构建 AIGNE 应用程序提供基础。
+* [examples](./examples) - 示例项目，演示如何使用不同的代理处理各种任务。
+* [packages/core](./packages/core) - 核心包，为构建 AIGNE 应用程序提供基础。
+* [packages/agent-library](./packages/agent-library) - 提供多种代理实现，简化代理的创建和管理。
+* [packages/cli](./packages/cli) - 命令行工具，提供便捷的命令行界面，简化开发和调试过程。
 
 ## 文档
 
-- [CLI 指南](./docs/cli.md) ([中文](./docs/cli.zh.md)): AIGNE CLI 工具的全面指南
-- [代理开发指南](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): 使用 YAML/JS 配置文件开发 AIGNE 代理的指南
-- [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): AIGNE Framework API 使用的实用方案和模式
-- API 参考:
-  - [Agent API](./docs/apis/agent-api.md) ([English](./docs/apis/agent-api.md) | [中文](./docs/apis/agent-api.zh.md))
-  - [AI Agent API](./docs/apis/ai-agent-api.md) ([English](./docs/apis/ai-agent-api.md) | [中文](./docs/apis/ai-agent-api.zh.md))
-  - [Function Agent API](./docs/apis/function-agent-api.md) ([English](./docs/apis/function-agent-api.md) | [中文](./docs/apis/function-agent-api.zh.md))
-  - [MCP Agent API](./docs/apis/mcp-agent-api.md) ([English](./docs/apis/mcp-agent-api.md) | [中文](./docs/apis/mcp-agent-api.zh.md))
-  - [AIGNE API](./docs/apis/aigne-api.md) ([English](./docs/apis/aigne-api.md) | [中文](./docs/apis/aigne-api.zh.md))
-  - [服务器/客户端 API](./docs/apis/server-client-api.md) ([English](./docs/apis/server-client-api.md) | [中文](./docs/apis/server-client-api.zh.md))
+* [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): AIGNE Framework API 使用的实用方案和模式
+* [CLI 指南](./docs/cli.md) ([中文](./docs/cli.zh.md)): AIGNE CLI 工具的全面指南
+* [代理开发指南](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): 使用 YAML/JS 配置文件开发 AIGNE 代理的指南
+* [API 参考](https://aigne-io.github.io/#/api/@aigne/core/README)
 
 ## 架构
 
@@ -273,35 +280,35 @@ Coder ->> User: 10!（10的阶乘）的值是 3,628,800。
 
 ### MCP 服务器集成
 
-- [Puppeteer MCP Server](./examples/mcp-puppeteer) - 学习如何通过 AIGNE Framework 利用 Puppeteer 进行自动化网页抓取。
-- [SQLite MCP Server](./examples/mcp-sqlite) - 探索通过模型上下文协议连接 SQLite 进行数据库操作。
-- [Github](./examples/mcp-github) - 了解如何使用 AIGNE Framework 和 GitHub MCP 服务器与 GitHub 仓库进行交互。
+* [Puppeteer MCP Server](./examples/mcp-puppeteer) - 学习如何通过 AIGNE Framework 利用 Puppeteer 进行自动化网页抓取。
+* [SQLite MCP Server](./examples/mcp-sqlite) - 探索通过模型上下文协议连接 SQLite 进行数据库操作。
+* [Github](./examples/mcp-github) - 了解如何使用 AIGNE Framework 和 GitHub MCP 服务器与 GitHub 仓库进行交互。
 
 ### 工作流模式
 
-- [Workflow Router](./examples/workflow-router) - 实现智能路由逻辑，根据内容将请求定向到适当的处理程序。
-- [Workflow Sequential](./examples/workflow-sequential) - 构建具有保证执行顺序的步骤式处理管道。
-- [Workflow Concurrency](./examples/workflow-concurrency) - 通过并行执行同时处理多个任务优化性能。
-- [Workflow Handoff](./examples/workflow-handoff) - 在专业代理之间创建无缝转换以解决复杂问题。
-- [Workflow Reflection](./examples/workflow-reflection) - 通过输出评估和修正能力实现自我提升。
-- [Workflow Orchestration](./examples/workflow-orchestration) - 协调多个代理在复杂处理管道中共同工作。
-- [Workflow Code Execution](./examples/workflow-code-execution) - 在 AI 驱动的工作流中安全执行动态生成的代码。
-- [Workflow Group Chat](./examples/workflow-group-chat) - 通过聊天模型实现群聊功能，支持多个用户同时参与。
+* [Workflow Router](./examples/workflow-router) - 实现智能路由逻辑，根据内容将请求定向到适当的处理程序。
+* [Workflow Sequential](./examples/workflow-sequential) - 构建具有保证执行顺序的步骤式处理管道。
+* [Workflow Concurrency](./examples/workflow-concurrency) - 通过并行执行同时处理多个任务优化性能。
+* [Workflow Handoff](./examples/workflow-handoff) - 在专业代理之间创建无缝转换以解决复杂问题。
+* [Workflow Reflection](./examples/workflow-reflection) - 通过输出评估和修正能力实现自我提升。
+* [Workflow Orchestration](./examples/workflow-orchestration) - 协调多个代理在复杂处理管道中共同工作。
+* [Workflow Code Execution](./examples/workflow-code-execution) - 在 AI 驱动的工作流中安全执行动态生成的代码。
+* [Workflow Group Chat](./examples/workflow-group-chat) - 通过聊天模型实现群聊功能，支持多个用户同时参与。
 
 ## 贡献与发布
 
 AIGNE Framework 是一个开源项目，欢迎社区贡献。我们使用 [release-please](https://github.com/googleapis/release-please) 进行版本管理和发布自动化。
 
-- 贡献指南：请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md)
-- 发布流程：请参阅 [RELEASING.zh.md](./RELEASING.zh.md)
+* 贡献指南：请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md)
+* 发布流程：请参阅 [RELEASING.zh.md](./RELEASING.zh.md)
 
 ## 许可证
 
-本项目采用 [Elastic-2.0](./LICENSE) 授权 - 详情请查看 [LICENSE](./LICENSE) 文件。
+本项目采用 [Elastic-2.0](./LICENSE.md) 授权 - 详情请查看 [LICENSE](./LICENSE.md) 文件。
 
 ## 社区与支持
 
 AIGNE Framework 拥有活跃的开发者社区，提供多种支持渠道：
 
-- [文档中心](https://www.arcblock.io/docs/aigne-framework/introduce)：全面的官方文档，帮助开发者快速入门。
-- [技术论坛](https://community.arcblock.io/discussions/boards/aigne)：与全球开发者交流经验，解决技术问题。
+* [文档中心](https://aigne-io.github.io/#/api/@aigne/core/README)：全面的官方文档，帮助开发者快速入门。
+* [技术论坛](https://community.arcblock.io/discussions/boards/aigne)：与全球开发者交流经验，解决技术问题。

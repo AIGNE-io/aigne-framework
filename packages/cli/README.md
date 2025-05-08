@@ -25,14 +25,21 @@ Command-line tool for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framew
 
 ## Installation
 
+### Using npm
+
 ```bash
-# Using npm
 npm install -g @aigne/cli
+```
 
-# Using yarn
+### Using yarn
+
+```bash
 yarn global add @aigne/cli
+```
 
-# Using pnpm
+### Using pnpm
+
+```bash
 pnpm add -g @aigne/cli
 ```
 
@@ -121,14 +128,6 @@ aigne serve --mcp --port 3001
 # Start MCP server for agents at specified path
 aigne serve path/to/agents --mcp
 ```
-
-## Documentation
-
-For more detailed CLI usage guides, please refer to:
-
-- [CLI Guide](../../docs/cli.md)
-- [Agent Development Guide](../../docs/agent-development.md)
-- [Cookbook](../../docs/cookbook.md)
 
 ## License
 

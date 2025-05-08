@@ -9,7 +9,6 @@
   * [Introduction](#introduction)
   * [Installation](#installation)
     * [Installing AIGNE Framework](#installing-aigne-framework)
-    * [Using @aigne/core in CommonJS Environment](#using-aignecore-in-commonjs-environment)
   * [Core Concepts](#core-concepts)
     * [Chat Model](#chat-model)
     * [Agent](#agent)
@@ -76,30 +75,6 @@ pnpm install @aigne/agent-library
 
 # Install LLM libraries as needed
 pnpm install openai @anthropic-ai/sdk @google/generative-ai
-```
-
-### Using @aigne/core in CommonJS Environment
-
-@aigne/core supports use in both CommonJS and ES Module environments. If your project uses the CommonJS module system, but due to a [third-party lib not supporting ESM](https://github.com/AIGNE-io/aigne-framework/issues/36), you need to add the following configuration to your project's package.json before the issue is fixed:
-
-**npm**
-
-```json
-{
-  "overrides": {
-    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
-  }
-}
-```
-
-**yarn or pnpm**
-
-```json
-{
-  "resolutions": {
-    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
-  }
-}
 ```
 
 ## Core Concepts

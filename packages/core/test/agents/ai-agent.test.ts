@@ -286,6 +286,102 @@ test("AIAgent with router tool choice", async () => {
   // #endregion example-ai-agent-router
 });
 
+test("AIAgent with catchToolErrors enabled", async () => {
+  const model = new OpenAIChatModel();
+
+  const plus = FunctionAgent.from({
+    name: "plus",
+    inputSchema: z.object({
+      a: z.number(),
+      b: z.number(),
+    }),
+    outputSchema: z.object({
+      sum: z.number(),
+    }),
+    process: ({ a, b }) => {
+      if (a === 0 || b === 0) throw new Error("Invalid input: a or b is zero");
+
+      return { sum: a + b };
+    },
+  });
+
+  const agent = AIAgent.from({
+    model,
+    skills: [plus],
+  });
+
+  const process = spyOn(model, "process")
+    .mockReturnValueOnce(
+      Promise.resolve({
+        toolCalls: [createToolCallResponse("plus", { a: 1, b: 0 })],
+      }),
+    )
+    .mockReturnValueOnce(
+      Promise.resolve({
+        toolCalls: [createToolCallResponse("plus", { a: 1, b: 2 })],
+      }),
+    )
+    .mockReturnValueOnce({
+      text: "1 + 2 = 3",
+    });
+
+  const result = await agent.invoke("1 + 2 = ?");
+
+  expect(process).toHaveBeenCalledTimes(3);
+  expect(process).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      messages: expect.arrayContaining([
+        expect.objectContaining({
+          role: "tool",
+          content: JSON.stringify({
+            isError: true,
+            error: { message: "Invalid input: a or b is zero" },
+          }),
+        }),
+      ]),
+    }),
+    expect.anything(),
+  );
+
+  expect(result).toEqual({ $message: "1 + 2 = 3" });
+});
+
+test("AIAgent with catchToolErrors disabled", async () => {
+  const model = new OpenAIChatModel();
+
+  const plus = FunctionAgent.from({
+    name: "plus",
+    inputSchema: z.object({
+      a: z.number(),
+      b: z.number(),
+    }),
+    outputSchema: z.object({
+      sum: z.number(),
+    }),
+    process: ({ a, b }) => {
+      if (a === 0 || b === 0) throw new Error("Invalid input: a or b is zero");
+
+      return { sum: a + b };
+    },
+  });
+
+  const agent = AIAgent.from({
+    model,
+    skills: [plus],
+    catchToolErrors: false,
+  });
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve({
+      toolCalls: [createToolCallResponse("plus", { a: 1, b: 0 })],
+    }),
+  );
+
+  const result = agent.invoke("1 + 2 = ?");
+
+  expect(result).rejects.toThrowError("Invalid input: a or b is zero");
+});
+
 test.each([true, false])("AIAgent.invoke with streaming %p", async (streaming) => {
   const model = new OpenAIChatModel();
 

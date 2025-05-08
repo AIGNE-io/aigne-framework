@@ -59,6 +59,14 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    * @default AIAgentToolChoice.auto
    */
   toolChoice?: AIAgentToolChoice | Agent;
+
+  /**
+   * Whether to catch errors from tool execution and continue processing.
+   * If set to false, the agent will throw an error if a tool fails.
+   *
+   * @default true
+   */
+  catchToolErrors?: boolean;
 }
 
 /**
@@ -174,6 +182,9 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
         : (options.instructions ?? new PromptBuilder());
     this.outputKey = options.outputKey;
     this.toolChoice = options.toolChoice;
+
+    if (typeof options.catchToolErrors === "boolean")
+      this.catchToolErrors = options.catchToolErrors;
   }
 
   /**
@@ -216,6 +227,14 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-router}
    */
   toolChoice?: AIAgentToolChoice | Agent;
+
+  /**
+   * Whether to catch errors from tool execution and continue processing.
+   * If set to false, the agent will throw an error if a tool fails
+   *
+   * @default true
+   */
+  catchToolErrors = true;
 
   /**
    * Process an input message and generate a response
@@ -276,11 +295,20 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
           if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
           // NOTE: should pass both arguments (model generated) and input (user provided) to the tool
-          const output = await context.invoke(
-            tool,
-            { ...call.function.arguments, ...input },
-            { disableTransfer: true },
-          );
+          const output = await context
+            .invoke(tool, { ...call.function.arguments, ...input }, { disableTransfer: true })
+            .catch((error) => {
+              if (!this.catchToolErrors) {
+                return Promise.reject(error);
+              }
+
+              return {
+                isError: true,
+                error: {
+                  message: error.message,
+                },
+              };
+            });
 
           // NOTE: Return transfer output immediately
           if (isTransferAgentOutput(output)) {

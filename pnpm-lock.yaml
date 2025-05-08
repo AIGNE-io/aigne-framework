@@ -12,14 +12,14 @@ importers:
         specifier: ^1.9.4
         version: 1.9.4
       simple-git-hooks:
-        specifier: ^2.12.1
-        version: 2.12.1
+        specifier: ^2.13.0
+        version: 2.13.0
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
       zx:
-        specifier: ^8.5.2
-        version: 8.5.2
+        specifier: ^8.5.3
+        version: 8.5.3
 
   examples/chat-bot:
     dependencies:
@@ -40,17 +40,17 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       '@modelcontextprotocol/sdk':
-        specifier: ^1.9.0
-        version: 1.10.2
+        specifier: ^1.11.0
+        version: 1.11.0
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
       open:
-        specifier: ^10.1.0
-        version: 10.1.0
+        specifier: ^10.1.2
+        version: 10.1.2
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -65,11 +65,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -84,11 +84,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -103,11 +103,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -144,11 +144,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -163,11 +163,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -182,11 +182,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -201,11 +201,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -223,11 +223,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -242,11 +242,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -261,11 +261,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -280,11 +280,11 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -299,12 +299,12 @@ importers:
         specifier: ^1.19.1
         version: 1.19.1
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@types/bun':
-        specifier: ^1.2.9
-        version: 1.2.9
+        specifier: ^1.2.12
+        version: 1.2.12
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -321,14 +321,14 @@ importers:
         specifier: workspace:^
         version: link:../core
       '@aigne/listr2':
-        specifier: ^1.0.8
-        version: 1.0.8
+        specifier: ^1.0.9
+        version: 1.0.9
       '@aigne/marked-terminal':
         specifier: ^7.3.1
-        version: 7.3.1(marked@15.0.9)
+        version: 7.3.1(marked@15.0.11)
       '@modelcontextprotocol/sdk':
-        specifier: ^1.9.0
-        version: 1.10.2
+        specifier: ^1.11.0
+        version: 1.11.0
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
@@ -339,20 +339,20 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       glob:
-        specifier: ^11.0.1
-        version: 11.0.1
+        specifier: ^11.0.2
+        version: 11.0.2
       gradient-string:
         specifier: ^3.0.0
         version: 3.0.0
       inquirer:
-        specifier: ^12.5.2
-        version: 12.5.2(@types/node@22.14.1)
+        specifier: ^12.6.0
+        version: 12.6.0(@types/node@22.15.12)
       marked:
-        specifier: ^15.0.9
-        version: 15.0.9
+        specifier: ^15.0.11
+        version: 15.0.11
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -363,15 +363,15 @@ importers:
         specifier: ^7.4.3
         version: 7.4.3
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@types/archiver':
         specifier: ^6.0.3
         version: 6.0.3
       '@types/bun':
-        specifier: ^1.2.9
-        version: 1.2.9
+        specifier: ^1.2.12
+        version: 1.2.12
       '@types/express':
         specifier: ^5.0.1
         version: 5.0.1
@@ -382,8 +382,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@types/node':
-        specifier: ^22.14.1
-        version: 22.14.1
+        specifier: ^22.15.12
+        version: 22.15.12
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -407,13 +407,13 @@ importers:
     dependencies:
       '@aigne/json-schema-to-zod':
         specifier: ^1.3.3
-        version: 1.3.3(zod@3.24.2)
+        version: 1.3.3(zod@3.24.4)
       '@aws-sdk/client-bedrock-runtime':
         specifier: ^3.796.0
         version: 3.796.0
       '@modelcontextprotocol/sdk':
-        specifier: ^1.10.2
-        version: 1.10.2
+        specifier: ^1.11.0
+        version: 1.11.0
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -436,8 +436,8 @@ importers:
         specifier: ^10.1.1
         version: 10.1.1
       inquirer:
-        specifier: ^12.5.2
-        version: 12.5.2(@types/node@22.14.1)
+        specifier: ^12.6.0
+        version: 12.6.0(@types/node@22.15.12)
       mustache:
         specifier: ^4.2.0
         version: 4.2.0
@@ -460,21 +460,21 @@ importers:
         specifier: ^2.7.1
         version: 2.7.1
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^3.24.4
+        version: 3.24.4
       zod-to-json-schema:
         specifier: ^3.24.5
-        version: 3.24.5(zod@3.24.2)
+        version: 3.24.5(zod@3.24.4)
     devDependencies:
       '@anthropic-ai/sdk':
-        specifier: ^0.39.0
-        version: 0.39.0(encoding@0.1.13)
+        specifier: ^0.40.1
+        version: 0.40.1(encoding@0.1.13)
       '@google/generative-ai':
-        specifier: ^0.24.0
-        version: 0.24.0
+        specifier: ^0.24.1
+        version: 0.24.1
       '@types/bun':
-        specifier: ^1.2.9
-        version: 1.2.9
+        specifier: ^1.2.12
+        version: 1.2.12
       '@types/compression':
         specifier: ^1.7.5
         version: 1.7.5
@@ -485,11 +485,11 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       '@types/mustache':
-        specifier: ^4.2.5
-        version: 4.2.5
+        specifier: ^4.2.6
+        version: 4.2.6
       '@types/node':
-        specifier: ^22.14.1
-        version: 22.14.1
+        specifier: ^22.15.12
+        version: 22.15.12
       compression:
         specifier: ^1.8.0
         version: 1.8.0
@@ -500,14 +500,14 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       hono:
-        specifier: ^4.7.7
-        version: 4.7.7
+        specifier: ^4.7.8
+        version: 4.7.8
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
       openai:
-        specifier: ^4.94.0
-        version: 4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2)
+        specifier: ^4.97.0
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -518,11 +518,11 @@ importers:
   packages/test-utils:
     devDependencies:
       '@types/bun':
-        specifier: ^1.2.9
-        version: 1.2.9
+        specifier: ^1.2.12
+        version: 1.2.12
       '@types/node':
-        specifier: ^22.14.1
-        version: 22.14.1
+        specifier: ^22.15.12
+        version: 22.15.12
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -537,8 +537,8 @@ packages:
     peerDependencies:
       zod: ^3.0.0
 
-  '@aigne/listr2@1.0.8':
-    resolution: {integrity: sha512-tEAX2WSN78XaRJ1kv/w2IAvmeorh4/P+In0YyW7iafmHzn34dKwmzi3bXk1CDIfDG/Sr2fDdZ2tf0c/Vr43j9w==}
+  '@aigne/listr2@1.0.9':
+    resolution: {integrity: sha512-M+2uccbty78XtndfrAW7DZagabPVHdfsLnhA3FYfiOH8ERuaGBMoR50Nh79Te9uzzEwHsJJL9Ag6lertjPcQLA==}
     engines: {node: '>=18.0.0'}
 
   '@aigne/marked-terminal@7.3.1':
@@ -547,8 +547,8 @@ packages:
     peerDependencies:
       marked: '>=1 <16'
 
-  '@anthropic-ai/sdk@0.39.0':
-    resolution: {integrity: sha512-eMyDIPRZbt1CCLErRCi3exlAvNkBtRe+kW5vvJyef93PmNr/clstYgHhtvmkxN82nlKgzyGPCyGxrm0JQ1ZIdg==}
+  '@anthropic-ai/sdk@0.40.1':
+    resolution: {integrity: sha512-DJMWm8lTEM9Lk/MSFL+V+ugF7jKOn0M2Ujvb5fN8r2nY14aHbGPZ1k6sgjL+tpJ3VuOGJNG+4R83jEpOuYPv8w==}
 
   '@aws-crypto/crc32@5.2.0':
     resolution: {integrity: sha512-nLbCWqQNgUiwwtFsen1AdzAtvuLRsQS8rYgMuxCrdKf9kOssamGLuPwyTY9wyYblNr9+1XM8v6zoDTPPSIeANg==}
@@ -724,8 +724,8 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
-  '@google/generative-ai@0.24.0':
-    resolution: {integrity: sha512-fnEITCGEB7NdX0BhoYZ/cq/7WPZ1QS5IzJJfC3Tg/OwkvBetMiVJciyaan297OvE4B9Jg1xvo0zIazX/9sGu1Q==}
+  '@google/generative-ai@0.24.1':
+    resolution: {integrity: sha512-MqO+MLfM6kjxcKoy0p1wRzG3b4ZZXtPI+z2IE26UogS2Cm/XHO+7gGRBh6gcJsOiIVoH93UwKvW4HdgiOZCy9Q==}
     engines: {node: '>=18.0.0'}
 
   '@inquirer/checkbox@4.1.5':
@@ -804,8 +804,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/prompts@7.4.1':
-    resolution: {integrity: sha512-UlmM5FVOZF0gpoe1PT/jN4vk8JmpIWBlMvTL8M+hlvPmzN89K6z03+IFmyeu/oFCenwdwHDr2gky7nIGSEVvlA==}
+  '@inquirer/prompts@7.5.0':
+    resolution: {integrity: sha512-tk8Bx7l5AX/CR0sVfGj3Xg6v7cYlFBkEahH+EgBB+cZib6Fc83dwerTbzj7f2+qKckjIUGsviWRI1d7lx6nqQA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -813,8 +813,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/rawlist@4.0.12':
-    resolution: {integrity: sha512-wNPJZy8Oc7RyGISPxp9/MpTOqX8lr0r+lCCWm7hQra+MDtYRgINv1hxw7R+vKP71Bu/3LszabxOodfV/uTfsaA==}
+  '@inquirer/rawlist@4.1.0':
+    resolution: {integrity: sha512-6ob45Oh9pXmfprKqUiEeMz/tjtVTFQTgDDz1xAMKMrIvyrYjAmRbQZjMJfsictlL4phgjLhdLu27IkHNnNjB7g==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -831,8 +831,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/select@4.1.1':
-    resolution: {integrity: sha512-IUXzzTKVdiVNMA+2yUvPxWsSgOG4kfX93jOM4Zb5FgujeInotv5SPIJVeXQ+fO4xu7tW8VowFhdG5JRmmCyQ1Q==}
+  '@inquirer/select@4.2.0':
+    resolution: {integrity: sha512-KkXQ4aSySWimpV4V/TUJWdB3tdfENZUU765GjOIZ0uPwdbGIG6jrxD4dDf1w68uP+DVtfNhr1A92B+0mbTZ8FA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -857,8 +857,8 @@ packages:
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
     engines: {node: '>=18.0.0'}
 
-  '@modelcontextprotocol/sdk@1.10.2':
-    resolution: {integrity: sha512-rb6AMp2DR4SN+kc6L1ta2NCpApyA9WYNx3CrTSZvGxq9wH71bRur+zRqPfg0vQ9mjywR7qZdX2RGHOPq3ss+tA==}
+  '@modelcontextprotocol/sdk@1.11.0':
+    resolution: {integrity: sha512-k/1pb70eD638anoi0e8wUGAlbMJXyvdV4p62Ko+EZ7eBe1xMx8Uhak1R5DgfoofsK5IBBnRwsYGTaLZl+6/+RQ==}
     engines: {node: '>=18'}
 
   '@pkgjs/parseargs@0.11.0':
@@ -1063,8 +1063,8 @@ packages:
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
 
-  '@types/bun@1.2.9':
-    resolution: {integrity: sha512-epShhLGQYc4Bv/aceHbmBhOz1XgUnuTZgcxjxk+WXwNyDXavv5QHD1QEFV0FwbTSQtNq6g4ZcV6y0vZakTjswg==}
+  '@types/bun@1.2.12':
+    resolution: {integrity: sha512-lY/GQTXDGsolT/TiH72p1tuyUORuRrdV7VwOTOjDOt8uTBJQOJc5zz3ufwwDl0VBaoxotSk4LdP0hhjLJ6ypIQ==}
 
   '@types/compression@1.7.5':
     resolution: {integrity: sha512-AAQvK5pxMpaT+nDvhHrsBhLSYG5yQdtkaJE1WYieSNY2mVFKAgmU4ks65rkZD5oqnGCFLyQpUr1CqI4DmUMyDg==}
@@ -1102,8 +1102,8 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
-  '@types/mustache@4.2.5':
-    resolution: {integrity: sha512-PLwiVvTBg59tGFL/8VpcGvqOu3L4OuveNvPi0EYbWchRdEVP++yRUXJPFl+CApKEq13017/4Nf7aQ5lTtHUNsA==}
+  '@types/mustache@4.2.6':
+    resolution: {integrity: sha512-t+8/QWTAhOFlrF1IVZqKnMRJi84EgkIK5Kh0p2JV4OLywUvCwJPFxbJAl7XAow7DVIHsF+xW9f1MVzg0L6Szjw==}
 
   '@types/node-fetch@2.6.12':
     resolution: {integrity: sha512-8nneRWKCg3rMtF69nLQJnOYUcbafYeFSjqkw3jCRLsqkWFlHaoQrr5mXmofFGOx3DKn7UfmBMyov8ySvLRVldA==}
@@ -1111,8 +1111,8 @@ packages:
   '@types/node@18.19.71':
     resolution: {integrity: sha512-evXpcgtZm8FY4jqBSN8+DmOTcVkkvTmAayeo4Wf3m1xAruyVGzGuDh/Fb/WWX2yLItUiho42ozyJjB0dw//Tkw==}
 
-  '@types/node@22.14.1':
-    resolution: {integrity: sha512-u0HuPQwe/dHrItgHHpmw3N2fYCR6x4ivMNbPHRkBVP4CvN+kiRrKHWk3i8tXiO/joPwXLMYvF9TTF0eqgHIuOw==}
+  '@types/node@22.15.12':
+    resolution: {integrity: sha512-K0fpC/ZVeb8G9rm7bH7vI0KAec4XHEhBam616nVJCV51bKzJ6oA3luG4WdKoaztxe70QaNjS/xBmcDLmr4PiGw==}
 
   '@types/qs@6.9.18':
     resolution: {integrity: sha512-kK7dgTYDyGqS+e2Q4aK9X3D7q234CIZ1Bv0q/7Z5IwRDoADNU81xXJK/YVyLbLTZCoIwUoDoffFeF+p/eIklAA==}
@@ -1137,9 +1137,6 @@ packages:
 
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
-
-  '@types/ws@8.5.13':
-    resolution: {integrity: sha512-osM/gWBTPKgHV8XkTunnegTRIsvF6owmf5w+JtAfOw472dptdm0dlGv4xCt6GwQRcC2XVOvvRE/0bAoQcL2QkA==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -1252,8 +1249,8 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  bun-types@1.2.9:
-    resolution: {integrity: sha512-dk/kOEfQbajENN/D6FyiSgOKEuUi9PWfqKQJEgwKrCMWbjS/S6tEXp178mWvWAcUSYm9ArDlWHZKO3T/4cLXiw==}
+  bun-types@1.2.12:
+    resolution: {integrity: sha512-tvWMx5vPqbRXgE8WUZI94iS1xAYs8bkqESR9cxBB1Wi+urvfTrF1uzuDgBHFAdO0+d2lmsbG3HmeKMvUyj6pWA==}
 
   bundle-name@4.1.0:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
@@ -1681,8 +1678,8 @@ packages:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
     hasBin: true
 
-  glob@11.0.1:
-    resolution: {integrity: sha512-zrQDm8XPnYEKawJScsnM0QzobJxlT/kHOOlRTio8IH/GrmxRE5fjllkzdaHclIuNjUQTJYH2xHNIGfdpJkDJUw==}
+  glob@11.0.2:
+    resolution: {integrity: sha512-YT7U7Vye+t5fZ/QMkBFrTJ7ZQxInIUjwyAjVj84CYXqgBdv30MFUPGnBR6sQaVq6Is15wYJUsnzTuWaGRBhBAQ==}
     engines: {node: 20 || >=22}
     hasBin: true
 
@@ -1735,8 +1732,8 @@ packages:
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
 
-  hono@4.7.7:
-    resolution: {integrity: sha512-2PCpQRbN87Crty8/L/7akZN3UyZIAopSoRxCwRbJgUuV1+MHNFHzYFxZTg4v/03cXUm+jce/qa2VSBZpKBm3Qw==}
+  hono@4.7.8:
+    resolution: {integrity: sha512-PCibtFdxa7/Ldud9yddl1G81GjYaeMYYTq4ywSaNsYbB1Lug4mwtOMJf2WXykL0pntYwmpRJeOI3NmoDgD+Jxw==}
     engines: {node: '>=16.9.0'}
 
   hosted-git-info@2.8.9:
@@ -1769,8 +1766,8 @@ packages:
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
-  inquirer@12.5.2:
-    resolution: {integrity: sha512-qoDk/vdSTIaXNXAoNnlg7ubexpJfUo7t8GT2vylxvE49BrLhToFuPPdMViidG2boHV7+AcP1TCkJs/+PPoF2QQ==}
+  inquirer@12.6.0:
+    resolution: {integrity: sha512-3zmmccQd/8o65nPOZJZ+2wqt76Ghw3+LaMrmc6JE/IzcvQhJ1st+QLCOo/iLS85/tILU0myG31a2TAZX0ysAvg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -1982,8 +1979,8 @@ packages:
     resolution: {integrity: sha512-123qHRfJBmo2jXDbo/a5YOQrJoHF/GNQTLzQ5+IdK5pWpceK17yRc6ozlWd25FxvGKQbIUs91fDFkXmDHTKcyA==}
     engines: {node: 20 || >=22}
 
-  marked@15.0.9:
-    resolution: {integrity: sha512-9AW/bn9DxQeZVjR52l5jsc0W2pwuhP04QaQewPvylil12Cfr2GBfWmgp6mu8i9Jy8UlBjqDZ9uMTDuJ8QOGZJA==}
+  marked@15.0.11:
+    resolution: {integrity: sha512-1BEXAU2euRCG3xwgLVT1y0xbJEld1XOrmRJpUwRCcy7rxhSCwMrmEu9LXoPhHSCJG41V7YcQ2mjKRr5BA3ITIA==}
     engines: {node: '>= 18'}
     hasBin: true
 
@@ -2147,12 +2144,12 @@ packages:
     resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
     engines: {node: '>=18'}
 
-  open@10.1.0:
-    resolution: {integrity: sha512-mnkeQ1qP5Ue2wd+aivTD3NHd/lZ96Lu0jgf0pwktLPtx6cTZiH7tyeGRRHs0zX0rbrahXPnXlUnbeXyaBBuIaw==}
+  open@10.1.2:
+    resolution: {integrity: sha512-cxN6aIDPz6rm8hbebcP7vrQNhvRcveZoJU72Y7vskh4oIm+BZwBECnx5nTmrlres1Qapvx27Qo1Auukpf8PKXw==}
     engines: {node: '>=18'}
 
-  openai@4.94.0:
-    resolution: {integrity: sha512-WVmr9HWcwfouLJ7R3UHd2A93ClezTPuJljQxkCYQAL15Sjyt+FBNoqEz5MHSdH/ebQrVyvRhFyn/bvdqtSPyIA==}
+  openai@4.97.0:
+    resolution: {integrity: sha512-LRoiy0zvEf819ZUEJhgfV8PfsE8G5WpQi4AwA1uCV8SKvvtXQkoWUFkepD6plqyJQRghy2+AEPQ07FrJFKHZ9Q==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -2432,8 +2429,8 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
-  simple-git-hooks@2.12.1:
-    resolution: {integrity: sha512-NB3V4XyCOrWTIhjh85DyEoVlM3adHWwqQXKYHmuegy/108bJPP6YxuPGm4ZKBq1+GVKRbKJuzNY//09cMJYp+A==}
+  simple-git-hooks@2.13.0:
+    resolution: {integrity: sha512-N+goiLxlkHJlyaYEglFypzVNMaNplPAk5syu0+OPp/Bk6dwVoXF6FfOw2vO0Dp+JHsBaI+w6cm8TnFl2Hw6tDA==}
     hasBin: true
 
   skin-tone@2.0.0:
@@ -2740,21 +2737,21 @@ packages:
     peerDependencies:
       zod: ^3.24.1
 
-  zod@3.24.2:
-    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
+  zod@3.24.4:
+    resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
 
-  zx@8.5.2:
-    resolution: {integrity: sha512-eIxjTkCtlzvDNRhw3RD1gGBPA4nxOTn6PafpKl+MW4eE2jR/u/R6mqq7oyUCXwarM5DSP96kWtq6XkrL2kSFrg==}
+  zx@8.5.3:
+    resolution: {integrity: sha512-TsGLAt8Ngr4wDXLZmN9BT+6FWVLFbqdQ0qpXkV3tIfH7F+MgN/WUeSY7W4nNqAntjWunmnRaznpyxtJRPhCbUQ==}
     engines: {node: '>= 12.17.0'}
     hasBin: true
 
 snapshots:
 
-  '@aigne/json-schema-to-zod@1.3.3(zod@3.24.2)':
+  '@aigne/json-schema-to-zod@1.3.3(zod@3.24.4)':
     dependencies:
-      zod: 3.24.2
+      zod: 3.24.4
 
-  '@aigne/listr2@1.0.8':
+  '@aigne/listr2@1.0.9':
     dependencies:
       cli-truncate: 4.0.0
       colorette: 2.0.20
@@ -2763,18 +2760,18 @@ snapshots:
       rfdc: 1.4.1
       wrap-ansi: 9.0.0
 
-  '@aigne/marked-terminal@7.3.1(marked@15.0.9)':
+  '@aigne/marked-terminal@7.3.1(marked@15.0.11)':
     dependencies:
       ansi-escapes: 7.0.0
       ansi-regex: 6.1.0
       chalk: 5.4.1
       cli-highlight: 2.1.11
       cli-table3: 0.6.5
-      marked: 15.0.9
+      marked: 15.0.11
       node-emoji: 2.2.0
       supports-hyperlinks: 3.2.0
 
-  '@anthropic-ai/sdk@0.39.0(encoding@0.1.13)':
+  '@anthropic-ai/sdk@0.40.1(encoding@0.1.13)':
     dependencies:
       '@types/node': 18.19.71
       '@types/node-fetch': 2.6.12
@@ -3192,29 +3189,29 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@google/generative-ai@0.24.0': {}
+  '@google/generative-ai@0.24.1': {}
 
-  '@inquirer/checkbox@4.1.5(@types/node@22.14.1)':
+  '@inquirer/checkbox@4.1.5(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
       '@inquirer/figures': 1.0.11
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.2
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/confirm@5.1.9(@types/node@22.14.1)':
+  '@inquirer/confirm@5.1.9(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/core@10.1.10(@types/node@22.14.1)':
+  '@inquirer/core@10.1.10(@types/node@22.15.12)':
     dependencies:
       '@inquirer/figures': 1.0.11
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       ansi-escapes: 4.3.2
       cli-width: 4.1.0
       mute-stream: 2.0.0
@@ -3222,93 +3219,93 @@ snapshots:
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.2
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/editor@4.2.10(@types/node@22.14.1)':
+  '@inquirer/editor@4.2.10(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       external-editor: 3.1.0
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/expand@4.0.12(@types/node@22.14.1)':
+  '@inquirer/expand@4.0.12(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       yoctocolors-cjs: 2.1.2
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
   '@inquirer/figures@1.0.11': {}
 
-  '@inquirer/input@4.1.9(@types/node@22.14.1)':
+  '@inquirer/input@4.1.9(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/number@3.0.12(@types/node@22.14.1)':
+  '@inquirer/number@3.0.12(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/password@4.0.12(@types/node@22.14.1)':
+  '@inquirer/password@4.0.12(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       ansi-escapes: 4.3.2
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/prompts@7.4.1(@types/node@22.14.1)':
+  '@inquirer/prompts@7.5.0(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/checkbox': 4.1.5(@types/node@22.14.1)
-      '@inquirer/confirm': 5.1.9(@types/node@22.14.1)
-      '@inquirer/editor': 4.2.10(@types/node@22.14.1)
-      '@inquirer/expand': 4.0.12(@types/node@22.14.1)
-      '@inquirer/input': 4.1.9(@types/node@22.14.1)
-      '@inquirer/number': 3.0.12(@types/node@22.14.1)
-      '@inquirer/password': 4.0.12(@types/node@22.14.1)
-      '@inquirer/rawlist': 4.0.12(@types/node@22.14.1)
-      '@inquirer/search': 3.0.12(@types/node@22.14.1)
-      '@inquirer/select': 4.1.1(@types/node@22.14.1)
+      '@inquirer/checkbox': 4.1.5(@types/node@22.15.12)
+      '@inquirer/confirm': 5.1.9(@types/node@22.15.12)
+      '@inquirer/editor': 4.2.10(@types/node@22.15.12)
+      '@inquirer/expand': 4.0.12(@types/node@22.15.12)
+      '@inquirer/input': 4.1.9(@types/node@22.15.12)
+      '@inquirer/number': 3.0.12(@types/node@22.15.12)
+      '@inquirer/password': 4.0.12(@types/node@22.15.12)
+      '@inquirer/rawlist': 4.1.0(@types/node@22.15.12)
+      '@inquirer/search': 3.0.12(@types/node@22.15.12)
+      '@inquirer/select': 4.2.0(@types/node@22.15.12)
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/rawlist@4.0.12(@types/node@22.14.1)':
+  '@inquirer/rawlist@4.1.0(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       yoctocolors-cjs: 2.1.2
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/search@3.0.12(@types/node@22.14.1)':
+  '@inquirer/search@3.0.12(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
       '@inquirer/figures': 1.0.11
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       yoctocolors-cjs: 2.1.2
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/select@4.1.1(@types/node@22.14.1)':
+  '@inquirer/select@4.2.0(@types/node@22.15.12)':
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
       '@inquirer/figures': 1.0.11
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.2
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@inquirer/type@3.0.6(@types/node@22.14.1)':
+  '@inquirer/type@3.0.6(@types/node@22.15.12)':
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -3323,7 +3320,7 @@ snapshots:
     dependencies:
       minipass: 7.1.2
 
-  '@modelcontextprotocol/sdk@1.10.2':
+  '@modelcontextprotocol/sdk@1.11.0':
     dependencies:
       content-type: 1.0.5
       cors: 2.8.5
@@ -3333,8 +3330,8 @@ snapshots:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.24.2
-      zod-to-json-schema: 3.24.5(zod@3.24.2)
+      zod: 3.24.4
+      zod-to-json-schema: 3.24.5(zod@3.24.4)
     transitivePeerDependencies:
       - supports-color
 
@@ -3647,11 +3644,11 @@ snapshots:
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
-  '@types/bun@1.2.9':
+  '@types/bun@1.2.12':
     dependencies:
-      bun-types: 1.2.9
+      bun-types: 1.2.12
 
   '@types/compression@1.7.5':
     dependencies:
@@ -3659,7 +3656,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
   '@types/content-type@1.1.8': {}
 
@@ -3669,7 +3666,7 @@ snapshots:
 
   '@types/express-serve-static-core@5.0.6':
     dependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
       '@types/qs': 6.9.18
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -3683,7 +3680,7 @@ snapshots:
   '@types/glob@8.1.0':
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
   '@types/gradient-string@1.1.6':
     dependencies:
@@ -3697,18 +3694,18 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
-  '@types/mustache@4.2.5': {}
+  '@types/mustache@4.2.6': {}
 
   '@types/node-fetch@2.6.12':
     dependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
       form-data: 4.0.1
 
   '@types/node@18.19.71':
     dependencies:
       undici-types: 5.26.5
 
-  '@types/node@22.14.1':
+  '@types/node@22.15.12':
     dependencies:
       undici-types: 6.21.0
 
@@ -3718,28 +3715,24 @@ snapshots:
 
   '@types/readdir-glob@1.1.5':
     dependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
   '@types/retry@0.12.2': {}
 
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
   '@types/serve-static@1.15.7':
     dependencies:
       '@types/http-errors': 2.0.4
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
       '@types/send': 0.17.4
 
   '@types/tinycolor2@1.4.6': {}
 
   '@types/uuid@9.0.8': {}
-
-  '@types/ws@8.5.13':
-    dependencies:
-      '@types/node': 22.14.1
 
   abort-controller@3.0.0:
     dependencies:
@@ -3868,10 +3861,9 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  bun-types@1.2.9:
+  bun-types@1.2.12:
     dependencies:
-      '@types/node': 22.14.1
-      '@types/ws': 8.5.13
+      '@types/node': 22.15.12
 
   bundle-name@4.1.0:
     dependencies:
@@ -4393,7 +4385,7 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
-  glob@11.0.1:
+  glob@11.0.2:
     dependencies:
       foreground-child: 3.3.0
       jackspeak: 4.0.2
@@ -4442,7 +4434,7 @@ snapshots:
 
   highlight.js@10.7.3: {}
 
-  hono@4.7.7: {}
+  hono@4.7.8: {}
 
   hosted-git-info@2.8.9: {}
 
@@ -4479,17 +4471,17 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  inquirer@12.5.2(@types/node@22.14.1):
+  inquirer@12.6.0(@types/node@22.15.12):
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@22.14.1)
-      '@inquirer/prompts': 7.4.1(@types/node@22.14.1)
-      '@inquirer/type': 3.0.6(@types/node@22.14.1)
+      '@inquirer/core': 10.1.10(@types/node@22.15.12)
+      '@inquirer/prompts': 7.5.0(@types/node@22.15.12)
+      '@inquirer/type': 3.0.6(@types/node@22.15.12)
       ansi-escapes: 4.3.2
       mute-stream: 2.0.0
       run-async: 3.0.0
       rxjs: 7.8.2
     optionalDependencies:
-      '@types/node': 22.14.1
+      '@types/node': 22.15.12
 
   internal-slot@1.1.0:
     dependencies:
@@ -4702,7 +4694,7 @@ snapshots:
 
   lru-cache@11.0.2: {}
 
-  marked@15.0.9: {}
+  marked@15.0.11: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -4841,14 +4833,14 @@ snapshots:
     dependencies:
       mimic-function: 5.0.1
 
-  open@10.1.0:
+  open@10.1.2:
     dependencies:
       default-browser: 5.2.1
       define-lazy-prop: 3.0.0
       is-inside-container: 1.0.0
       is-wsl: 3.1.0
 
-  openai@4.94.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.2):
+  openai@4.97.0(encoding@0.1.13)(ws@8.18.0)(zod@3.24.4):
     dependencies:
       '@types/node': 18.19.71
       '@types/node-fetch': 2.6.12
@@ -4859,7 +4851,7 @@ snapshots:
       node-fetch: 2.7.0(encoding@0.1.13)
     optionalDependencies:
       ws: 8.18.0
-      zod: 3.24.2
+      zod: 3.24.4
     transitivePeerDependencies:
       - encoding
 
@@ -5030,7 +5022,7 @@ snapshots:
 
   rimraf@6.0.1:
     dependencies:
-      glob: 11.0.1
+      glob: 11.0.2
       package-json-from-dist: 1.0.1
 
   router@2.2.0:
@@ -5173,7 +5165,7 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-git-hooks@2.12.1: {}
+  simple-git-hooks@2.13.0: {}
 
   skin-tone@2.0.0:
     dependencies:
@@ -5526,10 +5518,10 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod-to-json-schema@3.24.5(zod@3.24.2):
+  zod-to-json-schema@3.24.5(zod@3.24.4):
     dependencies:
-      zod: 3.24.2
+      zod: 3.24.4
 
-  zod@3.24.2: {}
+  zod@3.24.4: {}
 
-  zx@8.5.2: {}
+  zx@8.5.3: {}

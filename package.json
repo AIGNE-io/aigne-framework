@@ -35,14 +35,14 @@
     "remark-code-import": "^1.2.0",
     "remark-preset-lint-consistent": "^6.0.1",
     "remark-preset-lint-recommended": "^7.0.1",
-    "simple-git-hooks": "^2.12.1",
+    "simple-git-hooks": "^2.13.0",
     "ts-morph": "^25.0.1",
-    "typedoc": "^0.28.3",
+    "typedoc": "^0.28.4",
     "typedoc-plugin-markdown": "^4.6.3",
     "typedoc-plugin-no-inherit": "^1.6.1",
     "typescript": "^5.8.3",
     "unist-util-visit": "^5.0.0",
-    "zx": "^8.5.2"
+    "zx": "^8.5.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

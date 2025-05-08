@@ -3,6 +3,19 @@
 - chore: release v1.2.0
 
 
+## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.14.0...aigne-framework-v1.15.0) (2025-05-08)
+
+
+### Features
+
+* **docs:** use typedoc build and publish docs to gh-pages ([#100](https://github.com/AIGNE-io/aigne-framework/issues/100)) ([b9074c0](https://github.com/AIGNE-io/aigne-framework/commit/b9074c0148ea343ada92b5919a52b47537a1ad48))
+
+
+### Bug Fixes
+
+* **core:** default catch tool's error and continue processing ([#115](https://github.com/AIGNE-io/aigne-framework/issues/115)) ([983b0de](https://github.com/AIGNE-io/aigne-framework/commit/983b0de491afb3f0904e145cb491d432b62f9312))
+* **core:** handle response for UserAgent automatically in pub/sub mode ([#116](https://github.com/AIGNE-io/aigne-framework/issues/116)) ([b659714](https://github.com/AIGNE-io/aigne-framework/commit/b659714f2398ea042f21cb22eccc1014f181cd46))
+
 ## [1.14.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.13.0...aigne-framework-v1.14.0) (2025-04-30)
 
 

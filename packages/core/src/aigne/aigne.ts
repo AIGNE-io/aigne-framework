@@ -288,7 +288,7 @@ export class AIGNE {
    * Here's an example of how to publish a message:
    * {@includeCode ../../test/aigne/aigne.test.ts#example-publish-message}
    */
-  publish(topic: string | string[], payload: Omit<MessagePayload, "context">) {
+  publish(topic: string | string[], payload: Omit<MessagePayload, "context"> | Message | string) {
     return new AIGNEContext(this).publish(topic, payload);
   }
 
@@ -304,7 +304,7 @@ export class AIGNE {
    * Here's an example of how to subscribe to a topic and receive the next message:
    * {@includeCode ../../test/aigne/aigne.test.ts#example-publish-message}
    */
-  subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
+  subscribe(topic: string | string[], listener?: undefined): Promise<MessagePayload>;
 
   /**
    * Subscribes to messages on a specific topic with a listener callback.
@@ -319,7 +319,7 @@ export class AIGNE {
    * Here's an example of how to subscribe to a topic with a listener:
    * {@includeCode ../../test/aigne/aigne.test.ts#example-subscribe-topic}
    */
-  subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
+  subscribe(topic: string | string[], listener: MessageQueueListener): Unsubscribe;
 
   /**
    * Generic subscribe signature that handles both Promise and listener patterns.
@@ -329,8 +329,14 @@ export class AIGNE {
    * @param listener - Optional callback function
    * @returns Either a Promise for the next message or an Unsubscribe function
    */
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>;
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload> {
+  subscribe(
+    topic: string | string[],
+    listener?: MessageQueueListener,
+  ): Unsubscribe | Promise<MessagePayload>;
+  subscribe(
+    topic: string | string[],
+    listener?: MessageQueueListener,
+  ): Unsubscribe | Promise<MessagePayload> {
     return this.messageQueue.subscribe(topic, listener);
   }
 
@@ -346,7 +352,7 @@ export class AIGNE {
    * @example
    * {@includeCode ../../test/aigne/aigne.test.ts#example-subscribe-topic}
    */
-  unsubscribe(topic: string, listener: MessageQueueListener) {
+  unsubscribe(topic: string | string[], listener: MessageQueueListener) {
     this.messageQueue.unsubscribe(topic, listener);
   }
 

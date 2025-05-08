@@ -1,5 +1,5 @@
 import { expect, mock, spyOn, test } from "bun:test";
-import { AIAgent, AIGNE, UserAgent, createMessage, createPublishMessage } from "@aigne/core";
+import { AIAgent, AIGNE, UserAgent, createMessage } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 
 test("UserAgent.stream", async () => {
@@ -12,7 +12,7 @@ test("UserAgent.stream", async () => {
   });
 
   const reader = userAgent.stream.getReader();
-  userAgent.publish("test_topic", createPublishMessage("hello", userAgent));
+  userAgent.publish("test_topic", "hello");
   expect(reader.read()).resolves.toEqual({
     value: {
       topic: "test_topic",
@@ -92,7 +92,7 @@ test("UserAgent pub/sub should work correctly", async () => {
   const listener = mock();
   userAgent.subscribe("test_sub", listener);
 
-  userAgent.publish("test_sub", createPublishMessage("hello"));
+  userAgent.publish("test_sub", "hello");
   expect(listener).toHaveBeenLastCalledWith(
     expect.objectContaining({
       message: createMessage("hello"),
@@ -100,6 +100,6 @@ test("UserAgent pub/sub should work correctly", async () => {
   );
 
   userAgent.unsubscribe("test_sub", listener);
-  userAgent.publish("test_sub", createPublishMessage("hello"));
+  userAgent.publish("test_sub", "hello");
   expect(listener).toHaveBeenCalledTimes(1);
 });

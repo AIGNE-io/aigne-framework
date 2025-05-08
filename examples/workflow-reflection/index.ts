@@ -8,6 +8,7 @@ import { z } from "zod";
 const model = await loadModel();
 
 const coder = AIAgent.from({
+  name: "coder",
   subscribeTopic: [UserInputTopic, "rewrite_request"],
   publishTopic: "review_request",
   instructions: `\
@@ -37,6 +38,7 @@ User's question:
 });
 
 const reviewer = AIAgent.from({
+  name: "reviewer",
   subscribeTopic: "review_request",
   publishTopic: (output) => (output.approval ? UserOutputTopic : "rewrite_request"),
   instructions: `\

@@ -1,6 +1,7 @@
 import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../aigne/context.js";
+import type { MessagePayload } from "../aigne/message-queue.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
 import {
@@ -342,6 +343,10 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   attach(context: Pick<Context, "subscribe">) {
     this.memory?.attach(context);
 
+    this.subscribeToTopics(context);
+  }
+
+  protected subscribeToTopics(context: Pick<Context, "subscribe">) {
     for (const topic of orArrayToArray(this.subscribeTopic).concat(this.topic)) {
       context.subscribe(topic, async ({ message, context }) => {
         try {
@@ -609,12 +614,23 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   protected postprocess(input: I, output: O, context: Context) {
     this.checkContextStatus(context);
 
+    this.publishToTopics(output, context);
+
     this.memory?.addMemory({ role: "user", content: input });
     this.memory?.addMemory({
       role: "agent",
       content: replaceTransferAgentToName(output),
       source: this.name,
     });
+  }
+
+  protected async publishToTopics(output: Message, context: Context) {
+    const publishTopics =
+      typeof this.publishTopic === "function" ? await this.publishTopic(output) : this.publishTopic;
+
+    if (publishTopics?.length) {
+      context.publish(publishTopics, createPublishMessage(output, this));
+    }
   }
 
   /**
@@ -958,4 +974,19 @@ function functionToAgent<T extends Agent>(agent: T | FunctionAgentFn): T | Funct
     return FunctionAgent.from({ name: agent.name, process: agent });
   }
   return agent;
+}
+
+/**
+ * @hidden
+ * TODO: Refactor this function to be more generic
+ */
+function createPublishMessage(
+  message: string | Message,
+  from?: Agent,
+): Omit<MessagePayload, "context"> {
+  return {
+    role: !from || from.constructor.name === "UserAgent" ? "user" : "agent",
+    source: from?.name,
+    message: createMessage(message),
+  };
 }

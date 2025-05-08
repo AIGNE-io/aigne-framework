@@ -1,6 +1,6 @@
 import { ReadableStream } from "node:stream/web";
-import { type Context, createPublishMessage } from "../aigne/context.js";
-import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
+import type { Context } from "../aigne/context.js";
+import { type MessagePayload, type Unsubscribe, toMessagePayload } from "../aigne/message-queue.js";
 import { orArrayToArray } from "../utils/type-utils.js";
 import {
   Agent,
@@ -42,6 +42,14 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
   private activeAgent?: Agent;
 
+  protected override subscribeToTopics(context: Pick<Context, "subscribe">) {
+    if (this._process) super.subscribeToTopics(context);
+  }
+
+  protected override async publishToTopics(output: O, context: Context) {
+    if (this._process) super.publishToTopics(output, context);
+  }
+
   override invoke = ((input: string | I, context?: Context, options?: AgentInvokeOptions) => {
     if (!context) this.context = this.context.newContext({ reset: true });
 
@@ -68,15 +76,23 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
       typeof this.publishTopic === "function" ? await this.publishTopic(input) : this.publishTopic;
 
     if (publicTopic?.length) {
-      context.publish(publicTopic, createPublishMessage(input, this));
+      context.publish(publicTopic, input);
+
+      if (this.subscribeTopic) {
+        return this.subscribe(this.subscribeTopic).then((res) => res.message as O);
+      }
+
       return {} as AgentProcessResult<O>;
     }
 
     throw new Error("UserAgent must have a process function or a publishTopic");
   }
 
-  publish = ((...args) => {
-    return this.context.publish(...args);
+  publish = ((topic, payload) => {
+    return this.context.publish(
+      topic,
+      toMessagePayload(payload, { role: "user", source: this.name }),
+    );
   }) as Context["publish"];
 
   subscribe = ((...args) => {

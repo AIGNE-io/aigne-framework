@@ -7,7 +7,6 @@ import {
   UserInputTopic,
   UserOutputTopic,
   createMessage,
-  createPublishMessage,
 } from "@aigne/core";
 import { TeamAgent } from "@aigne/core/agents/team-agent.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
@@ -181,7 +180,7 @@ test("AIGNE example publish message", async () => {
 
   const subscription = aigne.subscribe("result_topic");
 
-  aigne.publish("test_topic", createPublishMessage("hello"));
+  aigne.publish("test_topic", "hello");
 
   const { message } = await subscription;
 
@@ -219,7 +218,7 @@ test("AIGNE example subscribe topic", async () => {
     unsubscribe();
   });
 
-  aigne.publish("test_topic", createPublishMessage("hello"));
+  aigne.publish("test_topic", "hello");
 
   // #endregion example-subscribe-topic
 });
@@ -243,7 +242,7 @@ test("AIGNE.invoke with reflection", async () => {
   });
 
   const aigne = new AIGNE({ agents: [plusOne, reviewer] });
-  aigne.publish(UserInputTopic, createPublishMessage({ num: 1 }));
+  aigne.publish(UserInputTopic, { num: 1 });
   const { message: result } = await aigne.subscribe(UserOutputTopic);
 
   expect(result).toEqual({ num: 11, approval: "approve" });
@@ -350,13 +349,13 @@ test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
 
   aigne.subscribe("test_topic", listener);
 
-  aigne.publish("test_topic", createPublishMessage("hello"));
+  aigne.publish("test_topic", "hello");
   expect(listener).toBeCalledTimes(1);
   expect(listener).toHaveBeenCalledWith(
     expect.objectContaining({ message: createMessage("hello") }),
   );
 
   aigne.unsubscribe("test_topic", listener);
-  aigne.publish("test_topic", createPublishMessage("hello"));
+  aigne.publish("test_topic", "hello");
   expect(listener).toBeCalledTimes(1);
 });

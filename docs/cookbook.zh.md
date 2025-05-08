@@ -368,13 +368,7 @@ console.log(result);
 **示例**:
 
 ```typescript file=../examples/workflow-reflection/usages.ts
-import {
-  AIAgent,
-  AIGNE,
-  UserInputTopic,
-  UserOutputTopic,
-  createPublishMessage,
-} from "@aigne/core";
+import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -448,9 +442,7 @@ Please review the code. If previous feedback was provided, see if it was address
 const aigne = new AIGNE({ model, agents: [coder, reviewer] });
 aigne.publish(
   UserInputTopic,
-  createPublishMessage(
-    "Write a function to find the sum of all even numbers in a list.",
-  ),
+  "Write a function to find the sum of all even numbers in a list.",
 );
 
 const { message } = await aigne.subscribe(UserOutputTopic);

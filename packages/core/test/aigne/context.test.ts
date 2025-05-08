@@ -5,7 +5,6 @@ import {
   type ContextEventMap,
   type MessageQueueListener,
   createMessage,
-  createPublishMessage,
 } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import type { Listener } from "@aigne/core/utils/typed-event-emtter";
@@ -17,14 +16,14 @@ test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
 
   context.subscribe("test_topic", listener);
 
-  context.publish("test_topic", createPublishMessage("hello"));
+  context.publish("test_topic", "hello");
   expect(listener).toBeCalledTimes(1);
   expect(listener).toHaveBeenCalledWith(
     expect.objectContaining({ message: createMessage("hello") }),
   );
 
   context.unsubscribe("test_topic", listener);
-  context.publish("test_topic", createPublishMessage("hello"));
+  context.publish("test_topic", "hello");
   expect(listener).toBeCalledTimes(1);
 });
 

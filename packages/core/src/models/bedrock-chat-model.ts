@@ -18,6 +18,7 @@ import { z } from "zod";
 import type { AgentResponse, AgentResponseChunk } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { mergeUsage } from "../utils/model-utils.js";
+import { getJsonToolInputPrompt } from "../utils/prompts.js";
 import { agentResponseStreamToObject } from "../utils/stream-utils.js";
 import { checkArguments, isNonNullable } from "../utils/type-utils.js";
 import {
@@ -227,7 +228,12 @@ export class BedrockChatModel extends ChatModel {
       throw new Error("Expected json_schema response format");
     }
 
-    const system = [{ text: "Use the generate_json tool to generate a json result." }];
+    const system = [
+      ...(body.system ?? []),
+      {
+        text: `Use the generate_json tool to generate a json result. ${getJsonToolInputPrompt(responseFormat.jsonSchema.schema)}`,
+      },
+    ];
     const toolConfig: ToolConfiguration = {
       tools: [
         {

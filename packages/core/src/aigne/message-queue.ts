@@ -135,8 +135,8 @@ function on<T>(
   event: string | string[],
   listener: (arg: T, ...args: unknown[]) => void,
 ): Unsubscribe {
-  orArrayToArray(event).map((e) => events.on(e, listener));
-  return () => orArrayToArray(event).map((e) => events.off(e, listener));
+  orArrayToArray(event).forEach((e) => events.on(e, listener));
+  return () => orArrayToArray(event).forEach((e) => events.off(e, listener));
 }
 
 function once<T>(
@@ -144,8 +144,8 @@ function once<T>(
   event: string | string[],
   listener: (arg: T, ...args: unknown[]) => void,
 ): Unsubscribe {
-  orArrayToArray(event).map((e) => events.once(e, listener));
-  return () => orArrayToArray(event).map((e) => events.off(e, listener));
+  orArrayToArray(event).forEach((e) => events.once(e, listener));
+  return () => orArrayToArray(event).forEach((e) => events.off(e, listener));
 }
 
 const subscribeArgsSchema = z.object({

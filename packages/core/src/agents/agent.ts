@@ -1,7 +1,6 @@
 import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../aigne/context.js";
-import type { MessagePayload } from "../aigne/message-queue.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
 import {
@@ -629,7 +628,11 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
       typeof this.publishTopic === "function" ? await this.publishTopic(output) : this.publishTopic;
 
     if (publishTopics?.length) {
-      context.publish(publishTopics, createPublishMessage(output, this));
+      context.publish(publishTopics, {
+        role: this.constructor.name === "UserAgent" ? "user" : "agent",
+        source: this.name,
+        message: output,
+      });
     }
   }
 
@@ -974,19 +977,4 @@ function functionToAgent<T extends Agent>(agent: T | FunctionAgentFn): T | Funct
     return FunctionAgent.from({ name: agent.name, process: agent });
   }
   return agent;
-}
-
-/**
- * @hidden
- * TODO: Refactor this function to be more generic
- */
-function createPublishMessage(
-  message: string | Message,
-  from?: Agent,
-): Omit<MessagePayload, "context"> {
-  return {
-    role: !from || from.constructor.name === "UserAgent" ? "user" : "agent",
-    source: from?.name,
-    message: createMessage(message),
-  };
 }

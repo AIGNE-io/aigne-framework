@@ -368,7 +368,7 @@ test("AIAgent with catchToolErrors disabled", async () => {
   const agent = AIAgent.from({
     model,
     skills: [plus],
-    catchToolErrors: false,
+    catchToolsError: false,
   });
 
   spyOn(model, "process").mockReturnValueOnce(

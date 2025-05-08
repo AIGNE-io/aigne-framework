@@ -66,7 +66,7 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    *
    * @default true
    */
-  catchToolErrors?: boolean;
+  catchToolsError?: boolean;
 }
 
 /**
@@ -183,8 +183,8 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     this.outputKey = options.outputKey;
     this.toolChoice = options.toolChoice;
 
-    if (typeof options.catchToolErrors === "boolean")
-      this.catchToolErrors = options.catchToolErrors;
+    if (typeof options.catchToolsError === "boolean")
+      this.catchToolsError = options.catchToolsError;
   }
 
   /**
@@ -229,12 +229,12 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
   toolChoice?: AIAgentToolChoice | Agent;
 
   /**
-   * Whether to catch errors from tool execution and continue processing.
+   * Whether to catch error from tool execution and continue processing.
    * If set to false, the agent will throw an error if a tool fails
    *
    * @default true
    */
-  catchToolErrors = true;
+  catchToolsError = true;
 
   /**
    * Process an input message and generate a response
@@ -298,7 +298,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
           const output = await context
             .invoke(tool, { ...call.function.arguments, ...input }, { disableTransfer: true })
             .catch((error) => {
-              if (!this.catchToolErrors) {
+              if (!this.catchToolsError) {
                 return Promise.reject(error);
               }
 

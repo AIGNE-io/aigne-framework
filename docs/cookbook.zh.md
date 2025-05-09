@@ -9,7 +9,6 @@
   * [介绍](#介绍)
   * [安装](#安装)
     * [安装 AIGNE Framework](#安装-aigne-framework)
-    * [在 CommonJS 环境中使用 @aigne/core](#在-commonjs-环境中使用-aignecore)
   * [基础概念](#基础概念)
     * [聊天模型（ChatModel）](#聊天模型chatmodel)
     * [Agent](#agent)
@@ -76,30 +75,6 @@ pnpm install @aigne/agent-library
 
 # 根据需要选择安装 LLM
 pnpm install openai @anthropic-ai/sdk @google/generative-ai
-```
-
-### 在 CommonJS 环境中使用 @aigne/core
-
-@aigne/core 支持在 CommonJS 和 ES Module 环境中使用。如果你的项目使用 CommonJS 模块系统，但由于一个[第三方 lib 不支持 ESM](https://github.com/AIGNE-io/aigne-framework/issues/36)，在问题修复前，需要在项目中的 package.json 中加入下面的配置：
-
-**npm**
-
-```json
-{
-  "overrides": {
-    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
-  }
-}
-```
-
-**yarn or pnpm**
-
-```json
-{
-  "resolutions": {
-    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
-  }
-}
 ```
 
 ## 基础概念
@@ -393,13 +368,7 @@ console.log(result);
 **示例**:
 
 ```typescript file=../examples/workflow-reflection/usages.ts
-import {
-  AIAgent,
-  AIGNE,
-  UserInputTopic,
-  UserOutputTopic,
-  createPublishMessage,
-} from "@aigne/core";
+import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -473,9 +442,7 @@ Please review the code. If previous feedback was provided, see if it was address
 const aigne = new AIGNE({ model, agents: [coder, reviewer] });
 aigne.publish(
   UserInputTopic,
-  createPublishMessage(
-    "Write a function to find the sum of all even numbers in a list.",
-  ),
+  "Write a function to find the sum of all even numbers in a list.",
 );
 
 const { message } = await aigne.subscribe(UserOutputTopic);

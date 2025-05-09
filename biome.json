@@ -30,6 +30,9 @@
       },
       "suspicious": {
         "noConfusingVoidType": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
       }
     }
   },

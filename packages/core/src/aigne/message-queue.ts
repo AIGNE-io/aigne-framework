@@ -1,7 +1,8 @@
 import { EventEmitter } from "node:events";
 import { z } from "zod";
 import type { Message } from "../agents/agent.js";
-import { checkArguments, orArrayToArray } from "../utils/type-utils.js";
+import { createMessage } from "../prompt/prompt-builder.js";
+import { checkArguments, isNil, orArrayToArray } from "../utils/type-utils.js";
 import type { Context } from "./context.js";
 
 /**
@@ -24,6 +25,35 @@ export interface MessagePayload {
 
   // Context of the message
   context: Context;
+}
+
+function isMessagePayload(payload: unknown): payload is Omit<MessagePayload, "context"> {
+  return (
+    !isNil(payload) &&
+    typeof payload === "object" &&
+    "role" in payload &&
+    typeof payload.role === "string" &&
+    ["user", "agent"].includes(payload.role) &&
+    "message" in payload &&
+    !isNil(payload.message)
+  );
+}
+
+/**
+ * @hidden
+ */
+export function toMessagePayload(
+  payload: Omit<MessagePayload, "context"> | string | Message,
+  options?: Partial<Pick<MessagePayload, "role" | "source">>,
+): Omit<MessagePayload, "context"> {
+  if (isMessagePayload(payload)) {
+    return { ...payload, message: createMessage(payload.message), ...options };
+  }
+  return {
+    role: options?.role || "user",
+    source: options?.source,
+    message: createMessage(payload),
+  };
 }
 
 /**
@@ -57,10 +87,16 @@ export class MessageQueue {
     this.events.emit("error", error);
   }
 
-  subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
-  subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>;
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload> {
+  subscribe(topic: string | string[], listener?: undefined): Promise<MessagePayload>;
+  subscribe(topic: string | string[], listener: MessageQueueListener): Unsubscribe;
+  subscribe(
+    topic: string | string[],
+    listener?: MessageQueueListener,
+  ): Unsubscribe | Promise<MessagePayload>;
+  subscribe(
+    topic: string | string[],
+    listener?: MessageQueueListener,
+  ): Unsubscribe | Promise<MessagePayload> {
     checkArguments("MessageQueue.subscribe", subscribeArgsSchema, {
       topic,
       listener,
@@ -82,41 +118,43 @@ export class MessageQueue {
     return on(this.events, topic, listener);
   }
 
-  unsubscribe(topic: string, listener: MessageQueueListener) {
+  unsubscribe(topic: string | string[], listener: MessageQueueListener) {
     checkArguments("MessageQueue.unsubscribe", unsubscribeArgsSchema, {
       topic,
       listener,
     });
 
-    this.events.off(topic, listener);
+    for (const t of orArrayToArray(topic)) {
+      this.events.off(t, listener);
+    }
   }
 }
 
 function on<T>(
   events: EventEmitter,
-  event: string,
+  event: string | string[],
   listener: (arg: T, ...args: unknown[]) => void,
 ): Unsubscribe {
-  events.on(event, listener);
-  return () => events.off(event, listener);
+  orArrayToArray(event).forEach((e) => events.on(e, listener));
+  return () => orArrayToArray(event).forEach((e) => events.off(e, listener));
 }
 
 function once<T>(
   events: EventEmitter,
-  event: string,
+  event: string | string[],
   listener: (arg: T, ...args: unknown[]) => void,
 ): Unsubscribe {
-  events.once(event, listener);
-  return () => events.off(event, listener);
+  orArrayToArray(event).forEach((e) => events.once(e, listener));
+  return () => orArrayToArray(event).forEach((e) => events.off(e, listener));
 }
 
 const subscribeArgsSchema = z.object({
-  topic: z.string(),
+  topic: z.union([z.string(), z.array(z.string())]),
   listener: z.function(z.tuple([z.any()]), z.any()).optional(),
 });
 
 const unsubscribeArgsSchema = z.object({
-  topic: z.string(),
+  topic: z.union([z.string(), z.array(z.string())]),
   listener: z.function(z.tuple([z.any()]), z.any()),
 });
 

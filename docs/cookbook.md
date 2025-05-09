@@ -9,7 +9,6 @@
   * [Introduction](#introduction)
   * [Installation](#installation)
     * [Installing AIGNE Framework](#installing-aigne-framework)
-    * [Using @aigne/core in CommonJS Environment](#using-aignecore-in-commonjs-environment)
   * [Core Concepts](#core-concepts)
     * [Chat Model](#chat-model)
     * [Agent](#agent)
@@ -76,30 +75,6 @@ pnpm install @aigne/agent-library
 
 # Install LLM libraries as needed
 pnpm install openai @anthropic-ai/sdk @google/generative-ai
-```
-
-### Using @aigne/core in CommonJS Environment
-
-@aigne/core supports use in both CommonJS and ES Module environments. If your project uses the CommonJS module system, but due to a [third-party lib not supporting ESM](https://github.com/AIGNE-io/aigne-framework/issues/36), you need to add the following configuration to your project's package.json before the issue is fixed:
-
-**npm**
-
-```json
-{
-  "overrides": {
-    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
-  }
-}
-```
-
-**yarn or pnpm**
-
-```json
-{
-  "resolutions": {
-    "pkce-challenge": "https://github.com/AIGNE-io/pkce-challenge#dist"
-  }
-}
 ```
 
 ## Core Concepts
@@ -393,13 +368,7 @@ console.log(result);
 **Example**:
 
 ```typescript file=../examples/workflow-reflection/usages.ts
-import {
-  AIAgent,
-  AIGNE,
-  UserInputTopic,
-  UserOutputTopic,
-  createPublishMessage,
-} from "@aigne/core";
+import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -473,9 +442,7 @@ Please review the code. If previous feedback was provided, see if it was address
 const aigne = new AIGNE({ model, agents: [coder, reviewer] });
 aigne.publish(
   UserInputTopic,
-  createPublishMessage(
-    "Write a function to find the sum of all even numbers in a list.",
-  ),
+  "Write a function to find the sum of all even numbers in a list.",
 );
 
 const { message } = await aigne.subscribe(UserOutputTopic);

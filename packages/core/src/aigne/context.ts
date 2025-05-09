@@ -32,6 +32,7 @@ import {
   MessageQueue,
   type MessageQueueListener,
   type Unsubscribe,
+  toMessagePayload,
 } from "./message-queue.js";
 import { type ContextLimits, type ContextUsage, newEmptyContextUsage } from "./usage.js";
 
@@ -137,14 +138,23 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
    * @param topic topic name, or an array of topic names
    * @param payload message to publish
    */
-  publish(topic: string | string[], payload: Omit<MessagePayload, "context">): void;
+  publish(
+    topic: string | string[],
+    payload: Omit<MessagePayload, "context"> | Message | string,
+  ): void;
 
-  subscribe(topic: string, listener?: undefined): Promise<MessagePayload>;
-  subscribe(topic: string, listener: MessageQueueListener): Unsubscribe;
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>;
-  subscribe(topic: string, listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>;
+  subscribe(topic: string | string[], listener?: undefined): Promise<MessagePayload>;
+  subscribe(topic: string | string[], listener: MessageQueueListener): Unsubscribe;
+  subscribe(
+    topic: string | string[],
+    listener?: MessageQueueListener,
+  ): Unsubscribe | Promise<MessagePayload>;
+  subscribe(
+    topic: string | string[],
+    listener?: MessageQueueListener,
+  ): Unsubscribe | Promise<MessagePayload>;
 
-  unsubscribe(topic: string, listener: MessageQueueListener): void;
+  unsubscribe(topic: string | string[], listener: MessageQueueListener): void;
 
   /**
    * Create a child context with the same configuration as the parent context.
@@ -155,20 +165,6 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
    * @returns new context
    */
   newContext(options?: { reset?: boolean }): Context;
-}
-
-/**
- * @hidden
- */
-export function createPublishMessage(
-  message: string | Message,
-  from?: Agent,
-): Omit<MessagePayload, "context"> {
-  return {
-    role: !from || from instanceof UserAgent ? "user" : "agent",
-    source: from?.name,
-    message: createMessage(message),
-  };
 }
 
 /**
@@ -238,8 +234,6 @@ export class AIGNEContext implements Context {
           const { __activeAgent__: activeAgent, ...output } =
             await agentResponseStreamToObject(response);
 
-          this.onInvokeSuccess(activeAgent, output, newContext);
-
           if (options?.returnActiveAgent) {
             return [output, activeAgent];
           }
@@ -251,9 +245,7 @@ export class AIGNEContext implements Context {
 
         const stream = onAgentResponseStreamEnd(
           asyncGeneratorToReadableStream(response),
-          async ({ __activeAgent__: activeAgent, ...output }) => {
-            this.onInvokeSuccess(activeAgent, output, newContext);
-
+          async ({ __activeAgent__: activeAgent }) => {
             activeAgentPromise.resolve(activeAgent);
           },
           {
@@ -281,21 +273,11 @@ export class AIGNEContext implements Context {
     );
   }) as Context["invoke"];
 
-  private async onInvokeSuccess(activeAgent: Agent, output: Message, context: Context) {
-    if (activeAgent instanceof Agent) {
-      const publishTopics =
-        typeof activeAgent.publishTopic === "function"
-          ? await activeAgent.publishTopic(output)
-          : activeAgent.publishTopic;
-
-      if (publishTopics?.length) {
-        context.publish(publishTopics, createPublishMessage(output, activeAgent));
-      }
-    }
-  }
-
   publish = ((topic, payload) => {
-    return this.internal.messageQueue.publish(topic, { ...payload, context: this });
+    return this.internal.messageQueue.publish(topic, {
+      ...toMessagePayload(payload),
+      context: this,
+    });
   }) as Context["publish"];
 
   subscribe = ((...args: Parameters<Context["subscribe"]>) => {

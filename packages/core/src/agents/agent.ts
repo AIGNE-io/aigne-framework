@@ -331,6 +331,10 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
       memory.attach(context);
     }
 
+    this.subscribeToTopics(context);
+  }
+
+  protected subscribeToTopics(context: Pick<Context, "subscribe">) {
     for (const topic of orArrayToArray(this.subscribeTopic).concat(this.topic)) {
       this.subscriptions.push(context.subscribe(topic, (payload) => this.onMessage(payload)));
     }
@@ -600,6 +604,8 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   protected postprocess(input: I, output: O, context: Context) {
     this.checkContextStatus(context);
 
+    this.publishToTopics(output, context);
+
     for (const memory of this.memories) {
       if (memory.autoUpdate) {
         memory.record(
@@ -612,6 +618,19 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
           context,
         );
       }
+    }
+  }
+
+  protected async publishToTopics(output: Message, context: Context) {
+    const publishTopics =
+      typeof this.publishTopic === "function" ? await this.publishTopic(output) : this.publishTopic;
+
+    if (publishTopics?.length) {
+      context.publish(publishTopics, {
+        role: this.constructor.name === "UserAgent" ? "user" : "agent",
+        source: this.name,
+        message: output,
+      });
     }
   }
 

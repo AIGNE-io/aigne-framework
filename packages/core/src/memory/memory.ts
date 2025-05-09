@@ -21,7 +21,7 @@ export interface MemoryAgentOptions
 
 export class MemoryAgent extends Agent {
   constructor(options: MemoryAgentOptions) {
-    checkArguments("AgentMemory", memoryAgentOptionsSchema, options);
+    checkArguments("MemoryAgent", memoryAgentOptionsSchema, options);
     super({
       subscribeTopic: options.subscribeTopic,
       skills: options.skills,
@@ -81,12 +81,12 @@ export class MemoryAgent extends Agent {
   }
 
   async retrieve(input: MemoryRetrieverInput, context: Context): Promise<MemoryRetrieverOutput> {
-    if (!this.retriever) throw new Error("AgentMemory retriever no initialized");
+    if (!this.retriever) throw new Error("MemoryAgent retriever no initialized");
     return context.invoke(this.retriever, input);
   }
 
   async record(input: MemoryRecorderInput, context: Context): Promise<MemoryRecorderOutput> {
-    if (!this.recorder) throw new Error("AgentMemory recorder no initialized");
+    if (!this.recorder) throw new Error("MemoryAgent recorder no initialized");
     return context.invoke(this.recorder, input);
   }
 

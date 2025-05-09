@@ -1,10 +1,10 @@
 #!/usr/bin/env npx -y bun
 
 import { join } from "node:path";
+import { FSMemory } from "@aigne/agent-library/fs-memory/index.js";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
-import { AINotebook } from "@aigne/core/memory/ai-notebook.js";
 
 const model = await loadModel();
 
@@ -14,10 +14,8 @@ const engine = new AIGNE({
 
 const agent = AIAgent.from({
   name: "memory_example",
-  instructions: `\
-You are a friendly chatbot.
-`,
-  memory: [new AINotebook({ rootDir: join(import.meta.dirname, "memories") })],
+  instructions: "You are a friendly chatbot",
+  memory: [new FSMemory({ rootDir: join(import.meta.dirname, "memories") })],
 });
 
 const userAgent = engine.invoke(agent);

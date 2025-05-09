@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@aigne/typedoc-plugin-example-utils-ts':
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: ^1.0.3
+        version: 1.0.3
       '@biomejs/biome':
         specifier: ^1.9.4
         version: 1.9.4
@@ -154,6 +154,9 @@ importers:
 
   examples/memory:
     dependencies:
+      '@aigne/agent-library':
+        specifier: workspace:^
+        version: link:../../packages/agent-library
       '@aigne/cli':
         specifier: workspace:^
         version: link:../../packages/cli
@@ -586,8 +589,8 @@ packages:
     peerDependencies:
       marked: '>=1 <16'
 
-  '@aigne/typedoc-plugin-example-utils-ts@1.0.2':
-    resolution: {integrity: sha512-tH9m5hvntFRWUTTYSwQmTHDgIfovma//PjTSnpR3putS5j3jGbEYrL3trhVzGvKSRX1HnQ9z3338BFczfuXJ1w==}
+  '@aigne/typedoc-plugin-example-utils-ts@1.0.3':
+    resolution: {integrity: sha512-r//jewUedSLQvuK4+geuVoBVNyTnl8UQbgq4jExYqE70qf/Nku/b5CgrzTs/6EJsSMyFp3VyIj+zTW3ZoVniDw==}
 
   '@anthropic-ai/sdk@0.41.0':
     resolution: {integrity: sha512-A4sfU0ss3BhhfMrm1RNl4YRt8B9CMIkheCRfow0vV3h0rYI9GBT/9lVsQPKGMwStnJSdowqUnVdSxLLrnutcHg==}
@@ -3567,11 +3570,17 @@ snapshots:
       node-emoji: 2.2.0
       supports-hyperlinks: 3.2.0
 
-  '@aigne/typedoc-plugin-example-utils-ts@1.0.2':
+  '@aigne/typedoc-plugin-example-utils-ts@1.0.3':
     dependencies:
+      '@biomejs/js-api': 0.7.1(@biomejs/wasm-nodejs@1.9.4)
+      '@biomejs/wasm-nodejs': 1.9.4
+      ts-morph: 25.0.1
       typedoc: 0.28.4(typescript@5.8.3)
       typescript: 5.8.3
       zod: 3.24.4
+    transitivePeerDependencies:
+      - '@biomejs/wasm-bundler'
+      - '@biomejs/wasm-web'
 
   '@anthropic-ai/sdk@0.41.0(encoding@0.1.13)':
     dependencies:

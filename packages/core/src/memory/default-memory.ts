@@ -7,7 +7,7 @@ import {
   type MemoryRetrieverOutput,
 } from "./retriever.js";
 
-export const DEFAULT_MAX_HISTORY_MESSAGES = 10;
+export const DEFAULT_MAX_MEMORY_COUNT = 10;
 
 export interface DefaultMemoryOptions extends Partial<MemoryAgentOptions> {}
 
@@ -25,7 +25,7 @@ export class DefaultMemory extends MemoryAgent {
   storage: Memory[] = [];
 
   async search(options: { limit?: number } = {}): Promise<{ result: Memory[] }> {
-    const { limit = DEFAULT_MAX_HISTORY_MESSAGES } = options;
+    const { limit = DEFAULT_MAX_MEMORY_COUNT } = options;
     const result = limit < 0 ? this.storage.slice(limit) : this.storage.slice(0, limit);
     return { result };
   }

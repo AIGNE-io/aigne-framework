@@ -70,8 +70,25 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    */
   catchToolsError?: boolean;
 
+  /**
+   * Whether to include memory agents as tools for the AI model
+   *
+   * When set to true, memory agents will be made available as tools
+   * that the model can call directly to retrieve or store information.
+   * This enables the agent to explicitly interact with its memories.
+   *
+   * @default false
+   */
   memoryAgentsAsTools?: boolean;
 
+  /**
+   * Custom prompt template for formatting memory content
+   *
+   * Allows customization of how memories are presented to the AI model.
+   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+   *
+   * The template receives a {{memories}} variable containing serialized memory content.
+   */
   memoryPromptTemplate?: string;
 
   memory?: AgentOptions<I, O>["memory"] | DefaultMemoryOptions | true;
@@ -196,7 +213,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
         : (options.instructions ?? new PromptBuilder());
     this.outputKey = options.outputKey;
     this.toolChoice = options.toolChoice;
-    this.memoryAgentsAsTools = options.memoryAgentsAsTools ?? true;
+    this.memoryAgentsAsTools = options.memoryAgentsAsTools;
     this.memoryPromptTemplate = options.memoryPromptTemplate;
 
     if (typeof options.catchToolsError === "boolean")
@@ -244,8 +261,23 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
    */
   toolChoice?: AIAgentToolChoice | Agent;
 
+  /**
+   * Whether to include memory agents as tools for the AI model
+   *
+   * When set to true, memory agents will be made available as tools
+   * that the model can call directly to retrieve or store information.
+   * This enables the agent to explicitly interact with its memories.
+   */
   memoryAgentsAsTools?: boolean;
 
+  /**
+   * Custom prompt template for formatting memory content
+   *
+   * Allows customization of how memories are presented to the AI model.
+   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+   *
+   * The template receives a {{memories}} variable containing serialized memory content.
+   */
   memoryPromptTemplate?: string;
 
   /**

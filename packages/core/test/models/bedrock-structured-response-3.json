@@ -1,0 +1,33 @@
+{
+  "$metadata": {
+    "httpStatusCode": 200,
+    "requestId": "4c5f2aed-7373-4329-9bc8-98c183a6de40",
+    "attempts": 1,
+    "totalRetryDelay": 0
+  },
+  "metrics": {
+    "latencyMs": 515
+  },
+  "output": {
+    "message": {
+      "content": [
+        {
+          "toolUse": {
+            "input": {
+              "text": "The temperature in New York is 20 degrees."
+            },
+            "name": "generate_json",
+            "toolUseId": "tooluse_IKE_FnOhSGq1VCjmZ4KK-g"
+          }
+        }
+      ],
+      "role": "assistant"
+    }
+  },
+  "stopReason": "tool_use",
+  "usage": {
+    "inputTokens": 484,
+    "outputTokens": 34,
+    "totalTokens": 518
+  }
+}

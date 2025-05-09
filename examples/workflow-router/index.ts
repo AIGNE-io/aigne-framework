@@ -35,9 +35,10 @@ const other = AIAgent.from({
 
 const triage = AIAgent.from({
   name: "triage",
-  instructions: `You are an agent capable of routing questions to the appropriate agent.
-  Your goal is to understand the user's query and direct them to the agent best suited to assist them.
-  Be efficient, clear, and ensure the user is connected to the right resource quickly.`,
+  instructions: `You are an intelligent routing agent responsible for directing user queries to the most appropriate specialized agent.
+Your task is to analyze the user's request and select exactly one tool from the available options.
+You must always choose a tool — do not answer the question directly or leave the tool unspecified.
+Be concise, accurate, and ensure efficient handoff to the correct agent.`,
   skills: [productSupport, feedback, other],
   toolChoice: AIAgentToolChoice.router,
 });

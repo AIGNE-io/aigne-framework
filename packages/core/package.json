@@ -53,6 +53,9 @@
       "models/*": [
         "./lib/dts/models/*"
       ],
+      "memory/*": [
+        "./lib/dts/memory/*"
+      ],
       "prompt/*": [
         "./lib/dts/prompt/*"
       ],

@@ -4,10 +4,11 @@ import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { AIGNE, type Agent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
-import { logger } from "@aigne/core/utils/logger.js";
+import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { Command, type OptionValues } from "commander";
+import { z } from "zod";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { runChatLoopInTerminal } from "../utils/run-chat-loop.js";
@@ -18,6 +19,7 @@ interface RunOptions extends OptionValues {
   modelProvider?: string;
   modelName?: string;
   verbose?: boolean;
+  logLevel?: LogLevel;
 }
 
 export function createRunCommand(): Command {
@@ -37,9 +39,9 @@ export function createRunCommand(): Command {
       "--model-name <model>",
       "Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)",
     )
-    .option("--verbose", "Enable verbose logging", false)
+    .option("--log-level <level>", "Log level", (s) => z.nativeEnum(LogLevel).parse(s))
     .action(async (path: string, options: RunOptions) => {
-      if (options.verbose) logger.enable("*");
+      if (options.logLevel) logger.level = options.logLevel;
 
       const { downloadDir, dir } = prepareDirs(path, options);
 

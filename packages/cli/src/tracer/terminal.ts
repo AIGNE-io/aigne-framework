@@ -264,7 +264,6 @@ class AIGNEListr extends Listr {
     renderer.create = (...args) => {
       const [tasks, output] = create.call(renderer, ...args);
       const l = [
-        "",
         tasks,
         "",
         ...this.myOptions.formatResult(this.result).map((i) => this.wrap(i)),
@@ -279,16 +278,19 @@ class AIGNEListr extends Listr {
   }
 
   override async run(stream: AgentResponseStream<Message>): Promise<Message> {
-    const originalLog = logger.log;
+    const originalLog = logger.logMessage;
+    const originalErrorLog = logger.logError;
 
     try {
-      logger.log = (...args) => this.logs.push(format(...args));
+      logger.logMessage = (...args) => this.logs.push(format(...args));
+      logger.logError = (...args) => this.logs.push(format(...args));
 
       this.add({ task: () => this.extractStream(stream) });
 
       return await super.run().then(() => ({ ...this.result }));
     } finally {
-      logger.log = originalLog;
+      logger.logMessage = originalLog;
+      logger.logError = originalErrorLog;
     }
   }
 

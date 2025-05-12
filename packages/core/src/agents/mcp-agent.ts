@@ -207,7 +207,7 @@ export class MCPAgent extends Agent {
 
     const transport = transportCreator();
 
-    logger.mcp(`Connecting to MCP server: ${getMCPServerString(options)}`);
+    logger.debug(`Connecting to MCP server: ${getMCPServerString(options)}`);
     await client.connect(transport);
 
     const mcpServer = getMCPServerName(client);
@@ -218,10 +218,10 @@ export class MCPAgent extends Agent {
       resources: isResourcesAvailable,
     } = client.getServerCapabilities() ?? {};
 
-    logger.mcp(`Listing tools from ${mcpServer}`);
+    logger.debug(`Listing tools from ${mcpServer}`);
     const skills = isToolsAvailable
       ? await client.listTools().then(({ tools }) => {
-          logger.mcp(
+          logger.debug(
             `Listing tools from ${mcpServer} completed %O`,
             tools?.map((i) => i.name),
           );
@@ -229,10 +229,10 @@ export class MCPAgent extends Agent {
         })
       : undefined;
 
-    logger.mcp(`Listing prompts from ${mcpServer}`);
+    logger.debug(`Listing prompts from ${mcpServer}`);
     const prompts = isPromptsAvailable
       ? await client.listPrompts().then(({ prompts }) => {
-          logger.mcp(
+          logger.debug(
             `Listing prompts from ${mcpServer} completed %O`,
             prompts?.map((i) => i.name),
           );
@@ -240,7 +240,7 @@ export class MCPAgent extends Agent {
         })
       : undefined;
 
-    logger.mcp(`Listing resources from ${mcpServer}`);
+    logger.debug(`Listing resources from ${mcpServer}`);
     // TODO: should conditionally call listResourceTemplates based on the server capabilities
     // but the capability is not correct in the current SDK version
     const resources = isResourcesAvailable
@@ -251,7 +251,7 @@ export class MCPAgent extends Agent {
           const result = [...resources, ...resourceTemplates].map((resource) =>
             resourceFromMCPResource(resource, { client }),
           );
-          logger.mcp(
+          logger.debug(
             `Listing resources from ${mcpServer} completed %O`,
             result.map((i) => i.name),
           );
@@ -402,7 +402,7 @@ class ClientWithReconnect extends Client {
       {
         retries: this.reconnectOptions?.maxReconnects ?? DEFAULT_MAX_RECONNECTS,
         shouldRetry: this.shouldReconnect,
-        onFailedAttempt: (error) => logger.mcp("Reconnect attempt failed: %O", error),
+        onFailedAttempt: (error) => logger.error("Reconnect attempt failed: %O", error),
       },
     );
   }
@@ -421,7 +421,7 @@ class ClientWithReconnect extends Client {
       return await super.request(request, resultSchema, mergedOptions);
     } catch (error) {
       if (this.shouldReconnect(error)) {
-        logger.mcp("Error occurred, reconnecting to MCP server: %O", error);
+        logger.error("Error occurred, reconnecting to MCP server: %O", error);
         await this.reconnect();
         return await super.request(request, resultSchema, mergedOptions);
       }

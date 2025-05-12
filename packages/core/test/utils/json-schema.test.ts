@@ -51,11 +51,11 @@ test("ensureZodUnionArray should work if the unions is not empty array", async (
 test("parseJSON should throw error if the json is invalid", async () => {
   const json = "{ foo: bar }";
 
-  const log = spyOn(logger, "core").mockReturnValue(undefined);
+  const error = spyOn(logger, "error").mockReturnValueOnce(undefined);
 
   expect((async () => parseJSON(json))()).rejects.toThrowError("JSON Parse error");
 
-  expect(log).toHaveBeenCalledWith("Failed to parse JSON", expect.anything());
+  expect(error).toHaveBeenCalledWith("Failed to parse JSON", expect.anything());
 
-  log.mockRestore();
+  error.mockRestore();
 });

@@ -457,7 +457,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     const ctx: Context = context ?? (await this.newDefaultContext());
     const message = typeof input === "string" ? createMessage(input) : input;
 
-    logger.core("Invoke agent %s started with input: %O", this.name, input);
+    logger.debug("Invoke agent %s started with input: %O", this.name, input);
     if (!this.disableEvents) ctx.emit("agentStarted", { agent: this, input: message });
 
     try {
@@ -536,7 +536,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
     this.postprocess(input, finalOutput, context);
 
-    logger.core("Invoke agent %s succeed with output: %O", this.name, finalOutput);
+    logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
     return finalOutput;
@@ -552,7 +552,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @throws Always throws the received error
    */
   private processAgentError(error: Error, context: Context): never {
-    logger.core("Invoke agent %s failed with error: %O", this.name, error);
+    logger.error("Invoke agent %s failed with error: %O", this.name, error);
     if (!this.disableEvents) context.emit("agentFailed", { agent: this, error });
     throw error;
   }

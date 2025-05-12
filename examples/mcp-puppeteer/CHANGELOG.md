@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.11.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.10.0...example-mcp-puppeteer-v1.11.0) (2025-05-12)
+
+
+### Features
+
+* **docs:** use typedoc build and publish docs to gh-pages ([#100](https://github.com/AIGNE-io/aigne-framework/issues/100)) ([b9074c0](https://github.com/AIGNE-io/aigne-framework/commit/b9074c0148ea343ada92b5919a52b47537a1ad48))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.9.0
+    * @aigne/core bumped to 1.14.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.2.0
+
 ## [1.10.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.9.0...example-mcp-puppeteer-v1.10.0) (2025-04-30)
 
 

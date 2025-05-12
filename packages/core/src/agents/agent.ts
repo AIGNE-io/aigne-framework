@@ -18,6 +18,7 @@ import {
   isEmpty,
   orArrayToArray,
 } from "../utils/type-utils.js";
+import type { GuideRailAgent } from "./guide-rail-agent.js";
 import { AgentMemory, type AgentMemoryOptions } from "./memory.js";
 import {
   type TransferAgentOutput,
@@ -56,7 +57,8 @@ export type PublishTopic<O extends Message> =
  * @template I The agent input message type
  * @template O The agent output message type
  */
-export interface AgentOptions<I extends Message = Message, O extends Message = Message> {
+export interface AgentOptions<I extends Message = Message, O extends Message = Message>
+  extends Partial<Pick<Agent, "guideRails">> {
   /**
    * Topics the agent should subscribe to
    *
@@ -229,6 +231,20 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * and use them for context in future processing
    */
   readonly memory?: AgentMemory;
+
+  /**
+   * List of GuideRail agents applied to this agent
+   *
+   * GuideRail agents validate, transform, or control the message flow by:
+   * - Enforcing rules and safety policies
+   * - Validating inputs/outputs against specific criteria
+   * - Implementing business logic validations
+   * - Monitoring and auditing agent behavior
+   *
+   * Each GuideRail agent can examine both input and expected output,
+   * and has the ability to abort the process with an explanation
+   */
+  readonly guideRails?: GuideRailAgent[];
 
   /**
    * Name of the agent, used for identification and logging

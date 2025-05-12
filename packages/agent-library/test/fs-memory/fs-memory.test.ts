@@ -1,7 +1,12 @@
 import { expect, spyOn, test } from "bun:test";
-import { FSMemory } from "@aigne/agent-library/fs-memory/index.js";
+import { randomUUID } from "node:crypto";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { FSMemory, MEMORY_FILE_NAME } from "@aigne/agent-library/fs-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { stringify } from "yaml";
 
 test("FSMemory simple example", async () => {
   // #region example-fs-memory-simple
@@ -53,4 +58,116 @@ test("FSMemory simple example", async () => {
   // Output: { $message: 'You like blue color.' }
 
   // #endregion example-fs-memory-simple
+});
+
+test("FSMemory retrieve should read all memory from file", async () => {
+  const dir = join(tmpdir(), randomUUID());
+  await mkdir(dir, { recursive: true });
+  try {
+    await writeFile(
+      join(dir, MEMORY_FILE_NAME),
+      stringify([
+        { content: "User likes blue color." },
+        { content: "User likes play basketball." },
+      ]),
+      "utf-8",
+    );
+
+    const model = new OpenAIChatModel();
+
+    const engine = new AIGNE({ model });
+
+    const memory = new FSMemory({ rootDir: dir });
+
+    const modelProcess = spyOn(model, "process");
+
+    modelProcess.mockReturnValueOnce(
+      Promise.resolve({
+        json: {
+          memories: [{ content: "User likes blue color." }],
+        },
+      }),
+    );
+
+    const result = await memory.retrieve({ search: "What color do I like?" }, engine.newContext());
+
+    expect(modelProcess).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        messages: expect.arrayContaining([
+          expect.objectContaining({
+            content: expect.stringContaining("What color do I like?"),
+          }),
+        ]),
+      }),
+      expect.anything(),
+    );
+
+    expect(result).toEqual({
+      memories: [
+        {
+          id: expect.any(String),
+          content: "User likes blue color.",
+          createdAt: expect.any(String),
+        },
+      ],
+    });
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("FSMemory retrieve should write all memory into memory file", async () => {
+  const dir = join(tmpdir(), randomUUID());
+  await mkdir(dir, { recursive: true });
+  try {
+    const model = new OpenAIChatModel();
+
+    const engine = new AIGNE({ model });
+
+    const memory = new FSMemory({ rootDir: dir });
+
+    const modelProcess = spyOn(model, "process");
+
+    modelProcess.mockReturnValueOnce(
+      Promise.resolve({
+        json: {
+          memories: [{ content: "User likes blue color." }],
+        },
+      }),
+    );
+
+    const result = await memory.record(
+      {
+        content: [{ role: "user", content: "I like blue color." }],
+      },
+      engine.newContext(),
+    );
+
+    expect(modelProcess).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        messages: expect.arrayContaining([
+          expect.objectContaining({
+            content: expect.stringContaining("I like blue color."),
+          }),
+        ]),
+      }),
+      expect.anything(),
+    );
+
+    expect(result).toEqual({
+      memories: [
+        {
+          id: expect.any(String),
+          content: "User likes blue color.",
+          createdAt: expect.any(String),
+        },
+      ],
+    });
+
+    expect(await readFile(join(dir, MEMORY_FILE_NAME), "utf-8")).toEqual(
+      stringify([{ content: "User likes blue color." }]),
+    );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

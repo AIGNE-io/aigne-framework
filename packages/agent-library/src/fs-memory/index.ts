@@ -18,7 +18,7 @@ import { stringify } from "yaml";
 import { z } from "zod";
 import { expandHome } from "../filesystem/utils.js";
 
-const MEMORY_FILE_NAME = "memory.md";
+export const MEMORY_FILE_NAME = "memory.yaml";
 
 /**
  * Configuration options for the FSMemory class.
@@ -35,13 +35,13 @@ export interface FSMemoryOptions extends Partial<MemoryAgentOptions> {
    * Optional configuration for the memory retriever agent.
    * Controls how memories are retrieved from the file system.
    */
-  retrieverOptions?: FSMemoryRetrieverOptions;
+  retrieverOptions?: Partial<FSMemoryRetrieverOptions>;
 
   /**
    * Optional configuration for the memory recorder agent.
    * Controls how memories are recorded to the file system.
    */
-  recorderOptions?: FSMemoryRecorderOptions;
+  recorderOptions?: Partial<FSMemoryRecorderOptions>;
 }
 
 /**
@@ -158,7 +158,6 @@ class FSMemoryRecorder extends MemoryRecorder {
         memories: z
           .array(
             z.object({
-              filename: z.string().describe("Filename of the memory"),
               content: z.string().describe("Content of the memory"),
             }),
           )

@@ -1,3 +1,4 @@
+import { inspect } from "node:util";
 import Mustache from "mustache";
 import { z } from "zod";
 import type {
@@ -5,6 +6,7 @@ import type {
   ChatModelInputMessageContent,
   ChatModelOutputToolCall,
 } from "../models/chat-model.js";
+import { tryOrThrow } from "../utils/type-utils.js";
 
 export class PromptTemplate {
   static from(template: string) {
@@ -95,7 +97,16 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
     public toolCallId: string,
     name?: string,
   ) {
-    super("tool", typeof content === "string" ? content : JSON.stringify(content), name);
+    super(
+      "tool",
+      typeof content === "string"
+        ? content
+        : tryOrThrow(
+            () => JSON.stringify(content),
+            `Failed to stringify tool content. toolCallId: ${toolCallId}, content: ${inspect(content)}`,
+          ),
+      name,
+    );
   }
 
   format(variables?: Record<string, unknown>) {

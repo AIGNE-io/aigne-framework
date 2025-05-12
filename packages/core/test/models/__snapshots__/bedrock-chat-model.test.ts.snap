@@ -1,23 +1,10 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`BedrockChatModel.invoke 1 1`] = `
-{
-  "json": {
-    "text": "The current temperature in New York is 20 degrees Celsius.",
-  },
-  "model": "us.amazon.nova-lite-v1:0",
-  "usage": {
-    "inputTokens": 487,
-    "outputTokens": 43,
-  },
-}
-`;
-
-exports[`BedrockChatModel.invoke 2 1`] = `
+exports[`BedrockChatModel.invoke with tool call and structured output 1`] = `
 {
   "model": "us.amazon.nova-lite-v1:0",
   "text": 
-"<thinking>The User has asked for the current weather in New York. I need to use the 'get_weather' tool to get this information. I will call the tool with the required 'city' parameter.</thinking>
+"<thinking>The User has asked for the weather in New York. I need to use the 'get_weather' tool to retrieve this information. I will need to specify the city as 'New York'.</thinking>
 "
 ,
   "toolCalls": [
@@ -28,13 +15,26 @@ exports[`BedrockChatModel.invoke 2 1`] = `
         },
         "name": "get_weather",
       },
-      "id": "tooluse_yPoXvCWrSCScmmoH4UCWOA",
+      "id": "tooluse_HenDpM4gSraNzkZ1LPuODg",
       "type": "function",
     },
   ],
   "usage": {
     "inputTokens": 392,
-    "outputTokens": 80,
+    "outputTokens": 79,
+  },
+}
+`;
+
+exports[`BedrockChatModel.invoke with tool call and structured output 2`] = `
+{
+  "json": {
+    "text": "The temperature in New York is 20 degrees.",
+  },
+  "model": "us.amazon.nova-lite-v1:0",
+  "usage": {
+    "inputTokens": 926,
+    "outputTokens": 75,
   },
 }
 `;

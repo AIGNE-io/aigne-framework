@@ -1,6 +1,7 @@
 import {
   BedrockRuntimeClient,
   type ContentBlock,
+  ConverseCommand,
   ConverseStreamCommand,
   type ConverseStreamRequest,
   type ConverseStreamResponse,
@@ -9,12 +10,15 @@ import {
   type TokenUsage,
   type Tool,
   type ToolChoice,
+  type ToolConfiguration,
+  type ToolInputSchema,
 } from "@aws-sdk/client-bedrock-runtime";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import type { AgentResponse, AgentResponseChunk } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
-import { getJsonOutputPrompt } from "../utils/prompts.js";
+import { mergeUsage } from "../utils/model-utils.js";
+import { getJsonToolInputPrompt } from "../utils/prompts.js";
 import { agentResponseStreamToObject } from "../utils/stream-utils.js";
 import { checkArguments, isNonNullable } from "../utils/type-utils.js";
 import {
@@ -23,6 +27,7 @@ import {
   type ChatModelInputMessageContent,
   type ChatModelOptions,
   type ChatModelOutput,
+  type ChatModelOutputUsage,
 } from "./chat-model.js";
 
 /**
@@ -111,29 +116,32 @@ export class BedrockChatModel extends ChatModel {
     const response = await this.client.send(command);
     const jsonMode = input.responseFormat?.type === "json_schema";
     if (!jsonMode) {
-      return this.extractResultFromStream(response.stream, modelId, false, true);
+      return this.extractResultFromStream(response.stream, modelId, true);
     }
 
-    const result = await this.extractResultFromStream(response.stream, modelId, jsonMode, false);
+    const result = await this.extractResultFromStream(response.stream, modelId, false);
+
+    if (!result.toolCalls?.length && jsonMode && result.text) {
+      const output = await this.requestStructuredOutput(body, input.responseFormat);
+      return { ...output, usage: mergeUsage(result.usage, output.usage) };
+    }
+
     return result;
   }
 
   private async extractResultFromStream(
     stream: ConverseStreamResponse["stream"],
     modelId: string,
-    jsonMode: boolean,
     streaming?: false,
   ): Promise<ChatModelOutput>;
   private async extractResultFromStream(
     stream: ConverseStreamResponse["stream"],
     modelId: string,
-    jsonMode: boolean,
     streaming: true,
   ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
   private async extractResultFromStream(
     stream: ConverseStreamResponse["stream"],
     modelId: string,
-    jsonMode: boolean,
     streaming?: boolean,
   ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
     if (!stream) throw new Error("Unable to get AI model response.");
@@ -146,7 +154,6 @@ export class BedrockChatModel extends ChatModel {
           const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
             args: string;
           })[] = [];
-          let text = "";
           let usage: TokenUsage | undefined;
 
           for await (const chunk of stream) {
@@ -170,10 +177,7 @@ export class BedrockChatModel extends ChatModel {
               const block = chunk.contentBlockDelta;
               const delta = block.delta;
               if (delta?.text) {
-                text += delta.text;
-                if (!jsonMode) {
-                  controller.enqueue({ delta: { text: { text: delta.text } } });
-                }
+                controller.enqueue({ delta: { text: { text: delta.text } } });
               }
 
               if (delta?.toolUse) {
@@ -188,15 +192,6 @@ export class BedrockChatModel extends ChatModel {
             if (chunk.metadata) {
               usage = chunk.metadata.usage;
             }
-          }
-
-          if (jsonMode && text) {
-            const match = extractLastJsonObject(text);
-            if (!match) throw new Error("Failed to extract JSON object from model output");
-
-            controller.enqueue({
-              delta: { json: { json: parseJSON(match) } },
-            });
           }
 
           if (toolCalls.length) {
@@ -224,11 +219,50 @@ export class BedrockChatModel extends ChatModel {
 
     return streaming ? result : await agentResponseStreamToObject(result);
   }
+
+  private async requestStructuredOutput(
+    body: ConverseStreamRequest & { modelId: string },
+    responseFormat: ChatModelInput["responseFormat"],
+  ): Promise<ChatModelOutput> {
+    if (responseFormat?.type !== "json_schema") {
+      throw new Error("Expected json_schema response format");
+    }
+
+    const system = [
+      ...(body.system ?? []),
+      {
+        text: `Use the generate_json tool to generate a json result. ${getJsonToolInputPrompt(responseFormat.jsonSchema.schema)}`,
+      },
+    ];
+    const toolConfig: ToolConfiguration = {
+      tools: [
+        {
+          toolSpec: {
+            name: "generate_json",
+            description: "Generate a json result by given context",
+            inputSchema: { json: responseFormat.jsonSchema.schema } as ToolInputSchema.JsonMember,
+          },
+        },
+      ],
+      toolChoice: { tool: { name: "generate_json" } },
+    };
+    const command = new ConverseCommand({ ...body, system, toolConfig });
+    const response = await this.client.send(command);
+    const jsonTool = response.output?.message?.content?.find<ContentBlock>(
+      (i): i is ContentBlock.ToolUseMember => i.toolUse?.name === "generate_json",
+    ) as ContentBlock.ToolUseMember | undefined;
+    if (!jsonTool) throw new Error("Json tool not found");
+
+    return {
+      json: jsonTool.toolUse?.input as object | undefined,
+      model: body.modelId,
+      usage: response.usage as ChatModelOutputUsage,
+    };
+  }
 }
 
 const getRunMessages = ({
   messages: msgs,
-  responseFormat,
 }: ChatModelInput): {
   messages: Message[];
   system: SystemContentBlock[];
@@ -289,12 +323,6 @@ const getRunMessages = ({
 
   if (messages.at(0)?.role !== "user") {
     messages.unshift({ role: "user", content: [{ text: "." }] });
-  }
-
-  if (responseFormat?.type === "json_schema") {
-    system.push({
-      text: getJsonOutputPrompt(responseFormat.jsonSchema.schema),
-    });
   }
 
   return { messages, system };

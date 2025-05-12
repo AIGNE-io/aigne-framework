@@ -46,6 +46,24 @@ export function duplicates<T>(arr: T[], key: (item: T) => unknown = (item: T) =>
   return Array.from(duplicates);
 }
 
+export function remove<T>(arr: T[], remove: T[] | ((item: T) => boolean)): T[] {
+  const removed: T[] = [];
+
+  for (let i = 0; i < arr.length; i++) {
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    const item = arr[i]!;
+    if (
+      (Array.isArray(remove) && remove.includes(item)) ||
+      (typeof remove === "function" && remove(item))
+    ) {
+      removed.push(...arr.splice(i, 1));
+      i--;
+    }
+  }
+
+  return removed;
+}
+
 export function unique<T>(arr: T[], key: (item: T) => unknown = (item: T) => item): T[] {
   const seen = new Set();
 

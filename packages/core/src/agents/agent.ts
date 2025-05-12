@@ -1,6 +1,8 @@
 import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../aigne/context.js";
+import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
+import type { MemoryAgent } from "../memory/memory.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
 import {
@@ -19,7 +21,6 @@ import {
   orArrayToArray,
 } from "../utils/type-utils.js";
 import type { GuideRailAgent } from "./guide-rail-agent.js";
-import { AgentMemory, type AgentMemoryOptions } from "./memory.js";
 import {
   type TransferAgentOutput,
   replaceTransferAgentToName,
@@ -129,17 +130,11 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   disableEvents?: boolean;
 
   /**
-   * Memory configuration for the agent
-   *
-   * Can be an AgentMemory instance, configuration options, or
-   * simply a boolean to enable/disable with default settings
+   * One or more memory agents this agent can use
    */
-  memory?: AgentMemory | AgentMemoryOptions | boolean;
+  memory?: MemoryAgent | MemoryAgent[];
 }
 
-/**
- * @hidden
- */
 export const agentOptionsSchema: ZodObject<{
   [key in keyof AgentOptions]: ZodType<AgentOptions[key]>;
 }> = z.object({
@@ -154,14 +149,9 @@ export const agentOptionsSchema: ZodObject<{
   includeInputInOutput: z.boolean().optional(),
   skills: z.array(z.union([z.custom<Agent>(), z.custom<FunctionAgentFn>()])).optional(),
   disableEvents: z.boolean().optional(),
-  memory: z
-    .union([z.custom<AgentMemory>(), z.custom<AgentMemoryOptions>(), z.boolean()])
-    .optional(),
+  memory: z.union([z.custom<MemoryAgent>(), z.array(z.custom<MemoryAgent>())]).optional(),
 });
 
-/**
- * Options for invoking an agent
- */
 export interface AgentInvokeOptions {
   /**
    * Whether to enable streaming response
@@ -214,23 +204,18 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     this.publishTopic = options.publishTopic as PublishTopic<Message>;
     if (options.skills?.length) this.skills.push(...options.skills.map(functionToAgent));
     this.disableEvents = options.disableEvents;
-    if (options.memory) {
-      this.memory =
-        options.memory instanceof AgentMemory
-          ? options.memory
-          : typeof options.memory === "boolean"
-            ? new AgentMemory({ enabled: options.memory })
-            : new AgentMemory(options.memory);
+
+    if (Array.isArray(options.memory)) {
+      this.memories.push(...options.memory);
+    } else if (options.memory) {
+      this.memories.push(options.memory);
     }
   }
 
   /**
-   * Agent's memory instance for storing conversation history
-   *
-   * When enabled, allows the agent to remember past interactions
-   * and use them for context in future processing
+   * List of memories this agent can use
    */
-  readonly memory?: AgentMemory;
+  readonly memories: MemoryAgent[] = [];
 
   /**
    * List of GuideRail agents applied to this agent
@@ -345,6 +330,8 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    */
   private disableEvents?: boolean;
 
+  private subscriptions: Unsubscribe[] = [];
+
   /**
    * Attach agent to context:
    * - Subscribe to topics and invoke process method when messages are received
@@ -356,20 +343,24 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @param context Context to attach to
    */
   attach(context: Pick<Context, "subscribe">) {
-    this.memory?.attach(context);
+    for (const memory of this.memories) {
+      memory.attach(context);
+    }
 
     this.subscribeToTopics(context);
   }
 
   protected subscribeToTopics(context: Pick<Context, "subscribe">) {
     for (const topic of orArrayToArray(this.subscribeTopic).concat(this.topic)) {
-      context.subscribe(topic, async ({ message, context }) => {
-        try {
-          await context.invoke(this, message);
-        } catch (error) {
-          context.emit("agentFailed", { agent: this, error });
-        }
-      });
+      this.subscriptions.push(context.subscribe(topic, (payload) => this.onMessage(payload)));
+    }
+  }
+
+  async onMessage({ message, context }: MessagePayload) {
+    try {
+      await context.invoke(this, message);
+    } catch (error) {
+      context.emit("agentFailed", { agent: this, error });
     }
   }
 
@@ -631,12 +622,19 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
     this.publishToTopics(output, context);
 
-    this.memory?.addMemory({ role: "user", content: input });
-    this.memory?.addMemory({
-      role: "agent",
-      content: replaceTransferAgentToName(output),
-      source: this.name,
-    });
+    for (const memory of this.memories) {
+      if (memory.autoUpdate) {
+        memory.record(
+          {
+            content: [
+              { role: "user", content: input },
+              { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
+            ],
+          },
+          context,
+        );
+      }
+    }
   }
 
   protected async publishToTopics(output: Message, context: Context) {
@@ -698,7 +696,14 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * {@includeCode ../../test/agents/agent.test.ts#example-agent-shutdown-by-using}
    */
   async shutdown() {
-    this.memory?.detach();
+    for (const sub of this.subscriptions) {
+      sub();
+    }
+    this.subscriptions = [];
+
+    for (const m of this.memories) {
+      m.shutdown();
+    }
   }
 
   /**

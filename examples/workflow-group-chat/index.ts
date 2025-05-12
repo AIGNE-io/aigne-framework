@@ -91,7 +91,6 @@ const user = UserAgent.from({
   name: "user",
   description: "User for providing final approval",
   publishTopic: DEFAULT_TOPIC,
-  memory: { subscribeTopic: DEFAULT_TOPIC },
   async process() {
     const { question } = await inquirer.prompt([
       {

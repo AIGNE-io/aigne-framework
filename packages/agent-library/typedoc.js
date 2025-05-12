@@ -5,7 +5,7 @@ import base from "../../typedoc.base.js";
  */
 const config = {
   ...base,
-  entryPoints: ["src/orchestrator"],
+  entryPoints: ["src/orchestrator", "src/fs-memory"],
   entryPointStrategy: "resolve",
 };
 

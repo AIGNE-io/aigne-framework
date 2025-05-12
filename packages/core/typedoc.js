@@ -17,6 +17,7 @@ const config = {
     "src/agents/*agent.ts",
     "src/models/chat-model.ts",
     ...models,
+    "src/memory/index.ts",
     "src/server/index.ts",
     "src/client/index.ts",
   ],

@@ -1,5 +1,7 @@
-import { z } from "zod";
+import { type ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../aigne/context.js";
+import { DefaultMemory, type DefaultMemoryOptions } from "../memory/default-memory.js";
+import { MemoryAgent } from "../memory/memory.js";
 import { ChatModel } from "../models/chat-model.js";
 import type {
   ChatModelInput,
@@ -30,7 +32,7 @@ import { isTransferAgentOutput } from "./types.js";
  * @template O The output message type the agent returns
  */
 export interface AIAgentOptions<I extends Message = Message, O extends Message = Message>
-  extends AgentOptions<I, O> {
+  extends Omit<AgentOptions<I, O>, "memory"> {
   /**
    * The language model to use for this agent
    *
@@ -67,6 +69,29 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    * @default true
    */
   catchToolsError?: boolean;
+
+  /**
+   * Whether to include memory agents as tools for the AI model
+   *
+   * When set to true, memory agents will be made available as tools
+   * that the model can call directly to retrieve or store information.
+   * This enables the agent to explicitly interact with its memories.
+   *
+   * @default false
+   */
+  memoryAgentsAsTools?: boolean;
+
+  /**
+   * Custom prompt template for formatting memory content
+   *
+   * Allows customization of how memories are presented to the AI model.
+   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+   *
+   * The template receives a {{memories}} variable containing serialized memory content.
+   */
+  memoryPromptTemplate?: string;
+
+  memory?: AgentOptions<I, O>["memory"] | DefaultMemoryOptions | true;
 }
 
 /**
@@ -104,14 +129,10 @@ export enum AIAgentToolChoice {
  * @hidden
  */
 export const aiAgentToolChoiceSchema = z.union(
-  [
-    z.literal("auto"),
-    z.literal("none"),
-    z.literal("required"),
-    z.literal("router"),
-    z.instanceof(Agent),
-  ],
-  { message: "aiAgentToolChoice must be 'auto', 'none', 'required', 'router', or an Agent" },
+  [z.nativeEnum(AIAgentToolChoice), z.instanceof(Agent)],
+  {
+    message: `aiAgentToolChoice must be ${Object.values(AIAgentToolChoice).join(", ")}, or an Agent`,
+  },
 );
 
 /**
@@ -121,11 +142,15 @@ export const aiAgentToolChoiceSchema = z.union(
  *
  * @hidden
  */
-export const aiAgentOptionsSchema = agentOptionsSchema.extend({
+export const aiAgentOptionsSchema: ZodObject<{
+  [key in keyof AIAgentOptions]: ZodType<AIAgentOptions[key]>;
+}> = agentOptionsSchema.extend({
   model: z.instanceof(ChatModel).optional(),
   instructions: z.union([z.string(), z.instanceof(PromptBuilder)]).optional(),
   outputKey: z.string().optional(),
   toolChoice: aiAgentToolChoiceSchema.optional(),
+  memoryAgentsAsTools: z.boolean().optional(),
+  memoryPromptTemplate: z.string().optional(),
 });
 
 /**
@@ -171,9 +196,15 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
    * @param options Configuration options for the AI agent
    */
   constructor(options: AIAgentOptions<I, O>) {
+    super({
+      ...options,
+      memory: !options.memory
+        ? undefined
+        : Array.isArray(options.memory) || options.memory instanceof MemoryAgent
+          ? options.memory
+          : new DefaultMemory(options.memory === true ? {} : options.memory),
+    });
     checkArguments("AIAgent", aiAgentOptionsSchema, options);
-
-    super(options);
 
     this.model = options.model;
     this.instructions =
@@ -182,6 +213,8 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
         : (options.instructions ?? new PromptBuilder());
     this.outputKey = options.outputKey;
     this.toolChoice = options.toolChoice;
+    this.memoryAgentsAsTools = options.memoryAgentsAsTools;
+    this.memoryPromptTemplate = options.memoryPromptTemplate;
 
     if (typeof options.catchToolsError === "boolean")
       this.catchToolsError = options.catchToolsError;
@@ -227,6 +260,25 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-router}
    */
   toolChoice?: AIAgentToolChoice | Agent;
+
+  /**
+   * Whether to include memory agents as tools for the AI model
+   *
+   * When set to true, memory agents will be made available as tools
+   * that the model can call directly to retrieve or store information.
+   * This enables the agent to explicitly interact with its memories.
+   */
+  memoryAgentsAsTools?: boolean;
+
+  /**
+   * Custom prompt template for formatting memory content
+   *
+   * Allows customization of how memories are presented to the AI model.
+   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+   *
+   * The template receives a {{memories}} variable containing serialized memory content.
+   */
+  memoryPromptTemplate?: string;
 
   /**
    * Whether to catch error from tool execution and continue processing.
@@ -296,7 +348,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
           // NOTE: should pass both arguments (model generated) and input (user provided) to the tool
           const output = await context
-            .invoke(tool, { ...call.function.arguments, ...input }, { disableTransfer: true })
+            .invoke(tool, { ...input, ...call.function.arguments }, { disableTransfer: true })
             .catch((error) => {
               if (!this.catchToolsError) {
                 return Promise.reject(error);

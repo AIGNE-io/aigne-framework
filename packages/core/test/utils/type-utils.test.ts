@@ -10,6 +10,7 @@ import {
   isRecord,
   omitBy,
   orArrayToArray,
+  remove,
   tryOrThrow,
   unique,
 } from "@aigne/core/utils/type-utils.js";
@@ -57,6 +58,16 @@ test("type-utils.duplicates", async () => {
   expect(duplicated).toEqual([{ id: 1, name: "baz" }]);
 
   expect(duplicates(["foo", "bar", "baz", "foo"])).toEqual(["foo"]);
+});
+
+test("test-utils.remove", async () => {
+  const array1 = [1, 2, 3, 4, 5];
+  expect(remove(array1, [1, 2])).toEqual([1, 2]);
+  expect(array1).toEqual([3, 4, 5]);
+
+  const array2 = [1, 2, 3, 4, 5];
+  expect(remove(array2, (item) => item > 3)).toEqual([4, 5]);
+  expect(array2).toEqual([1, 2, 3]);
 });
 
 test("type-utils.unique", async () => {

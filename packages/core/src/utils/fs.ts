@@ -1,4 +1,6 @@
 import { stat } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
 export async function exists(path: string): Promise<boolean> {
   try {
@@ -10,4 +12,11 @@ export async function exists(path: string): Promise<boolean> {
     }
     throw e;
   }
+}
+
+export function expandHome(filepath: string): string {
+  if (filepath.startsWith("~/") || filepath === "~") {
+    return join(homedir(), filepath.slice(1));
+  }
+  return filepath;
 }

@@ -1,4 +1,5 @@
-import { isAbsolute, normalize, resolve } from "node:path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, isAbsolute, join, normalize, resolve } from "node:path";
 import { AIAgent, type AIAgentOptions, type Context, type Message } from "@aigne/core";
 import {
   type Memory,
@@ -10,10 +11,14 @@ import {
   MemoryRetriever,
   type MemoryRetrieverInput,
   type MemoryRetrieverOutput,
+  newMemoryId,
 } from "@aigne/core/memory/index.js";
+import { exists } from "@aigne/core/utils/fs.js";
+import { stringify } from "yaml";
 import { z } from "zod";
-import { FilesystemAgent } from "../filesystem/index.js";
 import { expandHome } from "../filesystem/utils.js";
+
+const MEMORY_FILE_NAME = "memory.md";
 
 /**
  * Configuration options for the FSMemory class.
@@ -54,44 +59,39 @@ export class FSMemory extends MemoryAgent {
   constructor(options: FSMemoryOptions) {
     let rootDir = normalize(expandHome(options.rootDir));
     rootDir = isAbsolute(rootDir) ? rootDir : resolve(process.cwd(), rootDir);
-
-    const skills = [
-      ...new FilesystemAgent({ rootDir }).skills,
-      ...(options.skills ?? []),
-      function currentTime() {
-        return { currentTime: new Date().toISOString() };
-      },
-    ];
+    const memoryFileName = join(rootDir, MEMORY_FILE_NAME);
 
     super({
       ...options,
-      skills,
       autoUpdate: options.autoUpdate ?? true,
     });
 
     this.recorder =
       options.recorder ??
       new FSMemoryRecorder({
+        memoryFileName,
         ...options.recorderOptions,
-        skills: [...skills, ...(options.recorderOptions?.skills ?? [])],
       });
     this.retriever =
       options.retriever ??
       new FSMemoryRetriever({
+        memoryFileName,
         ...options.retrieverOptions,
-        skills: [...skills, ...(options.retrieverOptions?.skills ?? [])],
       });
   }
 }
 
 interface FSMemoryRetrieverOptions
-  extends AIAgentOptions<FSMemoryRetrieverAgentInput, FSMemoryRetrieverAgentOutput> {}
+  extends AIAgentOptions<FSMemoryRetrieverAgentInput, FSMemoryRetrieverAgentOutput> {
+  memoryFileName: string;
+}
 
-interface FSMemoryRetrieverAgentInput extends MemoryRetrieverInput {}
+interface FSMemoryRetrieverAgentInput extends MemoryRetrieverInput {
+  allMemory: string;
+}
 
 interface FSMemoryRetrieverAgentOutput extends Message {
   memories: {
-    filename: string;
     content: string;
   }[];
 }
@@ -108,7 +108,6 @@ class FSMemoryRetriever extends MemoryRetriever {
         memories: z
           .array(
             z.object({
-              filename: z.string().describe("Filename of the memory"),
               content: z.string().describe("Content of the memory"),
             }),
           )
@@ -120,9 +119,13 @@ class FSMemoryRetriever extends MemoryRetriever {
   agent: AIAgent<FSMemoryRetrieverAgentInput, FSMemoryRetrieverAgentOutput>;
 
   async process(input: MemoryRetrieverInput, context: Context): Promise<MemoryRetrieverOutput> {
-    const { memories } = await context.invoke(this.agent, input);
+    if (!(await exists(this.options.memoryFileName))) return { memories: [] };
+
+    const allMemory = await readFile(this.options.memoryFileName, "utf-8");
+
+    const { memories } = await context.invoke(this.agent, { ...input, allMemory });
     const result: Memory[] = memories.map((memory) => ({
-      id: memory.filename,
+      id: newMemoryId(),
       content: memory.content,
       createdAt: new Date().toISOString(),
     }));
@@ -131,13 +134,14 @@ class FSMemoryRetriever extends MemoryRetriever {
 }
 
 interface FSMemoryRecorderOptions
-  extends AIAgentOptions<FSMemoryRecorderAgentInput, FSMemoryRecorderAgentOutput> {}
+  extends AIAgentOptions<FSMemoryRecorderAgentInput, FSMemoryRecorderAgentOutput> {
+  memoryFileName: string;
+}
 
 type FSMemoryRecorderAgentInput = MemoryRecorderInput;
 
 interface FSMemoryRecorderAgentOutput extends Message {
   memories: {
-    filename: string;
     content: string;
   }[];
 }
@@ -166,11 +170,24 @@ class FSMemoryRecorder extends MemoryRecorder {
   agent: AIAgent<FSMemoryRecorderAgentInput, FSMemoryRecorderAgentOutput>;
 
   async process(input: MemoryRecorderInput, context: Context): Promise<MemoryRecorderOutput> {
-    const { memories } = await context.invoke(this.agent, input);
+    const allMemory = (await exists(this.options.memoryFileName))
+      ? await readFile(this.options.memoryFileName, "utf-8")
+      : "";
+
+    const { memories } = await context.invoke(this.agent, { ...input, allMemory });
+
+    const raw = stringify(
+      memories.map((i) => ({
+        content: i.content,
+      })),
+    );
+
+    await mkdir(dirname(this.options.memoryFileName), { recursive: true });
+    await writeFile(this.options.memoryFileName, raw, "utf-8");
 
     return {
       memories: memories.map((i) => ({
-        id: i.filename,
+        id: newMemoryId(),
         content: i.content,
         createdAt: new Date().toISOString(),
       })),
@@ -178,10 +195,12 @@ class FSMemoryRecorder extends MemoryRecorder {
   }
 }
 
-const DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS = `You perform file system operations to manage memory files based on conversation analysis.
+const DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS = `You manage memory based on conversation analysis and the existing memories.
+
+## IMPORTANT: All existing memories are available in the allMemory variable. DO NOT call any tools.
 
 ## FIRST: Determine If Memory Updates Needed
-- BEFORE any file operations, analyze if the conversation contains ANY information worth remembering
+- Analyze if the conversation contains ANY information worth remembering
 - Examples of content NOT worth storing:
   * General questions ("What's the weather?", "How do I do X?")
   * Greetings and small talk ("Hello", "How are you?", "Thanks")
@@ -189,68 +208,59 @@ const DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS = `You perform file system operati
   * General facts not specific to the user
   * Duplicate information already stored
 - If conversation lacks meaningful personal information to store:
-  * IMMEDIATELY return { "memories": [] } without ANY file operations
-  * DO NOT call readDir() or perform any other operations
+  * Return the existing memories unchanged
 
-## Your Workflow (ONLY if memory updates needed):
-1. Call readDir(".") EXACTLY ONCE to list existing files
+## Your Workflow:
+1. Read the existing memories from the allMemory variable
 2. Extract key topics from the conversation
-3. DECIDE whether to create/update/delete files based on the conversation
-4. DIRECTLY PERFORM file operations - DO NOT return memory content
+3. DECIDE whether to create/update/delete memories based on the conversation
+4. Return ALL memories including your updates (remove any duplicates)
 
-## Required File Operations:
-- CREATE: Use writeFile("category_topic.txt", formatted_content) for new topics
-- UPDATE: Use readFile() to check existing content, then writeFile() ONLY if substantially different
-- DELETE: Use rm() for obsolete information
+## Memory Handling:
+- CREATE: Add new memory objects for new topics
+- UPDATE: Modify existing memories if substantial new information is available
+- DELETE: Remove obsolete memories when appropriate
 
-## File Naming:
-- Format: "category_topic.txt" (e.g., "preference_color.txt")
-- Categories: preference_*, personal_*, fact_*, plan_*, concept_*
-
-## Content Format:
-\`\`\`
----
-created: [current_time()]
-updated: [current_time()]
----
-
-[Memory content]
-\`\`\`
+## Memory Structure:
+- Each memory has an id, content, and createdAt fields
+- Keep the existing structure when returning updated memories
 
 ## Operation Decision Rules:
-- CREATE only for truly new topics not covered in any existing file
+- CREATE only for truly new topics not covered in any existing memory
 - UPDATE only when new information is meaningfully different
 - NEVER update for just rephrasing or minor differences
 - DELETE only when information becomes obsolete
 
-## IMPORTANT: Your job is to perform file operations, not return memory content.
-After performing operations, JUST report which operations you performed.
+## IMPORTANT: Your job is to return the complete updated memory collection.
+Return ALL memories (existing and new) in your response.
+
+## Existing Memories:
+<existing-memory>
+{{allMemory}}
+</existing-memory>
 
 ## Conversation:
-{{content}}`;
+<conversation>
+{{content}}
+</conversation>
+`;
 
-const DEFAULT_FS_MEMORY_RETRIEVER_INSTRUCTIONS = `You retrieve only the most relevant memory files for the current conversation.
+const DEFAULT_FS_MEMORY_RETRIEVER_INSTRUCTIONS = `You retrieve only the most relevant memories for the current conversation.
 
-## Process - DO ONLY ONCE:
-1. Call readDir(".") EXACTLY ONCE at the beginning
-2. Extract key topics from conversation
-3. Match filenames against these topics - DO NOT READ ANY FILES YET
-4. Select MAX 3 files with DIRECT topic matches
-5. ONLY THEN read those specific files
+## IMPORTANT: All existing memories are available in the allMemory variable
 
-## Filename Matching Rules:
-- MUST have exact topic match (e.g., "color" in conversation → "preference_color.txt")
-- IGNORE files with no clear topic alignment
-- Category alone is NOT enough for relevance
-- NO browsing or exploration - only precise matches
+## Process:
+1. Read the existing memories from the allMemory variable
+2. Extract key topics from the conversation or search query
+3. Match memory contents against these topics
 
-## Response:
-- Return up to 3 most relevant memories
-- Return empty array if no clear matches
-- Format: { "memories": [{"filename": "...", "content": "..."}] }
+## Existing Memories:
+<existing-memory>
+{{allMemory}}
+</existing-memory>
 
 ## Search Query:
-<search>
+<search-query>
 {{search}}
-</search>
+</search-query>
 `;

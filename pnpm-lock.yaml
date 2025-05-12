@@ -340,6 +340,9 @@ importers:
       fastq:
         specifier: ^1.19.1
         version: 1.19.1
+      yaml:
+        specifier: ^2.7.1
+        version: 2.7.1
       zod:
         specifier: ^3.24.4
         version: 3.24.4

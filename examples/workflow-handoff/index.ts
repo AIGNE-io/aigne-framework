@@ -1,7 +1,7 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, type Agent, ExecutionEngine, FunctionAgent } from "@aigne/core";
+import { AIAgent, AIGNE, type Agent, FunctionAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { z } from "zod";
 
@@ -14,7 +14,7 @@ const execute_order_tool = FunctionAgent.from({
     product: z.string(),
     price: z.number(),
   }),
-  fn: ({ product, price }: { product: string; price: number }) => {
+  process: ({ product, price }: { product: string; price: number }) => {
     console.log("\n\n=== Order Summary ===");
     console.log(`Product: ${product}`);
     console.log(`Price: $${price}`);
@@ -35,7 +35,7 @@ const look_up_item_tool = FunctionAgent.from({
   inputSchema: z.object({
     search_query: z.string(),
   }),
-  fn: ({ search_query }: { search_query: string }) => {
+  process: ({ search_query }: { search_query: string }) => {
     const item_id = "item_132612938";
     console.log(`Found item for: ${search_query}`, item_id);
     return { item_id };
@@ -49,7 +49,7 @@ const execute_refund_tool = FunctionAgent.from({
     item_id: z.string(),
     reason: z.string().optional(),
   }),
-  fn: ({ item_id, reason }: { item_id: string; reason?: string }) => {
+  process: ({ item_id, reason }: { item_id: string; reason?: string }) => {
     console.log("\n\n=== Refund Summary ===");
     console.log(`Item ID: ${item_id}`);
     console.log(`Reason: ${reason ?? "not provided"}`);
@@ -62,26 +62,26 @@ const execute_refund_tool = FunctionAgent.from({
 const transfer_to_issues_and_repairs = FunctionAgent.from({
   name: "transfer_to_issues_and_repairs",
   description: "Use for issues, repairs, or refunds.",
-  fn: (): Agent => issuesAndRepairs,
+  process: (): Agent => issuesAndRepairs,
 });
 
 const transfer_to_sales_agent = FunctionAgent.from({
   name: "transfer_to_sales_agent",
   description: "Use for anything sales or buying related.",
-  fn: (): Agent => sales,
+  process: (): Agent => sales,
 });
 
 const transfer_back_to_triage = FunctionAgent.from({
   name: "transfer_back_to_triage",
   description:
     "Call this if the user brings up a topic outside of your purview,\nincluding escalating to human.",
-  fn: (): Agent => triage,
+  process: (): Agent => triage,
 });
 
 const transfer_to_human_manager = FunctionAgent.from({
   name: "transfer_to_human_manager",
   description: "Only call this if explicitly asked to.",
-  fn: (): Agent => humanAgent,
+  process: (): Agent => humanAgent,
 });
 
 const sales = AIAgent.from({
@@ -97,7 +97,7 @@ Follow the following routine with the user:
 4. Only after everything, and if the user says yes,
 tell them a crazy caveat and execute their order.
 `,
-  tools: [transfer_back_to_triage, execute_order_tool],
+  skills: [transfer_back_to_triage, execute_order_tool],
   outputKey: "sales",
   memory: true,
 });
@@ -114,7 +114,7 @@ Follow the following routine with the user:
 3. ONLY if not satisfied, offer a refund.
 4. If accepted, search for the ID and then execute refund.
 `,
-  tools: [transfer_back_to_triage, execute_refund_tool, look_up_item_tool],
+  skills: [transfer_back_to_triage, execute_refund_tool, look_up_item_tool],
   outputKey: "issuesAndRepairs",
   memory: true,
 });
@@ -127,7 +127,7 @@ You are a human manager for ACME Inc.
 Just chat with the user and help them with their problem.
 Only transfer to another agent if user explicitly asks for it.
 `,
-  tools: [transfer_back_to_triage, transfer_to_sales_agent, transfer_to_issues_and_repairs],
+  skills: [transfer_back_to_triage, transfer_to_sales_agent, transfer_to_issues_and_repairs],
   outputKey: "human",
   memory: true,
 });
@@ -140,14 +140,14 @@ Introduce yourself. Always be very brief.
 Gather information to direct the customer to the right department.
 But make your questions subtle and natural.
 `,
-  tools: [transfer_to_issues_and_repairs, transfer_to_sales_agent, transfer_to_human_manager],
+  skills: [transfer_to_issues_and_repairs, transfer_to_sales_agent, transfer_to_human_manager],
   outputKey: "triage",
   memory: true,
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = engine.call(triage);
+const userAgent = aigne.invoke(triage);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a customer service bot for ACME Inc. How can I help you today?`,

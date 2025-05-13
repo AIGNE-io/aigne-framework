@@ -1,10 +1,11 @@
 import { readFile } from "node:fs/promises";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
+import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
-import type { AgentMemory } from "../agents/memory.js";
-import type { Context } from "../execution-engine/context.js";
+import type { Context } from "../aigne/context.js";
+import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type {
   ChatModel,
   ChatModelInput,
@@ -15,16 +16,17 @@ import type {
   ChatModelOptions,
 } from "../models/chat-model.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { isNil } from "../utils/type-utils.js";
+import { isNil, orArrayToArray, unique } from "../utils/type-utils.js";
+import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
+  PromptTemplate,
   SystemMessageTemplate,
   UserMessageTemplate,
 } from "./template.js";
 
 export const MESSAGE_KEY = "$message";
-export const DEFAULT_MAX_HISTORY_MESSAGES = 10;
 
 export function createMessage<I extends Message>(message: string | I): I {
   return typeof message === "string"
@@ -44,8 +46,8 @@ export interface PromptBuilderOptions {
 }
 
 export interface PromptBuilderBuildOptions {
-  memory?: AgentMemory;
-  context?: Context;
+  memory?: MemoryAgent | MemoryAgent[];
+  context: Context;
   agent?: AIAgent;
   input?: Message;
   model?: ChatModel;
@@ -116,13 +118,15 @@ export class PromptBuilder {
     options: PromptBuilderBuildOptions,
   ): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
     return {
-      messages: this.buildMessages(options),
+      messages: await this.buildMessages(options),
       responseFormat: this.buildResponseFormat(options),
       ...this.buildTools(options),
     };
   }
 
-  private buildMessages(options: PromptBuilderBuildOptions): ChatModelInputMessage[] {
+  private async buildMessages(
+    options: PromptBuilderBuildOptions,
+  ): Promise<ChatModelInputMessage[]> {
     const { input } = options;
 
     const messages =
@@ -131,20 +135,12 @@ export class PromptBuilder {
         : this.instructions
       )?.format(options.input) ?? [];
 
-    const memory = options.memory ?? options.agent?.memory;
+    for (const memory of orArrayToArray(options.memory ?? options.agent?.memories)) {
+      const memories = (
+        await memory.retrieve({ search: input && getMessage(input) }, options.context)
+      )?.memories;
 
-    if (memory?.enabled) {
-      const k = memory.maxMemoriesInChat ?? DEFAULT_MAX_HISTORY_MESSAGES;
-      const histories = memory.memories.slice(-k);
-
-      if (histories?.length)
-        messages.push(
-          ...histories.map((i) => ({
-            role: i.role,
-            content: convertMessageToContent(i.content),
-            name: i.source,
-          })),
-        );
+      if (memories?.length) messages.push(...this.convertMemoriesToMessages(memories, options));
     }
 
     const content = input && getMessage(input);
@@ -154,6 +150,22 @@ export class PromptBuilder {
     }
 
     return messages;
+  }
+
+  private convertMemoriesToMessages(
+    memories: Memory[],
+    options: PromptBuilderBuildOptions,
+  ): ChatModelInputMessage[] {
+    const str = stringify(memories.map((i) => i.content));
+
+    return [
+      {
+        role: "system",
+        content: PromptTemplate.from(
+          options.agent?.memoryPromptTemplate || MEMORY_MESSAGE_TEMPLATE,
+        ).format({ memories: str }),
+      },
+    ];
   }
 
   private buildResponseFormat(
@@ -178,10 +190,14 @@ export class PromptBuilder {
   private buildTools(
     options: PromptBuilderBuildOptions,
   ): Pick<ChatModelInput, "tools" | "toolChoice" | "modelOptions"> & { toolAgents?: Agent[] } {
-    const toolAgents = (options.context?.tools ?? [])
-      .concat(options.agent?.tools ?? [])
-      // TODO: support nested tools?
-      .flatMap((i) => (i.isCallable ? i.tools.concat(i) : i.tools));
+    const toolAgents = unique(
+      (options.context?.skills ?? [])
+        .concat(options.agent?.skills ?? [])
+        .concat(options.agent?.memoryAgentsAsTools ? options.agent.memories : [])
+        // TODO: support nested tools?
+        .flatMap((i) => (i.isInvokable ? i.skills.concat(i) : i.skills)),
+      (i) => i.name,
+    );
 
     const tools: ChatModelInputTool[] = toolAgents.map((i) => ({
       type: "function",
@@ -241,9 +257,4 @@ function isFromPath(value: Parameters<typeof PromptBuilder.from>[0]): value is {
 
 function isEmptyObjectType(schema: ZodType) {
   return schema instanceof ZodObject && Object.keys(schema.shape).length === 0;
-}
-
-function convertMessageToContent(i: Message) {
-  const str = i[MESSAGE_KEY];
-  return !isNil(str) ? (typeof str === "string" ? str : JSON.stringify(str)) : JSON.stringify(i);
 }

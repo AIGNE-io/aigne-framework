@@ -2,6 +2,7 @@ import { expect } from "bun:test";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
+  type Message,
   SystemMessageTemplate,
   ToolMessageTemplate,
   UserMessageTemplate,
@@ -9,6 +10,7 @@ import {
 import type {
   ChatModelInputResponseFormat,
   ChatModelInputTool,
+  ChatModelOutputToolCall,
 } from "@aigne/core/models/chat-model";
 
 export const COMMON_TOOLS: ChatModelInputTool[] = [
@@ -28,6 +30,24 @@ export const COMMON_TOOLS: ChatModelInputTool[] = [
     },
   },
 ];
+
+export const COMMON_RESPONSE_FORMAT: ChatModelInputResponseFormat = {
+  type: "json_schema",
+  jsonSchema: {
+    name: "output",
+    schema: {
+      type: "object",
+      properties: {
+        text: {
+          type: "string",
+        },
+      },
+      required: ["text"],
+      additionalProperties: false,
+    },
+    strict: true,
+  },
+};
 
 const createBaseMessages = () => [
   SystemMessageTemplate.from("You are a chatbot"),
@@ -66,20 +86,16 @@ export const createWeatherToolCallMessages = () =>
     ToolMessageTemplate.from({ temperature: 20 }, "get_weather"),
   ]).format();
 
-export const COMMON_RESPONSE_FORMAT: ChatModelInputResponseFormat = {
-  type: "json_schema",
-  jsonSchema: {
-    name: "output",
-    schema: {
-      type: "object",
-      properties: {
-        text: {
-          type: "string",
-        },
-      },
-      required: ["text"],
-      additionalProperties: false,
+export function createToolCallResponse(
+  functionName: string,
+  args: Message,
+): ChatModelOutputToolCall {
+  return {
+    id: functionName,
+    type: "function",
+    function: {
+      name: functionName,
+      arguments: args,
     },
-    strict: true,
-  },
-};
+  };
+}

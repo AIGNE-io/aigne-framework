@@ -26,7 +26,6 @@ class sandbox processing
 
 Workflow of a code-execution between user and coder using a sandbox:
 
-
 ```mermaid
 sequenceDiagram
 
@@ -43,16 +42,17 @@ Coder ->> User: The value of \(10!\) (10 factorial) is 3,628,800.
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-code-execution # run the example
+npx -y @aigne/example-workflow-code-execution # Run the example
 ```
 
 ## Installation
@@ -76,7 +76,7 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 ### Run the Example
@@ -91,7 +91,7 @@ The following example demonstrates how to build a code-execution workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, FunctionAgent } from "@aigne/core";
+import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -103,12 +103,12 @@ const model = new OpenAIChatModel({
 });
 
 const sandbox = FunctionAgent.from({
-  name: "js-sandbox",
+  name: "evaluateJs",
   description: "A js sandbox for running javascript code",
   inputSchema: z.object({
     code: z.string().describe("The code to run"),
   }),
-  fn: async (input: { code: string }) => {
+  process: async (input: { code: string }) => {
     const { code } = input;
     // biome-ignore lint/security/noGlobalEval: <explanation>
     const result = eval(code);
@@ -122,12 +122,12 @@ const coder = AIAgent.from({
 You are a proficient coder. You write code to solve problems.
 Work with the sandbox to execute your code.
 `,
-  tools: [sandbox],
+  skills: [sandbox],
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(coder, "10! = ?");
+const result = await aigne.invoke(coder, "10! = ?");
 console.log(result);
 // Output:
 // {

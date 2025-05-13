@@ -1,7 +1,7 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, ChatModel, ExecutionEngine, MCPAgent, createMessage } from "@aigne/core";
+import { AIAgent, AIGNE, ChatModel, MCPAgent, createMessage } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
@@ -10,21 +10,19 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { nanoid } from "nanoid";
 import { mockModule } from "../_mocks/mock-module.js";
 
-test("ExecutionEngine.load should load agents correctly", async () => {
-  const engine = await ExecutionEngine.load({
-    path: join(import.meta.dirname, "../../test-agents"),
-  });
+test("AIGNE.load should load agents correctly", async () => {
+  const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"));
 
-  expect(engine).toEqual(
+  expect(aigne).toEqual(
     expect.objectContaining({
       name: "test_aigne_project",
       description: "A test project for the aigne agent",
     }),
   );
 
-  expect(engine.agents.length).toBe(1);
+  expect(aigne.agents.length).toBe(1);
 
-  const chat = engine.agents[0];
+  const chat = aigne.agents[0];
   expect(chat).toEqual(
     expect.objectContaining({
       name: "chat",
@@ -32,13 +30,13 @@ test("ExecutionEngine.load should load agents correctly", async () => {
   );
   assert(chat, "chat agent should be defined");
 
-  expect(chat.tools.length).toBe(1);
-  expect(chat.tools[0]).toEqual(expect.objectContaining({ name: "evaluateJs" }));
+  expect(chat.skills.length).toBe(1);
+  expect(chat.skills[0]).toEqual(expect.objectContaining({ name: "evaluateJs" }));
 
-  expect(engine.model).toBeInstanceOf(ChatModel);
-  assert(engine.model, "model should be defined");
+  expect(aigne.model).toBeInstanceOf(ChatModel);
+  assert(aigne.model, "model should be defined");
 
-  spyOn(engine.model, "call")
+  spyOn(aigne.model, "process")
     .mockReturnValueOnce(
       Promise.resolve({
         toolCalls: [
@@ -52,35 +50,34 @@ test("ExecutionEngine.load should load agents correctly", async () => {
     )
     .mockReturnValueOnce(Promise.resolve({ text: "1 + 2 = 3" }));
 
-  const result = await engine.call(chat, "1 + 2 = ?");
+  const result = await aigne.invoke(chat, "1 + 2 = ?");
   expect(result).toEqual(expect.objectContaining(createMessage("1 + 2 = 3")));
 });
 
 test("loader should use override options", async () => {
   const model = new ClaudeChatModel({});
   const testAgent = AIAgent.from({ name: "test-agent" });
-  const testTool = AIAgent.from({ name: "test-tool" });
+  const testSkill = AIAgent.from({ name: "test-skill" });
 
-  const engine = await ExecutionEngine.load({
-    path: join(import.meta.dirname, "../../test-agents"),
+  const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
     model,
     agents: [testAgent],
-    tools: [testTool],
+    skills: [testSkill],
   });
 
-  expect(engine.model).toBe(model);
-  expect([...engine.agents]).toEqual([
+  expect(aigne.model).toBe(model);
+  expect([...aigne.agents]).toEqual([
     expect.objectContaining({
       name: "chat",
     }),
     testAgent,
   ]);
-  expect([...engine.tools]).toEqual([expect.objectContaining({ name: "evaluateJs" }), testTool]);
+  expect([...aigne.skills]).toEqual([expect.objectContaining({ name: "evaluateJs" }), testSkill]);
 });
 
 test("loader should error if agent file is not supported", async () => {
-  const engine = loadAgent(join(import.meta.dirname, "./not-exist-agent-library/test.txt"));
-  expect(engine).rejects.toThrow("Unsupported agent file type");
+  const aigne = loadAgent(join(import.meta.dirname, "./not-exist-agent-library/test.txt"));
+  expect(aigne).rejects.toThrow("Unsupported agent file type");
 });
 
 test("load should process path correctly", async () => {
@@ -115,7 +112,7 @@ test("load should process path correctly", async () => {
     expect.objectContaining({
       model: expect.anything(),
       agents: [],
-      tools: [],
+      skills: [],
     }),
   );
   expect(readFile).toHaveBeenLastCalledWith("foo/aigne.yaml", "utf8");
@@ -130,7 +127,7 @@ test("load should process path correctly", async () => {
     expect.objectContaining({
       model: expect.anything(),
       agents: [],
-      tools: [],
+      skills: [],
     }),
   );
   expect(readFile).toHaveBeenLastCalledWith("bar/aigne.yml", "utf8");

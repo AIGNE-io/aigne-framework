@@ -24,8 +24,8 @@ You are a helpful assistant that can answer questions and provide information on
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 `);
 
-  expect(agent.tools.length).toBe(1);
-  const tool = agent.tools[0];
+  expect(agent.skills.length).toBe(1);
+  const tool = agent.skills[0];
   expect(tool).toBeInstanceOf(FunctionAgent);
   assert(tool instanceof FunctionAgent, "tool should be an instance of FunctionAgent");
   expect(tool).toEqual(

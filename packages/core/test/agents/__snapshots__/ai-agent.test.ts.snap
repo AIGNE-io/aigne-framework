@@ -1,0 +1,177 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AIAgent.invoke with streaming true 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "$message": "Here",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "is",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "a",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "beautiful",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "T",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "-",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "shirt",
+      },
+    },
+  },
+]
+`;
+
+exports[`AIAgent.invoke with streaming false 1`] = `
+{
+  "$message": "Here is a beautiful T-shirt",
+}
+`;
+
+exports[`AIAgent with router toolChoice should return router result with streaming true 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "$message": "Here",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "is",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "a",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "beautiful",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "T",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "-",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "$message": "shirt",
+      },
+    },
+  },
+]
+`;
+
+exports[`AIAgent with router toolChoice should return router result with streaming false 1`] = `
+{
+  "$message": "Here is a beautiful T-shirt",
+}
+`;

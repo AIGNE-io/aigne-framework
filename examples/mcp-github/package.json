@@ -1,10 +1,10 @@
 {
   "name": "@aigne/example-mcp-github",
-  "version": "1.6.0",
+  "version": "1.9.1",
   "description": "A demonstration of using AIGNE Framework and GitHub MCP Server to interact with GitHub repositories",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-github",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
@@ -17,12 +17,16 @@
   ],
   "scripts": {
     "start": "bun run index.ts",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:llm": "bun test"
   },
   "dependencies": {
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "openai": "^4.94.0",
-    "zod": "^3.24.2"
+    "openai": "^4.97.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^"
   }
 }

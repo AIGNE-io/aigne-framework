@@ -11,7 +11,7 @@ classDiagram
 
     class Prompt {
         +List~object~ messages
-        +List~Agent~ tools
+        +List~Agent~ skills
         +object toolChoice
         +object responseFormat
     }
@@ -22,57 +22,57 @@ classDiagram
         +build(PromptBuilderBuildOptions options) Prompt
     }
 
-    class Model {
-        +call(Prompt input) object*
-    }
-
-    ChatModel --|> Model: inheritance
+    ChatModel --|> Agent: inheritance
     class ChatModel {
     }
 
-    ImageModel --|> Model: inheritance
+    ImageModel --|> Agent: inheritance
     class ImageModel {
     }
 
-    Agent --|> EventEmitter: inheritance
     class Agent {
         +string name
         +string description
         +object inputSchema
         +object outputSchema
-        +List~string~ inputTopic
-        +List~string~ nextTopic
-        +List~Agent~ tools
+        +List~string~ subscribeTopic
+        +List~string~ publishTopic
+        +List~Agent~ skills
+        +MemoryAgent memory
 
-        +call(string input, Context context) object
-        +call(object input, Context context) object
-
+        +invoke(object input, Context context) object
+        +shutdown() void
         +process(object input, Context context) object*
-        -verifyInput() void
-        -verifyOutput() void
+        -preprocess() void
+        -postprocess() void
     }
 
     AIAgent --|> Agent: inheritance
     AIAgent *.. PromptBuilder: composition
     class AIAgent {
         +ChatModel model
-        +string instructions
+        +PromptBuilder instructions
         +string outputKey
         +object toolChoice
-        +PromptBuilder promptBuilder
+        +boolean catchToolsError
+    }
+
+    TeamAgent --|> Agent: inheritance
+    class TeamAgent {
+        +ProcessMode mode
     }
 
     ImageAgent --|> Agent: inheritance
     ImageAgent *.. PromptBuilder: composition
+    ImageAgent *.. ImageModel: composition
     class ImageAgent {
         +ImageModel model
-        +string instructions
-        +PromptBuilder promptBuilder
+        +PromptBuilder instructions
     }
 
     FunctionAgent --|> Agent: inheritance
     class FunctionAgent {
-        +Function fn
+        +Function process
     }
 
     RPCAgent --|> Agent: inheritance
@@ -100,27 +100,22 @@ classDiagram
         +unsubscribe(string topic, Function callback) void
     }
 
-    class History {
-        +string id
-        +string agentId
-        +object input
-        +object output
-    }
-
     Context *.. ChatModel: composition
     Context *.. ImageModel: composition
     Context --|> MessageQueue: inheritance
-    Context ..> History: dependency
     class Context {
         +ChatModel model
         +ImageModel imageModel
-        +List~Agent~ tools
+        +List~Agent~ skills
 
-        +getHistories(string agentId, int limit) List~History~
-        +addHistory(History history) void
+        +invoke(Agent agent, object input) object
         +publish(string topic, Message message) void
         +subscribe(string topic, Function callback) void
         +unsubscribe(string topic, Function callback) void
+    }
+
+    UserAgent --|> Agent: inheritance
+    class UserAgent {
     }
 
     class EventEmitter {
@@ -128,23 +123,23 @@ classDiagram
         +emit(): void
     }
 
-    UserAgent --|> Agent: inheritance
-    class UserAgent {
-    }
+    AIGNE --|> EventEmitter: inheritance
+    class AIGNE {
+        +string name
+        +string description
+        +ChatModel model
+        +object limits
+        +List~Agent~ agents
+        +List~Agent~ skills
 
-    class ExecutionEngineRunOptions {
-        +boolean concurrency
-    }
-
-    ExecutionEngine --|> Context: inheritance
-    ExecutionEngine --|> EventEmitter: inheritance
-    ExecutionEngine ..> UserAgent: dependency
-    ExecutionEngine ..> ExecutionEngineRunOptions: dependency
-    class ExecutionEngine {
-        +run(Agent agent) UserAgent
-        +run(string input) object
-        +run(object input) object
-        +run(object input, Agent ...agents) object
-        +run(object input, ExecutionEngineRunOptions options, Agent ...agents) object
+        +load(string path) AIGNE$
+        +addAgent(Agent agent) void
+        +invoke(Agent agent) UserAgent
+        +invoke(Agent agent, string input) object
+        +invoke(Agent agent, object input) object
+        +publish(string topic, Message message) void
+        +subscribe(string topic, Function callback) void
+        +unsubscribe(string topic, Function callback) void
+        +shutdown() void
     }
 ```

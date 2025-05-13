@@ -24,16 +24,17 @@ class reviewer processing
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-reflection # run the example
+npx -y @aigne/example-workflow-reflection # Run the example
 ```
 
 ## Installation
@@ -57,7 +58,7 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 ### Run the Example
@@ -72,7 +73,7 @@ The following example demonstrates how to build a reflection workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, UserInputTopic, UserOutputTopic } from "@aigne/core";
+import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -141,10 +142,10 @@ Please review the code. If previous feedback was provided, see if it was address
   includeInputInOutput: true,
 });
 
-const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
-engine.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
+const aigne = new AIGNE({ model, agents: [coder, reviewer] });
+aigne.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
 
-const { message } = await engine.subscribe(UserOutputTopic);
+const { message } = await aigne.subscribe(UserOutputTopic);
 console.log(message);
 // Output:
 // {

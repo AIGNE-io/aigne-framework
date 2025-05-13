@@ -65,16 +65,17 @@ AI ->> User: Here's the README content: ...
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
 - [GitHub Personal Access Token](https://github.com/settings/tokens) with appropriate permissions
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Setup your OpenAI API key
-export GITHUB_TOKEN=YOUR_GITHUB_TOKEN # Setup your GitHub token
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
+export GITHUB_TOKEN=YOUR_GITHUB_TOKEN # Set your GitHub token
 
 npx -y @aigne/example-mcp-github # Run the example
 ```
@@ -100,8 +101,8 @@ pnpm install
 Setup your API keys in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # Your OpenAI API key
-GITHUB_TOKEN="" # Your GitHub Personal Access Token
+OPENAI_API_KEY="" # Set your OpenAI API key here
+GITHUB_TOKEN="" # Set your GitHub Personal Access Token here
 ```
 
 ### Run the Example
@@ -117,7 +118,7 @@ pnpm example # Run predefined examples
 The following example demonstrates how to use the GitHub MCP server to search for repositories:
 
 ```typescript
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 // Load environment variables
@@ -137,10 +138,10 @@ const githubMCPAgent = await MCPAgent.from({
   },
 });
 
-// Create execution engine
-const engine = new ExecutionEngine({
+// Create AIGNE
+const aigne = new AIGNE({
   model,
-  tools: [githubMCPAgent],
+  skills: [githubMCPAgent],
 });
 
 // Create AI agent with GitHub-specific instructions
@@ -160,7 +161,7 @@ Always provide clear, concise responses with relevant information from GitHub.
 });
 
 // Example: Search for repositories
-const result = await engine.call(
+const result = await aigne.invoke(
   agent,
   "Search for repositories related to 'modelcontextprotocol'"
 );
@@ -173,8 +174,8 @@ console.log(result);
 // 2. **modelcontextprotocol/modelcontextprotocol** - The main ModelContextProtocol repository
 // ...
 
-// Shutdown the engine when done
-await engine.shutdown();
+// Shutdown the aigne when done
+await aigne.shutdown();
 ```
 
 ## Available GitHub Operations

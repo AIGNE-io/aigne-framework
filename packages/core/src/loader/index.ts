@@ -5,6 +5,7 @@ import { z } from "zod";
 import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
+import { BedrockChatModel } from "../models/bedrock-chat-model.js";
 import type { ChatModel, ChatModelOptions } from "../models/chat-model.js";
 import { ClaudeChatModel } from "../models/claude-chat-model.js";
 import { DeepSeekChatModel } from "../models/deepseek-chat-model.js";
@@ -34,44 +35,34 @@ export async function load(options: LoadOptions) {
   const agents = await Promise.all(
     (aigne.agents ?? []).map((filename) => loadAgent(join(rootDir, filename))),
   );
-  const tools = await Promise.all(
-    (aigne.tools ?? []).map((filename) => loadAgent(join(rootDir, filename))),
+  const skills = await Promise.all(
+    (aigne.skills ?? []).map((filename) => loadAgent(join(rootDir, filename))),
   );
 
   return {
     ...aigne,
     model: await loadModel(aigne.chat_model),
     agents,
-    tools,
+    skills,
   };
 }
 
 export async function loadAgent(path: string): Promise<Agent> {
   if (extname(path) === ".js") {
     const agent = await loadAgentFromJsFile(path);
-    return FunctionAgent.from({
-      name: agent.name,
-      description: agent.description,
-      inputSchema: agent.input_schema,
-      outputSchema: agent.output_schema,
-      fn: agent.fn,
-    });
+    return FunctionAgent.from(agent);
   }
 
   if (extname(path) === ".yaml" || extname(path) === ".yml") {
     const agent = await loadAgentFromYamlFile(path);
     if (agent.type === "ai") {
       return AIAgent.from({
-        name: agent.name,
-        description: agent.description,
-        instructions: agent.instructions,
-        inputSchema: agent.input_schema,
-        outputSchema: agent.output_schema,
-        outputKey: agent.output_key,
-        tools: await Promise.all(
-          (agent.tools ?? []).map((filename) => loadAgent(join(dirname(path), filename))),
-        ),
-        toolChoice: agent.tool_choice,
+        ...agent,
+        skills:
+          agent.skills &&
+          (await Promise.all(
+            agent.skills.map((filename) => loadAgent(join(dirname(path), filename))),
+          )),
       });
     }
     if (agent.type === "mcp") {
@@ -117,6 +108,7 @@ export async function loadModel(
     DeepSeekChatModel,
     OpenRouterChatModel,
     OllamaChatModel,
+    BedrockChatModel,
   ];
   const M = availableModels.find((m) =>
     m.name
@@ -145,7 +137,7 @@ const aigneFileSchema = z.object({
     .nullish()
     .transform((v) => (typeof v === "string" ? { name: v } : v)),
   agents: z.array(z.string()).nullish(),
-  tools: z.array(z.string()).nullish(),
+  skills: z.array(z.string()).nullish(),
 });
 
 export async function loadAIGNEFile(path: string) {
@@ -160,7 +152,7 @@ export async function loadAIGNEFile(path: string) {
   );
 
   const agent = tryOrThrow(
-    () => aigneFileSchema.parse(json),
+    () => aigneFileSchema.parse({ ...json, skills: json.skills ?? json.tools }),
     (error) => new Error(`Failed to validate aigne.yaml from ${path}: ${error.message}`),
   );
 

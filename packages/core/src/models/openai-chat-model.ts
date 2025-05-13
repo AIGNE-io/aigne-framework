@@ -7,10 +7,12 @@ import type {
 } from "openai/resources";
 import type { Stream } from "openai/streaming.js";
 import { z } from "zod";
+import type { AgentProcessResult, AgentResponse, AgentResponseChunk } from "../agents/agent.js";
 import { parseJSON } from "../utils/json-schema.js";
 import { mergeUsage } from "../utils/model-utils.js";
 import { getJsonOutputPrompt } from "../utils/prompts.js";
-import { checkArguments, isNonNullable } from "../utils/type-utils.js";
+import { agentResponseStreamToObject } from "../utils/stream-utils.js";
+import { type PromiseOrValue, checkArguments, isNonNullable } from "../utils/type-utils.js";
 import {
   ChatModel,
   type ChatModelInput,
@@ -18,19 +20,60 @@ import {
   type ChatModelInputTool,
   type ChatModelOptions,
   type ChatModelOutput,
-  type ChatModelOutputUsage,
   type Role,
 } from "./chat-model.js";
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 
+export interface OpenAIChatModelCapabilities {
+  supportsNativeStructuredOutputs: boolean;
+  supportsEndWithSystemMessage: boolean;
+  supportsToolsUseWithJsonSchema: boolean;
+  supportsParallelToolCalls: boolean;
+  supportsToolsEmptyParameters: boolean;
+  supportsToolStreaming: boolean;
+  supportsTemperature: boolean;
+}
+
+const OPENAI_CHAT_MODEL_CAPABILITIES: Record<string, Partial<OpenAIChatModelCapabilities>> = {
+  "o4-mini": { supportsParallelToolCalls: false, supportsTemperature: false },
+  "o3-mini": { supportsParallelToolCalls: false, supportsTemperature: false },
+};
+
+/**
+ * Configuration options for OpenAI Chat Model
+ */
 export interface OpenAIChatModelOptions {
+  /**
+   * API key for OpenAI API
+   *
+   * If not provided, will look for OPENAI_API_KEY in environment variables
+   */
   apiKey?: string;
+
+  /**
+   * Base URL for OpenAI API
+   *
+   * Useful for proxies or alternate endpoints
+   */
   baseURL?: string;
+
+  /**
+   * OpenAI model to use
+   *
+   * Defaults to 'gpt-4o-mini'
+   */
   model?: string;
+
+  /**
+   * Additional model options to control behavior
+   */
   modelOptions?: ChatModelOptions;
 }
 
+/**
+ * @hidden
+ */
 export const openAIChatModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
@@ -47,13 +90,39 @@ export const openAIChatModelOptionsSchema = z.object({
     .optional(),
 });
 
+/**
+ * Implementation of the ChatModel interface for OpenAI's API
+ *
+ * This model provides access to OpenAI's capabilities including:
+ * - Text generation
+ * - Tool use with parallel tool calls
+ * - JSON structured output
+ * - Image understanding
+ *
+ * Default model: 'gpt-4o-mini'
+ *
+ * @example
+ * Here's how to create and use an OpenAI chat model:
+ * {@includeCode ../../test/models/openai-chat-model.test.ts#example-openai-chat-model}
+ *
+ * @example
+ * Here's an example with streaming response:
+ * {@includeCode ../../test/models/openai-chat-model.test.ts#example-openai-chat-model-streaming}
+ */
 export class OpenAIChatModel extends ChatModel {
   constructor(public options?: OpenAIChatModelOptions) {
     super();
     if (options) checkArguments(this.name, openAIChatModelOptionsSchema, options);
+
+    const preset = options?.model ? OPENAI_CHAT_MODEL_CAPABILITIES[options.model] : undefined;
+    Object.assign(this, preset);
   }
 
+  /**
+   * @hidden
+   */
   protected _client?: OpenAI;
+
   protected apiKeyEnvName = "OPENAI_API_KEY";
   protected apiKeyDefault: string | undefined;
   protected supportsNativeStructuredOutputs = true;
@@ -61,6 +130,8 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsToolsUseWithJsonSchema = true;
   protected supportsParallelToolCalls = true;
   protected supportsToolsEmptyParameters = true;
+  protected supportsToolStreaming = true;
+  protected supportsTemperature = true;
 
   get client() {
     const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault;
@@ -77,15 +148,27 @@ export class OpenAIChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  async process(input: ChatModelInput): Promise<ChatModelOutput> {
+  /**
+   * Process the input and generate a response
+   * @param input The input to process
+   * @returns The generated response
+   */
+  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this._process(input);
+  }
+
+  private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
+    const messages = await this.getRunMessages(input);
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
-      temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
+      temperature: this.supportsTemperature
+        ? (input.modelOptions?.temperature ?? this.modelOptions?.temperature)
+        : undefined,
       top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       frequency_penalty:
         input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,
       presence_penalty: input.modelOptions?.presencePenalty ?? this.modelOptions?.presencePenalty,
-      messages: await this.getRunMessages(input),
+      messages,
       stream_options: {
         include_usage: true,
       },
@@ -103,7 +186,11 @@ export class OpenAIChatModel extends ChatModel {
       response_format: responseFormat,
     });
 
-    const result = await extractResultFromStream(stream, jsonMode);
+    if (input.responseFormat?.type !== "json_schema") {
+      return await this.extractResultFromStream(stream, false, true);
+    }
+
+    const result = await this.extractResultFromStream(stream, jsonMode);
 
     if (
       !this.supportsToolsUseWithJsonSchema &&
@@ -187,10 +274,132 @@ export class OpenAIChatModel extends ChatModel {
       response_format: resolvedResponseFormat,
     });
 
-    return extractResultFromStream(res, jsonMode);
+    return this.extractResultFromStream(res, jsonMode);
+  }
+
+  private async extractResultFromStream(
+    stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+    jsonMode: boolean | undefined,
+    streaming: true,
+  ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
+  private async extractResultFromStream(
+    stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+    jsonMode?: boolean,
+    streaming?: false,
+  ): Promise<ChatModelOutput>;
+  private async extractResultFromStream(
+    stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
+    jsonMode?: boolean,
+    streaming?: boolean,
+  ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
+    const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
+      start: async (controller) => {
+        try {
+          let text = "";
+          let refusal = "";
+          const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
+            args: string;
+          })[] = [];
+          let model: string | undefined;
+
+          for await (const chunk of stream) {
+            const choice = chunk.choices?.[0];
+            if (!model) {
+              model = chunk.model;
+              controller.enqueue({
+                delta: {
+                  json: {
+                    model,
+                  },
+                },
+              });
+            }
+
+            if (choice?.delta.tool_calls?.length) {
+              for (const call of choice.delta.tool_calls) {
+                if (this.supportsToolStreaming && call.index !== undefined) {
+                  handleToolCallDelta(toolCalls, call);
+                } else {
+                  handleCompleteToolCall(toolCalls, call);
+                }
+              }
+            }
+
+            if (choice?.delta.content) {
+              text += choice.delta.content;
+              if (!jsonMode) {
+                controller.enqueue({
+                  delta: {
+                    text: {
+                      text: choice.delta.content,
+                    },
+                  },
+                });
+              }
+            }
+
+            if (choice?.delta.refusal) {
+              refusal += choice.delta.refusal;
+              if (!jsonMode) {
+                controller.enqueue({
+                  delta: {
+                    text: { text: choice.delta.refusal },
+                  },
+                });
+              }
+            }
+
+            if (chunk.usage) {
+              controller.enqueue({
+                delta: {
+                  json: {
+                    usage: {
+                      inputTokens: chunk.usage.prompt_tokens,
+                      outputTokens: chunk.usage.completion_tokens,
+                    },
+                  },
+                },
+              });
+            }
+          }
+
+          text = text || refusal;
+          if (jsonMode && text) {
+            controller.enqueue({
+              delta: {
+                json: {
+                  json: parseJSON(text),
+                },
+              },
+            });
+          }
+
+          if (toolCalls.length) {
+            controller.enqueue({
+              delta: {
+                json: {
+                  toolCalls: toolCalls.map(({ args, ...c }) => ({
+                    ...c,
+                    function: { ...c.function, arguments: parseJSON(args) },
+                  })),
+                },
+              },
+            });
+          }
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+
+    return streaming ? result : await agentResponseStreamToObject(result);
   }
 }
 
+/**
+ * @hidden
+ */
 export const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
   system: "system",
   user: "user",
@@ -198,6 +407,9 @@ export const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
   tool: "tool",
 } as const;
 
+/**
+ * @hidden
+ */
 export async function contentsFromInputMessages(
   messages: ChatModelInputMessage[],
 ): Promise<ChatCompletionMessageParam[]> {
@@ -234,6 +446,9 @@ export async function contentsFromInputMessages(
   );
 }
 
+/**
+ * @hidden
+ */
 export function toolsFromInputTools(
   tools?: ChatModelInputTool[],
   options?: { addTypeToEmptyParameters?: boolean },
@@ -256,6 +471,9 @@ export function toolsFromInputTools(
     : undefined;
 }
 
+/**
+ * @hidden
+ */
 export function jsonSchemaToOpenAIJsonSchema(
   schema: Record<string, unknown>,
 ): Record<string, unknown> {
@@ -292,63 +510,6 @@ export function jsonSchemaToOpenAIJsonSchema(
   }
 
   return schema;
-}
-
-export async function extractResultFromStream(
-  stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
-  jsonMode = false,
-) {
-  let text = "";
-  const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-    args: string;
-  })[] = [];
-  let usage: ChatModelOutputUsage | undefined;
-  let model: string | undefined;
-
-  for await (const chunk of stream) {
-    const choice = chunk.choices?.[0];
-    model ??= chunk.model;
-
-    if (choice?.delta.tool_calls?.length) {
-      for (const call of choice.delta.tool_calls) {
-        // Gemini not support tool call delta
-        if (call.index !== undefined) {
-          handleToolCallDelta(toolCalls, call);
-        } else {
-          handleCompleteToolCall(toolCalls, call);
-        }
-      }
-    }
-
-    if (choice?.delta.content) text += choice.delta.content;
-
-    if (chunk.usage) {
-      usage = {
-        inputTokens: chunk.usage.prompt_tokens,
-        outputTokens: chunk.usage.completion_tokens,
-      };
-    }
-  }
-
-  const result: ChatModelOutput = {
-    usage,
-    model,
-  };
-
-  if (jsonMode && text) {
-    result.json = parseJSON(text);
-  } else {
-    result.text = text;
-  }
-
-  if (toolCalls.length) {
-    result.toolCalls = toolCalls.map(({ args, ...c }) => ({
-      ...c,
-      function: { ...c.function, arguments: parseJSON(args) },
-    }));
-  }
-
-  return result;
 }
 
 function handleToolCallDelta(

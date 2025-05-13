@@ -1,0 +1,228 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`objectToAgentResponseStream should generate stream correctly 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "bar": "bar",
+        "foo": "foo",
+      },
+    },
+  },
+]
+`;
+
+exports[`asyncGeneratorToReadableStream should process readableStream correctly 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "text": "hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "text": "hello, world",
+      },
+    },
+  },
+]
+`;
+
+exports[`arrayToAgentResponseStream should enqueue data 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "text": "hello",
+      },
+    },
+  },
+]
+`;
+
+exports[`readableStreamToArray should collect chunks correctly 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " world",
+      },
+    },
+  },
+]
+`;
+
+exports[`stringToAgentResponseStream should generate stream correctly 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "How",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "can",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "I",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "assist",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "you",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "today",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "?",
+      },
+    },
+  },
+]
+`;
+
+exports[`stringToAgentResponseStream should generate stream with Chinese correctly 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "custom_text": "你好",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "custom_text": "，",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "custom_text": "我能",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "custom_text": "帮",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "custom_text": "你",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "custom_text": "什么",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "custom_text": "？",
+      },
+    },
+  },
+]
+`;

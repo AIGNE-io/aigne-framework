@@ -2,6 +2,45 @@
 
 - chore: release 1.2.0
 
+## [1.7.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.7.0...agent-library-v1.7.1) (2025-04-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.13.0
+
+## [1.7.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.6.1...agent-library-v1.7.0) (2025-04-27)
+
+
+### Features
+
+* support TeamAgent and finalize API naming ([#91](https://github.com/AIGNE-io/aigne-framework/issues/91)) ([033d1b6](https://github.com/AIGNE-io/aigne-framework/commit/033d1b6a7dc5460807476abb35a413ba89a2a664))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.12.0
+
+## [1.6.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.6.0...agent-library-v1.6.1) (2025-04-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.11.0
+
+## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.5.0...agent-library-v1.6.0) (2025-04-22)
+
+
+### Features
+
+* **stream:** add streaming output support for agent ([#73](https://github.com/AIGNE-io/aigne-framework/issues/73)) ([5f3ea4b](https://github.com/AIGNE-io/aigne-framework/commit/5f3ea4bccda7c8c457d6e9518b3d6a8b254ec041))
+
 ## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.4.0...agent-library-v1.5.0) (2025-04-15)
 
 

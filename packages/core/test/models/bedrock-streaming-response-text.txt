@@ -1,0 +1,20 @@
+data: {"messageStart":{"p":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012","role":"assistant"}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"Hello"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"! How can I assist you"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" today? If you have"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" any questions or need information"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" on"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" a particular"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" topic, feel free to let"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" me know. Whether"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" it"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"'s about"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" science, technology"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":", history, or"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" something"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" else, I"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"'m here to help."}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":""}}}
+data: {"contentBlockStop":{"contentBlockIndex":0,"p":"abcdefghijklmnop"}}
+data: {"messageStop":{"stopReason":"end_turn"}}
+data: {"metadata":{"metrics":{"latencyMs":400},"usage":{"inputTokens":1,"outputTokens":51,"totalTokens":52}}}

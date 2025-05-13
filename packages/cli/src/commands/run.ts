@@ -2,8 +2,9 @@ import assert from "node:assert";
 import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
-import { type Agent, ExecutionEngine } from "@aigne/core";
+import { AIGNE, type Agent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import { isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { Command, type OptionValues } from "commander";
@@ -16,6 +17,7 @@ interface RunOptions extends OptionValues {
   downloadDir?: string;
   modelProvider?: string;
   modelName?: string;
+  verbose?: boolean;
 }
 
 export function createRunCommand(): Command {
@@ -35,11 +37,14 @@ export function createRunCommand(): Command {
       "--model-name <model>",
       "Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)",
     )
+    .option("--verbose", "Enable verbose logging", false)
     .action(async (path: string, options: RunOptions) => {
+      if (options.verbose) logger.enable("*");
+
       const { downloadDir, dir } = prepareDirs(path, options);
 
-      const { engine, agent } = await new Listr<{
-        engine: ExecutionEngine;
+      const { aigne, agent } = await new Listr<{
+        aigne: AIGNE;
         agent: Agent;
       }>(
         [
@@ -61,31 +66,31 @@ export function createRunCommand(): Command {
             },
           },
           {
-            title: "Initialize execution engine",
+            title: "Initialize AIGNE",
             task: async (ctx) => {
-              const engine = await runEngine(dir, options);
-              ctx.engine = engine;
+              const aigne = await loadAIGNE(dir, options);
+              ctx.aigne = aigne;
             },
           },
           {
             task: (ctx) => {
-              const { engine } = ctx;
-              assert(engine);
+              const { aigne } = ctx;
+              assert(aigne);
 
               let agent: Agent | undefined;
 
               if (options.agent) {
-                agent = engine.agents[options.agent];
+                agent = aigne.agents[options.agent];
                 if (!agent) {
                   console.error(`Agent "${options.agent}" not found in ${path}`);
                   console.log("Available agents:");
-                  for (const agent of engine.agents) {
+                  for (const agent of aigne.agents) {
                     console.log(`- ${agent.name}`);
                   }
                   throw new Error(`Agent "${options.agent}" not found in ${path}`);
                 }
               } else {
-                agent = engine.agents[0];
+                agent = aigne.agents[0];
                 if (!agent) throw new Error(`No agents found in ${path}`);
               }
 
@@ -101,20 +106,20 @@ export function createRunCommand(): Command {
         },
       ).run();
 
-      assert(engine);
+      assert(aigne);
       assert(agent);
 
-      const user = engine.call(agent);
+      const user = aigne.invoke(agent);
 
-      await runChatLoopInTerminal(user, {});
+      await runChatLoopInTerminal(user);
 
-      await engine.shutdown();
+      await aigne.shutdown();
     })
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);
 }
 
-async function runEngine(path: string, options: RunOptions) {
+async function loadAIGNE(path: string, options: RunOptions) {
   if (options.modelName && !options.modelProvider) {
     throw new Error("please specify --model-provider when using the --model-name option");
   }
@@ -123,7 +128,7 @@ async function runEngine(path: string, options: RunOptions) {
     ? await loadModel({ provider: options.modelProvider, name: options.modelName })
     : undefined;
 
-  return await ExecutionEngine.load({ path, model });
+  return await AIGNE.load(path, { model });
 }
 
 async function downloadPackage(url: string, downloadDir: string) {

@@ -1,10 +1,10 @@
 {
   "name": "@aigne/example-workflow-reflection",
-  "version": "1.5.0",
+  "version": "1.9.0",
   "description": "A demonstration of using AIGNE Framework to build a reflection workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-reflection",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
@@ -17,12 +17,16 @@
   ],
   "scripts": {
     "start": "bun run index.ts",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:llm": "bun test"
   },
   "dependencies": {
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "openai": "^4.94.0",
-    "zod": "^3.24.2"
+    "openai": "^4.97.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^"
   }
 }

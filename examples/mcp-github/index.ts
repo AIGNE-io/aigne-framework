@@ -1,8 +1,8 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import assert from "node:assert";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 
@@ -22,9 +22,9 @@ const github = await MCPAgent.from({
   },
 });
 
-const engine = new ExecutionEngine({
+const aigne = new AIGNE({
   model,
-  tools: [github],
+  skills: [github],
 });
 
 const agent = AIAgent.from({
@@ -43,7 +43,7 @@ Always provide clear, concise responses with relevant information from GitHub.
   memory: true,
 });
 
-const userAgent = engine.call(agent);
+const userAgent = aigne.invoke(agent);
 
 await runChatLoopInTerminal(userAgent, {
   welcome:

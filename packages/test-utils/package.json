@@ -1,0 +1,38 @@
+{
+  "name": "@aigne/test-utils",
+  "version": "0.1.0",
+  "description": "Test utils for AIGNE framework",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework",
+  "license": "Elastic-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "type": "module",
+  "exports": {
+    "./*": "./lib/*"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./lib/*"
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "tsc --build tsconfig.build.json",
+    "clean": "rimraf lib"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "^1.2.12",
+    "@types/node": "^22.15.15",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
+  }
+}

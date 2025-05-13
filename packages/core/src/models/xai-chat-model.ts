@@ -3,6 +3,22 @@ import { OpenAIChatModel, type OpenAIChatModelOptions } from "./openai-chat-mode
 const XAI_DEFAULT_CHAT_MODEL = "grok-2-latest";
 const XAI_BASE_URL = "https://api.x.ai/v1";
 
+/**
+ * Implementation of the ChatModel interface for X.AI's API (Grok)
+ *
+ * This model uses OpenAI-compatible API format to interact with X.AI models,
+ * providing access to models like Grok.
+ *
+ * Default model: 'grok-2-latest'
+ *
+ * @example
+ * Here's how to create and use an X.AI chat model:
+ * {@includeCode ../../test/models/xai-chat-model.test.ts#example-xai-chat-model}
+ *
+ * @example
+ * Here's an example with streaming response:
+ * {@includeCode ../../test/models/xai-chat-model.test.ts#example-xai-chat-model-streaming}
+ */
 export class XAIChatModel extends OpenAIChatModel {
   constructor(options?: OpenAIChatModelOptions) {
     super({
@@ -12,5 +28,5 @@ export class XAIChatModel extends OpenAIChatModel {
     });
   }
 
-  protected apiKeyEnvName = "XAI_API_KEY";
+  protected override apiKeyEnvName = "XAI_API_KEY";
 }

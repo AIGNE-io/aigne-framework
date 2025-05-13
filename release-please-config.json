@@ -6,6 +6,7 @@
     "packages/agent-library": {},
     "packages/core": {},
     "packages/cli": {},
+    "packages/test-utils": {},
     "examples/mcp-github": {},
     "examples/mcp-puppeteer": {},
     "examples/mcp-sqlite": {},
@@ -18,6 +19,13 @@
     "examples/workflow-reflection": {},
     "examples/workflow-router": {},
     "examples/workflow-sequential": {},
-    "examples/chat-bot": {}
-  }
+    "examples/chat-bot": {},
+    "examples/memory": {}
+  },
+  "plugins": [
+    {
+      "type": "node-workspace",
+      "updatePeerDependencies": true
+    }
+  ]
 }

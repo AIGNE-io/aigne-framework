@@ -1,13 +1,14 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, UserAgent, UserInputTopic, UserOutputTopic } from "@aigne/core";
+import { AIAgent, AIGNE, UserAgent, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { z } from "zod";
 
 const model = await loadModel();
 
 const coder = AIAgent.from({
+  name: "coder",
   subscribeTopic: [UserInputTopic, "rewrite_request"],
   publishTopic: "review_request",
   instructions: `\
@@ -37,6 +38,7 @@ User's question:
 });
 
 const reviewer = AIAgent.from({
+  name: "reviewer",
   subscribeTopic: "review_request",
   publishTopic: (output) => (output.approval ? UserOutputTopic : "rewrite_request"),
   instructions: `\
@@ -65,10 +67,10 @@ Please review the code. If previous feedback was provided, see if it was address
   includeInputInOutput: true,
 });
 
-const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
+const aigne = new AIGNE({ model, agents: [coder, reviewer] });
 
 const userAgent = UserAgent.from({
-  context: engine.newContext(),
+  context: aigne.newContext(),
   publishTopic: UserInputTopic,
   subscribeTopic: UserOutputTopic,
 });

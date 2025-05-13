@@ -27,6 +27,12 @@
         "noUnusedImports": "error",
         "noUnusedFunctionParameters": "error",
         "noUnusedPrivateClassMembers": "error"
+      },
+      "suspicious": {
+        "noConfusingVoidType": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
       }
     }
   },

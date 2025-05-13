@@ -30,16 +30,17 @@ class other processing
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-router # run the example
+npx -y @aigne/example-workflow-router # Run the example
 ```
 
 ## Installation
@@ -63,7 +64,7 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 ### Run the Example
@@ -78,7 +79,7 @@ The following example demonstrates how to build a router workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -120,25 +121,25 @@ const triage = AIAgent.from({
   instructions: `You are an agent capable of routing questions to the appropriate agent.
   Your goal is to understand the user's query and direct them to the agent best suited to assist them.
   Be efficient, clear, and ensure the user is connected to the right resource quickly.`,
-  tools: [productSupport, feedback, other],
+  skills: [productSupport, feedback, other],
   toolChoice: "router", // Set toolChoice to "router" to enable router mode
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result1 = await engine.call(triage, "How to use this product?");
+const result1 = await aigne.invoke(triage, "How to use this product?");
 console.log(result1);
 // {
 //   product_support: "I’d be happy to help you with that! However, I need to know which specific product you’re referring to. Could you please provide me with the name or type of product you have in mind?",
 // }
 
-const result2 = await engine.call(triage, "I have feedback about the app.");
+const result2 = await aigne.invoke(triage, "I have feedback about the app.");
 console.log(result2);
 // {
 //   feedback: "Thank you for sharing your feedback! I'm here to listen. Please go ahead and let me know what you’d like to share about the app.",
 // }
 
-const result3 = await engine.call(triage, "What is the weather today?");
+const result3 = await aigne.invoke(triage, "What is the weather today?");
 console.log(result3);
 // {
 //   other: "I can't provide real-time weather updates. However, you can check a reliable weather website or a weather app on your phone for the current conditions in your area. If you tell me your location, I can suggest a few sources where you can find accurate weather information!",

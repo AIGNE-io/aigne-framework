@@ -11,15 +11,16 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { type ZodObject, type ZodType, z } from "zod";
 import { type MCPBaseOptions, MCPPrompt, MCPResource, MCPTool } from "../agents/mcp-agent.js";
+import { isEmpty } from "./type-utils.js";
 
 export function toolFromMCPTool(tool: ListToolsResult["tools"][number], options: MCPBaseOptions) {
   return new MCPTool({
     ...options,
     name: tool.name,
     description: tool.description,
-    inputSchema: jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(
-      tool.inputSchema as JsonSchema,
-    ),
+    inputSchema: isEmpty(tool.inputSchema.properties)
+      ? z.object({})
+      : jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(tool.inputSchema as JsonSchema),
     outputSchema: CallToolResultSchema,
   });
 }

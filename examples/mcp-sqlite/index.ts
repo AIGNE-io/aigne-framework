@@ -1,8 +1,8 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { join } from "node:path";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, MCPAgent, PromptBuilder } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent, PromptBuilder } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 
@@ -20,12 +20,12 @@ const sqlite = await MCPAgent.from({
   ],
 });
 
-const prompt = await sqlite.prompts["mcp-demo"]?.call({ topic: "product service" });
+const prompt = await sqlite.prompts["mcp-demo"]?.invoke({ topic: "product service" });
 if (!prompt) throw new Error("Prompt mcp-demo not found");
 
-const engine = new ExecutionEngine({
+const aigne = new AIGNE({
   model,
-  tools: [sqlite],
+  skills: [sqlite],
 });
 
 const agent = AIAgent.from({
@@ -33,7 +33,7 @@ const agent = AIAgent.from({
   memory: true,
 });
 
-const userAgent = engine.call(agent);
+const userAgent = aigne.invoke(agent);
 
 await runChatLoopInTerminal(userAgent, {
   initialCall: {},

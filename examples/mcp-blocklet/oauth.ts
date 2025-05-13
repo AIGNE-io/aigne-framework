@@ -147,8 +147,10 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
 
           if (code) {
             this.emit("authorized", code);
-            console.info("Authorization successful!", Date.now());
-            resolve();
+            console.info("Authorization code received, exchanging for tokens...");
+            setTimeout(() => {
+              resolve();
+            }, 3000);
           } else {
             this.emit("error", new Error("No authorization code received"));
             reject(new Error("No authorization code received"));
@@ -158,7 +160,7 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
 
       // Start the local server
       server.listen(this.localServerPort, async () => {
-        console.log("Please authorize the application in your browser...");
+        console.log("Please complete the authorization in your browser...");
         // Open the authorization URL in the default browser
         await open(authorizationUrl.toString());
       });

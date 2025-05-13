@@ -1,0 +1,21 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Agent.invoke with streaming response 1`] = `
+[
+  "Hello",
+  ",",
+  " ",
+  "How",
+  " ",
+  "can",
+  " ",
+  "I",
+  " ",
+  "assist",
+  " ",
+  "you",
+  " ",
+  "today",
+  "?",
+]
+`;

@@ -1,14 +1,22 @@
 import { ReadableStream } from "node:stream/web";
-import { type Context, type Runnable, createPublishMessage } from "../execution-engine/context.js";
-import type { MessagePayload, Unsubscribe } from "../execution-engine/message-queue.js";
-import { type PromiseOrValue, orArrayToArray } from "../utils/type-utils.js";
-import { Agent, type AgentOptions, type Message } from "./agent.js";
+import type { Context } from "../aigne/context.js";
+import { type MessagePayload, type Unsubscribe, toMessagePayload } from "../aigne/message-queue.js";
+import { orArrayToArray } from "../utils/type-utils.js";
+import {
+  Agent,
+  type AgentInvokeOptions,
+  type AgentOptions,
+  type AgentProcessResult,
+  type AgentResponseStream,
+  type FunctionAgentFn,
+  type Message,
+} from "./agent.js";
 
 export interface UserAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
   context: Context;
-  process?: (input: I, context: Context) => PromiseOrValue<O>;
-  activeAgent?: Runnable;
+  process?: FunctionAgentFn<I, O>;
+  activeAgent?: Agent;
 }
 
 export class UserAgent<I extends Message = Message, O extends Message = Message> extends Agent<
@@ -30,42 +38,61 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
   context: Context;
 
-  private _process?: (input: I, context: Context) => PromiseOrValue<O>;
+  private _process?: FunctionAgentFn<I, O>;
 
-  private activeAgent?: Runnable;
+  private activeAgent?: Agent;
 
-  override call(input: string | I, context?: Context): Promise<O> {
-    if (!context) this.context = this.context.newContext({ reset: true });
-
-    return super.call(input, context ?? this.context);
+  protected override subscribeToTopics(context: Pick<Context, "subscribe">) {
+    if (this._process) super.subscribeToTopics(context);
   }
 
-  async process(input: I, context: Context): Promise<O> {
+  protected override async publishToTopics(output: O, context: Context) {
+    if (this._process) super.publishToTopics(output, context);
+  }
+
+  override invoke = ((input: string | I, context?: Context, options?: AgentInvokeOptions) => {
+    if (!context) this.context = this.context.newContext({ reset: true });
+
+    return super.invoke(input, context ?? this.context, options);
+  }) as Agent<I, O>["invoke"];
+
+  async process(input: I, context: Context): Promise<AgentProcessResult<O>> {
     if (this._process) {
       return this._process(input, context);
     }
 
     if (this.activeAgent) {
-      const [output, agent] = await context.call(this.activeAgent, input, {
+      const [output, agent] = await context.invoke(this.activeAgent, input, {
         returnActiveAgent: true,
+        streaming: true,
       });
-      this.activeAgent = agent;
-      return output as O;
+      agent.then((agent) => {
+        this.activeAgent = agent;
+      });
+      return output as AgentResponseStream<O>;
     }
 
     const publicTopic =
       typeof this.publishTopic === "function" ? await this.publishTopic(input) : this.publishTopic;
 
     if (publicTopic?.length) {
-      context.publish(publicTopic, createPublishMessage(input, this));
-      return {} as O;
+      context.publish(publicTopic, input);
+
+      if (this.subscribeTopic) {
+        return this.subscribe(this.subscribeTopic).then((res) => res.message as O);
+      }
+
+      return {} as AgentProcessResult<O>;
     }
 
     throw new Error("UserAgent must have a process function or a publishTopic");
   }
 
-  publish = ((...args) => {
-    return this.context.publish(...args);
+  publish = ((topic, payload) => {
+    return this.context.publish(
+      topic,
+      toMessagePayload(payload, { role: "user", source: this.name }),
+    );
   }) as Context["publish"];
 
   subscribe = ((...args) => {
@@ -97,7 +124,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     });
   }
 
-  protected override checkUsageAgentCalls(_context: Context): void {
+  protected override checkAgentInvokesUsage(_context: Context): void {
     // ignore calls usage check for UserAgent
   }
 }

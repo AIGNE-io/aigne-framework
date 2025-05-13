@@ -1,6 +1,4 @@
-import { inspect } from "node:util";
-import { MESSAGE_KEY, type Message, createMessage, type UserAgent as input } from "@aigne/core";
-import { logger } from "@aigne/core/utils/logger.js";
+import { type Message, createMessage, type UserAgent as input } from "@aigne/core";
 import { figures } from "@aigne/listr2";
 import chalk from "chalk";
 import inquirer from "inquirer";
@@ -11,17 +9,12 @@ export interface ChatLoopOptions {
   welcome?: string;
   defaultQuestion?: string;
   inputKey?: string;
-  verbose?: boolean;
   skipLoop?: boolean;
 }
 
 export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopOptions = {}) {
   const { initialCall = process.env.INITIAL_CALL, skipLoop = process.env.SKIP_LOOP === "true" } =
     options;
-
-  options.verbose ??= logger.enabled("aigne:core");
-  // Disable the logger, use TerminalTracer instead
-  logger.disable();
 
   let prompt: ReturnType<typeof inquirer.prompt<{ question: string }>> | undefined;
 
@@ -64,20 +57,17 @@ export async function runChatLoopInTerminal(userAgent: input, options: ChatLoopO
 }
 
 async function callAgent(userAgent: input, input: Message | string, options: ChatLoopOptions) {
-  const tracer = new TerminalTracer(userAgent.context, { verbose: options.verbose });
+  const tracer = new TerminalTracer(userAgent.context, {
+    aiResponsePrefix: (context): string => {
+      return `${chalk.grey(figures.tick)} 🤖 ${tracer.formatTokenUsage(context.usage)}`;
+    },
+  });
 
-  const { result, context } = await tracer.run(
+  await tracer.run(
     userAgent,
     options.inputKey && typeof input === "string"
       ? { [options.inputKey]: input }
       : createMessage(input),
-  );
-
-  console.log(
-    `
-${chalk.grey(figures.tick)} 🤖 ${tracer.formatTokenUsage(context.usage)}
-${formatAIResponse(result)}
-`,
   );
 }
 
@@ -91,9 +81,3 @@ Commands:
 `,
   }),
 };
-
-function formatAIResponse({ [MESSAGE_KEY]: msg, ...message }: Message = {}) {
-  const text = msg && typeof msg === "string" ? msg : undefined;
-  const json = Object.keys(message).length > 0 ? inspect(message, { colors: true }) : undefined;
-  return [text, json].filter(Boolean).join("\n");
-}

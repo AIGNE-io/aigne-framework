@@ -47,3 +47,4 @@ lerna-debug.log*
 
 *storybook.log
 .data
+.cursor

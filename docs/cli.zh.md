@@ -24,8 +24,8 @@ AIGNE CLI 提供以下命令：
 
 ### 全局选项
 
-- `--version`：显示 CLI 版本
-- `--help`：显示帮助信息
+* `--version`：显示 CLI 版本
+* `--help`：显示帮助信息
 
 ### `aigne run`
 
@@ -37,15 +37,16 @@ aigne run [路径] [选项]
 
 #### 参数
 
-- `路径`：代理目录的路径（默认为当前目录 `.`）或指向 AIGNE Studio 中项目的 URL
+* `路径`：代理目录的路径（默认为当前目录 `.`）或指向 AIGNE Studio 中项目的 URL
 
 #### 选项
 
-- `--agent <代理>`：要使用的代理名称（默认为找到的第一个代理）
-- `--download-dir <目录>`：下载包的目录（使用URL时），默认为 `~/.aigne/xxx`
-- `--model-provider <提供商>`：要使用的模型提供商，可用提供商：openai、claude、xai（默认为aigne.yaml定义或openai）
-- `--model-name <模型>`：要使用的模型名称，可用模型取决于提供商（默认为aigne.yaml定义或gpt-4o-mini）
-- `--help`：显示命令帮助
+* `--agent <代理>`：要使用的代理名称（默认为找到的第一个代理）
+* `--download-dir <目录>`：下载包的目录（使用URL时），默认为 `~/.aigne/xxx`
+* `--model-provider <提供商>`：要使用的模型提供商，可用提供商：openai、claude、xai（默认为aigne.yaml定义或openai）
+* `--model-name <模型>`：要使用的模型名称，可用模型取决于提供商（默认为aigne.yaml定义或gpt-4o-mini）
+* `--verbose`：启用详细输出模式，显示更多调试信息
+* `--help`：显示命令帮助
 
 #### 示例
 
@@ -78,20 +79,20 @@ aigne run https://www.aigne.io/projects/xxx/xxx.tgz
 https://github.com/user-attachments/assets/f528d1a1-31d1-48e5-b89e-e3d555c53649
 
 1. 在 AIGNE Studio 创建一个项目：
-   - 登录 [AIGNE Studio](https://www.aigne.io)
-   - 点击创建新项目
-   - 添加所需的 Agents 到项目中
+   * 登录 [AIGNE Studio](https://www.aigne.io)
+   * 点击创建新项目
+   * 添加所需的 Agents 到项目中
 
 2. 获取 CLI 命令：
-   - 在项目页面中，点击右上角的设置图标
-   - 在设置菜单中找到"集成"选项卡
-   - 在 AIGNE CLI 部分，如果没有链接则点击"生成链接"按钮
-   - 复制生成的 `aigne run` 命令（格式类似 `aigne run https://www.aigne.io/projects/xxx/xxx.tgz?secret=yyy&hash=zzz`）
+   * 在项目页面中，点击右上角的设置图标
+   * 在设置菜单中找到"集成"选项卡
+   * 在 AIGNE CLI 部分，如果没有链接则点击"生成链接"按钮
+   * 复制生成的 `aigne run` 命令（格式类似 `aigne run https://www.aigne.io/projects/xxx/xxx.tgz?secret=yyy&hash=zzz`）
 
 3. 运行命令：
-   - 打开终端
-   - 粘贴并运行复制的命令
-   - 系统将自动下载项目及其代理并启动聊天循环
+   * 打开终端
+   * 粘贴并运行复制的命令
+   * 系统将自动下载项目及其代理并启动聊天循环
 
 ### `aigne create`
 
@@ -103,11 +104,11 @@ aigne create [路径]
 
 #### 参数
 
-- `路径`：可选的项目目录路径（将在提示中用作默认项目名称）
+* `路径`：可选的项目目录路径（将在提示中用作默认项目名称）
 
 #### 选项
 
-- `--help`：显示命令帮助
+* `--help`：显示命令帮助
 
 #### 示例
 
@@ -135,11 +136,11 @@ aigne test [路径]
 
 #### 参数
 
-- `路径`：代理目录的路径（默认为当前目录 `.`）
+* `路径`：代理目录的路径（默认为当前目录 `.`）
 
 #### 选项
 
-- `--help`：显示命令帮助
+* `--help`：显示命令帮助
 
 #### 示例
 
@@ -165,13 +166,15 @@ aigne serve [路径] [选项]
 
 #### 参数
 
-- `路径`：代理目录的路径（默认为当前目录 `.`）
+* `路径`：代理目录的路径（默认为当前目录 `.`）
 
 #### 选项
 
-- `--mcp`：将代理作为 MCP 服务器提供（目前为必需选项）
-- `--port <端口>`：运行 MCP 服务器的端口（默认为 3000）
-- `--help`：显示命令帮助
+* `--mcp`：将代理作为 MCP 服务器提供（目前为必需选项）
+* `--host <主机>`：运行 MCP 服务器的主机地址（默认为"localhost"），使用"0.0.0.0"可以公开暴露服务器
+* `--port <端口>`：运行 MCP 服务器的端口（如果设置了环境变量PORT则使用其值，否则默认为3000）
+* `--pathname <路径名>`：MCP 服务器端点的 URL 路径（默认为"/mcp"）
+* `--help`：显示命令帮助
 
 #### 示例
 
@@ -185,6 +188,12 @@ aigne serve --mcp
 
 ```bash
 aigne serve ./my-agents --mcp --port 8080
+```
+
+公开暴露 MCP 服务器并使用自定义端点：
+
+```bash
+aigne serve --mcp --host 0.0.0.0 --pathname /api/agents
 ```
 
 ## 使用示例
@@ -224,5 +233,5 @@ AIGNE CLI 继承代理所需的任何环境变量。在运行 CLI 之前，请�
 
 有关开发代理的更多信息，请参阅以下资源：
 
-- [代理开发指南](./agent-development.zh.md)：使用 YAML/JS 配置文件开发 AIGNE 代理的指南
-- [AIGNE 框架文档](./cookbook.zh.md)：官方框架文档
+* [代理开发指南](./agent-development.zh.md)：使用 YAML/JS 配置文件开发 AIGNE 代理的指南
+* [AIGNE 框架文档](./cookbook.zh.md)：官方框架文档

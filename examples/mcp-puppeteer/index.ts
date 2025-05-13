@@ -1,7 +1,7 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 
@@ -15,9 +15,9 @@ const puppeteer = await MCPAgent.from({
   env: process.env as Record<string, string>,
 });
 
-const engine = new ExecutionEngine({
+const aigne = new AIGNE({
   model,
-  tools: [puppeteer],
+  skills: [puppeteer],
 });
 
 const agent = AIAgent.from({
@@ -30,7 +30,7 @@ const agent = AIAgent.from({
   memory: true,
 });
 
-const userAgent = engine.call(agent);
+const userAgent = aigne.invoke(agent);
 
 await runChatLoopInTerminal(userAgent, {
   welcome:

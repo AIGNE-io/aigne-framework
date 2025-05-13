@@ -25,16 +25,17 @@ class formatProof processing
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-sequential # run the example
+npx -y @aigne/example-workflow-sequential # Run the example
 ```
 
 ## Installation
@@ -58,7 +59,7 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 ### Run the Example
@@ -73,7 +74,7 @@ The following example demonstrates how to build a sequential workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, sequential } from "@aigne/core";
+import { AIAgent, AIGNE, TeamAgent, ProcessMode } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -125,9 +126,15 @@ Draft copy:
   outputKey: "content",
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(sequential(conceptExtractor, writer, formatProof), {
+// 创建一个 TeamAgent 来处理顺序工作流
+const teamAgent = TeamAgent.from({
+  skills: [conceptExtractor, writer, formatProof],
+  mode: ProcessMode.sequential // 默认值，可以省略
+});
+
+const result = await aigne.invoke(teamAgent, {
   product: "AIGNE is a No-code Generative AI Apps Engine",
 });
 

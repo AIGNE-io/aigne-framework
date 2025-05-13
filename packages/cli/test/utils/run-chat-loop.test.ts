@@ -1,13 +1,14 @@
 import { expect, spyOn, test } from "bun:test";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, UserAgent, createMessage } from "@aigne/core";
+import { AIAgent, AIGNE, UserAgent, createMessage } from "@aigne/core";
+import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import inquirer from "inquirer";
 
 test("runChatLoopInTerminal should respond /help /exit commands", async () => {
-  const engine = new ExecutionEngine({});
+  const aigne = new AIGNE({});
 
   const userAgent = UserAgent.from({
-    context: engine.newContext(),
+    context: aigne.newContext(),
     process: () => ({ text: "hello" }),
   });
 
@@ -27,36 +28,38 @@ test("runChatLoopInTerminal should respond /help /exit commands", async () => {
 });
 
 test("runChatLoopInTerminal should trigger initial call", async () => {
-  const engine = new ExecutionEngine({});
+  const aigne = new AIGNE({});
 
   const agent = AIAgent.from({});
 
-  const user = engine.call(agent);
+  const user = aigne.invoke(agent);
 
   spyOn(inquirer, "prompt").mockReturnValueOnce(
     Promise.resolve({ question: "/exit" }) as unknown as ReturnType<typeof inquirer.prompt>,
   );
 
-  const call = spyOn(agent, "call").mockReturnValue(
-    Promise.resolve({ text: "hello, this is a test response message" }),
+  const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
+    arrayToAgentProcessAsyncGenerator([
+      { delta: { json: { text: "hello, this is a test response message" } } },
+    ]),
   );
 
   const result = runChatLoopInTerminal(user, {
     initialCall: "hello, this is a test message",
   });
   expect(await result).toBeUndefined();
-  expect(call).toHaveBeenCalledWith(
+  expect(agentProcess).toHaveBeenCalledWith(
     createMessage("hello, this is a test message"),
     expect.anything(),
   );
 });
 
-test("runChatLoopInTerminal should call agent correctly", async () => {
+test("runChatLoopInTerminal should invoke agent correctly", async () => {
   const agent = AIAgent.from({});
 
-  const engine = new ExecutionEngine({});
+  const aigne = new AIGNE({});
 
-  const userAgent = engine.call(agent);
+  const userAgent = aigne.invoke(agent);
 
   spyOn(inquirer, "prompt").mockReturnValueOnce(
     Promise.resolve({ question: "hello, this is a test message" }) as unknown as ReturnType<
@@ -67,24 +70,28 @@ test("runChatLoopInTerminal should call agent correctly", async () => {
     Promise.resolve({ question: "/exit" }) as unknown as ReturnType<typeof inquirer.prompt>,
   );
 
-  const call = spyOn(agent, "call").mockReturnValue(
-    Promise.resolve({ text: "hello, this is a test response message" }),
+  const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
+    arrayToAgentProcessAsyncGenerator([
+      { delta: { json: { text: "hello, this is a test response message" } } },
+    ]),
   );
 
   expect(await runChatLoopInTerminal(userAgent)).toBeUndefined();
-  expect(call).toHaveBeenCalledWith(
+  expect(agentProcess).toHaveBeenCalledWith(
     createMessage("hello, this is a test message"),
     expect.anything(),
   );
 });
 
 test("runChatLoopInTerminal should skip loop If initialCall is provided and skipLoop is true", async () => {
-  const engine = new ExecutionEngine({});
+  const aigne = new AIGNE({});
   const agent = AIAgent.from({});
-  const userAgent = engine.call(agent);
+  const userAgent = aigne.invoke(agent);
 
-  const call = spyOn(agent, "call").mockReturnValue(
-    Promise.resolve({ text: "hello, this is a test response message" }),
+  const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
+    arrayToAgentProcessAsyncGenerator([
+      { delta: { json: { text: "hello, this is a test response message" } } },
+    ]),
   );
 
   await runChatLoopInTerminal(userAgent, {
@@ -92,8 +99,8 @@ test("runChatLoopInTerminal should skip loop If initialCall is provided and skip
     skipLoop: true,
   });
 
-  expect(call).toHaveBeenCalledTimes(1);
-  expect(call).toHaveBeenCalledWith(
+  expect(agentProcess).toHaveBeenCalledTimes(1);
+  expect(agentProcess).toHaveBeenCalledWith(
     createMessage("hello, this is a test message"),
     expect.anything(),
   );

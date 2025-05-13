@@ -1,7 +1,7 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import express, { type Request, type Response } from "express";
-import { z } from "zod";
+import { setupMCPHandlers } from "../_utils/setup-mcp-server.js";
 
 export function mockMCPSSEServer(port: number) {
   const server = new McpServer({
@@ -9,45 +9,7 @@ export function mockMCPSSEServer(port: number) {
     version: "1.0.0",
   });
 
-  server.resource(
-    "echo",
-    new ResourceTemplate("echo://{message}", { list: undefined }),
-    async (uri, { message }) => ({
-      contents: [
-        {
-          uri: uri.href,
-          text: `Resource echo: ${message}`,
-        },
-      ],
-    }),
-  );
-
-  server.tool("echo", { message: z.string() }, async ({ message }) => ({
-    content: [{ type: "text", text: `Tool echo: ${message}` }],
-  }));
-
-  server.prompt("echo", { message: z.string() }, ({ message }) => ({
-    messages: [
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: `Please process this message: ${message}`,
-        },
-      },
-      {
-        role: "user",
-        content: {
-          type: "resource",
-          resource: {
-            uri: `echo://${message}`,
-            blob: Buffer.from(`Resource echo: ${message}`).toString("base64"),
-            mimeType: "text/plain",
-          },
-        },
-      },
-    ],
-  }));
+  setupMCPHandlers(server);
 
   const app = express();
 
@@ -70,5 +32,14 @@ export function mockMCPSSEServer(port: number) {
     }
   });
 
-  return app.listen(port);
+  const httpServer = app.listen(port);
+
+  Object.assign(httpServer, {
+    [Symbol.asyncDispose]: async () => {
+      httpServer.closeAllConnections();
+      httpServer.close();
+    },
+  });
+
+  return httpServer;
 }

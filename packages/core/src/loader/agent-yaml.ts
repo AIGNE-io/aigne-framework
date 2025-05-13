@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { parse } from "yaml";
 import { type ZodObject, type ZodType, z } from "zod";
+import { AIAgentToolChoice } from "../agents/ai-agent.js";
+import { customCamelize } from "../utils/camelize.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { inputOutputSchema } from "./schema.js";
 
@@ -27,14 +29,26 @@ const agentFileSchema = z.discriminatedUnion("type", [
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
-    tools: z
+    skills: z
       .array(z.string())
       .nullish()
       .transform((v) => v ?? undefined),
     tool_choice: z
-      .union([z.literal("auto"), z.literal("none"), z.literal("required"), z.literal("router")])
+      .nativeEnum(AIAgentToolChoice)
       .nullish()
       .transform((v) => v ?? undefined),
+    memory: z
+      .union([
+        z.boolean(),
+        z.object({
+          subscribe_topic: z
+            .array(z.string())
+            .nullish()
+            .transform((v) => v ?? undefined),
+        }),
+      ])
+      .nullish()
+      .transform((v) => v || undefined),
   }),
   z.object({
     type: z.literal("mcp"),
@@ -65,7 +79,17 @@ export async function loadAgentFromYamlFile(path: string) {
   );
 
   const agent = tryOrThrow(
-    () => agentFileSchema.parse({ ...json, type: json.type ?? "ai" }),
+    () =>
+      customCamelize(
+        agentFileSchema.parse({
+          ...json,
+          type: json.type ?? "ai",
+          skills: json.skills ?? json.tools,
+        }),
+        {
+          shallowKeys: ["input_schema", "output_schema"],
+        },
+      ),
     (error) => new Error(`Failed to validate agent definition from ${path}: ${error.message}`),
   );
 

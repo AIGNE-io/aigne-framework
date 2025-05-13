@@ -1,7 +1,7 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, sequential } from "@aigne/core";
+import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 
 const model = await loadModel();
@@ -48,9 +48,14 @@ Draft copy:
   outputKey: "content",
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = engine.call(sequential(conceptExtractor, writer, formatProof));
+const userAgent = aigne.invoke(
+  TeamAgent.from({
+    skills: [conceptExtractor, writer, formatProof],
+    mode: ProcessMode.sequential,
+  }),
+);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a marketing assistant. I can help you with product descriptions, marketing copy, and editing.`,

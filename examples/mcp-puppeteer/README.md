@@ -56,16 +56,17 @@ AI ->> User: The content is as follows: ...
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-mcp-puppeteer # run the example
+npx -y @aigne/example-mcp-puppeteer # Run the example
 ```
 
 ## Installation
@@ -89,7 +90,7 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 ### Run the Example
@@ -104,7 +105,7 @@ The following example demonstrates how to extract content from a website:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -119,9 +120,9 @@ const puppeteerMCPAgent = await MCPAgent.from({
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
 });
 
-const engine = new ExecutionEngine({
+const aigne = new AIGNE({
   model,
-  tools: [puppeteerMCPAgent],
+  skills: [puppeteerMCPAgent],
 });
 
 const agent = AIAgent.from({
@@ -132,7 +133,7 @@ const agent = AIAgent.from({
 `,
 });
 
-const result = await engine.call(agent, "extract content from https://www.arcblock.io");
+const result = await aigne.invoke(agent, "extract content from https://www.arcblock.io");
 
 console.log(result);
 // output:
@@ -140,7 +141,7 @@ console.log(result);
 //   $message: "The content extracted from the website [ArcBlock](https://www.arcblock.io) is as follows:\n\n---\n\n**Redefining Software Architect and Ecosystems**\n\nA total solution for building decentralized applications ...",
 // }
 
-await engine.shutdown();
+await aigne.shutdown();
 ```
 
 ## License

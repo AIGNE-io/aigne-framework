@@ -1,7 +1,7 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIAgentToolChoice, AIGNE } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 
 const model = await loadModel();
@@ -12,7 +12,6 @@ const productSupport = AIAgent.from({
   instructions: `You are an agent capable of handling any product-related questions.
   Your goal is to provide accurate and helpful information about the product.
   Be polite, professional, and ensure the user feels supported.`,
-  outputKey: "product_support",
   memory: true,
 });
 
@@ -22,7 +21,6 @@ const feedback = AIAgent.from({
   instructions: `You are an agent capable of handling any feedback-related questions.
   Your goal is to listen to the user's feedback, acknowledge their input, and provide appropriate responses.
   Be empathetic, understanding, and ensure the user feels heard.`,
-  outputKey: "feedback",
   memory: true,
 });
 
@@ -32,22 +30,22 @@ const other = AIAgent.from({
   instructions: `You are an agent capable of handling any general questions.
   Your goal is to provide accurate and helpful information on a wide range of topics.
   Be friendly, knowledgeable, and ensure the user feels satisfied with the information provided.`,
-  outputKey: "other",
   memory: true,
 });
 
 const triage = AIAgent.from({
   name: "triage",
-  instructions: `You are an agent capable of routing questions to the appropriate agent.
-  Your goal is to understand the user's query and direct them to the agent best suited to assist them.
-  Be efficient, clear, and ensure the user is connected to the right resource quickly.`,
-  tools: [productSupport, feedback, other],
-  toolChoice: "router",
+  instructions: `You are an intelligent routing agent responsible for directing user queries to the most appropriate specialized agent.
+Your task is to analyze the user's request and select exactly one tool from the available options.
+You must always choose a tool — do not answer the question directly or leave the tool unspecified.
+Be concise, accurate, and ensure efficient handoff to the correct agent.`,
+  skills: [productSupport, feedback, other],
+  toolChoice: AIAgentToolChoice.router,
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = engine.call(triage);
+const userAgent = aigne.invoke(triage);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Welcome to the support chat!

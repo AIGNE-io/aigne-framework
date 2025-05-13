@@ -1,10 +1,10 @@
 {
   "name": "@aigne/example-workflow-group-chat",
-  "version": "1.6.0",
+  "version": "1.8.1",
   "description": "A demonstration of using AIGNE Framework to build a group chat workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-group-chat",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
@@ -22,7 +22,10 @@
   "dependencies": {
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "openai": "^4.94.0",
-    "zod": "^3.24.2"
+    "openai": "^4.97.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^"
   }
 }

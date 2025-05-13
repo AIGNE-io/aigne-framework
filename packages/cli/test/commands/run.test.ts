@@ -25,37 +25,25 @@ test("run command should call run chat loop correctly", async () => {
   const cwd = process.cwd();
   process.chdir(testAgentsPath);
   await command.parseAsync(["", "run"]);
-  expect(runChatLoopInTerminal).toHaveBeenNthCalledWith(
-    1,
-    expect.any(UserAgent),
-    expect.objectContaining({}),
-  );
+  expect(runChatLoopInTerminal).toHaveBeenCalledTimes(1);
+  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(expect.any(UserAgent));
   process.chdir(cwd);
 
   // should run in specified directory
   await command.parseAsync(["", "run", testAgentsPath]);
-  expect(runChatLoopInTerminal).toHaveBeenNthCalledWith(
-    1,
-    expect.any(UserAgent),
-    expect.objectContaining({}),
-  );
+  expect(runChatLoopInTerminal).toHaveBeenCalledTimes(2);
+  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(expect.any(UserAgent));
 
   // should run in specified directory of relative path
   const relativePath = relative(cwd, testAgentsPath);
   await command.parseAsync(["", "run", relativePath]);
-  expect(runChatLoopInTerminal).toHaveBeenNthCalledWith(
-    1,
-    expect.any(UserAgent),
-    expect.objectContaining({}),
-  );
+  expect(runChatLoopInTerminal).toHaveBeenCalledTimes(3);
+  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(expect.any(UserAgent));
 
   // should run specified agent
   await command.parseAsync(["", "run", testAgentsPath, "--agent", "chat"]);
-  expect(runChatLoopInTerminal).toHaveBeenNthCalledWith(
-    1,
-    expect.any(UserAgent),
-    expect.objectContaining({}),
-  );
+  expect(runChatLoopInTerminal).toHaveBeenCalledTimes(4);
+  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(expect.any(UserAgent));
 
   // should error if agent not found
   spyOn(console, "error").mockReturnValueOnce(undefined);
@@ -84,10 +72,7 @@ test("run command should download package and run correctly", async () => {
   const path = join(homedir(), ".aigne", url.hostname, url.pathname);
   expect((await stat(join(path, "aigne.yaml"))).isFile()).toBeTrue();
 
-  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(
-    expect.any(UserAgent),
-    expect.objectContaining({}),
-  );
+  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(expect.any(UserAgent));
 });
 
 test("run command should convert package from v1 and run correctly", async () => {
@@ -110,10 +95,7 @@ test("run command should convert package from v1 and run correctly", async () =>
   const path = join(homedir(), ".aigne", url.hostname, url.pathname);
   expect((await stat(join(path, "aigne.yaml"))).isFile()).toBeTrue();
 
-  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(
-    expect.any(UserAgent),
-    expect.objectContaining({}),
-  );
+  expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(expect.any(UserAgent));
 });
 
 test("run command should download package to a special folder", async () => {
@@ -136,10 +118,7 @@ test("run command should download package to a special folder", async () => {
     await command.parseAsync(["", "run", url, "--download-dir", dir]);
 
     expect((await stat(join(dir, "aigne.yaml"))).isFile()).toBeTrue();
-    expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(
-      expect.any(UserAgent),
-      expect.objectContaining({}),
-    );
+    expect(runChatLoopInTerminal).toHaveBeenLastCalledWith(expect.any(UserAgent));
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -172,7 +151,6 @@ test("run command should parse model options correctly", async () => {
         model: expect.any(XAIChatModel),
       }),
     }),
-    expect.objectContaining({}),
   );
 
   expect(

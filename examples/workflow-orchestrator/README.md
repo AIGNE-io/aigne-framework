@@ -40,16 +40,17 @@ class style_enforcer processing
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [Bun](https://bun.sh) installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-orchestrator # run the example
+npx -y @aigne/example-workflow-orchestrator # Run the example
 ```
 
 ## Installation
@@ -73,7 +74,7 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 When running Puppeteer inside a Docker container, set the following environment variable:
@@ -99,7 +100,7 @@ Here is the generated report for this example: [arcblock-deep-research.md](./gen
 ```typescript
 import assert from "node:assert";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -137,7 +138,7 @@ Rules:
 - if you want a url to some page, you should get all link and it's title of current(home) page,
 then you can use the title to search the url of the page you want to visit.
   `,
-  tools: [puppeteer, filesystem],
+  skills: [puppeteer, filesystem],
 });
 
 const writer = AIAgent.from({
@@ -146,18 +147,18 @@ const writer = AIAgent.from({
   instructions: `You are an agent that can write to the filesystem.
   You are tasked with taking the user's input, addressing it, and
   writing the result to disk in the appropriate location.`,
-  tools: [filesystem],
+  skills: [filesystem],
 });
 
 const agent = OrchestratorAgent.from({
-  tools: [finder, writer],
+  skills: [finder, writer],
   maxIterations: 3,
   tasksConcurrency: 1, // puppeteer can only run one task at a time
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(
+const result = await aigne.invoke(
   agent,
   `\
 Conduct an in-depth research on ArcBlock using only the official website\

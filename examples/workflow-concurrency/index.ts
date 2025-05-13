@@ -1,7 +1,7 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, ExecutionEngine, parallel } from "@aigne/core";
+import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 
 const model = await loadModel();
@@ -24,9 +24,14 @@ Product description:
   outputKey: "audience",
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = engine.call(parallel(featureExtractor, audienceAnalyzer));
+const userAgent = aigne.invoke(
+  TeamAgent.from({
+    skills: [featureExtractor, audienceAnalyzer],
+    mode: ProcessMode.parallel,
+  }),
+);
 
 await runChatLoopInTerminal(userAgent, {
   welcome: `Hello, I'm a product analyst and market researcher. I can help you with extracting features and identifying target audience.`,

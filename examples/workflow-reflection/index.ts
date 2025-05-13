@@ -1,11 +1,8 @@
 #!/usr/bin/env bunwrapper
 
-import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIGNE, UserAgent, UserInputTopic, UserOutputTopic } from "@aigne/core";
-import { loadModel } from "@aigne/core/loader/index.js";
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, UserAgent, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { z } from "zod";
-
-const model = await loadModel();
 
 const coder = AIAgent.from({
   name: "coder",
@@ -67,15 +64,22 @@ Please review the code. If previous feedback was provided, see if it was address
   includeInputInOutput: true,
 });
 
-const aigne = new AIGNE({ model, agents: [coder, reviewer] });
+await runWithAIGNE(
+  (aigne) => {
+    aigne.addAgent(coder, reviewer);
 
-const userAgent = UserAgent.from({
-  context: aigne.newContext(),
-  publishTopic: UserInputTopic,
-  subscribeTopic: UserOutputTopic,
-});
+    const userAgent = UserAgent.from({
+      context: aigne.newContext(),
+      publishTopic: UserInputTopic,
+      subscribeTopic: UserOutputTopic,
+    });
 
-await runChatLoopInTerminal(userAgent, {
-  welcome: `Hello, I'm a coder with a reviewer. I can help you write code and get it reviewed.`,
-  defaultQuestion: "Write a function to find the sum of all even numbers in a list.",
-});
+    return userAgent;
+  },
+  {
+    chatLoopOptions: {
+      welcome: `Hello, I'm a coder with a reviewer. I can help you write code and get it reviewed.`,
+      defaultQuestion: "Write a function to find the sum of all even numbers in a list.",
+    },
+  },
+);

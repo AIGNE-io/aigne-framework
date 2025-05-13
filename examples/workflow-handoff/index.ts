@@ -1,11 +1,8 @@
 #!/usr/bin/env bunwrapper
 
-import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIGNE, type Agent, FunctionAgent } from "@aigne/core";
-import { loadModel } from "@aigne/core/loader/index.js";
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, type Agent, FunctionAgent } from "@aigne/core";
 import { z } from "zod";
-
-const model = await loadModel();
 
 const execute_order_tool = FunctionAgent.from({
   name: "execute_order",
@@ -145,11 +142,9 @@ But make your questions subtle and natural.
   memory: true,
 });
 
-const aigne = new AIGNE({ model });
-
-const userAgent = aigne.invoke(triage);
-
-await runChatLoopInTerminal(userAgent, {
-  welcome: `Hello, I'm a customer service bot for ACME Inc. How can I help you today?`,
-  defaultQuestion: "I want a refund",
+await runWithAIGNE(triage, {
+  chatLoopOptions: {
+    welcome: `Hello, I'm a customer service bot for ACME Inc. How can I help you today?`,
+    defaultQuestion: "I want a refund",
+  },
 });

@@ -1,42 +1,37 @@
 #!/usr/bin/env bunwrapper
 
 import { join } from "node:path";
-import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIGNE, MCPAgent, PromptBuilder } from "@aigne/core";
-import { loadModel } from "@aigne/core/loader/index.js";
-import { logger } from "@aigne/core/utils/logger.js";
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, MCPAgent, PromptBuilder } from "@aigne/core";
 
-logger.enable(`aigne:mcp,${process.env.DEBUG}`);
+await runWithAIGNE(
+  async () => {
+    const sqlite = await MCPAgent.from({
+      command: "uvx",
+      args: [
+        "-q",
+        "mcp-server-sqlite",
+        "--db-path",
+        join(process.cwd(), "aigne-example-sqlite-mcp-server.db"),
+      ],
+    });
 
-const model = await loadModel();
+    const prompt = await sqlite.prompts["mcp-demo"]?.invoke({ topic: "product service" });
+    if (!prompt) throw new Error("Prompt mcp-demo not found");
 
-const sqlite = await MCPAgent.from({
-  command: "uvx",
-  args: [
-    "-q",
-    "mcp-server-sqlite",
-    "--db-path",
-    join(process.cwd(), "aigne-example-sqlite-mcp-server.db"),
-  ],
-});
+    const agent = AIAgent.from({
+      instructions: PromptBuilder.from(prompt),
+      skills: [sqlite],
+      memory: true,
+    });
 
-const prompt = await sqlite.prompts["mcp-demo"]?.invoke({ topic: "product service" });
-if (!prompt) throw new Error("Prompt mcp-demo not found");
-
-const aigne = new AIGNE({
-  model,
-  skills: [sqlite],
-});
-
-const agent = AIAgent.from({
-  instructions: PromptBuilder.from(prompt),
-  memory: true,
-});
-
-const userAgent = aigne.invoke(agent);
-
-await runChatLoopInTerminal(userAgent, {
-  initialCall: {},
-});
+    return agent;
+  },
+  {
+    chatLoopOptions: {
+      initialCall: {},
+    },
+  },
+);
 
 process.exit(0);

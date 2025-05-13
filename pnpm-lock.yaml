@@ -94,6 +94,9 @@ importers:
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../../packages/test-utils
+      '@types/jsonwebtoken':
+        specifier: ^9.0.9
+        version: 9.0.9
 
   examples/mcp-github:
     dependencies:
@@ -1237,6 +1240,9 @@ packages:
 
   '@types/is-empty@1.2.3':
     resolution: {integrity: sha512-4J1l5d79hoIvsrKh5VUKVRA1aIdsOb10Hu5j3J2VfP/msDnfTdGPmNp2E1Wg+vs97Bktzo+MZePFFXSGoykYJw==}
+
+  '@types/jsonwebtoken@9.0.9':
+    resolution: {integrity: sha512-uoe+GxEuHbvy12OUQct2X9JenKM3qAscquYymuQN4fMWG9DBQtykrQEFcAbVACF7qaLw9BePSodUL0kquqBJpQ==}
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
@@ -4629,6 +4635,11 @@ snapshots:
   '@types/http-errors@2.0.4': {}
 
   '@types/is-empty@1.2.3': {}
+
+  '@types/jsonwebtoken@9.0.9':
+    dependencies:
+      '@types/ms': 2.1.0
+      '@types/node': 22.15.15
 
   '@types/mdast@4.0.4':
     dependencies:

@@ -1,3 +1,4 @@
+import { EOL } from "node:os";
 import { inspect } from "node:util";
 import {
   type Agent,
@@ -9,8 +10,9 @@ import {
   MESSAGE_KEY,
   type Message,
 } from "@aigne/core";
+import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import type { Listener } from "@aigne/core/utils/typed-event-emtter.js";
-import type { Listr } from "@aigne/listr2";
+import { type Listr, figures } from "@aigne/listr2";
 import { markedTerminal } from "@aigne/marked-terminal";
 import chalk from "chalk";
 import { Marked } from "marked";
@@ -19,7 +21,7 @@ import { promiseWithResolvers } from "../utils/promise-with-resolvers.js";
 import { parseDuration } from "../utils/time.js";
 
 export interface TerminalTracerOptions {
-  aiResponsePrefix?: (context: Context) => string;
+  printRequest?: boolean;
 }
 
 export class TerminalTracer {
@@ -35,17 +37,12 @@ export class TerminalTracer {
 
     const listr = new AIGNEListr(
       {
-        formatResult: (result) => {
-          return [
-            this.options.aiResponsePrefix?.(context) || "",
-            this.formatAIResponse(result),
-          ].filter(Boolean);
-        },
+        formatRequest: () =>
+          this.options.printRequest ? this.formatRequest(context, input) : undefined,
+        formatResult: (result) => [this.formatResult(context, result)].filter(Boolean),
       },
       [],
-      {
-        concurrent: true,
-      },
+      { concurrent: true },
     );
 
     const onAgentStarted: Listener<"agentStarted", ContextEventMap> = async ({
@@ -188,11 +185,33 @@ export class TerminalTracer {
 
   private marked = new Marked().use(markedTerminal({ forceHyperLink: false }));
 
-  formatAIResponse({ [MESSAGE_KEY]: msg, ...message }: Message = {}) {
+  formatRequest(_context: Context, { [MESSAGE_KEY]: msg, ...message }: Message = {}) {
+    if (!logger.enabled(LogLevel.INFO)) return;
+
+    const prefix = `${chalk.grey(figures.pointer)} 💬 `;
+
     const text =
       msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;
+
     const json = Object.keys(message).length > 0 ? inspect(message, { colors: true }) : undefined;
-    return [text, json].filter(Boolean).join("\n");
+
+    return [prefix, [text, json].filter(Boolean).join(EOL)].join(" ");
+  }
+
+  formatResult(context: Context, { [MESSAGE_KEY]: msg, ...message }: Message = {}) {
+    const prefix = logger.enabled(LogLevel.INFO)
+      ? `${chalk.grey(figures.tick)} 🤖 ${this.formatTokenUsage(context.usage)}`
+      : null;
+
+    const text =
+      msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;
+
+    const json =
+      Object.keys(message).length > 0
+        ? inspect(message, { colors: process.stdout.isTTY })
+        : undefined;
+
+    return [prefix, text, json].filter(Boolean).join(EOL);
   }
 }
 

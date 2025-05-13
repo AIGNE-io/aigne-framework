@@ -216,3 +216,43 @@ export function stringToAgentResponseStream(
     Array.from(segments).map((segment) => ({ delta: { text: { [key]: segment.segment } } })),
   );
 }
+
+export function toReadableStream(stream: NodeJS.ReadStream) {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      const onData = (chunk: Buffer) => {
+        controller.enqueue(new Uint8Array(chunk));
+      };
+
+      const onEnd = () => {
+        cleanup();
+        controller.close();
+      };
+
+      const onError = (err: Error) => {
+        cleanup();
+        controller.error(err);
+      };
+
+      function cleanup() {
+        stream.off("data", onData);
+        stream.off("end", onEnd);
+        stream.off("error", onError);
+      }
+
+      stream.on("data", onData);
+      stream.on("end", onEnd);
+      stream.on("error", onError);
+    },
+  });
+}
+
+export async function readAllString(stream: NodeJS.ReadStream | ReadableStream): Promise<string> {
+  return (
+    await readableStreamToArray(
+      (stream instanceof ReadableStream ? stream : toReadableStream(stream)).pipeThrough(
+        new TextDecoderStream(),
+      ),
+    )
+  ).join("");
+}

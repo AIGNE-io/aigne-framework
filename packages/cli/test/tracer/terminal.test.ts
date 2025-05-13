@@ -53,6 +53,9 @@ test("TerminalTracer should render output message with markdown highlight", asyn
   const tracer = new TerminalTracer(context);
 
   expect(
-    tracer.formatAIResponse(createMessage("## Hello\nI am from [**AIGNE**](https://www.aigne.io)")),
+    tracer.formatResult(
+      context,
+      createMessage("## Hello\nI am from [**AIGNE**](https://www.aigne.io)"),
+    ),
   ).toMatchSnapshot();
 });

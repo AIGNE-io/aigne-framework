@@ -1,26 +1,26 @@
 import { expect, spyOn, test } from "bun:test";
-import { LogLevel, isLogLevelEnabled, logger } from "@aigne/core/utils/logger.js";
+import { LogLevel, Logger, logger } from "@aigne/core/utils/logger.js";
 
-test("isLogLevelEnabled should return true if the level is enabled", async () => {
-  expect(isLogLevelEnabled(LogLevel.DEBUG, LogLevel.ERROR)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.DEBUG, LogLevel.WARN)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.DEBUG, LogLevel.INFO)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.DEBUG, LogLevel.DEBUG)).toBe(true);
+test("Logger.enabled should return correct value", async () => {
+  expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.ERROR)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.WARN)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.INFO)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.DEBUG)).toBe(true);
 
-  expect(isLogLevelEnabled(LogLevel.INFO, LogLevel.ERROR)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.INFO, LogLevel.WARN)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.INFO, LogLevel.INFO)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.INFO, LogLevel.DEBUG)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.INFO }).enabled(LogLevel.ERROR)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.INFO }).enabled(LogLevel.WARN)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.INFO }).enabled(LogLevel.INFO)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.INFO }).enabled(LogLevel.DEBUG)).toBe(false);
 
-  expect(isLogLevelEnabled(LogLevel.WARN, LogLevel.ERROR)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.WARN, LogLevel.WARN)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.WARN, LogLevel.INFO)).toBe(false);
-  expect(isLogLevelEnabled(LogLevel.WARN, LogLevel.DEBUG)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.WARN }).enabled(LogLevel.ERROR)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.WARN }).enabled(LogLevel.WARN)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.WARN }).enabled(LogLevel.INFO)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.WARN }).enabled(LogLevel.DEBUG)).toBe(false);
 
-  expect(isLogLevelEnabled(LogLevel.ERROR, LogLevel.ERROR)).toBe(true);
-  expect(isLogLevelEnabled(LogLevel.ERROR, LogLevel.WARN)).toBe(false);
-  expect(isLogLevelEnabled(LogLevel.ERROR, LogLevel.INFO)).toBe(false);
-  expect(isLogLevelEnabled(LogLevel.ERROR, LogLevel.DEBUG)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.ERROR)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.WARN)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.INFO)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.DEBUG)).toBe(false);
 });
 
 test("logger should logging debug message", async () => {

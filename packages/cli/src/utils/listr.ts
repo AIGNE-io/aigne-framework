@@ -1,7 +1,7 @@
 import { EOL } from "node:os";
 import { format } from "node:util";
 import type { AgentResponseStream, Message } from "@aigne/core";
-import { logger } from "@aigne/core/utils/logger.js";
+import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import {
   mergeAgentResponseChunk,
   readableStreamToAsyncIterator,
@@ -12,7 +12,7 @@ import {
   Listr,
   ListrDefaultRendererLogLevels,
   type ListrDefaultRendererOptions,
-  type ListrLogger,
+  ListrLogger,
   type ListrSimpleRendererOptions,
   type ListrTaskWrapper,
   SimpleRenderer,
@@ -40,6 +40,7 @@ export class AIGNEListr extends Listr<
 
   constructor(
     public myOptions: {
+      formatRequest: () => string | undefined;
       formatResult: (result: Message) => string[];
     },
     ...[task, options, parentTask]: ConstructorParameters<
@@ -70,6 +71,14 @@ export class AIGNEListr extends Listr<
         fallbackRenderer: AIGNEListrFallbackRenderer,
         fallbackRendererOptions: {
           aigne: aigneOptions,
+          logger: new (class extends ListrLogger {
+            override log(...[level, ...args]: Parameters<ListrLogger["log"]>): void {
+              // ignore stdout logs if level `INFO` is not enabled
+              if (!this.options?.toStderr?.includes(level) && !logger.enabled(LogLevel.INFO))
+                return;
+              super.log(level, ...args);
+            }
+          })(),
         },
       },
       parentTask,
@@ -80,13 +89,16 @@ export class AIGNEListr extends Listr<
 
   override async run(stream: () => PromiseOrValue<AgentResponseStream<Message>>): Promise<Message> {
     const originalLog = logger.logMessage;
-    const originalErrorLog = logger.logError;
 
     try {
       this.spinner.start();
 
       logger.logMessage = (...args) => this.logs.push(format(...args));
-      logger.logError = (...args) => this.logs.push(format(...args));
+
+      if (logger.enabled(LogLevel.INFO)) {
+        const request = this.myOptions.formatRequest();
+        if (request) console.log(request);
+      }
 
       const _stream = await stream();
 
@@ -95,7 +107,6 @@ export class AIGNEListr extends Listr<
       return await super.run().then(() => ({ ...this.result }));
     } finally {
       logger.logMessage = originalLog;
-      logger.logError = originalErrorLog;
 
       this.spinner.stop();
     }

@@ -10,19 +10,17 @@ export enum LogLevel {
 
 const levels = Object.values(LogLevel);
 
-export function isLogLevelEnabled(value: LogLevel, level: LogLevel): boolean {
-  return levels.indexOf(value) >= levels.indexOf(level);
-}
-
 export class Logger {
-  constructor(
-    public ns: string,
-    public level: LogLevel = LogLevel.INFO,
-  ) {
-    this.debugLogger = debug(`${ns}:debug`);
-    this.infoLogger = debug(`${ns}:info`);
-    this.warnLogger = debug(`${ns}:warn`);
-    this.errorLogger = debug(`${ns}:error`);
+  constructor(options: {
+    level: LogLevel;
+    ns: string;
+  }) {
+    this.level = options.level;
+
+    this.debugLogger = debug(`${options.ns}:debug`);
+    this.infoLogger = debug(`${options.ns}:info`);
+    this.warnLogger = debug(`${options.ns}:warn`);
+    this.errorLogger = debug(`${options.ns}:error`);
 
     for (const logger of [this.debugLogger, this.infoLogger, this.warnLogger]) {
       // @ts-ignore
@@ -37,6 +35,8 @@ export class Logger {
     this.errorLogger.enabled = true;
   }
 
+  level: LogLevel;
+
   private debugLogger: debug.Debugger;
 
   private infoLogger: debug.Debugger;
@@ -50,28 +50,35 @@ export class Logger {
   logError = console.error;
 
   debug(message: string, ...args: unknown[]) {
-    if (isLogLevelEnabled(this.level, LogLevel.DEBUG)) {
+    if (this.enabled(LogLevel.DEBUG)) {
       this.debugLogger(message, ...args);
     }
   }
 
   info(message: string, ...args: unknown[]) {
-    if (isLogLevelEnabled(this.level, LogLevel.INFO)) {
+    if (this.enabled(LogLevel.INFO)) {
       this.infoLogger(message, ...args);
     }
   }
 
   warn(message: string, ...args: unknown[]) {
-    if (isLogLevelEnabled(this.level, LogLevel.WARN)) {
+    if (this.enabled(LogLevel.WARN)) {
       this.warnLogger(message, ...args);
     }
   }
 
   error(message: string, ...args: unknown[]) {
-    if (isLogLevelEnabled(this.level, LogLevel.ERROR)) {
+    if (this.enabled(LogLevel.ERROR)) {
       this.errorLogger(message, ...args);
     }
   }
+
+  enabled(level: LogLevel) {
+    return levels.indexOf(this.level) >= levels.indexOf(level);
+  }
 }
 
-export const logger = new Logger("aigne:core", LogLevel.INFO);
+export const logger = new Logger({
+  ns: "aigne:core",
+  level: LogLevel.INFO,
+});

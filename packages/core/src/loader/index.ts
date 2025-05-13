@@ -88,6 +88,17 @@ export async function loadAgent(path: string): Promise<Agent> {
 const { MODEL_PROVIDER, MODEL_NAME } = process.env;
 const DEFAULT_MODEL_PROVIDER = "openai";
 
+export const availableModels = [
+  OpenAIChatModel,
+  ClaudeChatModel,
+  XAIChatModel,
+  GeminiChatModel,
+  DeepSeekChatModel,
+  OpenRouterChatModel,
+  OllamaChatModel,
+  BedrockChatModel,
+];
+
 export async function loadModel(
   model?: Camelize<z.infer<typeof aigneFileSchema>["chat_model"]>,
   modelOptions?: ChatModelOptions,
@@ -100,16 +111,6 @@ export async function loadModel(
     presencePenalty: model?.presencePenalty ?? undefined,
   };
 
-  const availableModels = [
-    OpenAIChatModel,
-    ClaudeChatModel,
-    XAIChatModel,
-    GeminiChatModel,
-    DeepSeekChatModel,
-    OpenRouterChatModel,
-    OllamaChatModel,
-    BedrockChatModel,
-  ];
   const M = availableModels.find((m) =>
     m.name
       .toLowerCase()

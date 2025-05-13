@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { EventEmitter } from "node:stream";
 import {
   agentResponseStreamToObject,
   arrayToAgentProcessAsyncGenerator,
@@ -6,8 +7,10 @@ import {
   asyncGeneratorToReadableStream,
   mergeAgentResponseChunk,
   objectToAgentResponseStream,
+  readAllString,
   readableStreamToArray,
   stringToAgentResponseStream,
+  toReadableStream,
 } from "@aigne/core/utils/stream-utils.js";
 
 test("objectToAgentResponseStream should generate stream correctly", async () => {
@@ -110,4 +113,50 @@ test("stringToAgentResponseStream should generate stream with Chinese correctly"
   expect(
     readableStreamToArray(stringToAgentResponseStream("你好，我能帮你什么？", "custom_text")),
   ).resolves.toMatchSnapshot();
+});
+
+test("toReadableStream should generate stream correctly", async () => {
+  const original = new EventEmitter() as unknown as NodeJS.ReadStream;
+
+  const stream = readableStreamToArray(toReadableStream(original));
+
+  original.emit("data", Buffer.from("Hello, world!"));
+  original.emit("end");
+
+  expect(await stream).toEqual([new Uint8Array(Buffer.from("Hello, world!"))]);
+});
+
+test("toReadableStream should throw error from input stream", async () => {
+  const original = new EventEmitter() as unknown as NodeJS.ReadStream;
+
+  const stream = readableStreamToArray(toReadableStream(original));
+
+  original.emit("error", new Error("test error"));
+
+  expect(stream).rejects.toThrowError("test error");
+});
+
+test("readAllString should read all string from ReadStream", async () => {
+  const original = new EventEmitter() as unknown as NodeJS.ReadStream;
+
+  const stream = readAllString(toReadableStream(original));
+
+  original.emit("data", Buffer.from("Hello, world!"));
+  original.emit("end");
+
+  expect(await stream).toEqual("Hello, world!");
+});
+
+test("readAllString should read all string from ReadableStream", async () => {
+  const stream = readAllString(
+    new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode("Hello, "));
+        controller.enqueue(new TextEncoder().encode("world!"));
+        controller.close();
+      },
+    }),
+  );
+
+  expect(await stream).toEqual("Hello, world!");
 });

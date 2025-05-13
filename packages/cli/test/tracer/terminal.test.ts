@@ -18,7 +18,7 @@ test("TerminalTracer should work correctly", async () => {
 
   const userAgent = aigne.invoke(testAgent);
 
-  const tracer = new TerminalTracer(context);
+  const tracer = new TerminalTracer(context, { printRequest: true });
 
   const { result } = await tracer.run(userAgent, createMessage("hello"));
 

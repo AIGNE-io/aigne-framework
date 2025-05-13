@@ -39,7 +39,11 @@ export const createRunAIGNECommand = (name = "run") =>
       "Temperature for the model",
       customZodError("--temperature", (s) => z.coerce.number().parse(s)),
     )
-    .option("--top-p <top-p>", "Top P for the model", (s) => z.coerce.number().parse(s))
+    .option(
+      "--top-p <top-p>",
+      "Top P for the model",
+      customZodError("--top-p", (s) => z.coerce.number().parse(s)),
+    )
     .option(
       "--presence-penalty <presence-penalty>",
       "Presence penalty for the model",
@@ -60,11 +64,18 @@ export const createRunAIGNECommand = (name = "run") =>
 export async function runWithAIGNE(
   agentCreator: ((aigne: AIGNE) => PromiseOrValue<Agent>) | Agent,
   {
+    argv = process.argv,
     chatLoopOptions,
     modelOptions,
-  }: { chatLoopOptions?: ChatLoopOptions; modelOptions?: ChatModelOptions } = {},
+  }: {
+    argv?: typeof process.argv;
+    chatLoopOptions?: ChatLoopOptions;
+    modelOptions?: ChatModelOptions;
+  } = {},
 ) {
   await createRunAIGNECommand()
+    .showHelpAfterError(true)
+    .showSuggestionAfterError(true)
     .action(async (options: RunAIGNECommandOptions) => {
       if (options.logLevel) {
         logger.level = options.logLevel;
@@ -92,7 +103,7 @@ export async function runWithAIGNE(
         await aigne.shutdown();
       }
     })
-    .parseAsync(process.argv)
+    .parseAsync(argv)
     .catch((error) => {
       console.error(new PrettyError().render(error));
       process.exit(1);
@@ -120,7 +131,7 @@ export async function runAgentWithAIGNE(
   } & RunAIGNECommandOptions = {},
 ) {
   if (options.chat) {
-    if (!process.stdout.isTTY) {
+    if (!isatty(process.stdout.fd)) {
       throw new Error("--chat mode requires a TTY terminal");
     }
 
@@ -135,7 +146,7 @@ export async function runAgentWithAIGNE(
 
   const input =
     options.input ||
-    (isatty(process.stdin.fd) ? null : await readAllString(process.stdin)) ||
+    (!isatty(process.stdin.fd) ? null : await readAllString(process.stdin)) ||
     chatLoopOptions?.initialCall ||
     chatLoopOptions?.defaultQuestion ||
     {};
@@ -144,7 +155,7 @@ export async function runAgentWithAIGNE(
     printRequest: logger.enabled(LogLevel.INFO),
   });
 
-  await tracer.run(
+  return await tracer.run(
     agent,
     chatLoopOptions?.inputKey && typeof input === "string"
       ? { [chatLoopOptions.inputKey]: input }

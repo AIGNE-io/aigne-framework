@@ -23,13 +23,21 @@ test("Logger.enabled should return correct value", async () => {
   expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.DEBUG)).toBe(false);
 });
 
-test("logger should logging debug message", async () => {
+test("logger should logging messages", async () => {
   const log = spyOn(logger, "logMessage");
+  const logError = spyOn(logger, "logError");
 
   logger.level = LogLevel.DEBUG;
 
-  logger.debug("test logging debug");
+  logger.debug("test debug message");
+  expect(log.mock.lastCall?.[0]).toMatch("test debug message");
 
-  expect(log).toHaveBeenCalledTimes(1);
-  expect(log.mock.calls[0]?.[0]).toEqual(expect.stringContaining("test logging debug"));
+  logger.info("test info message");
+  expect(log.mock.lastCall?.[0]).toMatch("test info message");
+
+  logger.warn("test warn message");
+  expect(log.mock.lastCall?.[0]).toMatch("test warn message");
+
+  logger.error("test error message");
+  expect(logError.mock.lastCall?.[0]).toMatch("test error message");
 });

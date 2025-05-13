@@ -29,6 +29,7 @@ Here's an example of how to create a custom agent:
 class MyAgent extends Agent {
   process(input: Message): Message {
     console.log(input);
+
     return {
       text: "Hello, How can I assist you today?",
     };
@@ -134,7 +135,6 @@ Streaming response object
 Here's an example of invoking an agent with streaming response:
 
 ```ts
-// Create a chat model
 const model = new OpenAIChatModel();
 
 // AIGNE: Main execution engine of AIGNE Framework.
@@ -207,7 +207,6 @@ Final JSON response
 Here's an example of invoking an agent with regular mode:
 
 ```ts
-// Create a chat model
 const model = new OpenAIChatModel();
 
 // AIGNE: Main execution engine of AIGNE Framework.
@@ -239,10 +238,10 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Parameters
 
-| Parameter | Type                                    | Description                            |
-| --------- | --------------------------------------- | -------------------------------------- |
-| `topic`   | `string` \| `string`[]                  | topic name, or an array of topic names |
-| `payload` | `Omit`\<`MessagePayload`, `"context"`\> | message to publish                     |
+| Parameter | Type                                                                                 | Description                            |
+| --------- | ------------------------------------------------------------------------------------ | -------------------------------------- |
+| `topic`   | `string` \| `string`[]                                                               | topic name, or an array of topic names |
+| `payload` | `string` \| [`Message`](agent.md#message) \| `Omit`\<`MessagePayload`, `"context"`\> | message to publish                     |
 
 ###### Returns
 
@@ -250,7 +249,7 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ##### subscribe()
 
-> **subscribe**: \{(`topic`, `listener?`): `Promise`\<`MessagePayload`\>; (`topic`, `listener`): `Unsubscribe`; (`topic`, `listener?`): `Promise`\<`MessagePayload`\> \| `Unsubscribe`; (`topic`, `listener?`): `Promise`\<`MessagePayload`\> \| `Unsubscribe`; \}
+> **subscribe**: \{(`topic`, `listener?`): `Promise`\<`MessagePayload`\>; (`topic`, `listener`): `Unsubscribe`; (`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>; (`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>; \}
 
 ###### Call Signature
 
@@ -258,10 +257,10 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Parameters
 
-| Parameter   | Type        |
-| ----------- | ----------- |
-| `topic`     | `string`    |
-| `listener?` | `undefined` |
+| Parameter   | Type                   |
+| ----------- | ---------------------- |
+| `topic`     | `string` \| `string`[] |
+| `listener?` | `undefined`            |
 
 ###### Returns
 
@@ -275,7 +274,7 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 | Parameter  | Type                   |
 | ---------- | ---------------------- |
-| `topic`    | `string`               |
+| `topic`    | `string` \| `string`[] |
 | `listener` | `MessageQueueListener` |
 
 ###### Returns
@@ -284,33 +283,33 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Call Signature
 
-> (`topic`, `listener?`): `Promise`\<`MessagePayload`\> \| `Unsubscribe`
+> (`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 ###### Parameters
 
 | Parameter   | Type                   |
 | ----------- | ---------------------- |
-| `topic`     | `string`               |
+| `topic`     | `string` \| `string`[] |
 | `listener?` | `MessageQueueListener` |
 
 ###### Returns
 
-`Promise`\<`MessagePayload`\> \| `Unsubscribe`
+`Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 ###### Call Signature
 
-> (`topic`, `listener?`): `Promise`\<`MessagePayload`\> \| `Unsubscribe`
+> (`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 ###### Parameters
 
 | Parameter   | Type                   |
 | ----------- | ---------------------- |
-| `topic`     | `string`               |
+| `topic`     | `string` \| `string`[] |
 | `listener?` | `MessageQueueListener` |
 
 ###### Returns
 
-`Promise`\<`MessagePayload`\> \| `Unsubscribe`
+`Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 ##### unsubscribe()
 
@@ -320,7 +319,7 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 | Parameter  | Type                   |
 | ---------- | ---------------------- |
-| `topic`    | `string`               |
+| `topic`    | `string` \| `string`[] |
 | `listener` | `MessageQueueListener` |
 
 ###### Returns
@@ -361,6 +360,43 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 ###### Returns
 
 [`UserAgent`](#useragent)\<`I`, `O`\>
+
+##### subscribeToTopics()
+
+> `protected` **subscribeToTopics**(`context`): `void`
+
+###### Parameters
+
+| Parameter | Type                               |
+| --------- | ---------------------------------- |
+| `context` | `Pick`\<`Context`, `"subscribe"`\> |
+
+###### Returns
+
+`void`
+
+###### Overrides
+
+[`Agent`](agent.md#agent).[`subscribeToTopics`](agent.md#agent#subscribetotopics)
+
+##### publishToTopics()
+
+> `protected` **publishToTopics**(`output`, `context`): `Promise`\<`void`\>
+
+###### Parameters
+
+| Parameter | Type      |
+| --------- | --------- |
+| `output`  | `O`       |
+| `context` | `Context` |
+
+###### Returns
+
+`Promise`\<`void`\>
+
+###### Overrides
+
+[`Agent`](agent.md#agent).[`publishToTopics`](agent.md#agent#publishtotopics)
 
 ##### process()
 
@@ -432,11 +468,9 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 let fullText = "";
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
@@ -461,17 +495,16 @@ class AsyncGeneratorAgent extends Agent {
     yield textDelta({ message: " " });
     yield textDelta({ message: "is" });
     yield textDelta({ message: "..." });
+
     // Optional return a JSON object at the end
     return { time: new Date().toISOString() };
   }
 }
 
 const agent = new AsyncGeneratorAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 const message: string[] = [];
-
 let json: Message | undefined;
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -481,7 +514,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
-
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
 ```
 
@@ -505,11 +537,9 @@ class MainAgent extends Agent {
 }
 
 const aigne = new AIGNE({});
-
 const mainAgent = new MainAgent();
 
 const result = await aigne.invoke(mainAgent, "technical question");
-
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 

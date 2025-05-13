@@ -33,6 +33,16 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  text: "I'm powered by OpenRouter, using the Claude 3 Opus model from Anthropic.",
+  model: "anthropic/claude-3-opus",
+  usage: {
+    inputTokens: 5,
+    outputTokens: 14
+  }
+}
+*/
 ```
 
 Here's an example with streaming response:
@@ -52,7 +62,6 @@ const stream = await model.invoke(
 );
 
 let fullText = "";
-
 const json = {};
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -62,7 +71,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "I'm powered by OpenRouter, using the Claude 3 Opus model from Anthropic."
-
 console.log(json); // { model: "anthropic/claude-3-opus", usage: { inputTokens: 5, outputTokens: 14 } }
 ```
 

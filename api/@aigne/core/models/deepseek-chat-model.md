@@ -33,6 +33,16 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  text: "Hello! I'm an AI assistant powered by DeepSeek's language model.",
+  model: "deepseek-chat",
+  usage: {
+    inputTokens: 7,
+    outputTokens: 12
+  }
+}
+*/
 ```
 
 Here's an example with streaming response:
@@ -52,7 +62,6 @@ const stream = await model.invoke(
 );
 
 let fullText = "";
-
 const json = {};
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -62,7 +71,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Hello! I'm an AI assistant powered by DeepSeek's language model."
-
 console.log(json); // { model: "deepseek-chat", usage: { inputTokens: 7, outputTokens: 12 } }
 ```
 

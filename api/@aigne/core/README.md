@@ -19,5 +19,6 @@
 - [models/open-router-chat-model](models/open-router-chat-model.md)
 - [models/openai-chat-model](models/openai-chat-model.md)
 - [models/xai-chat-model](models/xai-chat-model.md)
+- [memory](memory.md)
 - [server](server.md)
 - [client](client.md)

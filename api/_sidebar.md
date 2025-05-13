@@ -22,8 +22,13 @@
     - [openai-chat-model](/api/@aigne/core/models/openai-chat-model.md)
     - [xai-chat-model](/api/@aigne/core/models/xai-chat-model.md)
 
+  - [memory](/api/@aigne/core/memory.md)
+
   - [server](/api/@aigne/core/server.md)
 
   - [client](/api/@aigne/core/client.md)
 
-- [@aigne/agent-library](/api/@aigne/agent-library.md)
+- [@aigne/agent-library](/api/@aigne/agent-library/README.md)
+
+  - [orchestrator](/api/@aigne/agent-library/orchestrator.md)
+  - [fs-memory](/api/@aigne/agent-library/fs-memory.md)

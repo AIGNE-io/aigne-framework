@@ -33,6 +33,12 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  text: "I'm an AI assistant running on Ollama with the llama3 model.",
+  model: "llama3"
+}
+*/
 ```
 
 Here's an example with streaming response:
@@ -52,7 +58,6 @@ const stream = await model.invoke(
 );
 
 let fullText = "";
-
 const json = {};
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -62,7 +67,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "I'm an AI assistant running on Ollama with the llama3 model."
-
 console.log(json); // { model: "llama3" }
 ```
 

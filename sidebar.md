@@ -1,13 +1,13 @@
-- Getting Started
+* Getting Started
 
-  - [Cookbook](/cookbook.md)
-  - [CLI](/cli.md)
-  - [Agent Development](/agent-development.md)
+  * [Cookbook](/cookbook.md)
+  * [CLI](/cli.md)
+  * [Agent Development](/agent-development.md)
 
 <!-- api reference -->
 
-- Contributing
+* Contributing
 
-  - [License](/LICENSE.md)
-  - [Contributing](/CONTRIBUTING.md)
-  - [Releasing](/RELEASING.md)
+  * [License](/LICENSE.md)
+  * [Contributing](/CONTRIBUTING.md)
+  * [Releasing](/RELEASING.md)

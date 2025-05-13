@@ -73,11 +73,9 @@ const aigneServer = new AIGNEServer(aigne);
 
 // Setup the server to handle incoming requests
 const server = express();
-
 server.post("/aigne/invoke", async (req, res) => {
   await aigneServer.invoke(req, res);
 });
-
 const httpServer = server.listen(port);
 
 // Create an AIGNEClient instance
@@ -106,11 +104,9 @@ const aigneServer = new AIGNEServer(aigne);
 
 // Setup the server to handle incoming requests
 const honoApp = new Hono();
-
 honoApp.post("/aigne/invoke", async (c) => {
   return aigneServer.invoke(c.req.raw);
 });
-
 const server = serve({ port, fetch: honoApp.fetch });
 
 // Create an AIGNEClient instance
@@ -118,7 +114,6 @@ const client = new AIGNEClient({ url });
 
 // Invoke the agent by client
 const response = await client.invoke("chat", { $message: "hello" });
-
 console.log(response); // Output: {$message: "Hello world!"}
 ```
 
@@ -204,11 +199,9 @@ const aigneServer = new AIGNEServer(aigne);
 
 // Setup the server to handle incoming requests
 const honoApp = new Hono();
-
 honoApp.post("/aigne/invoke", async (c) => {
   return aigneServer.invoke(c.req.raw);
 });
-
 const server = serve({ port, fetch: honoApp.fetch });
 
 // Create an AIGNEClient instance
@@ -216,7 +209,6 @@ const client = new AIGNEClient({ url });
 
 // Invoke the agent by client
 const response = await client.invoke("chat", { $message: "hello" });
-
 console.log(response); // Output: {$message: "Hello world!"}
 ```
 
@@ -260,11 +252,9 @@ const aigneServer = new AIGNEServer(aigne);
 
 // Setup the server to handle incoming requests
 const server = express();
-
 server.post("/aigne/invoke", async (req, res) => {
   await aigneServer.invoke(req, res);
 });
-
 const httpServer = server.listen(port);
 
 // Create an AIGNEClient instance

@@ -34,7 +34,6 @@ const stream = await client.invoke(
 );
 
 let text = "";
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
 }
@@ -152,7 +151,6 @@ const stream = await client.invoke(
 );
 
 let text = "";
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
 }

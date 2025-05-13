@@ -40,7 +40,6 @@ TeamAgent is particularly useful for:
 Here's an example of creating a sequential TeamAgent:
 
 ```ts
-// Create individual specialized agents
 const translatorAgent = FunctionAgent.from({
   name: "translator",
   process: (input: Message) => ({
@@ -65,7 +64,6 @@ const teamAgent = TeamAgent.from({
 const result = await teamAgent.invoke({ text: "Hello world" });
 
 console.log(result);
-
 // Expected output: {
 //   translation: "Hello world (translation)",
 //   formatted: "[formatted] Hello world (translation)"
@@ -147,7 +145,6 @@ A new TeamAgent instance
 Here's an example of creating a sequential TeamAgent:
 
 ```ts
-// Create individual specialized agents
 const translatorAgent = FunctionAgent.from({
   name: "translator",
   process: (input: Message) => ({
@@ -172,7 +169,6 @@ const teamAgent = TeamAgent.from({
 const result = await teamAgent.invoke({ text: "Hello world" });
 
 console.log(result);
-
 // Expected output: {
 //   translation: "Hello world (translation)",
 //   formatted: "[formatted] Hello world (translation)"
@@ -205,7 +201,6 @@ const teamAgent = TeamAgent.from({
 const result = await teamAgent.invoke({ query: "AI news" });
 
 console.log(result);
-
 // Expected output: {
 //   googleResults: "Google search results for AI news",
 //   braveResults: "Brave search results for AI news"

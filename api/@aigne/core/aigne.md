@@ -27,7 +27,6 @@ const agent = AIAgent.from({
 });
 
 const result = await aigne.invoke(agent, "hello");
-
 console.log(result); // { $message: "Hello, How can I assist you today?" }
 ```
 
@@ -49,7 +48,6 @@ const agent = AIAgent.from({
 let text = "";
 
 const stream = await aigne.invoke(agent, "hello", { streaming: true });
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
 }
@@ -215,11 +213,9 @@ const agent = AIAgent.from({
 const userAgent = aigne.invoke(agent);
 
 const result1 = await userAgent.invoke("hello");
-
 console.log(result1); // { $message: "Hello, How can I assist you today?" }
 
 const result2 = await userAgent.invoke("I'm Bob!");
-
 console.log(result2); // { $message: "Nice to meet you, Bob!" }
 ```
 
@@ -325,7 +321,6 @@ const agent = AIAgent.from({
 });
 
 const result = await aigne.invoke(agent, "hello");
-
 console.log(result); // { $message: "Hello, How can I assist you today?" }
 ```
 
@@ -377,7 +372,6 @@ const agent = AIAgent.from({
 let text = "";
 
 const stream = await aigne.invoke(agent, "hello", { streaming: true });
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
 }
@@ -424,10 +418,10 @@ It creates a new context internally and delegates to the context's publish metho
 
 ###### Parameters
 
-| Parameter | Type                                    | Description                                            |
-| --------- | --------------------------------------- | ------------------------------------------------------ |
-| `topic`   | `string` \| `string`[]                  | The topic or array of topics to publish the message to |
-| `payload` | `Omit`\<`MessagePayload`, `"context"`\> | The message payload to be delivered to subscribers     |
+| Parameter | Type                                                                                        | Description                                            |
+| --------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `topic`   | `string` \| `string`[]                                                                      | The topic or array of topics to publish the message to |
+| `payload` | `string` \| [`Message`](agents/agent.md#message) \| `Omit`\<`MessagePayload`, `"context"`\> | The message payload to be delivered to subscribers     |
 
 ###### Returns
 
@@ -456,7 +450,7 @@ const aigne = new AIGNE({
 
 const subscription = aigne.subscribe("result_topic");
 
-aigne.publish("test_topic", createPublishMessage("hello"));
+aigne.publish("test_topic", "hello");
 
 const { message } = await subscription;
 
@@ -475,10 +469,10 @@ It's useful for one-time message handling or when using async/await patterns.
 
 ###### Parameters
 
-| Parameter   | Type        | Description               |
-| ----------- | ----------- | ------------------------- |
-| `topic`     | `string`    | The topic to subscribe to |
-| `listener?` | `undefined` | -                         |
+| Parameter   | Type                   | Description               |
+| ----------- | ---------------------- | ------------------------- |
+| `topic`     | `string` \| `string`[] | The topic to subscribe to |
+| `listener?` | `undefined`            | -                         |
 
 ###### Returns
 
@@ -509,7 +503,7 @@ const aigne = new AIGNE({
 
 const subscription = aigne.subscribe("result_topic");
 
-aigne.publish("test_topic", createPublishMessage("hello"));
+aigne.publish("test_topic", "hello");
 
 const { message } = await subscription;
 
@@ -528,7 +522,7 @@ It's useful for continuous message handling or event-driven architectures.
 
 | Parameter  | Type                   | Description                                                                        |
 | ---------- | ---------------------- | ---------------------------------------------------------------------------------- |
-| `topic`    | `string`               | The topic to subscribe to                                                          |
+| `topic`    | `string` \| `string`[] | The topic to subscribe to                                                          |
 | `listener` | `MessageQueueListener` | Callback function that will be invoked when messages arrive on the specified topic |
 
 ###### Returns
@@ -560,15 +554,16 @@ const aigne = new AIGNE({
 
 const unsubscribe = aigne.subscribe("result_topic", ({ message }) => {
   console.log(message); // { $message: "Hello, How can I assist you today?" }
+
   unsubscribe();
 });
 
-aigne.publish("test_topic", createPublishMessage("hello"));
+aigne.publish("test_topic", "hello");
 ```
 
 ###### Call Signature
 
-> **subscribe**(`topic`, `listener?`): `Promise`\<`MessagePayload`\> \| `Unsubscribe`
+> **subscribe**(`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 Generic subscribe signature that handles both Promise and listener patterns.
 This is the implementation signature that supports both overloaded behaviors.
@@ -577,12 +572,12 @@ This is the implementation signature that supports both overloaded behaviors.
 
 | Parameter   | Type                   | Description                |
 | ----------- | ---------------------- | -------------------------- |
-| `topic`     | `string`               | The topic to subscribe to  |
+| `topic`     | `string` \| `string`[] | The topic to subscribe to  |
 | `listener?` | `MessageQueueListener` | Optional callback function |
 
 ###### Returns
 
-`Promise`\<`MessagePayload`\> \| `Unsubscribe`
+`Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 Either a Promise for the next message or an Unsubscribe function
 
@@ -599,7 +594,7 @@ in messages published to the specified topic.
 
 | Parameter  | Type                   | Description                                                       |
 | ---------- | ---------------------- | ----------------------------------------------------------------- |
-| `topic`    | `string`               | The topic to unsubscribe from                                     |
+| `topic`    | `string` \| `string`[] | The topic to unsubscribe from                                     |
 | `listener` | `MessageQueueListener` | The listener function that was previously subscribed to the topic |
 
 ###### Returns
@@ -627,10 +622,11 @@ const aigne = new AIGNE({
 
 const unsubscribe = aigne.subscribe("result_topic", ({ message }) => {
   console.log(message); // { $message: "Hello, How can I assist you today?" }
+
   unsubscribe();
 });
 
-aigne.publish("test_topic", createPublishMessage("hello"));
+aigne.publish("test_topic", "hello");
 ```
 
 ##### shutdown()

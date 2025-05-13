@@ -1,6 +1,6 @@
-[Documentation](../README.md) / @aigne/agent-library
+[Documentation](../../README.md) / [@aigne/agent-library](README.md) / orchestrator
 
-# @aigne/agent-library
+# orchestrator
 
 ## Classes
 
@@ -24,14 +24,14 @@ Workflow:
 
 #### Extends
 
-- [`Agent`](core/agents/agent.md#agent)\<`I`, `O`\>
+- [`Agent`](../core/agents/agent.md#agent)\<`I`, `O`\>
 
 #### Type Parameters
 
-| Type Parameter                                          | Default type                              |
-| ------------------------------------------------------- | ----------------------------------------- |
-| `I` _extends_ [`Message`](core/agents/agent.md#message) | [`Message`](core/agents/agent.md#message) |
-| `O` _extends_ [`Message`](core/agents/agent.md#message) | [`Message`](core/agents/agent.md#message) |
+| Type Parameter                                             | Default type                                 |
+| ---------------------------------------------------------- | -------------------------------------------- |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
 
 #### Constructors
 
@@ -53,7 +53,7 @@ Creates an OrchestratorAgent instance
 
 ###### Overrides
 
-[`Agent`](core/agents/agent.md#agent).[`constructor`](core/agents/agent.md#agent#constructor)
+[`Agent`](../core/agents/agent.md#agent).[`constructor`](../core/agents/agent.md#agent#constructor)
 
 #### Properties
 
@@ -81,10 +81,10 @@ Factory method to create an OrchestratorAgent instance
 
 ###### Type Parameters
 
-| Type Parameter                                          |
-| ------------------------------------------------------- |
-| `I` _extends_ [`Message`](core/agents/agent.md#message) |
-| `O` _extends_ [`Message`](core/agents/agent.md#message) |
+| Type Parameter                                             |
+| ---------------------------------------------------------- |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) |
 
 ###### Parameters
 
@@ -127,7 +127,7 @@ Processing result
 
 ###### Overrides
 
-[`Agent`](core/agents/agent.md#agent).[`process`](core/agents/agent.md#agent#process)
+[`Agent`](../core/agents/agent.md#agent).[`process`](../core/agents/agent.md#agent#process)
 
 ## Interfaces
 
@@ -137,14 +137,14 @@ Configuration options for the Orchestrator Agent
 
 #### Extends
 
-- [`AgentOptions`](core/agents/agent.md#agentoptions)\<`I`, `O`\>
+- [`AgentOptions`](../core/agents/agent.md#agentoptions)\<`I`, `O`\>
 
 #### Type Parameters
 
-| Type Parameter                                          | Default type                              |
-| ------------------------------------------------------- | ----------------------------------------- |
-| `I` _extends_ [`Message`](core/agents/agent.md#message) | [`Message`](core/agents/agent.md#message) |
-| `O` _extends_ [`Message`](core/agents/agent.md#message) | [`Message`](core/agents/agent.md#message) |
+| Type Parameter                                             | Default type                                 |
+| ---------------------------------------------------------- | -------------------------------------------- |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
 
 #### Properties
 

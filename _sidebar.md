@@ -1,8 +1,8 @@
-- Getting Started
+* Getting Started
 
-  - [Cookbook](/cookbook.md)
-  - [CLI](/cli.md)
-  - [Agent Development](/agent-development.md)
+  * [Cookbook](/cookbook.md)
+  * [CLI](/cli.md)
+  * [Agent Development](/agent-development.md)
 
 - API Reference
 
@@ -30,14 +30,19 @@
       - [openai-chat-model](/api/@aigne/core/models/openai-chat-model.md)
       - [xai-chat-model](/api/@aigne/core/models/xai-chat-model.md)
 
+    - [memory](/api/@aigne/core/memory.md)
+
     - [server](/api/@aigne/core/server.md)
 
     - [client](/api/@aigne/core/client.md)
 
-  - [@aigne/agent-library](/api/@aigne/agent-library.md)
+  - [@aigne/agent-library](/api/@aigne/agent-library/README.md)
 
-- Contributing
+    - [orchestrator](/api/@aigne/agent-library/orchestrator.md)
+    - [fs-memory](/api/@aigne/agent-library/fs-memory.md)
 
-  - [License](/LICENSE.md)
-  - [Contributing](/CONTRIBUTING.md)
-  - [Releasing](/RELEASING.md)
+* Contributing
+
+  * [License](/LICENSE.md)
+  * [Contributing](/CONTRIBUTING.md)
+  * [Releasing](/RELEASING.md)

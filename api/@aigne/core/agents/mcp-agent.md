@@ -22,7 +22,6 @@ MCPAgent serves as a bridge between your application and MCP servers, allowing y
 Here's an example of creating an MCPAgent with SSE transport:
 
 ```ts
-// Create an MCPAgent using a SSE server connection
 await using mcpAgent = await MCPAgent.from({
   url: `http://localhost:${port}/sse`,
   transport: "sse",
@@ -31,12 +30,18 @@ await using mcpAgent = await MCPAgent.from({
 console.log(mcpAgent.name); // Output: "example-server"
 
 const echo = mcpAgent.skills.echo;
-
 if (!echo) throw new Error("Skill not found");
 
 const result = await echo.invoke({ message: "Hello!" });
-
 console.log(result);
+// {
+//   "content": [
+//     {
+//       "text": "Tool echo: Hello!",
+//       "type": "text",
+//     },
+//   ],
+// }
 ```
 
 #### Extends
@@ -66,7 +71,6 @@ Create an MCPAgent instance directly with a configured client.
 Here's an example of creating an MCPAgent with an existing client:
 
 ```ts
-// Create a client instance
 const client = new Client({ name: "test-client", version: "1.0.0" });
 
 const transport = new StdioClientTransport({
@@ -119,12 +123,22 @@ await using mcpAgent = await MCPAgent.from({
 });
 
 const echo = mcpAgent.prompts.echo;
-
 if (!echo) throw new Error("Prompt not found");
 
 const result = await echo.invoke({ message: "Hello!" });
-
 console.log(result);
+// {
+//   "messages": [
+//     {
+//       "content": {
+//         "text": "Please process this message: Hello!",
+//         "type": "text",
+//       },
+//       "role": "user",
+//     },
+//     ...
+//   ],
+// }
 ```
 
 ##### resources
@@ -146,12 +160,18 @@ await using mcpAgent = await MCPAgent.from({
 });
 
 const echo = mcpAgent.resources.echo;
-
 if (!echo) throw new Error("Resource not found");
 
 const result = await echo.invoke({ message: "Hello!" });
-
 console.log(result);
+// {
+//   "contents": [
+//     {
+//       "text": "Resource echo: Hello!",
+//       "uri": "echo://Hello!",
+//     },
+//   ],
+// }
 ```
 
 #### Accessors
@@ -205,7 +225,6 @@ Promise resolving to a new MCPAgent instance
 Here's an example of creating an MCPAgent with StreamableHTTP transport:
 
 ```ts
-// Create an MCPAgent using a streamable http server connection
 await using mcpAgent = await MCPAgent.from({
   url: `http://localhost:${port}/mcp`,
   transport: "streamableHttp",
@@ -214,18 +233,23 @@ await using mcpAgent = await MCPAgent.from({
 console.log(mcpAgent.name); // Output: "example-server-streamable-http"
 
 const echo = mcpAgent.skills.echo;
-
 if (!echo) throw new Error("Skill not found");
 
 const result = await echo.invoke({ message: "Hello!" });
-
 console.log(result);
+// {
+//   "content": [
+//     {
+//       "text": "Tool echo: Hello!",
+//       "type": "text",
+//     },
+//   ],
+// }
 ```
 
 Here's an example of creating an MCPAgent with SSE transport:
 
 ```ts
-// Create an MCPAgent using a SSE server connection
 await using mcpAgent = await MCPAgent.from({
   url: `http://localhost:${port}/sse`,
   transport: "sse",
@@ -234,18 +258,23 @@ await using mcpAgent = await MCPAgent.from({
 console.log(mcpAgent.name); // Output: "example-server"
 
 const echo = mcpAgent.skills.echo;
-
 if (!echo) throw new Error("Skill not found");
 
 const result = await echo.invoke({ message: "Hello!" });
-
 console.log(result);
+// {
+//   "content": [
+//     {
+//       "text": "Tool echo: Hello!",
+//       "type": "text",
+//     },
+//   ],
+// }
 ```
 
 Here's an example of creating an MCPAgent with Stdio transport:
 
 ```ts
-// Create an MCPAgent using a command-line (stdio) server
 await using mcpAgent = await MCPAgent.from({
   command: "bun",
   args: [join(import.meta.dir, "../../test/_mocks/mock-mcp-server.ts")],
@@ -254,12 +283,18 @@ await using mcpAgent = await MCPAgent.from({
 console.log(mcpAgent.name); // Output: "example-server"
 
 const echo = mcpAgent.skills.echo;
-
 if (!echo) throw new Error("Skill not found");
 
 const result = await echo.invoke({ message: "Hello!" });
-
 console.log(result);
+// {
+//   "content": [
+//     {
+//       "text": "Tool echo: Hello!",
+//       "type": "text",
+//     },
+//   ],
+// }
 ```
 
 ###### Call Signature
@@ -288,7 +323,6 @@ A new MCPAgent instance
 Here's an example of creating an MCPAgent with a client instance:
 
 ```ts
-// Create a client instance
 const client = new Client({ name: "test-client", version: "1.0.0" });
 
 const transport = new StdioClientTransport({
@@ -358,17 +392,20 @@ const mcpAgent = await MCPAgent.from({
   transport: "streamableHttp",
 });
 
+const close = spyOn(mcpAgent.client, "close");
+
 await mcpAgent.shutdown();
 ```
 
 Here's an example of shutting down an MCPAgent by using statement:
 
 ```ts
-// MCP will be shutdown when the variable goes out of scope
 await using _mcpAgent = await MCPAgent.from({
   url: `http://localhost:${port}/mcp`,
   transport: "streamableHttp",
 });
+
+const close = spyOn(_mcpAgent.client, "close");
 ```
 
 ###### Overrides
@@ -402,6 +439,7 @@ Here's an example of how to create a custom agent:
 class MyAgent extends Agent {
   process(input: Message): Message {
     console.log(input);
+
     return {
       text: "Hello, How can I assist you today?",
     };
@@ -485,6 +523,7 @@ Here's an example of how to create a custom agent:
 class MyAgent extends Agent {
   process(input: Message): Message {
     console.log(input);
+
     return {
       text: "Hello, How can I assist you today?",
     };
@@ -573,11 +612,9 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 let fullText = "";
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
@@ -602,17 +639,16 @@ class AsyncGeneratorAgent extends Agent {
     yield textDelta({ message: " " });
     yield textDelta({ message: "is" });
     yield textDelta({ message: "..." });
+
     // Optional return a JSON object at the end
     return { time: new Date().toISOString() };
   }
 }
 
 const agent = new AsyncGeneratorAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 const message: string[] = [];
-
 let json: Message | undefined;
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -622,7 +658,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
-
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
 ```
 
@@ -646,11 +681,9 @@ class MainAgent extends Agent {
 }
 
 const aigne = new AIGNE({});
-
 const mainAgent = new MainAgent();
 
 const result = await aigne.invoke(mainAgent, "technical question");
-
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 
@@ -685,6 +718,7 @@ Here's an example of how to create a custom agent:
 class MyAgent extends Agent {
   process(input: Message): Message {
     console.log(input);
+
     return {
       text: "Hello, How can I assist you today?",
     };
@@ -773,11 +807,9 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 let fullText = "";
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
@@ -802,17 +834,16 @@ class AsyncGeneratorAgent extends Agent {
     yield textDelta({ message: " " });
     yield textDelta({ message: "is" });
     yield textDelta({ message: "..." });
+
     // Optional return a JSON object at the end
     return { time: new Date().toISOString() };
   }
 }
 
 const agent = new AsyncGeneratorAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 const message: string[] = [];
-
 let json: Message | undefined;
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -822,7 +853,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
-
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
 ```
 
@@ -846,11 +876,9 @@ class MainAgent extends Agent {
 }
 
 const aigne = new AIGNE({});
-
 const mainAgent = new MainAgent();
 
 const result = await aigne.invoke(mainAgent, "technical question");
-
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 
@@ -885,6 +913,7 @@ Here's an example of how to create a custom agent:
 class MyAgent extends Agent {
   process(input: Message): Message {
     console.log(input);
+
     return {
       text: "Hello, How can I assist you today?",
     };
@@ -999,11 +1028,9 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 let fullText = "";
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
@@ -1028,17 +1055,16 @@ class AsyncGeneratorAgent extends Agent {
     yield textDelta({ message: " " });
     yield textDelta({ message: "is" });
     yield textDelta({ message: "..." });
+
     // Optional return a JSON object at the end
     return { time: new Date().toISOString() };
   }
 }
 
 const agent = new AsyncGeneratorAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 const message: string[] = [];
-
 let json: Message | undefined;
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -1048,7 +1074,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
-
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
 ```
 
@@ -1072,11 +1097,9 @@ class MainAgent extends Agent {
 }
 
 const aigne = new AIGNE({});
-
 const mainAgent = new MainAgent();
 
 const result = await aigne.invoke(mainAgent, "technical question");
-
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 

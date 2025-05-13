@@ -41,7 +41,6 @@ Key features:
 Basic AIAgent creation:
 
 ```ts
-// Create a simple AIAgent with minimal configuration
 const model = new OpenAIChatModel();
 
 const agent = AIAgent.from({
@@ -118,11 +117,9 @@ const model = new OpenAIChatModel();
 const systemMessage = SystemMessageTemplate.from(
   "You are a technical support specialist.",
 );
-
 const userMessage = UserMessageTemplate.from(
   "Please help me troubleshoot this issue: {{issue}}",
 );
-
 const promptTemplate = ChatMessagesTemplate.from([systemMessage, userMessage]);
 
 // Create a PromptBuilder with the template
@@ -301,6 +298,40 @@ const result = await agent.invoke("What's the weather in San Francisco?");
 console.log(result); // Expected output: { forecast: "Weather in San Francisco: Sunny, 75°F" }
 ```
 
+##### memoryAgentsAsTools?
+
+> `optional` **memoryAgentsAsTools**: `boolean`
+
+Whether to include memory agents as tools for the AI model
+
+When set to true, memory agents will be made available as tools
+that the model can call directly to retrieve or store information.
+This enables the agent to explicitly interact with its memories.
+
+##### memoryPromptTemplate?
+
+> `optional` **memoryPromptTemplate**: `string`
+
+Custom prompt template for formatting memory content
+
+Allows customization of how memories are presented to the AI model.
+If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+
+The template receives a {{memories}} variable containing serialized memory content.
+
+##### catchToolsError
+
+> **catchToolsError**: `boolean` = `true`
+
+Whether to catch error from tool execution and continue processing.
+If set to false, the agent will throw an error if a tool fails
+
+###### Default
+
+```ts
+true;
+```
+
 #### Methods
 
 ##### from()
@@ -406,7 +437,7 @@ like model configuration, prompt instructions, and tool choice.
 
 #### Extends
 
-- [`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>
+- `Omit`\<[`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>, `"memory"`\>
 
 #### Type Parameters
 
@@ -417,9 +448,13 @@ like model configuration, prompt instructions, and tool choice.
 
 #### Properties
 
-| Property                                  | Type                                                                                                                                   | Description                                                                                                                             |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="model"></a> `model?`               | [`ChatModel`](../models/chat-model.md#chatmodel)                                                                                       | The language model to use for this agent If not provided, the agent will use the model from the context                                 |
-| <a id="instructions"></a> `instructions?` | `string` \| `PromptBuilder`                                                                                                            | Instructions to guide the AI model's behavior Can be a simple string or a full PromptBuilder instance for more complex prompt templates |
-| <a id="outputkey"></a> `outputKey?`       | `string`                                                                                                                               | Custom key to use for text output in the response Defaults to $message if not specified                                                 |
-| <a id="toolchoice"></a> `toolChoice?`     | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> \| [`AIAgentToolChoice`](#aiagenttoolchoice) | Controls how the agent uses tools during execution **Default** `AIAgentToolChoice.auto`                                                 |
+| Property                                                  | Type                                                                                                                                   | Description                                                                                                                                                                                                                                                                                   |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="model"></a> `model?`                               | [`ChatModel`](../models/chat-model.md#chatmodel)                                                                                       | The language model to use for this agent If not provided, the agent will use the model from the context                                                                                                                                                                                       |
+| <a id="instructions"></a> `instructions?`                 | `string` \| `PromptBuilder`                                                                                                            | Instructions to guide the AI model's behavior Can be a simple string or a full PromptBuilder instance for more complex prompt templates                                                                                                                                                       |
+| <a id="outputkey"></a> `outputKey?`                       | `string`                                                                                                                               | Custom key to use for text output in the response Defaults to $message if not specified                                                                                                                                                                                                       |
+| <a id="toolchoice"></a> `toolChoice?`                     | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> \| [`AIAgentToolChoice`](#aiagenttoolchoice) | Controls how the agent uses tools during execution **Default** `AIAgentToolChoice.auto`                                                                                                                                                                                                       |
+| <a id="catchtoolserror"></a> `catchToolsError?`           | `boolean`                                                                                                                              | Whether to catch errors from tool execution and continue processing. If set to false, the agent will throw an error if a tool fails. **Default** `true`                                                                                                                                       |
+| <a id="memoryagentsastools"></a> `memoryAgentsAsTools?`   | `boolean`                                                                                                                              | Whether to include memory agents as tools for the AI model When set to true, memory agents will be made available as tools that the model can call directly to retrieve or store information. This enables the agent to explicitly interact with its memories. **Default** `false`            |
+| <a id="memoryprompttemplate"></a> `memoryPromptTemplate?` | `string`                                                                                                                               | Custom prompt template for formatting memory content Allows customization of how memories are presented to the AI model. If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used. The template receives a {{memories}} variable containing serialized memory content. |
+| <a id="memory"></a> `memory?`                             | `true` \| [`MemoryAgent`](../memory.md#memoryagent) \| [`MemoryAgent`](../memory.md#memoryagent)[] \| `DefaultMemoryOptions`           | -                                                                                                                                                                                                                                                                                             |

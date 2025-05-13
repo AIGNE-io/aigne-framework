@@ -29,6 +29,7 @@ Here's an example of how to create a custom agent:
 class MyAgent extends Agent {
   process(input: Message): Message {
     console.log(input);
+
     return {
       text: "Hello, How can I assist you today?",
     };
@@ -51,7 +52,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 - [`TeamAgent`](team-agent.md#teamagent)
 - [`UserAgent`](user-agent.md#useragent)
 - [`ChatModel`](../models/chat-model.md#chatmodel)
-- [`OrchestratorAgent`](../../agent-library.md#orchestratoragent)
+- [`MemoryAgent`](../memory.md#memoryagent)
+- [`MemoryRecorder`](../memory.md#memoryrecorder)
+- [`MemoryRetriever`](../memory.md#memoryretriever)
+- [`OrchestratorAgent`](../../agent-library/orchestrator.md#orchestratoragent)
 
 #### Type Parameters
 
@@ -78,14 +82,11 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Properties
 
-##### memory?
+##### memories
 
-> `readonly` `optional` **memory**: `AgentMemory`
+> `readonly` **memories**: [`MemoryAgent`](../memory.md#memoryagent)[] = `[]`
 
-Agent's memory instance for storing conversation history
-
-When enabled, allows the agent to remember past interactions
-and use them for context in future processing
+List of memories this agent can use
 
 ##### name
 
@@ -229,6 +230,34 @@ enabling inter-agent communication.
 
 `void`
 
+##### subscribeToTopics()
+
+> `protected` **subscribeToTopics**(`context`): `void`
+
+###### Parameters
+
+| Parameter | Type                               |
+| --------- | ---------------------------------- |
+| `context` | `Pick`\<`Context`, `"subscribe"`\> |
+
+###### Returns
+
+`void`
+
+##### onMessage()
+
+> **onMessage**(`__namedParameters`): `Promise`\<`void`\>
+
+###### Parameters
+
+| Parameter           | Type             |
+| ------------------- | ---------------- |
+| `__namedParameters` | `MessagePayload` |
+
+###### Returns
+
+`Promise`\<`void`\>
+
 ##### addSkill()
 
 > **addSkill**(...`skills`): `void`
@@ -278,7 +307,6 @@ Final JSON response
 Here's an example of invoking an agent with regular mode:
 
 ```ts
-// Create a chat model
 const model = new OpenAIChatModel();
 
 // AIGNE: Main execution engine of AIGNE Framework.
@@ -328,7 +356,6 @@ Streaming response object
 Here's an example of invoking an agent with streaming response:
 
 ```ts
-// Create a chat model
 const model = new OpenAIChatModel();
 
 // AIGNE: Main execution engine of AIGNE Framework.
@@ -448,6 +475,21 @@ Operations performed after the agent produces output, including:
 
 `void`
 
+##### publishToTopics()
+
+> `protected` **publishToTopics**(`output`, `context`): `Promise`\<`void`\>
+
+###### Parameters
+
+| Parameter | Type                  |
+| --------- | --------------------- |
+| `output`  | [`Message`](#message) |
+| `context` | `Context`             |
+
+###### Returns
+
+`Promise`\<`void`\>
+
 ##### process()
 
 > `abstract` **process**(`input`, `context`): `PromiseOrValue`\<[`AgentProcessResult`](#agentprocessresult)\<`O`\>\>
@@ -518,11 +560,9 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 let fullText = "";
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
@@ -547,17 +587,16 @@ class AsyncGeneratorAgent extends Agent {
     yield textDelta({ message: " " });
     yield textDelta({ message: "is" });
     yield textDelta({ message: "..." });
+
     // Optional return a JSON object at the end
     return { time: new Date().toISOString() };
   }
 }
 
 const agent = new AsyncGeneratorAgent();
-
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 const message: string[] = [];
-
 let json: Message | undefined;
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -567,7 +606,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
-
 console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
 ```
 
@@ -591,11 +629,9 @@ class MainAgent extends Agent {
 }
 
 const aigne = new AIGNE({});
-
 const mainAgent = new MainAgent();
 
 const result = await aigne.invoke(mainAgent, "technical question");
-
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 
@@ -620,6 +656,7 @@ class MyAgent extends Agent {
   override process(input: Message): Message {
     return { text: `Hello, ${input}` };
   }
+
   override async shutdown() {
     console.log("Agent is shutting down...");
     // Clean up resources, close connections, etc.
@@ -627,6 +664,8 @@ class MyAgent extends Agent {
 }
 
 const agent = new MyAgent();
+
+const shutdown = spyOn(agent, "shutdown");
 
 await agent.shutdown();
 ```
@@ -638,6 +677,7 @@ class MyAgent extends Agent {
   override process(input: Message): Message {
     return { text: `Hello, ${input}` };
   }
+
   override async shutdown() {
     console.log("Agent is shutting down...");
     // Clean up resources, close connections, etc.
@@ -646,6 +686,8 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
+
+const shutdown = spyOn(agent, "shutdown");
 ```
 
 ##### \[custom\]()
@@ -682,6 +724,7 @@ class MyAgent extends Agent {
   override process(input: Message): Message {
     return { text: `Hello, ${input}` };
   }
+
   override async shutdown() {
     console.log("Agent is shutting down...");
     // Clean up resources, close connections, etc.
@@ -690,6 +733,8 @@ class MyAgent extends Agent {
 
 // agent will be automatically disposed of at the end of this block
 await using agent = new MyAgent();
+
+const shutdown = spyOn(agent, "shutdown");
 ```
 
 ---
@@ -874,12 +919,11 @@ Configuration options for an agent
 #### Extended by
 
 - [`FunctionAgentOptions`](#functionagentoptions)
-- [`AIAgentOptions`](ai-agent.md#aiagentoptions)
 - [`MCPAgentOptions`](mcp-agent.md#mcpagentoptions)
 - [`MCPBaseOptions`](mcp-agent.md#mcpbaseoptions)
 - [`TeamAgentOptions`](team-agent.md#teamagentoptions)
 - [`UserAgentOptions`](user-agent.md#useragentoptions)
-- [`OrchestratorAgentOptions`](../../agent-library.md#orchestratoragentoptions)
+- [`OrchestratorAgentOptions`](../../agent-library/orchestrator.md#orchestratoragentoptions)
 
 #### Type Parameters
 
@@ -890,24 +934,22 @@ Configuration options for an agent
 
 #### Properties
 
-| Property                                                  | Type                                                                                                                           | Description                                                                                                                                           |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="subscribetopic-1"></a> `subscribeTopic?`           | [`SubscribeTopic`](#subscribetopic)                                                                                            | Topics the agent should subscribe to These topics determine which messages the agent will receive from the system                                     |
-| <a id="publishtopic-1"></a> `publishTopic?`               | [`PublishTopic`](#publishtopic)\<`O`\>                                                                                         | Topics the agent should publish to These topics determine where the agent's output messages will be sent in the system                                |
-| <a id="name"></a> `name?`                                 | `string`                                                                                                                       | Name of the agent Used for identification and logging. Defaults to the constructor name if not specified                                              |
-| <a id="description"></a> `description?`                   | `string`                                                                                                                       | Description of the agent A human-readable description of what the agent does, useful for documentation and debugging                                  |
-| <a id="inputschema"></a> `inputSchema?`                   | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`I`\>                                                                     | Zod schema defining the input message structure Used to validate that input messages conform to the expected format                                   |
-| <a id="outputschema"></a> `outputSchema?`                 | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`O`\>                                                                     | Zod schema defining the output message structure Used to validate that output messages conform to the expected format                                 |
-| <a id="includeinputinoutput"></a> `includeInputInOutput?` | `boolean`                                                                                                                      | Whether to include input in the output When true, the agent will merge input fields into the output object                                            |
-| <a id="skills"></a> `skills?`                             | ([`Agent`](#agent)\<[`Message`](#message), [`Message`](#message)\> \| [`FunctionAgentFn`](#functionagentfn)\<`any`, `any`\>)[] | List of skills (other agents or functions) this agent has These skills can be used by the agent to delegate tasks or extend its capabilities          |
-| <a id="disableevents"></a> `disableEvents?`               | `boolean`                                                                                                                      | Whether to disable emitting events for agent actions When true, the agent won't emit events like agentStarted, agentSucceed, or agentFailed           |
-| <a id="memory"></a> `memory?`                             | `boolean` \| `AgentMemory` \| `AgentMemoryOptions`                                                                             | Memory configuration for the agent Can be an AgentMemory instance, configuration options, or simply a boolean to enable/disable with default settings |
+| Property                                                  | Type                                                                                                                           | Description                                                                                                                                  |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="subscribetopic-1"></a> `subscribeTopic?`           | [`SubscribeTopic`](#subscribetopic)                                                                                            | Topics the agent should subscribe to These topics determine which messages the agent will receive from the system                            |
+| <a id="publishtopic-1"></a> `publishTopic?`               | [`PublishTopic`](#publishtopic)\<`O`\>                                                                                         | Topics the agent should publish to These topics determine where the agent's output messages will be sent in the system                       |
+| <a id="name"></a> `name?`                                 | `string`                                                                                                                       | Name of the agent Used for identification and logging. Defaults to the constructor name if not specified                                     |
+| <a id="description"></a> `description?`                   | `string`                                                                                                                       | Description of the agent A human-readable description of what the agent does, useful for documentation and debugging                         |
+| <a id="inputschema"></a> `inputSchema?`                   | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`I`\>                                                                     | Zod schema defining the input message structure Used to validate that input messages conform to the expected format                          |
+| <a id="outputschema"></a> `outputSchema?`                 | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`O`\>                                                                     | Zod schema defining the output message structure Used to validate that output messages conform to the expected format                        |
+| <a id="includeinputinoutput"></a> `includeInputInOutput?` | `boolean`                                                                                                                      | Whether to include input in the output When true, the agent will merge input fields into the output object                                   |
+| <a id="skills"></a> `skills?`                             | ([`Agent`](#agent)\<[`Message`](#message), [`Message`](#message)\> \| [`FunctionAgentFn`](#functionagentfn)\<`any`, `any`\>)[] | List of skills (other agents or functions) this agent has These skills can be used by the agent to delegate tasks or extend its capabilities |
+| <a id="disableevents"></a> `disableEvents?`               | `boolean`                                                                                                                      | Whether to disable emitting events for agent actions When true, the agent won't emit events like agentStarted, agentSucceed, or agentFailed  |
+| <a id="memory"></a> `memory?`                             | [`MemoryAgent`](../memory.md#memoryagent) \| [`MemoryAgent`](../memory.md#memoryagent)[]                                       | One or more memory agents this agent can use                                                                                                 |
 
 ---
 
 ### AgentInvokeOptions
-
-Options for invoking an agent
 
 #### Extended by
 
@@ -1148,6 +1190,12 @@ Defines the function signature for processing messages in a function agent
 Processing result, can be synchronous or asynchronous
 
 ## Variables
+
+### agentOptionsSchema
+
+> `const` **agentOptionsSchema**: `ZodObject`\<`{ [key in keyof AgentOptions]: ZodType<AgentOptions[key]> }`\>
+
+---
 
 ### transferAgentOutputKey
 

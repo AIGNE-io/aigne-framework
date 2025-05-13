@@ -36,6 +36,16 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  text: "Hello! How can I assist you today?",
+  model: "gpt-4o",
+  usage: {
+    inputTokens: 10,
+    outputTokens: 9
+  }
+}
+*/
 ```
 
 Here's an example with streaming response:
@@ -55,7 +65,6 @@ const stream = await model.invoke(
 );
 
 let fullText = "";
-
 const json = {};
 
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
@@ -65,7 +74,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Hello! How can I assist you today?"
-
 console.log(json); // { model: "gpt-4o", usage: { inputTokens: 10, outputTokens: 9 } }
 ```
 

@@ -32,12 +32,20 @@ class TestChatModel extends ChatModel {
 }
 
 const model = new TestChatModel();
-
 const result = await model.invoke({
   messages: [{ role: "user", content: "Hello" }],
 });
 
 console.log(result);
+// Output:
+// {
+//   text: "Processed: Hello",
+//   model: "gpt-4o",
+//   usage: {
+//     inputTokens: 5,
+//     outputTokens: 10
+//   }
+// }
 ```
 
 Here's an example showing streaming response with readable stream:
@@ -64,7 +72,6 @@ class StreamingChatModel extends ChatModel {
 }
 
 const model = new StreamingChatModel();
-
 const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Hello" }],
@@ -74,9 +81,7 @@ const stream = await model.invoke(
 );
 
 let fullText = "";
-
 const json: Partial<AgentProcessResult<ChatModelOutput>> = {};
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
@@ -84,7 +89,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Processing your request..."
-
 console.log(json); // // Output: { model: "gpt-4o", usage: { inputTokens: 5, outputTokens: 10 } }
 ```
 
@@ -97,12 +101,12 @@ class StreamingChatModel extends ChatModel {
     yield textDelta({ text: " your" });
     yield textDelta({ text: " request" });
     yield textDelta({ text: "..." });
+
     return { model: "gpt-4o", usage: { inputTokens: 5, outputTokens: 10 } };
   }
 }
 
 const model = new StreamingChatModel();
-
 const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Hello" }],
@@ -112,9 +116,7 @@ const stream = await model.invoke(
 );
 
 let fullText = "";
-
 const json: Partial<AgentProcessResult<ChatModelOutput>> = {};
-
 for await (const chunk of readableStreamToAsyncIterator(stream)) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
@@ -122,7 +124,6 @@ for await (const chunk of readableStreamToAsyncIterator(stream)) {
 }
 
 console.log(fullText); // Output: "Processing your request..."
-
 console.log(json); // // Output: { model: "gpt-4o", usage: { inputTokens: 5, outputTokens: 10 } }
 ```
 
@@ -147,6 +148,7 @@ class ToolEnabledChatModel extends ChatModel {
         ],
       };
     }
+
     return {
       text: "No tools available",
     };
@@ -178,6 +180,20 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  toolCalls: [
+    {
+      id: "call_123",
+      type: "function",
+      function: {
+        name: "get_weather",
+        arguments: { param: "value" }
+      }
+    }
+  ]
+}
+*/
 ```
 
 #### Extends
@@ -352,12 +368,20 @@ class TestChatModel extends ChatModel {
 }
 
 const model = new TestChatModel();
-
 const result = await model.invoke({
   messages: [{ role: "user", content: "Hello" }],
 });
 
 console.log(result);
+// Output:
+// {
+//   text: "Processed: Hello",
+//   model: "gpt-4o",
+//   usage: {
+//     inputTokens: 5,
+//     outputTokens: 10
+//   }
+// }
 ```
 
 Here's an example with tool calling:
@@ -381,6 +405,7 @@ class ToolEnabledChatModel extends ChatModel {
         ],
       };
     }
+
     return {
       text: "No tools available",
     };
@@ -412,6 +437,20 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  toolCalls: [
+    {
+      id: "call_123",
+      type: "function",
+      function: {
+        name: "get_weather",
+        arguments: { param: "value" }
+      }
+    }
+  ]
+}
+*/
 ```
 
 #### Extends
@@ -482,6 +521,7 @@ class ToolEnabledChatModel extends ChatModel {
         ],
       };
     }
+
     return {
       text: "No tools available",
     };
@@ -513,6 +553,20 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  toolCalls: [
+    {
+      id: "call_123",
+      type: "function",
+      function: {
+        name: "get_weather",
+        arguments: { param: "value" }
+      }
+    }
+  ]
+}
+*/
 ```
 
 #### Properties
@@ -572,12 +626,20 @@ class TestChatModel extends ChatModel {
 }
 
 const model = new TestChatModel();
-
 const result = await model.invoke({
   messages: [{ role: "user", content: "Hello" }],
 });
 
 console.log(result);
+// Output:
+// {
+//   text: "Processed: Hello",
+//   model: "gpt-4o",
+//   usage: {
+//     inputTokens: 5,
+//     outputTokens: 10
+//   }
+// }
 ```
 
 Here's an example with tool calls:
@@ -601,6 +663,7 @@ class ToolEnabledChatModel extends ChatModel {
         ],
       };
     }
+
     return {
       text: "No tools available",
     };
@@ -632,6 +695,20 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  toolCalls: [
+    {
+      id: "call_123",
+      type: "function",
+      function: {
+        name: "get_weather",
+        arguments: { param: "value" }
+      }
+    }
+  ]
+}
+*/
 ```
 
 #### Extends
@@ -683,6 +760,7 @@ class ToolEnabledChatModel extends ChatModel {
         ],
       };
     }
+
     return {
       text: "No tools available",
     };
@@ -714,6 +792,20 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  toolCalls: [
+    {
+      id: "call_123",
+      type: "function",
+      function: {
+        name: "get_weather",
+        arguments: { param: "value" }
+      }
+    }
+  ]
+}
+*/
 ```
 
 #### Properties
@@ -846,6 +938,7 @@ class ToolEnabledChatModel extends ChatModel {
         ],
       };
     }
+
     return {
       text: "No tools available",
     };
@@ -877,4 +970,18 @@ const result = await model.invoke({
 });
 
 console.log(result);
+/* Output:
+{
+  toolCalls: [
+    {
+      id: "call_123",
+      type: "function",
+      function: {
+        name: "get_weather",
+        arguments: { param: "value" }
+      }
+    }
+  ]
+}
+*/
 ```

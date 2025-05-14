@@ -2,7 +2,6 @@ import { beforeEach, expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
 import { textDelta } from "@aigne/core";
 import { GeminiChatModel } from "@aigne/core/models/gemini-chat-model.js";
-import { readableStreamToAsyncIterator } from "@aigne/core/utils/stream-utils.js";
 import { createMockEventStream } from "../_utils/event-stream.js";
 import {
   COMMON_RESPONSE_FORMAT,
@@ -78,7 +77,7 @@ test("Gemini chat model with streaming using async generator", async () => {
   let fullText = "";
   const json = {};
 
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.text;
     if (text) fullText += text;
     if (chunk.delta.json) Object.assign(json, chunk.delta.json);

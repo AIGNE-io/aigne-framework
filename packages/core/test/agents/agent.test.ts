@@ -12,10 +12,7 @@ import {
   textDelta,
 } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import {
-  readableStreamToAsyncIterator,
-  stringToAgentResponseStream,
-} from "@aigne/core/utils/stream-utils.js";
+import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
 
 test("Custom agent", async () => {
@@ -94,7 +91,7 @@ test("Agent returning a ReadableStream", async () => {
   const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
   let fullText = "";
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.text;
     if (text) fullText += text;
   }
@@ -130,7 +127,7 @@ test("Agent using AsyncGenerator", async () => {
   const message: string[] = [];
   let json: Message | undefined;
 
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.message;
     if (text) message.push(text);
     if (chunk.delta.json) json = chunk.delta.json;
@@ -233,7 +230,7 @@ test("Agent.invoke with streaming response", async () => {
   const chunks: string[] = [];
 
   // Read the stream using an async iterator
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.$message;
     if (text) {
       chunks.push(text);

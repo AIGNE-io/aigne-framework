@@ -46,7 +46,7 @@ export async function agentResponseStreamToObject<T extends Message>(
   const json: T = {} as T;
 
   if (stream instanceof ReadableStream) {
-    for await (const value of readableStreamToAsyncIterator(stream)) {
+    for await (const value of stream) {
       mergeAgentResponseChunk(json, value);
     }
   } else {
@@ -183,7 +183,7 @@ export async function readableStreamToArray<T>(
 ): Promise<(T | Error)[]> {
   const result: T[] = [];
   try {
-    for await (const value of readableStreamToAsyncIterator(stream)) {
+    for await (const value of stream) {
       result.push(value);
     }
   } catch (error) {
@@ -192,17 +192,6 @@ export async function readableStreamToArray<T>(
     result.push(error);
   }
   return result;
-}
-
-export async function* readableStreamToAsyncIterator<T>(
-  stream: ReadableStream<T>,
-): AsyncIterable<T> {
-  const reader = stream.getReader();
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    yield value;
-  }
 }
 
 export function stringToAgentResponseStream(

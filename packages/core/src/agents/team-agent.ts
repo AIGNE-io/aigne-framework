@@ -1,5 +1,5 @@
 import type { Context } from "../aigne/context.js";
-import { mergeAgentResponseChunk, readableStreamToAsyncIterator } from "../utils/stream-utils.js";
+import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { type PromiseOrValue, isEmpty } from "../utils/type-utils.js";
 import {
   Agent,
@@ -149,7 +149,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
         { returnActiveAgent: true, streaming: true },
       );
 
-      for await (const chunk of readableStreamToAsyncIterator(o)) {
+      for await (const chunk of o) {
         yield chunk;
         mergeAgentResponseChunk(output, chunk);
       }

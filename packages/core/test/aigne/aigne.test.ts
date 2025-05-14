@@ -10,10 +10,7 @@ import {
 } from "@aigne/core";
 import { TeamAgent } from "@aigne/core/agents/team-agent.js";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import {
-  readableStreamToAsyncIterator,
-  stringToAgentResponseStream,
-} from "@aigne/core/utils/stream-utils.js";
+import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { mockOpenAIStreaming } from "../_mocks/mock-openai-streaming.js";
 
 test("AIGNE simple example", async () => {
@@ -62,7 +59,7 @@ test("AIGNE example with streaming response", async () => {
   let text = "";
 
   const stream = await aigne.invoke(agent, "hello", { streaming: true });
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
   }
 

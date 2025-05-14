@@ -1,4 +1,6 @@
+import { fstat } from "node:fs";
 import { isatty } from "node:tty";
+import { promisify } from "node:util";
 import { AIGNE, type Agent, type ChatModelOptions, createMessage } from "@aigne/core";
 import { availableModels, loadModel } from "@aigne/core/loader/index.js";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
@@ -146,7 +148,9 @@ export async function runAgentWithAIGNE(
 
   const input =
     options.input ||
-    (!isatty(process.stdin.fd) ? null : await readAllString(process.stdin)) ||
+    (isatty(process.stdin.fd) || !(await stdinHasData())
+      ? null
+      : await readAllString(process.stdin)) ||
     chatLoopOptions?.initialCall ||
     chatLoopOptions?.defaultQuestion ||
     {};
@@ -161,4 +165,9 @@ export async function runAgentWithAIGNE(
       ? { [chatLoopOptions.inputKey]: input }
       : createMessage(input),
   );
+}
+
+async function stdinHasData(): Promise<boolean> {
+  const stats = await promisify(fstat)(0);
+  return stats.isFIFO() || stats.isFile();
 }

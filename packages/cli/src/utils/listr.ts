@@ -125,34 +125,34 @@ export class AIGNEListr extends Listr<
   }
 }
 
-interface AIGNEListrRendererOptions extends ListrDefaultRendererOptions {
+export interface AIGNEListrRendererOptions extends ListrDefaultRendererOptions {
   aigne?: {
     getStdoutLogs?: () => string[];
     getBottomBarLogs?: () => string[];
   };
 }
 
-class AIGNEListrRenderer extends DefaultRenderer {
+export class AIGNEListrRenderer extends DefaultRenderer {
   public static rendererOptions: AIGNEListrRendererOptions = {
     ...DefaultRenderer.rendererOptions,
   };
 
-  protected get _updater() {
+  get _updater() {
     // @ts-ignore `updater` is a private property
     return this.updater as ReturnType<typeof createLogUpdate>;
   }
 
-  protected get _logger() {
+  get _logger() {
     // @ts-ignore `logger` is a private property
     return this.logger as ListrLogger;
   }
 
-  protected get _options() {
+  get _options() {
     // @ts-ignore `options` is a private property
     return this.options as AIGNEListrRendererOptions;
   }
 
-  protected get _spinner() {
+  get _spinner() {
     // @ts-ignore `spinner` is a private property
     return this.spinner as Spinner;
   }
@@ -183,7 +183,7 @@ class AIGNEListrRenderer extends DefaultRenderer {
     return tasks.join(EOL.repeat(2));
   }
 
-  protected _wrap(str: string) {
+  _wrap(str: string) {
     return wrap(str, process.stdout.columns ?? 80, {
       hard: true,
       trim: false,
@@ -191,21 +191,21 @@ class AIGNEListrRenderer extends DefaultRenderer {
   }
 }
 
-interface AIGNEListrFallbackRendererOptions
+export interface AIGNEListrFallbackRendererOptions
   extends ListrSimpleRendererOptions,
     Pick<AIGNEListrRendererOptions, "aigne"> {}
 
-class AIGNEListrFallbackRenderer extends SimpleRenderer {
+export class AIGNEListrFallbackRenderer extends SimpleRenderer {
   static rendererOptions: AIGNEListrFallbackRendererOptions = {
     ...SimpleRenderer.rendererOptions,
   };
 
-  protected get _logger() {
+  get _logger() {
     // @ts-ignore `logger` is a private property
     return this.logger as ListrLogger;
   }
 
-  protected get _options() {
+  get _options() {
     // @ts-ignore `options` is a private property
     return this.options as AIGNEListrFallbackRendererOptions;
   }

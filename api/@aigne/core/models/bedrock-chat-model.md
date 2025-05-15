@@ -82,7 +82,7 @@ const stream = await model.invoke(
 
 let fullText = "";
 const json: Partial<AgentProcessResult<ChatModelOutput>> = {};
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
   if (chunk.delta.json) Object.assign(json, chunk.delta.json);
@@ -117,7 +117,7 @@ const stream = await model.invoke(
 
 let fullText = "";
 const json: Partial<AgentProcessResult<ChatModelOutput>> = {};
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
   if (chunk.delta.json) Object.assign(json, chunk.delta.json);

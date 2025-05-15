@@ -48,7 +48,7 @@ const agent = AIAgent.from({
 let text = "";
 
 const stream = await aigne.invoke(agent, "hello", { streaming: true });
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
 }
 
@@ -372,7 +372,7 @@ const agent = AIAgent.from({
 let text = "";
 
 const stream = await aigne.invoke(agent, "hello", { streaming: true });
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
 }
 

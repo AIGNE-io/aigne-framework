@@ -615,7 +615,7 @@ const agent = new StreamResponseAgent();
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 let fullText = "";
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
 }
@@ -651,7 +651,7 @@ const stream = await agent.invoke("Hello", undefined, { streaming: true });
 const message: string[] = [];
 let json: Message | undefined;
 
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   const text = chunk.delta.text?.message;
   if (text) message.push(text);
   if (chunk.delta.json) json = chunk.delta.json;
@@ -810,7 +810,7 @@ const agent = new StreamResponseAgent();
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 let fullText = "";
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
 }
@@ -846,7 +846,7 @@ const stream = await agent.invoke("Hello", undefined, { streaming: true });
 const message: string[] = [];
 let json: Message | undefined;
 
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   const text = chunk.delta.text?.message;
   if (text) message.push(text);
   if (chunk.delta.json) json = chunk.delta.json;
@@ -1031,7 +1031,7 @@ const agent = new StreamResponseAgent();
 const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
 let fullText = "";
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   const text = chunk.delta.text?.text;
   if (text) fullText += text;
 }
@@ -1067,7 +1067,7 @@ const stream = await agent.invoke("Hello", undefined, { streaming: true });
 const message: string[] = [];
 let json: Message | undefined;
 
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   const text = chunk.delta.text?.message;
   if (text) message.push(text);
   if (chunk.delta.json) json = chunk.delta.json;

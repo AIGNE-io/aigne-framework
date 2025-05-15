@@ -14,8 +14,7 @@ import { type ChatLoopOptions, runChatLoopInTerminal } from "./run-chat-loop.js"
 
 export interface RunAIGNECommandOptions {
   chat?: boolean;
-  modelProvider?: string;
-  modelName?: string;
+  model?: string;
   temperature?: number;
   topP?: number;
   presencePenalty?: number;
@@ -29,12 +28,8 @@ export const createRunAIGNECommand = (name = "run") =>
     .description("Run agent with AIGNE in terminal")
     .option("--chat", "Run chat loop in terminal", false)
     .option(
-      "--model-provider <provider>",
-      `Model provider to use, available providers: ${availableModels.map((i) => i.name.toLowerCase().replace(/ChatModel$/i, "")).join(", ")} (default: openai)`,
-    )
-    .option(
-      "--model-name <model>",
-      "Model name to use, available models depend on the provider (default: gpt-4o-mini for openai provider)",
+      "--model <provider[:model]>",
+      `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels.map((i) => i.name.toLowerCase().replace(/ChatModel$/i, "")).join(", ")} (default: openai)`,
     )
     .option(
       "--temperature <temperature>",
@@ -64,6 +59,12 @@ export const createRunAIGNECommand = (name = "run") =>
       LogLevel.INFO,
     );
 
+export const parseModelOption = (model?: string) => {
+  const { provider, name } = model?.match(/(?<provider>[^:]+)(:(?<name>(\S+)))?/)?.groups ?? {};
+
+  return { provider, name };
+};
+
 export async function runWithAIGNE(
   agentCreator: ((aigne: AIGNE) => PromiseOrValue<Agent>) | Agent,
   {
@@ -86,8 +87,7 @@ export async function runWithAIGNE(
 
       const model = await loadModel(
         {
-          provider: options.modelProvider,
-          name: options.modelName,
+          ...parseModelOption(options.model),
           temperature: options.temperature,
           topP: options.topP,
           presencePenalty: options.presencePenalty,

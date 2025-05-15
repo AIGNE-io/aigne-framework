@@ -13,27 +13,31 @@ import { downloadAndExtract } from "../utils/download.js";
 import {
   type RunAIGNECommandOptions,
   createRunAIGNECommand,
+  parseModelOption,
   runAgentWithAIGNE,
 } from "../utils/run-with-aigne.js";
 
 interface RunOptions extends RunAIGNECommandOptions {
-  agent?: string;
-  downloadDir?: string;
+  entryAgent?: string;
+  cacheDir?: string;
 }
 
 export function createRunCommand(): Command {
   return createRunAIGNECommand()
     .description("Run AIGNE from the specified agent")
     .argument("[path]", "Path to the agents directory or URL to aigne project", ".")
-    .option("--agent <agent>", "Name of the agent to use (defaults to the first agent found)")
     .option(
-      "--download-dir <dir>",
+      "--entry-agent <entry-agent>",
+      "Name of the agent to run (defaults to the first agent found)",
+    )
+    .option(
+      "--cache-dir <dir>",
       "Directory to download the package to (defaults to the ~/.aigne/xxx)",
     )
     .action(async (path: string, options: RunOptions) => {
       if (options.logLevel) logger.level = options.logLevel;
 
-      const { downloadDir, dir } = prepareDirs(path, options);
+      const { cacheDir, dir } = prepareDirs(path, options);
 
       const { aigne, agent } = await new Listr<{
         aigne: AIGNE;
@@ -43,15 +47,15 @@ export function createRunCommand(): Command {
           {
             title: "Prepare environment",
             task: (_, task) => {
-              if (downloadDir) {
+              if (cacheDir) {
                 return task.newListr([
                   {
                     title: "Download package",
-                    task: () => downloadPackage(path, downloadDir),
+                    task: () => downloadPackage(path, cacheDir),
                   },
                   {
                     title: "Extract package",
-                    task: () => extractPackage(downloadDir, dir),
+                    task: () => extractPackage(cacheDir, dir),
                   },
                 ]);
               }
@@ -69,24 +73,24 @@ export function createRunCommand(): Command {
               const { aigne } = ctx;
               assert(aigne);
 
-              let agent: Agent | undefined;
+              let entryAgent: Agent | undefined;
 
-              if (options.agent) {
-                agent = aigne.agents[options.agent];
-                if (!agent) {
-                  console.error(`Agent "${options.agent}" not found in ${path}`);
+              if (options.entryAgent) {
+                entryAgent = aigne.agents[options.entryAgent];
+                if (!entryAgent) {
+                  console.error(`Agent "${options.entryAgent}" not found in ${path}`);
                   console.log("Available agents:");
                   for (const agent of aigne.agents) {
                     console.log(`- ${agent.name}`);
                   }
-                  throw new Error(`Agent "${options.agent}" not found in ${path}`);
+                  throw new Error(`Agent "${options.entryAgent}" not found in ${path}`);
                 }
               } else {
-                agent = aigne.agents[0];
-                if (!agent) throw new Error(`No agents found in ${path}`);
+                entryAgent = aigne.agents[0];
+                if (!entryAgent) throw new Error(`No agents found in ${path}`);
               }
 
-              ctx.agent = agent;
+              ctx.agent = entryAgent;
             },
           },
         ],
@@ -112,52 +116,46 @@ export function createRunCommand(): Command {
 }
 
 async function loadAIGNE(path: string, options: RunOptions) {
-  if (options.modelName && !options.modelProvider) {
-    throw new Error("please specify --model-provider when using the --model-name option");
-  }
-
-  const model = options.modelProvider
-    ? await loadModel({ provider: options.modelProvider, name: options.modelName })
-    : undefined;
+  const model = options.model ? await loadModel(parseModelOption(options.model)) : undefined;
 
   return await AIGNE.load(path, { model });
 }
 
-async function downloadPackage(url: string, downloadDir: string) {
-  await rm(downloadDir, { recursive: true, force: true });
+async function downloadPackage(url: string, cacheDir: string) {
+  await rm(cacheDir, { recursive: true, force: true });
 
-  await mkdir(downloadDir, { recursive: true });
+  await mkdir(cacheDir, { recursive: true });
 
-  await downloadAndExtract(url, downloadDir);
+  await downloadAndExtract(url, cacheDir);
 }
 
-async function extractPackage(downloadDir: string, dir: string) {
+async function extractPackage(cacheDir: string, dir: string) {
   await mkdir(dir, { recursive: true });
 
-  if (await isV1Package(downloadDir)) {
-    await toAIGNEPackage(downloadDir, dir);
+  if (await isV1Package(cacheDir)) {
+    await toAIGNEPackage(cacheDir, dir);
   } else {
-    await cp(downloadDir, dir, { recursive: true, force: true });
+    await cp(cacheDir, dir, { recursive: true, force: true });
   }
 }
 
 function prepareDirs(path: string, options: RunOptions) {
   let dir: string;
-  let downloadDir: string | undefined;
+  let cacheDir: string | undefined;
 
   if (!path.startsWith("http")) {
     dir = isAbsolute(path) ? path : resolve(process.cwd(), path);
-  } else if (options.downloadDir) {
-    dir = isAbsolute(options.downloadDir)
-      ? options.downloadDir
-      : resolve(process.cwd(), options.downloadDir);
-    downloadDir = join(dir, ".download");
+  } else if (options.cacheDir) {
+    dir = isAbsolute(options.cacheDir)
+      ? options.cacheDir
+      : resolve(process.cwd(), options.cacheDir);
+    cacheDir = join(dir, ".download");
   } else {
     dir = getLocalPackagePathFromUrl(path);
-    downloadDir = getLocalPackagePathFromUrl(path, { subdir: ".download" });
+    cacheDir = getLocalPackagePathFromUrl(path, { subdir: ".download" });
   }
 
-  return { downloadDir, dir };
+  return { cacheDir, dir };
 }
 
 function getLocalPackagePathFromUrl(url: string, { subdir }: { subdir?: string } = {}) {

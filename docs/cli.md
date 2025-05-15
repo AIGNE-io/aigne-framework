@@ -41,10 +41,9 @@ aigne run [path] [options]
 
 #### Options
 
-* `--agent <agent>`: Name of the agent to use (defaults to the first agent found)
-* `--download-dir <dir>`: Directory to download the package to (when using a URL), defaults to `~/.aigne/xxx`
-* `--model-provider <provider>`: Model provider to use, available providers: openai, claude, xai (defaults to the aigne.yaml definition or openai)
-* `--model-name <model>`: Model name to use, available models depend on the provider (defaults to the aigne.yaml definition or gpt-4o-mini)
+* `--entry-agent <entry-agent>`: Name of the agent to run (defaults to the first agent found)
+* `--cache-dir <dir>`: Directory to download the package to (when using a URL), defaults to `~/.aigne/xxx`
+* `--model <provider[:model]>`: AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: openai, claude, xai (defaults to openai)
 * `--temperature <temperature>`: Temperature for the model (controls randomness, higher values produce more random outputs). Range: 0.0-2.0, with 0.0 being most deterministic.
 * `--top-p <top-p>`: Top P (nucleus sampling) parameter for the model (controls diversity). Range: 0.0-1.0, with lower values restricting to more likely tokens.
 * `--presence-penalty <presence-penalty>`: Presence penalty for the model (penalizes repeating the same tokens). Range: -2.0 to 2.0, with positive values reducing repetition.
@@ -69,7 +68,7 @@ aigne run ./my-agents
 Run a specific agent:
 
 ```bash
-aigne run --agent myAgent
+aigne run --entry-agent myAgent
 ```
 
 Run an agent from an AIGNE Studio project URL:

@@ -52,7 +52,7 @@ test("run command should call run chat loop correctly", async () => {
   );
 
   // should run specified agent
-  await command.parseAsync(["", "run", testAgentsPath, "--agent", "chat"]);
+  await command.parseAsync(["", "run", testAgentsPath, "--entry-agent", "chat"]);
   expect(runAgentWithAIGNE).toHaveBeenCalledTimes(4);
   expect(runAgentWithAIGNE).toHaveBeenLastCalledWith(
     expect.any(AIGNE),
@@ -62,7 +62,7 @@ test("run command should call run chat loop correctly", async () => {
 
   // should error if agent not found
   spyOn(console, "error").mockReturnValueOnce(undefined);
-  expect(command.parseAsync(["", "run", testAgentsPath, "--agent", "chat1"])).rejects.toThrow(
+  expect(command.parseAsync(["", "run", testAgentsPath, "--entry-agent", "chat1"])).rejects.toThrow(
     "not found",
   );
 });
@@ -138,7 +138,7 @@ test("run command should download package to a special folder", async () => {
   const dir = join(tmpdir(), randomUUID());
 
   try {
-    await command.parseAsync(["", "run", url, "--download-dir", dir]);
+    await command.parseAsync(["", "run", url, "--cache-dir", dir]);
 
     expect((await stat(join(dir, "aigne.yaml"))).isFile()).toBeTrue();
     expect(runAgentWithAIGNE).toHaveBeenLastCalledWith(
@@ -162,23 +162,11 @@ test("run command should parse model options correctly", async () => {
 
   const command = createRunCommand();
 
-  await command.parseAsync([
-    "",
-    "run",
-    testAgentsPath,
-    "--model-provider",
-    "xai",
-    "--model-name",
-    "test-model",
-  ]);
+  await command.parseAsync(["", "run", testAgentsPath, "--model", "xai:test-model"]);
 
   expect(runAgentWithAIGNE).toHaveBeenLastCalledWith(
     expect.any(AIGNE),
     expect.anything(),
     expect.objectContaining({}),
   );
-
-  expect(
-    command.parseAsync(["", "run", testAgentsPath, "--model-name", "test-model"]),
-  ).rejects.toThrow("please specify --model-provider when using the --model-name option");
 });

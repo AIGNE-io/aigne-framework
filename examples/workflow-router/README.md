@@ -93,8 +93,7 @@ The example supports the following command-line parameters:
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
-| `--model-provider <provider>` | Model provider to use (e.g., openai, anthropic) | openai |
-| `--model-name <model>` | Model name to use | gpt-4o-mini (for openai) |
+| `--model <provider[:model]>` | AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | Temperature for model generation | Provider default |
 | `--top-p <value>` | Top-p sampling value | Provider default |
 | `--presence-penalty <value>` | Presence penalty value | Provider default |

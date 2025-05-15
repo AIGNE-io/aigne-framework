@@ -7,6 +7,7 @@ import {
   asyncGeneratorToReadableStream,
   mergeAgentResponseChunk,
   objectToAgentResponseStream,
+  onAgentResponseStreamEnd,
   readAllString,
   readableStreamToArray,
   stringToAgentResponseStream,
@@ -159,4 +160,20 @@ test("readAllString should read all string from ReadableStream", async () => {
   );
 
   expect(await stream).toEqual("Hello, world!");
+});
+
+test("onAgentResponseStreamEnd should continue reading until end", async () => {
+  const stream = onAgentResponseStreamEnd(
+    arrayToReadableStream([
+      { delta: { text: { text: "Hello " } } },
+      { delta: {} },
+      { delta: { text: { text: "world" } } },
+    ]),
+    () => {},
+  );
+
+  expect(await readableStreamToArray(stream)).toEqual([
+    { delta: { text: { text: "Hello " } } },
+    { delta: { text: { text: "world" } } },
+  ]);
 });

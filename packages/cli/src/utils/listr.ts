@@ -2,10 +2,7 @@ import { EOL } from "node:os";
 import { format } from "node:util";
 import type { AgentResponseStream, Message } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
-import {
-  mergeAgentResponseChunk,
-  readableStreamToAsyncIterator,
-} from "@aigne/core/utils/stream-utils.js";
+import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils";
 import {
   DefaultRenderer,
@@ -117,7 +114,7 @@ export class AIGNEListr extends Listr<
   private async extractStream(stream: AgentResponseStream<Message>) {
     this.result = {};
 
-    for await (const value of readableStreamToAsyncIterator(stream)) {
+    for await (const value of stream) {
       mergeAgentResponseChunk(this.result, value);
     }
 

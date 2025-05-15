@@ -2,10 +2,7 @@ import { expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
 import { textDelta } from "@aigne/core";
 import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
-import {
-  readableStreamToArray,
-  readableStreamToAsyncIterator,
-} from "@aigne/core/utils/stream-utils.js";
+import { readableStreamToArray } from "@aigne/core/utils/stream-utils.js";
 import type Anthropic from "@anthropic-ai/sdk";
 import { createMockEventStream } from "../_utils/event-stream.js";
 import {
@@ -94,7 +91,7 @@ test("Claude chat model with streaming using async generator", async () => {
   let fullText = "";
   const json = {};
 
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.text;
     if (text) fullText += text;
     if (chunk.delta.json) Object.assign(json, chunk.delta.json);

@@ -18,7 +18,6 @@ import {
   agentResponseStreamToObject,
   asyncGeneratorToReadableStream,
   onAgentResponseStreamEnd,
-  readableStreamToAsyncIterator,
 } from "../utils/stream-utils.js";
 import {
   type OmitPropertiesFromArrayFirstElement,
@@ -395,7 +394,7 @@ class AIGNEContextInternal {
       const result: Message = {};
 
       const stream = await activeAgent.invoke(input, context, { streaming: true });
-      for await (const value of readableStreamToAsyncIterator(stream)) {
+      for await (const value of stream) {
         if (value.delta.text) {
           yield { delta: { text: value.delta.text } as Message };
         }

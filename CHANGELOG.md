@@ -3,6 +3,18 @@
 - chore: release v1.2.0
 
 
+## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.15.0...aigne-framework-v1.16.0) (2025-05-15)
+
+
+### Features
+
+* optimize the stability of the model and ci ([#119](https://github.com/AIGNE-io/aigne-framework/issues/119)) ([de93887](https://github.com/AIGNE-io/aigne-framework/commit/de938879452a8be82a198dda0eda1eb9fcbb0474))
+
+
+### Bug Fixes
+
+* **core:** response.headers.toJSON is not a function ([#121](https://github.com/AIGNE-io/aigne-framework/issues/121)) ([4609ba6](https://github.com/AIGNE-io/aigne-framework/commit/4609ba645e6b8fe8d76ecd475cd2d7817483a4bd))
+
 ## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.14.0...aigne-framework-v1.15.0) (2025-05-12)
 
 

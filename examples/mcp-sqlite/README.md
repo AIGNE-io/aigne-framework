@@ -1,6 +1,6 @@
 # Sqlite MCP Server Demo
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [MCP Server SQlite](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite) to interact with SQLite databases.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [MCP Server SQlite](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite) to interact with SQLite databases. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR
@@ -71,7 +71,14 @@ AI ->> User: There are 10 products in the database.
 ```bash
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-mcp-sqlite # Run the example
+# Run in one-shot mode (default)
+npx -y @aigne/example-mcp-sqlite
+
+# Run in interactive chat mode
+npx -y @aigne/example-mcp-sqlite --chat
+
+# Use pipeline input
+echo "create a product table with columns name description and createdAt" | npx -y @aigne/example-mcp-sqlite
 ```
 
 ## Installation
@@ -101,7 +108,42 @@ OPENAI_API_KEY="" # Set your OpenAI API key here
 ### Run the Example
 
 ```bash
-pnpm start
+pnpm start # Run in one-shot mode (default)
+
+# Run in interactive chat mode
+pnpm start -- --chat
+
+# Use pipeline input
+echo "create a product table with columns name description and createdAt" | pnpm start
+```
+
+### Run Options
+
+The example supports the following command-line parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--model-provider <provider>` | Model provider to use (e.g., openai, anthropic) | openai |
+| `--model-name <model>` | Model name to use | gpt-4o-mini (for openai) |
+| `--temperature <value>` | Temperature for model generation | Provider default |
+| `--top-p <value>` | Top-p sampling value | Provider default |
+| `--presence-penalty <value>` | Presence penalty value | Provider default |
+| `--frequency-penalty <value>` | Frequency penalty value | Provider default |
+| `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
+| `--input`, `-i <input>` | Specify input directly | None |
+
+#### Examples
+
+```bash
+# Run in chat mode (interactive)
+pnpm start -- --chat
+
+# Set logging level
+pnpm start -- --log-level DEBUG
+
+# Use pipeline input
+echo "how many products?" | pnpm start
 ```
 
 ## Example

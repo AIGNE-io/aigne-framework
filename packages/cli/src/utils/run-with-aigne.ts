@@ -38,29 +38,30 @@ export const createRunAIGNECommand = (name = "run") =>
     )
     .option(
       "--temperature <temperature>",
-      "Temperature for the model",
-      customZodError("--temperature", (s) => z.coerce.number().parse(s)),
+      "Temperature for the model (controls randomness, higher values produce more random outputs). Range: 0.0-2.0",
+      customZodError("--temperature", (s) => z.coerce.number().min(0).max(2).parse(s)),
     )
     .option(
       "--top-p <top-p>",
-      "Top P for the model",
-      customZodError("--top-p", (s) => z.coerce.number().parse(s)),
+      "Top P (nucleus sampling) parameter for the model (controls diversity). Range: 0.0-1.0",
+      customZodError("--top-p", (s) => z.coerce.number().min(0).max(1).parse(s)),
     )
     .option(
       "--presence-penalty <presence-penalty>",
-      "Presence penalty for the model",
-      customZodError("--presence-penalty", (s) => z.coerce.number().parse(s)),
+      "Presence penalty for the model (penalizes repeating the same tokens). Range: -2.0 to 2.0",
+      customZodError("--presence-penalty", (s) => z.coerce.number().min(-2).max(2).parse(s)),
     )
     .option(
       "--frequency-penalty <frequency-penalty>",
-      "Frequency penalty for the model",
-      customZodError("--frequency-penalty", (s) => z.coerce.number().parse(s)),
+      "Frequency penalty for the model (penalizes frequency of token usage). Range: -2.0 to 2.0",
+      customZodError("--frequency-penalty", (s) => z.coerce.number().min(-2).max(2).parse(s)),
     )
     .option("--input -i <input>", "Input to the agent")
     .option(
       "--log-level <level>",
-      "Log level",
+      `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
       customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
+      LogLevel.INFO,
     );
 
 export async function runWithAIGNE(

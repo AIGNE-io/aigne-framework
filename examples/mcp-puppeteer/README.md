@@ -1,6 +1,6 @@
 # Puppeteer MCP Server Demo
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [Puppeteer MCP Server](https://github.com/modelcontextprotocol/servers/tree/8bd41eb0b3cf48aea0d1fe5b6c7029736092dcb1/src/puppeteer) to extract content from websites using Puppeteer.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [Puppeteer MCP Server](https://github.com/modelcontextprotocol/servers/tree/8bd41eb0b3cf48aea0d1fe5b6c7029736092dcb1/src/puppeteer) to extract content from websites using Puppeteer. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR
@@ -66,7 +66,14 @@ AI ->> User: The content is as follows: ...
 ```bash
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-mcp-puppeteer # Run the example
+# Run in one-shot mode (default)
+npx -y @aigne/example-mcp-puppeteer
+
+# Run in interactive chat mode
+npx -y @aigne/example-mcp-puppeteer --chat
+
+# Use pipeline input
+echo "extract content from https://www.arcblock.io" | npx -y @aigne/example-mcp-puppeteer
 ```
 
 ## Installation
@@ -97,6 +104,35 @@ OPENAI_API_KEY="" # Set your OpenAI API key here
 
 ```bash
 pnpm start
+```
+
+### Run Options
+
+The example supports the following command-line parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--model-provider <provider>` | Model provider to use (e.g., openai, anthropic) | openai |
+| `--model-name <model>` | Model name to use | gpt-4o-mini (for openai) |
+| `--temperature <value>` | Temperature for model generation | Provider default |
+| `--top-p <value>` | Top-p sampling value | Provider default |
+| `--presence-penalty <value>` | Presence penalty value | Provider default |
+| `--frequency-penalty <value>` | Frequency penalty value | Provider default |
+| `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
+| `--input`, `-i <input>` | Specify input directly | None |
+
+#### Examples
+
+```bash
+# Run in chat mode (interactive)
+pnpm start -- --chat
+
+# Set logging level
+pnpm start -- --log-level DEBUG
+
+# Use pipeline input
+echo "extract content from https://www.arcblock.io" | pnpm start
 ```
 
 ## Example

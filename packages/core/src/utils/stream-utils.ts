@@ -105,24 +105,31 @@ export function onAgentResponseStreamEnd<T extends Message>(
   return new ReadableStream({
     async pull(controller) {
       try {
-        const { value, done } = await reader.read();
+        while (true) {
+          const { value, done } = await reader.read();
 
-        if (!done) {
-          const chunk = options?.processChunk ? options.processChunk(value) : value;
-          if (!isEmptyChunk(chunk)) controller.enqueue(chunk);
+          if (done) {
+            const result = await callback(json);
+
+            if (result && !equal(result, json)) {
+              let chunk: AgentResponseChunk<T> = { delta: { json: result } };
+              if (options?.processChunk) chunk = options.processChunk(chunk);
+              controller.enqueue(chunk);
+            }
+
+            controller.close();
+
+            return;
+          }
 
           mergeAgentResponseChunk(json, value);
-          return;
-        }
-        const result = await callback(json);
 
-        if (result && !equal(result, json)) {
-          let chunk: AgentResponseChunk<T> = { delta: { json: result } };
-          if (options?.processChunk) chunk = options.processChunk(chunk);
-          controller.enqueue(chunk);
+          const chunk = options?.processChunk ? options.processChunk(value) : value;
+          if (!isEmptyChunk(chunk)) {
+            controller.enqueue(chunk);
+            break;
+          }
         }
-
-        controller.close();
       } catch (error) {
         controller.error(options?.errorCallback?.(error) ?? error);
       }

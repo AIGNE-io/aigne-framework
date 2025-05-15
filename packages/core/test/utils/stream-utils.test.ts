@@ -6,6 +6,7 @@ import {
   asyncGeneratorToReadableStream,
   mergeAgentResponseChunk,
   objectToAgentResponseStream,
+  onAgentResponseStreamEnd,
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
@@ -110,4 +111,20 @@ test("stringToAgentResponseStream should generate stream with Chinese correctly"
   expect(
     readableStreamToArray(stringToAgentResponseStream("你好，我能帮你什么？", "custom_text")),
   ).resolves.toMatchSnapshot();
+});
+
+test("onAgentResponseStreamEnd should continue reading until end", async () => {
+  const stream = onAgentResponseStreamEnd(
+    arrayToReadableStream([
+      { delta: { text: { text: "Hello " } } },
+      { delta: {} },
+      { delta: { text: { text: "world" } } },
+    ]),
+    () => {},
+  );
+
+  expect(await readableStreamToArray(stream)).toEqual([
+    { delta: { text: { text: "Hello " } } },
+    { delta: { text: { text: "world" } } },
+  ]);
 });

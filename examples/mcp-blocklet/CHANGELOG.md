@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.2](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.9.1...example-mcp-blocklet-v1.9.2) (2025-05-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.9.1
+    * @aigne/core bumped to 1.15.0
+
 ## [1.9.1](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.9.0...example-mcp-blocklet-v1.9.1) (2025-05-12)
 
 

@@ -2,6 +2,15 @@
 
 - chore: release 1.2.0
 
+## [1.8.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.8.0...agent-library-v1.8.1) (2025-05-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.15.0
+
 ## [1.8.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.7.1...agent-library-v1.8.0) (2025-05-12)
 
 

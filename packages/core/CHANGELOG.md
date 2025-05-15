@@ -22,6 +22,18 @@
 * rename @aigne/core-next to @aigne/core ([3a81009](https://github.com/AIGNE-io/aigne-framework/commit/3a8100962c81813217b687ae28e8de604419c622))
 * use text resource from MCP correctly ([8b9eba8](https://github.com/AIGNE-io/aigne-framework/commit/8b9eba83352ec096a2a5d4f410d4c4bde7420bce))
 
+## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.14.0...core-v1.15.0) (2025-05-15)
+
+
+### Features
+
+* optimize the stability of the model and ci ([#119](https://github.com/AIGNE-io/aigne-framework/issues/119)) ([de93887](https://github.com/AIGNE-io/aigne-framework/commit/de938879452a8be82a198dda0eda1eb9fcbb0474))
+
+
+### Bug Fixes
+
+* **core:** response.headers.toJSON is not a function ([#121](https://github.com/AIGNE-io/aigne-framework/issues/121)) ([4609ba6](https://github.com/AIGNE-io/aigne-framework/commit/4609ba645e6b8fe8d76ecd475cd2d7817483a4bd))
+
 ## [1.14.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.13.0...core-v1.14.0) (2025-05-12)
 
 

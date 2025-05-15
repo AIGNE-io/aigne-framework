@@ -4,7 +4,6 @@ import getRawBody from "raw-body";
 import { z } from "zod";
 import type { AIGNE } from "../aigne/aigne.js";
 import { AgentResponseStreamSSE } from "../utils/event-stream.js";
-import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
 import { checkArguments, isRecord, tryOrThrow } from "../utils/type-utils.js";
 import { ServerError } from "./error.js";
 
@@ -243,12 +242,12 @@ export class AIGNEServer {
    */
   async _writeResponse(response: Response, res: ServerResponse): Promise<void> {
     try {
-      res.writeHead(response.status, response.headers.toJSON());
+      res.writeHead(response.status, Object.fromEntries(response.headers.entries()));
       res.flushHeaders();
 
       if (!response.body) throw new Error("Response body is empty");
 
-      for await (const chunk of readableStreamToAsyncIterator(response.body)) {
+      for await (const chunk of response.body) {
         res.write(chunk);
 
         // Support for express with compression middleware

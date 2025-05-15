@@ -7,7 +7,6 @@ import { AIGNEServer } from "@aigne/core/server/index.js";
 import {
   arrayToReadableStream,
   readableStreamToArray,
-  readableStreamToAsyncIterator,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils";
 import { serve } from "bun";
@@ -56,7 +55,7 @@ test("AIGNEClient example with streaming", async () => {
   const stream = await client.invoke("chat", { $message: "hello" }, { streaming: true });
 
   let text = "";
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
   }
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.1.0...test-utils-v0.2.0) (2025-05-12)
+
+
+### Features
+
+* **docs:** use typedoc build and publish docs to gh-pages ([#100](https://github.com/AIGNE-io/aigne-framework/issues/100)) ([b9074c0](https://github.com/AIGNE-io/aigne-framework/commit/b9074c0148ea343ada92b5919a52b47537a1ad48))
+
+
+### Bug Fixes
+
+* **core:** handle response for UserAgent automatically in pub/sub mode ([#116](https://github.com/AIGNE-io/aigne-framework/issues/116)) ([b659714](https://github.com/AIGNE-io/aigne-framework/commit/b659714f2398ea042f21cb22eccc1014f181cd46))
+
 ## [0.1.0](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.0.1...test-utils-v0.1.0) (2025-04-27)
 
 

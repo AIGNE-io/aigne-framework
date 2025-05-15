@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.8.1](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.8.0...example-chat-bot-v1.8.1) (2025-05-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.9.1
+
+## [1.8.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.7.0...example-chat-bot-v1.8.0) (2025-05-12)
+
+
+### Features
+
+* optimize the stability of ci and example ([#113](https://github.com/AIGNE-io/aigne-framework/issues/113)) ([d16ed6c](https://github.com/AIGNE-io/aigne-framework/commit/d16ed6cb60faea19fb4f1c12e1f83d69563b153f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.9.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.2.0
+
 ## [1.7.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.6.0...example-chat-bot-v1.7.0) (2025-04-30)
 
 

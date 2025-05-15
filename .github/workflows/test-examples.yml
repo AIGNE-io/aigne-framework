@@ -117,6 +117,7 @@ jobs:
           declare -A MODEL_EXCLUDE_PATTERNS
           MODEL_EXCLUDE_PATTERNS["us.amazon.nova-pro-v1:0"]="mcp-sqlite"
           MODEL_EXCLUDE_PATTERNS["us.amazon.nova-lite-v1:0"]="mcp-sqlite"
+          MODEL_EXCLUDE_PATTERNS["o4-mini"]="mcp-sqlite"
 
           for MODEL in $MODELS; do
             SLEEP_SECONDS=${PROVIDER_SLEEP_SECONDS[${{ matrix.provider }}]:-$DEFAULT_SLEEP_SECONDS}

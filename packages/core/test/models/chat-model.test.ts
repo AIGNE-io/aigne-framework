@@ -10,7 +10,6 @@ import {
   type ChatModelInput,
   type ChatModelOutput,
 } from "../../src/models/chat-model.js";
-import { readableStreamToAsyncIterator } from "../../src/utils/stream-utils.js";
 
 test("ChatModel implementation", async () => {
   // #region example-chat-model
@@ -81,7 +80,7 @@ test("ChatModel with streaming response", async () => {
 
   let fullText = "";
   const json: Partial<AgentProcessResult<ChatModelOutput>> = {};
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.text;
     if (text) fullText += text;
     if (chunk.delta.json) Object.assign(json, chunk.delta.json);
@@ -121,7 +120,7 @@ test("ChatModel with streaming response with async generator", async () => {
 
   let fullText = "";
   const json: Partial<AgentProcessResult<ChatModelOutput>> = {};
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.text;
     if (text) fullText += text;
     if (chunk.delta.json) Object.assign(json, chunk.delta.json);

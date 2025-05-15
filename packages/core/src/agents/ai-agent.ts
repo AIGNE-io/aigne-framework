@@ -11,7 +11,6 @@ import type {
 } from "../models/chat-model.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
-import { readableStreamToAsyncIterator } from "../utils/stream-utils.js";
 import { checkArguments, isEmpty } from "../utils/type-utils.js";
 import {
   Agent,
@@ -323,7 +322,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
         { streaming: true },
       );
 
-      for await (const value of readableStreamToAsyncIterator(stream)) {
+      for await (const value of stream) {
         if (value.delta.text?.text) {
           yield { delta: { text: { [outputKey]: value.delta.text.text } } };
         }
@@ -433,6 +432,6 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
       { streaming: true },
     );
 
-    yield* readableStreamToAsyncIterator(stream);
+    yield* stream;
   }
 }

@@ -71,7 +71,7 @@ export class AIGNEListr extends Listr<
           logger: new (class extends ListrLogger {
             override log(...[level, ...args]: Parameters<ListrLogger["log"]>): void {
               // ignore stdout logs if level `INFO` is not enabled
-              if (this.options?.toStderr?.includes(level) || logger.enabled(LogLevel.INFO)) {
+              if (!this.options?.toStderr?.includes(level) && !logger.enabled(LogLevel.INFO)) {
                 return;
               }
 

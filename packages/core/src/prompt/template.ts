@@ -102,7 +102,10 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
       typeof content === "string"
         ? content
         : tryOrThrow(
-            () => JSON.stringify(content),
+            () =>
+              JSON.stringify(content, (_, value) =>
+                typeof value === "bigint" ? value.toString() : value,
+              ),
             `Failed to stringify tool content. toolCallId: ${toolCallId}, content: ${inspect(content)}`,
           ),
       name,

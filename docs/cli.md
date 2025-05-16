@@ -43,7 +43,7 @@ aigne run [path] [options]
 
 * `--entry-agent <entry-agent>`: Name of the agent to run (defaults to the first agent found)
 * `--cache-dir <dir>`: Directory to download the package to (when using a URL), defaults to `~/.aigne/xxx`
-* `--model <provider[:model]>`: AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: openai, claude, xai (defaults to openai)
+* `--model <provider[:model]>`: AI model to use in format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: openai, claude, xai (defaults to openai)
 * `--temperature <temperature>`: Temperature for the model (controls randomness, higher values produce more random outputs). Range: 0.0-2.0, with 0.0 being most deterministic.
 * `--top-p <top-p>`: Top P (nucleus sampling) parameter for the model (controls diversity). Range: 0.0-1.0, with lower values restricting to more likely tokens.
 * `--presence-penalty <presence-penalty>`: Presence penalty for the model (penalizes repeating the same tokens). Range: -2.0 to 2.0, with positive values reducing repetition.

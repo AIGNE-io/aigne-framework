@@ -43,7 +43,7 @@ aigne run [路径] [选项]
 
 * `--entry-agent <代理>`：要运行的代理名称（默认为找到的第一个代理）
 * `--cache-dir <目录>`：下载包的目录（使用URL时），默认为 `~/.aigne/xxx`
-* `--model <提供商[:模型]>`：要使用的AI模型，格式为'提供商[:模型]'，其中模型是可选的。示例：'openai'或'openai:gpt-4o-mini'。可用提供商：openai、claude、xai（默认为openai）
+* `--model <提供商[:模型]>`：要使用的AI模型，格式为'提供商\[:模型]'，其中模型是可选的。示例：'openai'或'openai:gpt-4o-mini'。可用提供商：openai、claude、xai（默认为openai）
 * `--temperature <温度>`：模型的温度参数（控制随机性，值越高输出越随机）。范围：0.0-2.0，0.0为最确定性输出。
 * `--top-p <top-p>`：模型的 Top P（核采样）参数（控制多样性）。范围：0.0-1.0，值越低则限制为更可能的标记。
 * `--presence-penalty <存在惩罚>`：模型的存在惩罚参数（惩罚重复出现的标记）。范围：-2.0至2.0，正值会减少重复。

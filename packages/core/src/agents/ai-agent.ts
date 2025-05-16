@@ -19,6 +19,7 @@ import {
   type Message,
   agentOptionsSchema,
 } from "./agent.js";
+import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
 import { isTransferAgentOutput } from "./types.js";
 
 /**
@@ -387,7 +388,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
       const result = {} as O;
 
-      if (modelInput.responseFormat?.type === "json_schema") {
+      if (json) {
         Object.assign(result, json);
       } else if (text) {
         Object.assign(result, { [outputKey]: text });
@@ -398,6 +399,15 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
       }
       return;
     }
+  }
+
+  protected override async onGuideRailError(
+    error: GuideRailAgentOutput,
+  ): Promise<O | GuideRailAgentOutput> {
+    const outputKey = this.outputKey || MESSAGE_KEY;
+    return {
+      [outputKey]: error.reason,
+    };
   }
 
   /**

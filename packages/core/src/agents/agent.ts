@@ -150,6 +150,7 @@ export const agentOptionsSchema: ZodObject<{
   skills: z.array(z.union([z.custom<Agent>(), z.custom<FunctionAgentFn>()])).optional(),
   disableEvents: z.boolean().optional(),
   memory: z.union([z.custom<MemoryAgent>(), z.array(z.custom<MemoryAgent>())]).optional(),
+  guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
 });
 
 export interface AgentInvokeOptions {

@@ -95,7 +95,7 @@ export function onAgentResponseStreamEnd<T extends Message>(
   stream: AgentResponseStream<T>,
   callback: (result: T) => PromiseOrValue<Partial<T> | void>,
   options?: {
-    errorCallback?: (error: Error) => Error;
+    errorCallback?: (error: Error) => PromiseOrValue<Error>;
     processChunk?: (chunk: AgentResponseChunk<T>) => AgentResponseChunk<T>;
   },
 ) {
@@ -131,7 +131,7 @@ export function onAgentResponseStreamEnd<T extends Message>(
           }
         }
       } catch (error) {
-        controller.error(options?.errorCallback?.(error) ?? error);
+        controller.error((await options?.errorCallback?.(error)) ?? error);
       }
     },
   });

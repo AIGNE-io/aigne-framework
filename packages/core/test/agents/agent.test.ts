@@ -373,6 +373,46 @@ test("Agent.shutdown by `using` statement", async () => {
   // #endregion example-agent-shutdown-by-using
 });
 
+test("Agent should return the original error from guide rails", async () => {
+  const legalModel = new OpenAIChatModel();
+
+  const legal = AIAgent.from<GuideRailAgentInput, GuideRailAgentOutput>({
+    model: legalModel,
+    instructions: `You are a legal assistant. You must ensure that the input and output are legal.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  class MyAgent extends Agent {
+    override process(input: Message): Message {
+      return { text: `Hello, ${input}` };
+    }
+  }
+
+  const agent = new MyAgent({ guideRails: [legal] });
+
+  spyOn(legalModel, "process").mockReturnValueOnce({
+    json: {
+      abort: true,
+      reason: "Sorry, I can not answer you.",
+    },
+  });
+
+  const result = await agent.invoke("Hot to kill someone?");
+
+  expect(result).toEqual({
+    $status: "GuideRailError",
+    abort: true,
+    reason: "Sorry, I can not answer you.",
+  });
+});
+
 test("Agent can be intercepted by guide rails", async () => {
   // #region example-agent-guide-rails
 

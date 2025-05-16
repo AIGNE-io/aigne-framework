@@ -452,6 +452,13 @@ test("Agent can be intercepted by guide rails", async () => {
 
   const result = await aigne.invoke(agent, "How to kill someone?");
 
+  console.log(result);
+  // Output:
+  // {
+  //   "$status": "GuideRailError",
+  //   "$message": "Sorry, I can not answer you."
+  // }
+
   expect(result).toEqual({
     $status: "GuideRailError",
     $message: "Sorry, I can not answer you.",

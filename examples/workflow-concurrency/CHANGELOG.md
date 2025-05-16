@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.10.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.9.2...example-workflow-concurrency-v1.10.0) (2025-05-16)
+
+
+### Features
+
+* add `--chat` option for `run` command ([#120](https://github.com/AIGNE-io/aigne-framework/issues/120)) ([7699550](https://github.com/AIGNE-io/aigne-framework/commit/76995507001ca33b09b29f72ff588dae513cb340))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.10.0
+    * @aigne/core bumped to 1.16.0
+
 ## [1.9.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.9.1...example-workflow-concurrency-v1.9.2) (2025-05-15)
 
 

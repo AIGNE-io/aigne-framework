@@ -3,6 +3,13 @@
 - chore: release v1.2.0
 
 
+## [1.17.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.16.0...aigne-framework-v1.17.0) (2025-05-16)
+
+
+### Features
+
+* add `--chat` option for `run` command ([#120](https://github.com/AIGNE-io/aigne-framework/issues/120)) ([7699550](https://github.com/AIGNE-io/aigne-framework/commit/76995507001ca33b09b29f72ff588dae513cb340))
+
 ## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.15.0...aigne-framework-v1.16.0) (2025-05-15)
 
 

@@ -5,7 +5,7 @@ const config = {
   plugin: [
     "typedoc-plugin-no-inherit",
     "typedoc-plugin-markdown",
-    "@aigne/typedoc-plugin-example-utils-ts",
+    "./scripts/typedoc-plugin-clean-code.ts",
     "./scripts/typedoc-plugin-sidebar.ts",
   ],
   entryPointStrategy: "expand",

@@ -11,6 +11,10 @@ import {
   type Message,
   textDelta,
 } from "@aigne/core";
+import type {
+  GuideRailAgentInput,
+  GuideRailAgentOutput,
+} from "@aigne/core/agents/guide-rail-agent";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
@@ -367,6 +371,95 @@ test("Agent.shutdown by `using` statement", async () => {
   expect(shutdown).not.toHaveBeenCalled();
 
   // #endregion example-agent-shutdown-by-using
+});
+
+test("Agent can be intercepted by guide rails", async () => {
+  // #region example-agent-guide-rails
+
+  const model = new OpenAIChatModel();
+
+  const legalModel = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const legal = AIAgent.from<GuideRailAgentInput, GuideRailAgentOutput>({
+    model: legalModel,
+    instructions: `You are a legal assistant. You must ensure that the input and output are legal.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  const agent = AIAgent.from({
+    guideRails: [legal],
+  });
+
+  spyOn(model, "process").mockReturnValueOnce({
+    text: "You can kill someone by using a knife.",
+  });
+
+  spyOn(legalModel, "process").mockReturnValueOnce({
+    json: {
+      abort: true,
+      reason: "Sorry, I can not answer you.",
+    },
+  });
+
+  const result = await aigne.invoke(agent, "How to kill someone?");
+
+  expect(result).toEqual({
+    $status: "GuideRailError",
+    $message: "Sorry, I can not answer you.",
+  });
+
+  // #endregion example-agent-guide-rails
+});
+
+test("Agent should respond result if no any guide rails error", async () => {
+  const model = new OpenAIChatModel();
+
+  const legalModel = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const legal = AIAgent.from<GuideRailAgentInput, GuideRailAgentOutput>({
+    model: legalModel,
+    instructions: `You are a legal assistant. You must ensure that the input and output are legal.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  const agent = AIAgent.from({
+    guideRails: [legal],
+  });
+
+  spyOn(model, "process").mockReturnValueOnce({
+    text: "You can use AIGNE Framework create a useful agent!",
+  });
+
+  spyOn(legalModel, "process").mockReturnValueOnce({
+    json: {
+      abort: false,
+      reason: "That is a normal response",
+    },
+  });
+
+  const result = await aigne.invoke(agent, "How to create an agent?");
+
+  expect(result).toEqual({
+    $message: "You can use AIGNE Framework create a useful agent!",
+  });
 });
 
 test("Agent inspect should return it's name", async () => {

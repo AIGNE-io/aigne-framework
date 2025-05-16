@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.1.1...example-memory-v0.2.0) (2025-05-16)
+
+
+### Features
+
+* add `--chat` option for `run` command ([#120](https://github.com/AIGNE-io/aigne-framework/issues/120)) ([7699550](https://github.com/AIGNE-io/aigne-framework/commit/76995507001ca33b09b29f72ff588dae513cb340))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.10.0
+    * @aigne/core bumped to 1.16.0
+    * @aigne/agent-library bumped to 1.8.2
+
 ## [0.1.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.1.0...example-memory-v0.1.1) (2025-05-15)
 
 

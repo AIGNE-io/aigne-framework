@@ -9,6 +9,10 @@ export type OmitPropertiesFromArrayFirstElement<
   K extends string | number | symbol,
 > = T extends [infer U, ...infer Rest] ? [Omit<U, K>, ...Rest] : never;
 
+export type XOr<T, K extends keyof T, O extends keyof T> =
+  | (Omit<T, O> & { [key in O]?: undefined })
+  | (Omit<T, K> & { [key in K]?: undefined });
+
 export function isNil(value: unknown): value is null | undefined {
   return value === null || value === undefined;
 }

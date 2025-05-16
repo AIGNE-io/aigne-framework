@@ -14,6 +14,7 @@ import {
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
+import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 
 test("Custom agent", async () => {
   // #region example-custom-agent
@@ -404,4 +405,86 @@ test("Agent should check input and output schema", async () => {
   expect(plus.invoke({ a: 1, b: 2 })).rejects.toThrow(
     "Agent test-agent-plus output check arguments error: sum: Expected number, received string",
   );
+});
+
+test("Agent hooks simple example", async () => {
+  // #region example-agent-hooks
+
+  const model = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const weather = FunctionAgent.from({
+    name: "weather",
+    description: "Get the weather of a city",
+    inputSchema: z.object({
+      city: z.string(),
+    }),
+    outputSchema: z.object({
+      temperature: z.number(),
+    }),
+    process: async (_input) => {
+      return {
+        temperature: 25,
+      };
+    },
+  });
+
+  const agent = AIAgent.from({
+    hooks: {
+      onStart: (event) => {
+        console.log("Agent started:", event.input);
+      },
+      onEnd: (event) => {
+        console.log("Agent ended:", event.input, event.output);
+      },
+      onSkillStart: (event) => {
+        console.log(`Skill ${event.skill.name} started:`, event.input);
+      },
+      onSkillEnd: (event) => {
+        console.log(`Skill ${event.skill.name} ended:`, event.input, event.output);
+      },
+    },
+    skills: [weather],
+  });
+
+  const onStart = spyOn(agent.hooks, "onStart");
+  const onEnd = spyOn(agent.hooks, "onEnd");
+  const onSkillStart = spyOn(agent.hooks, "onSkillStart");
+  const onSkillEnd = spyOn(agent.hooks, "onSkillEnd");
+
+  spyOn(model, "process")
+    .mockReturnValueOnce({ toolCalls: [createToolCallResponse("weather", { city: "Paris" })] })
+    .mockReturnValueOnce({ text: "The weather in Paris is 25 degrees." });
+
+  const result = await aigne.invoke(agent, "What is the weather in Paris?");
+
+  console.log(result);
+  // Output: { $message: "The weather in Paris is 25 degrees." }
+
+  expect(result).toEqual({ $message: "The weather in Paris is 25 degrees." });
+  expect(onStart).toHaveBeenLastCalledWith(
+    expect.objectContaining({ input: { $message: "What is the weather in Paris?" } }),
+  );
+  expect(onEnd).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      input: { $message: "What is the weather in Paris?" },
+      output: { $message: "The weather in Paris is 25 degrees." },
+    }),
+  );
+  expect(onSkillStart).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      input: expect.objectContaining({ city: "Paris" }),
+      skill: weather,
+    }),
+  );
+  expect(onSkillEnd).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      input: expect.objectContaining({ city: "Paris" }),
+      output: { temperature: 25 },
+      skill: weather,
+    }),
+  );
+
+  // #endregion example-agent-hooks
 });

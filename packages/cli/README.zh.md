@@ -93,13 +93,15 @@ aigne run path/to/agents
 
 # 运行远程 URL 中的代理
 aigne run https://example.com/aigne-project
+
+# 指定特定代理运行
+aigne run --entry-agent myAgent
 ```
 
 可用选项：
-- `--agent <agent>` - 指定要使用的代理名称（默认为找到的第一个代理）
-- `--download-dir <dir>` - 指定下载包的目录（URL模式下使用）
-- `--model-provider <provider>` - 指定模型提供商（openai、claude、xai）
-- `--model-name <model>` - 指定模型名称
+- `--entry-agent <代理>` - 指定要运行的代理名称（默认为找到的第一个代理）
+- `--cache-dir <目录>` - 指定下载包的目录（URL模式下使用）
+- `--model <提供商[:模型]>` - 指定AI模型，格式为'提供商[:模型]'，其中模型是可选的（如'openai'或'openai:gpt-4o-mini'）
 - `--verbose` - 启用详细日志记录
 
 ## 测试命令 (test)

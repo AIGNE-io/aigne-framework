@@ -94,6 +94,9 @@ importers:
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../../packages/test-utils
+      '@types/jsonwebtoken':
+        specifier: ^9.0.9
+        version: 9.0.9
 
   examples/mcp-github:
     dependencies:
@@ -366,8 +369,8 @@ importers:
         specifier: workspace:^
         version: link:../core
       '@aigne/listr2':
-        specifier: ^1.0.9
-        version: 1.0.9
+        specifier: ^1.0.10
+        version: 1.0.10
       '@aigne/marked-terminal':
         specifier: ^7.3.1
         version: 7.3.1(marked@15.0.11)
@@ -582,8 +585,8 @@ packages:
     peerDependencies:
       zod: ^3.0.0
 
-  '@aigne/listr2@1.0.9':
-    resolution: {integrity: sha512-M+2uccbty78XtndfrAW7DZagabPVHdfsLnhA3FYfiOH8ERuaGBMoR50Nh79Te9uzzEwHsJJL9Ag6lertjPcQLA==}
+  '@aigne/listr2@1.0.10':
+    resolution: {integrity: sha512-Naihs/9vGDS/Ovu84daVEq4O+kq6q44eMikmm2DX25rv6DUNRJ6SuwqSvBmBlzYFkGgZDcmfm9n6sH2qg3+phw==}
     engines: {node: '>=18.0.0'}
 
   '@aigne/marked-terminal@7.3.1':
@@ -1237,6 +1240,9 @@ packages:
 
   '@types/is-empty@1.2.3':
     resolution: {integrity: sha512-4J1l5d79hoIvsrKh5VUKVRA1aIdsOb10Hu5j3J2VfP/msDnfTdGPmNp2E1Wg+vs97Bktzo+MZePFFXSGoykYJw==}
+
+  '@types/jsonwebtoken@9.0.9':
+    resolution: {integrity: sha512-uoe+GxEuHbvy12OUQct2X9JenKM3qAscquYymuQN4fMWG9DBQtykrQEFcAbVACF7qaLw9BePSodUL0kquqBJpQ==}
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
@@ -3553,7 +3559,7 @@ snapshots:
     dependencies:
       zod: 3.24.4
 
-  '@aigne/listr2@1.0.9':
+  '@aigne/listr2@1.0.10':
     dependencies:
       cli-truncate: 4.0.0
       colorette: 2.0.20
@@ -4629,6 +4635,11 @@ snapshots:
   '@types/http-errors@2.0.4': {}
 
   '@types/is-empty@1.2.3': {}
+
+  '@types/jsonwebtoken@9.0.9':
+    dependencies:
+      '@types/ms': 2.1.0
+      '@types/node': 22.15.15
 
   '@types/mdast@4.0.4':
     dependencies:

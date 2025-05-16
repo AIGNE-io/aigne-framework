@@ -93,13 +93,15 @@ aigne run path/to/agents
 
 # Run the agent from a remote URL
 aigne run https://example.com/aigne-project
+
+# Run a specific agent
+aigne run --entry-agent myAgent
 ```
 
 Available options:
-- `--agent <agent>` - Specify the agent name to use (defaults to the first agent found)
-- `--download-dir <dir>` - Specify the directory to download the package to (used in URL mode)
-- `--model-provider <provider>` - Specify the model provider (openai, claude, xai)
-- `--model-name <model>` - Specify the model name
+- `--entry-agent <entry-agent>` - Specify the agent name to run (defaults to the first agent found)
+- `--cache-dir <dir>` - Specify the directory to download the package to (used in URL mode)
+- `--model <provider[:model]>` - Specify the AI model in format 'provider[:model]' where model is optional (e.g., 'openai' or 'openai:gpt-4o-mini')
 - `--verbose` - Enable verbose logging
 
 ## Test Command

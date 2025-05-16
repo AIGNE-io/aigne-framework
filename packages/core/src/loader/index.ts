@@ -1,5 +1,6 @@
 import { readFile, stat } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
+import type { Camelize } from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
 import { type Agent, FunctionAgent } from "../agents/agent.js";
@@ -86,30 +87,30 @@ export async function loadAgent(path: string): Promise<Agent> {
 
 const { MODEL_PROVIDER, MODEL_NAME } = process.env;
 const DEFAULT_MODEL_PROVIDER = "openai";
-const DEFAULT_MODEL_NAME = "gpt-4o-mini";
+
+export const availableModels = [
+  OpenAIChatModel,
+  ClaudeChatModel,
+  XAIChatModel,
+  GeminiChatModel,
+  DeepSeekChatModel,
+  OpenRouterChatModel,
+  OllamaChatModel,
+  BedrockChatModel,
+];
 
 export async function loadModel(
-  model?: z.infer<typeof aigneFileSchema>["chat_model"],
+  model?: Camelize<z.infer<typeof aigneFileSchema>["chat_model"]>,
   modelOptions?: ChatModelOptions,
 ): Promise<ChatModel | undefined> {
   const params = {
-    model: MODEL_NAME ?? model?.name ?? DEFAULT_MODEL_NAME,
+    model: MODEL_NAME ?? model?.name ?? undefined,
     temperature: model?.temperature ?? undefined,
-    topP: model?.top_p ?? undefined,
-    frequencyPenalty: model?.frequent_penalty ?? undefined,
-    presencePenalty: model?.presence_penalty ?? undefined,
+    topP: model?.topP ?? undefined,
+    frequencyPenalty: model?.frequencyPenalty ?? undefined,
+    presencePenalty: model?.presencePenalty ?? undefined,
   };
 
-  const availableModels = [
-    OpenAIChatModel,
-    ClaudeChatModel,
-    XAIChatModel,
-    GeminiChatModel,
-    DeepSeekChatModel,
-    OpenRouterChatModel,
-    OllamaChatModel,
-    BedrockChatModel,
-  ];
   const M = availableModels.find((m) =>
     m.name
       .toLowerCase()
@@ -130,7 +131,7 @@ const aigneFileSchema = z.object({
         name: z.string().nullish(),
         temperature: z.number().min(0).max(2).nullish(),
         top_p: z.number().min(0).nullish(),
-        frequent_penalty: z.number().min(-2).max(2).nullish(),
+        frequency_penalty: z.number().min(-2).max(2).nullish(),
         presence_penalty: z.number().min(-2).max(2).nullish(),
       }),
     ])

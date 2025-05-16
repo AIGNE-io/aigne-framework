@@ -1,6 +1,6 @@
 # GitHub MCP Server Integration
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [GitHub MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/github) to interact with GitHub repositories.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [GitHub MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/github) to interact with GitHub repositories. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR
@@ -108,9 +108,41 @@ GITHUB_TOKEN="" # Set your GitHub Personal Access Token here
 ### Run the Example
 
 ```bash
-pnpm start # Interactive chat interface
-# or
-pnpm example # Run predefined examples
+pnpm start # Run in one-shot mode (default)
+
+# Run in interactive chat mode
+pnpm start -- --chat
+
+# Use pipeline input
+echo "Search for repositories related to 'modelcontextprotocol'" | pnpm start
+```
+
+### Run Options
+
+The example supports the following command-line parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--model <provider[:model]>` | AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
+| `--temperature <value>` | Temperature for model generation | Provider default |
+| `--top-p <value>` | Top-p sampling value | Provider default |
+| `--presence-penalty <value>` | Presence penalty value | Provider default |
+| `--frequency-penalty <value>` | Frequency penalty value | Provider default |
+| `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
+| `--input`, `-i <input>` | Specify input directly | None |
+
+#### Examples
+
+```bash
+# Run in chat mode (interactive)
+pnpm start -- --chat
+
+# Set logging level
+pnpm start -- --log-level DEBUG
+
+# Use pipeline input
+echo "Search for repositories related to 'modelcontextprotocol'" | pnpm start
 ```
 
 ## Example

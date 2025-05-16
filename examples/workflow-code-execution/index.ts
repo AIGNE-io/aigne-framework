@@ -1,11 +1,8 @@
 #!/usr/bin/env bunwrapper
 
-import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
-import { loadModel } from "@aigne/core/loader/index.js";
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, FunctionAgent } from "@aigne/core";
 import { z } from "zod";
-
-const model = await loadModel();
 
 const sandbox = FunctionAgent.from({
   name: "evaluateJs",
@@ -38,12 +35,10 @@ Work with the sandbox to execute your code.
   memory: true,
 });
 
-const aigne = new AIGNE({ model });
-
-const user = aigne.invoke(coder);
-
-await runChatLoopInTerminal(user, {
-  welcome:
-    "Welcome to the code execution workflow! you can ask me anything can be resolved by running code.",
-  defaultQuestion: "10! = ?",
+await runWithAIGNE(coder, {
+  chatLoopOptions: {
+    welcome:
+      "Welcome to the code execution workflow! you can ask me anything can be resolved by running code.",
+    defaultQuestion: "10! = ?",
+  },
 });

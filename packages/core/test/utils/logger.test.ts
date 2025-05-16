@@ -1,23 +1,43 @@
-import { expect, mock, test } from "bun:test";
-import { logger } from "@aigne/core/utils/logger.js";
+import { expect, spyOn, test } from "bun:test";
+import { LogLevel, Logger, logger } from "@aigne/core/utils/logger.js";
 
-test("logger.debug", async () => {
-  const log = mock();
+test("Logger.enabled should return correct value", async () => {
+  expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.ERROR)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.WARN)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.INFO)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.DEBUG)).toBe(true);
 
-  expect(logger).toEqual(
-    expect.objectContaining({
-      core: expect.any(Function),
-      mcp: expect.any(Function),
-    }),
-  );
+  expect(new Logger({ ns: "test", level: LogLevel.INFO }).enabled(LogLevel.ERROR)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.INFO }).enabled(LogLevel.WARN)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.INFO }).enabled(LogLevel.INFO)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.INFO }).enabled(LogLevel.DEBUG)).toBe(false);
 
-  logger.core.log = log;
+  expect(new Logger({ ns: "test", level: LogLevel.WARN }).enabled(LogLevel.ERROR)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.WARN }).enabled(LogLevel.WARN)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.WARN }).enabled(LogLevel.INFO)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.WARN }).enabled(LogLevel.DEBUG)).toBe(false);
 
-  logger.enable("aigne:core");
+  expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.ERROR)).toBe(true);
+  expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.WARN)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.INFO)).toBe(false);
+  expect(new Logger({ ns: "test", level: LogLevel.ERROR }).enabled(LogLevel.DEBUG)).toBe(false);
+});
 
-  logger.core("test logging debug");
+test("logger should logging messages", async () => {
+  const log = spyOn(logger, "logMessage");
+  const logError = spyOn(logger, "logError");
 
-  expect(log).toHaveBeenCalledTimes(1);
-  expect(log.mock.calls[0]?.[0]).toContain("aigne:core");
-  expect(log.mock.calls[0]?.[0]).toContain("test logging debug");
+  logger.level = LogLevel.DEBUG;
+
+  logger.debug("test debug message");
+  expect(log.mock.lastCall?.[0]).toMatch("test debug message");
+
+  logger.info("test info message");
+  expect(log.mock.lastCall?.[0]).toMatch("test info message");
+
+  logger.warn("test warn message");
+  expect(log.mock.lastCall?.[0]).toMatch("test warn message");
+
+  logger.error("test error message");
+  expect(logError.mock.lastCall?.[0]).toMatch("test error message");
 });

@@ -1,10 +1,7 @@
 #!/usr/bin/env bunwrapper
 
-import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIAgentToolChoice, AIGNE } from "@aigne/core";
-import { loadModel } from "@aigne/core/loader/index.js";
-
-const model = await loadModel();
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, AIAgentToolChoice } from "@aigne/core";
 
 const productSupport = AIAgent.from({
   name: "product_support",
@@ -43,12 +40,9 @@ Be concise, accurate, and ensure efficient handoff to the correct agent.`,
   toolChoice: AIAgentToolChoice.router,
 });
 
-const aigne = new AIGNE({ model });
-
-const userAgent = aigne.invoke(triage);
-
-await runChatLoopInTerminal(userAgent, {
-  welcome: `Welcome to the support chat!
+await runWithAIGNE(triage, {
+  chatLoopOptions: {
+    welcome: `Welcome to the support chat!
 
 I can help you with any questions you have, such as
 - product-related queries: "How do I use this product?"
@@ -57,5 +51,6 @@ I can help you with any questions you have, such as
 
 How can I assist you today?
 `,
-  defaultQuestion: "How do I use this product?",
+    defaultQuestion: "How do I use this product?",
+  },
 });

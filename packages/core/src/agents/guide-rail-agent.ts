@@ -1,4 +1,5 @@
-import type { Agent, Message } from "./agent.js";
+import { z } from "zod";
+import type { Agent, AgentOptions, Message } from "./agent.js";
 
 /**
  * Input interface for GuideRail agents
@@ -12,7 +13,7 @@ export interface GuideRailAgentInput extends Message {
    *
    * This is the original message that would be sent to the target agent
    */
-  input: unknown;
+  input?: unknown;
 
   /**
    * The expected output data
@@ -20,7 +21,7 @@ export interface GuideRailAgentInput extends Message {
    * This is what the target agent is expected to produce, allowing
    * the GuideRail agent to validate or transform the data flow
    */
-  output: unknown;
+  output?: unknown;
 }
 
 /**
@@ -64,3 +65,14 @@ export interface GuideRailAgentOutput extends Message {
  * - Monitor and audit agent behavior
  */
 export type GuideRailAgent = Agent<GuideRailAgentInput, GuideRailAgentOutput>;
+
+export const guideRailAgentOptions: AgentOptions<GuideRailAgentInput, GuideRailAgentOutput> = {
+  inputSchema: z.object({
+    input: z.unknown(),
+    output: z.unknown(),
+  }),
+  outputSchema: z.object({
+    abort: z.boolean().optional().describe("Whether to abort the current process"),
+    reason: z.string().optional().describe("Reason for aborting the process"),
+  }),
+};

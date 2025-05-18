@@ -11,10 +11,7 @@ import {
   type Message,
   textDelta,
 } from "@aigne/core";
-import type {
-  GuideRailAgentInput,
-  GuideRailAgentOutput,
-} from "@aigne/core/agents/guide-rail-agent";
+import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
@@ -376,9 +373,10 @@ test("Agent.shutdown by `using` statement", async () => {
 test("Agent should return the original error from guide rails", async () => {
   const legalModel = new OpenAIChatModel();
 
-  const legal = AIAgent.from<GuideRailAgentInput, GuideRailAgentOutput>({
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
     model: legalModel,
-    instructions: `You are a legal assistant. You must ensure that the input and output are legal.
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
 <user-input>
 {{input}}
 </user-input>
@@ -390,26 +388,32 @@ test("Agent should return the original error from guide rails", async () => {
   });
 
   class MyAgent extends Agent {
-    override process(input: Message): Message {
-      return { text: `Hello, ${input}` };
+    override process(_input: Message): Message {
+      return {
+        text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
+      };
     }
   }
 
-  const agent = new MyAgent({ guideRails: [legal] });
+  const agent = new MyAgent({ guideRails: [financial] });
 
-  spyOn(legalModel, "process").mockReturnValueOnce({
-    json: {
-      abort: true,
-      reason: "Sorry, I can not answer you.",
-    },
-  });
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: true,
+        reason:
+          "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+      },
+    }),
+  );
 
-  const result = await agent.invoke("Hot to kill someone?");
+  const result = await agent.invoke("What will be the price of Bitcoin next year?");
 
   expect(result).toEqual({
     $status: "GuideRailError",
     abort: true,
-    reason: "Sorry, I can not answer you.",
+    reason:
+      "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
   });
 });
 
@@ -422,9 +426,10 @@ test("Agent can be intercepted by guide rails", async () => {
 
   const aigne = new AIGNE({ model });
 
-  const legal = AIAgent.from<GuideRailAgentInput, GuideRailAgentOutput>({
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
     model: legalModel,
-    instructions: `You are a legal assistant. You must ensure that the input and output are legal.
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
 <user-input>
 {{input}}
 </user-input>
@@ -436,32 +441,40 @@ test("Agent can be intercepted by guide rails", async () => {
   });
 
   const agent = AIAgent.from({
-    guideRails: [legal],
+    guideRails: [financial],
   });
 
-  spyOn(model, "process").mockReturnValueOnce({
-    text: "You can kill someone by using a knife.",
-  });
+  // Mock the model's response (the potential price prediction)
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve({
+      text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
+    }),
+  );
 
-  spyOn(legalModel, "process").mockReturnValueOnce({
-    json: {
-      abort: true,
-      reason: "Sorry, I can not answer you.",
-    },
-  });
+  // Mock the guide rail's response (rejecting the price prediction)
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: true,
+        reason:
+          "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+      },
+    }),
+  );
 
-  const result = await aigne.invoke(agent, "How to kill someone?");
+  const result = await aigne.invoke(agent, "What will be the price of Bitcoin next month?");
 
   console.log(result);
   // Output:
   // {
   //   "$status": "GuideRailError",
-  //   "$message": "Sorry, I can not answer you."
+  //   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
   // }
 
   expect(result).toEqual({
     $status: "GuideRailError",
-    $message: "Sorry, I can not answer you.",
+    $message:
+      "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
   });
 
   // #endregion example-agent-guide-rails
@@ -474,9 +487,10 @@ test("Agent should respond result if no any guide rails error", async () => {
 
   const aigne = new AIGNE({ model });
 
-  const legal = AIAgent.from<GuideRailAgentInput, GuideRailAgentOutput>({
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
     model: legalModel,
-    instructions: `You are a legal assistant. You must ensure that the input and output are legal.
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
 <user-input>
 {{input}}
 </user-input>
@@ -488,19 +502,23 @@ test("Agent should respond result if no any guide rails error", async () => {
   });
 
   const agent = AIAgent.from({
-    guideRails: [legal],
+    guideRails: [financial],
   });
 
-  spyOn(model, "process").mockReturnValueOnce({
-    text: "You can use AIGNE Framework create a useful agent!",
-  });
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve({
+      text: "You can use AIGNE Framework create a useful agent!",
+    }),
+  );
 
-  spyOn(legalModel, "process").mockReturnValueOnce({
-    json: {
-      abort: false,
-      reason: "That is a normal response",
-    },
-  });
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: false,
+        reason: "That is a normal response",
+      },
+    }),
+  );
 
   const result = await aigne.invoke(agent, "How to create an agent?");
 

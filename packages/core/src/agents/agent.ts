@@ -156,6 +156,7 @@ export const agentOptionsSchema: ZodObject<{
       onEnd: z.custom<AgentHooks["onEnd"]>().optional(),
       onSkillStart: z.custom<AgentHooks["onSkillStart"]>().optional(),
       onSkillEnd: z.custom<AgentHooks["onSkillEnd"]>().optional(),
+      onHandoff: z.custom<AgentHooks["onHandoff"]>().optional(),
     })
     .optional(),
 });
@@ -805,6 +806,17 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
   onSkillEnd?: (
     event: XOr<{ skill: Agent; input: I; output: O; error: Error }, "output", "error">,
   ) => PromiseOrValue<void>;
+
+  /**
+   * Called when an agent hands off processing to another agent
+   *
+   * This hook runs when a source agent transfers control to a target agent,
+   * allowing for tracking of handoffs between agents and monitoring the flow
+   * of processing in multi-agent systems.
+   *
+   * @param event Object containing the source agent, target agent, and input message
+   */
+  onHandoff?: (event: { source: Agent; target: Agent; input: I }) => PromiseOrValue<void>;
 }
 
 /**

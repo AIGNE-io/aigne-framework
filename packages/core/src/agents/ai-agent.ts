@@ -431,7 +431,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     const stream = await context.invoke(
       tool,
       { ...call.function.arguments, ...input },
-      { streaming: true },
+      { streaming: true, sourceAgent: this },
     );
 
     yield* stream;

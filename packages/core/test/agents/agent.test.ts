@@ -2,6 +2,7 @@ import { expect, spyOn, test } from "bun:test";
 import { inspect } from "node:util";
 import {
   AIAgent,
+  AIAgentToolChoice,
   AIGNE,
   Agent,
   type AgentProcessAsyncGenerator,
@@ -487,4 +488,46 @@ test("Agent hooks simple example", async () => {
   );
 
   // #endregion example-agent-hooks
+});
+
+test("Agent hook onHandoff should work correctly", async () => {
+  const model = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const triage = AIAgent.from({
+    hooks: {
+      onHandoff(event) {
+        console.log("Agent handoff:", event.target.name);
+      },
+    },
+    skills: [
+      function transferToFeedback() {
+        return feedback;
+      },
+    ],
+    toolChoice: AIAgentToolChoice.router,
+  });
+
+  const onHandoff = spyOn(triage.hooks, "onHandoff");
+
+  const feedback = AIAgent.from({});
+
+  spyOn(model, "process")
+    .mockReturnValueOnce({ toolCalls: [createToolCallResponse("transferToFeedback", {})] })
+    .mockReturnValueOnce({ text: "Hello, I am feedback agent." });
+
+  const result = await aigne.invoke(triage, "I want to give feedback");
+
+  console.log(result);
+
+  expect(onHandoff).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      source: triage,
+      target: feedback,
+      input: { $message: "I want to give feedback" },
+    }),
+  );
+
+  expect(result).toEqual({ $message: "Hello, I am feedback agent." });
 });

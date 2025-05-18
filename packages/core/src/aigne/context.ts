@@ -70,6 +70,7 @@ export type ContextEmitEventMap = {
 export interface InvokeOptions extends AgentInvokeOptions {
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
+  sourceAgent?: Agent;
 }
 
 /**
@@ -392,6 +393,14 @@ class AIGNEContextInternal {
 
     for (;;) {
       const result: Message = {};
+
+      if (options?.sourceAgent && activeAgent !== options.sourceAgent) {
+        options.sourceAgent.hooks.onHandoff?.({
+          source: options.sourceAgent,
+          target: activeAgent,
+          input,
+        });
+      }
 
       const stream = await activeAgent.invoke(input, context, { streaming: true });
       for await (const value of stream) {

@@ -16,12 +16,12 @@ Core library of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) f
 
 ## Features
 
-- **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, Nova, and other mainstream AI models, easily extensible to support additional models
-- **Agent System**: Powerful agent abstractions supporting AI agents, function agents, MCP agents, and more
-- **AIGNE Environment**: Flexible handling communication between agents and workflow execution
-- **Workflow Patterns**: Support for sequential, concurrent, routing, handoff, and other workflow patterns
-- **MCP Protocol Integration**: Seamless integration with external systems through the Model Context Protocol
-- **TypeScript Support**: Comprehensive type definitions providing an excellent development experience
+* **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, Nova, and other mainstream AI models, easily extensible to support additional models
+* **Agent System**: Powerful agent abstractions supporting AI agents, function agents, MCP agents, and more
+* **AIGNE Environment**: Flexible handling communication between agents and workflow execution
+* **Workflow Patterns**: Support for sequential, concurrent, routing, handoff, and other workflow patterns
+* **MCP Protocol Integration**: Seamless integration with external systems through the Model Context Protocol
+* **TypeScript Support**: Comprehensive type definitions providing an excellent development experience
 
 ## Installation
 
@@ -68,7 +68,9 @@ const aigne = new AIGNE({ model });
 const userAgent = await aigne.invoke(agent);
 
 // Send a message to the agent
-const response = await userAgent.invoke("Hello, can you help me write a short article?");
+const response = await userAgent.invoke(
+  "Hello, can you help me write a short article?",
+);
 console.log(response);
 ```
 

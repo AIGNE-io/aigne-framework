@@ -16,11 +16,11 @@ Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/
 
 ## Features
 
-- **Orchestrator Agent**: Provides OrchestratorAgent implementation for coordinating workflows between multiple agents
-- **Task Concurrency**: Supports parallel execution of multiple tasks to improve processing efficiency
-- **Planning & Execution**: Automatically generates execution plans and executes them step by step
-- **Result Synthesis**: Intelligently synthesizes results from multiple steps and tasks
-- **TypeScript Support**: Complete type definitions providing an excellent development experience
+* **Orchestrator Agent**: Provides OrchestratorAgent implementation for coordinating workflows between multiple agents
+* **Task Concurrency**: Supports parallel execution of multiple tasks to improve processing efficiency
+* **Planning & Execution**: Automatically generates execution plans and executes them step by step
+* **Result Synthesis**: Intelligently synthesizes results from multiple steps and tasks
+* **TypeScript Support**: Complete type definitions providing an excellent development experience
 
 ## Installation
 
@@ -61,12 +61,16 @@ const aigne = new AIGNE({ model });
 // Create orchestrator agent
 const orchestrator = new OrchestratorAgent({
   name: "MainOrchestrator",
-  instructions: "You are a task orchestrator responsible for coordinating multiple specialized agents to complete complex tasks.",
+  instructions:
+    "You are a task orchestrator responsible for coordinating multiple specialized agents to complete complex tasks.",
   // Configure sub-agents and tools...
 });
 
 // Execute orchestration task
-const result = await aigne.invoke(orchestrator, "Analyze this article and generate a summary and keywords");
+const result = await aigne.invoke(
+  orchestrator,
+  "Analyze this article and generate a summary and keywords",
+);
 console.log(result);
 ```
 
@@ -74,7 +78,7 @@ console.log(result);
 
 The library currently provides one specialized agent implementation:
 
-- **Orchestrator Agent (OrchestratorAgent)**: Responsible for coordinating work between multiple agents and managing complex workflows. It can automatically plan task steps, distribute and execute tasks across multiple agents, and finally synthesize the results.
+* **Orchestrator Agent (OrchestratorAgent)**: Responsible for coordinating work between multiple agents and managing complex workflows. It can automatically plan task steps, distribute and execute tasks across multiple agents, and finally synthesize the results.
 
 ## Advanced Usage
 
@@ -93,36 +97,43 @@ const model = new OpenAIChatModel({
 // Create specialized sub-agents
 const researchAgent = AIAgent.from({
   name: "Researcher",
-  instructions: "You are a professional researcher responsible for collecting and analyzing information.",
+  instructions:
+    "You are a professional researcher responsible for collecting and analyzing information.",
   outputKey: "research",
 });
 
 const writerAgent = AIAgent.from({
   name: "Writer",
-  instructions: "You are a professional writer responsible for creating high-quality content.",
+  instructions:
+    "You are a professional writer responsible for creating high-quality content.",
   outputKey: "content",
 });
 
 const editorAgent = AIAgent.from({
   name: "Editor",
-  instructions: "You are a strict editor responsible for checking content quality and formatting.",
+  instructions:
+    "You are a strict editor responsible for checking content quality and formatting.",
   outputKey: "edited",
 });
 
 // Create orchestrator agent
 const orchestrator = new OrchestratorAgent({
   name: "WorkflowOrchestrator",
-  instructions: "You are responsible for coordinating research, writing, and editing processes.",
+  instructions:
+    "You are responsible for coordinating research, writing, and editing processes.",
   skills: [researchAgent, writerAgent, editorAgent],
   // Optional configuration
-  maxIterations: 30,      // Maximum number of iterations
-  tasksConcurrency: 5,    // Task concurrency
+  maxIterations: 30, // Maximum number of iterations
+  tasksConcurrency: 5, // Task concurrency
 });
 
 // Use the orchestrator agent
 const aigne = new AIGNE({ model });
 
-const result = await aigne.invoke(orchestrator, "Applications of artificial intelligence in healthcare");
+const result = await aigne.invoke(
+  orchestrator,
+  "Applications of artificial intelligence in healthcare",
+);
 
 console.log(result);
 ```

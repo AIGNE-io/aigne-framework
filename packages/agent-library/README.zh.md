@@ -16,11 +16,11 @@
 
 ## 特性
 
-- **编排代理**：提供 OrchestratorAgent 实现，用于协调多个代理之间的工作流
-- **任务并发**：支持并行执行多个任务，提高处理效率
-- **计划与执行**：自动生成执行计划并逐步执行
-- **结果合成**：智能合成多个步骤和任务的结果
-- **TypeScript 支持**：完整的类型定义，提供优秀的开发体验
+* **编排代理**：提供 OrchestratorAgent 实现，用于协调多个代理之间的工作流
+* **任务并发**：支持并行执行多个任务，提高处理效率
+* **计划与执行**：自动生成执行计划并逐步执行
+* **结果合成**：智能合成多个步骤和任务的结果
+* **TypeScript 支持**：完整的类型定义，提供优秀的开发体验
 
 ## 安装
 
@@ -66,7 +66,10 @@ const orchestrator = new OrchestratorAgent({
 });
 
 // 执行编排任务
-const result = await aigne.invoke(orchestrator, "分析这篇文章并生成摘要和关键词");
+const result = await aigne.invoke(
+  orchestrator,
+  "分析这篇文章并生成摘要和关键词",
+);
 
 console.log(result);
 ```
@@ -75,7 +78,7 @@ console.log(result);
 
 该库目前提供了一种专业化的代理实现：
 
-- **编排代理（OrchestratorAgent）**：负责协调多个代理之间的工作，管理复杂工作流。它能够自动规划任务步骤，并在多个代理之间分配和执行任务，最后合成结果。
+* **编排代理（OrchestratorAgent）**：负责协调多个代理之间的工作，管理复杂工作流。它能够自动规划任务步骤，并在多个代理之间分配和执行任务，最后合成结果。
 
 ## 高级用法
 
@@ -116,8 +119,8 @@ const orchestrator = new OrchestratorAgent({
   instructions: "你负责协调研究、写作和编辑流程。",
   skills: [researchAgent, writerAgent, editorAgent],
   // 可选配置
-  maxIterations: 30,      // 最大迭代次数
-  tasksConcurrency: 5,    // 任务并发数
+  maxIterations: 30, // 最大迭代次数
+  tasksConcurrency: 5, // 任务并发数
 });
 
 // 使用编排代理

@@ -1,7 +1,7 @@
 {
   "name": "@aigne/openai",
   "version": "0.0.1",
-  "description": "AIGNE OpenAI SDK",
+  "description": "AIGNE OpenAI SDK for integrating with OpenAI's GPT models and API services",
   "publishConfig": {
     "access": "public"
   },

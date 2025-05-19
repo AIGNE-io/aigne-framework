@@ -17,6 +17,9 @@ importers:
       '@biomejs/wasm-nodejs':
         specifier: ^1.9.4
         version: 1.9.4
+      fenceparser:
+        specifier: ^2.2.0
+        version: 2.2.0
       mdast:
         specifier: ^3.0.0
         version: 3.0.0
@@ -35,6 +38,9 @@ importers:
       simple-git-hooks:
         specifier: ^2.13.0
         version: 2.13.0
+      strip-indent:
+        specifier: ^4.0.0
+        version: 4.0.0
       ts-morph:
         specifier: ^25.0.1
         version: 25.0.1
@@ -53,6 +59,9 @@ importers:
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
+      vfile:
+        specifier: ^6.0.3
+        version: 6.0.3
       zx:
         specifier: ^8.5.3
         version: 8.5.3
@@ -2140,6 +2149,9 @@ packages:
 
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
+
+  fenceparser@2.2.0:
+    resolution: {integrity: sha512-fdXOPciCALTWvooKxyRUmYERiw1L1mzqVsfpk5F9kGr3NoT/Sdwew4BqGctY6xZpUXiZ7dXXPb27Om2nmUmHMg==}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -5605,6 +5617,8 @@ snapshots:
   fastq@1.19.1:
     dependencies:
       reusify: 1.1.0
+
+  fenceparser@2.2.0: {}
 
   fill-range@7.1.1:
     dependencies:

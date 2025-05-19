@@ -91,7 +91,7 @@ ChatModel can be used directly, but it's generally recommended to use it through
 
 **Example**:
 
-```typescript file=../packages/core/test/agents/model-simple-usage.test.ts
+```typescript file="../packages/core/test/agents/model-simple-usage.test.ts"
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
@@ -160,7 +160,7 @@ const aigne = new AIGNE({ model });
 
 **Example**:
 
-```typescript file=../examples/workflow-code-execution/usages.ts
+```typescript file="../examples/workflow-code-execution/usages.ts"
 import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 import { z } from "zod";
@@ -216,7 +216,7 @@ console.log(result);
 
 **Example**:
 
-```typescript file=../examples/workflow-sequential/usages.ts
+```typescript file="../examples/workflow-sequential/usages.ts"
 import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -302,7 +302,7 @@ console.log(result);
 
 **Example**:
 
-```typescript file=../examples/workflow-concurrency/usages.ts
+```typescript file="../examples/workflow-concurrency/usages.ts"
 import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -364,7 +364,7 @@ console.log(result);
 
 **Example**:
 
-```typescript file=../examples/workflow-reflection/usages.ts
+```typescript file="../examples/workflow-reflection/usages.ts"
 import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 import { z } from "zod";
@@ -469,7 +469,7 @@ console.log(message);
 
 **Example**:
 
-```typescript file=../examples/workflow-handoff/usages.ts
+```typescript file="../examples/workflow-handoff/usages.ts"
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -527,7 +527,7 @@ console.log(result2);
 
 **Example**:
 
-```typescript file=../examples/workflow-router/usages.ts
+```typescript file="../examples/workflow-router/usages.ts"
 import { AIAgent, AIAgentToolChoice, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -606,7 +606,7 @@ console.log(result3);
 
 **Example**:
 
-```typescript file=../examples/workflow-orchestrator/usage.ts
+```typescript file="../examples/workflow-orchestrator/usage.ts"
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
@@ -696,7 +696,7 @@ The Puppeteer MCP server allows AIGNE Framework to access and manipulate web con
 
 **Example**:
 
-```typescript file=../examples/mcp-puppeteer/usages.ts
+```typescript file="../examples/mcp-puppeteer/usages.ts"
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -753,7 +753,7 @@ The SQLite MCP server allows AIGNE Framework to interact with SQLite databases.
 
 **Example**:
 
-```typescript file=../examples/mcp-sqlite/usages.ts
+```typescript file="../examples/mcp-sqlite/usages.ts"
 import { join } from "node:path";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";

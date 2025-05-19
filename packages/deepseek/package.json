@@ -1,7 +1,7 @@
 {
   "name": "@aigne/deepseek",
   "version": "0.0.1",
-  "description": "AIGNE OpenAI SDK",
+  "description": "AIGNE Deepseek SDK for integrating with Deepseek AI models",
   "publishConfig": {
     "access": "public"
   },

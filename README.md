@@ -46,7 +46,7 @@ pnpm add @aigne/core
 
 ### Usage Example
 
-```ts file=examples/workflow-handoff/usages.ts
+```ts file="examples/workflow-handoff/usages.ts"
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 

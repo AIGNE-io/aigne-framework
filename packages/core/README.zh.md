@@ -16,12 +16,12 @@
 
 ## 特性
 
-- **多 AI 模型支持**：内置支持 OpenAI、Gemini、Claude、Nova 等主流 AI 模型，可轻松扩展支持其他模型
-- **代理系统**：强大的代理抽象，支持 AI 代理、功能代理、MCP 代理等
-- **AIGNE 环境**：灵活处理代理之间的通信和工作流执行
-- **工作流模式**：支持顺序、并发、路由、交接等多种工作流模式
-- **MCP 协议集成**：通过模型上下文协议与外部系统无缝集成
-- **TypeScript 支持**：全面的类型定义，提供出色的开发体验
+* **多 AI 模型支持**：内置支持 OpenAI、Gemini、Claude、Nova 等主流 AI 模型，可轻松扩展支持其他模型
+* **代理系统**：强大的代理抽象，支持 AI 代理、功能代理、MCP 代理等
+* **AIGNE 环境**：灵活处理代理之间的通信和工作流执行
+* **工作流模式**：支持顺序、并发、路由、交接等多种工作流模式
+* **MCP 协议集成**：通过模型上下文协议与外部系统无缝集成
+* **TypeScript 支持**：全面的类型定义，提供出色的开发体验
 
 ## 安装
 
@@ -68,7 +68,9 @@ const aigne = new AIGNE({ model });
 const userAgent = await aigne.invoke(agent);
 
 // 向代理发送消息
-const response = await userAgent.invoke("Hello, can you help me write a short article?");
+const response = await userAgent.invoke(
+  "Hello, can you help me write a short article?",
+);
 console.log(response);
 ```
 

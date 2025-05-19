@@ -162,7 +162,7 @@ const aigne = new AIGNE({ model });
 
 ```typescript file=../examples/workflow-code-execution/usages.ts
 import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;
@@ -218,7 +218,7 @@ console.log(result);
 
 ```typescript file=../examples/workflow-sequential/usages.ts
 import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -304,7 +304,7 @@ console.log(result);
 
 ```typescript file=../examples/workflow-concurrency/usages.ts
 import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -366,7 +366,7 @@ console.log(result);
 
 ```typescript file=../examples/workflow-reflection/usages.ts
 import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;
@@ -471,7 +471,7 @@ console.log(message);
 
 ```typescript file=../examples/workflow-handoff/usages.ts
 import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -529,7 +529,7 @@ console.log(result2);
 
 ```typescript file=../examples/workflow-router/usages.ts
 import { AIAgent, AIAgentToolChoice, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -609,7 +609,7 @@ console.log(result3);
 ```typescript file=../examples/workflow-orchestrator/usage.ts
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -698,7 +698,7 @@ Puppeteer MCP服务器允许AIGNE Framework访问和操作网页内容。
 
 ```typescript file=../examples/mcp-puppeteer/usages.ts
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -756,7 +756,7 @@ SQLite MCP服务器允许AIGNE Framework与SQLite数据库交互。
 ```typescript file=../examples/mcp-sqlite/usages.ts
 import { join } from "node:path";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 

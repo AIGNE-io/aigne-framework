@@ -48,7 +48,7 @@ pnpm add @aigne/core
 
 ```ts file=examples/workflow-handoff/usages.ts
 import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 

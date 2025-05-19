@@ -2,8 +2,8 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, ChatModel } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils";
-import { AIGNEClient } from "@aigne/transport/client/index.js";
-import { AIGNEServer } from "@aigne/transport/server/index.js";
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import express from "express";
@@ -26,7 +26,7 @@ test("AIGNEServer example with expression", async () => {
   const aigne = new AIGNE({ model, agents: [chat] });
 
   // Create an AIGNEServer instance
-  const aigneServer = new AIGNEServer(aigne);
+  const aigneServer = new AIGNEHTTPServer(aigne);
 
   // Setup the server to handle incoming requests
   const server = express();
@@ -42,7 +42,7 @@ test("AIGNEServer example with expression", async () => {
   );
 
   // Create an AIGNEClient instance
-  const client = new AIGNEClient({ url });
+  const client = new AIGNEHTTPClient({ url });
 
   // Invoke the agent by client
   const response = await client.invoke("chat", { $message: "hello" });
@@ -73,7 +73,7 @@ test("AIGNEServer example with hono", async () => {
   const aigne = new AIGNE({ model, agents: [chat] });
 
   // Create an AIGNEServer instance
-  const aigneServer = new AIGNEServer(aigne);
+  const aigneServer = new AIGNEHTTPServer(aigne);
 
   // Setup the server to handle incoming requests
   const honoApp = new Hono();
@@ -89,7 +89,7 @@ test("AIGNEServer example with hono", async () => {
   );
 
   // Create an AIGNEClient instance
-  const client = new AIGNEClient({ url });
+  const client = new AIGNEHTTPClient({ url });
 
   // Invoke the agent by client
   const response = await client.invoke("chat", { $message: "hello" });

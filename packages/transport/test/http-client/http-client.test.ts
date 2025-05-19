@@ -6,8 +6,8 @@ import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils";
-import { AIGNEClient } from "@aigne/transport/client/index.js";
-import { AIGNEServer } from "@aigne/transport/server/index.js";
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import compression from "compression";
 import { detect } from "detect-port";
@@ -26,7 +26,7 @@ test("AIGNEClient example simple", async () => {
 
   // #region example-aigne-client-simple
 
-  const client = new AIGNEClient({ url });
+  const client = new AIGNEHTTPClient({ url });
 
   const response = await client.invoke("chat", { $message: "hello" });
 
@@ -50,7 +50,7 @@ test("AIGNEClient example with streaming", async () => {
 
   // #region example-aigne-client-streaming
 
-  const client = new AIGNEClient({ url });
+  const client = new AIGNEHTTPClient({ url });
 
   const stream = await client.invoke("chat", { $message: "hello" }, { streaming: true });
 
@@ -107,7 +107,7 @@ test.each(table)(
         Promise.resolve(stringToAgentResponseStream("Hello world!")),
       );
 
-      const client = new AIGNEClient({ url });
+      const client = new AIGNEHTTPClient({ url });
       const response = await client.invoke("chat", { $message: "hello" }, options);
 
       if (options.streaming) {
@@ -140,7 +140,7 @@ test.each(table)(
         ),
       );
 
-      const client = new AIGNEClient({ url });
+      const client = new AIGNEHTTPClient({ url });
       const response = client.invoke("chat", { $message: "hello" }, options);
 
       if (options.streaming) {
@@ -162,7 +162,7 @@ test.each(table)(
     const { url, close } = await createServer();
 
     try {
-      const client = new AIGNEClient({ url });
+      const client = new AIGNEHTTPClient({ url });
 
       const response = client.invoke("not-exists-agent", {}, options);
 
@@ -179,7 +179,7 @@ test.each(table)(
     const { url, close } = await createServer();
 
     try {
-      const client = new AIGNEClient({ url });
+      const client = new AIGNEHTTPClient({ url });
 
       const response = client.invoke("chat", "invalid body" as unknown as Message, {
         ...options,
@@ -201,7 +201,7 @@ test.each(table)(
     const { url, close } = await createServer();
 
     try {
-      const client = new AIGNEClient({ url });
+      const client = new AIGNEHTTPClient({ url });
 
       const response = client.invoke("chat", [] as unknown as Message, options);
 
@@ -232,7 +232,7 @@ async function createExpressServer({
   if (enableCompression) server.use(compression());
 
   const aigne = await createAIGNE();
-  const aigneServer = new AIGNEServer(aigne);
+  const aigneServer = new AIGNEHTTPServer(aigne);
 
   server.post("/aigne/invoke", async (req, res) => {
     await aigneServer.invoke(passBodyDirectly ? req.body : req, res);
@@ -257,7 +257,7 @@ async function createHonoServer() {
   const honoApp = new Hono();
 
   const aigne = await createAIGNE();
-  const aigneServer = new AIGNEServer(aigne);
+  const aigneServer = new AIGNEHTTPServer(aigne);
 
   honoApp.post("/aigne/invoke", async (c) => {
     return aigneServer.invoke(c.req.raw);

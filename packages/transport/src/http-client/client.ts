@@ -13,9 +13,9 @@ import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
 
 /**
- * Configuration options for the AIGNEClient.
+ * Configuration options for the AIGNEHTTPClient.
  */
-export interface AIGNEClientOptions {
+export interface AIGNEHTTPClientOptions {
   /**
    * The URL of the AIGNE server to connect to.
    * This should point to the base endpoint where the AIGNEServer is hosted.
@@ -24,10 +24,10 @@ export interface AIGNEClientOptions {
 }
 
 /**
- * Options for invoking an agent through the AIGNEClient.
+ * Options for invoking an agent through the AIGNEHTTPClient.
  * Extends the standard AgentInvokeOptions with client-specific options.
  */
-export interface AIGNEClientInvokeOptions extends AgentInvokeOptions {
+export interface AIGNEHTTPClientInvokeOptions extends AgentInvokeOptions {
   /**
    * Additional fetch API options to customize the HTTP request.
    * These options will be merged with the default options used by the client.
@@ -36,25 +36,25 @@ export interface AIGNEClientInvokeOptions extends AgentInvokeOptions {
 }
 
 /**
- * Client for interacting with a remote AIGNE server.
- * AIGNEClient provides a client-side interface that matches the AIGNE API,
+ * Http client for interacting with a remote AIGNE server.
+ * AIGNEHTTPClient provides a client-side interface that matches the AIGNE API,
  * allowing applications to invoke agents and receive responses from a remote AIGNE instance.
  *
  * @example
  * Here's a simple example of how to use AIGNEClient:
- * {@includeCode ../../test/client/client.test.ts#example-aigne-client-simple}
+ * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-simple}
  *
  * @example
  * Here's an example of how to use AIGNEClient with streaming response:
- * {@includeCode ../../test/client/client.test.ts#example-aigne-client-streaming}
+ * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
  */
-export class AIGNEClient {
+export class AIGNEHTTPClient {
   /**
    * Creates a new AIGNEClient instance.
    *
    * @param options - Configuration options for connecting to the AIGNE server
    */
-  constructor(public options: AIGNEClientOptions) {}
+  constructor(public options: AIGNEHTTPClientOptions) {}
 
   /**
    * Invokes an agent in non-streaming mode and returns the complete response.
@@ -66,12 +66,12 @@ export class AIGNEClient {
    *
    * @example
    * Here's a simple example of how to use AIGNEClient:
-   * {@includeCode ../../test/client/client.test.ts#example-aigne-client-simple}
+   * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-simple}
    */
   async invoke<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AIGNEClientInvokeOptions & { streaming?: false },
+    options?: AIGNEHTTPClientInvokeOptions & { streaming?: false },
   ): Promise<O>;
 
   /**
@@ -84,12 +84,12 @@ export class AIGNEClient {
    *
    * @example
    * Here's an example of how to use AIGNEClient with streaming response:
-   * {@includeCode ../../test/client/client.test.ts#example-aigne-client-streaming}
+   * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
    */
   async invoke<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options: AIGNEClientInvokeOptions & { streaming: true },
+    options: AIGNEHTTPClientInvokeOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
   /**
@@ -103,12 +103,12 @@ export class AIGNEClient {
   async invoke<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AIGNEClientInvokeOptions,
+    options?: AIGNEHTTPClientInvokeOptions,
   ): Promise<AgentResponse<O>>;
   async invoke<I extends Message, O extends Message>(
     agent: string,
     input: I,
-    options?: AIGNEClientInvokeOptions,
+    options?: AIGNEHTTPClientInvokeOptions,
   ): Promise<AgentResponse<O>> {
     // Send the agent invocation request to the AIGNE server
     const response = await this.fetch(this.options.url, {

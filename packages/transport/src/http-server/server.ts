@@ -32,11 +32,11 @@ export const invokePayloadSchema = z.object({
 });
 
 /**
- * Configuration options for the AIGNEServer.
+ * Configuration options for the AIGNEHTTPServer.
  * These options control various aspects of server behavior including
  * request parsing, payload limits, and response handling.
  */
-export interface AIGNEServerOptions {
+export interface AIGNEHTTPServerOptions {
   /**
    * Maximum body size for incoming HTTP requests.
    * This controls the upper limit of request payload size when parsing raw HTTP requests.
@@ -49,20 +49,20 @@ export interface AIGNEServerOptions {
 }
 
 /**
- * AIGNEServer provides HTTP API access to AIGNE capabilities.
+ * AIGNEHTTPServer provides HTTP API access to AIGNE capabilities.
  * It handles requests to invoke agents, manages response streaming,
  * and supports multiple HTTP server frameworks including Node.js http,
  * Express, and Fetch API compatible environments.
  *
  * @example
  * Here's a simple example of how to use AIGNEServer with express:
- * {@includeCode ../../test/server/server.test.ts#example-aigne-server-express}
+ * {@includeCode ../../test/http-server/http-server.test.ts#example-aigne-server-express}
  *
  * @example
  * Here's an example of how to use AIGNEServer with Hono:
- * {@includeCode ../../test/server/server.test.ts#example-aigne-server-hono}
+ * {@includeCode ../../test/http-server/http-server.test.ts#example-aigne-server-hono}
  */
-export class AIGNEServer {
+export class AIGNEHTTPServer {
   /**
    * Creates a new AIGNEServer instance.
    *
@@ -71,7 +71,7 @@ export class AIGNEServer {
    */
   constructor(
     public engine: AIGNE,
-    public options?: AIGNEServerOptions,
+    public options?: AIGNEHTTPServerOptions,
   ) {}
 
   /**
@@ -89,7 +89,7 @@ export class AIGNEServer {
    *
    * @example
    * Here's a simple example of how to use AIGNEServer with Hono:
-   * {@includeCode ../../test/server/server.test.ts#example-aigne-server-hono}
+   * {@includeCode ../../test/http-server/http-server.test.ts#example-aigne-server-hono}
    */
   async invoke(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response>;
   /**
@@ -104,7 +104,7 @@ export class AIGNEServer {
    *
    * @example
    * Here's a simple example of how to use AIGNEServer with express:
-   * {@includeCode ../../test/server/server.test.ts#example-aigne-server-express}
+   * {@includeCode ../../test/http-server/http-server.test.ts#example-aigne-server-express}
    */
   async invoke(
     request: Record<string, unknown> | Request | IncomingMessage,

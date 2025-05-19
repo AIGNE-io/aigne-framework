@@ -5,5 +5,5 @@ import base from "../../typedoc.base.js";
  */
 export default {
   ...base,
-  entryPoints: ["src/server", "src/client"],
+  entryPoints: ["src/http-server/index.ts", "src/http-client/index.ts"],
 };

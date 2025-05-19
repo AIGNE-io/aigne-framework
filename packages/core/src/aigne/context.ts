@@ -10,9 +10,9 @@ import {
   type FunctionAgentFn,
   type Message,
 } from "../agents/agent.js";
+import type { ChatModel } from "../agents/chat-model.js";
 import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
-import type { ChatModel } from "../models/chat-model.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import {
   agentResponseStreamToObject,

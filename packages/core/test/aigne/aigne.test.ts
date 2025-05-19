@@ -9,9 +9,8 @@ import {
   createMessage,
 } from "@aigne/core";
 import { TeamAgent } from "@aigne/core/agents/team-agent.js";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
-import { mockOpenAIStreaming } from "../_mocks/mock-openai-streaming.js";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 test("AIGNE simple example", async () => {
   // #region example-simple
@@ -290,13 +289,15 @@ test("AIGNE should throw error if reached max agent calls", async () => {
 });
 
 test("AIGNE should throw error if reached max tokens", async () => {
-  const model = new OpenAIChatModel({
-    apiKey: "YOUR_API_KEY",
-  });
+  const model = new OpenAIChatModel();
 
-  spyOn(model.client.chat.completions, "create").mockImplementation(() =>
-    mockOpenAIStreaming({ text: "hello", inputTokens: 100, outputTokens: 200 }),
-  );
+  spyOn(model, "process").mockReturnValue({
+    text: "hello",
+    usage: {
+      inputTokens: 100,
+      outputTokens: 200,
+    },
+  });
 
   const agent = AIAgent.from({});
 
@@ -308,14 +309,9 @@ test("AIGNE should throw error if reached max tokens", async () => {
   });
 
   expect(aigne.invoke(agent, "test")).resolves.toEqual(createMessage("hello"));
-  expect(
-    aigne.invoke(
-      TeamAgent.from({
-        skills: [agent, agent],
-      }),
-      "test",
-    ),
-  ).rejects.toThrow("Exceeded max tokens 300/200");
+  expect(aigne.invoke(TeamAgent.from({ skills: [agent, agent] }), "test")).rejects.toThrow(
+    "Exceeded max tokens 300/200",
+  );
 });
 
 test("AIGNE should throw timeout error", async () => {

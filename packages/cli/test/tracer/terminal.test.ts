@@ -1,8 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
 import { TerminalTracer } from "@aigne/cli/tracer/terminal.js";
 import { AIAgent, AIGNE, createMessage } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 test("TerminalTracer should work correctly", async () => {
   const model = new OpenAIChatModel({});

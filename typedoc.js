@@ -7,7 +7,7 @@ const config = {
   ...base,
   out: "docs/api",
   basePath: "/api",
-  entryPoints: ["packages/core", "packages/agent-library"],
+  entryPoints: ["packages/*"],
   entryPointStrategy: "packages",
   sortEntryPoints: false,
 };

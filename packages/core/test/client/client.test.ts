@@ -2,7 +2,6 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, type AgentInvokeOptions, ChatModel, type Message } from "@aigne/core";
 import { AIGNEClient } from "@aigne/core/client/index.js";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { AIGNEServer } from "@aigne/core/server/index.js";
 import {
   arrayToReadableStream,
@@ -14,6 +13,7 @@ import compression from "compression";
 import { detect } from "detect-port";
 import express from "express";
 import { Hono } from "hono";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 test("AIGNEClient example simple", async () => {
   const { url, aigne, close } = await createHonoServer();
@@ -273,9 +273,7 @@ async function createHonoServer() {
 }
 
 async function createAIGNE() {
-  const model = new OpenAIChatModel({
-    apiKey: "YOUR_OPENAI_API_KEY",
-  });
+  const model = new OpenAIChatModel();
 
   const chat = AIAgent.from({
     name: "chat",

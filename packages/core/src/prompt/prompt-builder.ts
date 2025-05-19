@@ -4,8 +4,6 @@ import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
-import type { Context } from "../aigne/context.js";
-import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type {
   ChatModel,
   ChatModelInput,
@@ -14,7 +12,9 @@ import type {
   ChatModelInputTool,
   ChatModelInputToolChoice,
   ChatModelOptions,
-} from "../models/chat-model.js";
+} from "../agents/chat-model.js";
+import type { Context } from "../aigne/context.js";
+import type { Memory, MemoryAgent } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
 import { isNil, orArrayToArray, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";

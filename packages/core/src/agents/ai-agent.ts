@@ -2,13 +2,6 @@ import { type ZodObject, type ZodType, z } from "zod";
 import type { Context } from "../aigne/context.js";
 import { DefaultMemory, type DefaultMemoryOptions } from "../memory/default-memory.js";
 import { MemoryAgent } from "../memory/memory.js";
-import { ChatModel } from "../models/chat-model.js";
-import type {
-  ChatModelInput,
-  ChatModelInputMessage,
-  ChatModelOutput,
-  ChatModelOutputToolCall,
-} from "../models/chat-model.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
 import { checkArguments, isEmpty } from "../utils/type-utils.js";
@@ -19,6 +12,13 @@ import {
   type Message,
   agentOptionsSchema,
 } from "./agent.js";
+import { ChatModel } from "./chat-model.js";
+import type {
+  ChatModelInput,
+  ChatModelInputMessage,
+  ChatModelOutput,
+  ChatModelOutputToolCall,
+} from "./chat-model.js";
 import { isTransferAgentOutput } from "./types.js";
 
 /**

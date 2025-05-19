@@ -28,7 +28,9 @@
     "build": "tsc --build tsconfig.build.json",
     "clean": "rimraf lib"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@aigne/core": "workspace:^"
+  },
   "devDependencies": {
     "@types/bun": "^1.2.12",
     "@types/node": "^22.15.15",

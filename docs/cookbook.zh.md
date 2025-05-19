@@ -91,15 +91,12 @@ ChatModel可以直接使用，但通常建议通过 AIGNE 来使用，以获得�
 
 **示例**:
 
-```typescript file=../packages/core/test/models/model-simple-usage.test.ts
+```typescript file=../packages/core/test/agents/model-simple-usage.test.ts
 import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 // Initialize OpenAI model
-const model = new OpenAIChatModel({
-  apiKey: "YOUR_OPENAI_API_KEY",
-  model: "gpt-4o-mini", // Optional, defaults to "gpt-4o-mini"
-});
+const model = new OpenAIChatModel();
 
 // Use with AIGNE
 const aigne = new AIGNE({ model });

@@ -3,8 +3,8 @@ import assert from "node:assert";
 import { resolve } from "node:path";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import { mockModule } from "../_mocks_/mock-module.js";
 
 test("runWithAIGNE should run agent correctly", async () => {

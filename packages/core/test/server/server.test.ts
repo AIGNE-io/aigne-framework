@@ -2,13 +2,13 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, ChatModel } from "@aigne/core";
 import { AIGNEClient } from "@aigne/core/client/index.js";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { AIGNEServer } from "@aigne/core/server/index.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import express from "express";
 import { Hono } from "hono";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 test("AIGNEServer example with expression", async () => {
   const port = await detect();

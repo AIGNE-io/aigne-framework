@@ -5,9 +5,9 @@ import {
   type AgentResponseStream,
   type Message,
 } from "../agents/agent.js";
+import { ChatModel } from "../agents/chat-model.js";
 import type { UserAgent } from "../agents/user-agent.js";
-import { load } from "../loader/index.js";
-import { ChatModel } from "../models/chat-model.js";
+import { type LoadOptions, load } from "../loader/index.js";
 import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
 import { AIGNEContext, type InvokeOptions } from "./context.js";
 import {
@@ -74,8 +74,11 @@ export class AIGNE {
    * @param options - Options to override the loaded configuration.
    * @returns A fully initialized AIGNE instance with configured agents and skills.
    */
-  static async load(path: string, options?: AIGNEOptions): Promise<AIGNE> {
-    const { model, agents, skills, ...aigne } = await load({ path });
+  static async load(
+    path: string,
+    options: AIGNEOptions & Pick<LoadOptions, "models">,
+  ): Promise<AIGNE> {
+    const { model, agents, skills, ...aigne } = await load({ models: options.models, path });
     return new AIGNE({
       ...options,
       model: options?.model || model,

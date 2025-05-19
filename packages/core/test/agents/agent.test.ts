@@ -11,9 +11,9 @@ import {
   type Message,
   textDelta,
 } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 test("Custom agent", async () => {
   // #region example-custom-agent

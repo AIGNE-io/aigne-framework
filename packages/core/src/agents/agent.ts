@@ -21,6 +21,7 @@ import {
   isEmpty,
   orArrayToArray,
 } from "../utils/type-utils.js";
+import type { GuideRailAgent, GuideRailAgentOutput } from "./guide-rail-agent.js";
 import {
   type TransferAgentOutput,
   replaceTransferAgentToName,
@@ -59,7 +60,7 @@ export type PublishTopic<O extends Message> =
  * @template O The agent output message type
  */
 export interface AgentOptions<I extends Message = Message, O extends Message = Message>
-  extends Partial<Pick<Agent, "hooks">> {
+  extends Partial<Pick<Agent, "guideRails" | "hooks">> {
   /**
    * Topics the agent should subscribe to
    *
@@ -159,6 +160,7 @@ export const agentOptionsSchema: ZodObject<{
       onHandoff: z.custom<AgentHooks["onHandoff"]>().optional(),
     })
     .optional(),
+  guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
 });
 
 export interface AgentInvokeOptions {
@@ -221,6 +223,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     }
 
     this.hooks = options.hooks ?? {};
+    this.guideRails = options.guideRails;
   }
 
   /**
@@ -239,6 +242,25 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * {@includeCode ../../test/agents/agent.test.ts#example-agent-hooks}
    */
   readonly hooks: AgentHooks;
+
+  /**
+   * List of GuideRail agents applied to this agent
+   *
+   * GuideRail agents validate, transform, or control the message flow by:
+   * - Enforcing rules and safety policies
+   * - Validating inputs/outputs against specific criteria
+   * - Implementing business logic validations
+   * - Monitoring and auditing agent behavior
+   *
+   * Each GuideRail agent can examine both input and expected output,
+   * and has the ability to abort the process with an explanation
+   *
+   * @example
+   * Here's an example of using GuideRail agents:
+   *
+   * {@includeCode ../../test/agents/agent.test.ts#example-agent-guide-rails}
+   */
+  readonly guideRails?: GuideRailAgent[];
 
   /**
    * Name of the agent, used for identification and logging
@@ -507,26 +529,34 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
               ? asyncGeneratorToReadableStream(response)
               : objectToAgentResponseStream(response);
 
-        return onAgentResponseStreamEnd(
-          stream,
-          async (result) => {
-            return await this.processAgentOutput(parsedInput, result, ctx);
-          },
-          {
-            errorCallback: async (error) => {
-              return await this.processAgentError(message, error, ctx);
+        return this.checkResponseByGuideRails(
+          message,
+          onAgentResponseStreamEnd(
+            stream,
+            async (result) => {
+              return await this.processAgentOutput(parsedInput, result, ctx);
             },
-          },
+            {
+              errorCallback: async (error) => {
+                return await this.processAgentError(message, error, ctx);
+              },
+            },
+          ),
+          ctx,
         );
       }
 
-      return await this.processAgentOutput(
-        parsedInput,
-        response instanceof ReadableStream
-          ? await agentResponseStreamToObject(response)
-          : isAsyncGenerator(response)
+      return await this.checkResponseByGuideRails(
+        message,
+        this.processAgentOutput(
+          parsedInput,
+          response instanceof ReadableStream
             ? await agentResponseStreamToObject(response)
-            : response,
+            : isAsyncGenerator(response)
+              ? await agentResponseStreamToObject(response)
+              : response,
+          ctx,
+        ),
         ctx,
       );
     } catch (error) {
@@ -560,7 +590,11 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @param context Execution context
    * @returns Final processed output
    */
-  private async processAgentOutput(input: I, output: O | TransferAgentOutput, context: Context) {
+  private async processAgentOutput(
+    input: I,
+    output: Exclude<AgentResponse<O>, AgentResponseStream<O>>,
+    context: Context,
+  ) {
     const parsedOutput = checkArguments(
       `Agent ${this.name} output`,
       this.outputSchema,
@@ -627,6 +661,63 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   protected preprocess(_: I, context: Context) {
     this.checkContextStatus(context);
     this.checkAgentInvokesUsage(context);
+  }
+
+  private async checkResponseByGuideRails(
+    input: I,
+    output: PromiseOrValue<AgentResponse<O>>,
+    context: Context,
+  ): Promise<typeof output> {
+    if (!this.guideRails?.length) return output;
+
+    const result = await output;
+
+    if (result instanceof ReadableStream) {
+      return onAgentResponseStreamEnd(result, async (result) => {
+        const error = await this.runGuideRails(input, result, context);
+        if (error) {
+          return {
+            ...(await this.onGuideRailError(error)),
+            $status: "GuideRailError",
+          } as unknown as O;
+        }
+      });
+    }
+
+    const error = await this.runGuideRails(input, result, context);
+    if (!error) return output;
+
+    return { ...(await this.onGuideRailError(error)), $status: "GuideRailError" };
+  }
+
+  private async runGuideRails(
+    input: I,
+    output: PromiseOrValue<AgentResponse<O>>,
+    context: Context,
+  ): Promise<(GuideRailAgentOutput & { abort: true }) | undefined> {
+    const result = await Promise.all(
+      (this.guideRails ?? []).map((i) => context.invoke(i, { input, output })),
+    );
+    return result.find((i): i is GuideRailAgentOutput & { abort: true } => !!i.abort);
+  }
+
+  /**
+   * Handle errors detected by GuideRail agents
+   *
+   * This method is called when a GuideRail agent aborts the process, providing
+   * a way for agents to customize error handling behavior. By default, it simply
+   * returns the original error, but subclasses can override this method to:
+   * - Transform the error into a more specific response
+   * - Apply recovery strategies
+   * - Log or report the error in a custom format
+   * - Return a fallback output instead of an error
+   *
+   * @param error The GuideRail agent output containing abort=true and a reason
+   * @returns Either the original/modified error or a substitute output object
+   *          which will be tagged with $status: "GuideRailError"
+   */
+  protected async onGuideRailError(error: GuideRailAgentOutput): Promise<O | GuideRailAgentOutput> {
+    return error;
   }
 
   /**
@@ -827,7 +918,11 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
  *
  * @template T Response data type
  */
-export type AgentResponse<T> = T | TransferAgentOutput | AgentResponseStream<T>;
+export type AgentResponse<T> =
+  | T
+  | AgentResponseStream<T>
+  | TransferAgentOutput
+  | GuideRailAgentOutput;
 
 /**
  * Streaming response type for an agent

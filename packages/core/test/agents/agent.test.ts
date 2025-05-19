@@ -12,6 +12,7 @@ import {
   type Message,
   textDelta,
 } from "@aigne/core";
+import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
@@ -369,6 +370,163 @@ test("Agent.shutdown by `using` statement", async () => {
   expect(shutdown).not.toHaveBeenCalled();
 
   // #endregion example-agent-shutdown-by-using
+});
+
+test("Agent should return the original error from guide rails", async () => {
+  const legalModel = new OpenAIChatModel();
+
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
+    model: legalModel,
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  class MyAgent extends Agent {
+    override process(_input: Message): Message {
+      return {
+        text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
+      };
+    }
+  }
+
+  const agent = new MyAgent({ guideRails: [financial] });
+
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: true,
+        reason:
+          "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+      },
+    }),
+  );
+
+  const result = await agent.invoke("What will be the price of Bitcoin next year?");
+
+  expect(result).toEqual({
+    $status: "GuideRailError",
+    abort: true,
+    reason:
+      "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+  });
+});
+
+test("Agent can be intercepted by guide rails", async () => {
+  // #region example-agent-guide-rails
+
+  const model = new OpenAIChatModel();
+
+  const legalModel = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
+    model: legalModel,
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  const agent = AIAgent.from({
+    guideRails: [financial],
+  });
+
+  // Mock the model's response (the potential price prediction)
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve({
+      text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
+    }),
+  );
+
+  // Mock the guide rail's response (rejecting the price prediction)
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: true,
+        reason:
+          "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+      },
+    }),
+  );
+
+  const result = await aigne.invoke(agent, "What will be the price of Bitcoin next month?");
+
+  console.log(result);
+  // Output:
+  // {
+  //   "$status": "GuideRailError",
+  //   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
+  // }
+
+  expect(result).toEqual({
+    $status: "GuideRailError",
+    $message:
+      "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+  });
+
+  // #endregion example-agent-guide-rails
+});
+
+test("Agent should respond result if no any guide rails error", async () => {
+  const model = new OpenAIChatModel();
+
+  const legalModel = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
+    model: legalModel,
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  const agent = AIAgent.from({
+    guideRails: [financial],
+  });
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve({
+      text: "You can use AIGNE Framework create a useful agent!",
+    }),
+  );
+
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: false,
+        reason: "That is a normal response",
+      },
+    }),
+  );
+
+  const result = await aigne.invoke(agent, "How to create an agent?");
+
+  expect(result).toEqual({
+    $message: "You can use AIGNE Framework create a useful agent!",
+  });
 });
 
 test("Agent inspect should return it's name", async () => {

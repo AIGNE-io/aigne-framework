@@ -8,9 +8,9 @@ import type {
   AgentResponseChunk,
   AgentResponseStream,
   Message,
-} from "../agents/agent.js";
-import { AgentResponseStreamParser, EventStreamParser } from "../utils/event-stream.js";
-import { tryOrThrow } from "../utils/type-utils.js";
+} from "@aigne/core";
+import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
+import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
 
 /**
  * Configuration options for the AIGNEClient.

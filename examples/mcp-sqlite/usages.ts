@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");

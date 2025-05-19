@@ -26,6 +26,7 @@
     "@aigne/cli": "workspace:^"
   },
   "devDependencies": {
-    "@aigne/test-utils": "workspace:^"
+    "@aigne/test-utils": "workspace:^",
+    "@types/bun": "^1.2.9"
   }
 }

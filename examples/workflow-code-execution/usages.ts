@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;

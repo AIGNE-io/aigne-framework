@@ -12,7 +12,7 @@ import {
   createMessage,
   getMessage,
 } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import inquirer from "inquirer";
 import { z } from "zod";
 

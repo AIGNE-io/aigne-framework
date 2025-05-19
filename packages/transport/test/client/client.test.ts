@@ -1,19 +1,19 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, type AgentInvokeOptions, ChatModel, type Message } from "@aigne/core";
-import { AIGNEClient } from "@aigne/core/client/index.js";
-import { AIGNEServer } from "@aigne/core/server/index.js";
 import {
   arrayToReadableStream,
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils";
+import { AIGNEClient } from "@aigne/transport/client/index.js";
+import { AIGNEServer } from "@aigne/transport/server/index.js";
 import { serve } from "bun";
 import compression from "compression";
 import { detect } from "detect-port";
 import express from "express";
 import { Hono } from "hono";
-import { OpenAIChatModel } from "../_mocks/mock-models.js";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
 test("AIGNEClient example simple", async () => {
   const { url, aigne, close } = await createHonoServer();

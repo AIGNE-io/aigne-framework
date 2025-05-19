@@ -50,9 +50,6 @@
       "loader/*": [
         "./lib/dts/loader/*"
       ],
-      "models/*": [
-        "./lib/dts/models/*"
-      ],
       "memory/*": [
         "./lib/dts/memory/*"
       ],
@@ -61,12 +58,6 @@
       ],
       "utils/*": [
         "./lib/dts/utils/*"
-      ],
-      "client/*": [
-        "./lib/dts/client/*"
-      ],
-      "server/*": [
-        "./lib/dts/server/*"
       ]
     }
   },

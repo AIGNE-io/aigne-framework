@@ -1,4 +1,5 @@
 import {
+  type AgentProcessResult,
   type AgentResponse,
   type AgentResponseChunk,
   ChatModel,
@@ -12,7 +13,11 @@ import { parseJSON } from "@aigne/core/utils/json-schema.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { getJsonToolInputPrompt } from "@aigne/core/utils/prompts.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
-import { checkArguments, isNonNullable } from "@aigne/core/utils/type-utils.js";
+import {
+  type PromiseOrValue,
+  checkArguments,
+  isNonNullable,
+} from "@aigne/core/utils/type-utils.js";
 import {
   BedrockRuntimeClient,
   type ContentBlock,
@@ -96,7 +101,16 @@ export class BedrockChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  async process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
+  /**
+   * Process the input using Bedrock's chat model
+   * @param input - The input to process
+   * @returns The processed output from the model
+   */
+  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this._process(input);
+  }
+
+  private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const modelId =
       input.modelOptions?.model ?? this.modelOptions?.model ?? BEDROCK_DEFAULT_CHAT_MODEL;
 

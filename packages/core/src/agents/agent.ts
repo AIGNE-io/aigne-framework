@@ -15,11 +15,13 @@ import {
 import {
   type Nullish,
   type PromiseOrValue,
+  type XOr,
   checkArguments,
   createAccessorArray,
   isEmpty,
   orArrayToArray,
 } from "../utils/type-utils.js";
+import type { GuideRailAgent, GuideRailAgentOutput } from "./guide-rail-agent.js";
 import {
   type TransferAgentOutput,
   replaceTransferAgentToName,
@@ -57,7 +59,8 @@ export type PublishTopic<O extends Message> =
  * @template I The agent input message type
  * @template O The agent output message type
  */
-export interface AgentOptions<I extends Message = Message, O extends Message = Message> {
+export interface AgentOptions<I extends Message = Message, O extends Message = Message>
+  extends Partial<Pick<Agent, "guideRails" | "hooks">> {
   /**
    * Topics the agent should subscribe to
    *
@@ -148,6 +151,16 @@ export const agentOptionsSchema: ZodObject<{
   skills: z.array(z.union([z.custom<Agent>(), z.custom<FunctionAgentFn>()])).optional(),
   disableEvents: z.boolean().optional(),
   memory: z.union([z.custom<MemoryAgent>(), z.array(z.custom<MemoryAgent>())]).optional(),
+  hooks: z
+    .object({
+      onStart: z.custom<AgentHooks["onStart"]>().optional(),
+      onEnd: z.custom<AgentHooks["onEnd"]>().optional(),
+      onSkillStart: z.custom<AgentHooks["onSkillStart"]>().optional(),
+      onSkillEnd: z.custom<AgentHooks["onSkillEnd"]>().optional(),
+      onHandoff: z.custom<AgentHooks["onHandoff"]>().optional(),
+    })
+    .optional(),
+  guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
 });
 
 export interface AgentInvokeOptions {
@@ -208,12 +221,46 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     } else if (options.memory) {
       this.memories.push(options.memory);
     }
+
+    this.hooks = options.hooks ?? {};
+    this.guideRails = options.guideRails;
   }
 
   /**
    * List of memories this agent can use
    */
   readonly memories: MemoryAgent[] = [];
+
+  /**
+   * Lifecycle hooks for agent processing.
+   *
+   * Hooks enable tracing, logging, monitoring, and custom behavior
+   * without modifying the core agent implementation
+   *
+   * @example
+   * Here's an example of using hooks:
+   * {@includeCode ../../test/agents/agent.test.ts#example-agent-hooks}
+   */
+  readonly hooks: AgentHooks;
+
+  /**
+   * List of GuideRail agents applied to this agent
+   *
+   * GuideRail agents validate, transform, or control the message flow by:
+   * - Enforcing rules and safety policies
+   * - Validating inputs/outputs against specific criteria
+   * - Implementing business logic validations
+   * - Monitoring and auditing agent behavior
+   *
+   * Each GuideRail agent can examine both input and expected output,
+   * and has the ability to abort the process with an explanation
+   *
+   * @example
+   * Here's an example of using GuideRail agents:
+   *
+   * {@includeCode ../../test/agents/agent.test.ts#example-agent-guide-rails}
+   */
+  readonly guideRails?: GuideRailAgent[];
 
   /**
    * Name of the agent, used for identification and logging
@@ -455,17 +502,15 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     options?: AgentInvokeOptions,
   ): Promise<AgentResponse<O>> {
     const ctx: Context = context ?? (await this.newDefaultContext());
-    const message = typeof input === "string" ? createMessage(input) : input;
+    const message = typeof input === "string" ? (createMessage(input) as I) : input;
 
     logger.debug("Invoke agent %s started with input: %O", this.name, input);
     if (!this.disableEvents) ctx.emit("agentStarted", { agent: this, input: message });
 
     try {
-      const parsedInput = checkArguments(
-        `Agent ${this.name} input`,
-        this.inputSchema,
-        message,
-      ) as I;
+      await this.hooks.onStart?.({ input: message });
+
+      const parsedInput = checkArguments(`Agent ${this.name} input`, this.inputSchema, message);
 
       this.preprocess(parsedInput, ctx);
 
@@ -484,34 +529,54 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
               ? asyncGeneratorToReadableStream(response)
               : objectToAgentResponseStream(response);
 
-        return onAgentResponseStreamEnd(
-          stream,
-          async (result) => {
-            return await this.processAgentOutput(parsedInput, result, ctx);
-          },
-          {
-            errorCallback: (error) => {
-              try {
-                this.processAgentError(error, ctx);
-              } catch (error) {
-                return error;
-              }
+        return this.checkResponseByGuideRails(
+          message,
+          onAgentResponseStreamEnd(
+            stream,
+            async (result) => {
+              return await this.processAgentOutput(parsedInput, result, ctx);
             },
-          },
+            {
+              errorCallback: async (error) => {
+                return await this.processAgentError(message, error, ctx);
+              },
+            },
+          ),
+          ctx,
         );
       }
 
-      return await this.processAgentOutput(
-        parsedInput,
-        response instanceof ReadableStream
-          ? await agentResponseStreamToObject(response)
-          : isAsyncGenerator(response)
+      return await this.checkResponseByGuideRails(
+        message,
+        this.processAgentOutput(
+          parsedInput,
+          response instanceof ReadableStream
             ? await agentResponseStreamToObject(response)
-            : response,
+            : isAsyncGenerator(response)
+              ? await agentResponseStreamToObject(response)
+              : response,
+          ctx,
+        ),
         ctx,
       );
     } catch (error) {
-      this.processAgentError(error, ctx);
+      throw await this.processAgentError(message, error, ctx);
+    }
+  }
+
+  protected async invokeSkill<I extends Message, O extends Message>(
+    skill: Agent<I, O>,
+    input: I,
+    context: Context,
+  ): Promise<O> {
+    await this.hooks.onSkillStart?.({ skill, input });
+    try {
+      const output = await context.invoke(skill, input);
+      await this.hooks.onSkillEnd?.({ skill, input, output });
+      return output;
+    } catch (error) {
+      await this.hooks.onSkillEnd?.({ skill, input, error });
+      throw error;
     }
   }
 
@@ -525,7 +590,11 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @param context Execution context
    * @returns Final processed output
    */
-  private async processAgentOutput(input: I, output: O | TransferAgentOutput, context: Context) {
+  private async processAgentOutput(
+    input: I,
+    output: Exclude<AgentResponse<O>, AgentResponseStream<O>>,
+    context: Context,
+  ) {
     const parsedOutput = checkArguments(
       `Agent ${this.name} output`,
       this.outputSchema,
@@ -539,6 +608,8 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
+    await this.hooks.onEnd?.({ input, output: finalOutput });
+
     return finalOutput;
   }
 
@@ -549,12 +620,14 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    *
    * @param error Caught error
    * @param context Execution context
-   * @throws Always throws the received error
    */
-  private processAgentError(error: Error, context: Context): never {
+  private async processAgentError(input: I, error: Error, context: Context): Promise<Error> {
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
     if (!this.disableEvents) context.emit("agentFailed", { agent: this, error });
-    throw error;
+
+    await this.hooks.onEnd?.({ input, error });
+
+    return error;
   }
 
   /**
@@ -588,6 +661,63 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   protected preprocess(_: I, context: Context) {
     this.checkContextStatus(context);
     this.checkAgentInvokesUsage(context);
+  }
+
+  private async checkResponseByGuideRails(
+    input: I,
+    output: PromiseOrValue<AgentResponse<O>>,
+    context: Context,
+  ): Promise<typeof output> {
+    if (!this.guideRails?.length) return output;
+
+    const result = await output;
+
+    if (result instanceof ReadableStream) {
+      return onAgentResponseStreamEnd(result, async (result) => {
+        const error = await this.runGuideRails(input, result, context);
+        if (error) {
+          return {
+            ...(await this.onGuideRailError(error)),
+            $status: "GuideRailError",
+          } as unknown as O;
+        }
+      });
+    }
+
+    const error = await this.runGuideRails(input, result, context);
+    if (!error) return output;
+
+    return { ...(await this.onGuideRailError(error)), $status: "GuideRailError" };
+  }
+
+  private async runGuideRails(
+    input: I,
+    output: PromiseOrValue<AgentResponse<O>>,
+    context: Context,
+  ): Promise<(GuideRailAgentOutput & { abort: true }) | undefined> {
+    const result = await Promise.all(
+      (this.guideRails ?? []).map((i) => context.invoke(i, { input, output })),
+    );
+    return result.find((i): i is GuideRailAgentOutput & { abort: true } => !!i.abort);
+  }
+
+  /**
+   * Handle errors detected by GuideRail agents
+   *
+   * This method is called when a GuideRail agent aborts the process, providing
+   * a way for agents to customize error handling behavior. By default, it simply
+   * returns the original error, but subclasses can override this method to:
+   * - Transform the error into a more specific response
+   * - Apply recovery strategies
+   * - Log or report the error in a custom format
+   * - Return a fallback output instead of an error
+   *
+   * @param error The GuideRail agent output containing abort=true and a reason
+   * @returns Either the original/modified error or a substitute output object
+   *          which will be tagged with $status: "GuideRailError"
+   */
+  protected async onGuideRailError(error: GuideRailAgentOutput): Promise<O | GuideRailAgentOutput> {
+    return error;
   }
 
   /**
@@ -715,6 +845,72 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 }
 
 /**
+ * Lifecycle hooks for agent execution
+ *
+ * Hooks provide a way to intercept and extend agent behavior at key points during
+ * the agent's lifecycle, enabling custom functionality like logging, monitoring,
+ * tracing, error handling, and more.
+ */
+export interface AgentHooks<I extends Message = Message, O extends Message = Message> {
+  /**
+   * Called when agent processing begins
+   *
+   * This hook runs before the agent processes input, allowing for
+   * setup operations, logging, or input transformations.
+   *
+   * @param event Object containing the input message
+   */
+  onStart?: (event: { input: I }) => PromiseOrValue<void>;
+
+  /**
+   * Called when agent processing completes or fails
+   *
+   * This hook runs after processing finishes, receiving either the output
+   * or an error if processing failed. Useful for cleanup operations,
+   * logging results, or error handling.
+   *
+   * @param event Object containing the input message and either output or error
+   */
+  onEnd?: (
+    event: XOr<{ input: I; output: O; error: Error }, "output", "error">,
+  ) => PromiseOrValue<void>;
+
+  /**
+   * Called before a skill (sub-agent) is invoked
+   *
+   * This hook runs when the agent delegates work to a skill,
+   * allowing for tracking skill usage or transforming input to the skill.
+   *
+   * @param event Object containing the skill being used and input message
+   */
+  onSkillStart?: (event: { skill: Agent; input: I }) => PromiseOrValue<void>;
+
+  /**
+   * Called after a skill (sub-agent) completes or fails
+   *
+   * This hook runs when a skill finishes execution, receiving either the output
+   * or an error if the skill failed. Useful for monitoring skill performance
+   * or handling skill-specific errors.
+   *
+   * @param event Object containing the skill used, input message, and either output or error
+   */
+  onSkillEnd?: (
+    event: XOr<{ skill: Agent; input: I; output: O; error: Error }, "output", "error">,
+  ) => PromiseOrValue<void>;
+
+  /**
+   * Called when an agent hands off processing to another agent
+   *
+   * This hook runs when a source agent transfers control to a target agent,
+   * allowing for tracking of handoffs between agents and monitoring the flow
+   * of processing in multi-agent systems.
+   *
+   * @param event Object containing the source agent, target agent, and input message
+   */
+  onHandoff?: (event: { source: Agent; target: Agent; input: I }) => PromiseOrValue<void>;
+}
+
+/**
  * Response type for an agent, can be:
  * - Direct response object
  * - Output transferred to another agent
@@ -722,7 +918,11 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
  *
  * @template T Response data type
  */
-export type AgentResponse<T> = T | TransferAgentOutput | AgentResponseStream<T>;
+export type AgentResponse<T> =
+  | T
+  | AgentResponseStream<T>
+  | TransferAgentOutput
+  | GuideRailAgentOutput;
 
 /**
  * Streaming response type for an agent

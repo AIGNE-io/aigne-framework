@@ -7,7 +7,7 @@ export const testData = {
   `,
 };
 
-// 测试数据2：复杂嵌套结构
+// Test data 2: Complex nested structure
 export const testData2 = {
   responseSchema: `{
     "type": "object",
@@ -110,7 +110,7 @@ export const testData2 = {
   `,
 };
 
-// 测试数据3：数组处理和条件映射
+// Test data 3: Array processing and conditional mapping
 export const testData3 = {
   responseSchema: `{
     "type": "object",

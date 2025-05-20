@@ -1,48 +1,16 @@
-import { expect, test } from "bun:test";
-import { OpenAIChatModel } from "@aigne/openai";
+import { expect, spyOn, test } from "bun:test";
 import { generateMapping } from "../../src/data-mapper/index.js";
 import { applyJsonata } from "../../src/data-mapper/tools.js";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
+import { resultArray, resultBasic, resultComplex } from "./mock-model-response.js";
 import { testData, testData2, testData3 } from "./test-data.js";
 
 test(
   "generateMapping - basic case",
   async () => {
-    const model = new OpenAIChatModel({
-      apiKey: process.env.OPENAI_API_KEY,
-      model: "gpt-4o",
-    });
+    const model = new OpenAIChatModel();
 
-    // spyOn(
-    //   (model as unknown as { client: OpenAI }).client.chat.completions,
-    //   "create",
-    // ).mockReturnValue(
-    //   new ReadableStream({
-    //     async start(controller) {
-    //       const file = await readFile(join(import.meta.dirname, "data-mapper-ai-response.txt"));
-    //       for (const line of file.toString().split("\n")) {
-    //         if (line) controller.enqueue(JSON.parse(line.replace("data:", "")));
-    //       }
-    //       controller.close();
-    //     },
-    //   }) as unknown as APIPromise<Stream<ChatCompletionChunk> | ChatCompletion>,
-    // );
-
-    // spyOn(model, "call")
-    //   .mockReturnValueOnce(
-    //     Promise.resolve({
-    //       toolCalls: [
-    //         {
-    //           id: "plus",
-    //           type: "function",
-    //           function: {
-    //             name: "plus",
-    //             arguments: { a: 1, b: 1 },
-    //           },
-    //         },
-    //       ],
-    //     }),
-    //   )
-    //   .mockReturnValueOnce(Promise.resolve({ json: { sum: 2 } }));
+    spyOn(model, "process").mockReturnValueOnce(Promise.resolve({ json: resultBasic }));
 
     const result = await generateMapping({
       input: testData,
@@ -71,10 +39,9 @@ test(
 test(
   "generateMapping - complex nested structure",
   async () => {
-    const model = new OpenAIChatModel({
-      apiKey: process.env.OPENAI_API_KEY,
-      model: "gpt-4o-mini",
-    });
+    const model = new OpenAIChatModel();
+
+    spyOn(model, "process").mockReturnValueOnce(Promise.resolve({ json: resultComplex }));
 
     const result = await generateMapping({
       input: testData2,
@@ -106,10 +73,9 @@ test(
 test(
   "generateMapping - array processing",
   async () => {
-    const model = new OpenAIChatModel({
-      apiKey: process.env.OPENAI_API_KEY,
-      model: "gpt-4o-mini",
-    });
+    const model = new OpenAIChatModel();
+
+    spyOn(model, "process").mockReturnValueOnce(Promise.resolve({ json: resultArray }));
 
     const result = await generateMapping({
       input: testData3,

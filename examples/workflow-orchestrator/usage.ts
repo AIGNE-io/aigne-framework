@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
@@ -38,7 +38,7 @@ Rules:
 - if you want a url to some page, you should get all link and it's title of current(home) page,
 then you can use the title to search the url of the page you want to visit.
   `,
-  tools: [puppeteer, filesystem],
+  skills: [puppeteer, filesystem],
 });
 
 const writer = AIAgent.from({
@@ -47,18 +47,18 @@ const writer = AIAgent.from({
   instructions: `You are an agent that can write to the filesystem.
   You are tasked with taking the user's input, addressing it, and
   writing the result to disk in the appropriate location.`,
-  tools: [filesystem],
+  skills: [filesystem],
 });
 
 const agent = OrchestratorAgent.from({
-  tools: [finder, writer],
+  skills: [finder, writer],
   maxIterations: 3,
   tasksConcurrency: 1, // puppeteer can only run one task at a time
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(
+const result = await aigne.invoke(
   agent,
   `\
 Conduct an in-depth research on ArcBlock using only the official website\

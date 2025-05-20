@@ -1,16 +1,7 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
-import assert from "node:assert";
-import { AIAgent, ExecutionEngine, parallel } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
-
-const { OPENAI_API_KEY } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
-
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, ProcessMode, TeamAgent } from "@aigne/core";
 
 const featureExtractor = AIAgent.from({
   instructions: `\
@@ -30,12 +21,15 @@ Product description:
   outputKey: "audience",
 });
 
-const engine = new ExecutionEngine({ model });
+const agent = TeamAgent.from({
+  skills: [featureExtractor, audienceAnalyzer],
+  mode: ProcessMode.parallel,
+});
 
-const userAgent = engine.call(parallel(featureExtractor, audienceAnalyzer));
-
-await runChatLoopInTerminal(userAgent, {
-  welcome: `Hello, I'm a product analyst and market researcher. I can help you with extracting features and identifying target audience.`,
-  defaultQuestion: "AIGNE is a No-code Generative AI Apps Engine",
-  inputKey: "product",
+await runWithAIGNE(agent, {
+  chatLoopOptions: {
+    welcome: `Hello, I'm a product analyst and market researcher. I can help you with extracting features and identifying target audience.`,
+    defaultQuestion: "AIGNE is a No-code Generative AI Apps Engine",
+    inputKey: "product",
+  },
 });

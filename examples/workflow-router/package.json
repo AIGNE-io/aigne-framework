@@ -1,10 +1,10 @@
 {
   "name": "@aigne/example-workflow-router",
-  "version": "1.3.1",
+  "version": "1.11.1",
   "description": "A demonstration of using AIGNE Framework to build a router workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-router",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
@@ -16,12 +16,17 @@
     "README.md"
   ],
   "scripts": {
-    "start": "npx -y bun run index.ts",
-    "lint": "tsc --noEmit"
+    "start": "bun run index.ts",
+    "lint": "tsc --noEmit",
+    "test:llm": "bun test"
   },
   "dependencies": {
+    "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "openai": "^4.89.1",
-    "zod": "^3.24.2"
+    "@aigne/openai": "workspace:^"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
+    "@types/bun": "^1.2.9"
   }
 }

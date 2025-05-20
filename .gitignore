@@ -47,3 +47,16 @@ lerna-debug.log*
 
 *storybook.log
 .data
+.cursor
+
+# ignore files in the docs folder
+/docs/_sidebar.md
+/docs/api
+/docs/_media
+/docs/README.md
+/docs/README.zh.md
+/docs/LICENSE
+/docs/CONTRIBUTING.md
+/docs/CONTRIBUTING.zh.md
+/docs/RELEASING.md
+/docs/RELEASING.zh.md

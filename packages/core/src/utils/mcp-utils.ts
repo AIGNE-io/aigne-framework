@@ -1,5 +1,4 @@
 import { type JsonSchema, jsonSchemaToZod } from "@aigne/json-schema-to-zod";
-import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { UriTemplate } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
 import {
   CallToolResultSchema,
@@ -11,23 +10,27 @@ import {
   ReadResourceResultSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { type ZodObject, type ZodType, z } from "zod";
-import { MCPPrompt, MCPResource, MCPTool } from "../agents/mcp-agent.js";
+import { type MCPBaseOptions, MCPPrompt, MCPResource, MCPTool } from "../agents/mcp-agent.js";
+import { isEmpty } from "./type-utils.js";
 
-export function toolFromMCPTool(client: Client, tool: ListToolsResult["tools"][number]) {
+export function toolFromMCPTool(tool: ListToolsResult["tools"][number], options: MCPBaseOptions) {
   return new MCPTool({
-    client,
+    ...options,
     name: tool.name,
     description: tool.description,
-    inputSchema: jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(
-      tool.inputSchema as JsonSchema,
-    ),
+    inputSchema: isEmpty(tool.inputSchema.properties)
+      ? z.object({})
+      : jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(tool.inputSchema as JsonSchema),
     outputSchema: CallToolResultSchema,
   });
 }
 
-export function promptFromMCPPrompt(client: Client, prompt: ListPromptsResult["prompts"][number]) {
+export function promptFromMCPPrompt(
+  prompt: ListPromptsResult["prompts"][number],
+  options: MCPBaseOptions,
+) {
   return new MCPPrompt({
-    client,
+    ...options,
     name: prompt.name,
     description: prompt.description,
     inputSchema: jsonSchemaToZod<ZodObject<Record<string, ZodType>>>({
@@ -44,25 +47,17 @@ export function promptFromMCPPrompt(client: Client, prompt: ListPromptsResult["p
 }
 
 export function resourceFromMCPResource(
-  client: Client,
   resource:
     | ListResourcesResult["resources"][number]
     | ListResourceTemplatesResult["resourceTemplates"][number],
+  options: MCPBaseOptions,
 ) {
   const [uri, variables] = isResourceTemplate(resource)
-    ? [
-        resource.uriTemplate,
-        // TODO: use template.variableNames when it's available https://github.com/modelcontextprotocol/typescript-sdk/pull/188
-        (
-          new UriTemplate(resource.uriTemplate) as unknown as {
-            parts: (string | { names: string[] })[];
-          }
-        ).parts.flatMap((i) => (typeof i === "object" ? i.names : [])),
-      ]
+    ? [resource.uriTemplate, new UriTemplate(resource.uriTemplate).variableNames]
     : [resource.uri, []];
 
   return new MCPResource({
-    client,
+    ...options,
     name: resource.name,
     uri,
     description: resource.description,

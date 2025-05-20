@@ -1,6 +1,6 @@
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, sequential } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
@@ -51,11 +51,17 @@ Draft copy:
   outputKey: "content",
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(sequential(conceptExtractor, writer, formatProof), {
-  product: "AIGNE is a No-code Generative AI Apps Engine",
-});
+const result = await aigne.invoke(
+  TeamAgent.from({
+    skills: [conceptExtractor, writer, formatProof],
+    mode: ProcessMode.sequential,
+  }),
+  {
+    product: "AIGNE is a No-code Generative AI Apps Engine",
+  },
+);
 
 console.log(result);
 

@@ -1,4 +1,4 @@
-![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner&title=AIGNE%20Framework&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize&w=160&h=160&v=0.4.227)
+![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner\&title=AIGNE%20Framework\&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize\&w=160\&h=160\&v=0.4.227)
 
 [English](./README.md) | [中文](./README.zh.md)
 
@@ -6,7 +6,7 @@
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
 [![NPM Version](https://img.shields.io/npm/v/@aigne/core)](https://www.npmjs.com/package/@aigne/core)
-[![MIT licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
 ## AIGNE Framework 简介
 
@@ -14,75 +14,114 @@ AIGNE Framework 是一个功能型 AI 应用开发框架，旨在简化和加速
 
 ## 核心特性
 
-- **模块化设计**：采用清晰的模块化结构，开发者可以轻松组织代码，提高开发效率，简化维护工作。
-- **TypeScript 支持**：提供全面的 TypeScript 类型定义，确保类型安全并增强开发体验。
-- **Blocklet 生态系统集成**：与 Blocklet 生态系统紧密集成，为开发者提供一站式开发和部署解决方案。
+* **模块化设计**：采用清晰的模块化结构，开发者可以轻松组织代码，提高开发效率，简化维护工作。
+* **TypeScript 支持**：提供全面的 TypeScript 类型定义，确保类型安全并增强开发体验。
+* **多种 AI 模型支持**：内置支持 OpenAI、Gemini、Claude、Nova 等主流 AI 模型，可轻松扩展支持其他模型。
+* **灵活的工作流模式**：支持顺序、并发、路由、交接等多种工作流模式，满足各种复杂应用场景需求。
+* **MCP 协议集成**：通过模型上下文协议（Model Context Protocol）支持与外部系统和服务的无缝集成。
+* **代码执行能力**：支持在安全沙箱中执行动态生成的代码，实现更强大的自动化能力。
+* **Blocklet 生态系统集成**：与 Blocklet 生态系统紧密集成，为开发者提供一站式开发和部署解决方案。
 
-## 使用示例
+## 快速开始
 
-```ts
-import { AIAgent, ExecutionEngine } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { DEFAULT_CHAT_MODEL, OPENAI_API_KEY } from "../env";
+### 安装
+
+#### 使用 npm
+
+```bash
+npm install @aigne/core
+```
+
+#### 使用 yarn
+
+```bash
+yarn add @aigne/core
+```
+
+#### 使用 pnpm
+
+```bash
+pnpm add @aigne/core
+```
+
+### 使用示例
+
+```ts file="examples/workflow-handoff/usages.ts"
+import { AIAgent, AIGNE } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/openai";
+
+const { OPENAI_API_KEY } = process.env;
 
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
-  model: DEFAULT_CHAT_MODEL,
 });
 
-function transferToAgentB() {
+function transfer_to_b() {
   return agentB;
-}
-
-function transferToAgentA() {
-  return agentA;
 }
 
 const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  tools: [transferToAgentB],
+  skills: [transfer_to_b],
 });
 
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
-  tools: [transferToAgentA],
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = await engine.call(agentA);
+const userAgent = aigne.invoke(agentA);
 
-const response = await userAgent.call("transfer to agent b");
-// 输出
+const result1 = await userAgent.invoke("transfer to agent b");
+console.log(result1);
+// Output:
 // {
-//   B: "Agent B awaits here,  \nIn haikus I shall speak now,  \nWhat do you seek, friend?",
+//   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
+// }
+
+const result2 = await userAgent.invoke("It's a beautiful day");
+console.log(result2);
+// Output:
+// {
+//   B: "Sunshine warms the earth,  \nGentle breeze whispers softly,  \nNature sings with joy.  ",
 // }
 ```
 
 ## 包结构
 
-- [examples](./examples) - 示例项目，演示如何使用不同的代理处理各种任务。
-- [packages/core](./packages/core) - 核心包，为构建 AIGNE 应用程序提供基础。
+* [examples](./examples) - 示例项目，演示如何使用不同的代理处理各种任务。
+* [packages/core](./packages/core) - 核心包，为构建 AIGNE 应用程序提供基础。
+* [packages/agent-library](./packages/agent-library) - 提供多种代理实现，简化代理的创建和管理。
+* [packages/cli](./packages/cli) - 命令行工具，提供便捷的命令行界面，简化开发和调试过程。
+* models - 大语言模型的实现，支持多种模型和 API
+  * [packages/openai](./packages/openai) - OpenAI 模型的实现，支持 OpenAI 的 API 和函数调用。
+  * [packages/anthropic](./packages/anthropic) - Anthropic 模型的实现，支持 Anthropic 的 API 和函数调用。
+  * [packages/bedrock](./packages/bedrock) - Bedrock 模型的实现，支持 Bedrock 的 API 和函数调用。
+  * [packages/deepseek](./packages/deepseek) - DeepSeek 模型的实现，支持 DeepSeek 的 API 和函数调用。
+  * [packages/gemini](./packages/gemini) - Gemini 模型的实现，支持 Gemini 的 API 和函数调用。
+  * [packages/ollama](./packages/ollama) - Ollama 模型的实现，支持 Ollama 的 API 和函数调用。
+  * [packages/open-router](./packages/open-router) - OpenRouter 模型的实现，支持 OpenRouter 的 API 和函数调用。
+  * [packages/xai](./packages/xai) - XAI 模型的实现，支持 XAI 的 API 和函数调用。
 
 ## 文档
 
-- [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): AIGNE Framework 常见使用场景的实用方案和模式
-- API 参考:
-  - [Agent API](./docs/apis/agent-api.md) ([English](./docs/apis/agent-api.en.md) | [中文](./docs/apis/agent-api.zh.md))
-  - [AI Agent API](./docs/apis/ai-agent-api.md) ([English](./docs/apis/ai-agent-api.en.md) | [中文](./docs/apis/ai-agent-api.zh.md))
-  - [Function Agent API](./docs/apis/function-agent-api.md) ([English](./docs/apis/function-agent-api.en.md) | [中文](./docs/apis/function-agent-api.zh.md))
-  - [MCP Agent API](./docs/apis/mcp-agent-api.md) ([English](./docs/apis/mcp-agent-api.en.md) | [中文](./docs/apis/mcp-agent-api.zh.md))
-  - [Execution Engine API](./docs/apis/execution-engine-api.md) ([English](./docs/apis/execution-engine-api.en.md) | [中文](./docs/apis/execution-engine-api.zh.md))
+* [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): AIGNE Framework API 使用的实用方案和模式
+* [CLI 指南](./docs/cli.md) ([中文](./docs/cli.zh.md)): AIGNE CLI 工具的全面指南
+* [代理开发指南](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): 使用 YAML/JS 配置文件开发 AIGNE 代理的指南
+* [API 参考](https://aigne-io.github.io/#/api/@aigne/core/README)
 
 ## 架构
 
-AIGNE Framework 支持多种工作流模式，以满足不同 AI 应用需求：
+AIGNE Framework 支持多种工作流模式，以满足不同 AI 应用需求。每种工作流模式都针对特定的应用场景进行了优化：
 
-### 顺序工作流
+### 顺序工作流（Sequential Workflow）
+
+**适用场景**：处理需要按特定顺序执行的多步骤任务，如内容生成管道、多阶段数据处理等。
 
 ```mermaid
 flowchart LR
@@ -104,7 +143,9 @@ class writer processing
 class formatProof processing
 ```
 
-### 并发工作流
+### 并发工作流（Concurrent Workflow）
+
+**适用场景**：需要同时处理多个独立任务以提高效率的场景，如并行数据分析、多维度内容评估等。
 
 ```mermaid
 flowchart LR
@@ -128,7 +169,9 @@ class audienceAnalyzer processing
 class aggregator processing
 ```
 
-### 路由工作流
+### 路由工作流（Router Workflow）
+
+**适用场景**：根据输入内容类型将请求路由到不同专业处理器的场景，如智能客服系统、多功能助手等。
 
 ```mermaid
 flowchart LR
@@ -155,7 +198,9 @@ class feedback processing
 class other processing
 ```
 
-### 交接工作流
+### 交接工作流（Handoff Workflow）
+
+**适用场景**：需要在不同专业代理之间传递控制权以解决复杂问题的场景，如专家协作系统等。
 
 ```mermaid
 flowchart LR
@@ -176,7 +221,9 @@ class agentA processing
 class agentB processing
 ```
 
-### 反思工作流
+### 反思工作流（Reflection Workflow）
+
+**适用场景**：需要自我评估和迭代改进输出质量的场景，如代码审查、内容质量控制等。
 
 ```mermaid
 flowchart LR
@@ -197,7 +244,9 @@ class coder processing
 class reviewer processing
 ```
 
-### 代码执行工作流
+### 代码执行工作流（Code Execution Workflow）
+
+**适用场景**：需要动态生成并执行代码来解决问题的场景，如自动化数据分析、算法问题求解等。
 
 ```mermaid
 flowchart LR
@@ -240,28 +289,35 @@ Coder ->> User: 10!（10的阶乘）的值是 3,628,800。
 
 ### MCP 服务器集成
 
-- [Puppeteer MCP Server](./examples/mcp-puppeteer) - 学习如何通过 AIGNE Framework 利用 Puppeteer 进行自动化网页抓取。
-- [SQLite MCP Server](./examples/mcp-sqlite) - 探索通过模型上下文协议连接 SQLite 进行数据库操作。
-- [Github](./examples/mcp-github) - 了解如何使用 AIGNE Framework 和 GitHub MCP 服务器与 GitHub 仓库进行交互。
+* [Puppeteer MCP Server](./examples/mcp-puppeteer) - 学习如何通过 AIGNE Framework 利用 Puppeteer 进行自动化网页抓取。
+* [SQLite MCP Server](./examples/mcp-sqlite) - 探索通过模型上下文协议连接 SQLite 进行数据库操作。
+* [Github](./examples/mcp-github) - 了解如何使用 AIGNE Framework 和 GitHub MCP 服务器与 GitHub 仓库进行交互。
 
 ### 工作流模式
 
-- [Workflow Router](./examples/workflow-router) - 实现智能路由逻辑，根据内容将请求定向到适当的处理程序。
-- [Workflow Sequential](./examples/workflow-sequential) - 构建具有保证执行顺序的步骤式处理管道。
-- [Workflow Concurrency](./examples/workflow-concurrency) - 通过并行执行同时处理多个任务优化性能。
-- [Workflow Handoff](./examples/workflow-handoff) - 在专业代理之间创建无缝转换以解决复杂问题。
-- [Workflow Reflection](./examples/workflow-reflection) - 通过输出评估和修正能力实现自我提升。
-- [Workflow Orchestration](./examples/workflow-orchestration) - 协调多个代理在复杂处理管道中共同工作。
-- [Workflow Code Execution](./examples/workflow-code-execution) - 在 AI 驱动的工作流中安全执行动态生成的代码。
-- [Workflow Group Chat](./examples/workflow-group-chat) - 通过聊天模型实现群聊功能，支持多个用户同时参与。
+* [Workflow Router](./examples/workflow-router) - 实现智能路由逻辑，根据内容将请求定向到适当的处理程序。
+* [Workflow Sequential](./examples/workflow-sequential) - 构建具有保证执行顺序的步骤式处理管道。
+* [Workflow Concurrency](./examples/workflow-concurrency) - 通过并行执行同时处理多个任务优化性能。
+* [Workflow Handoff](./examples/workflow-handoff) - 在专业代理之间创建无缝转换以解决复杂问题。
+* [Workflow Reflection](./examples/workflow-reflection) - 通过输出评估和修正能力实现自我提升。
+* [Workflow Orchestration](./examples/workflow-orchestration) - 协调多个代理在复杂处理管道中共同工作。
+* [Workflow Code Execution](./examples/workflow-code-execution) - 在 AI 驱动的工作流中安全执行动态生成的代码。
+* [Workflow Group Chat](./examples/workflow-group-chat) - 通过聊天模型实现群聊功能，支持多个用户同时参与。
 
 ## 贡献与发布
 
-AIGNE Framework 使用 [release-please](https://github.com/googleapis/release-please) 进行版本管理和发布自动化。有关发布流程和贡献指南的详细信息，请参阅 [RELEASING.zh.md](./RELEASING.zh.md) 和 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+AIGNE Framework 是一个开源项目，欢迎社区贡献。我们使用 [release-please](https://github.com/googleapis/release-please) 进行版本管理和发布自动化。
+
+* 贡献指南：请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md)
+* 发布流程：请参阅 [RELEASING.zh.md](./RELEASING.zh.md)
+
+## 许可证
+
+本项目采用 [Elastic-2.0](./LICENSE.md) 授权 - 详情请查看 [LICENSE](./LICENSE.md) 文件。
 
 ## 社区与支持
 
 AIGNE Framework 拥有活跃的开发者社区，提供多种支持渠道：
 
-- [文档中心](https://www.arcblock.io/docs/aigne-framework/introduce)：全面的官方文档，帮助开发者快速入门。
-- [技术论坛](https://community.arcblock.io/discussions/boards/aigne)：与全球开发者交流经验，解决技术问题。
+* [文档中心](https://aigne-io.github.io/#/api/@aigne/core/README)：全面的官方文档，帮助开发者快速入门。
+* [技术论坛](https://community.arcblock.io/discussions/boards/aigne)：与全球开发者交流经验，解决技术问题。

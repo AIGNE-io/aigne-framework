@@ -1,0 +1,3 @@
+data:{"choices":[{"delta":{"content":"The","role":"assistant"},"index":0}],"created":1744646866,"model":"gemini-2.0-flash","object":"chat.completion.chunk","usage":{"completion_tokens":0,"prompt_tokens":84,"total_tokens":84}}
+data:{"choices":[{"delta":{"content":" temperature in New","role":"assistant"},"index":0}],"created":1744646866,"model":"gemini-2.0-flash","object":"chat.completion.chunk","usage":{"completion_tokens":0,"prompt_tokens":84,"total_tokens":84}}
+data:{"choices":[{"delta":{"content":" York is 20 degrees.\n","role":"assistant"},"finish_reason":"stop","index":0}],"created":1744646866,"model":"gemini-2.0-flash","object":"chat.completion.chunk","usage":{"completion_tokens":12,"prompt_tokens":33,"total_tokens":45}}

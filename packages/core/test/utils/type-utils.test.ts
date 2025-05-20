@@ -3,9 +3,16 @@ import { Agent, type FunctionAgentFn } from "@aigne/core";
 import {
   checkArguments,
   createAccessorArray,
-  get,
+  duplicates,
+  isEmpty,
+  isNil,
   isNonNullable,
+  isRecord,
+  omitBy,
   orArrayToArray,
+  remove,
+  tryOrThrow,
+  unique,
 } from "@aigne/core/utils/type-utils.js";
 import { type ZodType, z } from "zod";
 
@@ -13,15 +20,74 @@ test("type-utils.isNonNullable", async () => {
   expect([null, undefined, 0].filter(isNonNullable)).toEqual([0]);
 });
 
+test("type-utils.isNil", async () => {
+  expect([null, undefined, 0].filter((value) => !isNil(value))).toEqual([0]);
+});
+
+test("type-utils.isRecord", async () => {
+  expect(isRecord({})).toBe(true);
+  expect(isRecord({ foo: "bar" })).toBe(true);
+  expect(isRecord([])).toBe(false);
+  expect(isRecord("")).toBe(false);
+  expect(isRecord(null)).toBe(false);
+  expect(isRecord(undefined)).toBe(false);
+  expect(isRecord(1)).toBe(false);
+  expect(isRecord(true)).toBe(false);
+});
+
+test("types-utils.isEmpty", async () => {
+  expect(isEmpty({})).toBe(true);
+  expect(isEmpty("")).toBe(true);
+  expect(isEmpty([])).toBe(true);
+  expect(isEmpty(null)).toBe(true);
+  expect(isEmpty(undefined)).toBe(true);
+  expect(isEmpty({ foo: "bar" })).toBe(false);
+  expect(isEmpty("test")).toBe(false);
+  expect(isEmpty([1])).toBe(false);
+});
+
+test("type-utils.duplicates", async () => {
+  const array = [
+    { id: 1, name: "foo" },
+    { id: 2, name: "bar" },
+    { id: 1, name: "baz" },
+  ];
+
+  const duplicated = duplicates(array, (item) => item.id);
+
+  expect(duplicated).toEqual([{ id: 1, name: "baz" }]);
+
+  expect(duplicates(["foo", "bar", "baz", "foo"])).toEqual(["foo"]);
+});
+
+test("test-utils.remove", async () => {
+  const array1 = [1, 2, 3, 4, 5];
+  expect(remove(array1, [1, 2])).toEqual([1, 2]);
+  expect(array1).toEqual([3, 4, 5]);
+
+  const array2 = [1, 2, 3, 4, 5];
+  expect(remove(array2, (item) => item > 3)).toEqual([4, 5]);
+  expect(array2).toEqual([1, 2, 3]);
+});
+
+test("type-utils.unique", async () => {
+  expect(unique([1, 2, 3, 1, 2, 3])).toEqual([1, 2, 3]);
+
+  expect(unique([{ id: 1 }, { id: 2 }, { id: 1 }], (item) => item.id)).toEqual([
+    { id: 1 },
+    { id: 2 },
+  ]);
+});
+
+test("type-utils.omitBy", async () => {
+  expect(omitBy({ foo: 1, bar: 2 }, (value) => value === 1)).toEqual({ bar: 2 });
+
+  expect(omitBy({ foo: 1, bar: 2 }, (_, key) => key === "foo")).toEqual({ bar: 2 });
+});
+
 test("type-utils.orArrayToArray", async () => {
   expect(orArrayToArray(1)).toEqual([1]);
   expect(orArrayToArray([1, 2, 3])).toEqual([1, 2, 3]);
-});
-
-test("type-utils.get", async () => {
-  expect(get({ foo: "hello" }, "foo", "string")).toBe("hello");
-
-  expect(get({ foo: "hello" }, "foo", "number")).toBeUndefined();
 });
 
 test("type-utils.createAccessorArray", async () => {
@@ -56,4 +122,41 @@ test("type-utils.checkArguments should throw an error if the arguments do not ma
       { agent: 1 } as unknown,
     );
   }).toThrow("test check arguments error: agent: Input not instance of Agent");
+});
+
+test("type-utils.tryOrThrow should return the value if the function succeeds", async () => {
+  const result = tryOrThrow(
+    () => 42,
+    (error) => new Error(`Error: ${error.message}`),
+  );
+  expect(result).toBe(42);
+
+  const result2 = await tryOrThrow(
+    () => Promise.resolve(42),
+    (error) => new Error(`Error: ${error.message}`),
+  );
+  expect(result2).toBe(42);
+});
+
+test("type-utils.tryOrThrow should throw an error if the function fails", async () => {
+  expect(() => {
+    tryOrThrow(() => {
+      throw new Error("Test error");
+    }, "Error: Test error");
+  }).toThrow("Error: Test error");
+
+  expect(() => {
+    tryOrThrow(() => {
+      throw new Error("Test error");
+    }, new Error("Error: Test error"));
+  }).toThrow("Error: Test error");
+
+  expect(() => {
+    tryOrThrow(
+      () => {
+        throw new Error("Test error");
+      },
+      (error) => new Error(`Error: ${error.message}`),
+    );
+  }).toThrow("Error: Test error");
 });

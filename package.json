@@ -1,11 +1,12 @@
 {
   "name": "aigne-framework",
-  "version": "1.5.0",
+  "version": "1.16.0",
   "description": "AIGNE framework is a collection of libraries and tools for building AI-powered applications",
   "private": true,
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework",
-  "license": "ISC",
+  "license": "Elastic-2.0",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
@@ -14,18 +15,33 @@
     "lint": "biome check && pnpm -r run lint",
     "lint:fix": "biome check --write && pnpm -r run lint",
     "build": "pnpm build:libs",
+    "build:docs": "typedoc",
     "clean": "pnpm -r run clean",
     "build:libs": "pnpm -F @aigne/* build",
     "update:deps": "npx -y taze latest -r -w && pnpm install && pnpm dedupe",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
-    "postinstall": "npx simple-git-hooks"
+    "test": "pnpm -r run test",
+    "test:coverage": "pnpm -r run test:coverage",
+    "postinstall": "npx simple-git-hooks",
+    "postbuild:docs": "npm run build:markdown && node scripts/post-build-docs.js",
+    "build:markdown": "remark README.md README.zh.md docs/cli*.md docs/cookbook*.md docs/agent-development*.md packages/*/README*.md -o"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "simple-git-hooks": "^2.12.1",
-    "typescript": "^5.8.2",
-    "zx": "^8.4.1"
+    "@biomejs/js-api": "^0.7.1",
+    "@biomejs/wasm-nodejs": "^1.9.4",
+    "fenceparser": "^2.2.0",
+    "mdast": "^3.0.0",
+    "remark-cli": "^12.0.1",
+    "remark-preset-lint-consistent": "^6.0.1",
+    "remark-preset-lint-recommended": "^7.0.1",
+    "simple-git-hooks": "^2.13.0",
+    "ts-morph": "^25.0.1",
+    "typedoc": "^0.28.4",
+    "typedoc-plugin-markdown": "^4.6.3",
+    "typedoc-plugin-no-inherit": "^1.6.1",
+    "typescript": "^5.8.3",
+    "unist-util-visit": "^5.0.0",
+    "zx": "^8.5.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
@@ -41,5 +57,12 @@
   "engines": {
     "node": ">=20.15",
     "pnpm": ">=10.2.1"
+  },
+  "remarkConfig": {
+    "plugins": [
+      "remark-preset-lint-consistent",
+      "remark-preset-lint-recommended",
+      "./scripts/remark-plugin-clean-code.ts"
+    ]
   }
 }

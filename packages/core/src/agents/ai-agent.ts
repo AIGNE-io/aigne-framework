@@ -1,61 +1,210 @@
-import { z } from "zod";
-import type { Context } from "../execution-engine/context.js";
-import { ChatModel } from "../models/chat-model.js";
-import type { ChatModelInputMessage, ChatModelOutputToolCall } from "../models/chat-model.js";
+import { type ZodObject, type ZodType, z } from "zod";
+import type { Context } from "../aigne/context.js";
+import { DefaultMemory, type DefaultMemoryOptions } from "../memory/default-memory.js";
+import { MemoryAgent } from "../memory/memory.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
-import { Agent, type AgentOptions, type Message } from "./agent.js";
+import { checkArguments, isEmpty } from "../utils/type-utils.js";
+import {
+  Agent,
+  type AgentOptions,
+  type AgentProcessAsyncGenerator,
+  type Message,
+  agentOptionsSchema,
+} from "./agent.js";
+import {
+  ChatModel,
+  type ChatModelInput,
+  type ChatModelInputMessage,
+  type ChatModelOutput,
+  type ChatModelOutputToolCall,
+} from "./chat-model.js";
+import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
 import { isTransferAgentOutput } from "./types.js";
 
+/**
+ * Configuration options for an AI Agent
+ *
+ * These options extend the base agent options with AI-specific parameters
+ * like model configuration, prompt instructions, and tool choice.
+ *
+ * @template I The input message type the agent accepts
+ * @template O The output message type the agent returns
+ */
 export interface AIAgentOptions<I extends Message = Message, O extends Message = Message>
-  extends AgentOptions<I, O> {
+  extends Omit<AgentOptions<I, O>, "memory"> {
+  /**
+   * The language model to use for this agent
+   *
+   * If not provided, the agent will use the model from the context
+   */
   model?: ChatModel;
 
+  /**
+   * Instructions to guide the AI model's behavior
+   *
+   * Can be a simple string or a full PromptBuilder instance for
+   * more complex prompt templates
+   */
   instructions?: string | PromptBuilder;
 
+  /**
+   * Custom key to use for text output in the response
+   *
+   * Defaults to $message if not specified
+   */
   outputKey?: string;
 
-  toolChoice?: AIAgentToolChoice;
+  /**
+   * Controls how the agent uses tools during execution
+   *
+   * @default AIAgentToolChoice.auto
+   */
+  toolChoice?: AIAgentToolChoice | Agent;
+
+  /**
+   * Whether to catch errors from tool execution and continue processing.
+   * If set to false, the agent will throw an error if a tool fails.
+   *
+   * @default true
+   */
+  catchToolsError?: boolean;
+
+  /**
+   * Whether to include memory agents as tools for the AI model
+   *
+   * When set to true, memory agents will be made available as tools
+   * that the model can call directly to retrieve or store information.
+   * This enables the agent to explicitly interact with its memories.
+   *
+   * @default false
+   */
+  memoryAgentsAsTools?: boolean;
+
+  /**
+   * Custom prompt template for formatting memory content
+   *
+   * Allows customization of how memories are presented to the AI model.
+   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+   *
+   * The template receives a {{memories}} variable containing serialized memory content.
+   */
+  memoryPromptTemplate?: string;
+
+  memory?: AgentOptions<I, O>["memory"] | DefaultMemoryOptions | true;
 }
 
-export type AIAgentToolChoice = "auto" | "none" | "required" | "router" | Agent;
+/**
+ * Tool choice options for AI agents
+ *
+ * Controls how the agent decides to use tools during execution
+ */
+export enum AIAgentToolChoice {
+  /**
+   * Let the model decide when to use tools
+   */
+  auto = "auto",
 
+  /**
+   * Disable tool usage
+   */
+  none = "none",
+
+  /**
+   * Force tool usage
+   */
+  required = "required",
+
+  /**
+   * Choose exactly one tool and route directly to it
+   */
+  router = "router",
+}
+
+/**
+ * Zod schema for validating AIAgentToolChoice values
+ *
+ * Used to ensure that toolChoice receives valid values
+ *
+ * @hidden
+ */
 export const aiAgentToolChoiceSchema = z.union(
-  [
-    z.literal("auto"),
-    z.literal("none"),
-    z.literal("required"),
-    z.literal("router"),
-    z.instanceof(Agent),
-  ],
-  { message: "aiAgentToolChoice must be 'auto', 'none', 'required', 'router', or an Agent" },
+  [z.nativeEnum(AIAgentToolChoice), z.instanceof(Agent)],
+  {
+    message: `aiAgentToolChoice must be ${Object.values(AIAgentToolChoice).join(", ")}, or an Agent`,
+  },
 );
 
-export const aiAgentOptionsSchema = z.object({
+/**
+ * Zod schema for validating AIAgentOptions
+ *
+ * Extends the base agent options schema with AI-specific parameters
+ *
+ * @hidden
+ */
+export const aiAgentOptionsSchema: ZodObject<{
+  [key in keyof AIAgentOptions]: ZodType<AIAgentOptions[key]>;
+}> = agentOptionsSchema.extend({
   model: z.instanceof(ChatModel).optional(),
   instructions: z.union([z.string(), z.instanceof(PromptBuilder)]).optional(),
   outputKey: z.string().optional(),
   toolChoice: aiAgentToolChoiceSchema.optional(),
-  enableHistory: z.boolean().optional(),
-  maxHistoryMessages: z.number().optional(),
-  includeInputInOutput: z.boolean().optional(),
-  subscribeTopic: z.union([z.string(), z.array(z.string())]).optional(),
-  publishTopic: z.union([z.string(), z.array(z.string()), z.function()]).optional(),
-  name: z.string().optional(),
-  description: z.string().optional(),
-  tools: z.array(z.union([z.instanceof(Agent), z.function()])).optional(),
-  disableLogging: z.boolean().optional(),
-  memory: z.union([z.boolean(), z.any(), z.any()]).optional(),
+  memoryAgentsAsTools: z.boolean().optional(),
+  memoryPromptTemplate: z.string().optional(),
 });
 
+/**
+ * AI-powered agent that leverages language models
+ *
+ * AIAgent connects to language models to process inputs and generate responses,
+ * with support for streaming, function calling, and tool usage.
+ *
+ * Key features:
+ * - Connect to any language model
+ * - Use customizable instructions and prompts
+ * - Execute tools/function calls
+ * - Support streaming responses
+ * - Router mode for specialized agents
+ *
+ * @template I The input message type the agent accepts
+ * @template O The output message type the agent returns
+ *
+ * @example
+ * Basic AIAgent creation:
+ * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-basic}
+ */
 export class AIAgent<I extends Message = Message, O extends Message = Message> extends Agent<I, O> {
+  /**
+   * Create an AIAgent with the specified options
+   *
+   * Factory method that provides a convenient way to create new AI agents
+   *
+   * @param options Configuration options for the AI agent
+   * @returns A new AIAgent instance
+   *
+   * @example
+   * AI agent with custom instructions:
+   * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-instructions}
+   */
   static from<I extends Message, O extends Message>(options: AIAgentOptions<I, O>): AIAgent<I, O> {
     return new AIAgent(options);
   }
 
+  /**
+   * Create an AIAgent instance
+   *
+   * @param options Configuration options for the AI agent
+   */
   constructor(options: AIAgentOptions<I, O>) {
-    aiAgentOptionsSchema.parse(options);
-    super(options);
+    super({
+      ...options,
+      memory: !options.memory
+        ? undefined
+        : Array.isArray(options.memory) || options.memory instanceof MemoryAgent
+          ? options.memory
+          : new DefaultMemory(options.memory === true ? {} : options.memory),
+    });
+    checkArguments("AIAgent", aiAgentOptionsSchema, options);
 
     this.model = options.model;
     this.instructions =
@@ -64,23 +213,91 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
         : (options.instructions ?? new PromptBuilder());
     this.outputKey = options.outputKey;
     this.toolChoice = options.toolChoice;
+    this.memoryAgentsAsTools = options.memoryAgentsAsTools;
+    this.memoryPromptTemplate = options.memoryPromptTemplate;
+
+    if (typeof options.catchToolsError === "boolean")
+      this.catchToolsError = options.catchToolsError;
   }
 
+  /**
+   * The language model used by this agent
+   *
+   * If not set on the agent, the model from the context will be used
+   */
   model?: ChatModel;
 
+  /**
+   * Instructions for the language model
+   *
+   * Contains system messages, user templates, and other prompt elements
+   * that guide the model's behavior
+   *
+   * @example
+   * Custom prompt builder:
+   * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-prompt-builder}
+   */
   instructions: PromptBuilder;
 
+  /**
+   * Custom key to use for text output in the response
+   *
+   * @example
+   * Setting a custom output key:
+   * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-custom-output-key}
+   */
   outputKey?: string;
 
-  toolChoice?: AIAgentToolChoice;
+  /**
+   * Controls how the agent uses tools during execution
+   *
+   * @example
+   * Automatic tool choice:
+   * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-tool-choice-auto}
+   *
+   * @example
+   * Router tool choice:
+   * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-router}
+   */
+  toolChoice?: AIAgentToolChoice | Agent;
 
-  async process(input: I, context?: Context) {
-    if (!context) throw new Error("Context is required to run AIAgent");
+  /**
+   * Whether to include memory agents as tools for the AI model
+   *
+   * When set to true, memory agents will be made available as tools
+   * that the model can call directly to retrieve or store information.
+   * This enables the agent to explicitly interact with its memories.
+   */
+  memoryAgentsAsTools?: boolean;
 
-    const model = context?.model ?? this.model;
+  /**
+   * Custom prompt template for formatting memory content
+   *
+   * Allows customization of how memories are presented to the AI model.
+   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+   *
+   * The template receives a {{memories}} variable containing serialized memory content.
+   */
+  memoryPromptTemplate?: string;
+
+  /**
+   * Whether to catch error from tool execution and continue processing.
+   * If set to false, the agent will throw an error if a tool fails
+   *
+   * @default true
+   */
+  catchToolsError = true;
+
+  /**
+   * Process an input message and generate a response
+   *
+   * @protected
+   */
+  async *process(input: I, context: Context): AgentProcessAsyncGenerator<O> {
+    const model = this.model ?? context.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
-    const { toolAgents, messages, ...modelInput } = await this.instructions.build({
+    const { toolAgents, ...modelInput } = await this.instructions.build({
       agent: this,
       input,
       model,
@@ -89,13 +306,34 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
 
     const toolsMap = new Map<string, Agent>(toolAgents?.map((i) => [i.name, i]));
 
+    if (this.toolChoice === "router") {
+      yield* this._processRouter(input, model, modelInput, context, toolsMap);
+      return;
+    }
+
     const toolCallMessages: ChatModelInputMessage[] = [];
+    const outputKey = this.outputKey || MESSAGE_KEY;
 
     for (;;) {
-      const { text, json, toolCalls } = await model.call(
-        { ...modelInput, messages: messages.concat(toolCallMessages) },
-        context,
+      const modelOutput: ChatModelOutput = {};
+
+      const stream = await context.invoke(
+        model,
+        { ...modelInput, messages: modelInput.messages.concat(toolCallMessages) },
+        { streaming: true },
       );
+
+      for await (const value of stream) {
+        if (value.delta.text?.text) {
+          yield { delta: { text: { [outputKey]: value.delta.text.text } } };
+        }
+
+        if (value.delta.json) {
+          Object.assign(modelOutput, value.delta.json);
+        }
+      }
+
+      const { toolCalls, json, text } = modelOutput;
 
       if (toolCalls?.length) {
         const executedToolCalls: {
@@ -109,7 +347,22 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
           if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
           // NOTE: should pass both arguments (model generated) and input (user provided) to the tool
-          const output = await tool.call({ ...call.function.arguments, ...input }, context);
+          const output = await this.invokeSkill(
+            tool,
+            { ...input, ...call.function.arguments },
+            context,
+          ).catch((error) => {
+            if (!this.catchToolsError) {
+              return Promise.reject(error);
+            }
+
+            return {
+              isError: true,
+              error: {
+                message: error.message,
+              },
+            };
+          });
 
           // NOTE: Return transfer output immediately
           if (isTransferAgentOutput(output)) {
@@ -131,30 +384,66 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
             ),
           );
 
-          // Return the output of the first tool if the toolChoice is "router"
-          if (this.toolChoice === "router") {
-            const output = executedToolCalls[0]?.output;
-            if (!output || executedToolCalls.length !== 1) {
-              throw new Error("Router toolChoice requires exactly one tool to be executed");
-            }
-
-            return output as O;
-          }
-
           continue;
         }
       }
 
       const result = {} as O;
 
-      if (modelInput.responseFormat?.type === "json_schema") {
+      if (json) {
         Object.assign(result, json);
-      } else {
-        const outputKey = this.outputKey || MESSAGE_KEY;
+      } else if (text) {
         Object.assign(result, { [outputKey]: text });
       }
 
-      return result;
+      if (!isEmpty(result)) {
+        yield { delta: { json: result } };
+      }
+      return;
     }
+  }
+
+  protected override async onGuideRailError(
+    error: GuideRailAgentOutput,
+  ): Promise<O | GuideRailAgentOutput> {
+    const outputKey = this.outputKey || MESSAGE_KEY;
+    return {
+      [outputKey]: error.reason,
+    };
+  }
+
+  /**
+   * Process router mode requests
+   *
+   * In router mode, the agent sends a single request to the model to determine
+   * which tool to use, then routes the request directly to that tool
+   *
+   * @protected
+   */
+  async *_processRouter(
+    input: I,
+    model: ChatModel,
+    modelInput: ChatModelInput,
+    context: Context,
+    toolsMap: Map<string, Agent>,
+  ): AgentProcessAsyncGenerator<O> {
+    const {
+      toolCalls: [call] = [],
+    } = await context.invoke(model, modelInput);
+
+    if (!call) {
+      throw new Error("Router toolChoice requires exactly one tool to be executed");
+    }
+
+    const tool = toolsMap.get(call.function.name);
+    if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
+
+    const stream = await context.invoke(
+      tool,
+      { ...call.function.arguments, ...input },
+      { streaming: true, sourceAgent: this },
+    );
+
+    yield* stream;
   }
 }

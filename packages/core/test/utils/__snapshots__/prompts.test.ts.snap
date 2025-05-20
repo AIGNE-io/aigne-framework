@@ -1,0 +1,49 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getJsonOutputPrompt string schema 1`] = `
+"Output must be a JSON object containing the following fields only.
+<json_fields>
+{name: string, age: number}
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON."
+`;
+
+exports[`getJsonOutputPrompt object schema 1`] = `
+"Output must be a JSON object containing the following fields only.
+<json_fields>
+{"name":"string","age":"number"}
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON."
+`;
+
+exports[`getJsonOutputPrompt should handle empty schema 1`] = `
+"Output must be a JSON object containing the following fields only.
+<json_fields>
+{}
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON."
+`;
+
+exports[`getJsonOutputPrompt should handle empty string schema 1`] = `
+"Output must be a JSON object containing the following fields only.
+<json_fields>
+
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON."
+`;
+
+exports[`getJsonToolInputPrompt string schema 1`] = `
+"Tool input must be a JSON object containing the following fields only.
+<json_fields>
+{foo: string}
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON."
+`;
+
+exports[`getJsonToolInputPrompt object schema 1`] = `
+"Tool input must be a JSON object containing the following fields only.
+<json_fields>
+{"foo":"string"}
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON."
+`;

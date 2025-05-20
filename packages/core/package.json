@@ -1,13 +1,13 @@
 {
   "name": "@aigne/core",
-  "version": "1.5.0",
+  "version": "1.15.0",
   "description": "AIGNE core library for building AI-powered applications",
   "publishConfig": {
     "access": "public"
   },
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework",
-  "license": "ISC",
+  "license": "Elastic-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
@@ -44,11 +44,14 @@
       "agents/*": [
         "./lib/dts/agents/*"
       ],
-      "execution-engine/*": [
-        "./lib/dts/execution-engine/*"
+      "aigne/*": [
+        "./lib/dts/aigne/*"
       ],
-      "models/*": [
-        "./lib/dts/models/*"
+      "loader/*": [
+        "./lib/dts/loader/*"
+      ],
+      "memory/*": [
+        "./lib/dts/memory/*"
       ],
       "prompt/*": [
         "./lib/dts/prompt/*"
@@ -61,39 +64,46 @@
   "scripts": {
     "lint": "tsc --noEmit",
     "build": "tsc --build scripts/tsconfig.build.json",
-    "clean": "rimraf lib coverage",
+    "clean": "rimraf lib test/coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test": "bun --cwd test test",
+    "test:coverage": "bun --cwd test test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {
     "@aigne/json-schema-to-zod": "^1.3.3",
-    "@modelcontextprotocol/sdk": "^1.8.0",
+    "@modelcontextprotocol/sdk": "^1.11.0",
     "@types/debug": "^4.1.12",
-    "@types/mustache": "^4.2.5",
+    "camelize-ts": "^3.0.0",
+    "content-type": "^1.0.5",
     "debug": "^4.4.0",
-    "inquirer": "^12.5.0",
-    "lodash-es": "^4.17.21",
+    "eventsource-parser": "^3.0.1",
+    "fast-deep-equal": "^3.1.3",
+    "immer": "^10.1.1",
+    "inquirer": "^12.6.0",
     "mustache": "^4.2.0",
     "nanoid": "^5.1.5",
-    "ora": "^8.2.0",
-    "zod": "^3.24.2",
+    "p-retry": "^6.2.1",
+    "raw-body": "^3.0.0",
+    "ufo": "^1.6.1",
+    "uuid": "^11.1.0",
+    "yaml": "^2.7.1",
+    "zod": "^3.24.4",
     "zod-to-json-schema": "^3.24.5"
   },
-  "peerDependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
-    "@google/generative-ai": "^0.24.0",
-    "openai": "^4.87.3"
-  },
   "devDependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
-    "@google/generative-ai": "^0.24.0",
-    "@types/bun": "^1.2.6",
-    "@types/lodash-es": "^4.17.12",
+    "@types/bun": "^1.2.12",
+    "@types/compression": "^1.7.5",
+    "@types/content-type": "^1.1.8",
+    "@types/express": "^5.0.1",
+    "@types/mustache": "^4.2.6",
+    "@types/node": "^22.15.15",
+    "compression": "^1.8.0",
+    "detect-port": "^2.1.0",
+    "express": "^5.1.0",
+    "hono": "^4.7.8",
     "npm-run-all": "^4.1.5",
-    "openai": "^4.89.1",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }

@@ -1,0 +1,210 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TeamAgent should return streaming response with sequential process method (multiple agent with different output keys) 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "first": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "first": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "first": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": "!",
+      },
+    },
+  },
+]
+`;
+
+exports[`TeamAgent should return streaming response with parallel process method (multiple agent with different output keys) 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "first": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "first": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "first": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "second": "!",
+      },
+    },
+  },
+]
+`;
+
+exports[`TeamAgent should return streaming response with sequential process method (multiple agent with same output key) 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "!",
+      },
+    },
+  },
+]
+`;
+
+exports[`TeamAgent should return streaming response with parallel process method (multiple agent with same output key) 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+]
+`;

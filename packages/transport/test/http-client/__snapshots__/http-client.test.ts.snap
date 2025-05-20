@@ -1,0 +1,416 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AIGNEClient should return correct process options {
+  streaming: true,
+} for express server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello ",
+      },
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world",
+      },
+      "text": {
+        "$message": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world!",
+      },
+      "text": {
+        "$message": "!",
+      },
+    },
+  },
+]
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: false,
+} for express server 1`] = `
+{
+  "$message": "Hello world!",
+}
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: true,
+} for express (with json middleware) server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello ",
+      },
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world",
+      },
+      "text": {
+        "$message": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world!",
+      },
+      "text": {
+        "$message": "!",
+      },
+    },
+  },
+]
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: false,
+} for express (with json middleware) server 1`] = `
+{
+  "$message": "Hello world!",
+}
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: true,
+} for express (with compression middleware) server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello ",
+      },
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world",
+      },
+      "text": {
+        "$message": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world!",
+      },
+      "text": {
+        "$message": "!",
+      },
+    },
+  },
+]
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: false,
+} for express (with compression middleware) server 1`] = `
+{
+  "$message": "Hello world!",
+}
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: true,
+} for express (pass body directly) server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello ",
+      },
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world",
+      },
+      "text": {
+        "$message": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world!",
+      },
+      "text": {
+        "$message": "!",
+      },
+    },
+  },
+]
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: false,
+} for express (pass body directly) server 1`] = `
+{
+  "$message": "Hello world!",
+}
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: true,
+} for hono server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello ",
+      },
+      "text": {
+        "$message": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world",
+      },
+      "text": {
+        "$message": "world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello world!",
+      },
+      "text": {
+        "$message": "!",
+      },
+    },
+  },
+]
+`;
+
+exports[`AIGNEClient should return correct process options {
+  streaming: false,
+} for hono server 1`] = `
+{
+  "$message": "Hello world!",
+}
+`;
+
+exports[`AIGNEClient should return error with options {
+  streaming: true,
+} for express server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello, world",
+      },
+      "text": {
+        "$message": ", world",
+      },
+    },
+  },
+  [Error: test llm model error],
+]
+`;
+
+exports[`AIGNEClient should return error with options {
+  streaming: true,
+} for express (with json middleware) server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello, world",
+      },
+      "text": {
+        "$message": ", world",
+      },
+    },
+  },
+  [Error: test llm model error],
+]
+`;
+
+exports[`AIGNEClient should return error with options {
+  streaming: true,
+} for express (with compression middleware) server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello, world",
+      },
+      "text": {
+        "$message": ", world",
+      },
+    },
+  },
+  [Error: test llm model error],
+]
+`;
+
+exports[`AIGNEClient should return error with options {
+  streaming: true,
+} for express (pass body directly) server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello, world",
+      },
+      "text": {
+        "$message": ", world",
+      },
+    },
+  },
+  [Error: test llm model error],
+]
+`;
+
+exports[`AIGNEClient should return error with options {
+  streaming: true,
+} for hono server 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello",
+      },
+      "text": {
+        "$message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$message": "Hello, world",
+      },
+      "text": {
+        "$message": ", world",
+      },
+    },
+  },
+  [Error: test llm model error],
+]
+`;

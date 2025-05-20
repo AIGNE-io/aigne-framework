@@ -5,9 +5,21 @@
     ".": {},
     "packages/agent-library": {},
     "packages/core": {},
+    "packages/cli": {},
+    "packages/test-utils": {},
+    "packages/anthropic": {},
+    "packages/bedrock": {},
+    "packages/deepseek": {},
+    "packages/gemini": {},
+    "packages/ollama": {},
+    "packages/open-router": {},
+    "packages/openai": {},
+    "packages/xai": {},
+    "packages/transport": {},
     "examples/mcp-github": {},
     "examples/mcp-puppeteer": {},
     "examples/mcp-sqlite": {},
+    "examples/mcp-blocklet": {},
     "examples/workflow-code-execution": {},
     "examples/workflow-concurrency": {},
     "examples/workflow-group-chat": {},
@@ -15,6 +27,14 @@
     "examples/workflow-orchestrator": {},
     "examples/workflow-reflection": {},
     "examples/workflow-router": {},
-    "examples/workflow-sequential": {}
-  }
+    "examples/workflow-sequential": {},
+    "examples/chat-bot": {},
+    "examples/memory": {}
+  },
+  "plugins": [
+    {
+      "type": "node-workspace",
+      "updatePeerDependencies": true
+    }
+  ]
 }

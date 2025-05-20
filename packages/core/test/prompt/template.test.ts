@@ -85,6 +85,18 @@ test("ToolMessageTemplate", async () => {
     content: JSON.stringify({ result: { content: "call tool success" } }),
     name: "AgentA",
   });
+
+  const bigintPrompt = ToolMessageTemplate.from(
+    { result: { content: 1234567890n } },
+    "tool1",
+    "AgentA",
+  ).format();
+  expect(bigintPrompt).toEqual({
+    role: "tool",
+    toolCallId: "tool1",
+    content: JSON.stringify({ result: { content: "1234567890" } }),
+    name: "AgentA",
+  });
 });
 
 test("parseChatMessages", async () => {

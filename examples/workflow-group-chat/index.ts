@@ -1,27 +1,31 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import {
   AIAgent,
-  ExecutionEngine,
+  AIAgentToolChoice,
+  AIGNE,
   FunctionAgent,
   PromptTemplate,
   UserAgent,
   createMessage,
   getMessage,
 } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { logger } from "@aigne/core/utils/logger.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import inquirer from "inquirer";
 import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;
 assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
-const gpt = new OpenAIChatModel({
+const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
   model: "gpt-4o",
+});
+
+const aigne = new AIGNE({
+  model,
 });
 
 const DEFAULT_TOPIC = "DEFAULT_TOPIC";
@@ -54,7 +58,7 @@ const generateImage = FunctionAgent.from({
     worn_and_carried: z.string(),
     scenario: z.string(),
   }),
-  fn: (input) => {
+  process: (input) => {
     return { ...input, url: `https://example.com/${randomUUID()}.jpg` };
   },
 });
@@ -67,8 +71,8 @@ const illustrator = AIAgent.from({
   instructions: `\
 You are an Illustrator. You use the generate_image tool to create images given user's requirement.
 Make sure the images have consistent characters and style.`,
-  tools: [generateImage],
-  toolChoice: "auto",
+  skills: [generateImage],
+  toolChoice: AIAgentToolChoice.auto,
   outputSchema: z.object({
     images: z
       .array(
@@ -83,12 +87,11 @@ Make sure the images have consistent characters and style.`,
 let isFirstQuestion = true;
 
 const user = UserAgent.from({
+  context: aigne.newContext(),
   name: "user",
   description: "User for providing final approval",
   publishTopic: DEFAULT_TOPIC,
-  memory: { subscribeTopic: DEFAULT_TOPIC },
   async process() {
-    logger.globalSpinner.stop();
     const { question } = await inquirer.prompt([
       {
         type: "input",
@@ -101,7 +104,6 @@ const user = UserAgent.from({
       },
     ]);
     isFirstQuestion = false;
-    logger.globalSpinner.start();
     return createMessage(question);
   },
 });
@@ -136,12 +138,9 @@ const manager = AIAgent.from({
   }),
 });
 
-const engine = new ExecutionEngine({
-  model: gpt,
-  agents: [user, manager, writer, editor, illustrator],
-});
+aigne.addAgent(user, writer, editor, illustrator, manager);
 
-engine.subscribe(DEFAULT_TOPIC, (message) => {
+aigne.subscribe(DEFAULT_TOPIC, (message) => {
   console.log(
     "------------- Received message -------------\n",
     `${message.source}:`,
@@ -150,7 +149,7 @@ engine.subscribe(DEFAULT_TOPIC, (message) => {
   );
 });
 
-await engine.call(user, {});
+await aigne.invoke(user, {});
 
 function assertZodUnionArray<T extends z.ZodType>(union: T[]): [T, T, ...T[]] {
   if (!(union.length >= 2)) throw new Error("Union must have at least 2 items");

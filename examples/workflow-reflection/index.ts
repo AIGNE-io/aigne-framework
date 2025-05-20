@@ -1,19 +1,11 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
-import assert from "node:assert";
-import { AIAgent, ExecutionEngine, UserAgent, UserInputTopic, UserOutputTopic } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, UserAgent, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { z } from "zod";
 
-const { OPENAI_API_KEY } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
-
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
-
 const coder = AIAgent.from({
+  name: "coder",
   subscribeTopic: [UserInputTopic, "rewrite_request"],
   publishTopic: "review_request",
   instructions: `\
@@ -43,6 +35,7 @@ User's question:
 });
 
 const reviewer = AIAgent.from({
+  name: "reviewer",
   subscribeTopic: "review_request",
   publishTopic: (output) => (output.approval ? UserOutputTopic : "rewrite_request"),
   instructions: `\
@@ -71,15 +64,22 @@ Please review the code. If previous feedback was provided, see if it was address
   includeInputInOutput: true,
 });
 
-const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
+await runWithAIGNE(
+  (aigne) => {
+    aigne.addAgent(coder, reviewer);
 
-const userAgent = UserAgent.from({
-  context: engine,
-  publishTopic: UserInputTopic,
-  subscribeTopic: UserOutputTopic,
-});
+    const userAgent = UserAgent.from({
+      context: aigne.newContext(),
+      publishTopic: UserInputTopic,
+      subscribeTopic: UserOutputTopic,
+    });
 
-await runChatLoopInTerminal(userAgent, {
-  welcome: `Hello, I'm a coder with a reviewer. I can help you write code and get it reviewed.`,
-  defaultQuestion: "Write a function to find the sum of all even numbers in a list.",
-});
+    return userAgent;
+  },
+  {
+    chatLoopOptions: {
+      welcome: `Hello, I'm a coder with a reviewer. I can help you write code and get it reviewed.`,
+      defaultQuestion: "Write a function to find the sum of all even numbers in a list.",
+    },
+  },
+);

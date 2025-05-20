@@ -1,0 +1,191 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BedrockChatModel.invoke with tool call and structured output 1`] = `
+{
+  "model": "us.amazon.nova-lite-v1:0",
+  "text": 
+"<thinking>The User has asked for the weather in New York. I need to use the 'get_weather' tool to retrieve this information. I will need to specify the city as 'New York'.</thinking>
+"
+,
+  "toolCalls": [
+    {
+      "function": {
+        "arguments": {
+          "city": "New York",
+        },
+        "name": "get_weather",
+      },
+      "id": "tooluse_HenDpM4gSraNzkZ1LPuODg",
+      "type": "function",
+    },
+  ],
+  "usage": {
+    "inputTokens": 392,
+    "outputTokens": 79,
+  },
+}
+`;
+
+exports[`BedrockChatModel.invoke with tool call and structured output 2`] = `
+{
+  "json": {
+    "text": "The temperature in New York is 20 degrees.",
+  },
+  "model": "us.amazon.nova-lite-v1:0",
+  "usage": {
+    "inputTokens": 926,
+    "outputTokens": 75,
+  },
+}
+`;
+
+exports[`BedrockChatModel.invoke with streaming 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "model": "us.amazon.nova-lite-v1:0",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "! How can I assist you",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " today? If you have",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " any questions or need information",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " on",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " a particular",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " topic, feel free to let",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " me know. Whether",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " it",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "'s about",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " science, technology",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": ", history, or",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " something",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " else, I",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "'m here to help.",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "usage": {
+          "inputTokens": 1,
+          "outputTokens": 51,
+          "totalTokens": 52,
+        },
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "model": "us.amazon.nova-lite-v1:0",
+        "text": "Hello! How can I assist you today? If you have any questions or need information on a particular topic, feel free to let me know. Whether it's about science, technology, history, or something else, I'm here to help.",
+        "usage": {
+          "inputTokens": 1,
+          "outputTokens": 51,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`BedrockChatModel.invoke without streaming 1`] = `
+{
+  "model": "us.amazon.nova-lite-v1:0",
+  "text": "Hello! How can I assist you today? If you have any questions or need information on a particular topic, feel free to let me know. Whether it's about science, technology, history, or something else, I'm here to help.",
+  "usage": {
+    "inputTokens": 1,
+    "outputTokens": 51,
+  },
+}
+`;

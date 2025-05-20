@@ -1,0 +1,14 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TerminalTracer should work correctly 1`] = `
+{
+  "$message": "hello, this is a test response message",
+}
+`;
+
+exports[`TerminalTracer should render output message with markdown highlight 1`] = `
+"\x1B[90m✔\x1B[39m 🤖 \x1B[90m(\x1B[39m\x1B[33m0\x1B[39m \x1B[90minput tokens\x1B[39m\x1B[32m, \x1B[39m\x1B[36m0\x1B[39m \x1B[90moutput tokens\x1B[39m\x1B[90m)\x1B[39m
+\x1B[32m\x1B[1m## Hello\x1B[22m\x1B[39m
+
+\x1B[0mI am from \x1B[34m\x1B[1mAIGNE\x1B[22m (\x1B[34m\x1B[4mhttps://www.aigne.io\x1B[24m\x1B[39m\x1B[34m)\x1B[39m\x1B[0m"
+`;

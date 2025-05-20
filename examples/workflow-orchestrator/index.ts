@@ -1,20 +1,8 @@
-#!/usr/bin/env npx -y bun
+#!/usr/bin/env bunwrapper
 
-import assert from "node:assert";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { runChatLoopInTerminal } from "@aigne/core/utils/run-chat-loop.js";
-
-const { OPENAI_API_KEY } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
-
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-  modelOptions: {
-    parallelToolCalls: false, // puppeteer can only run one task at a time
-  },
-});
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, MCPAgent } from "@aigne/core";
 
 const puppeteer = await MCPAgent.from({
   command: "npx",
@@ -41,7 +29,7 @@ Rules:
 - if you want a url to some page, you should get all link and it's title of current(home) page,
 then you can use the title to search the url of the page you want to visit.
   `,
-  tools: [puppeteer, filesystem],
+  skills: [puppeteer, filesystem],
 });
 
 const writer = AIAgent.from({
@@ -50,26 +38,25 @@ const writer = AIAgent.from({
   instructions: `You are an agent that can write to the filesystem.
   You are tasked with taking the user's input, addressing it, and
   writing the result to disk in the appropriate location.`,
-  tools: [filesystem],
+  skills: [filesystem],
 });
 
 const agent = OrchestratorAgent.from({
-  tools: [finder, writer],
+  skills: [finder, writer],
   maxIterations: 3,
   tasksConcurrency: 1, // puppeteer can only run one task at a time
 });
 
-const engine = new ExecutionEngine({ model });
-
-const userAgent = engine.call(agent);
-
-await runChatLoopInTerminal(userAgent, {
-  welcome: "Welcome to the Orchestrator Agent!",
-  defaultQuestion: `\
-Conduct an in-depth research on ArcBlock using only the official website\
-(avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
-The report should include comprehensive insights into the company's products \
-(with detailed research findings and links), technical architecture, and future plans.`,
+await runWithAIGNE(agent, {
+  modelOptions: { parallelToolCalls: false },
+  chatLoopOptions: {
+    welcome: "Welcome to the Orchestrator Agent!",
+    defaultQuestion: `\
+  Conduct an in-depth research on ArcBlock using only the official website\
+  (avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
+  The report should include comprehensive insights into the company's products \
+  (with detailed research findings and links), technical architecture, and future plans.`,
+  },
 });
 
 process.exit(0);

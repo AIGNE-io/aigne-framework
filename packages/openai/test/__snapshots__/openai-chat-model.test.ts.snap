@@ -1,0 +1,132 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OpenAIChatModel.invoke should return the correct tool 1`] = `
+{
+  "model": "gpt-4o-mini-2024-07-18",
+  "toolCalls": [
+    {
+      "function": {
+        "arguments": {
+          "city": "New York",
+        },
+        "name": "get_weather",
+      },
+      "id": "call_IkOOWQ7QLmx2DuEl6isZIJ9S",
+      "type": "function",
+    },
+  ],
+  "usage": {
+    "inputTokens": 72,
+    "outputTokens": 16,
+  },
+}
+`;
+
+exports[`OpenAIChatModel.invoke should return structured output 1`] = `
+{
+  "json": {
+    "text": "The current temperature in New York is 20°C.",
+  },
+  "model": "gpt-4o-mini-2024-07-18",
+  "usage": {
+    "inputTokens": 100,
+    "outputTokens": 20,
+  },
+}
+`;
+
+exports[`OpenAIChatModel.invoke with streaming 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "model": "gpt-4o-mini-2024-07-18",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "!",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " How",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " can",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " I",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " assist",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " you",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " today",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "?",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "usage": {
+          "inputTokens": 8,
+          "outputTokens": 10,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`OpenAIChatModel.invoke without streaming 1`] = `
+{
+  "model": "gpt-4o-mini-2024-07-18",
+  "text": "Hello! How can I assist you today?",
+  "usage": {
+    "inputTokens": 8,
+    "outputTokens": 10,
+  },
+}
+`;

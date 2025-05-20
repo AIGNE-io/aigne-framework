@@ -1,6 +1,6 @@
 # Workflow Handoff Demo
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build a handoff workflow.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build a handoff workflow. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR
@@ -43,15 +43,24 @@ end
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-handoff # run the example
+# Run in one-shot mode (default)
+npx -y @aigne/example-workflow-handoff
+
+# Run in interactive chat mode
+npx -y @aigne/example-workflow-handoff --chat
+
+# Use pipeline input
+echo "transfer to agent b" | npx -y @aigne/example-workflow-handoff
 ```
 
 ## Installation
@@ -75,13 +84,47 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 ### Run the Example
 
 ```bash
-pnpm start
+pnpm start # Run in one-shot mode (default)
+
+# Run in interactive chat mode
+pnpm start -- --chat
+
+# Use pipeline input
+echo "transfer to agent b" | pnpm start
+```
+
+### Run Options
+
+The example supports the following command-line parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--model <provider[:model]>` | AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
+| `--temperature <value>` | Temperature for model generation | Provider default |
+| `--top-p <value>` | Top-p sampling value | Provider default |
+| `--presence-penalty <value>` | Presence penalty value | Provider default |
+| `--frequency-penalty <value>` | Frequency penalty value | Provider default |
+| `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
+| `--input`, `-i <input>` | Specify input directly | None |
+
+#### Examples
+
+```bash
+# Run in chat mode (interactive)
+pnpm start -- --chat
+
+# Set logging level
+pnpm start -- --log-level DEBUG
+
+# Use pipeline input
+echo "transfer to agent b" | pnpm start
 ```
 
 ## Example
@@ -90,7 +133,7 @@ The following example demonstrates how to build a handoff workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -108,7 +151,7 @@ const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  tools: [transfer_to_b],
+  skills: [transfer_to_b],
 });
 
 const agentB = AIAgent.from({
@@ -117,18 +160,18 @@ const agentB = AIAgent.from({
   outputKey: "B",
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const userAgent = engine.call(agentA);
+const userAgent = aigne.invoke(agentA);
 
-const result1 = await userAgent.call("transfer to agent b");
+const result1 = await userAgent.invoke("transfer to agent b");
 console.log(result1);
 // Output:
 // {
 //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
 // }
 
-const result2 = await userAgent.call("It's a beautiful day");
+const result2 = await userAgent.invoke("It's a beautiful day");
 console.log(result2);
 // Output:
 // {

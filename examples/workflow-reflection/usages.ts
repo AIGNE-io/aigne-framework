@@ -1,6 +1,6 @@
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, UserInputTopic, UserOutputTopic } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/openai";
 import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;
@@ -68,10 +68,10 @@ Please review the code. If previous feedback was provided, see if it was address
   includeInputInOutput: true,
 });
 
-const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
-engine.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
+const aigne = new AIGNE({ model, agents: [coder, reviewer] });
+aigne.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
 
-const { message } = await engine.subscribe(UserOutputTopic);
+const { message } = await aigne.subscribe(UserOutputTopic);
 console.log(message);
 // Output:
 // {

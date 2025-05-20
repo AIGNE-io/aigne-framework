@@ -1,0 +1,1 @@
+data:{"choices":[{"delta":{"role":"assistant","tool_calls":[{"function":{"arguments":"{\"city\":\"New York\"}","name":"get_weather"},"id":"","type":"function"}]},"finish_reason":"tool_calls","index":0}],"created":1744176113,"model":"gemini-2.0-flash","object":"chat.completion.chunk"}

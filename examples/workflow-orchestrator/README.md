@@ -1,6 +1,6 @@
 # Workflow Orchestrator Demo
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build a orchestrator workflow.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build an orchestrator workflow. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR
@@ -40,15 +40,24 @@ class style_enforcer processing
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-orchestrator # run the example
+# Run in one-shot mode (default)
+npx -y @aigne/example-workflow-orchestrator
+
+# Run in interactive chat mode
+npx -y @aigne/example-workflow-orchestrator --chat
+
+# Use pipeline input
+echo "Research ArcBlock and compile a report about their products and architecture" | npx -y @aigne/example-workflow-orchestrator
 ```
 
 ## Installation
@@ -72,7 +81,7 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 When running Puppeteer inside a Docker container, set the following environment variable:
@@ -86,7 +95,41 @@ This ensures Puppeteer configures itself correctly for a Docker environment, pre
 ### Run the Example
 
 ```bash
-pnpm start
+pnpm start # Run in one-shot mode (default)
+
+# Run in interactive chat mode
+pnpm start -- --chat
+
+# Use pipeline input
+echo "Research ArcBlock and compile a report about their products and architecture" | pnpm start
+```
+
+### Run Options
+
+The example supports the following command-line parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--model <provider[:model]>` | AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
+| `--temperature <value>` | Temperature for model generation | Provider default |
+| `--top-p <value>` | Top-p sampling value | Provider default |
+| `--presence-penalty <value>` | Presence penalty value | Provider default |
+| `--frequency-penalty <value>` | Frequency penalty value | Provider default |
+| `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
+| `--input`, `-i <input>` | Specify input directly | None |
+
+#### Examples
+
+```bash
+# Run in chat mode (interactive)
+pnpm start -- --chat
+
+# Set logging level
+pnpm start -- --log-level DEBUG
+
+# Use pipeline input
+echo "Research ArcBlock and compile a report about their products and architecture" | pnpm start
 ```
 
 ## Example
@@ -98,7 +141,7 @@ Here is the generated report for this example: [arcblock-deep-research.md](./gen
 ```typescript
 import assert from "node:assert";
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, ExecutionEngine, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
@@ -136,7 +179,7 @@ Rules:
 - if you want a url to some page, you should get all link and it's title of current(home) page,
 then you can use the title to search the url of the page you want to visit.
   `,
-  tools: [puppeteer, filesystem],
+  skills: [puppeteer, filesystem],
 });
 
 const writer = AIAgent.from({
@@ -145,18 +188,18 @@ const writer = AIAgent.from({
   instructions: `You are an agent that can write to the filesystem.
   You are tasked with taking the user's input, addressing it, and
   writing the result to disk in the appropriate location.`,
-  tools: [filesystem],
+  skills: [filesystem],
 });
 
 const agent = OrchestratorAgent.from({
-  tools: [finder, writer],
+  skills: [finder, writer],
   maxIterations: 3,
   tasksConcurrency: 1, // puppeteer can only run one task at a time
 });
 
-const engine = new ExecutionEngine({ model });
+const aigne = new AIGNE({ model });
 
-const result = await engine.call(
+const result = await aigne.invoke(
   agent,
   `\
 Conduct an in-depth research on ArcBlock using only the official website\

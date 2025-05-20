@@ -1,19 +1,23 @@
 import type { Agent, Message } from "@aigne/core";
 import { ensureZodUnionArray } from "@aigne/core/utils/json-schema.js";
-import { groupBy, pickBy } from "lodash-es";
+import { duplicates } from "@aigne/core/utils/type-utils.js";
 import { z } from "zod";
 
+/**
+ * @hidden
+ */
 export const SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE = `\
 Synthesize the results of executing all steps in the plan into a cohesive result
 `;
 
+/**
+ * @hidden
+ */
 export function getFullPlanSchema(agents: Agent[]) {
   const agentNames = agents.map((i) => i.name);
   if (new Set(agentNames).size !== agentNames.length) {
-    const duplicates = pickBy(groupBy(agentNames), (x) => x.length > 1);
-    throw new Error(
-      `Tools name must be unique for orchestrator: ${Object.keys(duplicates).join(",")}`,
-    );
+    const dup = duplicates(agentNames);
+    throw new Error(`Duplicate agent names found in orchestrator: ${dup.join(",")}`);
   }
 
   const TaskSchema = z.object({
@@ -34,23 +38,41 @@ export function getFullPlanSchema(agents: Agent[]) {
   });
 }
 
+/**
+ * @hidden
+ */
 export type FullPlanOutput = z.infer<ReturnType<typeof getFullPlanSchema>>;
 
+/**
+ * @hidden
+ */
 export type Step = FullPlanOutput["steps"][number];
 
+/**
+ * @hidden
+ */
 export type Task = Step["tasks"][number];
 
+/**
+ * @hidden
+ */
 export interface StepWithResult {
   step: Step;
   tasks: Array<TaskWithResult>;
   result: string;
 }
 
+/**
+ * @hidden
+ */
 export interface TaskWithResult {
   task: Task;
   result: string;
 }
 
+/**
+ * @hidden
+ */
 export interface FullPlanInput extends Message {
   objective: string;
   steps: StepWithResult[];
@@ -68,6 +90,9 @@ export interface FullPlanInput extends Message {
   }[];
 }
 
+/**
+ * @hidden
+ */
 export const FULL_PLAN_PROMPT_TEMPLATE = `You are tasked with orchestrating a plan to complete an objective.
 You can analyze results from the previous steps already executed to decide if the objective is complete.
 Your plan must be structured in sequential steps, with each step containing independent parallel subtasks.
@@ -114,6 +139,9 @@ You have access to the following Agents(which are collections of tools/functions
     1. Clear description of the task that an LLM can execute
     2. Name of 1 Agent to use for the task`;
 
+/**
+ * @hidden
+ */
 export interface TaskPromptInput extends Message {
   objective: string;
   step: Step;
@@ -121,6 +149,9 @@ export interface TaskPromptInput extends Message {
   steps: StepWithResult[];
 }
 
+/**
+ * @hidden
+ */
 export const TASK_PROMPT_TEMPLATE = `\
 You are part of a larger workflow to achieve the step then the objective:
 
@@ -148,12 +179,18 @@ Results so far that may provide helpful context:
 </steps_completed>
 `;
 
+/**
+ * @hidden
+ */
 export interface SynthesizeStepPromptInput extends Message {
   objective: string;
   step: Step;
   tasks: TaskWithResult[];
 }
 
+/**
+ * @hidden
+ */
 export const SYNTHESIZE_STEP_PROMPT_TEMPLATE = `\
 Synthesize the results of these parallel tasks into a cohesive result
 

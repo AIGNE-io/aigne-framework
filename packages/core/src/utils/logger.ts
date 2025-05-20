@@ -1,118 +1,84 @@
-import debug, { type Debugger } from "debug";
-import ora from "ora";
+import { isatty } from "node:tty";
+import debug from "debug";
 
-interface DebugWithSpinner extends Debugger {
-  spinner<T>(
-    promise: Promise<T>,
-    message?: string,
-    callback?: (result: T) => void,
-    options?: { disabled?: boolean },
-  ): Promise<T>;
-  extend: (namespace: string) => DebugWithSpinner;
+export enum LogLevel {
+  ERROR = "error",
+  WARN = "warn",
+  INFO = "info",
+  DEBUG = "debug",
 }
 
-debug.log = (...args) => {
-  const { isSpinning } = globalSpinner;
-  if (isSpinning) globalSpinner.stop();
-  console.log(...args);
-  if (isSpinning) globalSpinner.start();
-};
+const levels = Object.values(LogLevel);
 
-function createDebugger(namespace: string): DebugWithSpinner {
-  const i = debug(namespace) as DebugWithSpinner;
+export class Logger {
+  constructor(options: {
+    level: LogLevel;
+    ns: string;
+  }) {
+    this.level = options.level;
 
-  function overrideExtend(debug: DebugWithSpinner) {
-    const originalExtend = debug.extend;
-    debug.extend = (namespace: string) => {
-      const extended = originalExtend.call(debug, namespace);
-      overrideExtend(extended);
+    this.debugLogger = debug(`${options.ns}:debug`);
+    this.infoLogger = debug(`${options.ns}:info`);
+    this.warnLogger = debug(`${options.ns}:warn`);
+    this.errorLogger = debug(`${options.ns}:error`);
 
-      extended.spinner = async <T>(
-        promise: Promise<T>,
-        message?: string,
-        callback?: (result: T) => void,
-        options?: { disabled?: boolean },
-      ) => {
-        if (!extended.enabled || options?.disabled) return promise;
-
-        return spinner(promise, message, callback);
-      };
-
-      return extended;
-    };
-  }
-
-  overrideExtend(i);
-
-  return i;
-}
-
-const globalSpinner = ora();
-
-interface SpinnerTask<T = unknown> {
-  promise: Promise<T>;
-  message?: string;
-  callback?: (result: T) => void;
-  status?: "fail" | "succeed";
-  result?: T;
-}
-
-const globalSpinnerTasks: SpinnerTask[] = [];
-
-async function spinner<T>(
-  promise: Promise<T>,
-  message?: string,
-  callback?: (result: T) => void,
-): Promise<T> {
-  const task: SpinnerTask<T> = { promise, message, callback };
-  globalSpinnerTasks.push(task as SpinnerTask);
-
-  globalSpinner.start(message || " ");
-
-  await promise
-    .then((result) => {
-      task.result = result;
-      task.status = "succeed";
-    })
-    .catch(() => {
-      task.status = "fail";
-    });
-
-  // Once the promise resolves or rejects, it updates the spinner status and processes
-  // all completed tasks in a Last-In-First-Out (LIFO) order.
-  for (;;) {
-    const task = globalSpinnerTasks.at(-1);
-    if (!task) break;
-
-    // Recover spinner state for last running task
-    if (!task.status) {
-      globalSpinner.start(task.message || " ");
-      break;
+    for (const logger of [this.debugLogger, this.infoLogger, this.warnLogger]) {
+      // @ts-ignore
+      logger.useColors = isatty(process.stdout.fd);
+      logger.enabled = true;
+      logger.log = (...args: unknown[]) => this.logMessage(...args);
     }
 
-    globalSpinnerTasks.pop();
-
-    if (task.message) {
-      if (task.status === "fail") globalSpinner.fail(task.message);
-      else globalSpinner.succeed(task.message);
-    } else {
-      globalSpinner.stop();
-    }
-
-    // NOTE: This is a workaround to make sure the spinner stops spinning before the next tick
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    if (task.status === "succeed") task.callback?.(task.result);
+    this.errorLogger.log = (...args: unknown[]) => this.logError(...args);
+    // @ts-ignore
+    this.errorLogger.useColors = isatty(process.stderr.fd);
+    this.errorLogger.enabled = true;
   }
 
-  return promise;
+  level: LogLevel;
+
+  private debugLogger: debug.Debugger;
+
+  private infoLogger: debug.Debugger;
+
+  private warnLogger: debug.Debugger;
+
+  private errorLogger: debug.Debugger;
+
+  logMessage = console.log;
+
+  logError = console.error;
+
+  debug(message: string, ...args: unknown[]) {
+    if (this.enabled(LogLevel.DEBUG)) {
+      this.debugLogger(message, ...args);
+    }
+  }
+
+  info(message: string, ...args: unknown[]) {
+    if (this.enabled(LogLevel.INFO)) {
+      this.infoLogger(message, ...args);
+    }
+  }
+
+  warn(message: string, ...args: unknown[]) {
+    if (this.enabled(LogLevel.WARN)) {
+      this.warnLogger(message, ...args);
+    }
+  }
+
+  error(message: string, ...args: unknown[]) {
+    if (this.enabled(LogLevel.ERROR)) {
+      this.errorLogger(message, ...args);
+    }
+  }
+
+  enabled(level: LogLevel) {
+    return levels.indexOf(this.level) >= levels.indexOf(level);
+  }
 }
 
-const base = createDebugger("aigne");
-
-export const logger = Object.assign(debug, {
-  globalSpinner,
-  base,
-  debug: base.extend("core"),
-  spinner,
+export const logger = new Logger({
+  ns: "aigne:core",
+  level: LogLevel.INFO,
 });

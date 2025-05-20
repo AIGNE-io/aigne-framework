@@ -51,7 +51,7 @@ pnpm lint
 
 ## Examples
 
-We use the examples for end-to-end testing. For any new feature or integration, please add an example in the [`examples`](./examples/) directory.
+We use the examples for end-to-end testing. For any new feature or integration, please add an example in the [`examples`](https://github.com/AIGNE-io/aigne-framework/tree/main/examples) directory.
 
 ## Thank You
 

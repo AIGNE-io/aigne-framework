@@ -1,0 +1,20 @@
+data: {"messageStart":{"p":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012","role":"assistant"}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"<thinking"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"> The"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" tool"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" has"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" successfully retrieved the weather information"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" for New"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" York. I can now"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" provide the temperature"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" to the user"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":". </"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"thinking"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":">\n\n"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":"The current"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" temperature in New York is"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" 20 degrees"}}}
+data: {"contentBlockDelta":{"contentBlockIndex":0,"delta":{"text":" Celsius."}}}
+data: {"contentBlockStop":{"contentBlockIndex":0,"p":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR"}}
+data: {"messageStop":{"stopReason":"end_turn"}}
+data: {"metadata":{"metrics":{"latencyMs":686},"usage":{"inputTokens":442,"outputTokens":41,"totalTokens":483}}}

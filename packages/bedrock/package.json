@@ -1,0 +1,57 @@
+{
+  "name": "@aigne/bedrock",
+  "version": "0.0.1",
+  "description": "AIGNE AWS Bedrock SDK for integrating with AWS foundation models",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework",
+  "license": "Elastic-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "files": [
+    "lib/cjs",
+    "lib/dts",
+    "lib/esm",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/dts/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/dts/index.d.ts"
+    }
+  },
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "tsc --build scripts/tsconfig.build.json",
+    "clean": "rimraf lib test/coverage",
+    "prepublishOnly": "run-s clean build",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
+  },
+  "dependencies": {
+    "@aigne/core": "workspace:^",
+    "@aws-sdk/client-bedrock-runtime": "^3.812.0",
+    "nanoid": "^5.1.5",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
+    "@types/bun": "^1.2.12",
+    "@types/node": "^22.15.15",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
+  }
+}

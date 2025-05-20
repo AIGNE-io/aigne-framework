@@ -1,6 +1,6 @@
 # Workflow Reflection Demo
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build a reflection workflow.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build a reflection workflow. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR
@@ -24,15 +24,24 @@ class reviewer processing
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
-- [OpenAI API key](https://platform.openai.com/api-keys) used to interact with OpenAI API
-- [Pnpm](https://pnpm.io) [Optional] if you want to run the example from source code
+- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+- Optional dependencies (if running the example from source code):
+  - [Bun](https://bun.sh) for running unit tests & examples
+  - [Pnpm](https://pnpm.io) for package management
 
-## Try without Installation
+## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # setup your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-reflection # run the example
+# Run in one-shot mode (default)
+npx -y @aigne/example-workflow-reflection
+
+# Run in interactive chat mode
+npx -y @aigne/example-workflow-reflection --chat
+
+# Use pipeline input
+echo "Write a function to validate email addresses" | npx -y @aigne/example-workflow-reflection
 ```
 
 ## Installation
@@ -56,13 +65,47 @@ pnpm install
 Setup your OpenAI API key in the `.env.local` file:
 
 ```bash
-OPENAI_API_KEY="" # setup your OpenAI API key here
+OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
 ### Run the Example
 
 ```bash
-pnpm start
+pnpm start # Run in one-shot mode (default)
+
+# Run in interactive chat mode
+pnpm start -- --chat
+
+# Use pipeline input
+echo "Write a function to validate email addresses" | pnpm start
+```
+
+### Run Options
+
+The example supports the following command-line parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--model <provider[:model]>` | AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
+| `--temperature <value>` | Temperature for model generation | Provider default |
+| `--top-p <value>` | Top-p sampling value | Provider default |
+| `--presence-penalty <value>` | Presence penalty value | Provider default |
+| `--frequency-penalty <value>` | Frequency penalty value | Provider default |
+| `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
+| `--input`, `-i <input>` | Specify input directly | None |
+
+#### Examples
+
+```bash
+# Run in chat mode (interactive)
+pnpm start -- --chat
+
+# Set logging level
+pnpm start -- --log-level DEBUG
+
+# Use pipeline input
+echo "Write a function to validate email addresses" | pnpm start
 ```
 
 ## Example
@@ -71,7 +114,7 @@ The following example demonstrates how to build a reflection workflow:
 
 ```typescript
 import assert from "node:assert";
-import { AIAgent, ExecutionEngine, UserInputTopic, UserOutputTopic } from "@aigne/core";
+import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
@@ -140,10 +183,10 @@ Please review the code. If previous feedback was provided, see if it was address
   includeInputInOutput: true,
 });
 
-const engine = new ExecutionEngine({ model, agents: [coder, reviewer] });
-engine.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
+const aigne = new AIGNE({ model, agents: [coder, reviewer] });
+aigne.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
 
-const { message } = await engine.subscribe(UserOutputTopic);
+const { message } = await aigne.subscribe(UserOutputTopic);
 console.log(message);
 // Output:
 // {

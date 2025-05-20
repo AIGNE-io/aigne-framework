@@ -1,0 +1,148 @@
+name: Test Examples
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-examples:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        provider:
+          - OpenAI
+          - Claude
+          - XAI
+          - Gemini
+          - DeepSeek
+          - OpenRouter
+          - Bedrock
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Get puppeteer version from @modelcontextprotocol/server-puppeteer
+        id: puppeteer-version
+        shell: bash
+        run: |
+          VERSION=$(pnpm view @modelcontextprotocol/server-puppeteer dependencies.puppeteer)
+          if [ -z "$VERSION" ]; then
+            echo "Error: puppeteer dependency not found in @modelcontextprotocol/server-puppeteer"
+            exit 1
+          fi
+          echo "version=$VERSION" >> ${GITHUB_OUTPUT}
+          echo "Puppeteer version: $VERSION"
+
+      - name: Cache Puppeteer
+        uses: actions/cache@v4
+        id: puppeteer-cache
+        with:
+          path: ~/.cache/puppeteer
+          key: ${{ runner.os }}-puppeteer-cache-${{ steps.puppeteer-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-puppeteer-cache-
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: |
+          pnpm build
+          # run pnpm install again to make binaries (@aigne/cli: aigne,bunwrapper) available in node_modules/.bin
+          pnpm install
+
+      - name: Run models for ${{ matrix.provider }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+          OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
+        run: |
+          DEFAULT_SLEEP_SECONDS=0
+
+          declare -A PROVIDER_SLEEP_SECONDS
+          PROVIDER_SLEEP_SECONDS["Gemini"]=10
+          PROVIDER_SLEEP_SECONDS["Claude"]=10
+          PROVIDER_SLEEP_SECONDS["Bedrock"]=10
+
+          if [ "${{ matrix.provider }}" = "OpenAI" ]; then
+            MODELS="gpt-4.1-mini gpt-4o-mini o4-mini o3-mini"
+          elif [ "${{ matrix.provider }}" = "Claude" ]; then
+            MODELS="claude-3-7-sonnet-latest claude-3-5-haiku-latest"
+          elif [ "${{ matrix.provider }}" = "XAI" ]; then
+            MODELS="grok-3 grok-2"
+          elif [ "${{ matrix.provider }}" = "Gemini" ]; then
+            MODELS="gemini-2.5-flash-preview-04-17 gemini-2.0-flash gemini-1.5-flash"
+          elif [ "${{ matrix.provider }}" = "DeepSeek" ]; then
+            MODELS="deepseek-chat"
+          elif [ "${{ matrix.provider }}" = "OpenRouter" ]; then
+            MODELS="openai/gpt-4o"
+          elif [ "${{ matrix.provider }}" = "Bedrock" ]; then
+            MODELS="us.amazon.nova-premier-v1:0 us.amazon.nova-pro-v1:0 us.amazon.nova-lite-v1:0"
+          fi
+
+          DEFAULT_EXCLUDE_PATTERN="mcp-blocklet|workflow-group-chat|workflow-orchestrator"
+
+          declare -A PROVIDER_EXCLUDE_PATTERNS
+          # PROVIDER_EXCLUDE_PATTERNS["Bedrock"]="mcp-sqlite"
+
+          declare -A MODEL_EXCLUDE_PATTERNS
+          MODEL_EXCLUDE_PATTERNS["us.amazon.nova-pro-v1:0"]="mcp-sqlite"
+          MODEL_EXCLUDE_PATTERNS["us.amazon.nova-lite-v1:0"]="mcp-sqlite"
+          MODEL_EXCLUDE_PATTERNS["o4-mini"]="mcp-sqlite"
+
+          for MODEL in $MODELS; do
+            SLEEP_SECONDS=${PROVIDER_SLEEP_SECONDS[${{ matrix.provider }}]:-$DEFAULT_SLEEP_SECONDS}
+            for dir in examples/*; do
+              echo "=========================================="
+              if echo "$dir" | grep -E -q "$DEFAULT_EXCLUDE_PATTERN"; then
+                echo "Skipping $dir (default exclude)"
+              elif [ -n "${PROVIDER_EXCLUDE_PATTERNS[${{ matrix.provider }}]}" ] && echo "$dir" | grep -E -q "${PROVIDER_EXCLUDE_PATTERNS[${{ matrix.provider }}]}"; then
+                echo "Skipping $dir for provider ${{ matrix.provider }} (provider exclude)"
+              elif [ -n "${MODEL_EXCLUDE_PATTERNS[$MODEL]}" ] && echo "$dir" | grep -E -q "${MODEL_EXCLUDE_PATTERNS[$MODEL]}"; then
+                echo "Skipping $dir for $MODEL (model exclude)"
+              else
+                if [ "$SLEEP_SECONDS" -gt 0 ]; then
+                  echo "Waiting $SLEEP_SECONDS seconds before starting test..."
+                  sleep $SLEEP_SECONDS
+                fi
+                echo "Testing $dir with ${{ matrix.provider }}:$MODEL"
+                start_time=$(date +%s)
+                cd $dir
+                echo "MODEL_PROVIDER=${{ matrix.provider }} MODEL_NAME=$MODEL pnpm test:llm"
+                MODEL_PROVIDER=${{ matrix.provider }} MODEL_NAME=$MODEL pnpm test:llm || exit 1
+                cd ../..
+                end_time=$(date +%s)
+                duration=$((end_time - start_time))
+                echo "✅ $dir $MODEL completed in $duration seconds"
+              fi
+            done
+          done

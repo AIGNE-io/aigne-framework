@@ -1,0 +1,70 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MCPAgent.from with streamable parameters 1`] = `
+{
+  "content": [
+    {
+      "text": "Tool echo: Hello!",
+      "type": "text",
+    },
+  ],
+}
+`;
+
+exports[`MCPAgent.from with SSE parameters 1`] = `
+{
+  "content": [
+    {
+      "text": "Tool echo: Hello!",
+      "type": "text",
+    },
+  ],
+}
+`;
+
+exports[`MCPAgent.from with stdio parameters 1`] = `
+{
+  "content": [
+    {
+      "text": "Tool echo: Hello!",
+      "type": "text",
+    },
+  ],
+}
+`;
+
+exports[`MCPAgent prompts access 1`] = `
+{
+  "messages": [
+    {
+      "content": {
+        "text": "Please process this message: Hello!",
+        "type": "text",
+      },
+      "role": "user",
+    },
+    {
+      "content": {
+        "resource": {
+          "blob": "UmVzb3VyY2UgZWNobzogSGVsbG8h",
+          "mimeType": "text/plain",
+          "uri": "echo://Hello!",
+        },
+        "type": "resource",
+      },
+      "role": "user",
+    },
+  ],
+}
+`;
+
+exports[`MCPAgent resources access 1`] = `
+{
+  "contents": [
+    {
+      "text": "Resource echo: Hello!",
+      "uri": "echo://Hello!",
+    },
+  ],
+}
+`;

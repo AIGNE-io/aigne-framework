@@ -4,12 +4,12 @@ import {
   OrchestratorAgent,
   getFullPlanSchema,
 } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, ExecutionEngine, createMessage } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { AIAgent, AIGNE, MESSAGE_KEY, createMessage } from "@aigne/core";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
-test("AIAgent.call", async () => {
+test("AIAgent.invoke", async () => {
   const model = new OpenAIChatModel();
-  const engine = new ExecutionEngine({ model });
+  const aigne = new AIGNE({ model });
 
   const finder = AIAgent.from({
     name: "finder",
@@ -22,10 +22,10 @@ test("AIAgent.call", async () => {
   });
 
   const agent = OrchestratorAgent.from({
-    tools: [finder, writer],
+    skills: [finder, writer],
   });
 
-  spyOn(model, "call")
+  spyOn(model, "process")
     .mockReturnValueOnce(
       Promise.resolve<{ json: FullPlanOutput }>({
         json: {
@@ -73,18 +73,25 @@ test("AIAgent.call", async () => {
     )
     .mockReturnValueOnce(Promise.resolve({ text: "Task finished" }));
 
-  const finderCall = spyOn(finder, "call");
-  const writerCall = spyOn(writer, "call");
+  const finderCall = spyOn(finder, "invoke");
+  const writerCall = spyOn(writer, "invoke");
 
-  const result = await engine.call(agent, "Deep research ArcBlock and write a professional report");
+  const result = await aigne.invoke(
+    agent,
+    "Deep research ArcBlock and write a professional report",
+  );
 
   expect(result).toEqual(createMessage("Task finished"));
-  expect(finderCall.mock.calls).toEqual([
-    [createMessage(expect.stringContaining("Find the closest match to a user's request")), engine],
-  ]);
-  expect(writerCall.mock.calls).toEqual([
-    [createMessage(expect.stringContaining("Write to the filesystem")), engine],
-  ]);
+  expect(finderCall).toHaveBeenLastCalledWith(
+    { [MESSAGE_KEY]: expect.stringContaining("Find the closest match to a user's request") },
+    expect.anything(),
+    expect.anything(),
+  );
+  expect(writerCall).toHaveBeenLastCalledWith(
+    { [MESSAGE_KEY]: expect.stringContaining("Write to the filesystem") },
+    expect.anything(),
+    expect.anything(),
+  );
 });
 
 test("getFullPlanSchema should throw error if tools name is not unique", async () => {
@@ -99,5 +106,5 @@ test("getFullPlanSchema should throw error if tools name is not unique", async (
         description: "Write to the filesystem",
       }),
     ]),
-  ).toThrowError("Tools name must be unique for orchestrator: finder");
+  ).toThrowError("Duplicate agent names found in orchestrator: finder");
 });

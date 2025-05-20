@@ -1,15 +1,15 @@
-import { expect, spyOn, test } from "bun:test";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model";
-import { generateMapping } from "../../src/data-mapper";
-import { applyJsonata } from "../../src/data-mapper/tools";
-import { testData, testData2, testData3 } from "./test-data";
+import { expect, test } from "bun:test";
+import { OpenAIChatModel } from "@aigne/openai";
+import { generateMapping } from "../../src/data-mapper/index.js";
+import { applyJsonata } from "../../src/data-mapper/tools.js";
+import { testData, testData2, testData3 } from "./test-data.js";
 
 test(
   "generateMapping - basic case",
   async () => {
     const model = new OpenAIChatModel({
-      apiKey: "YOUR_API_KEY",
-      model: "gpt-4o-mini",
+      apiKey: process.env.OPENAI_API_KEY,
+      model: "gpt-4o",
     });
 
     // spyOn(
@@ -27,22 +27,22 @@ test(
     //   }) as unknown as APIPromise<Stream<ChatCompletionChunk> | ChatCompletion>,
     // );
 
-    spyOn(model, "call")
-      .mockReturnValueOnce(
-        Promise.resolve({
-          toolCalls: [
-            {
-              id: "plus",
-              type: "function",
-              function: {
-                name: "plus",
-                arguments: { a: 1, b: 1 },
-              },
-            },
-          ],
-        }),
-      )
-      .mockReturnValueOnce(Promise.resolve({ json: { sum: 2 } }));
+    // spyOn(model, "call")
+    //   .mockReturnValueOnce(
+    //     Promise.resolve({
+    //       toolCalls: [
+    //         {
+    //           id: "plus",
+    //           type: "function",
+    //           function: {
+    //             name: "plus",
+    //             arguments: { a: 1, b: 1 },
+    //           },
+    //         },
+    //       ],
+    //     }),
+    //   )
+    //   .mockReturnValueOnce(Promise.resolve({ json: { sum: 2 } }));
 
     const result = await generateMapping({
       input: testData,
@@ -71,8 +71,14 @@ test(
 test(
   "generateMapping - complex nested structure",
   async () => {
+    const model = new OpenAIChatModel({
+      apiKey: process.env.OPENAI_API_KEY,
+      model: "gpt-4o-mini",
+    });
+
     const result = await generateMapping({
       input: testData2,
+      model,
     });
 
     console.log("result", result);
@@ -100,8 +106,14 @@ test(
 test(
   "generateMapping - array processing",
   async () => {
+    const model = new OpenAIChatModel({
+      apiKey: process.env.OPENAI_API_KEY,
+      model: "gpt-4o-mini",
+    });
+
     const result = await generateMapping({
       input: testData3,
+      model,
     });
 
     console.log("result", result);

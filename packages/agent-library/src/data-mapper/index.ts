@@ -1,12 +1,8 @@
-import assert from "node:assert";
-import { type ChatModel, ExecutionEngine, UserInputTopic, UserOutputTopic } from "@aigne/core";
+import { AIGNE, type ChatModel, UserInputTopic, UserOutputTopic } from "@aigne/core";
 
 import toJsonSchema from "to-json-schema";
 import mapper from "./agents/mapper.js";
 import reviewer from "./agents/reviewer.js";
-
-const { OPENAI_API_KEY } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
 
 export interface TransformInput {
   responseSchema: string;
@@ -36,7 +32,7 @@ export async function generateMapping({
       input.sourceSchema = JSON.stringify(toJsonSchema(JSON.parse(input.sourceData)));
     }
 
-    const engine = new ExecutionEngine({ model, agents: [mapper, reviewer] });
+    const engine = new AIGNE({ model, agents: [mapper, reviewer] });
 
     engine.publish(UserInputTopic, input);
 

@@ -12,7 +12,7 @@ const reviewer = FunctionAgent.from({
     jsonata: z.string(),
     responseSchema: z.string(),
   }),
-  fn: async ({
+  process: async ({
     sourceData,
     jsonata,
     responseSchema,

@@ -346,6 +346,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
       fastq:
         specifier: ^1.19.1
         version: 1.19.1

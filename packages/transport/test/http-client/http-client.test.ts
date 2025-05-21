@@ -206,7 +206,7 @@ test.each(table)(
       const response = client.invoke("chat", [] as unknown as Message, options);
 
       expect(response).rejects.toThrow(
-        "status 400: Invoke agent chat check arguments error: input: Expected object, received array",
+        "status 400: Invoke agent chat check arguments error: input: Expected string or object, received array",
       );
     } finally {
       await close();

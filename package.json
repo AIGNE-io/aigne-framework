@@ -23,7 +23,7 @@
     "test:coverage": "pnpm -r run test:coverage",
     "postinstall": "npx simple-git-hooks",
     "postbuild:docs": "npm run build:markdown && node scripts/post-build-docs.js",
-    "build:markdown": "remark README.md README.zh.md docs/cli*.md docs/cookbook*.md docs/agent-development*.md packages/*/README*.md docs/getting-started/*.md docs/how-to-guides -o"
+    "build:markdown": "remark ./*.md docs/ -o"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

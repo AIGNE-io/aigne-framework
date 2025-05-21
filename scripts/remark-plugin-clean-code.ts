@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { isAbsolute, join } from "node:path";
 import parse from "fenceparser";
 import type { Code, Root } from "mdast";
 import { visit } from "unist-util-visit";
@@ -27,7 +27,9 @@ export default function cleanCode() {
       if (typeof filepath === "string") {
         if (!file.dirname) throw new Error("File dirname is not defined");
 
-        const p = join(file.dirname, filepath);
+        const p = isAbsolute(filepath)
+          ? join(process.cwd(), filepath)
+          : join(file.dirname, filepath);
         const content = await readFile(p, "utf-8");
 
         code.value = content;

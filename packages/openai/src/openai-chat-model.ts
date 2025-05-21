@@ -113,7 +113,7 @@ export const openAIChatModelOptionsSchema = z.object({
  *
  * @example
  * Here's an example with streaming response:
- * {@includeCode ../test/openai-chat-model.test.ts#example-openai-chat-model-streaming}
+ * {@includeCode ../test/openai-chat-model.test.ts#example-openai-chat-model-stream}
  */
 export class OpenAIChatModel extends ChatModel {
   constructor(public options?: OpenAIChatModelOptions) {

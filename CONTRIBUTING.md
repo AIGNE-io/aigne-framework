@@ -8,20 +8,20 @@ Contributions are made through [pull requests](https://help.github.com/articles/
 
 Before sending a pull request, make sure to do the following:
 
-- Fork the repo and create a feature branch prefixed with `feature/`
-- [Lint, typecheck, and format](#lint-typecheck-format) your code
-- [Add examples](#examples)
+* Fork the repo and create a feature branch prefixed with `feature/`
+* [Lint, typecheck, and format](#lint-typecheck-format) your code
+* [Add examples](#examples)
 
-_Please reach out to the AIGNE Framework maintainers before starting work on a large contribution._ Get in touch via [GitHub issues](https://github.com/AIGNE-io/aigne-framework/issues) or [AIGNE Community](https://community.arcblock.io/discussions/boards/aigne).
+*Please reach out to the AIGNE Framework maintainers before starting work on a large contribution.* Get in touch via [GitHub issues](https://github.com/AIGNE-io/aigne-framework/issues) or [AIGNE Community](https://community.arcblock.io/discussions/boards/aigne).
 
 ## Prerequisites
 
 To set up the development environment for AIGNE Framework, you'll need the following installed:
 
-- Install [pnpm](https://pnpm.io/), which we use for package management
-- Install [bun](https://bun.sh/), which we use for running examples and unit tests
-- Install Node.js (>= 20.x)
-- Install dependencies using `pnpm install`
+* Install [pnpm](https://pnpm.io/), which we use for package management
+* Install [bun](https://bun.sh/), which we use for running examples and unit tests
+* Install Node.js (>= 20.x)
+* Install dependencies using `pnpm install`
 
 ## Running Tests
 

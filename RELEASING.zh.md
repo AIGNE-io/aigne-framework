@@ -14,17 +14,17 @@
 
 常用的 `type` 类型包括：
 
-- `feat`: 新特性或功能
-- `fix`: 修复 bug
-- `docs`: 仅文档变更
-- `style`: 不影响代码含义的变更（空格、格式化、缺少分号等）
-- `refactor`: 既不修复 bug 也不添加新功能的代码重构
-- `perf`: 提高性能的代码变更
-- `test`: 添加或修正测试
-- `build`: 影响构建系统或外部依赖的变更（例如 webpack, npm）
-- `ci`: 对 CI 配置文件和脚本的变更
-- `chore`: 其他不修改 src 或测试文件的变更
-- `revert`: 恢复之前的提交
+* `feat`: 新特性或功能
+* `fix`: 修复 bug
+* `docs`: 仅文档变更
+* `style`: 不影响代码含义的变更（空格、格式化、缺少分号等）
+* `refactor`: 既不修复 bug 也不添加新功能的代码重构
+* `perf`: 提高性能的代码变更
+* `test`: 添加或修正测试
+* `build`: 影响构建系统或外部依赖的变更（例如 webpack, npm）
+* `ci`: 对 CI 配置文件和脚本的变更
+* `chore`: 其他不修改 src 或测试文件的变更
+* `revert`: 恢复之前的提交
 
 对于影响多个包的变更，可以在 scope 中指定，例如：`feat(core,types): 添加新的类型定义`
 
@@ -41,8 +41,8 @@
 
 本项目的 Release Please 配置使用以下两个文件：
 
-- `release-please-config.json`: 定义版本管理策略、发布类型等
-- `.release-please-manifest.json`: 跟踪各个包的当前版本
+* `release-please-config.json`: 定义版本管理策略、发布类型等
+* `.release-please-manifest.json`: 跟踪各个包的当前版本
 
 ## 手动触发发布
 

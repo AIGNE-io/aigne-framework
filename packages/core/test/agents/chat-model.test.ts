@@ -1,4 +1,5 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
+import { nanoid } from "nanoid";
 import {
   type AgentProcessResult,
   type AgentResponseStream,
@@ -14,7 +15,7 @@ import {
 test("ChatModel implementation", async () => {
   // #region example-chat-model
   class TestChatModel extends ChatModel {
-    process(input: ChatModelInput): ChatModelOutput {
+    override process(input: ChatModelInput): ChatModelOutput {
       // You can fetch upstream api here
       return {
         model: "gpt-4o",
@@ -53,7 +54,7 @@ test("ChatModel implementation", async () => {
 test("ChatModel with streaming response", async () => {
   // #region example-chat-model-streaming
   class StreamingChatModel extends ChatModel {
-    process(_input: ChatModelInput): AgentResponseStream<ChatModelOutput> {
+    override process(_input: ChatModelInput): AgentResponseStream<ChatModelOutput> {
       return new ReadableStream({
         start(controller) {
           controller.enqueue(textDelta({ text: "Processing" }));
@@ -99,7 +100,7 @@ test("ChatModel with streaming response", async () => {
 test("ChatModel with streaming response with async generator", async () => {
   // #region example-chat-model-streaming-async-generator
   class StreamingChatModel extends ChatModel {
-    async *process(_input: ChatModelInput): AgentProcessResult<ChatModelOutput> {
+    override async *process(_input: ChatModelInput): AgentProcessResult<ChatModelOutput> {
       yield textDelta({ text: "Processing" });
       yield textDelta({ text: " your" });
       yield textDelta({ text: " request" });
@@ -139,7 +140,7 @@ test("ChatModel with streaming response with async generator", async () => {
 test("ChatModel with tools", async () => {
   // #region example-chat-model-tools
   class ToolEnabledChatModel extends ChatModel {
-    process(input: ChatModelInput): ChatModelOutput {
+    override process(input: ChatModelInput): ChatModelOutput {
       // Mock a response with tool calls based on input
       const toolName = input.tools?.[0]?.function?.name;
       if (toolName) {
@@ -216,4 +217,83 @@ test("ChatModel with tools", async () => {
     ],
   });
   // #endregion example-chat-model-tools
+});
+
+test("ChatModel should return capabilities", async () => {
+  class ToolsChatModel extends ChatModel {
+    override process(input: ChatModelInput): ChatModelOutput {
+      const tool = input.tools?.[0];
+      if (!tool) return { text: "no tools available" };
+
+      return {
+        toolCalls: [
+          {
+            id: nanoid(),
+            type: "function",
+            function: { name: tool.function.name, arguments: {} },
+          },
+        ],
+      };
+    }
+
+    protected override supportsParallelToolCalls = false;
+  }
+
+  const model = new ToolsChatModel();
+
+  expect(model.getModelCapabilities()).toEqual({
+    supportsParallelToolCalls: false,
+  });
+});
+
+test("ChatModel should auto convert tool name to valid function name", async () => {
+  class ToolsChatModel extends ChatModel {
+    override process(input: ChatModelInput): ChatModelOutput {
+      const tool = input.tools?.[0];
+      if (!tool) return { text: "no tools available" };
+
+      return {
+        toolCalls: [
+          {
+            id: nanoid(),
+            type: "function",
+            function: { name: tool.function.name, arguments: {} },
+          },
+        ],
+      };
+    }
+  }
+
+  const model = new ToolsChatModel();
+
+  const process = spyOn(model, "process");
+
+  const result = await model.invoke({
+    messages: [{ role: "user", content: "What's the weather?" }],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get - weather",
+          description: "Get weather for a location",
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
+      },
+    ],
+  });
+
+  expect(result).toEqual({
+    toolCalls: [
+      {
+        id: expect.any(String),
+        type: "function",
+        function: { name: "get - weather", arguments: {} },
+      },
+    ],
+  });
+
+  expect(process.mock.lastCall?.[0].tools?.at(0)?.function.name).toEqual("get___weather");
 });

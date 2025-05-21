@@ -645,9 +645,6 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.1.0
-      hono:
-        specifier: ^4.7.8
-        version: 4.7.8
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -835,9 +832,24 @@ importers:
       '@types/bun':
         specifier: ^1.2.12
         version: 1.2.12
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.1
       '@types/node':
         specifier: ^22.15.15
         version: 22.15.15
+      compression:
+        specifier: ^1.8.0
+        version: 1.8.0
+      detect-port:
+        specifier: ^2.1.0
+        version: 2.1.0
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
+      hono:
+        specifier: ^4.7.10
+        version: 4.7.10
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -2296,8 +2308,8 @@ packages:
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
 
-  hono@4.7.8:
-    resolution: {integrity: sha512-PCibtFdxa7/Ldud9yddl1G81GjYaeMYYTq4ywSaNsYbB1Lug4mwtOMJf2WXykL0pntYwmpRJeOI3NmoDgD+Jxw==}
+  hono@4.7.10:
+    resolution: {integrity: sha512-QkACju9MiN59CKSY5JsGZCYmPZkA6sIW6OFCUp7qDjZu6S6KHtJHhAc9Uy9mV9F8PJ1/HQ3ybZF2yjCa/73fvQ==}
     engines: {node: '>=16.9.0'}
 
   hosted-git-info@2.8.9:
@@ -5775,7 +5787,7 @@ snapshots:
 
   highlight.js@10.7.3: {}
 
-  hono@4.7.8: {}
+  hono@4.7.10: {}
 
   hosted-git-info@2.8.9: {}
 

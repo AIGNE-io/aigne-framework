@@ -66,6 +66,20 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   }
 
   /**
+   * Normalizes tool names to ensure compatibility with language models
+   *
+   * This method converts tool names to a format that complies with model requirements
+   * by replacing hyphens and whitespace characters with underscores. The normalized
+   * names are used for tool calls while preserving the original names for reference.
+   *
+   * @param name - The original tool name to normalize
+   * @returns A promise that resolves to the normalized tool name
+   */
+  protected async normalizeToolName(name: string): Promise<string> {
+    return name.replaceAll(/[-\s]/g, "_");
+  }
+
+  /**
    * Performs preprocessing operations before handling input
    *
    * Primarily checks if token usage exceeds limits, throwing an exception if limits are exceeded
@@ -74,7 +88,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
    * @param context Execution context
    * @throws Error if token usage exceeds maximum limit
    */
-  protected override preprocess(input: ChatModelInput, context: Context): void {
+  protected override async preprocess(input: ChatModelInput, context: Context): Promise<void> {
     super.preprocess(input, context);
     const { limits, usage } = context;
     const usedTokens = usage.outputTokens + usage.inputTokens;
@@ -82,7 +96,27 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
     }
 
-    this.validateToolNames(input.tools);
+    // Automatically convert tool names to a valid format
+    if (input.tools?.length) {
+      const toolsMap: { [name: string]: ChatModelInputTool } = {};
+      const tools: ChatModelInputTool[] = [];
+
+      for (const originalTool of input.tools) {
+        const name = await this.normalizeToolName(originalTool.function.name);
+
+        const tool: ChatModelInputTool = {
+          ...originalTool,
+          function: { ...originalTool.function, name },
+        };
+
+        tools.push(tool);
+        toolsMap[name] = originalTool;
+      }
+
+      this.validateToolNames(tools);
+
+      Object.assign(input, { _toolsMap: toolsMap, tools });
+    }
   }
 
   /**
@@ -99,6 +133,21 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     output: ChatModelOutput,
     context: Context,
   ): void {
+    // Restore original tool names in the output
+    if (output.toolCalls?.length) {
+      const toolsMap = input._toolsMap as Record<string, ChatModelInputTool> | undefined;
+      if (toolsMap) {
+        for (const toolCall of output.toolCalls) {
+          const originalTool = toolsMap[toolCall.function.name];
+          if (!originalTool) {
+            throw new Error(`Tool "${toolCall.function.name}" not found in tools map`);
+          }
+
+          toolCall.function.name = originalTool.function.name;
+        }
+      }
+    }
+
     super.postprocess(input, output, context);
     const { usage } = output;
     if (usage) {

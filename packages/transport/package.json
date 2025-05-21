@@ -34,8 +34,7 @@
   "typesVersions": {
     "*": {
       "*": [
-        "./lib/dts/*/index.d.ts",
-        "./lib/dts/*.d.ts"
+        "./lib/dts/*"
       ]
     }
   },
@@ -55,7 +54,12 @@
     "@aigne/core": "workspace:^",
     "@aigne/test-utils": "workspace:^",
     "@types/bun": "^1.2.12",
+    "@types/express": "^5.0.1",
     "@types/node": "^22.15.15",
+    "compression": "^1.8.0",
+    "detect-port": "^2.1.0",
+    "express": "^5.1.0",
+    "hono": "^4.7.10",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"

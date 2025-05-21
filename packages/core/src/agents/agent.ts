@@ -512,7 +512,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
       const parsedInput = checkArguments(`Agent ${this.name} input`, this.inputSchema, message);
 
-      this.preprocess(parsedInput, ctx);
+      await this.preprocess(parsedInput, ctx);
 
       this.checkContextStatus(ctx);
 
@@ -603,7 +603,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
     const finalOutput = this.includeInputInOutput ? { ...input, ...parsedOutput } : parsedOutput;
 
-    this.postprocess(input, finalOutput, context);
+    await this.postprocess(input, finalOutput, context);
 
     logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
@@ -658,7 +658,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @param _ Input message (unused)
    * @param context Execution context
    */
-  protected preprocess(_: I, context: Context) {
+  protected preprocess(_: I, context: Context): PromiseOrValue<void> {
     this.checkContextStatus(context);
     this.checkAgentInvokesUsage(context);
   }
@@ -731,7 +731,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @param output Output message
    * @param context Execution context
    */
-  protected postprocess(input: I, output: O, context: Context) {
+  protected postprocess(input: I, output: O, context: Context): PromiseOrValue<void> {
     this.checkContextStatus(context);
 
     this.publishToTopics(output, context);

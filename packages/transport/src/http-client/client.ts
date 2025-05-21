@@ -70,7 +70,7 @@ export class AIGNEHTTPClient {
    */
   async invoke<I extends Message, O extends Message>(
     agent: string,
-    input: I,
+    input: string | I,
     options?: AIGNEHTTPClientInvokeOptions & { streaming?: false },
   ): Promise<O>;
 
@@ -88,7 +88,7 @@ export class AIGNEHTTPClient {
    */
   async invoke<I extends Message, O extends Message>(
     agent: string,
-    input: I,
+    input: string | I,
     options: AIGNEHTTPClientInvokeOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
@@ -102,12 +102,12 @@ export class AIGNEHTTPClient {
    */
   async invoke<I extends Message, O extends Message>(
     agent: string,
-    input: I,
+    input: string | I,
     options?: AIGNEHTTPClientInvokeOptions,
   ): Promise<AgentResponse<O>>;
   async invoke<I extends Message, O extends Message>(
     agent: string,
-    input: I,
+    input: string | I,
     options?: AIGNEHTTPClientInvokeOptions,
   ): Promise<AgentResponse<O>> {
     // Send the agent invocation request to the AIGNE server

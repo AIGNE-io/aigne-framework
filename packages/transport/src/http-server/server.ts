@@ -23,7 +23,7 @@ const DEFAULT_MAXIMUM_BODY_SIZE = "4mb";
  */
 export const invokePayloadSchema = z.object({
   agent: z.string(),
-  input: z.record(z.string(), z.unknown()),
+  input: z.union([z.string(), z.record(z.string(), z.unknown())]),
   options: z
     .object({
       streaming: z.boolean().nullish(),

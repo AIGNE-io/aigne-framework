@@ -1,4 +1,5 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
+import { nanoid } from "nanoid";
 import {
   type AgentProcessResult,
   type AgentResponseStream,
@@ -216,4 +217,56 @@ test("ChatModel with tools", async () => {
     ],
   });
   // #endregion example-chat-model-tools
+});
+
+test("ChatModel should auto convert tool name to valid function name", async () => {
+  class ToolsChatModel extends ChatModel {
+    process(input: ChatModelInput): ChatModelOutput {
+      const tool = input.tools?.[0];
+      if (!tool) return { text: "no tools available" };
+
+      return {
+        toolCalls: [
+          {
+            id: nanoid(),
+            type: "function",
+            function: { name: tool.function.name, arguments: {} },
+          },
+        ],
+      };
+    }
+  }
+
+  const model = new ToolsChatModel();
+
+  const process = spyOn(model, "process");
+
+  const result = await model.invoke({
+    messages: [{ role: "user", content: "What's the weather?" }],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get - weather",
+          description: "Get weather for a location",
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
+      },
+    ],
+  });
+
+  expect(result).toEqual({
+    toolCalls: [
+      {
+        id: expect.any(String),
+        type: "function",
+        function: { name: "get - weather", arguments: {} },
+      },
+    ],
+  });
+
+  expect(process.mock.lastCall?.[0].tools?.at(0)?.function.name).toEqual("get___weather");
 });

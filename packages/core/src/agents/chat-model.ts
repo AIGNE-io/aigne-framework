@@ -82,7 +82,27 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
     }
 
-    this.validateToolNames(input.tools);
+    // Automatically convert tool names to a valid format
+    if (input.tools?.length) {
+      const toolsMap: { [name: string]: ChatModelInputTool } = {};
+      const tools: ChatModelInputTool[] = [];
+
+      for (const originalTool of input.tools) {
+        const name = originalTool.function.name.replaceAll(/[-|\s]/g, "_");
+
+        const tool: ChatModelInputTool = {
+          ...originalTool,
+          function: { ...originalTool.function, name },
+        };
+
+        tools.push(tool);
+        toolsMap[name] = originalTool;
+      }
+
+      this.validateToolNames(tools);
+
+      Object.assign(input, { _toolsMap: toolsMap, tools });
+    }
   }
 
   /**
@@ -99,6 +119,21 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     output: ChatModelOutput,
     context: Context,
   ): void {
+    // Restore original tool names in the output
+    if (output.toolCalls?.length) {
+      const toolsMap = input._toolsMap as Record<string, ChatModelInputTool> | undefined;
+      if (toolsMap) {
+        for (const toolCall of output.toolCalls) {
+          const originalTool = toolsMap[toolCall.function.name];
+          if (!originalTool) {
+            throw new Error(`Tool "${toolCall.function.name}" not found in tools map`);
+          }
+
+          toolCall.function.name = originalTool.function.name;
+        }
+      }
+    }
+
     super.postprocess(input, output, context);
     const { usage } = output;
     if (usage) {

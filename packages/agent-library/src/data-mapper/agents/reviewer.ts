@@ -21,45 +21,38 @@ const reviewer = FunctionAgent.from({
     jsonata: string;
     responseSchema: string;
   }) => {
+    let parsedSourceData = null;
+    let parsedResponseSchema = null;
     try {
-      let parsedSourceData = null;
-      let parsedResponseSchema = null;
-      try {
-        parsedSourceData = sourceData ? JSON.parse(sourceData) : null;
-        parsedResponseSchema = responseSchema ? JSON.parse(responseSchema) : null;
-      } catch (parseError) {
-        return {
-          success: false,
-          data: null,
-          feedback: `JSON parsing failed: ${parseError.message}`,
-        };
-      }
-      const transformation = await applyJsonataWithValidation(
-        parsedSourceData,
-        jsonata,
-        parsedResponseSchema,
-      );
-
-      // if transformation is successful, return success
-      if (transformation.success) {
-        return {
-          success: true,
-          data: transformation.data,
-        };
-      }
-
+      parsedSourceData = sourceData ? JSON.parse(sourceData) : null;
+      parsedResponseSchema = responseSchema ? JSON.parse(responseSchema) : null;
+    } catch (parseError) {
+      // input data is not valid JSON, return success
       return {
-        success: transformation.success,
-        data: transformation.data,
-        feedback: transformation.error,
-      };
-    } catch (error) {
-      return {
-        success: false,
+        success: true,
         data: null,
-        feedback: `Validation failed: ${error}`,
+        feedback: `JSON parsing failed: ${parseError.message}`,
       };
     }
+    const transformation = await applyJsonataWithValidation(
+      parsedSourceData,
+      jsonata,
+      parsedResponseSchema,
+    );
+
+    // if transformation is successful, return success
+    if (transformation.success) {
+      return {
+        success: true,
+        data: transformation.data,
+      };
+    }
+
+    return {
+      success: transformation.success,
+      data: transformation.data,
+      feedback: transformation.error,
+    };
   },
   includeInputInOutput: true,
 });

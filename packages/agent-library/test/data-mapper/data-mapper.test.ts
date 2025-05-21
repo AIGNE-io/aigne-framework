@@ -176,9 +176,17 @@ test("extendJsonata - registered functions", async () => {
   const maxResult = await applyJsonata({ numbers: testArray }, "$max(numbers)");
   expect(maxResult).toBe(5);
 
+  // Testing max function
+  const maxNumberResult = await applyJsonata({ numbers: 1 }, "$max(numbers)");
+  expect(maxNumberResult).toBe(1);
+
   // Testing min function
   const minResult = await applyJsonata({ numbers: testArray }, "$min(numbers)");
   expect(minResult).toBe(1);
+
+  // Testing min function
+  const minNumberResult = await applyJsonata({ numbers: 1 }, "$min(numbers)");
+  expect(minNumberResult).toBe(1);
 
   // Testing number function
   const numberResult = await applyJsonata({ value: "123.45" }, "$number(value)");

@@ -27,7 +27,6 @@ import {
   type ConverseStreamResponse,
   type Message,
   type SystemContentBlock,
-  type TokenUsage,
   type Tool,
   type ToolChoice,
   type ToolConfiguration,
@@ -169,7 +168,7 @@ export class BedrockChatModel extends ChatModel {
           const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
             args: string;
           })[] = [];
-          let usage: TokenUsage | undefined;
+          let usage: ChatModelOutputUsage | undefined;
 
           for await (const chunk of stream) {
             if (chunk.contentBlockStart?.start?.toolUse) {
@@ -204,8 +203,9 @@ export class BedrockChatModel extends ChatModel {
               }
             }
 
-            if (chunk.metadata) {
-              usage = chunk.metadata.usage;
+            if (chunk.metadata?.usage) {
+              const { inputTokens = 0, outputTokens = 0 } = chunk.metadata.usage;
+              usage = { inputTokens, outputTokens };
             }
           }
 

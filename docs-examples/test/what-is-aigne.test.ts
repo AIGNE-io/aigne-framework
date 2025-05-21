@@ -3,8 +3,8 @@ import assert from "node:assert";
 import { AIAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
-test("Example what is aigne", async () => {
-  // #region example-what-is-aigne
+test("Example what is aigne: basic", async () => {
+  // #region example-what-is-aigne-basic
 
   const agent = AIAgent.from({
     model: new OpenAIChatModel({
@@ -16,15 +16,13 @@ test("Example what is aigne", async () => {
 
   assert(agent.model);
   spyOn(agent.model, "process").mockReturnValueOnce({
-    text: "Aigne is a platform for building AI agents.",
+    text: "AIGNE is a platform for building AI agents.",
   });
 
-  const result = await agent.invoke("What is Aigne?");
-
-  expect(result).toEqual({ $message: "Aigne is a platform for building AI agents." });
-
+  const result = await agent.invoke("What is AIGNE?");
   console.log(result);
-  // Output: { $message: "Aigne is a platform for building AI agents." }
+  // Output: { $message: "AIGNE is a platform for building AI agents." }
+  expect(result).toEqual({ $message: "AIGNE is a platform for building AI agents." });
 
-  // #endregion example-what-is-aigne
+  // #endregion example-what-is-aigne-basic
 });

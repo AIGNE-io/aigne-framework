@@ -17,9 +17,16 @@
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
+    "@aigne/anthropic": "workspace:^",
+    "@aigne/bedrock": "workspace:^",
     "@aigne/core": "workspace:^",
+    "@aigne/deepseek": "workspace:^",
+    "@aigne/gemini": "workspace:^",
+    "@aigne/ollama": "workspace:^",
+    "@aigne/open-router": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/transport": "workspace:^",
+    "@aigne/xai": "workspace:^",
     "express": "^5.1.0",
     "hono": "^4.7.10",
     "zod": "^3.24.4"

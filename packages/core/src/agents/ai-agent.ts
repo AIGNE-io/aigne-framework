@@ -9,6 +9,7 @@ import {
   Agent,
   type AgentOptions,
   type AgentProcessAsyncGenerator,
+  type AgentResponseStream,
   type Message,
   agentOptionsSchema,
 } from "./agent.js";
@@ -444,6 +445,6 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
       { streaming: true, sourceAgent: this },
     );
 
-    yield* stream;
+    yield* stream as AgentResponseStream<O>;
   }
 }

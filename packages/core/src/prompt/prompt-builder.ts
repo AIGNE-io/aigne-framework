@@ -28,10 +28,27 @@ import {
 
 export const MESSAGE_KEY = "$message";
 
-export function createMessage<I extends Message>(message: string | I): I {
-  return typeof message === "string"
-    ? ({ [MESSAGE_KEY]: message } as unknown as I)
-    : { ...message };
+export function createMessage<V extends Message>(
+  message: string,
+  variables?: V,
+): { [MESSAGE_KEY]: string } & typeof variables;
+export function createMessage<I extends Message, V extends Message>(
+  message: I,
+  variables?: V,
+): I & typeof variables;
+export function createMessage<I extends Message, V extends Message>(
+  message: string | I,
+  variables?: V,
+): ({ [MESSAGE_KEY]: string } | I) & typeof variables;
+export function createMessage<I extends Message, V extends Message>(
+  message: string | I,
+  variables?: V,
+): ({ [MESSAGE_KEY]: string } | I) & typeof variables {
+  return (
+    typeof message === "string"
+      ? { [MESSAGE_KEY]: message, ...variables }
+      : { ...message, ...variables }
+  ) as ({ [MESSAGE_KEY]: string } | I) & typeof variables;
 }
 
 export function getMessage(input: Message): string | undefined {

@@ -57,17 +57,38 @@ importers:
         specifier: ^8.5.3
         version: 8.5.3
 
-  docs/examples:
+  docs-examples:
     dependencies:
+      '@aigne/anthropic':
+        specifier: workspace:^
+        version: link:../packages/anthropic
+      '@aigne/bedrock':
+        specifier: workspace:^
+        version: link:../packages/bedrock
       '@aigne/core':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../packages/core
+      '@aigne/deepseek':
+        specifier: workspace:^
+        version: link:../packages/deepseek
+      '@aigne/gemini':
+        specifier: workspace:^
+        version: link:../packages/gemini
+      '@aigne/ollama':
+        specifier: workspace:^
+        version: link:../packages/ollama
+      '@aigne/open-router':
+        specifier: workspace:^
+        version: link:../packages/open-router
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../packages/openai
       '@aigne/transport':
         specifier: workspace:^
-        version: link:../../packages/transport
+        version: link:../packages/transport
+      '@aigne/xai':
+        specifier: workspace:^
+        version: link:../packages/xai
       express:
         specifier: ^5.1.0
         version: 5.1.0

@@ -967,7 +967,7 @@ export interface AgentResponseDelta<T> {
       | Partial<{
           [key: string]: string;
         }>;
-    json?: Partial<T | TransferAgentOutput>;
+    json?: Partial<T> | TransferAgentOutput;
   };
 }
 
@@ -1012,7 +1012,7 @@ export function jsonDelta<T extends Message>(
  */
 export type AgentProcessAsyncGenerator<O extends Message> = AsyncGenerator<
   AgentResponseChunk<O>,
-  Partial<O | TransferAgentOutput> | undefined | void
+  Partial<O> | TransferAgentOutput | undefined | void
 >;
 
 /**

@@ -11,7 +11,11 @@ import {
   type Message,
 } from "../agents/agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
-import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types.js";
+import {
+  type TransferAgentOutput,
+  isTransferAgentOutput,
+  transferAgentOutputKey,
+} from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import {
@@ -255,7 +259,10 @@ export class AIGNEContext implements Context {
                   ...chunk,
                   delta: {
                     ...chunk.delta,
-                    json: omitBy(chunk.delta.json, (_, k) => k === "__activeAgent__"),
+                    json: omitBy(chunk.delta.json, (_, k) => k === "__activeAgent__") as Exclude<
+                      typeof chunk.delta.json,
+                      TransferAgentOutput
+                    >,
                   },
                 };
               }

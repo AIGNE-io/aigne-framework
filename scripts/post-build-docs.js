@@ -12,7 +12,7 @@ const sidebarContent = sidebarTemplate
   .replace(
     "<!-- api reference -->",
     `\
-- API Reference\n
+* API Reference\n
 ${apiSidebar
   .trim()
   .split("\n")

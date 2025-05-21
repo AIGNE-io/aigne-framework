@@ -6,6 +6,7 @@ import {
   AIGNE,
   Agent,
   type AgentProcessAsyncGenerator,
+  type AgentResponseChunk,
   type AgentResponseStream,
   type Context,
   FunctionAgent,
@@ -285,7 +286,7 @@ test("FunctionAgent.from a function return stream", async () => {
   // #region example-function-agent-stream
 
   const agent = FunctionAgent.from(({ name }: { name: string }) => {
-    return new ReadableStream({
+    return new ReadableStream<AgentResponseChunk<{ text: string }>>({
       start(controller) {
         controller.enqueue(textDelta({ text: "Hello" }));
         controller.enqueue(textDelta({ text: ", " }));
@@ -446,14 +447,12 @@ test("Agent can be intercepted by guide rails", async () => {
     guideRails: [financial],
   });
 
-  // Mock the model's response (the potential price prediction)
   spyOn(model, "process").mockReturnValueOnce(
     Promise.resolve({
       text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
     }),
   );
 
-  // Mock the guide rail's response (rejecting the price prediction)
   spyOn(legalModel, "process").mockReturnValueOnce(
     Promise.resolve({
       json: {

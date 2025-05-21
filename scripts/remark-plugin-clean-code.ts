@@ -5,13 +5,15 @@ import type { Code, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import type { VFile } from "vfile";
 import {
+  extractImports,
   extractRegionCode,
   extractTestCode,
   formatCode,
+  removeCommentsFromCode,
   removeFunctionCallsFromCode,
 } from "./ts-utils.ts";
 
-const removeExpressions = ["assert", "spyOn", "expect", "mock"];
+const removeExpressions = ["assert", "spyOn", "expect", "mock", "detectPort"];
 
 export default function cleanCode() {
   return async (tree: Root, file: VFile) => {
@@ -22,7 +24,7 @@ export default function cleanCode() {
     });
 
     for (const code of codes) {
-      const { file: filepath, region } = code.meta ? parse(code.meta) : {};
+      const { file: filepath, region, ...meta } = code.meta ? parse(code.meta) : {};
 
       if (typeof filepath === "string") {
         if (!file.dirname) throw new Error("File dirname is not defined");
@@ -37,14 +39,22 @@ export default function cleanCode() {
 
       if (code.lang && ["ts", "tsx", "js", "jsx", "typescript", "javascript"].includes(code.lang)) {
         const processedCode = formatCode(
-          removeFunctionCallsFromCode(
-            typeof region === "string"
-              ? extractRegionCode(code.value, region, { includeImports: true })
-              : extractTestCode(code.value),
-            removeExpressions,
+          removeCommentsFromCode(
+            removeFunctionCallsFromCode(
+              typeof region === "string"
+                ? extractRegionCode(code.value, region, { includeImports: !meta.exclude_imports })
+                : extractTestCode(code.value),
+              removeExpressions,
+            ),
+            (node) => /^\/\/\s*#(region|endregion)/.test(node.getText()),
           ),
         ).trim();
-        code.value = processedCode;
+
+        if (meta.only_imports) {
+          code.value = extractImports(processedCode);
+        } else {
+          code.value = processedCode;
+        }
       }
     }
   };

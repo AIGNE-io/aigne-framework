@@ -1,0 +1,31 @@
+{
+  "name": "@aigne/docs-examples",
+  "version": "0.0.1",
+  "description": "Examples for AIGNE Framework",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "clean": "rimraf lib test/coverage",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
+  },
+  "dependencies": {
+    "@aigne/core": "workspace:^",
+    "@aigne/openai": "workspace:^",
+    "@aigne/transport": "workspace:^",
+    "express": "^5.1.0",
+    "hono": "^4.7.10",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.9",
+    "@types/express": "^5.0.1"
+  }
+}

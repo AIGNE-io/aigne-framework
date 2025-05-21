@@ -57,6 +57,34 @@ importers:
         specifier: ^8.5.3
         version: 8.5.3
 
+  docs/examples:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../../packages/openai
+      '@aigne/transport':
+        specifier: workspace:^
+        version: link:../../packages/transport
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
+      hono:
+        specifier: ^4.7.10
+        version: 4.7.10
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.9
+        version: 1.2.12
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.1
+
   examples/chat-bot:
     dependencies:
       '@aigne/cli':

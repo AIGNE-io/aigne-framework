@@ -281,6 +281,13 @@ test("extendJsonata - registered functions", async () => {
   );
   expect(dateDiffSecondsResult).toBe(30);
 
+  // Testing dateDiff function - milliseconds
+  const dateDiffMillisecondsResult = await applyJsonata(
+    { date1: "2023-01-01T00:00:00Z", date2: "2023-01-01T00:00:30Z" },
+    '$dateDiff(date1, date2, "milliseconds")',
+  );
+  expect(dateDiffMillisecondsResult).toBe(30000);
+
   // Testing dateDiff function - default unit (milliseconds) is days
   const dateDiffDefaultResult = await applyJsonata(
     { date1: "2023-01-01T00:00:00Z", date2: "2023-01-01T00:00:01Z" },
@@ -315,6 +322,9 @@ test("addNullableToOptional - schema modification", () => {
           },
         },
       },
+      multi_type_field: {
+        type: ["string", "number"],
+      },
     },
     required: ["required_field", "nested"],
   };
@@ -341,8 +351,48 @@ test("addNullableToOptional - schema modification", () => {
   expect(modifiedSchema.properties.array_field.items.properties.item_field.type[0]).toBe("string");
   expect(modifiedSchema.properties.array_field.items.properties.item_field.type[1]).toBe("null");
 
+  // 验证多类型字段是否正确处理
+  expect(Array.isArray(modifiedSchema.properties.multi_type_field.type)).toBe(true);
+  expect(modifiedSchema.properties.multi_type_field.type).toContain("string");
+  expect(modifiedSchema.properties.multi_type_field.type).toContain("number");
+  expect(modifiedSchema.properties.multi_type_field.type).toContain("null");
+  expect(modifiedSchema.properties.multi_type_field.type.length).toBe(3);
+
   // Testing null or non-object input
   expect(addNullableToOptional(null as unknown as Schema)).toBeNull();
+});
+
+// Testing addNullableToOptional with top-level array schema
+test("addNullableToOptional - top level array schema", () => {
+  // Creating a test schema with array as the top-level type
+  const arraySchema: Schema = {
+    type: "array",
+    items: {
+      type: "object",
+      properties: {
+        required_item: { type: "string" },
+        optional_item: { type: "number" },
+      },
+      required: ["required_item"],
+    },
+  };
+
+  // Applying addNullableToOptional
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const modifiedSchema = addNullableToOptional(arraySchema) as any;
+
+  // Verifying the structure is preserved
+  expect(modifiedSchema.type).toBe("array");
+  expect(modifiedSchema.items).toBeDefined();
+  expect(modifiedSchema.items.type).toBe("object");
+
+  // Verifying required fields remain unchanged
+  expect(modifiedSchema.items.properties.required_item.type).toBe("string");
+
+  // Verifying optional fields are now nullable
+  expect(Array.isArray(modifiedSchema.items.properties.optional_item.type)).toBe(true);
+  expect(modifiedSchema.items.properties.optional_item.type).toContain("number");
+  expect(modifiedSchema.items.properties.optional_item.type).toContain("null");
 });
 
 // Testing error handling for generateMapping

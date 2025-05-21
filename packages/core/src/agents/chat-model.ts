@@ -66,6 +66,20 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   }
 
   /**
+   * Normalizes tool names to ensure compatibility with language models
+   *
+   * This method converts tool names to a format that complies with model requirements
+   * by replacing hyphens and whitespace characters with underscores. The normalized
+   * names are used for tool calls while preserving the original names for reference.
+   *
+   * @param name - The original tool name to normalize
+   * @returns A promise that resolves to the normalized tool name
+   */
+  protected async normalizeToolName(name: string): Promise<string> {
+    return name.replaceAll(/[-\s]/g, "_");
+  }
+
+  /**
    * Performs preprocessing operations before handling input
    *
    * Primarily checks if token usage exceeds limits, throwing an exception if limits are exceeded
@@ -74,7 +88,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
    * @param context Execution context
    * @throws Error if token usage exceeds maximum limit
    */
-  protected override preprocess(input: ChatModelInput, context: Context): void {
+  protected override async preprocess(input: ChatModelInput, context: Context): Promise<void> {
     super.preprocess(input, context);
     const { limits, usage } = context;
     const usedTokens = usage.outputTokens + usage.inputTokens;
@@ -88,7 +102,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       const tools: ChatModelInputTool[] = [];
 
       for (const originalTool of input.tools) {
-        const name = originalTool.function.name.replaceAll(/[-\s]/g, "_");
+        const name = await this.normalizeToolName(originalTool.function.name);
 
         const tool: ChatModelInputTool = {
           ...originalTool,

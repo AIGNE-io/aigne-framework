@@ -88,7 +88,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       const tools: ChatModelInputTool[] = [];
 
       for (const originalTool of input.tools) {
-        const name = originalTool.function.name.replaceAll(/[-|\s]/g, "_");
+        const name = originalTool.function.name.replaceAll(/[-\s]/g, "_");
 
         const tool: ChatModelInputTool = {
           ...originalTool,

@@ -48,7 +48,7 @@ const agent = AIAgent.from({
 let text = "";
 
 const stream = await aigne.invoke(agent, "hello", { streaming: true });
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
 }
 
@@ -89,7 +89,7 @@ Optional description of this AIGNE instance's purpose or functionality.
 
 ##### model?
 
-> `optional` **model**: [`ChatModel`](models/chat-model.md#chatmodel)
+> `optional` **model**: `ChatModel`
 
 Global model to use for all agents that don't specify their own model.
 
@@ -101,14 +101,14 @@ Usage limits applied to this AIGNE instance's execution.
 
 ##### skills
 
-> `readonly` **skills**: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>; \}
+> `readonly` **skills**: [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>\[] & {\[`key`: `string`]: [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>; }
 
 Collection of skill agents available to this AIGNE instance.
 Provides indexed access by skill name.
 
 ##### agents
 
-> `readonly` **agents**: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>; \}
+> `readonly` **agents**: [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>\[] & {\[`key`: `string`]: [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>; }
 
 Collection of primary agents managed by this AIGNE instance.
 Provides indexed access by agent name.
@@ -117,21 +117,21 @@ Provides indexed access by agent name.
 
 ##### load()
 
-> `static` **load**(`path`, `options?`): `Promise`\<[`AIGNE`](#aigne)\>
+> `static` **load**(`path`, `options`): `Promise`<[`AIGNE`](#aigne)>
 
 Loads an AIGNE instance from a directory containing an aigne.yaml file and agent definitions.
 This static method provides a convenient way to initialize an AIGNE system from configuration files.
 
 ###### Parameters
 
-| Parameter  | Type                            | Description                                           |
-| ---------- | ------------------------------- | ----------------------------------------------------- |
-| `path`     | `string`                        | Path to the directory containing the aigne.yaml file. |
-| `options?` | [`AIGNEOptions`](#aigneoptions) | Options to override the loaded configuration.         |
+| Parameter | Type                                                                  | Description                                           |
+| --------- | --------------------------------------------------------------------- | ----------------------------------------------------- |
+| `path`    | `string`                                                              | Path to the directory containing the aigne.yaml file. |
+| `options` | [`AIGNEOptions`](#aigneoptions) & `Pick`<`LoadOptions`, `"models"`> | Options to override the loaded configuration.         |
 
 ###### Returns
 
-`Promise`\<[`AIGNE`](#aigne)\>
+`Promise`<[`AIGNE`](#aigne)>
 
 A fully initialized AIGNE instance with configured agents and skills.
 
@@ -146,7 +146,7 @@ Each agent is attached to this AIGNE instance, allowing it to access the AIGNE's
 
 | Parameter   | Type                                                                                                             | Description                                       |
 | ----------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| ...`agents` | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | One or more Agent instances to add to this AIGNE. |
+| ...`agents` | [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>\[] | One or more Agent instances to add to this AIGNE. |
 
 ###### Returns
 
@@ -169,7 +169,7 @@ A new AIGNEContext instance bound to this AIGNE.
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\>
+> **invoke**<`I`, `O`>(`agent`): [`UserAgent`](agents/user-agent.md#useragent)<`I`, `O`>
 
 Creates a user agent for consistent interactions with a specified agent.
 This method allows you to create a wrapper around an agent for repeated invocations.
@@ -178,18 +178,18 @@ This method allows you to create a wrapper around an agent for repeated invocati
 
 | Type Parameter                                     |
 | -------------------------------------------------- |
-| `I` _extends_ [`Message`](agents/agent.md#message) |
-| `O` _extends_ [`Message`](agents/agent.md#message) |
+| `I` *extends* [`Message`](agents/agent.md#message) |
+| `O` *extends* [`Message`](agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                         | Description                                          |
 | --------- | -------------------------------------------- | ---------------------------------------------------- |
-| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\> | Target agent to be wrapped for consistent invocation |
+| `agent`   | [`Agent`](agents/agent.md#agent)<`I`, `O`> | Target agent to be wrapped for consistent invocation |
 
 ###### Returns
 
-[`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\>
+[`UserAgent`](agents/user-agent.md#useragent)<`I`, `O`>
 
 A user agent instance that provides a convenient interface for interacting with the target agent
 
@@ -221,7 +221,7 @@ console.log(result2); // { $message: "Nice to meet you, Bob!" }
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
+> **invoke**<`I`, `O`>(`agent`, `message`, `options`): `Promise`<\[`O`, [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>]>
 
 Invokes an agent with a message and returns both the output and the active agent.
 This overload is useful when you need to track which agent was ultimately responsible for generating the response.
@@ -230,26 +230,26 @@ This overload is useful when you need to track which agent was ultimately respon
 
 | Type Parameter                                     |
 | -------------------------------------------------- |
-| `I` _extends_ [`Message`](agents/agent.md#message) |
-| `O` _extends_ [`Message`](agents/agent.md#message) |
+| `I` *extends* [`Message`](agents/agent.md#message) |
+| `O` *extends* [`Message`](agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                                                        | Description                                                                         |
 | --------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                | Target agent to invoke                                                              |
-| `message` | `string` \| `I`                                                             | Input message to send to the agent (can be a string or a structured message object) |
-| `options` | `InvokeOptions` & \{ `returnActiveAgent`: `true`; `streaming?`: `false`; \} | -                                                                                   |
+| `agent`   | [`Agent`](agents/agent.md#agent)<`I`, `O`>                                | Target agent to invoke                                                              |
+| `message` | `string` | `I`                                                             | Input message to send to the agent (can be a string or a structured message object) |
+| `options` | `InvokeOptions` & { `returnActiveAgent`: `true`; `streaming?`: `false`; } | -                                                                                   |
 
 ###### Returns
 
-`Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
+`Promise`<\[`O`, [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>]>
 
 A promise resolving to a tuple containing the agent's response and the final active agent
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\>\]\>
+> **invoke**<`I`, `O`>(`agent`, `message`, `options`): `Promise`<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)<`O`>, `Promise`<[`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>>]>
 
 Invokes an agent with a message and returns both a stream of the response and the active agent.
 This overload is useful when you need streaming responses while also tracking which agent provided them.
@@ -258,26 +258,26 @@ This overload is useful when you need streaming responses while also tracking wh
 
 | Type Parameter                                     |
 | -------------------------------------------------- |
-| `I` _extends_ [`Message`](agents/agent.md#message) |
-| `O` _extends_ [`Message`](agents/agent.md#message) |
+| `I` *extends* [`Message`](agents/agent.md#message) |
+| `O` *extends* [`Message`](agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                                                      | Description                                                                         |
 | --------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                              | Target agent to invoke                                                              |
-| `message` | `string` \| `I`                                                           | Input message to send to the agent (can be a string or a structured message object) |
-| `options` | `InvokeOptions` & \{ `returnActiveAgent`: `true`; `streaming`: `true`; \} | -                                                                                   |
+| `agent`   | [`Agent`](agents/agent.md#agent)<`I`, `O`>                              | Target agent to invoke                                                              |
+| `message` | `string` | `I`                                                           | Input message to send to the agent (can be a string or a structured message object) |
+| `options` | `InvokeOptions` & { `returnActiveAgent`: `true`; `streaming`: `true`; } | -                                                                                   |
 
 ###### Returns
 
-`Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\>\]\>
+`Promise`<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)<`O`>, `Promise`<[`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>>]>
 
 A promise resolving to a tuple containing the agent's response stream and a promise for the final agent
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message`, `options?`): `Promise`\<`O`\>
+> **invoke**<`I`, `O`>(`agent`, `message`, `options?`): `Promise`<`O`>
 
 Invokes an agent with a message and returns just the output.
 This is the standard way to invoke an agent when you only need the response.
@@ -286,20 +286,20 @@ This is the standard way to invoke an agent when you only need the response.
 
 | Type Parameter                                     |
 | -------------------------------------------------- |
-| `I` _extends_ [`Message`](agents/agent.md#message) |
-| `O` _extends_ [`Message`](agents/agent.md#message) |
+| `I` *extends* [`Message`](agents/agent.md#message) |
+| `O` *extends* [`Message`](agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter  | Type                                                                          | Description                                                                         |
 | ---------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `agent`    | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                  | Target agent to invoke                                                              |
-| `message`  | `string` \| `I`                                                               | Input message to send to the agent (can be a string or a structured message object) |
-| `options?` | `InvokeOptions` & \{ `returnActiveAgent?`: `false`; `streaming?`: `false`; \} | Optional configuration parameters for the invocation                                |
+| `agent`    | [`Agent`](agents/agent.md#agent)<`I`, `O`>                                  | Target agent to invoke                                                              |
+| `message`  | `string` | `I`                                                               | Input message to send to the agent (can be a string or a structured message object) |
+| `options?` | `InvokeOptions` & { `returnActiveAgent?`: `false`; `streaming?`: `false`; } | Optional configuration parameters for the invocation                                |
 
 ###### Returns
 
-`Promise`\<`O`\>
+`Promise`<`O`>
 
 A promise resolving to the agent's complete response
 
@@ -326,7 +326,7 @@ console.log(result); // { $message: "Hello, How can I assist you today?" }
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>\>
+> **invoke**<`I`, `O`>(`agent`, `message`, `options`): `Promise`<[`AgentResponseStream`](agents/agent.md#agentresponsestream)<`O`>>
 
 Invokes an agent with a message and returns a stream of the response.
 This allows processing the response incrementally as it's being generated.
@@ -335,20 +335,20 @@ This allows processing the response incrementally as it's being generated.
 
 | Type Parameter                                     |
 | -------------------------------------------------- |
-| `I` _extends_ [`Message`](agents/agent.md#message) |
-| `O` _extends_ [`Message`](agents/agent.md#message) |
+| `I` *extends* [`Message`](agents/agent.md#message) |
+| `O` *extends* [`Message`](agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                                                        | Description                                                                         |
 | --------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                | Target agent to invoke                                                              |
-| `message` | `string` \| `I`                                                             | Input message to send to the agent (can be a string or a structured message object) |
-| `options` | `InvokeOptions` & \{ `returnActiveAgent?`: `false`; `streaming`: `true`; \} | Configuration with streaming enabled to receive incremental response chunks         |
+| `agent`   | [`Agent`](agents/agent.md#agent)<`I`, `O`>                                | Target agent to invoke                                                              |
+| `message` | `string` | `I`                                                             | Input message to send to the agent (can be a string or a structured message object) |
+| `options` | `InvokeOptions` & { `returnActiveAgent?`: `false`; `streaming`: `true`; } | Configuration with streaming enabled to receive incremental response chunks         |
 
 ###### Returns
 
-`Promise`\<[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>\>
+`Promise`<[`AgentResponseStream`](agents/agent.md#agentresponsestream)<`O`>>
 
 A promise resolving to a stream of the agent's response that can be consumed incrementally
 
@@ -372,7 +372,7 @@ const agent = AIAgent.from({
 let text = "";
 
 const stream = await aigne.invoke(agent, "hello", { streaming: true });
-for await (const chunk of readableStreamToAsyncIterator(stream)) {
+for await (const chunk of stream) {
   if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
 }
 
@@ -381,7 +381,7 @@ console.log(text); // Output: Hello, How can I assist you today?
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
+> **invoke**<`I`, `O`>(`agent`, `message?`, `options?`): [`UserAgent`](agents/user-agent.md#useragent)<`I`, `O`> | `Promise`<[`AgentResponse`](agents/agent.md#agentresponse)<`O`> | \[[`AgentResponse`](agents/agent.md#agentresponse)<`O`>, [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>]>
 
 General implementation signature that handles all overload cases.
 This unified signature supports all the different invocation patterns defined by the overloads.
@@ -390,20 +390,20 @@ This unified signature supports all the different invocation patterns defined by
 
 | Type Parameter                                     |
 | -------------------------------------------------- |
-| `I` _extends_ [`Message`](agents/agent.md#message) |
-| `O` _extends_ [`Message`](agents/agent.md#message) |
+| `I` *extends* [`Message`](agents/agent.md#message) |
+| `O` *extends* [`Message`](agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter  | Type                                         | Description                                          |
 | ---------- | -------------------------------------------- | ---------------------------------------------------- |
-| `agent`    | [`Agent`](agents/agent.md#agent)\<`I`, `O`\> | Target agent to invoke or wrap                       |
-| `message?` | `string` \| `I`                              | Optional input message to send to the agent          |
+| `agent`    | [`Agent`](agents/agent.md#agent)<`I`, `O`> | Target agent to invoke or wrap                       |
+| `message?` | `string` | `I`                              | Optional input message to send to the agent          |
 | `options?` | `InvokeOptions`                              | Optional configuration parameters for the invocation |
 
 ###### Returns
 
-[`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
+[`UserAgent`](agents/user-agent.md#useragent)<`I`, `O`> | `Promise`<[`AgentResponse`](agents/agent.md#agentresponse)<`O`> | \[[`AgentResponse`](agents/agent.md#agentresponse)<`O`>, [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>]>
 
 Either a UserAgent (when no message provided) or a promise resolving to the agent's response
 with optional active agent information based on the provided options
@@ -420,8 +420,8 @@ It creates a new context internally and delegates to the context's publish metho
 
 | Parameter | Type                                                                                        | Description                                            |
 | --------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `topic`   | `string` \| `string`[]                                                                      | The topic or array of topics to publish the message to |
-| `payload` | `string` \| [`Message`](agents/agent.md#message) \| `Omit`\<`MessagePayload`, `"context"`\> | The message payload to be delivered to subscribers     |
+| `topic`   | `string` | `string`\[]                                                                      | The topic or array of topics to publish the message to |
+| `payload` | `string` | [`Message`](agents/agent.md#message) | `Omit`<`MessagePayload`, `"context"`> | The message payload to be delivered to subscribers     |
 
 ###### Returns
 
@@ -461,7 +461,7 @@ console.log(message); // { $message: "Hello, How can I assist you today?" }
 
 ###### Call Signature
 
-> **subscribe**(`topic`, `listener?`): `Promise`\<`MessagePayload`\>
+> **subscribe**(`topic`, `listener?`): `Promise`<`MessagePayload`>
 
 Subscribes to receive the next message on a specific topic.
 This overload returns a Promise that resolves with the next message published to the topic.
@@ -471,12 +471,12 @@ It's useful for one-time message handling or when using async/await patterns.
 
 | Parameter   | Type                   | Description               |
 | ----------- | ---------------------- | ------------------------- |
-| `topic`     | `string` \| `string`[] | The topic to subscribe to |
+| `topic`     | `string` | `string`\[] | The topic to subscribe to |
 | `listener?` | `undefined`            | -                         |
 
 ###### Returns
 
-`Promise`\<`MessagePayload`\>
+`Promise`<`MessagePayload`>
 
 A Promise that resolves with the next message payload published to the specified topic
 
@@ -522,7 +522,7 @@ It's useful for continuous message handling or event-driven architectures.
 
 | Parameter  | Type                   | Description                                                                        |
 | ---------- | ---------------------- | ---------------------------------------------------------------------------------- |
-| `topic`    | `string` \| `string`[] | The topic to subscribe to                                                          |
+| `topic`    | `string` | `string`\[] | The topic to subscribe to                                                          |
 | `listener` | `MessageQueueListener` | Callback function that will be invoked when messages arrive on the specified topic |
 
 ###### Returns
@@ -563,7 +563,7 @@ aigne.publish("test_topic", "hello");
 
 ###### Call Signature
 
-> **subscribe**(`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>
+> **subscribe**(`topic`, `listener?`): `Unsubscribe` | `Promise`<`MessagePayload`>
 
 Generic subscribe signature that handles both Promise and listener patterns.
 This is the implementation signature that supports both overloaded behaviors.
@@ -572,12 +572,12 @@ This is the implementation signature that supports both overloaded behaviors.
 
 | Parameter   | Type                   | Description                |
 | ----------- | ---------------------- | -------------------------- |
-| `topic`     | `string` \| `string`[] | The topic to subscribe to  |
+| `topic`     | `string` | `string`\[] | The topic to subscribe to  |
 | `listener?` | `MessageQueueListener` | Optional callback function |
 
 ###### Returns
 
-`Unsubscribe` \| `Promise`\<`MessagePayload`\>
+`Unsubscribe` | `Promise`<`MessagePayload`>
 
 Either a Promise for the next message or an Unsubscribe function
 
@@ -594,7 +594,7 @@ in messages published to the specified topic.
 
 | Parameter  | Type                   | Description                                                       |
 | ---------- | ---------------------- | ----------------------------------------------------------------- |
-| `topic`    | `string` \| `string`[] | The topic to unsubscribe from                                     |
+| `topic`    | `string` | `string`\[] | The topic to unsubscribe from                                     |
 | `listener` | `MessageQueueListener` | The listener function that was previously subscribed to the topic |
 
 ###### Returns
@@ -631,14 +631,14 @@ aigne.publish("test_topic", "hello");
 
 ##### shutdown()
 
-> **shutdown**(): `Promise`\<`void`\>
+> **shutdown**(): `Promise`<`void`>
 
 Gracefully shuts down the AIGNE instance and all its agents and skills.
 This ensures proper cleanup of resources before termination.
 
 ###### Returns
 
-`Promise`\<`void`\>
+`Promise`<`void`>
 
 A promise that resolves when shutdown is complete.
 
@@ -664,15 +664,15 @@ await aigne.invoke(agent, "hello");
 await aigne.shutdown();
 ```
 
-##### \[asyncDispose\]()
+##### \[asyncDispose]\()
 
-> **\[asyncDispose\]**(): `Promise`\<`void`\>
+> **\[asyncDispose]**(): `Promise`<`void`>
 
 Asynchronous dispose method for the AIGNE instance.
 
 ###### Returns
 
-`Promise`\<`void`\>
+`Promise`<`void`>
 
 ###### Example
 
@@ -708,7 +708,7 @@ Options for the AIGNE class.
 | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | <a id="name"></a> `name?`               | `string`                                                                                                         | The name of the AIGNE instance.                                                   |
 | <a id="description"></a> `description?` | `string`                                                                                                         | The description of the AIGNE instance.                                            |
-| <a id="model"></a> `model?`             | [`ChatModel`](models/chat-model.md#chatmodel)                                                                    | Global model to use for all agents not specifying a model.                        |
-| <a id="skills"></a> `skills?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Skills to use for the AIGNE instance.                                             |
-| <a id="agents"></a> `agents?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Agents to use for the AIGNE instance.                                             |
+| <a id="model"></a> `model?`             | `ChatModel`                                                                                                      | Global model to use for all agents not specifying a model.                        |
+| <a id="skills"></a> `skills?`           | [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>\[] | Skills to use for the AIGNE instance.                                             |
+| <a id="agents"></a> `agents?`           | [`Agent`](agents/agent.md#agent)<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)>\[] | Agents to use for the AIGNE instance.                                             |
 | <a id="limits"></a> `limits?`           | `ContextLimits`                                                                                                  | Limits for the AIGNE instance, such as timeout, max tokens, max invocations, etc. |

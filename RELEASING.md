@@ -14,17 +14,17 @@ For Release Please to correctly identify change types and automatically generate
 
 Common `type` categories include:
 
-- `feat`: New features or functionality
-- `fix`: Bug fixes
-- `docs`: Documentation changes only
-- `style`: Changes that don't affect code meaning (whitespace, formatting, missing semicolons, etc.)
-- `refactor`: Code changes that neither fix bugs nor add features
-- `perf`: Code changes that improve performance
-- `test`: Adding or correcting tests
-- `build`: Changes that affect the build system or external dependencies (e.g., webpack, npm)
-- `ci`: Changes to CI configuration files and scripts
-- `chore`: Other changes that don't modify src or test files
-- `revert`: Revert a previous commit
+* `feat`: New features or functionality
+* `fix`: Bug fixes
+* `docs`: Documentation changes only
+* `style`: Changes that don't affect code meaning (whitespace, formatting, missing semicolons, etc.)
+* `refactor`: Code changes that neither fix bugs nor add features
+* `perf`: Code changes that improve performance
+* `test`: Adding or correcting tests
+* `build`: Changes that affect the build system or external dependencies (e.g., webpack, npm)
+* `ci`: Changes to CI configuration files and scripts
+* `chore`: Other changes that don't modify src or test files
+* `revert`: Revert a previous commit
 
 For changes that affect multiple packages, you can specify in the scope, for example: `feat(core,types): add new type definitions`
 
@@ -41,8 +41,8 @@ In the Release Please-based version management workflow, releases follow these s
 
 This project's Release Please configuration uses the following two files:
 
-- `release-please-config.json`: Defines version management strategy, release types, etc.
-- `.release-please-manifest.json`: Tracks the current version of each package
+* `release-please-config.json`: Defines version management strategy, release types, etc.
+* `.release-please-manifest.json`: Tracks the current version of each package
 
 ## Manual Release Triggering
 

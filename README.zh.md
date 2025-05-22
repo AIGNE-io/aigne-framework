@@ -46,9 +46,9 @@ pnpm add @aigne/core
 
 ### 使用示例
 
-```ts file=examples/workflow-handoff/usages.ts
+```ts file="/examples/workflow-handoff/usages.ts"
 import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -98,6 +98,15 @@ console.log(result2);
 * [packages/core](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/core) - 核心包，为构建 AIGNE 应用程序提供基础。
 * [packages/agent-library](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/agent-library) - 提供多种代理实现，简化代理的创建和管理。
 * [packages/cli](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/cli) - 命令行工具，提供便捷的命令行界面，简化开发和调试过程。
+* models - 大语言模型的实现，支持多种模型和 API
+  * [packages/openai](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/openai) - OpenAI 模型的实现，支持 OpenAI 的 API 和函数调用。
+  * [packages/anthropic](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/anthropic) - Anthropic 模型的实现，支持 Anthropic 的 API 和函数调用。
+  * [packages/bedrock](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/bedrock) - Bedrock 模型的实现，支持 Bedrock 的 API 和函数调用。
+  * [packages/deepseek](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/deepseek) - DeepSeek 模型的实现，支持 DeepSeek 的 API 和函数调用。
+  * [packages/gemini](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/gemini) - Gemini 模型的实现，支持 Gemini 的 API 和函数调用。
+  * [packages/ollama](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/ollama) - Ollama 模型的实现，支持 Ollama 的 API 和函数调用。
+  * [packages/open-router](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/open-router) - OpenRouter 模型的实现，支持 OpenRouter 的 API 和函数调用。
+  * [packages/xai](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/xai) - XAI 模型的实现，支持 XAI 的 API 和函数调用。
 
 ## 文档
 

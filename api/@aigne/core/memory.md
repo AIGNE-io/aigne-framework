@@ -15,11 +15,11 @@ instead provides memory management capabilities to the system.
 
 #### Extends
 
-- [`Agent`](agents/agent.md#agent)
+* [`Agent`](agents/agent.md#agent)
 
 #### Extended by
 
-- [`FSMemory`](../agent-library/fs-memory.md#fsmemory)
+* [`FSMemory`](../agent-library/fs-memory.md#fsmemory)
 
 #### Constructors
 
@@ -60,7 +60,7 @@ after completing operations, creating a history of interactions.
 
 ###### Get Signature
 
-> **get** **retriever**(): `undefined` \| [`MemoryRetriever`](#memoryretriever)
+> **get** **retriever**(): `undefined` | [`MemoryRetriever`](#memoryretriever)
 
 Agent used for retrieving memories from storage.
 
@@ -69,7 +69,7 @@ Setting a new retriever will remove any previously set retriever from skills.
 
 ###### Returns
 
-`undefined` \| [`MemoryRetriever`](#memoryretriever)
+`undefined` | [`MemoryRetriever`](#memoryretriever)
 
 ###### Set Signature
 
@@ -79,7 +79,7 @@ Setting a new retriever will remove any previously set retriever from skills.
 
 | Parameter | Type                                                 |
 | --------- | ---------------------------------------------------- |
-| `value`   | `undefined` \| [`MemoryRetriever`](#memoryretriever) |
+| `value`   | `undefined` | [`MemoryRetriever`](#memoryretriever) |
 
 ###### Returns
 
@@ -89,7 +89,7 @@ Setting a new retriever will remove any previously set retriever from skills.
 
 ###### Get Signature
 
-> **get** **recorder**(): `undefined` \| [`MemoryRecorder`](#memoryrecorder)
+> **get** **recorder**(): `undefined` | [`MemoryRecorder`](#memoryrecorder)
 
 Agent used for recording and storing new memories.
 
@@ -98,7 +98,7 @@ Setting a new recorder will remove any previously set recorder from skills.
 
 ###### Returns
 
-`undefined` \| [`MemoryRecorder`](#memoryrecorder)
+`undefined` | [`MemoryRecorder`](#memoryrecorder)
 
 ###### Set Signature
 
@@ -108,7 +108,7 @@ Setting a new recorder will remove any previously set recorder from skills.
 
 | Parameter | Type                                               |
 | --------- | -------------------------------------------------- |
-| `value`   | `undefined` \| [`MemoryRecorder`](#memoryrecorder) |
+| `value`   | `undefined` | [`MemoryRecorder`](#memoryrecorder) |
 
 ###### Returns
 
@@ -133,7 +133,7 @@ being directly invoked for processing, so this returns false.
 
 ##### process()
 
-> **process**(`_input`, `_context`): `Promise`\<[`Message`](agents/agent.md#message)\>
+> **process**(`_input`, `_context`): `Promise`<[`Message`](agents/agent.md#message)>
 
 The standard message processing method required by the Agent interface.
 
@@ -149,7 +149,7 @@ throws an error when called. Use the specialized retrieve() and record() methods
 
 ###### Returns
 
-`Promise`\<[`Message`](agents/agent.md#message)\>
+`Promise`<[`Message`](agents/agent.md#message)>
 
 ###### Overrides
 
@@ -157,7 +157,7 @@ throws an error when called. Use the specialized retrieve() and record() methods
 
 ##### retrieve()
 
-> **retrieve**(`input`, `context`): `Promise`\<[`MemoryRetrieverOutput`](#memoryretrieveroutput)\>
+> **retrieve**(`input`, `context`): `Promise`<[`MemoryRetrieverOutput`](#memoryretrieveroutput)>
 
 Retrieves memories based on the provided input criteria.
 
@@ -172,7 +172,7 @@ Delegates the actual retrieval operation to the configured retriever agent.
 
 ###### Returns
 
-`Promise`\<[`MemoryRetrieverOutput`](#memoryretrieveroutput)\>
+`Promise`<[`MemoryRetrieverOutput`](#memoryretrieveroutput)>
 
 A promise resolving to the retrieved memories
 
@@ -182,7 +182,7 @@ Error - If no retriever has been initialized
 
 ##### record()
 
-> **record**(`input`, `context`): `Promise`\<[`MemoryRecorderOutput`](#memoryrecorderoutput)\>
+> **record**(`input`, `context`): `Promise`<[`MemoryRecorderOutput`](#memoryrecorderoutput)>
 
 Records new memories based on the provided input content.
 
@@ -197,7 +197,7 @@ Delegates the actual recording operation to the configured recorder agent.
 
 ###### Returns
 
-`Promise`\<[`MemoryRecorderOutput`](#memoryrecorderoutput)\>
+`Promise`<[`MemoryRecorderOutput`](#memoryrecorderoutput)>
 
 A promise resolving to the recorded memories
 
@@ -207,7 +207,7 @@ Error - If no recorder has been initialized
 
 ##### onMessage()
 
-> **onMessage**(`__namedParameters`): `Promise`\<`void`\>
+> **onMessage**(`__namedParameters`): `Promise`<`void`>
 
 ###### Parameters
 
@@ -217,13 +217,13 @@ Error - If no recorder has been initialized
 
 ###### Returns
 
-`Promise`\<`void`\>
+`Promise`<`void`>
 
 ###### Overrides
 
 [`Agent`](agents/agent.md#agent).[`onMessage`](agents/agent.md#agent#onmessage)
 
----
+***
 
 ### `abstract` MemoryRecorder
 
@@ -242,7 +242,7 @@ implementations of the process method to handle the actual storage logic.
 
 #### Extends
 
-- [`Agent`](agents/agent.md#agent)\<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)\>
+* [`Agent`](agents/agent.md#agent)<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)>
 
 #### Constructors
 
@@ -256,7 +256,7 @@ Creates a new MemoryRecorder instance with predefined input and output schemas.
 
 | Parameter | Type                                                                                                                                                                                            | Description                                         |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `options` | `Omit`\<[`AgentOptions`](agents/agent.md#agentoptions)\<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)\>, `"inputSchema"` \| `"outputSchema"`\> | Configuration options for the memory recorder agent |
+| `options` | `Omit`<[`AgentOptions`](agents/agent.md#agentoptions)<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)>, `"inputSchema"` | `"outputSchema"`> | Configuration options for the memory recorder agent |
 
 ###### Returns
 
@@ -266,7 +266,7 @@ Creates a new MemoryRecorder instance with predefined input and output schemas.
 
 [`Agent`](agents/agent.md#agent).[`constructor`](agents/agent.md#agent#constructor)
 
----
+***
 
 ### `abstract` MemoryRetriever
 
@@ -285,7 +285,7 @@ implementations of the process method to handle the actual retrieval logic.
 
 #### Extends
 
-- [`Agent`](agents/agent.md#agent)\<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)\>
+* [`Agent`](agents/agent.md#agent)<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)>
 
 #### Constructors
 
@@ -299,7 +299,7 @@ Creates a new MemoryRetriever instance with predefined input and output schemas.
 
 | Parameter | Type                                                                                                                                                                                                | Description                                          |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `options` | `Omit`\<[`AgentOptions`](agents/agent.md#agentoptions)\<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)\>, `"inputSchema"` \| `"outputSchema"`\> | Configuration options for the memory retriever agent |
+| `options` | `Omit`<[`AgentOptions`](agents/agent.md#agentoptions)<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)>, `"inputSchema"` | `"outputSchema"`> | Configuration options for the memory retriever agent |
 
 ###### Returns
 
@@ -321,15 +321,15 @@ Creates a new MemoryRetriever instance with predefined input and output schemas.
 | <a id="content"></a> `content`     | `unknown` |
 | <a id="createdat"></a> `createdAt` | `string`  |
 
----
+***
 
 ### MemoryAgentOptions
 
 #### Extends
 
-- `Partial`\<`Pick`\<[`MemoryAgent`](#memoryagent), `"recorder"` \| `"retriever"` \| `"autoUpdate"`\>\>.`Pick`\<[`AgentOptions`](agents/agent.md#agentoptions), `"subscribeTopic"` \| `"skills"`\>
+* `Partial`<`Pick`<[`MemoryAgent`](#memoryagent), `"recorder"` | `"retriever"` | `"autoUpdate"`>>.`Pick`<[`AgentOptions`](agents/agent.md#agentoptions), `"subscribeTopic"` | `"skills"`>
 
----
+***
 
 ### MemoryRecorderInput
 
@@ -341,19 +341,19 @@ should be stored as memories.
 
 #### Extends
 
-- [`Message`](agents/agent.md#message)
+* [`Message`](agents/agent.md#message)
 
 #### Indexable
 
-\[`key`: `string`\]: `unknown`
+\[`key`: `string`]: `unknown`
 
 #### Properties
 
 | Property                         | Type        | Description                                                                                                                     |
 | -------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="content-1"></a> `content` | `unknown`[] | Array of content items to record as memories. Each item in this array will typically be converted into a separate memory entry. |
+| <a id="content-1"></a> `content` | `unknown`\[] | Array of content items to record as memories. Each item in this array will typically be converted into a separate memory entry. |
 
----
+***
 
 ### MemoryRecorderOutput
 
@@ -364,19 +364,19 @@ including the newly created memory objects with their IDs and timestamps.
 
 #### Extends
 
-- [`Message`](agents/agent.md#message)
+* [`Message`](agents/agent.md#message)
 
 #### Indexable
 
-\[`key`: `string`\]: `unknown`
+\[`key`: `string`]: `unknown`
 
 #### Properties
 
 | Property                         | Type                  | Description                                                                                                            |
 | -------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| <a id="memories"></a> `memories` | [`Memory`](#memory)[] | Array of newly created memory objects. Each memory includes a unique ID, the stored content, and a creation timestamp. |
+| <a id="memories"></a> `memories` | [`Memory`](#memory)\[] | Array of newly created memory objects. Each memory includes a unique ID, the stored content, and a creation timestamp. |
 
----
+***
 
 ### MemoryRetrieverInput
 
@@ -387,11 +387,11 @@ memories when retrieving them from storage.
 
 #### Extends
 
-- [`Message`](agents/agent.md#message)
+* [`Message`](agents/agent.md#message)
 
 #### Indexable
 
-\[`key`: `string`\]: `unknown`
+\[`key`: `string`]: `unknown`
 
 #### Properties
 
@@ -400,7 +400,7 @@ memories when retrieving them from storage.
 | <a id="limit"></a> `limit?`   | `number` | Maximum number of memories to retrieve. Used for pagination or limiting result set size.                           |
 | <a id="search"></a> `search?` | `string` | Search term to filter memories by. How the search is implemented depends on the specific retriever implementation. |
 
----
+***
 
 ### MemoryRetrieverOutput
 
@@ -411,17 +411,17 @@ containing an array of memory objects that match the query criteria.
 
 #### Extends
 
-- [`Message`](agents/agent.md#message)
+* [`Message`](agents/agent.md#message)
 
 #### Indexable
 
-\[`key`: `string`\]: `unknown`
+\[`key`: `string`]: `unknown`
 
 #### Properties
 
 | Property                           | Type                  | Description                                                                                      |
 | ---------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------ |
-| <a id="memories-1"></a> `memories` | [`Memory`](#memory)[] | Array of retrieved memory objects. Each memory includes its ID, content, and creation timestamp. |
+| <a id="memories-1"></a> `memories` | [`Memory`](#memory)\[] | Array of retrieved memory objects. Each memory includes its ID, content, and creation timestamp. |
 
 ## Functions
 

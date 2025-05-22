@@ -1,34 +1,44 @@
-- [@aigne/core](/api/@aigne/core/README.md)
+* [@aigne/agent-library](/api/@aigne/agent-library/README.md)
 
-  - [aigne](/api/@aigne/core/aigne.md)
+  * [orchestrator](/api/@aigne/agent-library/orchestrator.md)
+  * [fs-memory](/api/@aigne/agent-library/fs-memory.md)
 
-  - agents
+* [@aigne/anthropic](/api/@aigne/anthropic.md)
 
-    - [agent](/api/@aigne/core/agents/agent.md)
-    - [ai-agent](/api/@aigne/core/agents/ai-agent.md)
-    - [mcp-agent](/api/@aigne/core/agents/mcp-agent.md)
-    - [team-agent](/api/@aigne/core/agents/team-agent.md)
-    - [user-agent](/api/@aigne/core/agents/user-agent.md)
+* [@aigne/bedrock](/api/@aigne/bedrock.md)
 
-  - models
+* [@aigne/cli](/api/@aigne/cli.md)
 
-    - [chat-model](/api/@aigne/core/models/chat-model.md)
-    - [bedrock-chat-model](/api/@aigne/core/models/bedrock-chat-model.md)
-    - [claude-chat-model](/api/@aigne/core/models/claude-chat-model.md)
-    - [deepseek-chat-model](/api/@aigne/core/models/deepseek-chat-model.md)
-    - [gemini-chat-model](/api/@aigne/core/models/gemini-chat-model.md)
-    - [ollama-chat-model](/api/@aigne/core/models/ollama-chat-model.md)
-    - [open-router-chat-model](/api/@aigne/core/models/open-router-chat-model.md)
-    - [openai-chat-model](/api/@aigne/core/models/openai-chat-model.md)
-    - [xai-chat-model](/api/@aigne/core/models/xai-chat-model.md)
+* [@aigne/core](/api/@aigne/core/README.md)
 
-  - [memory](/api/@aigne/core/memory.md)
+  * [aigne](/api/@aigne/core/aigne.md)
 
-  - [server](/api/@aigne/core/server.md)
+  * agents
 
-  - [client](/api/@aigne/core/client.md)
+    * [agent](/api/@aigne/core/agents/agent.md)
+    * [ai-agent](/api/@aigne/core/agents/ai-agent.md)
+    * [guide-rail-agent](/api/@aigne/core/agents/guide-rail-agent.md)
+    * [mcp-agent](/api/@aigne/core/agents/mcp-agent.md)
+    * [team-agent](/api/@aigne/core/agents/team-agent.md)
+    * [user-agent](/api/@aigne/core/agents/user-agent.md)
 
-- [@aigne/agent-library](/api/@aigne/agent-library/README.md)
+  * [memory](/api/@aigne/core/memory.md)
 
-  - [orchestrator](/api/@aigne/agent-library/orchestrator.md)
-  - [fs-memory](/api/@aigne/agent-library/fs-memory.md)
+* [@aigne/deepseek](/api/@aigne/deepseek.md)
+
+* [@aigne/gemini](/api/@aigne/gemini.md)
+
+* [@aigne/ollama](/api/@aigne/ollama.md)
+
+* [@aigne/open-router](/api/@aigne/open-router.md)
+
+* [@aigne/openai](/api/@aigne/openai.md)
+
+* [@aigne/test-utils](/api/@aigne/test-utils.md)
+
+* [@aigne/transport](/api/@aigne/transport/README.md)
+
+  * [http-server](/api/@aigne/transport/http-server.md)
+  * [http-client](/api/@aigne/transport/http-client.md)
+
+* [@aigne/xai](/api/@aigne/xai.md)

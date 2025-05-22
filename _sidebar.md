@@ -1,45 +1,77 @@
 * Getting Started
 
-  * [Cookbook](/cookbook.md)
-  * [CLI](/cli.md)
-  * [Agent Development](/agent-development.md)
+  * [What is AIGNE](/getting-started/what-is-aigne.zh.md)
+  * [Quick Start](/getting-started/quick-start.zh.md)
 
-- API Reference
+* How to guides
 
-  - [@aigne/core](/api/@aigne/core/README.md)
+  * [Build Your First Agent](/how-to-guides/build-your-first-agent.zh.md)
+  * [MCP Server as Agent](/how-to-guides/mcp-server-as-agent.zh.md)
+  * [Add Skills to Agent](/how-to-guides/add-skills-to-agent.zh.md)
+  * [Enable Memory for Agent](/how-to-guides/enable-memory-for-agent.zh.md)
+  * [Serve Agent as API](/how-to-guides/serve-agent-as-api.zh.md)
+  * [Available Chat Models](/how-to-guides/available-chat-models.zh.md)
 
-    - [aigne](/api/@aigne/core/aigne.md)
+* Concepts
 
-    - agents
+  * [AIGNE](/concepts/aigne.zh.md)
+  * [Agent](/concepts/agent.zh.md)
+  * [Function Agent](/concepts/agent-function-agent.zh.md)
+  * [AI Agent](/concepts/agent-ai-agent.zh.md)
+  * [Team Agent](/concepts/agent-team-agent.zh.md)
+  * [MCP Agent](/concepts/agent-mcp-agent.zh.md)
+  * [Memory Agent](/concepts/agent-memory-agent.zh.md)
+  * [Guide Rail Agent](/concepts/agent-guide-rail-agent.zh.md)
+  * [Prompt Builder](/concepts/prompt-builder.zh.md)
+  * [Chat Model](/concepts/chat-model.zh.md)
+  * [HTTP Transport](/concepts/http-transport.zh.md)
 
-      - [agent](/api/@aigne/core/agents/agent.md)
-      - [ai-agent](/api/@aigne/core/agents/ai-agent.md)
-      - [mcp-agent](/api/@aigne/core/agents/mcp-agent.md)
-      - [team-agent](/api/@aigne/core/agents/team-agent.md)
-      - [user-agent](/api/@aigne/core/agents/user-agent.md)
+* API Reference
 
-    - models
+  * [@aigne/agent-library](/api/@aigne/agent-library/README.md)
 
-      - [chat-model](/api/@aigne/core/models/chat-model.md)
-      - [bedrock-chat-model](/api/@aigne/core/models/bedrock-chat-model.md)
-      - [claude-chat-model](/api/@aigne/core/models/claude-chat-model.md)
-      - [deepseek-chat-model](/api/@aigne/core/models/deepseek-chat-model.md)
-      - [gemini-chat-model](/api/@aigne/core/models/gemini-chat-model.md)
-      - [ollama-chat-model](/api/@aigne/core/models/ollama-chat-model.md)
-      - [open-router-chat-model](/api/@aigne/core/models/open-router-chat-model.md)
-      - [openai-chat-model](/api/@aigne/core/models/openai-chat-model.md)
-      - [xai-chat-model](/api/@aigne/core/models/xai-chat-model.md)
+    * [orchestrator](/api/@aigne/agent-library/orchestrator.md)
+    * [fs-memory](/api/@aigne/agent-library/fs-memory.md)
 
-    - [memory](/api/@aigne/core/memory.md)
+  * [@aigne/anthropic](/api/@aigne/anthropic.md)
 
-    - [server](/api/@aigne/core/server.md)
+  * [@aigne/bedrock](/api/@aigne/bedrock.md)
 
-    - [client](/api/@aigne/core/client.md)
+  * [@aigne/cli](/api/@aigne/cli.md)
 
-  - [@aigne/agent-library](/api/@aigne/agent-library/README.md)
+  * [@aigne/core](/api/@aigne/core/README.md)
 
-    - [orchestrator](/api/@aigne/agent-library/orchestrator.md)
-    - [fs-memory](/api/@aigne/agent-library/fs-memory.md)
+    * [aigne](/api/@aigne/core/aigne.md)
+
+    * agents
+
+      * [agent](/api/@aigne/core/agents/agent.md)
+      * [ai-agent](/api/@aigne/core/agents/ai-agent.md)
+      * [guide-rail-agent](/api/@aigne/core/agents/guide-rail-agent.md)
+      * [mcp-agent](/api/@aigne/core/agents/mcp-agent.md)
+      * [team-agent](/api/@aigne/core/agents/team-agent.md)
+      * [user-agent](/api/@aigne/core/agents/user-agent.md)
+
+    * [memory](/api/@aigne/core/memory.md)
+
+  * [@aigne/deepseek](/api/@aigne/deepseek.md)
+
+  * [@aigne/gemini](/api/@aigne/gemini.md)
+
+  * [@aigne/ollama](/api/@aigne/ollama.md)
+
+  * [@aigne/open-router](/api/@aigne/open-router.md)
+
+  * [@aigne/openai](/api/@aigne/openai.md)
+
+  * [@aigne/test-utils](/api/@aigne/test-utils.md)
+
+  * [@aigne/transport](/api/@aigne/transport/README.md)
+
+    * [http-server](/api/@aigne/transport/http-server.md)
+    * [http-client](/api/@aigne/transport/http-client.md)
+
+  * [@aigne/xai](/api/@aigne/xai.md)
 
 * Contributing
 

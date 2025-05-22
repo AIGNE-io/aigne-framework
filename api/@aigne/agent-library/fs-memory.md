@@ -37,7 +37,7 @@ console.log(result2);
 
 #### Extends
 
-- [`MemoryAgent`](../core/memory.md#memoryagent)
+* [`MemoryAgent`](../core/memory.md#memoryagent)
 
 #### Constructors
 
@@ -69,18 +69,18 @@ Configuration options for the FSMemory class.
 
 #### Extends
 
-- `Partial`\<[`MemoryAgentOptions`](../core/memory.md#memoryagentoptions)\>
+* `Partial`<[`MemoryAgentOptions`](../core/memory.md#memoryagentoptions)>
 
 #### Properties
 
 | Property                                          | Type                                    | Description                                                                                                                                                                                                       |
 | ------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <a id="rootdir"></a> `rootDir`                    | `string`                                | The root directory where memory files will be stored. Can be absolute or relative path. Relative paths are resolved from the current working directory. Home directory prefix (~) will be expanded appropriately. |
-| <a id="retrieveroptions"></a> `retrieverOptions?` | `Partial`\<`FSMemoryRetrieverOptions`\> | Optional configuration for the memory retriever agent. Controls how memories are retrieved from the file system.                                                                                                  |
-| <a id="recorderoptions"></a> `recorderOptions?`   | `Partial`\<`FSMemoryRecorderOptions`\>  | Optional configuration for the memory recorder agent. Controls how memories are recorded to the file system.                                                                                                      |
+| <a id="retrieveroptions"></a> `retrieverOptions?` | `Partial`<`FSMemoryRetrieverOptions`> | Optional configuration for the memory retriever agent. Controls how memories are retrieved from the file system.                                                                                                  |
+| <a id="recorderoptions"></a> `recorderOptions?`   | `Partial`<`FSMemoryRecorderOptions`>  | Optional configuration for the memory recorder agent. Controls how memories are recorded to the file system.                                                                                                      |
 
 ## Variables
 
-### MEMORY_FILE_NAME
+### MEMORY\_FILE\_NAME
 
-> `const` **MEMORY_FILE_NAME**: `"memory.yaml"` = `"memory.yaml"`
+> `const` **MEMORY\_FILE\_NAME**: `"memory.yaml"` = `"memory.yaml"`

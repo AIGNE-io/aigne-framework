@@ -4,5 +4,5 @@
 
 ## Modules
 
-- [orchestrator](orchestrator.md)
-- [fs-memory](fs-memory.md)
+* [orchestrator](orchestrator.md)
+* [fs-memory](fs-memory.md)

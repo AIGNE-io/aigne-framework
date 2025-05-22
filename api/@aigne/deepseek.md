@@ -1,0 +1,125 @@
+[Documentation](../README.md) / @aigne/deepseek
+
+# @aigne/deepseek
+
+## Classes
+
+### DeepSeekChatModel
+
+Implementation of the ChatModel interface for DeepSeek's API
+
+This model uses OpenAI-compatible API format to interact with DeepSeek's models,
+but with specific configuration and capabilities for DeepSeek.
+
+Default model: 'deepseek-chat'
+
+#### Examples
+
+Here's how to create and use a DeepSeek chat model:
+
+```ts
+const model = new DeepSeekChatModel({
+  // Provide API key directly or use environment variable DEEPSEEK_API_KEY
+  apiKey: "your-api-key", // Optional if set in env variables
+  // Specify model version (defaults to 'deepseek-chat')
+  model: "deepseek-chat",
+  modelOptions: {
+    temperature: 0.7,
+  },
+});
+
+const result = await model.invoke({
+  messages: [{ role: "user", content: "Introduce yourself" }],
+});
+
+console.log(result);
+/* Output:
+{
+  text: "Hello! I'm an AI assistant powered by DeepSeek's language model.",
+  model: "deepseek-chat",
+  usage: {
+    inputTokens: 7,
+    outputTokens: 12
+  }
+}
+*/
+```
+
+Here's an example with streaming response:
+
+```ts
+const model = new DeepSeekChatModel({
+  apiKey: "your-api-key",
+  model: "deepseek-chat",
+});
+
+const stream = await model.invoke(
+  {
+    messages: [{ role: "user", content: "Introduce yourself" }],
+  },
+  undefined,
+  { streaming: true },
+);
+
+let fullText = "";
+const json = {};
+
+for await (const chunk of stream) {
+  const text = chunk.delta.text?.text;
+  if (text) fullText += text;
+  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+}
+
+console.log(fullText); // Output: "Hello! I'm an AI assistant powered by DeepSeek's language model."
+console.log(json); // { model: "deepseek-chat", usage: { inputTokens: 7, outputTokens: 12 } }
+```
+
+#### Extends
+
+* `OpenAIChatModel`
+
+#### Constructors
+
+##### Constructor
+
+> **new DeepSeekChatModel**(`options?`): [`DeepSeekChatModel`](#deepseekchatmodel)
+
+###### Parameters
+
+| Parameter  | Type                     |
+| ---------- | ------------------------ |
+| `options?` | `OpenAIChatModelOptions` |
+
+###### Returns
+
+[`DeepSeekChatModel`](#deepseekchatmodel)
+
+###### Overrides
+
+`OpenAIChatModel.constructor`
+
+#### Properties
+
+##### apiKeyEnvName
+
+> `protected` **apiKeyEnvName**: `string` = `"DEEPSEEK_API_KEY"`
+
+###### Overrides
+
+`OpenAIChatModel.apiKeyEnvName`
+
+##### supportsNativeStructuredOutputs
+
+> `protected` **supportsNativeStructuredOutputs**: `boolean` = `false`
+
+###### Overrides
+
+`OpenAIChatModel.supportsNativeStructuredOutputs`
+
+##### supportsToolsEmptyParameters
+
+> `protected` **supportsToolsEmptyParameters**: `boolean` = `false`
+
+###### Overrides
+
+`OpenAIChatModel.supportsToolsEmptyParameters`

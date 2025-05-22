@@ -1,5 +1,3 @@
-[Documentation](../../../README.md) / [@aigne/core](../README.md) / agents/team-agent
-
 # agents/team-agent
 
 ## Enumerations
@@ -20,7 +18,7 @@ and how their outputs are combined.
 
 ## Classes
 
-### TeamAgent\<I, O>
+### TeamAgent\<I, O\>
 
 TeamAgent coordinates a group of agents working together to accomplish tasks.
 
@@ -31,9 +29,9 @@ with appropriate handling of their outputs.
 
 TeamAgent is particularly useful for:
 
-* Creating agent workflows where output from one agent feeds into another
-* Executing multiple agents simultaneously and combining their results
-* Building complex agent systems with specialized components working together
+- Creating agent workflows where output from one agent feeds into another
+- Executing multiple agents simultaneously and combining their results
+- Building complex agent systems with specialized components working together
 
 #### Example
 
@@ -72,20 +70,20 @@ console.log(result);
 
 #### Extends
 
-* [`Agent`](agent.md#agent)<`I`, `O`>
+- [`Agent`](agent.md#agent)\<`I`, `O`\>
 
 #### Type Parameters
 
 | Type Parameter                              |
 | ------------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) |
-| `O` *extends* [`Message`](agent.md#message) |
+| `I` _extends_ [`Message`](agent.md#message) |
+| `O` _extends_ [`Message`](agent.md#message) |
 
 #### Constructors
 
 ##### Constructor
 
-> **new TeamAgent**<`I`, `O`>(`options`): [`TeamAgent`](#teamagent)<`I`, `O`>
+> **new TeamAgent**\<`I`, `O`\>(`options`): [`TeamAgent`](#teamagent)\<`I`, `O`\>
 
 Create a new TeamAgent instance.
 
@@ -93,11 +91,11 @@ Create a new TeamAgent instance.
 
 | Parameter | Type                                                | Description                             |
 | --------- | --------------------------------------------------- | --------------------------------------- |
-| `options` | [`TeamAgentOptions`](#teamagentoptions)<`I`, `O`> | Configuration options for the TeamAgent |
+| `options` | [`TeamAgentOptions`](#teamagentoptions)\<`I`, `O`\> | Configuration options for the TeamAgent |
 
 ###### Returns
 
-[`TeamAgent`](#teamagent)<`I`, `O`>
+[`TeamAgent`](#teamagent)\<`I`, `O`\>
 
 ###### Overrides
 
@@ -117,7 +115,7 @@ This can be either sequential (one after another) or parallel (all at once).
 
 ##### from()
 
-> `static` **from**<`I`, `O`>(`options`): [`TeamAgent`](#teamagent)<`I`, `O`>
+> `static` **from**\<`I`, `O`\>(`options`): [`TeamAgent`](#teamagent)\<`I`, `O`\>
 
 Create a TeamAgent from the provided options.
 
@@ -125,18 +123,18 @@ Create a TeamAgent from the provided options.
 
 | Type Parameter                              |
 | ------------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) |
-| `O` *extends* [`Message`](agent.md#message) |
+| `I` _extends_ [`Message`](agent.md#message) |
+| `O` _extends_ [`Message`](agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                                | Description                             |
 | --------- | --------------------------------------------------- | --------------------------------------- |
-| `options` | [`TeamAgentOptions`](#teamagentoptions)<`I`, `O`> | Configuration options for the TeamAgent |
+| `options` | [`TeamAgentOptions`](#teamagentoptions)\<`I`, `O`\> | Configuration options for the TeamAgent |
 
 ###### Returns
 
-[`TeamAgent`](#teamagent)<`I`, `O`>
+[`TeamAgent`](#teamagent)\<`I`, `O`\>
 
 A new TeamAgent instance
 
@@ -209,26 +207,26 @@ console.log(result);
 
 ##### process()
 
-> **process**(`input`, `context`): `PromiseOrValue`<[`AgentProcessResult`](agent.md#agentprocessresult)<`O`>>
+> **process**(`input`, `options`): `PromiseOrValue`\<[`AgentProcessResult`](agent.md#agentprocessresult)\<`O`\>\>
 
 Process an input message by routing it through the team's agents.
 
 Depending on the team's processing mode, this will either:
 
-* In sequential mode: Pass input through each agent in sequence, with each agent
+- In sequential mode: Pass input through each agent in sequence, with each agent
   receiving the combined output from previous agents
-* In parallel mode: Process input through all agents simultaneously and combine their outputs
+- In parallel mode: Process input through all agents simultaneously and combine their outputs
 
 ###### Parameters
 
-| Parameter | Type      | Description            |
-| --------- | --------- | ---------------------- |
-| `input`   | `I`       | The message to process |
-| `context` | `Context` | The execution context  |
+| Parameter | Type                                                | Description            |
+| --------- | --------------------------------------------------- | ---------------------- |
+| `input`   | `I`                                                 | The message to process |
+| `options` | [`AgentInvokeOptions`](agent.md#agentinvokeoptions) | The invocation options |
 
 ###### Returns
 
-`PromiseOrValue`<[`AgentProcessResult`](agent.md#agentprocessresult)<`O`>>
+`PromiseOrValue`\<[`AgentProcessResult`](agent.md#agentprocessresult)\<`O`\>\>
 
 A stream of message chunks that collectively form the response
 
@@ -238,7 +236,7 @@ A stream of message chunks that collectively form the response
 
 ## Interfaces
 
-### TeamAgentOptions\<I, O>
+### TeamAgentOptions\<I, O\>
 
 Configuration options for creating a TeamAgent.
 
@@ -246,14 +244,14 @@ These options extend the base AgentOptions and add team-specific settings.
 
 #### Extends
 
-* [`AgentOptions`](agent.md#agentoptions)<`I`, `O`>
+- [`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>
 
 #### Type Parameters
 
 | Type Parameter                              |
 | ------------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) |
-| `O` *extends* [`Message`](agent.md#message) |
+| `I` _extends_ [`Message`](agent.md#message) |
+| `O` _extends_ [`Message`](agent.md#message) |
 
 #### Properties
 

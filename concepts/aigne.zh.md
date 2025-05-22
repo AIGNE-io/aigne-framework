@@ -1,5 +1,7 @@
 # AIGNE
 
+[English](./aigne.md) | [中文](./aigne.zh.md)
+
 AIGNE 是一个强大的框架，用于编排多个 Agent 以构建复杂的 AI 应用程序。它作为 Agent 交互、消息传递和执行流程的中央协调点。
 
 ## 基本概念

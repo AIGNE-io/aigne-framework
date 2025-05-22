@@ -1,5 +1,3 @@
-[Documentation](../README.md) / @aigne/cli
-
 # @aigne/cli
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
@@ -8,7 +6,7 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/cli)](https://www.npmjs.com/package/@aigne/cli)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/cli)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
-**English** | [中文](../_media/README.zh.md)
+**English** | [中文](../_media/README.zh-4.md)
 
 Command-line tool for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing convenient development and management capabilities.
 
@@ -18,12 +16,12 @@ Command-line tool for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framew
 
 ## Features
 
-* **Project Creation**: Quickly create new AIGNE projects with predefined file structures and configurations
-* **Agent Running**: Easily run and test AIGNE agents
-* **Testing Support**: Built-in test command for unit testing and integration testing
-* **MCP Services**: Support for launching agents as MCP servers for integration with external systems
-* **Interactive Interface**: Beautiful command-line interface providing an intuitive user experience
-* **Multi-model Support**: Support for OpenAI, Claude, XAI, and other model providers
+- **Project Creation**: Quickly create new AIGNE projects with predefined file structures and configurations
+- **Agent Running**: Easily run and test AIGNE agents
+- **Testing Support**: Built-in test command for unit testing and integration testing
+- **MCP Services**: Support for launching agents as MCP servers for integration with external systems
+- **Interactive Interface**: Beautiful command-line interface providing an intuitive user experience
+- **Multi-model Support**: Support for OpenAI, Claude, XAI, and other model providers
 
 ## Installation
 
@@ -80,8 +78,8 @@ aigne create my-project
 
 The interactive creation process will ask for:
 
-* Project name
-* Project template (currently supports the default template)
+- Project name
+- Project template (currently supports the default template)
 
 ## Run Command
 
@@ -103,10 +101,10 @@ aigne run --entry-agent myAgent
 
 Available options:
 
-* `--entry-agent <entry-agent>` - Specify the agent name to run (defaults to the first agent found)
-* `--cache-dir <dir>` - Specify the directory to download the package to (used in URL mode)
-* `--model <provider[:model]>` - Specify the AI model in format 'provider\[:model]' where model is optional (e.g., 'openai' or 'openai:gpt-4o-mini')
-* `--verbose` - Enable verbose logging
+- `--entry-agent <entry-agent>` - Specify the agent name to run (defaults to the first agent found)
+- `--cache-dir <dir>` - Specify the directory to download the package to (used in URL mode)
+- `--model <provider[:model]>` - Specify the AI model in format 'provider\[:model]' where model is optional (e.g., 'openai' or 'openai:gpt-4o-mini')
+- `--verbose` - Enable verbose logging
 
 ## Test Command
 

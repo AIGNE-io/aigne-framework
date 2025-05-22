@@ -1,10 +1,8 @@
-[Documentation](../../README.md) / [@aigne/agent-library](README.md) / orchestrator
-
 # orchestrator
 
 ## Classes
 
-### OrchestratorAgent\<I, O>
+### OrchestratorAgent\<I, O\>
 
 Orchestrator Agent Class
 
@@ -17,27 +15,27 @@ This Agent is responsible for:
 
 Workflow:
 
-* Receives input objective
-* Uses planner to create execution plan
-* Executes tasks and steps according to the plan
-* Synthesizes final result through completer
+- Receives input objective
+- Uses planner to create execution plan
+- Executes tasks and steps according to the plan
+- Synthesizes final result through completer
 
 #### Extends
 
-* [`Agent`](../core/agents/agent.md#agent)<`I`, `O`>
+- [`Agent`](../core/agents/agent.md#agent)\<`I`, `O`\>
 
 #### Type Parameters
 
 | Type Parameter                                             | Default type                                 |
 | ---------------------------------------------------------- | -------------------------------------------- |
-| `I` *extends* [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
-| `O` *extends* [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
 
 #### Constructors
 
 ##### Constructor
 
-> **new OrchestratorAgent**<`I`, `O`>(`options`): [`OrchestratorAgent`](#orchestratoragent)<`I`, `O`>
+> **new OrchestratorAgent**\<`I`, `O`\>(`options`): [`OrchestratorAgent`](#orchestratoragent)\<`I`, `O`\>
 
 Creates an OrchestratorAgent instance
 
@@ -45,11 +43,11 @@ Creates an OrchestratorAgent instance
 
 | Parameter | Type                                                                | Description                                      |
 | --------- | ------------------------------------------------------------------- | ------------------------------------------------ |
-| `options` | [`OrchestratorAgentOptions`](#orchestratoragentoptions)<`I`, `O`> | Configuration options for the Orchestrator Agent |
+| `options` | [`OrchestratorAgentOptions`](#orchestratoragentoptions)\<`I`, `O`\> | Configuration options for the Orchestrator Agent |
 
 ###### Returns
 
-[`OrchestratorAgent`](#orchestratoragent)<`I`, `O`>
+[`OrchestratorAgent`](#orchestratoragent)\<`I`, `O`\>
 
 ###### Overrides
 
@@ -75,7 +73,7 @@ Controls how many tasks can be executed simultaneously
 
 ##### from()
 
-> `static` **from**<`I`, `O`>(`options`): [`OrchestratorAgent`](#orchestratoragent)<`I`, `O`>
+> `static` **from**\<`I`, `O`\>(`options`): [`OrchestratorAgent`](#orchestratoragent)\<`I`, `O`\>
 
 Factory method to create an OrchestratorAgent instance
 
@@ -83,24 +81,24 @@ Factory method to create an OrchestratorAgent instance
 
 | Type Parameter                                             |
 | ---------------------------------------------------------- |
-| `I` *extends* [`Message`](../core/agents/agent.md#message) |
-| `O` *extends* [`Message`](../core/agents/agent.md#message) |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                                                | Description                                      |
 | --------- | ------------------------------------------------------------------- | ------------------------------------------------ |
-| `options` | [`OrchestratorAgentOptions`](#orchestratoragentoptions)<`I`, `O`> | Configuration options for the Orchestrator Agent |
+| `options` | [`OrchestratorAgentOptions`](#orchestratoragentoptions)\<`I`, `O`\> | Configuration options for the Orchestrator Agent |
 
 ###### Returns
 
-[`OrchestratorAgent`](#orchestratoragent)<`I`, `O`>
+[`OrchestratorAgent`](#orchestratoragent)\<`I`, `O`\>
 
 A new OrchestratorAgent instance
 
 ##### process()
 
-> **process**(`input`, `context`): `Promise`<`O`>
+> **process**(`input`, `options`): `Promise`\<`O`\>
 
 Process input and execute the orchestrator workflow
 
@@ -114,14 +112,14 @@ Workflow:
 
 ###### Parameters
 
-| Parameter | Type      | Description                                           |
-| --------- | --------- | ----------------------------------------------------- |
-| `input`   | `I`       | Input message containing the objective                |
-| `context` | `Context` | Execution context with model and other necessary info |
+| Parameter | Type                                                               | Description                            |
+| --------- | ------------------------------------------------------------------ | -------------------------------------- |
+| `input`   | `I`                                                                | Input message containing the objective |
+| `options` | [`AgentInvokeOptions`](../core/agents/agent.md#agentinvokeoptions) | Agent invocation options               |
 
 ###### Returns
 
-`Promise`<`O`>
+`Promise`\<`O`\>
 
 Processing result
 
@@ -131,20 +129,20 @@ Processing result
 
 ## Interfaces
 
-### OrchestratorAgentOptions\<I, O>
+### OrchestratorAgentOptions\<I, O\>
 
 Configuration options for the Orchestrator Agent
 
 #### Extends
 
-* [`AgentOptions`](../core/agents/agent.md#agentoptions)<`I`, `O`>
+- [`AgentOptions`](../core/agents/agent.md#agentoptions)\<`I`, `O`\>
 
 #### Type Parameters
 
 | Type Parameter                                             | Default type                                 |
 | ---------------------------------------------------------- | -------------------------------------------- |
-| `I` *extends* [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
-| `O` *extends* [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
 
 #### Properties
 

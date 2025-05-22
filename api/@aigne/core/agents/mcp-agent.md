@@ -1,5 +1,3 @@
-[Documentation](../../../README.md) / [@aigne/core](../README.md) / agents/mcp-agent
-
 # agents/mcp-agent
 
 ## Classes
@@ -12,10 +10,10 @@ and access their tools, prompts, and resources.
 
 MCPAgent serves as a bridge between your application and MCP servers, allowing you to:
 
-* Connect to MCP servers over HTTP/SSE or stdio
-* Access server tools as agent skills
-* Utilize server prompts and resources
-* Manage server connections with automatic reconnection
+- Connect to MCP servers over HTTP/SSE or stdio
+- Access server tools as agent skills
+- Utilize server prompts and resources
+- Manage server connections with automatic reconnection
 
 #### Example
 
@@ -46,7 +44,7 @@ console.log(result);
 
 #### Extends
 
-* [`Agent`](agent.md#agent)
+- [`Agent`](agent.md#agent)
 
 #### Constructors
 
@@ -106,7 +104,7 @@ methods for interacting with server-provided functionality.
 
 ##### prompts
 
-> `readonly` **prompts**: [`MCPPrompt`](#mcpprompt)\[] & {\[`key`: `string`]: [`MCPPrompt`](#mcpprompt); }
+> `readonly` **prompts**: [`MCPPrompt`](#mcpprompt)[] & \{[`key`: `string`]: [`MCPPrompt`](#mcpprompt); \}
 
 Array of MCP prompts available from the connected server.
 
@@ -143,7 +141,7 @@ console.log(result);
 
 ##### resources
 
-> `readonly` **resources**: [`MCPResource`](#mcpresource)\[] & {\[`key`: `string`]: [`MCPResource`](#mcpresource); }
+> `readonly` **resources**: [`MCPResource`](#mcpresource)[] & \{[`key`: `string`]: [`MCPResource`](#mcpresource); \}
 
 Array of MCP resources available from the connected server.
 
@@ -201,7 +199,7 @@ for tools, prompts, and resources. Always returns false.
 
 ###### Call Signature
 
-> `static` **from**(`options`): `Promise`<[`MCPAgent`](#mcpagent)>
+> `static` **from**(`options`): `Promise`\<[`MCPAgent`](#mcpagent)\>
 
 Create an MCPAgent from a connection to an SSE server.
 
@@ -216,7 +214,7 @@ and automatically discovers its available tools, prompts, and resources.
 
 ###### Returns
 
-`Promise`<[`MCPAgent`](#mcpagent)>
+`Promise`\<[`MCPAgent`](#mcpagent)\>
 
 Promise resolving to a new MCPAgent instance
 
@@ -343,7 +341,7 @@ console.log(mcpAgent.name); // Output: "example-server"
 
 ##### process()
 
-> **process**(`_input`, `_context?`): `Promise`<[`Message`](agent.md#message)>
+> **process**(`_input`, `_options`): `Promise`\<[`Message`](agent.md#message)\>
 
 Process method required by Agent interface.
 
@@ -352,14 +350,14 @@ throws an error if called.
 
 ###### Parameters
 
-| Parameter   | Type                          | Description                |
-| ----------- | ----------------------------- | -------------------------- |
-| `_input`    | [`Message`](agent.md#message) | Input message (unused)     |
-| `_context?` | `Context`                     | Execution context (unused) |
+| Parameter  | Type                                                | Description                 |
+| ---------- | --------------------------------------------------- | --------------------------- |
+| `_input`   | [`Message`](agent.md#message)                       | Input message (unused)      |
+| `_options` | [`AgentInvokeOptions`](agent.md#agentinvokeoptions) | AgentInvokeOptions (unused) |
 
 ###### Returns
 
-`Promise`<[`Message`](agent.md#message)>
+`Promise`\<[`Message`](agent.md#message)\>
 
 ###### Throws
 
@@ -371,7 +369,7 @@ Error This method always throws an error since MCPAgent is not directly invokabl
 
 ##### shutdown()
 
-> **shutdown**(): `Promise`<`void`>
+> **shutdown**(): `Promise`\<`void`\>
 
 Shut down the agent and close the MCP connection.
 
@@ -380,7 +378,7 @@ to the MCP server.
 
 ###### Returns
 
-`Promise`<`void`>
+`Promise`\<`void`\>
 
 ###### Examples
 
@@ -408,9 +406,9 @@ await using _mcpAgent = await MCPAgent.from({
 
 [`Agent`](agent.md#agent).[`shutdown`](agent.md#agent#shutdown)
 
-***
+---
 
-### `abstract` MCPBase\<I, O>
+### `abstract` MCPBase\<I, O\>
 
 Agent is the base class for all agents.
 It provides a mechanism for defining input/output schemas and implementing processing logic,
@@ -419,13 +417,13 @@ serving as the foundation of the entire agent system.
 By extending the Agent class and implementing the process method, you can create custom agents
 with various capabilities:
 
-* Process structured input and output data
-* Validate data formats using schemas
-* Communicate between agents through contexts
-* Support streaming or non-streaming responses
-* Maintain memory of past interactions
-* Output in multiple formats (JSON/text)
-* Forward tasks to other agents
+- Process structured input and output data
+- Validate data formats using schemas
+- Communicate between agents through contexts
+- Support streaming or non-streaming responses
+- Maintain memory of past interactions
+- Output in multiple formats (JSON/text)
+- Forward tasks to other agents
 
 #### Example
 
@@ -451,36 +449,36 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Extends
 
-* [`Agent`](agent.md#agent)<`I`, `O`>
+- [`Agent`](agent.md#agent)\<`I`, `O`\>
 
 #### Extended by
 
-* [`MCPTool`](#mcptool)
-* [`MCPPrompt`](#mcpprompt)
-* [`MCPResource`](#mcpresource)
+- [`MCPTool`](#mcptool)
+- [`MCPPrompt`](#mcpprompt)
+- [`MCPResource`](#mcpresource)
 
 #### Type Parameters
 
 | Type Parameter                              | Description                               |
 | ------------------------------------------- | ----------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) | The input message type the agent accepts  |
-| `O` *extends* [`Message`](agent.md#message) | The output message type the agent returns |
+| `I` _extends_ [`Message`](agent.md#message) | The input message type the agent accepts  |
+| `O` _extends_ [`Message`](agent.md#message) | The output message type the agent returns |
 
 #### Constructors
 
 ##### Constructor
 
-> **new MCPBase**<`I`, `O`>(`options`): [`MCPBase`](#mcpbase)<`I`, `O`>
+> **new MCPBase**\<`I`, `O`\>(`options`): [`MCPBase`](#mcpbase)\<`I`, `O`\>
 
 ###### Parameters
 
 | Parameter | Type                                            |
 | --------- | ----------------------------------------------- |
-| `options` | [`MCPBaseOptions`](#mcpbaseoptions)<`I`, `O`> |
+| `options` | [`MCPBaseOptions`](#mcpbaseoptions)\<`I`, `O`\> |
 
 ###### Returns
 
-[`MCPBase`](#mcpbase)<`I`, `O`>
+[`MCPBase`](#mcpbase)\<`I`, `O`\>
 
 ###### Overrides
 
@@ -492,7 +490,7 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 > `protected` **client**: `ClientWithReconnect`
 
-***
+---
 
 ### MCPTool
 
@@ -503,13 +501,13 @@ serving as the foundation of the entire agent system.
 By extending the Agent class and implementing the process method, you can create custom agents
 with various capabilities:
 
-* Process structured input and output data
-* Validate data formats using schemas
-* Communicate between agents through contexts
-* Support streaming or non-streaming responses
-* Maintain memory of past interactions
-* Output in multiple formats (JSON/text)
-* Forward tasks to other agents
+- Process structured input and output data
+- Validate data formats using schemas
+- Communicate between agents through contexts
+- Support streaming or non-streaming responses
+- Maintain memory of past interactions
+- Output in multiple formats (JSON/text)
+- Forward tasks to other agents
 
 #### Example
 
@@ -535,23 +533,23 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Extends
 
-* [`MCPBase`](#mcpbase)<[`Message`](agent.md#message), `CallToolResult`>
+- [`MCPBase`](#mcpbase)\<[`Message`](agent.md#message), `CallToolResult`\>
 
 #### Methods
 
 ##### process()
 
-> **process**(`input`): `Promise`<{\[`key`: `string`]: `unknown`; `_meta?`: {\[`key`: `string`]: `unknown`; }; `content`: ({\[`key`: `string`]: `unknown`; `type`: `"text"`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"image"`; `data`: `string`; `mimeType`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"audio"`; `data`: `string`; `mimeType`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"resource"`; `resource`: {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; }; })\[]; `isError?`: `boolean`; }>
+> **process**(`input`): `Promise`\<\{[`key`: `string`]: `unknown`; `_meta?`: \{[`key`: `string`]: `unknown`; \}; `content`: (\{[`key`: `string`]: `unknown`; `type`: `"text"`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"image"`; `data`: `string`; `mimeType`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"audio"`; `data`: `string`; `mimeType`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"resource"`; `resource`: \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; \}; \})[]; `isError?`: `boolean`; \}\>
 
 Core processing method of the agent, must be implemented in subclasses
 
 This is the main functionality implementation of the agent, processing input and
 generating output. Can return various types of results:
 
-* Regular object response
-* Streaming response
-* Async generator
-* Another agent instance (transfer agent)
+- Regular object response
+- Streaming response
+- Async generator
+- Another agent instance (transfer agent)
 
 ###### Parameters
 
@@ -561,7 +559,7 @@ generating output. Can return various types of results:
 
 ###### Returns
 
-`Promise`<{\[`key`: `string`]: `unknown`; `_meta?`: {\[`key`: `string`]: `unknown`; }; `content`: ({\[`key`: `string`]: `unknown`; `type`: `"text"`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"image"`; `data`: `string`; `mimeType`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"audio"`; `data`: `string`; `mimeType`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"resource"`; `resource`: {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; }; })\[]; `isError?`: `boolean`; }>
+`Promise`\<\{[`key`: `string`]: `unknown`; `_meta?`: \{[`key`: `string`]: `unknown`; \}; `content`: (\{[`key`: `string`]: `unknown`; `type`: `"text"`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"image"`; `data`: `string`; `mimeType`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"audio"`; `data`: `string`; `mimeType`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"resource"`; `resource`: \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; \}; \})[]; `isError?`: `boolean`; \}\>
 
 Processing result
 
@@ -608,7 +606,7 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", undefined, { streaming: true });
+const stream = await agent.invoke("Hello", { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
@@ -625,7 +623,7 @@ Example of using an async generator:
 class AsyncGeneratorAgent extends Agent {
   async *process(
     _input: Message,
-    _context: Context,
+    _options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<Message> {
     // Use async generator to produce streaming results
     yield textDelta({ message: "This" });
@@ -642,7 +640,7 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", undefined, { streaming: true });
+const stream = await agent.invoke("Hello", { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
@@ -687,7 +685,7 @@ console.log(result); // { response: "This is a specialist response", expertise: 
 
 `MCPBase.process`
 
-***
+---
 
 ### MCPPrompt
 
@@ -698,13 +696,13 @@ serving as the foundation of the entire agent system.
 By extending the Agent class and implementing the process method, you can create custom agents
 with various capabilities:
 
-* Process structured input and output data
-* Validate data formats using schemas
-* Communicate between agents through contexts
-* Support streaming or non-streaming responses
-* Maintain memory of past interactions
-* Output in multiple formats (JSON/text)
-* Forward tasks to other agents
+- Process structured input and output data
+- Validate data formats using schemas
+- Communicate between agents through contexts
+- Support streaming or non-streaming responses
+- Maintain memory of past interactions
+- Output in multiple formats (JSON/text)
+- Forward tasks to other agents
 
 #### Example
 
@@ -730,23 +728,23 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Extends
 
-* [`MCPBase`](#mcpbase)<[`MCPPromptInput`](#mcppromptinput), `GetPromptResult`>
+- [`MCPBase`](#mcpbase)\<[`MCPPromptInput`](#mcppromptinput), `GetPromptResult`\>
 
 #### Methods
 
 ##### process()
 
-> **process**(`input`): `Promise`<{\[`key`: `string`]: `unknown`; `_meta?`: {\[`key`: `string`]: `unknown`; }; `description?`: `string`; `messages`: {\[`key`: `string`]: `unknown`; `role`: `"user"` | `"assistant"`; `content`: {\[`key`: `string`]: `unknown`; `type`: `"text"`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"image"`; `data`: `string`; `mimeType`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"audio"`; `data`: `string`; `mimeType`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"resource"`; `resource`: {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; }; }; }\[]; }>
+> **process**(`input`): `Promise`\<\{[`key`: `string`]: `unknown`; `_meta?`: \{[`key`: `string`]: `unknown`; \}; `description?`: `string`; `messages`: \{[`key`: `string`]: `unknown`; `role`: `"user"` \| `"assistant"`; `content`: \{[`key`: `string`]: `unknown`; `type`: `"text"`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"image"`; `data`: `string`; `mimeType`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"audio"`; `data`: `string`; `mimeType`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"resource"`; `resource`: \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; \}; \}; \}[]; \}\>
 
 Core processing method of the agent, must be implemented in subclasses
 
 This is the main functionality implementation of the agent, processing input and
 generating output. Can return various types of results:
 
-* Regular object response
-* Streaming response
-* Async generator
-* Another agent instance (transfer agent)
+- Regular object response
+- Streaming response
+- Async generator
+- Another agent instance (transfer agent)
 
 ###### Parameters
 
@@ -756,7 +754,7 @@ generating output. Can return various types of results:
 
 ###### Returns
 
-`Promise`<{\[`key`: `string`]: `unknown`; `_meta?`: {\[`key`: `string`]: `unknown`; }; `description?`: `string`; `messages`: {\[`key`: `string`]: `unknown`; `role`: `"user"` | `"assistant"`; `content`: {\[`key`: `string`]: `unknown`; `type`: `"text"`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"image"`; `data`: `string`; `mimeType`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"audio"`; `data`: `string`; `mimeType`: `string`; } | {\[`key`: `string`]: `unknown`; `type`: `"resource"`; `resource`: {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; }; }; }\[]; }>
+`Promise`\<\{[`key`: `string`]: `unknown`; `_meta?`: \{[`key`: `string`]: `unknown`; \}; `description?`: `string`; `messages`: \{[`key`: `string`]: `unknown`; `role`: `"user"` \| `"assistant"`; `content`: \{[`key`: `string`]: `unknown`; `type`: `"text"`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"image"`; `data`: `string`; `mimeType`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"audio"`; `data`: `string`; `mimeType`: `string`; \} \| \{[`key`: `string`]: `unknown`; `type`: `"resource"`; `resource`: \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; \}; \}; \}[]; \}\>
 
 Processing result
 
@@ -803,7 +801,7 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", undefined, { streaming: true });
+const stream = await agent.invoke("Hello", { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
@@ -820,7 +818,7 @@ Example of using an async generator:
 class AsyncGeneratorAgent extends Agent {
   async *process(
     _input: Message,
-    _context: Context,
+    _options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<Message> {
     // Use async generator to produce streaming results
     yield textDelta({ message: "This" });
@@ -837,7 +835,7 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", undefined, { streaming: true });
+const stream = await agent.invoke("Hello", { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
@@ -882,7 +880,7 @@ console.log(result); // { response: "This is a specialist response", expertise: 
 
 `MCPBase.process`
 
-***
+---
 
 ### MCPResource
 
@@ -893,13 +891,13 @@ serving as the foundation of the entire agent system.
 By extending the Agent class and implementing the process method, you can create custom agents
 with various capabilities:
 
-* Process structured input and output data
-* Validate data formats using schemas
-* Communicate between agents through contexts
-* Support streaming or non-streaming responses
-* Maintain memory of past interactions
-* Output in multiple formats (JSON/text)
-* Forward tasks to other agents
+- Process structured input and output data
+- Validate data formats using schemas
+- Communicate between agents through contexts
+- Support streaming or non-streaming responses
+- Maintain memory of past interactions
+- Output in multiple formats (JSON/text)
+- Forward tasks to other agents
 
 #### Example
 
@@ -925,7 +923,7 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Extends
 
-* [`MCPBase`](#mcpbase)<[`MCPPromptInput`](#mcppromptinput), `ReadResourceResult`>
+- [`MCPBase`](#mcpbase)\<[`MCPPromptInput`](#mcppromptinput), `ReadResourceResult`\>
 
 #### Constructors
 
@@ -957,17 +955,17 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 ##### process()
 
-> **process**(`input`): `Promise`<{\[`key`: `string`]: `unknown`; `_meta?`: {\[`key`: `string`]: `unknown`; }; `contents`: ({\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; })\[]; }>
+> **process**(`input`): `Promise`\<\{[`key`: `string`]: `unknown`; `_meta?`: \{[`key`: `string`]: `unknown`; \}; `contents`: (\{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; \})[]; \}\>
 
 Core processing method of the agent, must be implemented in subclasses
 
 This is the main functionality implementation of the agent, processing input and
 generating output. Can return various types of results:
 
-* Regular object response
-* Streaming response
-* Async generator
-* Another agent instance (transfer agent)
+- Regular object response
+- Streaming response
+- Async generator
+- Another agent instance (transfer agent)
 
 ###### Parameters
 
@@ -977,7 +975,7 @@ generating output. Can return various types of results:
 
 ###### Returns
 
-`Promise`<{\[`key`: `string`]: `unknown`; `_meta?`: {\[`key`: `string`]: `unknown`; }; `contents`: ({\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; } | {\[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; })\[]; }>
+`Promise`\<\{[`key`: `string`]: `unknown`; `_meta?`: \{[`key`: `string`]: `unknown`; \}; `contents`: (\{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `text`: `string`; \} \| \{[`key`: `string`]: `unknown`; `uri`: `string`; `mimeType?`: `string`; `blob`: `string`; \})[]; \}\>
 
 Processing result
 
@@ -1024,7 +1022,7 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", undefined, { streaming: true });
+const stream = await agent.invoke("Hello", { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
@@ -1041,7 +1039,7 @@ Example of using an async generator:
 class AsyncGeneratorAgent extends Agent {
   async *process(
     _input: Message,
-    _context: Context,
+    _options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<Message> {
     // Use async generator to produce streaming results
     yield textDelta({ message: "This" });
@@ -1058,7 +1056,7 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", undefined, { streaming: true });
+const stream = await agent.invoke("Hello", { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
@@ -1111,17 +1109,17 @@ Configuration options for an agent
 
 #### Extends
 
-* [`AgentOptions`](agent.md#agentoptions)
+- [`AgentOptions`](agent.md#agentoptions)
 
 #### Properties
 
 | Property                            | Type                            |
 | ----------------------------------- | ------------------------------- |
 | <a id="client"></a> `client`        | `Client`                        |
-| <a id="prompts"></a> `prompts?`     | [`MCPPrompt`](#mcpprompt)\[]     |
-| <a id="resources"></a> `resources?` | [`MCPResource`](#mcpresource)\[] |
+| <a id="prompts"></a> `prompts?`     | [`MCPPrompt`](#mcpprompt)[]     |
+| <a id="resources"></a> `resources?` | [`MCPResource`](#mcpresource)[] |
 
-***
+---
 
 ### ClientWithReconnectOptions
 
@@ -1129,31 +1127,31 @@ Configuration options for an agent
 
 | Property                                          | Type                                  |
 | ------------------------------------------------- | ------------------------------------- |
-| <a id="transportcreator"></a> `transportCreator?` | () => `PromiseOrValue`<`Transport`> |
+| <a id="transportcreator"></a> `transportCreator?` | () => `PromiseOrValue`\<`Transport`\> |
 | <a id="timeout-1"></a> `timeout?`                 | `number`                              |
 | <a id="maxreconnects-1"></a> `maxReconnects?`     | `number`                              |
 | <a id="shouldreconnect-1"></a> `shouldReconnect?` | (`error`) => `boolean`                |
 
-***
+---
 
-### MCPBaseOptions\<I, O>
+### MCPBaseOptions\<I, O\>
 
 Configuration options for an agent
 
 #### Extends
 
-* [`AgentOptions`](agent.md#agentoptions)<`I`, `O`>
+- [`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>
 
 #### Extended by
 
-* [`MCPResourceOptions`](#mcpresourceoptions)
+- [`MCPResourceOptions`](#mcpresourceoptions)
 
 #### Type Parameters
 
 | Type Parameter                              | Default type                  | Description                   |
 | ------------------------------------------- | ----------------------------- | ----------------------------- |
-| `I` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent input message type  |
-| `O` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent output message type |
+| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent input message type  |
+| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent output message type |
 
 #### Properties
 
@@ -1161,7 +1159,7 @@ Configuration options for an agent
 | ------------------------------ | --------------------- |
 | <a id="client-2"></a> `client` | `ClientWithReconnect` |
 
-***
+---
 
 ### MCPPromptInput
 
@@ -1169,13 +1167,13 @@ Basic message type that can contain any key-value pairs
 
 #### Extends
 
-* [`Message`](agent.md#message)
+- [`Message`](agent.md#message)
 
 #### Indexable
 
-\[`key`: `string`]: `string`
+\[`key`: `string`\]: `string`
 
-***
+---
 
 ### MCPResourceOptions
 
@@ -1183,7 +1181,7 @@ Configuration options for an agent
 
 #### Extends
 
-* [`MCPBaseOptions`](#mcpbaseoptions)<[`MCPPromptInput`](#mcppromptinput), `ReadResourceResult`>
+- [`MCPBaseOptions`](#mcpbaseoptions)\<[`MCPPromptInput`](#mcppromptinput), `ReadResourceResult`\>
 
 #### Properties
 
@@ -1195,21 +1193,21 @@ Configuration options for an agent
 
 ### MCPServerOptions
 
-> **MCPServerOptions** = [`SSEServerParameters`](#sseserverparameters) | `StdioServerParameters`
+> **MCPServerOptions** = [`SSEServerParameters`](#sseserverparameters) \| `StdioServerParameters`
 
-***
+---
 
 ### SSEServerParameters
 
-> **SSEServerParameters** = { `url`: `string`; `transport?`: `"sse"` | `"streamableHttp"`; `opts?`: `SSEClientTransportOptions` | `StreamableHTTPClientTransportOptions`; `timeout?`: `number`; `maxReconnects?`: `number`; `shouldReconnect?`: (`error`) => `boolean`; }
+> **SSEServerParameters** = \{ `url`: `string`; `transport?`: `"sse"` \| `"streamableHttp"`; `opts?`: `SSEClientTransportOptions` \| `StreamableHTTPClientTransportOptions`; `timeout?`: `number`; `maxReconnects?`: `number`; `shouldReconnect?`: (`error`) => `boolean`; \}
 
 #### Properties
 
 | Property                                        | Type                                                                  | Description                                                                                                                             |
 | ----------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | <a id="url"></a> `url`                          | `string`                                                              | -                                                                                                                                       |
-| <a id="transport"></a> `transport?`             | `"sse"` | `"streamableHttp"`                                         | Whether to use the StreamableHTTPClientTransport instead of the SSEClientTransport. **Default** `"sse"`                                 |
-| <a id="opts"></a> `opts?`                       | `SSEClientTransportOptions` | `StreamableHTTPClientTransportOptions` | Additional options to pass to the SSEClientTransport or StreamableHTTPClientTransport.                                                  |
+| <a id="transport"></a> `transport?`             | `"sse"` \| `"streamableHttp"`                                         | Whether to use the StreamableHTTPClientTransport instead of the SSEClientTransport. **Default** `"sse"`                                 |
+| <a id="opts"></a> `opts?`                       | `SSEClientTransportOptions` \| `StreamableHTTPClientTransportOptions` | Additional options to pass to the SSEClientTransport or StreamableHTTPClientTransport.                                                  |
 | <a id="timeout"></a> `timeout?`                 | `number`                                                              | The timeout for requests to the server, in milliseconds. **Default** `60000`                                                            |
 | <a id="maxreconnects"></a> `maxReconnects?`     | `number`                                                              | Whether to automatically reconnect to the server if the connection is lost. **Default** `10 set to 0 to disable automatic reconnection` |
 | <a id="shouldreconnect"></a> `shouldReconnect?` | (`error`) => `boolean`                                                | A function that determines whether to reconnect to the server based on the error. default to reconnect on all errors.                   |

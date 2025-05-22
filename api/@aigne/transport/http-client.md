@@ -1,5 +1,3 @@
-[Documentation](../../README.md) / [@aigne/transport](README.md) / http-client
-
 # http-client
 
 ## Classes
@@ -73,7 +71,7 @@ Configuration options for connecting to the AIGNE server
 
 ###### Call Signature
 
-> **invoke**<`I`, `O`>(`agent`, `input`, `options?`): `Promise`<`O`>
+> **invoke**\<`I`, `O`\>(`agent`, `input`, `options?`): `Promise`\<`O`\>
 
 Invokes an agent in non-streaming mode and returns the complete response.
 
@@ -81,20 +79,20 @@ Invokes an agent in non-streaming mode and returns the complete response.
 
 | Type Parameter                                             |
 | ---------------------------------------------------------- |
-| `I` *extends* [`Message`](../core/agents/agent.md#message) |
-| `O` *extends* [`Message`](../core/agents/agent.md#message) |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter  | Type                                                                                           | Description                                                    |
 | ---------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | `agent`    | `string`                                                                                       | Name of the agent to invoke                                    |
-| `input`    | `string` | `I`                                                                                | Input message for the agent                                    |
-| `options?` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & { `streaming?`: `false`; } | Options with streaming mode explicitly set to false or omitted |
+| `input`    | `string` \| `I`                                                                                | Input message for the agent                                    |
+| `options?` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & \{ `streaming?`: `false`; \} | Options with streaming mode explicitly set to false or omitted |
 
 ###### Returns
 
-`Promise`<`O`>
+`Promise`\<`O`\>
 
 The complete agent response
 
@@ -112,7 +110,7 @@ console.log(response); // Output: {$message: "Hello world!"}
 
 ###### Call Signature
 
-> **invoke**<`I`, `O`>(`agent`, `input`, `options`): `Promise`<[`AgentResponseStream`](../core/agents/agent.md#agentresponsestream)<`O`>>
+> **invoke**\<`I`, `O`\>(`agent`, `input`, `options`): `Promise`\<[`AgentResponseStream`](../core/agents/agent.md#agentresponsestream)\<`O`\>\>
 
 Invokes an agent with streaming mode enabled and returns a stream of response chunks.
 
@@ -120,20 +118,20 @@ Invokes an agent with streaming mode enabled and returns a stream of response ch
 
 | Type Parameter                                             |
 | ---------------------------------------------------------- |
-| `I` *extends* [`Message`](../core/agents/agent.md#message) |
-| `O` *extends* [`Message`](../core/agents/agent.md#message) |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                                                                         | Description                                        |
 | --------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------- |
 | `agent`   | `string`                                                                                     | Name of the agent to invoke                        |
-| `input`   | `string` | `I`                                                                              | Input message for the agent                        |
-| `options` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & { `streaming`: `true`; } | Options with streaming mode explicitly set to true |
+| `input`   | `string` \| `I`                                                                              | Input message for the agent                        |
+| `options` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & \{ `streaming`: `true`; \} | Options with streaming mode explicitly set to true |
 
 ###### Returns
 
-`Promise`<[`AgentResponseStream`](../core/agents/agent.md#agentresponsestream)<`O`>>
+`Promise`\<[`AgentResponseStream`](../core/agents/agent.md#agentresponsestream)\<`O`\>\>
 
 A stream of agent response chunks
 
@@ -160,7 +158,7 @@ console.log(text); // Output: "Hello world!"
 
 ###### Call Signature
 
-> **invoke**<`I`, `O`>(`agent`, `input`, `options?`): `Promise`<[`AgentResponse`](../core/agents/agent.md#agentresponse)<`O`>>
+> **invoke**\<`I`, `O`\>(`agent`, `input`, `options?`): `Promise`\<[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\>\>
 
 Invokes an agent with the given input and options.
 
@@ -168,20 +166,20 @@ Invokes an agent with the given input and options.
 
 | Type Parameter                                             |
 | ---------------------------------------------------------- |
-| `I` *extends* [`Message`](../core/agents/agent.md#message) |
-| `O` *extends* [`Message`](../core/agents/agent.md#message) |
+| `I` _extends_ [`Message`](../core/agents/agent.md#message) |
+| `O` _extends_ [`Message`](../core/agents/agent.md#message) |
 
 ###### Parameters
 
 | Parameter  | Type                                                            | Description                 |
 | ---------- | --------------------------------------------------------------- | --------------------------- |
 | `agent`    | `string`                                                        | Name of the agent to invoke |
-| `input`    | `string` | `I`                                                 | Input message for the agent |
+| `input`    | `string` \| `I`                                                 | Input message for the agent |
 | `options?` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) | Options for the invocation  |
 
 ###### Returns
 
-`Promise`<[`AgentResponse`](../core/agents/agent.md#agentresponse)<`O`>>
+`Promise`\<[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\>\>
 
 Either a complete response or a response stream depending on the streaming option
 
@@ -197,7 +195,7 @@ Configuration options for the AIGNEHTTPClient.
 | ---------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
 | <a id="url"></a> `url` | `string` | The URL of the AIGNE server to connect to. This should point to the base endpoint where the AIGNEServer is hosted. |
 
-***
+---
 
 ### AIGNEHTTPClientInvokeOptions
 
@@ -206,10 +204,10 @@ Extends the standard AgentInvokeOptions with client-specific options.
 
 #### Extends
 
-* [`AgentInvokeOptions`](../core/agents/agent.md#agentinvokeoptions)
+- `Omit`\<[`AgentInvokeOptions`](../core/agents/agent.md#agentinvokeoptions), `"context"`\>
 
 #### Properties
 
 | Property                                  | Type                       | Description                                                                                                                           |
 | ----------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="fetchoptions"></a> `fetchOptions?` | `Partial`<`RequestInit`> | Additional fetch API options to customize the HTTP request. These options will be merged with the default options used by the client. |
+| <a id="fetchoptions"></a> `fetchOptions?` | `Partial`\<`RequestInit`\> | Additional fetch API options to customize the HTTP request. These options will be merged with the default options used by the client. |

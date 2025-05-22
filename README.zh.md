@@ -56,7 +56,7 @@ const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-function transfer_to_b() {
+function transferToB() {
   return agentB;
 }
 
@@ -64,7 +64,7 @@ const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  skills: [transfer_to_b],
+  skills: [transferToB],
 });
 
 const agentB = AIAgent.from({
@@ -110,10 +110,7 @@ console.log(result2);
 
 ## 文档
 
-* [Cookbook](./cookbook.md) ([中文](./cookbook.zh.md)): AIGNE Framework API 使用的实用方案和模式
-* [CLI 指南](./cli.md) ([中文](./cli.zh.md)): AIGNE CLI 工具的全面指南
-* [代理开发指南](./agent-development.md) ([中文](./agent-development.zh.md)): 使用 YAML/JS 配置文件开发 AIGNE 代理的指南
-* [API 参考](https://aigne-io.github.io/#/api/@aigne/core/README)
+[AIGNE Framework 文档](https://aigne-io.github.io/aigne-framework) 提供了全面的 API 参考和使用指南，帮助开发者快速上手。
 
 ## 架构
 

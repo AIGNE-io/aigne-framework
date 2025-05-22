@@ -1,5 +1,3 @@
-[Documentation](../../../README.md) / [@aigne/core](../README.md) / agents/ai-agent
-
 # agents/ai-agent
 
 ## Enumerations
@@ -21,7 +19,7 @@ Controls how the agent decides to use tools during execution
 
 ## Classes
 
-### AIAgent\<I, O>
+### AIAgent\<I, O\>
 
 AI-powered agent that leverages language models
 
@@ -30,11 +28,11 @@ with support for streaming, function calling, and tool usage.
 
 Key features:
 
-* Connect to any language model
-* Use customizable instructions and prompts
-* Execute tools/function calls
-* Support streaming responses
-* Router mode for specialized agents
+- Connect to any language model
+- Use customizable instructions and prompts
+- Execute tools/function calls
+- Support streaming responses
+- Router mode for specialized agents
 
 #### Example
 
@@ -56,20 +54,20 @@ console.log(result); // Expected output: { $message: "Hello, How can I help you?
 
 #### Extends
 
-* [`Agent`](agent.md#agent)<`I`, `O`>
+- [`Agent`](agent.md#agent)\<`I`, `O`\>
 
 #### Type Parameters
 
 | Type Parameter                              | Default type                  | Description                               |
 | ------------------------------------------- | ----------------------------- | ----------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
-| `O` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
+| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
+| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
 
 #### Constructors
 
 ##### Constructor
 
-> **new AIAgent**<`I`, `O`>(`options`): [`AIAgent`](#aiagent)<`I`, `O`>
+> **new AIAgent**\<`I`, `O`\>(`options`): [`AIAgent`](#aiagent)\<`I`, `O`\>
 
 Create an AIAgent instance
 
@@ -77,11 +75,11 @@ Create an AIAgent instance
 
 | Parameter | Type                                            | Description                            |
 | --------- | ----------------------------------------------- | -------------------------------------- |
-| `options` | [`AIAgentOptions`](#aiagentoptions)<`I`, `O`> | Configuration options for the AI agent |
+| `options` | [`AIAgentOptions`](#aiagentoptions)\<`I`, `O`\> | Configuration options for the AI agent |
 
 ###### Returns
 
-[`AIAgent`](#aiagent)<`I`, `O`>
+[`AIAgent`](#aiagent)\<`I`, `O`\>
 
 ###### Overrides
 
@@ -166,7 +164,7 @@ console.log(result); // Expected output: { greeting: "Hello, How can I help you?
 
 ##### toolChoice?
 
-> `optional` **toolChoice**: [`Agent`](agent.md#agent)<[`Message`](agent.md#message), [`Message`](agent.md#message)> | [`AIAgentToolChoice`](#aiagenttoolchoice)
+> `optional` **toolChoice**: [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> \| [`AIAgentToolChoice`](#aiagenttoolchoice)
 
 Controls how the agent uses tools during execution
 
@@ -315,7 +313,7 @@ This enables the agent to explicitly interact with its memories.
 Custom prompt template for formatting memory content
 
 Allows customization of how memories are presented to the AI model.
-If not provided, the default template from MEMORY\_MESSAGE\_TEMPLATE will be used.
+If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
 
 The template receives a {{memories}} variable containing serialized memory content.
 
@@ -336,7 +334,7 @@ true;
 
 ##### from()
 
-> `static` **from**<`I`, `O`>(`options`): [`AIAgent`](#aiagent)<`I`, `O`>
+> `static` **from**\<`I`, `O`\>(`options`): [`AIAgent`](#aiagent)\<`I`, `O`\>
 
 Create an AIAgent with the specified options
 
@@ -346,18 +344,18 @@ Factory method that provides a convenient way to create new AI agents
 
 | Type Parameter                              |
 | ------------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) |
-| `O` *extends* [`Message`](agent.md#message) |
+| `I` _extends_ [`Message`](agent.md#message) |
+| `O` _extends_ [`Message`](agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                            | Description                            |
 | --------- | ----------------------------------------------- | -------------------------------------- |
-| `options` | [`AIAgentOptions`](#aiagentoptions)<`I`, `O`> | Configuration options for the AI agent |
+| `options` | [`AIAgentOptions`](#aiagentoptions)\<`I`, `O`\> | Configuration options for the AI agent |
 
 ###### Returns
 
-[`AIAgent`](#aiagent)<`I`, `O`>
+[`AIAgent`](#aiagent)\<`I`, `O`\>
 
 A new AIAgent instance
 
@@ -384,20 +382,20 @@ console.log(result); // Expected output: { $message: "10 factorial is 3628800." 
 
 ##### process()
 
-> `protected` **process**(`input`, `context`): [`AgentProcessAsyncGenerator`](agent.md#agentprocessasyncgenerator)<`O`>
+> `protected` **process**(`input`, `options`): [`AgentProcessAsyncGenerator`](agent.md#agentprocessasyncgenerator)\<`O`\>
 
 Process an input message and generate a response
 
 ###### Parameters
 
-| Parameter | Type      |
-| --------- | --------- |
-| `input`   | `I`       |
-| `context` | `Context` |
+| Parameter | Type                                                |
+| --------- | --------------------------------------------------- |
+| `input`   | `I`                                                 |
+| `options` | [`AgentInvokeOptions`](agent.md#agentinvokeoptions) |
 
 ###### Returns
 
-[`AgentProcessAsyncGenerator`](agent.md#agentprocessasyncgenerator)<`O`>
+[`AgentProcessAsyncGenerator`](agent.md#agentprocessasyncgenerator)\<`O`\>
 
 ###### Overrides
 
@@ -405,7 +403,7 @@ Process an input message and generate a response
 
 ##### onGuideRailError()
 
-> `protected` **onGuideRailError**(`error`): `Promise`<[`GuideRailAgentOutput`](guide-rail-agent.md#guiderailagentoutput) | `O`>
+> `protected` **onGuideRailError**(`error`): `Promise`\<[`GuideRailAgentOutput`](guide-rail-agent.md#guiderailagentoutput) \| `O`\>
 
 Handle errors detected by GuideRail agents
 
@@ -413,10 +411,10 @@ This method is called when a GuideRail agent aborts the process, providing
 a way for agents to customize error handling behavior. By default, it simply
 returns the original error, but subclasses can override this method to:
 
-* Transform the error into a more specific response
-* Apply recovery strategies
-* Log or report the error in a custom format
-* Return a fallback output instead of an error
+- Transform the error into a more specific response
+- Apply recovery strategies
+- Log or report the error in a custom format
+- Return a fallback output instead of an error
 
 ###### Parameters
 
@@ -426,7 +424,7 @@ returns the original error, but subclasses can override this method to:
 
 ###### Returns
 
-`Promise`<[`GuideRailAgentOutput`](guide-rail-agent.md#guiderailagentoutput) | `O`>
+`Promise`\<[`GuideRailAgentOutput`](guide-rail-agent.md#guiderailagentoutput) \| `O`\>
 
 Either the original/modified error or a substitute output object
 which will be tagged with $status: "GuideRailError"
@@ -437,7 +435,7 @@ which will be tagged with $status: "GuideRailError"
 
 ##### \_processRouter()
 
-> `protected` **\_processRouter**(`input`, `model`, `modelInput`, `context`, `toolsMap`): [`AgentProcessAsyncGenerator`](agent.md#agentprocessasyncgenerator)<`O`>
+> `protected` **\_processRouter**(`input`, `model`, `modelInput`, `options`, `toolsMap`): [`AgentProcessAsyncGenerator`](agent.md#agentprocessasyncgenerator)\<`O`\>
 
 Process router mode requests
 
@@ -451,16 +449,16 @@ which tool to use, then routes the request directly to that tool
 | `input`      | `I`                                                                                                          |
 | `model`      | `ChatModel`                                                                                                  |
 | `modelInput` | `ChatModelInput`                                                                                             |
-| `context`    | `Context`                                                                                                    |
-| `toolsMap`   | `Map`<`string`, [`Agent`](agent.md#agent)<[`Message`](agent.md#message), [`Message`](agent.md#message)>> |
+| `options`    | [`AgentInvokeOptions`](agent.md#agentinvokeoptions)                                                          |
+| `toolsMap`   | `Map`\<`string`, [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\>\> |
 
 ###### Returns
 
-[`AgentProcessAsyncGenerator`](agent.md#agentprocessasyncgenerator)<`O`>
+[`AgentProcessAsyncGenerator`](agent.md#agentprocessasyncgenerator)\<`O`\>
 
 ## Interfaces
 
-### AIAgentOptions\<I, O>
+### AIAgentOptions\<I, O\>
 
 Configuration options for an AI Agent
 
@@ -469,24 +467,24 @@ like model configuration, prompt instructions, and tool choice.
 
 #### Extends
 
-* `Omit`<[`AgentOptions`](agent.md#agentoptions)<`I`, `O`>, `"memory"`>
+- `Omit`\<[`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>, `"memory"`\>
 
 #### Type Parameters
 
 | Type Parameter                              | Default type                  | Description                               |
 | ------------------------------------------- | ----------------------------- | ----------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
-| `O` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
+| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
+| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
 
 #### Properties
 
 | Property                                                  | Type                                                                                                                                   | Description                                                                                                                                                                                                                                                                                   |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <a id="model"></a> `model?`                               | `ChatModel`                                                                                                                            | The language model to use for this agent If not provided, the agent will use the model from the context                                                                                                                                                                                       |
-| <a id="instructions"></a> `instructions?`                 | `string` | `PromptBuilder`                                                                                                            | Instructions to guide the AI model's behavior Can be a simple string or a full PromptBuilder instance for more complex prompt templates                                                                                                                                                       |
+| <a id="instructions"></a> `instructions?`                 | `string` \| `PromptBuilder`                                                                                                            | Instructions to guide the AI model's behavior Can be a simple string or a full PromptBuilder instance for more complex prompt templates                                                                                                                                                       |
 | <a id="outputkey"></a> `outputKey?`                       | `string`                                                                                                                               | Custom key to use for text output in the response Defaults to $message if not specified                                                                                                                                                                                                       |
-| <a id="toolchoice"></a> `toolChoice?`                     | [`Agent`](agent.md#agent)<[`Message`](agent.md#message), [`Message`](agent.md#message)> | [`AIAgentToolChoice`](#aiagenttoolchoice) | Controls how the agent uses tools during execution **Default** `AIAgentToolChoice.auto`                                                                                                                                                                                                       |
+| <a id="toolchoice"></a> `toolChoice?`                     | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> \| [`AIAgentToolChoice`](#aiagenttoolchoice) | Controls how the agent uses tools during execution **Default** `AIAgentToolChoice.auto`                                                                                                                                                                                                       |
 | <a id="catchtoolserror"></a> `catchToolsError?`           | `boolean`                                                                                                                              | Whether to catch errors from tool execution and continue processing. If set to false, the agent will throw an error if a tool fails. **Default** `true`                                                                                                                                       |
 | <a id="memoryagentsastools"></a> `memoryAgentsAsTools?`   | `boolean`                                                                                                                              | Whether to include memory agents as tools for the AI model When set to true, memory agents will be made available as tools that the model can call directly to retrieve or store information. This enables the agent to explicitly interact with its memories. **Default** `false`            |
-| <a id="memoryprompttemplate"></a> `memoryPromptTemplate?` | `string`                                                                                                                               | Custom prompt template for formatting memory content Allows customization of how memories are presented to the AI model. If not provided, the default template from MEMORY\_MESSAGE\_TEMPLATE will be used. The template receives a {{memories}} variable containing serialized memory content. |
-| <a id="memory"></a> `memory?`                             | `true` | [`MemoryAgent`](../memory.md#memoryagent) | [`MemoryAgent`](../memory.md#memoryagent)\[] | `DefaultMemoryOptions`           | -                                                                                                                                                                                                                                                                                             |
+| <a id="memoryprompttemplate"></a> `memoryPromptTemplate?` | `string`                                                                                                                               | Custom prompt template for formatting memory content Allows customization of how memories are presented to the AI model. If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used. The template receives a {{memories}} variable containing serialized memory content. |
+| <a id="memory"></a> `memory?`                             | `true` \| [`MemoryAgent`](../memory.md#memoryagent) \| [`MemoryAgent`](../memory.md#memoryagent)[] \| `DefaultMemoryOptions`           | -                                                                                                                                                                                                                                                                                             |

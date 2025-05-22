@@ -1,5 +1,3 @@
-[Documentation](../../README.md) / [@aigne/transport](README.md) / http-server
-
 # http-server
 
 ## Classes
@@ -12,7 +10,7 @@ This allows error responses to include appropriate HTTP status codes.
 
 #### Extends
 
-* `Error`
+- `Error`
 
 #### Constructors
 
@@ -45,7 +43,7 @@ Creates a new ServerError instance.
 
 The HTTP status code for this error (e.g., 400, 404, 500)
 
-***
+---
 
 ### AIGNEHTTPServer
 
@@ -156,26 +154,27 @@ Configuration options for the server
 
 ###### Call Signature
 
-> **invoke**(`request`): `Promise`<`Response`>
+> **invoke**(`request`, `options?`): `Promise`\<`Response`\>
 
 Invokes an agent with the provided input and returns a standard web Response.
 This method serves as the primary API endpoint for agent invocation.
 
 The request can be provided in various formats to support different integration scenarios:
 
-* As a pre-parsed JavaScript object
-* As a Fetch API Request instance (for modern web frameworks)
-* As a Node.js IncomingMessage (for Express, Fastify, etc.)
+- As a pre-parsed JavaScript object
+- As a Fetch API Request instance (for modern web frameworks)
+- As a Node.js IncomingMessage (for Express, Fastify, etc.)
 
 ###### Parameters
 
-| Parameter | Type                                                              | Description                                          |
-| --------- | ----------------------------------------------------------------- | ---------------------------------------------------- |
-| `request` | `Record`<`string`, `unknown`> | `Request` | `IncomingMessage` | The agent invocation request in any supported format |
+| Parameter  | Type                                                                                                                      | Description                                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `request`  | `Record`\<`string`, `unknown`\> \| `Request` \| `IncomingMessage`                                                         | The agent invocation request in any supported format |
+| `options?` | `ServerResponse`\<`IncomingMessage`\> \| [`AIGNEHTTPServerInvokeOptions`](#aignehttpserverinvokeoptions)\<`UserContext`\> | -                                                    |
 
 ###### Returns
 
-`Promise`<`Response`>
+`Promise`\<`Response`\>
 
 A web standard Response object that can be returned directly in frameworks
 like Hono, Next.js, or any Fetch API compatible environment
@@ -214,7 +213,7 @@ console.log(response); // Output: {$message: "Hello world!"}
 
 ###### Call Signature
 
-> **invoke**(`request`, `response`): `Promise`<`void`>
+> **invoke**(`request`, `response`, `options?`): `Promise`\<`void`\>
 
 Invokes an agent with the provided input and streams the response to a Node.js ServerResponse.
 This overload is specifically designed for Node.js HTTP server environments.
@@ -224,14 +223,15 @@ responses based on the options specified in the request.
 
 ###### Parameters
 
-| Parameter  | Type                                                              | Description                                                |
-| ---------- | ----------------------------------------------------------------- | ---------------------------------------------------------- |
-| `request`  | `Record`<`string`, `unknown`> | `Request` | `IncomingMessage` | The agent invocation request in any supported format       |
-| `response` | `ServerResponse`                                                  | The Node.js ServerResponse object to write the response to |
+| Parameter  | Type                                                                             | Description                                                |
+| ---------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `request`  | `Record`\<`string`, `unknown`\> \| `Request` \| `IncomingMessage`                | The agent invocation request in any supported format       |
+| `response` | `ServerResponse`                                                                 | The Node.js ServerResponse object to write the response to |
+| `options?` | [`AIGNEHTTPServerInvokeOptions`](#aignehttpserverinvokeoptions)\<`UserContext`\> | -                                                          |
 
 ###### Returns
 
-`Promise`<`void`>
+`Promise`\<`void`\>
 
 ###### Example
 
@@ -279,3 +279,19 @@ request parsing, payload limits, and response handling.
 | Property                                        | Type     | Description                                                                                                                                                                                                                                                                                                       |
 | ----------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <a id="maximumbodysize"></a> `maximumBodySize?` | `string` | Maximum body size for incoming HTTP requests. This controls the upper limit of request payload size when parsing raw HTTP requests. Only used when working with Node.js IncomingMessage objects that don't already have a pre-parsed body property (e.g., when not using Express middleware). **Default** `"4mb"` |
+
+---
+
+### AIGNEHTTPServerInvokeOptions\<U\>
+
+#### Type Parameters
+
+| Type Parameter              | Default type  |
+| --------------------------- | ------------- |
+| `U` _extends_ `UserContext` | `UserContext` |
+
+#### Properties
+
+| Property                                | Type |
+| --------------------------------------- | ---- |
+| <a id="usercontext"></a> `userContext?` | `U`  |

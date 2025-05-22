@@ -27,7 +27,12 @@
 const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
-  memory: true,
+  memory: {
+    storage: {
+      path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+      getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
+    },
+  },
 });
 ```
 
@@ -35,7 +40,7 @@ const agent = AIAgent.from({
 
 * **命名重要性**：`name` 参数为 Agent 提供唯一标识符，在多 Agent 环境中尤为重要
 * **行为定义**：`instructions` 定义 Agent 的角色和行为准则
-* **状态保持**：`memory: true` 启用对话记忆功能，使 Agent 能够：
+* **状态保持**：`memory` 配置启用对话记忆功能，使 Agent 能够：
   * 在多次 API 调用之间保持上下文连贯性
   * 引用之前对话中提到的信息
   * 构建持续性的用户交互体验
@@ -65,7 +70,8 @@ const server = new AIGNEHTTPServer(aigne);
 const app = express();
 
 app.post("/api/chat", async (req, res) => {
-  await server.invoke(req, res);
+  const userId = "user_123"; // Example user ID, replace with actual logic to get user ID, such as `req.user.id` in a real application
+  await server.invoke(req, res, { userContext: { userId } });
 });
 
 const port = 3000;
@@ -99,7 +105,12 @@ import express from "express";
 const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
-  memory: true,
+  memory: {
+    storage: {
+      path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+      getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
+    },
+  },
 });
 
 const aigne = new AIGNE({
@@ -112,7 +123,8 @@ const server = new AIGNEHTTPServer(aigne);
 const app = express();
 
 app.post("/api/chat", async (req, res) => {
-  await server.invoke(req, res);
+  const userId = "user_123"; // Example user ID, replace with actual logic to get user ID, such as `req.user.id` in a real application
+  await server.invoke(req, res, { userContext: { userId } });
 });
 
 const port = 3000;

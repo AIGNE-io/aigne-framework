@@ -1,5 +1,3 @@
-[Documentation](../../../README.md) / [@aigne/core](../README.md) / agents/guide-rail-agent
-
 # agents/guide-rail-agent
 
 ## Interfaces
@@ -13,11 +11,11 @@ validate, transform, or control the flow of messages between other agents.
 
 #### Extends
 
-* [`Message`](agent.md#message)
+- [`Message`](agent.md#message)
 
 #### Indexable
 
-\[`key`: `string`]: `unknown`
+\[`key`: `string`\]: `unknown`
 
 #### Properties
 
@@ -26,7 +24,7 @@ validate, transform, or control the flow of messages between other agents.
 | <a id="input"></a> `input?`   | `unknown` | The input data to be processed This is the original message that would be sent to the target agent                                                 |
 | <a id="output"></a> `output?` | `unknown` | The expected output data This is what the target agent is expected to produce, allowing the GuideRail agent to validate or transform the data flow |
 
-***
+---
 
 ### GuideRailAgentOutput
 
@@ -38,11 +36,11 @@ the execution flow of the agent system.
 
 #### Extends
 
-* [`Message`](agent.md#message)
+- [`Message`](agent.md#message)
 
 #### Indexable
 
-\[`key`: `string`]: `unknown`
+\[`key`: `string`\]: `unknown`
 
 #### Properties
 
@@ -55,7 +53,7 @@ the execution flow of the agent system.
 
 ### GuideRailAgent
 
-> **GuideRailAgent** = [`Agent`](agent.md#agent)<[`GuideRailAgentInput`](#guiderailagentinput), [`GuideRailAgentOutput`](#guiderailagentoutput)>
+> **GuideRailAgent** = [`Agent`](agent.md#agent)\<[`GuideRailAgentInput`](#guiderailagentinput), [`GuideRailAgentOutput`](#guiderailagentoutput)\>
 
 GuideRail agent type definition
 
@@ -65,13 +63,13 @@ quality, or implement business logic validations.
 
 Use GuideRail agents when you need to:
 
-* Validate inputs or outputs against specific criteria
-* Enforce security or safety policies
-* Implement business rules that control agent interactions
-* Monitor and audit agent behavior
+- Validate inputs or outputs against specific criteria
+- Enforce security or safety policies
+- Implement business rules that control agent interactions
+- Monitor and audit agent behavior
 
 ## Variables
 
 ### guideRailAgentOptions
 
-> `const` **guideRailAgentOptions**: [`AgentOptions`](agent.md#agentoptions)<[`GuideRailAgentInput`](#guiderailagentinput), [`GuideRailAgentOutput`](#guiderailagentoutput)>
+> `const` **guideRailAgentOptions**: [`AgentOptions`](agent.md#agentoptions)\<[`GuideRailAgentInput`](#guiderailagentinput), [`GuideRailAgentOutput`](#guiderailagentoutput)\>

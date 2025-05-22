@@ -2,6 +2,13 @@
 
 AIGNE Framework 让你用极简代码构建强大的 AI Agent 和工作流。跟着下面的步骤，马上体验 AI 魔法，享受"写一点点，玩很大"的乐趣吧！✨
 
+## 环境要求
+
+在开始安装之前，请确保你的本地环境满足以下条件：
+
+* [Node.js](https://nodejs.org) v22.14.0 或更高版本
+* 支持 npm/[yarn](https://yarnpkg.com)/[pnpm](https://pnpm.io) 中任意一种包管理工具
+
 ## 安装 🛠️
 
 第一步，安装依赖！只需一条命令，立刻拥有构建 AI Agent 的全部能力。支持 npm/yarn/pnpm，随你喜欢。

@@ -56,7 +56,7 @@ const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-function transfer_to_b() {
+function transferToB() {
   return agentB;
 }
 
@@ -64,7 +64,7 @@ const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
   outputKey: "A",
-  skills: [transfer_to_b],
+  skills: [transferToB],
 });
 
 const agentB = AIAgent.from({
@@ -110,10 +110,7 @@ console.log(result2);
 
 ## Documentation
 
-* [Cookbook](./cookbook.md) ([中文](./cookbook.zh.md)): Practical recipes and patterns for AIGNE Framework API usage
-* [CLI Guide](./cli.md) ([中文](./cli.zh.md)): Comprehensive guide to the AIGNE CLI tool
-* [Agent Development Guide](./agent-development.md) ([中文](./agent-development.zh.md)): Guide to developing AIGNE agents using YAML/JS configuration files
-* [API References](https://aigne-io.github.io/#/api/@aigne/core/README)
+[AIGNE Framework Documentation](https://aigne-io.github.io/aigne-framework) provides comprehensive guides and API references to help developers quickly get started and master the framework.
 
 ## Architecture
 

@@ -1,10 +1,8 @@
-[Documentation](../../../README.md) / [@aigne/core](../README.md) / agents/user-agent
-
 # agents/user-agent
 
 ## Classes
 
-### UserAgent\<I, O>
+### UserAgent\<I, O\>
 
 Agent is the base class for all agents.
 It provides a mechanism for defining input/output schemas and implementing processing logic,
@@ -13,13 +11,13 @@ serving as the foundation of the entire agent system.
 By extending the Agent class and implementing the process method, you can create custom agents
 with various capabilities:
 
-* Process structured input and output data
-* Validate data formats using schemas
-* Communicate between agents through contexts
-* Support streaming or non-streaming responses
-* Maintain memory of past interactions
-* Output in multiple formats (JSON/text)
-* Forward tasks to other agents
+- Process structured input and output data
+- Validate data formats using schemas
+- Communicate between agents through contexts
+- Support streaming or non-streaming responses
+- Maintain memory of past interactions
+- Output in multiple formats (JSON/text)
+- Forward tasks to other agents
 
 #### Example
 
@@ -45,30 +43,30 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Extends
 
-* [`Agent`](agent.md#agent)<`I`, `O`>
+- [`Agent`](agent.md#agent)\<`I`, `O`\>
 
 #### Type Parameters
 
 | Type Parameter                              | Default type                  | Description                               |
 | ------------------------------------------- | ----------------------------- | ----------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
-| `O` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
+| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
+| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
 
 #### Constructors
 
 ##### Constructor
 
-> **new UserAgent**<`I`, `O`>(`options`): [`UserAgent`](#useragent)<`I`, `O`>
+> **new UserAgent**\<`I`, `O`\>(`options`): [`UserAgent`](#useragent)\<`I`, `O`\>
 
 ###### Parameters
 
 | Parameter | Type                                                |
 | --------- | --------------------------------------------------- |
-| `options` | [`UserAgentOptions`](#useragentoptions)<`I`, `O`> |
+| `options` | [`UserAgentOptions`](#useragentoptions)\<`I`, `O`\> |
 
 ###### Returns
 
-[`UserAgent`](#useragent)<`I`, `O`>
+[`UserAgent`](#useragent)\<`I`, `O`\>
 
 ###### Overrides
 
@@ -82,7 +80,7 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 ##### invoke()
 
-> **invoke**: {(`input`, `context?`, `options?`): `Promise`<`O`>; (`input`, `context`, `options`): `Promise`<[`AgentResponseStream`](agent.md#agentresponsestream)<`O`>>; (`input`, `context?`, `options?`): `Promise`<[`AgentResponse`](agent.md#agentresponse)<`O`>>; }
+> **invoke**: \{(`input`, `options?`): `Promise`\<`O`\>; (`input`, `options`): `Promise`\<[`AgentResponseStream`](agent.md#agentresponsestream)\<`O`\>\>; (`input`, `options?`): `Promise`\<[`AgentResponse`](agent.md#agentresponse)\<`O`\>\>; \}
 
 Invoke the agent with regular (non-streaming) response
 
@@ -91,23 +89,22 @@ suitable for scenarios where a complete result is needed at once.
 
 ###### Call Signature
 
-> (`input`, `context?`, `options?`): `Promise`<`O`>
+> (`input`, `options?`): `Promise`\<`O`\>
 
 ###### Parameters
 
-| Parameter  | Type                                                                               |
-| ---------- | ---------------------------------------------------------------------------------- |
-| `input`    | `string` | `I`                                                                    |
-| `context?` | `Context`                                                                          |
-| `options?` | [`AgentInvokeOptions`](agent.md#agentinvokeoptions) & { `streaming?`: `false`; } |
+| Parameter  | Type                                                                                                             |
+| ---------- | ---------------------------------------------------------------------------------------------------------------- |
+| `input`    | `string` \| `I`                                                                                                  |
+| `options?` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming?`: `false`; \} |
 
 ###### Returns
 
-`Promise`<`O`>
+`Promise`\<`O`\>
 
 ###### Call Signature
 
-> (`input`, `context`, `options`): `Promise`<[`AgentResponseStream`](agent.md#agentresponsestream)<`O`>>
+> (`input`, `options`): `Promise`\<[`AgentResponseStream`](agent.md#agentresponsestream)\<`O`\>\>
 
 Invoke the agent with streaming response
 
@@ -117,16 +114,14 @@ chat bot typing effects.
 
 ###### Parameters
 
-| Parameter           | Type                       | Description                                                      |
-| ------------------- | -------------------------- | ---------------------------------------------------------------- |
-| `input`             | `string` | `I`            | Input message to the agent, can be a string or structured object |
-| `context`           | `undefined` | `Context`   | Execution context, providing environment and resource access     |
-| `options`           | { `streaming`: `true`; } | Invocation options, must set streaming to true for this overload |
-| `options.streaming` | `true`                     | -                                                                |
+| Parameter | Type                                                                                                           | Description                                                      |
+| --------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `input`   | `string` \| `I`                                                                                                | Input message to the agent, can be a string or structured object |
+| `options` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming`: `true`; \} | Invocation options, must set streaming to true for this overload |
 
 ###### Returns
 
-`Promise`<[`AgentResponseStream`](agent.md#agentresponsestream)<`O`>>
+`Promise`\<[`AgentResponseStream`](agent.md#agentresponsestream)\<`O`\>\>
 
 Streaming response object
 
@@ -166,7 +161,7 @@ console.log(chunks); // Output: ["Hello", ",", " ", "How", " ", "can", " ", "I",
 
 ###### Call Signature
 
-> (`input`, `context?`, `options?`): `Promise`<[`AgentResponse`](agent.md#agentresponse)<`O`>>
+> (`input`, `options?`): `Promise`\<[`AgentResponse`](agent.md#agentresponse)\<`O`\>\>
 
 General signature for invoking the agent
 
@@ -174,25 +169,20 @@ Returns either streaming or regular response based on the streaming parameter in
 
 ###### Parameters
 
-| Parameter  | Type                                                | Description                |
-| ---------- | --------------------------------------------------- | -------------------------- |
-| `input`    | `string` | `I`                                     | Input message to the agent |
-| `context?` | `Context`                                           | Execution context          |
-| `options?` | [`AgentInvokeOptions`](agent.md#agentinvokeoptions) | Invocation options         |
+| Parameter  | Type                                                                              | Description                |
+| ---------- | --------------------------------------------------------------------------------- | -------------------------- |
+| `input`    | `string` \| `I`                                                                   | Input message to the agent |
+| `options?` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> | Invocation options         |
 
 ###### Returns
 
-`Promise`<[`AgentResponse`](agent.md#agentresponse)<`O`>>
+`Promise`\<[`AgentResponse`](agent.md#agentresponse)\<`O`\>\>
 
 Agent response (streaming or regular)
 
 ###### Param
 
 Input message to the agent, can be a string or structured object
-
-###### Param
-
-Execution context, providing environment and resource access
 
 ###### Param
 
@@ -232,16 +222,17 @@ console.log(result); // Output: { $message: "Hello, How can I assist you today?"
 
 ##### publish()
 
-> **publish**: (`topic`, `payload`) => `void`
+> **publish**: (`topic`, `payload`, `options?`) => `void`
 
 Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Parameters
 
-| Parameter | Type                                                                                 | Description                            |
-| --------- | ------------------------------------------------------------------------------------ | -------------------------------------- |
-| `topic`   | `string` | `string`\[]                                                               | topic name, or an array of topic names |
-| `payload` | `string` | [`Message`](agent.md#message) | `Omit`<`MessagePayload`, `"context"`> | message to publish                     |
+| Parameter  | Type                                                                                 | Description                            |
+| ---------- | ------------------------------------------------------------------------------------ | -------------------------------------- |
+| `topic`    | `string` \| `string`[]                                                               | topic name, or an array of topic names |
+| `payload`  | `string` \| [`Message`](agent.md#message) \| `Omit`\<`MessagePayload`, `"context"`\> | message to publish                     |
+| `options?` | `InvokeOptions`\<`UserContext`\>                                                     | -                                      |
 
 ###### Returns
 
@@ -249,22 +240,22 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ##### subscribe()
 
-> **subscribe**: {(`topic`, `listener?`): `Promise`<`MessagePayload`>; (`topic`, `listener`): `Unsubscribe`; (`topic`, `listener?`): `Unsubscribe` | `Promise`<`MessagePayload`>; (`topic`, `listener?`): `Unsubscribe` | `Promise`<`MessagePayload`>; }
+> **subscribe**: \{(`topic`, `listener?`): `Promise`\<`MessagePayload`\>; (`topic`, `listener`): `Unsubscribe`; (`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>; (`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>; \}
 
 ###### Call Signature
 
-> (`topic`, `listener?`): `Promise`<`MessagePayload`>
+> (`topic`, `listener?`): `Promise`\<`MessagePayload`\>
 
 ###### Parameters
 
 | Parameter   | Type                   |
 | ----------- | ---------------------- |
-| `topic`     | `string` | `string`\[] |
+| `topic`     | `string` \| `string`[] |
 | `listener?` | `undefined`            |
 
 ###### Returns
 
-`Promise`<`MessagePayload`>
+`Promise`\<`MessagePayload`\>
 
 ###### Call Signature
 
@@ -274,7 +265,7 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 | Parameter  | Type                   |
 | ---------- | ---------------------- |
-| `topic`    | `string` | `string`\[] |
+| `topic`    | `string` \| `string`[] |
 | `listener` | `MessageQueueListener` |
 
 ###### Returns
@@ -283,33 +274,33 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Call Signature
 
-> (`topic`, `listener?`): `Unsubscribe` | `Promise`<`MessagePayload`>
+> (`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 ###### Parameters
 
 | Parameter   | Type                   |
 | ----------- | ---------------------- |
-| `topic`     | `string` | `string`\[] |
+| `topic`     | `string` \| `string`[] |
 | `listener?` | `MessageQueueListener` |
 
 ###### Returns
 
-`Unsubscribe` | `Promise`<`MessagePayload`>
+`Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 ###### Call Signature
 
-> (`topic`, `listener?`): `Unsubscribe` | `Promise`<`MessagePayload`>
+> (`topic`, `listener?`): `Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 ###### Parameters
 
 | Parameter   | Type                   |
 | ----------- | ---------------------- |
-| `topic`     | `string` | `string`\[] |
+| `topic`     | `string` \| `string`[] |
 | `listener?` | `MessageQueueListener` |
 
 ###### Returns
 
-`Unsubscribe` | `Promise`<`MessagePayload`>
+`Unsubscribe` \| `Promise`\<`MessagePayload`\>
 
 ##### unsubscribe()
 
@@ -319,7 +310,7 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 | Parameter  | Type                   |
 | ---------- | ---------------------- |
-| `topic`    | `string` | `string`\[] |
+| `topic`    | `string` \| `string`[] |
 | `listener` | `MessageQueueListener` |
 
 ###### Returns
@@ -332,34 +323,34 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Get Signature
 
-> **get** **stream**(): `ReadableStream`<`MessagePayload` & { `topic`: `string`; }>
+> **get** **stream**(): `ReadableStream`\<`MessagePayload` & \{ `topic`: `string`; \}\>
 
 ###### Returns
 
-`ReadableStream`<`MessagePayload` & { `topic`: `string`; }>
+`ReadableStream`\<`MessagePayload` & \{ `topic`: `string`; \}\>
 
 #### Methods
 
 ##### from()
 
-> `static` **from**<`I`, `O`>(`options`): [`UserAgent`](#useragent)<`I`, `O`>
+> `static` **from**\<`I`, `O`\>(`options`): [`UserAgent`](#useragent)\<`I`, `O`\>
 
 ###### Type Parameters
 
 | Type Parameter                              |
 | ------------------------------------------- |
-| `I` *extends* [`Message`](agent.md#message) |
-| `O` *extends* [`Message`](agent.md#message) |
+| `I` _extends_ [`Message`](agent.md#message) |
+| `O` _extends_ [`Message`](agent.md#message) |
 
 ###### Parameters
 
 | Parameter | Type                                                |
 | --------- | --------------------------------------------------- |
-| `options` | [`UserAgentOptions`](#useragentoptions)<`I`, `O`> |
+| `options` | [`UserAgentOptions`](#useragentoptions)\<`I`, `O`\> |
 
 ###### Returns
 
-[`UserAgent`](#useragent)<`I`, `O`>
+[`UserAgent`](#useragent)\<`I`, `O`\>
 
 ##### subscribeToTopics()
 
@@ -367,9 +358,9 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Parameters
 
-| Parameter | Type                               |
-| --------- | ---------------------------------- |
-| `context` | `Pick`<`Context`, `"subscribe"`> |
+| Parameter | Type                                                |
+| --------- | --------------------------------------------------- |
+| `context` | `Pick`\<`Context`\<`UserContext`\>, `"subscribe"`\> |
 
 ###### Returns
 
@@ -381,18 +372,18 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ##### publishToTopics()
 
-> `protected` **publishToTopics**(`output`, `context`): `Promise`<`void`>
+> `protected` **publishToTopics**(`output`, `options`): `Promise`\<`void`\>
 
 ###### Parameters
 
-| Parameter | Type      |
-| --------- | --------- |
-| `output`  | `O`       |
-| `context` | `Context` |
+| Parameter | Type                                                |
+| --------- | --------------------------------------------------- |
+| `output`  | `O`                                                 |
+| `options` | [`AgentInvokeOptions`](agent.md#agentinvokeoptions) |
 
 ###### Returns
 
-`Promise`<`void`>
+`Promise`\<`void`\>
 
 ###### Overrides
 
@@ -400,28 +391,28 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ##### process()
 
-> **process**(`input`, `context`): `Promise`<[`AgentProcessResult`](agent.md#agentprocessresult)<`O`>>
+> **process**(`input`, `options`): `Promise`\<[`AgentProcessResult`](agent.md#agentprocessresult)\<`O`\>\>
 
 Core processing method of the agent, must be implemented in subclasses
 
 This is the main functionality implementation of the agent, processing input and
 generating output. Can return various types of results:
 
-* Regular object response
-* Streaming response
-* Async generator
-* Another agent instance (transfer agent)
+- Regular object response
+- Streaming response
+- Async generator
+- Another agent instance (transfer agent)
 
 ###### Parameters
 
-| Parameter | Type      | Description       |
-| --------- | --------- | ----------------- |
-| `input`   | `I`       | Input message     |
-| `context` | `Context` | Execution context |
+| Parameter | Type                                                | Description                  |
+| --------- | --------------------------------------------------- | ---------------------------- |
+| `input`   | `I`                                                 | Input message                |
+| `options` | [`AgentInvokeOptions`](agent.md#agentinvokeoptions) | Options for agent invocation |
 
 ###### Returns
 
-`Promise`<[`AgentProcessResult`](agent.md#agentprocessresult)<`O`>>
+`Promise`\<[`AgentProcessResult`](agent.md#agentprocessresult)\<`O`\>\>
 
 Processing result
 
@@ -468,7 +459,7 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", undefined, { streaming: true });
+const stream = await agent.invoke("Hello", { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
@@ -485,7 +476,7 @@ Example of using an async generator:
 class AsyncGeneratorAgent extends Agent {
   async *process(
     _input: Message,
-    _context: Context,
+    _options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<Message> {
     // Use async generator to produce streaming results
     yield textDelta({ message: "This" });
@@ -502,7 +493,7 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", undefined, { streaming: true });
+const stream = await agent.invoke("Hello", { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
@@ -549,7 +540,7 @@ console.log(result); // { response: "This is a specialist response", expertise: 
 
 ##### checkAgentInvokesUsage()
 
-> `protected` **checkAgentInvokesUsage**(`_context`): `void`
+> `protected` **checkAgentInvokesUsage**(`_options`): `void`
 
 Check agent invocation usage to prevent exceeding limits
 
@@ -558,9 +549,9 @@ has been exceeded and increments the invocation counter
 
 ###### Parameters
 
-| Parameter  | Type      |
-| ---------- | --------- |
-| `_context` | `Context` |
+| Parameter  | Type                                                |
+| ---------- | --------------------------------------------------- |
+| `_options` | [`AgentInvokeOptions`](agent.md#agentinvokeoptions) |
 
 ###### Returns
 
@@ -576,25 +567,25 @@ Error if maximum invocation limit is exceeded
 
 ## Interfaces
 
-### UserAgentOptions\<I, O>
+### UserAgentOptions\<I, O\>
 
 Configuration options for an agent
 
 #### Extends
 
-* [`AgentOptions`](agent.md#agentoptions)<`I`, `O`>
+- [`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>
 
 #### Type Parameters
 
 | Type Parameter                              | Default type                  | Description                   |
 | ------------------------------------------- | ----------------------------- | ----------------------------- |
-| `I` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent input message type  |
-| `O` *extends* [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent output message type |
+| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent input message type  |
+| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent output message type |
 
 #### Properties
 
 | Property                                | Type                                                                                      |
 | --------------------------------------- | ----------------------------------------------------------------------------------------- |
 | <a id="context"></a> `context`          | `Context`                                                                                 |
-| <a id="process"></a> `process?`         | [`FunctionAgentFn`](agent.md#functionagentfn)<`I`, `O`>                                 |
-| <a id="activeagent"></a> `activeAgent?` | [`Agent`](agent.md#agent)<[`Message`](agent.md#message), [`Message`](agent.md#message)> |
+| <a id="process"></a> `process?`         | [`FunctionAgentFn`](agent.md#functionagentfn)\<`I`, `O`\>                                 |
+| <a id="activeagent"></a> `activeAgent?` | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> |

@@ -2,6 +2,20 @@
 
 - chore: release 1.2.0
 
+## [1.9.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.8.1...agent-library-v1.9.0) (2025-05-23)
+
+
+### Features
+
+* **models:** publish model adapters as standalone packages ([#126](https://github.com/AIGNE-io/aigne-framework/issues/126)) ([588b8ae](https://github.com/AIGNE-io/aigne-framework/commit/588b8aea6abcee5fa87def1358bf51f84021c6ef))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.16.0
+
 ## [1.8.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.8.0...agent-library-v1.8.1) (2025-05-15)
 
 

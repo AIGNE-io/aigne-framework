@@ -85,11 +85,9 @@ test("AIAgent.invoke", async () => {
   expect(finderCall).toHaveBeenLastCalledWith(
     { [MESSAGE_KEY]: expect.stringContaining("Find the closest match to a user's request") },
     expect.anything(),
-    expect.anything(),
   );
   expect(writerCall).toHaveBeenLastCalledWith(
     { [MESSAGE_KEY]: expect.stringContaining("Write to the filesystem") },
-    expect.anything(),
     expect.anything(),
   );
 });

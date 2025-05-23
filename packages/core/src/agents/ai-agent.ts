@@ -1,5 +1,4 @@
 import { type ZodObject, type ZodType, z } from "zod";
-import type { Context } from "../aigne/context.js";
 import { DefaultMemory, type DefaultMemoryOptions } from "../memory/default-memory.js";
 import { MemoryAgent } from "../memory/memory.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
@@ -7,6 +6,7 @@ import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js
 import { checkArguments, isEmpty } from "../utils/type-utils.js";
 import {
   Agent,
+  type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessAsyncGenerator,
   type Message,
@@ -293,21 +293,21 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
    *
    * @protected
    */
-  async *process(input: I, context: Context): AgentProcessAsyncGenerator<O> {
-    const model = this.model ?? context.model;
+  async *process(input: I, options: AgentInvokeOptions): AgentProcessAsyncGenerator<O> {
+    const model = this.model ?? options.context.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
     const { toolAgents, ...modelInput } = await this.instructions.build({
       agent: this,
       input,
       model,
-      context,
+      context: options.context,
     });
 
     const toolsMap = new Map<string, Agent>(toolAgents?.map((i) => [i.name, i]));
 
     if (this.toolChoice === "router") {
-      yield* this._processRouter(input, model, modelInput, context, toolsMap);
+      yield* this._processRouter(input, model, modelInput, options, toolsMap);
       return;
     }
 
@@ -317,7 +317,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     for (;;) {
       const modelOutput: ChatModelOutput = {};
 
-      const stream = await context.invoke(
+      const stream = await options.context.invoke(
         model,
         { ...modelInput, messages: modelInput.messages.concat(toolCallMessages) },
         { streaming: true },
@@ -350,7 +350,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
           const output = await this.invokeSkill(
             tool,
             { ...input, ...call.function.arguments },
-            context,
+            options,
           ).catch((error) => {
             if (!this.catchToolsError) {
               return Promise.reject(error);
@@ -424,12 +424,12 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     input: I,
     model: ChatModel,
     modelInput: ChatModelInput,
-    context: Context,
+    options: AgentInvokeOptions,
     toolsMap: Map<string, Agent>,
   ): AgentProcessAsyncGenerator<O> {
     const {
       toolCalls: [call] = [],
-    } = await context.invoke(model, modelInput);
+    } = await options.context.invoke(model, modelInput);
 
     if (!call) {
       throw new Error("Router toolChoice requires exactly one tool to be executed");
@@ -438,7 +438,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     const tool = toolsMap.get(call.function.name);
     if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
-    const stream = await context.invoke(
+    const stream = await options.context.invoke(
       tool,
       { ...call.function.arguments, ...input },
       { streaming: true, sourceAgent: this },

@@ -24,7 +24,6 @@ import type {
 } from "@modelcontextprotocol/sdk/types.js";
 import pRetry from "p-retry";
 import { type ZodType, z } from "zod";
-import type { Context } from "../aigne/context.js";
 import { logger } from "../utils/logger.js";
 import {
   promptFromMCPPrompt,
@@ -32,7 +31,7 @@ import {
   toolFromMCPTool,
 } from "../utils/mcp-utils.js";
 import { type PromiseOrValue, checkArguments, createAccessorArray } from "../utils/type-utils.js";
-import { Agent, type AgentOptions, type Message } from "./agent.js";
+import { Agent, type AgentInvokeOptions, type AgentOptions, type Message } from "./agent.js";
 
 const MCP_AGENT_CLIENT_NAME = "AIGNE/MCPAgent";
 const MCP_AGENT_CLIENT_VERSION = "1.10.0"; // This should match the version in package.json
@@ -336,10 +335,10 @@ export class MCPAgent extends Agent {
    * throws an error if called.
    *
    * @param _input Input message (unused)
-   * @param _context Execution context (unused)
+   * @param _options AgentInvokeOptions (unused)
    * @throws Error This method always throws an error since MCPAgent is not directly invokable
    */
-  async process(_input: Message, _context?: Context): Promise<Message> {
+  async process(_input: Message, _options: AgentInvokeOptions): Promise<Message> {
     throw new Error("Method not implemented.");
   }
 

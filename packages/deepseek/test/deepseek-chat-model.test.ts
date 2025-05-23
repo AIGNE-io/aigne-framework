@@ -82,7 +82,6 @@ test("DeepSeek chat model with streaming using async generator", async () => {
     {
       messages: [{ role: "user", content: "Introduce yourself" }],
     },
-    undefined,
     { streaming: true },
   );
 

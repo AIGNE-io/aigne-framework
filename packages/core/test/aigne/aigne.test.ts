@@ -267,7 +267,10 @@ test("AIGNE.shutdown should shutdown all tools and agents", async () => {
 
 test("AIGNE should throw error if reached max agent calls", async () => {
   const plus = FunctionAgent.from(
-    async ({ num, times }: { num: number; times: number }, context): Promise<{ num: number }> => {
+    async (
+      { num, times }: { num: number; times: number },
+      { context },
+    ): Promise<{ num: number }> => {
       if (times <= 1) {
         return { num: num + 1 };
       }

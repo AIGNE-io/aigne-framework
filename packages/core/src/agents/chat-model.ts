@@ -1,7 +1,6 @@
 import { z } from "zod";
-import type { Context } from "../aigne/context.js";
 import type { PromiseOrValue } from "../utils/type-utils.js";
-import { Agent, type AgentProcessResult, type Message } from "./agent.js";
+import { Agent, type AgentInvokeOptions, type AgentProcessResult, type Message } from "./agent.js";
 
 /**
  * ChatModel is an abstract base class for interacting with Large Language Models (LLMs).
@@ -85,12 +84,15 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
    * Primarily checks if token usage exceeds limits, throwing an exception if limits are exceeded
    *
    * @param input Input message
-   * @param context Execution context
+   * @param options Options for invoking the agent
    * @throws Error if token usage exceeds maximum limit
    */
-  protected override async preprocess(input: ChatModelInput, context: Context): Promise<void> {
-    super.preprocess(input, context);
-    const { limits, usage } = context;
+  protected override async preprocess(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<void> {
+    super.preprocess(input, options);
+    const { limits, usage } = options.context;
     const usedTokens = usage.outputTokens + usage.inputTokens;
     if (limits?.maxTokens && usedTokens >= limits.maxTokens) {
       throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
@@ -126,12 +128,12 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
    *
    * @param input Input message
    * @param output Output message
-   * @param context Execution context
+   * @param options Options for invoking the agent
    */
   protected override postprocess(
     input: ChatModelInput,
     output: ChatModelOutput,
-    context: Context,
+    options: AgentInvokeOptions,
   ): void {
     // Restore original tool names in the output
     if (output.toolCalls?.length) {
@@ -148,11 +150,11 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       }
     }
 
-    super.postprocess(input, output, context);
+    super.postprocess(input, output, options);
     const { usage } = output;
     if (usage) {
-      context.usage.outputTokens += usage.outputTokens;
-      context.usage.inputTokens += usage.inputTokens;
+      options.context.usage.outputTokens += usage.outputTokens;
+      options.context.usage.inputTokens += usage.inputTokens;
     }
   }
 
@@ -173,12 +175,12 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
    * - Tool call processing if applicable
    *
    * @param input - The standardized input containing messages and model options
-   * @param context - The execution context with settings and state
+   * @param options - The options for invoking the agent, including context and limits
    * @returns A promise or direct value containing the model's response
    */
   abstract process(
     input: ChatModelInput,
-    context: Context,
+    options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>>;
 }
 

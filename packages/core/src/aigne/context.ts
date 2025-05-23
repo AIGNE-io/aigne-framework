@@ -67,7 +67,7 @@ export type ContextEmitEventMap = {
 /**
  * @hidden
  */
-export interface InvokeOptions extends AgentInvokeOptions {
+export interface InvokeOptions extends Omit<AgentInvokeOptions, "context"> {
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
   sourceAgent?: Agent;
@@ -402,7 +402,7 @@ class AIGNEContextInternal {
         });
       }
 
-      const stream = await activeAgent.invoke(input, context, { streaming: true });
+      const stream = await activeAgent.invoke(input, { ...options, context, streaming: true });
       for await (const value of stream) {
         if (value.delta.text) {
           yield { delta: { text: value.delta.text } as Message };

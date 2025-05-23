@@ -1,12 +1,15 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { AIAgent, AIGNE, type AgentInvokeOptions, ChatModel, type Message } from "@aigne/core";
+import { AIAgent, AIGNE, ChatModel, type Message } from "@aigne/core";
 import {
   arrayToReadableStream,
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils";
-import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+import {
+  AIGNEHTTPClient,
+  type AIGNEHTTPClientInvokeOptions,
+} from "@aigne/transport/http-client/index.js";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import compression from "compression";
@@ -90,7 +93,7 @@ const servers: { name: string; createServer: () => Promise<Server> }[] = [
   },
   { name: "hono", createServer: createHonoServer },
 ];
-const options: AgentInvokeOptions[] = [{ streaming: true }, { streaming: false }];
+const options: AIGNEHTTPClientInvokeOptions[] = [{ streaming: true }, { streaming: false }];
 
 const table = servers.flatMap((server) =>
   options.map((options) => [options, server.name, server.createServer] as const),

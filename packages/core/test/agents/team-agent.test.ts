@@ -1,11 +1,11 @@
 import { expect, spyOn, test } from "bun:test";
 import { AIAgent, AIGNE, FunctionAgent, type Message } from "@aigne/core";
 import { ProcessMode, TeamAgent } from "@aigne/core/agents/team-agent.js";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 test("TeamAgent.from with sequential mode", async () => {
   // #region example-team-agent-sequential

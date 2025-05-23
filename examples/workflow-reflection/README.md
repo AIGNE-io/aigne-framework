@@ -1,6 +1,6 @@
 # Workflow Reflection Demo
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build a reflection workflow.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build a reflection workflow. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR
@@ -34,7 +34,14 @@ class reviewer processing
 ```bash
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-npx -y @aigne/example-workflow-reflection # Run the example
+# Run in one-shot mode (default)
+npx -y @aigne/example-workflow-reflection
+
+# Run in interactive chat mode
+npx -y @aigne/example-workflow-reflection --chat
+
+# Use pipeline input
+echo "Write a function to validate email addresses" | npx -y @aigne/example-workflow-reflection
 ```
 
 ## Installation
@@ -64,7 +71,41 @@ OPENAI_API_KEY="" # Set your OpenAI API key here
 ### Run the Example
 
 ```bash
-pnpm start
+pnpm start # Run in one-shot mode (default)
+
+# Run in interactive chat mode
+pnpm start -- --chat
+
+# Use pipeline input
+echo "Write a function to validate email addresses" | pnpm start
+```
+
+### Run Options
+
+The example supports the following command-line parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--model <provider[:model]>` | AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
+| `--temperature <value>` | Temperature for model generation | Provider default |
+| `--top-p <value>` | Top-p sampling value | Provider default |
+| `--presence-penalty <value>` | Presence penalty value | Provider default |
+| `--frequency-penalty <value>` | Frequency penalty value | Provider default |
+| `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
+| `--input`, `-i <input>` | Specify input directly | None |
+
+#### Examples
+
+```bash
+# Run in chat mode (interactive)
+pnpm start -- --chat
+
+# Set logging level
+pnpm start -- --log-level DEBUG
+
+# Use pipeline input
+echo "Write a function to validate email addresses" | pnpm start
 ```
 
 ## Example

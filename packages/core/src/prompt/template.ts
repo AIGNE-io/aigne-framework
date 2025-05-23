@@ -5,7 +5,7 @@ import type {
   ChatModelInputMessage,
   ChatModelInputMessageContent,
   ChatModelOutputToolCall,
-} from "../models/chat-model.js";
+} from "../agents/chat-model.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 
 export class PromptTemplate {
@@ -102,7 +102,10 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
       typeof content === "string"
         ? content
         : tryOrThrow(
-            () => JSON.stringify(content),
+            () =>
+              JSON.stringify(content, (_, value) =>
+                typeof value === "bigint" ? value.toString() : value,
+              ),
             `Failed to stringify tool content. toolCallId: ${toolCallId}, content: ${inspect(content)}`,
           ),
       name,

@@ -1,4 +1,4 @@
-import type { ChatModelOutputUsage } from "../models/chat-model.js";
+import type { ChatModelOutputUsage } from "../agents/chat-model.js";
 import type { Nullish } from "./type-utils.js";
 
 export function mergeUsage(...usages: Nullish<ChatModelOutputUsage>[]): ChatModelOutputUsage {

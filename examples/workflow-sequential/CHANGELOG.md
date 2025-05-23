@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.10.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.10.1...example-workflow-sequential-v1.10.2) (2025-05-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.9.1
+    * @aigne/core bumped to 1.15.0
+
+## [1.10.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.10.0...example-workflow-sequential-v1.10.1) (2025-05-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.9.0
+    * @aigne/core bumped to 1.14.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.2.0
+
 ## [1.10.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.9.0...example-workflow-sequential-v1.10.0) (2025-04-30)
 
 

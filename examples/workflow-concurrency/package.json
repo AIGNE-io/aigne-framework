@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-concurrency",
-  "version": "1.9.0",
+  "version": "1.9.2",
   "description": "A demonstration of using AIGNE Framework to build a concurrency workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-concurrency",
@@ -23,10 +23,10 @@
   "dependencies": {
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "openai": "^4.97.0",
-    "zod": "^3.24.4"
+    "@aigne/openai": "workspace:^"
   },
   "devDependencies": {
-    "@aigne/test-utils": "workspace:^"
+    "@aigne/test-utils": "workspace:^",
+    "@types/bun": "^1.2.9"
   }
 }

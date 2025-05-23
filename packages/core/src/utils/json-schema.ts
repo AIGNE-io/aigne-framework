@@ -32,7 +32,7 @@ export function parseJSON(json: string) {
   try {
     return JSON.parse(json);
   } catch (error) {
-    logger.core("Failed to parse JSON", { json, error });
+    logger.error("Failed to parse JSON", { json, error });
     throw error;
   }
 }

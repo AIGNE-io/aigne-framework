@@ -1,8 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
 import { TerminalTracer } from "@aigne/cli/tracer/terminal.js";
 import { AIAgent, AIGNE, createMessage } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 test("TerminalTracer should work correctly", async () => {
   const model = new OpenAIChatModel({});
@@ -18,7 +18,7 @@ test("TerminalTracer should work correctly", async () => {
 
   const userAgent = aigne.invoke(testAgent);
 
-  const tracer = new TerminalTracer(context);
+  const tracer = new TerminalTracer(context, { printRequest: true });
 
   const { result } = await tracer.run(userAgent, createMessage("hello"));
 
@@ -53,6 +53,9 @@ test("TerminalTracer should render output message with markdown highlight", asyn
   const tracer = new TerminalTracer(context);
 
   expect(
-    tracer.formatAIResponse(createMessage("## Hello\nI am from [**AIGNE**](https://www.aigne.io)")),
+    tracer.formatResult(
+      context,
+      createMessage("## Hello\nI am from [**AIGNE**](https://www.aigne.io)"),
+    ),
   ).toMatchSnapshot();
 });

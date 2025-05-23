@@ -1,19 +1,12 @@
 import { readFile, stat } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
+import type { Camelize } from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
 import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
+import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
-import { BedrockChatModel } from "../models/bedrock-chat-model.js";
-import type { ChatModel, ChatModelOptions } from "../models/chat-model.js";
-import { ClaudeChatModel } from "../models/claude-chat-model.js";
-import { DeepSeekChatModel } from "../models/deepseek-chat-model.js";
-import { GeminiChatModel } from "../models/gemini-chat-model.js";
-import { OllamaChatModel } from "../models/ollama-chat-model.js";
-import { OpenRouterChatModel } from "../models/open-router-chat-model.js";
-import { OpenAIChatModel } from "../models/openai-chat-model.js";
-import { XAIChatModel } from "../models/xai-chat-model.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { loadAgentFromYamlFile } from "./agent-yaml.js";
@@ -21,6 +14,7 @@ import { loadAgentFromYamlFile } from "./agent-yaml.js";
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
 export interface LoadOptions {
+  models: { new (parameters: { model?: string; modelOptions?: ChatModelOptions }): ChatModel }[];
   path: string;
 }
 
@@ -41,7 +35,7 @@ export async function load(options: LoadOptions) {
 
   return {
     ...aigne,
-    model: await loadModel(aigne.chat_model),
+    model: await loadModel(options.models, aigne.chat_model),
     agents,
     skills,
   };
@@ -86,31 +80,21 @@ export async function loadAgent(path: string): Promise<Agent> {
 
 const { MODEL_PROVIDER, MODEL_NAME } = process.env;
 const DEFAULT_MODEL_PROVIDER = "openai";
-const DEFAULT_MODEL_NAME = "gpt-4o-mini";
 
 export async function loadModel(
-  model?: z.infer<typeof aigneFileSchema>["chat_model"],
+  models: LoadOptions["models"],
+  model?: Camelize<z.infer<typeof aigneFileSchema>["chat_model"]>,
   modelOptions?: ChatModelOptions,
 ): Promise<ChatModel | undefined> {
   const params = {
-    model: MODEL_NAME ?? model?.name ?? DEFAULT_MODEL_NAME,
+    model: MODEL_NAME ?? model?.name ?? undefined,
     temperature: model?.temperature ?? undefined,
-    topP: model?.top_p ?? undefined,
-    frequencyPenalty: model?.frequent_penalty ?? undefined,
-    presencePenalty: model?.presence_penalty ?? undefined,
+    topP: model?.topP ?? undefined,
+    frequencyPenalty: model?.frequencyPenalty ?? undefined,
+    presencePenalty: model?.presencePenalty ?? undefined,
   };
 
-  const availableModels = [
-    OpenAIChatModel,
-    ClaudeChatModel,
-    XAIChatModel,
-    GeminiChatModel,
-    DeepSeekChatModel,
-    OpenRouterChatModel,
-    OllamaChatModel,
-    BedrockChatModel,
-  ];
-  const M = availableModels.find((m) =>
+  const M = models.find((m) =>
     m.name
       .toLowerCase()
       .includes((MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER).toLowerCase()),
@@ -130,7 +114,7 @@ const aigneFileSchema = z.object({
         name: z.string().nullish(),
         temperature: z.number().min(0).max(2).nullish(),
         top_p: z.number().min(0).nullish(),
-        frequent_penalty: z.number().min(-2).max(2).nullish(),
+        frequency_penalty: z.number().min(-2).max(2).nullish(),
         presence_penalty: z.number().min(-2).max(2).nullish(),
       }),
     ])

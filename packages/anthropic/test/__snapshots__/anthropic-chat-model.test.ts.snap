@@ -1,0 +1,104 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AnthropicChatModel.invoke 1`] = `
+{
+  "model": "claude-3-7-sonnet-20250219",
+  "toolCalls": [
+    {
+      "function": {
+        "arguments": {
+          "city": "New York",
+        },
+        "name": "get_weather",
+      },
+      "id": "toolu_01MnGRVuuum7T1AiVoRh89QC",
+      "type": "function",
+    },
+  ],
+  "usage": {
+    "inputTokens": 416,
+    "outputTokens": 54,
+  },
+}
+`;
+
+exports[`AnthropicChatModel.invoke 2`] = `
+{
+  "json": {
+    "text": "The current temperature in New York is 20 degrees.",
+  },
+  "model": "claude-3-7-sonnet-20250219",
+  "usage": {
+    "inputTokens": 955,
+    "outputTokens": 54,
+  },
+}
+`;
+
+exports[`AnthropicChatModel.invoke with streaming 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "model": "claude-3-7-sonnet-20250219",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "Hello! How",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " can I assist you today? Whether you have a question,",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " need information, or just want to chat, I'm here",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " to help. Feel free to let me know what",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "'s on your mind.",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "usage": {
+          "inputTokens": 8,
+          "outputTokens": 45,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`AnthropicChatModel.invoke without streaming 1`] = `
+{
+  "model": "claude-3-7-sonnet-20250219",
+  "text": "Hello! How can I assist you today? Whether you have a question, need information, or just want to chat, I'm here to help. Feel free to let me know what's on your mind.",
+  "usage": {
+    "inputTokens": 8,
+    "outputTokens": 45,
+  },
+}
+`;

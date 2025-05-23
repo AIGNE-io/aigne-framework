@@ -4,8 +4,6 @@ import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { Agent, type Message } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
-import type { Context } from "../aigne/context.js";
-import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type {
   ChatModel,
   ChatModelInput,
@@ -14,7 +12,9 @@ import type {
   ChatModelInputTool,
   ChatModelInputToolChoice,
   ChatModelOptions,
-} from "../models/chat-model.js";
+} from "../agents/chat-model.js";
+import type { Context } from "../aigne/context.js";
+import type { Memory, MemoryAgent } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
 import { isNil, orArrayToArray, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
@@ -45,7 +45,7 @@ export interface PromptBuilderOptions {
   instructions?: string | ChatMessagesTemplate;
 }
 
-export interface PromptBuilderBuildOptions {
+export interface PromptBuildOptions {
   memory?: MemoryAgent | MemoryAgent[];
   context: Context;
   agent?: AIAgent;
@@ -114,9 +114,7 @@ export class PromptBuilder {
 
   instructions?: string | ChatMessagesTemplate;
 
-  async build(
-    options: PromptBuilderBuildOptions,
-  ): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
+  async build(options: PromptBuildOptions): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
     return {
       messages: await this.buildMessages(options),
       responseFormat: this.buildResponseFormat(options),
@@ -124,9 +122,7 @@ export class PromptBuilder {
     };
   }
 
-  private async buildMessages(
-    options: PromptBuilderBuildOptions,
-  ): Promise<ChatModelInputMessage[]> {
+  private async buildMessages(options: PromptBuildOptions): Promise<ChatModelInputMessage[]> {
     const { input } = options;
 
     const messages =
@@ -154,7 +150,7 @@ export class PromptBuilder {
 
   private convertMemoriesToMessages(
     memories: Memory[],
-    options: PromptBuilderBuildOptions,
+    options: PromptBuildOptions,
   ): ChatModelInputMessage[] {
     const str = stringify(memories.map((i) => i.content));
 
@@ -169,7 +165,7 @@ export class PromptBuilder {
   }
 
   private buildResponseFormat(
-    options: PromptBuilderBuildOptions,
+    options: PromptBuildOptions,
   ): ChatModelInputResponseFormat | undefined {
     const outputSchema = options.outputSchema || options.agent?.outputSchema;
     if (!outputSchema) return undefined;
@@ -188,7 +184,7 @@ export class PromptBuilder {
   }
 
   private buildTools(
-    options: PromptBuilderBuildOptions,
+    options: PromptBuildOptions,
   ): Pick<ChatModelInput, "tools" | "toolChoice" | "modelOptions"> & { toolAgents?: Agent[] } {
     const toolAgents = unique(
       (options.context?.skills ?? [])

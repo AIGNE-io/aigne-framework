@@ -16,12 +16,12 @@
 
 ## 特性
 
-- **项目创建**：快速创建新的 AIGNE 项目，包含预设的文件结构和配置
-- **代理运行**：轻松运行和测试 AIGNE 代理
-- **测试支持**：内置测试命令，方便进行单元测试和集成测试
-- **MCP 服务**：支持将代理作为 MCP 服务器启动，与外部系统集成
-- **交互式界面**：美观的命令行界面，提供直观的使用体验
-- **多模型支持**：支持 OpenAI、Claude、XAI 等多种模型提供商
+* **项目创建**：快速创建新的 AIGNE 项目，包含预设的文件结构和配置
+* **代理运行**：轻松运行和测试 AIGNE 代理
+* **测试支持**：内置测试命令，方便进行单元测试和集成测试
+* **MCP 服务**：支持将代理作为 MCP 服务器启动，与外部系统集成
+* **交互式界面**：美观的命令行界面，提供直观的使用体验
+* **多模型支持**：支持 OpenAI、Claude、XAI 等多种模型提供商
 
 ## 安装
 
@@ -77,8 +77,9 @@ aigne create my-project
 ```
 
 交互式创建过程会询问：
-- 项目名称
-- 项目模板（目前支持 default 模板）
+
+* 项目名称
+* 项目模板（目前支持 default 模板）
 
 ## 运行命令 (run)
 
@@ -93,14 +94,17 @@ aigne run path/to/agents
 
 # 运行远程 URL 中的代理
 aigne run https://example.com/aigne-project
+
+# 指定特定代理运行
+aigne run --entry-agent myAgent
 ```
 
 可用选项：
-- `--agent <agent>` - 指定要使用的代理名称（默认为找到的第一个代理）
-- `--download-dir <dir>` - 指定下载包的目录（URL模式下使用）
-- `--model-provider <provider>` - 指定模型提供商（openai、claude、xai）
-- `--model-name <model>` - 指定模型名称
-- `--verbose` - 启用详细日志记录
+
+* `--entry-agent <代理>` - 指定要运行的代理名称（默认为找到的第一个代理）
+* `--cache-dir <目录>` - 指定下载包的目录（URL模式下使用）
+* `--model <提供商[:模型]>` - 指定AI模型，格式为'提供商\[:模型]'，其中模型是可选的（如'openai'或'openai:gpt-4o-mini'）
+* `--verbose` - 启用详细日志记录
 
 ## 测试命令 (test)
 

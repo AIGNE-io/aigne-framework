@@ -46,9 +46,9 @@ pnpm add @aigne/core
 
 ### Usage Example
 
-```ts file=examples/workflow-handoff/usages.ts
+```ts file="examples/workflow-handoff/usages.ts"
 import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -98,6 +98,15 @@ console.log(result2);
 * [packages/core](./packages/core) - Core package providing the foundation for building AIGNE applications.
 * [packages/agent-library](./packages/agent-library) - AIGNE agent library, providing a variety of specialized agents for different tasks.
 * [packages/cli](./packages/cli) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
+* models - AIGNE Framework's built-in models, including OpenAI, Gemini, Claude, and Nova.
+  * [packages/openai](./packages/openai) - OpenAI model implementation, supporting OpenAI's API and function calling.
+  * [packages/anthropic](./packages/anthropic) - Anthropic model implementation, supporting Anthropic's API and function calling.
+  * [packages/bedrock](./packages/bedrock) - Bedrock model implementation, supporting Bedrock's API and function calling.
+  * [packages/deepseek](./packages/deepseek) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
+  * [packages/gemini](./packages/gemini) - Gemini model implementation, supporting Gemini's API and function calling.
+  * [packages/ollama](./packages/ollama) - Ollama model implementation, supporting Ollama's API and function calling.
+  * [packages/open-router](./packages/open-router) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
+  * [packages/xai](./packages/xai) - XAI model implementation, supporting XAI's API and function calling.
 
 ## Documentation
 

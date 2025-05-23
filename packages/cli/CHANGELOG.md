@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.9.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.9.0...cli-v1.9.1) (2025-05-15)
+
+
+### Bug Fixes
+
+* **core:** response.headers.toJSON is not a function ([#121](https://github.com/AIGNE-io/aigne-framework/issues/121)) ([4609ba6](https://github.com/AIGNE-io/aigne-framework/commit/4609ba645e6b8fe8d76ecd475cd2d7817483a4bd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.15.0
+
+## [1.9.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.8.1...cli-v1.9.0) (2025-05-12)
+
+
+### Features
+
+* **docs:** use typedoc build and publish docs to gh-pages ([#100](https://github.com/AIGNE-io/aigne-framework/issues/100)) ([b9074c0](https://github.com/AIGNE-io/aigne-framework/commit/b9074c0148ea343ada92b5919a52b47537a1ad48))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.14.0
+
 ## [1.8.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.8.0...cli-v1.8.1) (2025-04-30)
 
 

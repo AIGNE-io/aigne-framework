@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.9.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.9.1...example-workflow-reflection-v1.9.2) (2025-05-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.9.1
+    * @aigne/core bumped to 1.15.0
+
+## [1.9.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.9.0...example-workflow-reflection-v1.9.1) (2025-05-12)
+
+
+### Bug Fixes
+
+* **core:** handle response for UserAgent automatically in pub/sub mode ([#116](https://github.com/AIGNE-io/aigne-framework/issues/116)) ([b659714](https://github.com/AIGNE-io/aigne-framework/commit/b659714f2398ea042f21cb22eccc1014f181cd46))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.9.0
+    * @aigne/core bumped to 1.14.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.2.0
+
 ## [1.9.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.8.0...example-workflow-reflection-v1.9.0) (2025-04-30)
 
 

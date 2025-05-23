@@ -5,8 +5,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { FSMemory, MEMORY_FILE_NAME } from "@aigne/agent-library/fs-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { stringify } from "yaml";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
 test("FSMemory simple example", async () => {
   // #region example-fs-memory-simple

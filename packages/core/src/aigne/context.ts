@@ -10,15 +10,14 @@ import {
   type FunctionAgentFn,
   type Message,
 } from "../agents/agent.js";
+import type { ChatModel } from "../agents/chat-model.js";
 import { isTransferAgentOutput, transferAgentOutputKey } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
-import type { ChatModel } from "../models/chat-model.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import {
   agentResponseStreamToObject,
   asyncGeneratorToReadableStream,
   onAgentResponseStreamEnd,
-  readableStreamToAsyncIterator,
 } from "../utils/stream-utils.js";
 import {
   type OmitPropertiesFromArrayFirstElement,
@@ -71,6 +70,7 @@ export type ContextEmitEventMap = {
 export interface InvokeOptions extends AgentInvokeOptions {
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
+  sourceAgent?: Agent;
 }
 
 /**
@@ -394,8 +394,16 @@ class AIGNEContextInternal {
     for (;;) {
       const result: Message = {};
 
+      if (options?.sourceAgent && activeAgent !== options.sourceAgent) {
+        options.sourceAgent.hooks.onHandoff?.({
+          source: options.sourceAgent,
+          target: activeAgent,
+          input,
+        });
+      }
+
       const stream = await activeAgent.invoke(input, context, { streaming: true });
-      for await (const value of readableStreamToAsyncIterator(stream)) {
+      for await (const value of stream) {
         if (value.delta.text) {
           yield { delta: { text: value.delta.text } as Message };
         }

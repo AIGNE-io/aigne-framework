@@ -16,12 +16,12 @@ Command-line tool for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framew
 
 ## Features
 
-- **Project Creation**: Quickly create new AIGNE projects with predefined file structures and configurations
-- **Agent Running**: Easily run and test AIGNE agents
-- **Testing Support**: Built-in test command for unit testing and integration testing
-- **MCP Services**: Support for launching agents as MCP servers for integration with external systems
-- **Interactive Interface**: Beautiful command-line interface providing an intuitive user experience
-- **Multi-model Support**: Support for OpenAI, Claude, XAI, and other model providers
+* **Project Creation**: Quickly create new AIGNE projects with predefined file structures and configurations
+* **Agent Running**: Easily run and test AIGNE agents
+* **Testing Support**: Built-in test command for unit testing and integration testing
+* **MCP Services**: Support for launching agents as MCP servers for integration with external systems
+* **Interactive Interface**: Beautiful command-line interface providing an intuitive user experience
+* **Multi-model Support**: Support for OpenAI, Claude, XAI, and other model providers
 
 ## Installation
 
@@ -77,8 +77,9 @@ aigne create my-project
 ```
 
 The interactive creation process will ask for:
-- Project name
-- Project template (currently supports the default template)
+
+* Project name
+* Project template (currently supports the default template)
 
 ## Run Command
 
@@ -93,14 +94,17 @@ aigne run path/to/agents
 
 # Run the agent from a remote URL
 aigne run https://example.com/aigne-project
+
+# Run a specific agent
+aigne run --entry-agent myAgent
 ```
 
 Available options:
-- `--agent <agent>` - Specify the agent name to use (defaults to the first agent found)
-- `--download-dir <dir>` - Specify the directory to download the package to (used in URL mode)
-- `--model-provider <provider>` - Specify the model provider (openai, claude, xai)
-- `--model-name <model>` - Specify the model name
-- `--verbose` - Enable verbose logging
+
+* `--entry-agent <entry-agent>` - Specify the agent name to run (defaults to the first agent found)
+* `--cache-dir <dir>` - Specify the directory to download the package to (used in URL mode)
+* `--model <provider[:model]>` - Specify the AI model in format 'provider\[:model]' where model is optional (e.g., 'openai' or 'openai:gpt-4o-mini')
+* `--verbose` - Enable verbose logging
 
 ## Test Command
 

@@ -1,18 +1,12 @@
 #!/usr/bin/env bunwrapper
 
 import assert from "node:assert";
-import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIGNE, MCPAgent, PromptBuilder } from "@aigne/core";
-import { loadModel } from "@aigne/core/loader/index.js";
-import { logger } from "@aigne/core/utils/logger.js";
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent, MCPAgent, PromptBuilder } from "@aigne/core";
 import { UnauthorizedError, refreshAuthorization } from "@modelcontextprotocol/sdk/client/auth.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-// @ts-ignore
 import JWT from "jsonwebtoken";
-
 import { TerminalOAuthProvider } from "./oauth.js";
-
-logger.enable(`aigne:mcp,${process.env.DEBUG}`);
 
 const rawUrl = process.argv[2] || process.env.BLOCKLET_APP_URL;
 assert(
@@ -56,9 +50,12 @@ try {
   let tokens = await provider.tokens();
   if (tokens) {
     let decoded = JWT.decode(tokens.access_token);
-    if (decoded) {
+    if (decoded && typeof decoded === "object") {
+      const exp = decoded.exp;
+      assert(typeof exp === "number", "Invalid access token");
+
       const now = Date.now();
-      const expiresAt = decoded.exp * 1000;
+      const expiresAt = exp * 1000;
       if (now < expiresAt) {
         console.info("Tokens already exist and not expired, skipping authorization");
       } else if (tokens.refresh_token) {
@@ -66,7 +63,7 @@ try {
         decoded = JWT.decode(tokens.refresh_token);
         if (decoded) {
           const now = Date.now();
-          const expiresAt = decoded.exp * 1000;
+          const expiresAt = exp * 1000;
           if (now < expiresAt) {
             console.info("Refresh token already exists and not expired, refreshing authorization");
             try {
@@ -111,34 +108,33 @@ try {
   }
 }
 
-const model = await loadModel();
+await runWithAIGNE(
+  async () => {
+    const blocklet = await MCPAgent.from({
+      url: appUrl.href,
+      transport: "streamableHttp",
+      opts: {
+        authProvider: provider,
+      },
+    });
 
-const blocklet = await MCPAgent.from({
-  url: appUrl.href,
-  transport: "streamableHttp",
-  opts: {
-    authProvider: provider,
+    const agent = AIAgent.from({
+      instructions: PromptBuilder.from(
+        "You are a helpful assistant that can help users query and analyze data from the blocklet. You can perform various database queries on the blocklet database, before performing any queries, please try to understand the user's request and generate a query base on the database schema.",
+      ),
+      skills: [blocklet],
+      memory: true,
+    });
+
+    return agent;
   },
-});
-
-const aigne = new AIGNE({
-  model,
-  skills: [blocklet],
-});
-
-const agent = AIAgent.from({
-  instructions: PromptBuilder.from(
-    "You are a helpful assistant that can help users query and analyze data from the blocklet. You can perform various database queries on the blocklet database, before performing any queries, please try to understand the user's request and generate a query base on the database schema.",
-  ),
-  memory: true,
-});
-
-const userAgent = aigne.invoke(agent);
-
-await runChatLoopInTerminal(userAgent, {
-  welcome:
-    "Hello! I'm a chatbot that can help you interact with the blocklet. Try asking me a question about the blocklet!",
-  defaultQuestion: "How many users are there in the database?",
-});
+  {
+    chatLoopOptions: {
+      welcome:
+        "Hello! I'm a chatbot that can help you interact with the blocklet. Try asking me a question about the blocklet!",
+      defaultQuestion: "How many users are there in the database?",
+    },
+  },
+);
 
 process.exit(0);

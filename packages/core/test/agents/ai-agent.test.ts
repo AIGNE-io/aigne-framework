@@ -13,13 +13,12 @@ import {
   UserMessageTemplate,
   createMessage,
 } from "@aigne/core";
-import { ClaudeChatModel } from "@aigne/core/models/claude-chat-model.js";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
+import { ClaudeChatModel, OpenAIChatModel } from "../_mocks/mock-models.js";
 import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 
 test("AIAgent basic creation", async () => {

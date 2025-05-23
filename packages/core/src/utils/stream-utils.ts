@@ -46,7 +46,7 @@ export async function agentResponseStreamToObject<T extends Message>(
   const json: T = {} as T;
 
   if (stream instanceof ReadableStream) {
-    for await (const value of readableStreamToAsyncIterator(stream)) {
+    for await (const value of stream) {
       mergeAgentResponseChunk(json, value);
     }
   } else {
@@ -95,7 +95,7 @@ export function onAgentResponseStreamEnd<T extends Message>(
   stream: AgentResponseStream<T>,
   callback: (result: T) => PromiseOrValue<Partial<T> | void>,
   options?: {
-    errorCallback?: (error: Error) => Error;
+    errorCallback?: (error: Error) => PromiseOrValue<Error>;
     processChunk?: (chunk: AgentResponseChunk<T>) => AgentResponseChunk<T>;
   },
 ) {
@@ -105,26 +105,33 @@ export function onAgentResponseStreamEnd<T extends Message>(
   return new ReadableStream({
     async pull(controller) {
       try {
-        const { value, done } = await reader.read();
+        while (true) {
+          const { value, done } = await reader.read();
 
-        if (!done) {
-          const chunk = options?.processChunk ? options.processChunk(value) : value;
-          if (!isEmptyChunk(chunk)) controller.enqueue(chunk);
+          if (done) {
+            const result = await callback(json);
+
+            if (result && !equal(result, json)) {
+              let chunk: AgentResponseChunk<T> = { delta: { json: result } };
+              if (options?.processChunk) chunk = options.processChunk(chunk);
+              controller.enqueue(chunk);
+            }
+
+            controller.close();
+
+            return;
+          }
 
           mergeAgentResponseChunk(json, value);
-          return;
-        }
-        const result = await callback(json);
 
-        if (result && !equal(result, json)) {
-          let chunk: AgentResponseChunk<T> = { delta: { json: result } };
-          if (options?.processChunk) chunk = options.processChunk(chunk);
-          controller.enqueue(chunk);
+          const chunk = options?.processChunk ? options.processChunk(value) : value;
+          if (!isEmptyChunk(chunk)) {
+            controller.enqueue(chunk);
+            break;
+          }
         }
-
-        controller.close();
       } catch (error) {
-        controller.error(options?.errorCallback?.(error) ?? error);
+        controller.error((await options?.errorCallback?.(error)) ?? error);
       }
     },
   });
@@ -183,7 +190,7 @@ export async function readableStreamToArray<T>(
 ): Promise<(T | Error)[]> {
   const result: T[] = [];
   try {
-    for await (const value of readableStreamToAsyncIterator(stream)) {
+    for await (const value of stream) {
       result.push(value);
     }
   } catch (error) {
@@ -192,17 +199,6 @@ export async function readableStreamToArray<T>(
     result.push(error);
   }
   return result;
-}
-
-export async function* readableStreamToAsyncIterator<T>(
-  stream: ReadableStream<T>,
-): AsyncIterable<T> {
-  const reader = stream.getReader();
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    yield value;
-  }
 }
 
 export function stringToAgentResponseStream(
@@ -215,4 +211,44 @@ export function stringToAgentResponseStream(
   return arrayToReadableStream(
     Array.from(segments).map((segment) => ({ delta: { text: { [key]: segment.segment } } })),
   );
+}
+
+export function toReadableStream(stream: NodeJS.ReadStream) {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      const onData = (chunk: Buffer) => {
+        controller.enqueue(new Uint8Array(chunk));
+      };
+
+      const onEnd = () => {
+        cleanup();
+        controller.close();
+      };
+
+      const onError = (err: Error) => {
+        cleanup();
+        controller.error(err);
+      };
+
+      function cleanup() {
+        stream.off("data", onData);
+        stream.off("end", onEnd);
+        stream.off("error", onError);
+      }
+
+      stream.on("data", onData);
+      stream.on("end", onEnd);
+      stream.on("error", onError);
+    },
+  });
+}
+
+export async function readAllString(stream: NodeJS.ReadStream | ReadableStream): Promise<string> {
+  return (
+    await readableStreamToArray(
+      (stream instanceof ReadableStream ? stream : toReadableStream(stream)).pipeThrough(
+        new TextDecoderStream(),
+      ),
+    )
+  ).join("");
 }

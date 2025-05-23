@@ -2,6 +2,7 @@ import { expect, spyOn, test } from "bun:test";
 import { inspect } from "node:util";
 import {
   AIAgent,
+  AIAgentToolChoice,
   AIGNE,
   Agent,
   type AgentProcessAsyncGenerator,
@@ -11,12 +12,11 @@ import {
   type Message,
   textDelta,
 } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import {
-  readableStreamToAsyncIterator,
-  stringToAgentResponseStream,
-} from "@aigne/core/utils/stream-utils.js";
+import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent";
+import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
+import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 
 test("Custom agent", async () => {
   // #region example-custom-agent
@@ -94,7 +94,7 @@ test("Agent returning a ReadableStream", async () => {
   const stream = await agent.invoke("Hello", undefined, { streaming: true });
 
   let fullText = "";
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.text;
     if (text) fullText += text;
   }
@@ -130,7 +130,7 @@ test("Agent using AsyncGenerator", async () => {
   const message: string[] = [];
   let json: Message | undefined;
 
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.message;
     if (text) message.push(text);
     if (chunk.delta.json) json = chunk.delta.json;
@@ -233,7 +233,7 @@ test("Agent.invoke with streaming response", async () => {
   const chunks: string[] = [];
 
   // Read the stream using an async iterator
-  for await (const chunk of readableStreamToAsyncIterator(stream)) {
+  for await (const chunk of stream) {
     const text = chunk.delta.text?.$message;
     if (text) {
       chunks.push(text);
@@ -372,6 +372,163 @@ test("Agent.shutdown by `using` statement", async () => {
   // #endregion example-agent-shutdown-by-using
 });
 
+test("Agent should return the original error from guide rails", async () => {
+  const legalModel = new OpenAIChatModel();
+
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
+    model: legalModel,
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  class MyAgent extends Agent {
+    override process(_input: Message): Message {
+      return {
+        text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
+      };
+    }
+  }
+
+  const agent = new MyAgent({ guideRails: [financial] });
+
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: true,
+        reason:
+          "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+      },
+    }),
+  );
+
+  const result = await agent.invoke("What will be the price of Bitcoin next year?");
+
+  expect(result).toEqual({
+    $status: "GuideRailError",
+    abort: true,
+    reason:
+      "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+  });
+});
+
+test("Agent can be intercepted by guide rails", async () => {
+  // #region example-agent-guide-rails
+
+  const model = new OpenAIChatModel();
+
+  const legalModel = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
+    model: legalModel,
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  const agent = AIAgent.from({
+    guideRails: [financial],
+  });
+
+  // Mock the model's response (the potential price prediction)
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve({
+      text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
+    }),
+  );
+
+  // Mock the guide rail's response (rejecting the price prediction)
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: true,
+        reason:
+          "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+      },
+    }),
+  );
+
+  const result = await aigne.invoke(agent, "What will be the price of Bitcoin next month?");
+
+  console.log(result);
+  // Output:
+  // {
+  //   "$status": "GuideRailError",
+  //   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
+  // }
+
+  expect(result).toEqual({
+    $status: "GuideRailError",
+    $message:
+      "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+  });
+
+  // #endregion example-agent-guide-rails
+});
+
+test("Agent should respond result if no any guide rails error", async () => {
+  const model = new OpenAIChatModel();
+
+  const legalModel = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const financial = AIAgent.from({
+    ...guideRailAgentOptions,
+    model: legalModel,
+    instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
+<user-input>
+{{input}}
+</user-input>
+
+<agent-output>
+{{output}}
+</agent-output>
+`,
+  });
+
+  const agent = AIAgent.from({
+    guideRails: [financial],
+  });
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve({
+      text: "You can use AIGNE Framework create a useful agent!",
+    }),
+  );
+
+  spyOn(legalModel, "process").mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: false,
+        reason: "That is a normal response",
+      },
+    }),
+  );
+
+  const result = await aigne.invoke(agent, "How to create an agent?");
+
+  expect(result).toEqual({
+    $message: "You can use AIGNE Framework create a useful agent!",
+  });
+});
+
 test("Agent inspect should return it's name", async () => {
   expect(inspect(AIAgent.from({}))).toBe("AIAgent");
 
@@ -407,4 +564,128 @@ test("Agent should check input and output schema", async () => {
   expect(plus.invoke({ a: 1, b: 2 })).rejects.toThrow(
     "Agent test-agent-plus output check arguments error: sum: Expected number, received string",
   );
+});
+
+test("Agent hooks simple example", async () => {
+  // #region example-agent-hooks
+
+  const model = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const weather = FunctionAgent.from({
+    name: "weather",
+    description: "Get the weather of a city",
+    inputSchema: z.object({
+      city: z.string(),
+    }),
+    outputSchema: z.object({
+      temperature: z.number(),
+    }),
+    process: async (_input) => {
+      return {
+        temperature: 25,
+      };
+    },
+  });
+
+  const agent = AIAgent.from({
+    hooks: {
+      onStart: (event) => {
+        console.log("Agent started:", event.input);
+      },
+      onEnd: (event) => {
+        console.log("Agent ended:", event.input, event.output);
+      },
+      onSkillStart: (event) => {
+        console.log(`Skill ${event.skill.name} started:`, event.input);
+      },
+      onSkillEnd: (event) => {
+        console.log(`Skill ${event.skill.name} ended:`, event.input, event.output);
+      },
+    },
+    skills: [weather],
+  });
+
+  const onStart = spyOn(agent.hooks, "onStart");
+  const onEnd = spyOn(agent.hooks, "onEnd");
+  const onSkillStart = spyOn(agent.hooks, "onSkillStart");
+  const onSkillEnd = spyOn(agent.hooks, "onSkillEnd");
+
+  spyOn(model, "process")
+    .mockReturnValueOnce({ toolCalls: [createToolCallResponse("weather", { city: "Paris" })] })
+    .mockReturnValueOnce({ text: "The weather in Paris is 25 degrees." });
+
+  const result = await aigne.invoke(agent, "What is the weather in Paris?");
+
+  console.log(result);
+  // Output: { $message: "The weather in Paris is 25 degrees." }
+
+  expect(result).toEqual({ $message: "The weather in Paris is 25 degrees." });
+  expect(onStart).toHaveBeenLastCalledWith(
+    expect.objectContaining({ input: { $message: "What is the weather in Paris?" } }),
+  );
+  expect(onEnd).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      input: { $message: "What is the weather in Paris?" },
+      output: { $message: "The weather in Paris is 25 degrees." },
+    }),
+  );
+  expect(onSkillStart).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      input: expect.objectContaining({ city: "Paris" }),
+      skill: weather,
+    }),
+  );
+  expect(onSkillEnd).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      input: expect.objectContaining({ city: "Paris" }),
+      output: { temperature: 25 },
+      skill: weather,
+    }),
+  );
+
+  // #endregion example-agent-hooks
+});
+
+test("Agent hook onHandoff should work correctly", async () => {
+  const model = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const triage = AIAgent.from({
+    hooks: {
+      onHandoff(event) {
+        console.log("Agent handoff:", event.target.name);
+      },
+    },
+    skills: [
+      function transferToFeedback() {
+        return feedback;
+      },
+    ],
+    toolChoice: AIAgentToolChoice.router,
+  });
+
+  const onHandoff = spyOn(triage.hooks, "onHandoff");
+
+  const feedback = AIAgent.from({});
+
+  spyOn(model, "process")
+    .mockReturnValueOnce({ toolCalls: [createToolCallResponse("transferToFeedback", {})] })
+    .mockReturnValueOnce({ text: "Hello, I am feedback agent." });
+
+  const result = await aigne.invoke(triage, "I want to give feedback");
+
+  console.log(result);
+
+  expect(onHandoff).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      source: triage,
+      target: feedback,
+      input: { $message: "I want to give feedback" },
+    }),
+  );
+
+  expect(result).toEqual({ $message: "Hello, I am feedback agent." });
 });

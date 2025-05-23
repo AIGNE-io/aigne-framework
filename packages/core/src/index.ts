@@ -5,6 +5,6 @@ export * from "./agents/team-agent.js";
 export * from "./agents/types.js";
 export * from "./agents/user-agent.js";
 export * from "./aigne/index.js";
-export * from "./models/chat-model.js";
+export * from "./agents/chat-model.js";
 export * from "./prompt/prompt-builder.js";
 export * from "./prompt/template.js";

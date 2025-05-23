@@ -31,8 +31,8 @@ function navigationToMarkdown(
 
   return navigation.map((item) => {
     const title = item.path
-      ? `- [${item.title}](${join("/", basePath, item.path)})`
-      : `- ${item.title}`;
+      ? `* [${item.title}](${join("/", basePath, item.path)})`
+      : `* ${item.title}`;
     const children = navigationToMarkdown(item.children, { basePath, level: level + 1, maxLevel });
 
     const childMarkdown = joinList(children.map((i) => `${" ".repeat((level + 1) * 2)}${i}`));

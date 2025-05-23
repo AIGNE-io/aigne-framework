@@ -20,6 +20,7 @@ build
 dist
 dist-ssr
 .blocklet
+.oauth
 
 # local env files
 *.local

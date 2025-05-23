@@ -67,6 +67,14 @@ jobs:
           npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
           pnpm -F "@aigne/*" publish --access public --no-git-checks
 
+      - name: Publish Docs
+        if: ${{ steps.release.outputs.release_created }}
+        run: pnpm publish:docs
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BOARD_ID: ${{ secrets.BOARD_ID }}
+
       - name: Deploy to GitHub Pages
         if: ${{ steps.release.outputs.release_created }}
         uses: peaceiris/actions-gh-pages@v4

@@ -90,6 +90,7 @@ export class AIGNEListr extends Listr<
     const originalLog = logger.logMessage;
 
     try {
+      this.ctx = {};
       this.spinner.start();
 
       logger.logMessage = (...args) => this.logs.push(format(...args));

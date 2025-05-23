@@ -1,7 +1,7 @@
 import { fstat } from "node:fs";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
-import { AIGNE, type Agent, type ChatModelOptions, createMessage } from "@aigne/core";
+import { AIGNE, type Agent, type ChatModelOptions, UserAgent, createMessage } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { readAllString } from "@aigne/core/utils/stream-utils.js";
@@ -140,7 +140,7 @@ export async function runAgentWithAIGNE(
       throw new Error("--chat mode requires a TTY terminal");
     }
 
-    const userAgent = aigne.invoke(agent);
+    const userAgent = agent instanceof UserAgent ? agent : aigne.invoke(agent);
 
     await runChatLoopInTerminal(userAgent, {
       ...chatLoopOptions,

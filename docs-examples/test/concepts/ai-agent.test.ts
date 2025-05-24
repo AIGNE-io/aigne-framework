@@ -31,7 +31,7 @@ test("Example AIAgent: basic", async () => {
   spyOn(model, "process").mockReturnValueOnce(
     stringToAgentResponseStream("AIGNE is a platform for building AI agents."),
   );
-  const stream = await agent.invoke("What is AIGNE?", undefined, { streaming: true });
+  const stream = await agent.invoke("What is AIGNE?", { streaming: true });
   let response = "";
   for await (const chunk of stream) {
     if (chunk.delta.text?.$message) response += chunk.delta.text.$message;

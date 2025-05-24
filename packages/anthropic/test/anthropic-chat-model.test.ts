@@ -84,7 +84,6 @@ test("Anthropic chat model with streaming using async generator", async () => {
     {
       messages: [{ role: "user", content: "Tell me about yourself" }],
     },
-    undefined,
     { streaming: true },
   );
 
@@ -225,7 +224,6 @@ test("AnthropicChatModel.invoke with streaming", async () => {
     {
       messages: [{ role: "user", content: "hello" }],
     },
-    undefined,
     { streaming: true },
   );
 

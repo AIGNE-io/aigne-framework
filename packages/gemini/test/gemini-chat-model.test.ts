@@ -70,7 +70,6 @@ test("Gemini chat model with streaming using async generator", async () => {
     {
       messages: [{ role: "user", content: "Hi there, introduce yourself" }],
     },
-    undefined,
     { streaming: true },
   );
 

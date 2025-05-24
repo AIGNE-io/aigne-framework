@@ -106,7 +106,7 @@ test("Example FunctionAgent: streaming", async () => {
   // #endregion example-agent-streaming-create-agent
 
   // #region example-agent-streaming-invoke
-  const stream = await weather.invoke({ city: "New York" }, undefined, { streaming: true });
+  const stream = await weather.invoke({ city: "New York" }, { streaming: true });
   let text = "";
   const json = {};
   for await (const chunk of stream) {

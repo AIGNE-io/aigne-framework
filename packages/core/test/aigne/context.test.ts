@@ -140,3 +140,11 @@ test("AIGNEContext should receive agentStarted/agentSucceed/agentFailed message"
     }),
   );
 });
+
+test("AIGNEContext should get/set userContext correctly", async () => {
+  const context = new AIGNE({}).newContext({ userContext: { userId: "test_user_id" } });
+  expect(context.userContext).toEqual({ userId: "test_user_id" });
+
+  context.userContext = { userId: "new_user_id" };
+  expect(context.userContext).toEqual({ userId: "new_user_id" });
+});

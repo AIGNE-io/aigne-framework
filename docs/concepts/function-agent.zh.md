@@ -161,9 +161,7 @@ console.log(result);
 当需要处理流式数据时，可以启用流式选项，然后使用异步迭代来逐步获取数据块，实现流式读取、分段处理的逻辑。
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-invoke"
-const stream = await weather.invoke({ city: "New York" }, undefined, {
-  streaming: true,
-});
+const stream = await weather.invoke({ city: "New York" }, { streaming: true });
 let text = "";
 const json = {};
 for await (const chunk of stream) {

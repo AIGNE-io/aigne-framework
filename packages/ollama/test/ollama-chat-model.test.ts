@@ -68,7 +68,6 @@ test("Ollama chat model with streaming using async generator", async () => {
     {
       messages: [{ role: "user", content: "Tell me what model you're using" }],
     },
-    undefined,
     { streaming: true },
   );
 

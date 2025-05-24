@@ -4,8 +4,8 @@ import {
   AIAgent,
   AIGNE,
   Agent,
+  type AgentInvokeOptions,
   type AgentProcessResult,
-  type Context,
   FunctionAgent,
   type Message,
   guideRailAgentOptions,
@@ -258,7 +258,7 @@ test("Example Agent: invoke", async () => {
     stringToAgentResponseStream("ABT is currently priced at $1000."),
   );
 
-  const stream = await agent.invoke("What is the price of ABT?", undefined, { streaming: true });
+  const stream = await agent.invoke("What is the price of ABT?", { streaming: true });
   let response = "";
   for await (const chunk of stream) {
     if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
@@ -275,7 +275,7 @@ test("Example Agent: custom agent", async () => {
   class CustomAgent extends Agent {
     override process(
       input: Message,
-      _context: Context,
+      _options: AgentInvokeOptions,
     ): PromiseOrValue<AgentProcessResult<Message>> {
       console.log("Custom agent processing input:", input);
       return {

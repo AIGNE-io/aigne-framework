@@ -83,7 +83,6 @@ test("OpenRouter chat model with streaming using async generator", async () => {
     {
       messages: [{ role: "user", content: "Which model are you using?" }],
     },
-    undefined,
     { streaming: true },
   );
 

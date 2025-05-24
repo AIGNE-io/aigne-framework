@@ -1,4 +1,5 @@
 import { expect, mock, spyOn, test } from "bun:test";
+import assert from "node:assert";
 import {
   AIAgent,
   AIGNE,
@@ -267,7 +268,10 @@ test("AIGNE.shutdown should shutdown all tools and agents", async () => {
 
 test("AIGNE should throw error if reached max agent calls", async () => {
   const plus = FunctionAgent.from(
-    async ({ num, times }: { num: number; times: number }, context): Promise<{ num: number }> => {
+    async (
+      { num, times }: { num: number; times: number },
+      { context },
+    ): Promise<{ num: number }> => {
       if (times <= 1) {
         return { num: num + 1 };
       }
@@ -349,4 +353,81 @@ test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
   aigne.unsubscribe("test_topic", listener);
   aigne.publish("test_topic", "hello");
   expect(listener).toBeCalledTimes(1);
+});
+
+test("AIGNE.invoke support custom user context", async () => {
+  const aigne = new AIGNE<{ id: string; name: string }>({});
+
+  const agent = FunctionAgent.from((_, options) => {
+    options.context.userContext.newContextProperty = "foo";
+
+    return options.context.invoke(childAgent, {});
+  });
+
+  const childAgent = FunctionAgent.from(() => ({
+    text: "I am a child agent",
+  }));
+
+  const agentProcess = spyOn(agent, "process");
+  const childAgentProcess = spyOn(childAgent, "process");
+
+  const result = await aigne.invoke(agent, "hello", {
+    userContext: { id: "test_user_id", name: "test_user_name" },
+  });
+  expect(result).toEqual({ text: "I am a child agent" });
+  expect(agentProcess).toHaveBeenLastCalledWith(
+    expect.anything(),
+    expect.objectContaining({
+      context: expect.objectContaining({
+        userContext: expect.objectContaining({ id: "test_user_id", name: "test_user_name" }),
+      }),
+    }),
+  );
+  expect(childAgentProcess).toHaveBeenLastCalledWith(
+    expect.anything(),
+    expect.objectContaining({
+      context: expect.objectContaining({
+        userContext: expect.objectContaining({
+          id: "test_user_id",
+          name: "test_user_name",
+          newContextProperty: "foo",
+        }),
+      }),
+    }),
+  );
+});
+
+test("AIGNE.publish support custom user context", async () => {
+  const agent = FunctionAgent.from({
+    publishTopic: "test_topic",
+    subscribeTopic: "test_topic1",
+    process: () => ({
+      text: "I am a test agent",
+    }),
+  });
+
+  const aigne = new AIGNE({
+    model: new OpenAIChatModel(),
+    agents: [agent],
+  });
+  assert(aigne.model);
+
+  const agentProcess = spyOn(agent, "process");
+  spyOn(aigne.model, "process").mockReturnValueOnce({
+    text: "I am a test agent",
+  });
+  const result = aigne.subscribe("test_topic");
+  aigne.publish("test_topic1", "hello", {
+    userContext: { id: "test_user_id", name: "test_user_name" },
+  });
+  const { message: response } = await result;
+  expect(response).toEqual({ text: "I am a test agent" });
+  expect(agentProcess).toHaveBeenLastCalledWith(
+    expect.anything(),
+    expect.objectContaining({
+      context: expect.objectContaining({
+        userContext: { id: "test_user_id", name: "test_user_name" },
+      }),
+    }),
+  );
 });

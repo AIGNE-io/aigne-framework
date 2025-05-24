@@ -5,3 +5,4 @@ packages:
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - simple-git-hooks
+  - sqlite3

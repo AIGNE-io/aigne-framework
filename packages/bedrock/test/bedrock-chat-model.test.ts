@@ -92,7 +92,6 @@ test("OpenAI chat model with streaming using async generator", async () => {
     {
       messages: [{ role: "user", content: "Hello, who are you?" }],
     },
-    undefined,
     { streaming: true },
   );
 
@@ -167,7 +166,6 @@ test("BedrockChatModel.invoke with streaming", async () => {
     {
       messages: [{ role: "user", content: "hello" }],
     },
-    undefined,
     { streaming: true },
   );
 

@@ -237,7 +237,7 @@ console.log(result);
 2. **流式模式** - 允许 Agent 以增量方式实时返回结果，非常适合需要即时反馈的交互场景，例如聊天机器人的打字效果：
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-invoke-stream" exclude_imports
-const stream = await agent.invoke("What is the price of ABT?", undefined, {
+const stream = await agent.invoke("What is the price of ABT?", {
   streaming: true,
 });
 let response = "";
@@ -261,7 +261,7 @@ console.log(response);
 class CustomAgent extends Agent {
   override process(
     input: Message,
-    _context: Context,
+    _options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<Message>> {
     console.log("Custom agent processing input:", input);
     return {

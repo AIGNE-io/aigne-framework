@@ -5,10 +5,10 @@ import {
   AIAgentToolChoice,
   AIGNE,
   Agent,
+  type AgentInvokeOptions,
   type AgentProcessAsyncGenerator,
   type AgentResponseChunk,
   type AgentResponseStream,
-  type Context,
   FunctionAgent,
   type Message,
   textDelta,
@@ -92,7 +92,7 @@ test("Agent returning a ReadableStream", async () => {
   }
 
   const agent = new StreamResponseAgent();
-  const stream = await agent.invoke("Hello", undefined, { streaming: true });
+  const stream = await agent.invoke("Hello", { streaming: true });
 
   let fullText = "";
   for await (const chunk of stream) {
@@ -110,7 +110,10 @@ test("Agent using AsyncGenerator", async () => {
   // #region example-process-async-generator
 
   class AsyncGeneratorAgent extends Agent {
-    async *process(_input: Message, _context: Context): AgentProcessAsyncGenerator<Message> {
+    async *process(
+      _input: Message,
+      _options: AgentInvokeOptions,
+    ): AgentProcessAsyncGenerator<Message> {
       // Use async generator to produce streaming results
       yield textDelta({ message: "This" });
       yield textDelta({ message: "," });
@@ -126,7 +129,7 @@ test("Agent using AsyncGenerator", async () => {
   }
 
   const agent = new AsyncGeneratorAgent();
-  const stream = await agent.invoke("Hello", undefined, { streaming: true });
+  const stream = await agent.invoke("Hello", { streaming: true });
 
   const message: string[] = [];
   let json: Message | undefined;

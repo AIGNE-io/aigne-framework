@@ -27,6 +27,8 @@ test("logger should logging messages", async () => {
   const log = spyOn(logger, "logMessage");
   const logError = spyOn(logger, "logError");
 
+  const originalLevel = logger.level;
+
   logger.level = LogLevel.DEBUG;
 
   logger.debug("test debug message");
@@ -40,4 +42,6 @@ test("logger should logging messages", async () => {
 
   logger.error("test error message");
   expect(logError.mock.lastCall?.[0]).toMatch("test error message");
+
+  logger.level = originalLevel;
 });

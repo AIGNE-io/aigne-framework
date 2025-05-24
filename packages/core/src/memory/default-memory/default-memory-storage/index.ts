@@ -90,7 +90,7 @@ export class DefaultMemoryStorage extends MemoryStorage {
   }
 }
 
-function initSequelize(path?: string) {
+export function initSequelize(path?: string) {
   const sequelize = new Sequelize({
     logging: (sql) => logger.debug(sql),
     storage: path,

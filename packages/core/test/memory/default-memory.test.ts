@@ -79,13 +79,11 @@ test("should add memory after topic trigger", async () => {
   memoryAgent.attach(context);
 
   const record = spyOn(memoryAgent, "record");
-
-  const sub = context.subscribe("test_topic");
+  const lastCall = waitLastCall(record);
 
   context.publish("test_topic", "hello");
 
-  await sub;
-  await waitLastCall(record);
+  await lastCall;
 
   const { result: allMemories } = await storage.search({}, { context });
 

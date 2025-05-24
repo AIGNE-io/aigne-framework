@@ -1,5 +1,5 @@
 import { type ZodObject, type ZodType, z } from "zod";
-import { DefaultMemory, type DefaultMemoryOptions } from "../memory/default-memory.js";
+import { DefaultMemory, type DefaultMemoryOptions } from "../memory/default-memory/index.js";
 import { MemoryAgent } from "../memory/memory.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";

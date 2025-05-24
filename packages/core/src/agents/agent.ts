@@ -1,6 +1,6 @@
 import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
-import type { Context } from "../aigne/context.js";
+import type { Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { MemoryAgent } from "../memory/memory.js";
 import { createMessage } from "../prompt/prompt-builder.js";
@@ -163,7 +163,7 @@ export const agentOptionsSchema: ZodObject<{
   guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
 });
 
-export interface AgentInvokeOptions {
+export interface AgentInvokeOptions<U extends UserContext = UserContext> {
   /**
    * The execution context for the agent
    *
@@ -177,7 +177,7 @@ export interface AgentInvokeOptions {
    * Each agent invocation requires a context to coordinate with the broader
    * agent system and maintain proper isolation and resource control.
    */
-  context: Context;
+  context: Context<U>;
 
   /**
    * Whether to enable streaming response
@@ -515,7 +515,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input: message });
 
     try {
-      await this.hooks.onStart?.({ input: message });
+      await this.hooks.onStart?.({ context: opts.context, input: message });
 
       const parsedInput = checkArguments(`Agent ${this.name} input`, this.inputSchema, message);
 
@@ -576,13 +576,15 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     input: I,
     options: AgentInvokeOptions,
   ): Promise<O> {
-    await this.hooks.onSkillStart?.({ skill, input });
+    const { context } = options;
+
+    await this.hooks.onSkillStart?.({ context, skill, input });
     try {
-      const output = await options.context.invoke(skill, input);
-      await this.hooks.onSkillEnd?.({ skill, input, output });
+      const output = await context.invoke(skill, input);
+      await this.hooks.onSkillEnd?.({ context, skill, input, output });
       return output;
     } catch (error) {
-      await this.hooks.onSkillEnd?.({ skill, input, error });
+      await this.hooks.onSkillEnd?.({ context, skill, input, error });
       throw error;
     }
   }
@@ -602,6 +604,8 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     output: Exclude<AgentResponse<O>, AgentResponseStream<O>>,
     options: AgentInvokeOptions,
   ) {
+    const { context } = options;
+
     const parsedOutput = checkArguments(
       `Agent ${this.name} output`,
       this.outputSchema,
@@ -613,10 +617,9 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     await this.postprocess(input, finalOutput, options);
 
     logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
-    if (!this.disableEvents)
-      options.context.emit("agentSucceed", { agent: this, output: finalOutput });
+    if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
-    await this.hooks.onEnd?.({ input, output: finalOutput });
+    await this.hooks.onEnd?.({ context, input, output: finalOutput });
 
     return finalOutput;
   }
@@ -637,7 +640,9 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
     if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
 
-    await this.hooks.onEnd?.({ input, error });
+    const { context } = options;
+
+    await this.hooks.onEnd?.({ context, input, error });
 
     return error;
   }
@@ -872,7 +877,7 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the input message
    */
-  onStart?: (event: { input: I }) => PromiseOrValue<void>;
+  onStart?: (event: { context: Context; input: I }) => PromiseOrValue<void>;
 
   /**
    * Called when agent processing completes or fails
@@ -884,7 +889,7 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    * @param event Object containing the input message and either output or error
    */
   onEnd?: (
-    event: XOr<{ input: I; output: O; error: Error }, "output", "error">,
+    event: XOr<{ context: Context; input: I; output: O; error: Error }, "output", "error">,
   ) => PromiseOrValue<void>;
 
   /**
@@ -895,7 +900,7 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the skill being used and input message
    */
-  onSkillStart?: (event: { skill: Agent; input: I }) => PromiseOrValue<void>;
+  onSkillStart?: (event: { context: Context; skill: Agent; input: I }) => PromiseOrValue<void>;
 
   /**
    * Called after a skill (sub-agent) completes or fails
@@ -907,7 +912,11 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    * @param event Object containing the skill used, input message, and either output or error
    */
   onSkillEnd?: (
-    event: XOr<{ skill: Agent; input: I; output: O; error: Error }, "output", "error">,
+    event: XOr<
+      { context: Context; skill: Agent; input: I; output: O; error: Error },
+      "output",
+      "error"
+    >,
   ) => PromiseOrValue<void>;
 
   /**
@@ -919,7 +928,12 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the source agent, target agent, and input message
    */
-  onHandoff?: (event: { source: Agent; target: Agent; input: I }) => PromiseOrValue<void>;
+  onHandoff?: (event: {
+    context: Context;
+    source: Agent;
+    target: Agent;
+    input: I;
+  }) => PromiseOrValue<void>;
 }
 
 /**

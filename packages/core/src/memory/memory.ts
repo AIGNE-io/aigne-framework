@@ -14,6 +14,7 @@ import type { MemoryRetriever, MemoryRetrieverInput, MemoryRetrieverOutput } fro
 
 export interface Memory {
   id: string;
+  sessionId?: string | null;
   content: unknown;
   createdAt: string;
 }

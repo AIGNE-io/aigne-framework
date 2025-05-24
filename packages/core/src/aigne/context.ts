@@ -67,16 +67,24 @@ export type ContextEmitEventMap = {
 /**
  * @hidden
  */
-export interface InvokeOptions extends Omit<AgentInvokeOptions, "context"> {
+export interface InvokeOptions<U extends UserContext = UserContext>
+  extends Partial<Omit<AgentInvokeOptions<U>, "context">> {
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
   sourceAgent?: Agent;
+  userContext?: U;
 }
 
 /**
  * @hidden
  */
-export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitEventMap> {
+export interface UserContext extends Record<string, unknown> {}
+
+/**
+ * @hidden
+ */
+export interface Context<U extends UserContext = UserContext>
+  extends TypedEventEmitter<ContextEventMap, ContextEmitEventMap> {
   model?: ChatModel;
 
   skills?: Agent[];
@@ -86,6 +94,8 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   limits?: ContextLimits;
 
   status?: "normal" | "timeout";
+
+  userContext: U;
 
   /**
    * Create a user agent to consistently invoke an agent
@@ -141,6 +151,7 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
   publish(
     topic: string | string[],
     payload: Omit<MessagePayload, "context"> | Message | string,
+    options?: InvokeOptions,
   ): void;
 
   subscribe(topic: string | string[], listener?: undefined): Promise<MessagePayload>;
@@ -171,12 +182,12 @@ export interface Context extends TypedEventEmitter<ContextEventMap, ContextEmitE
  * @hidden
  */
 export class AIGNEContext implements Context {
-  constructor(parent?: ConstructorParameters<typeof AIGNEContextInternal>[0]) {
+  constructor(...[parent, ...args]: ConstructorParameters<typeof AIGNEContextShared>) {
     if (parent instanceof AIGNEContext) {
       this.parentId = parent.id;
       this.internal = parent.internal;
     } else {
-      this.internal = new AIGNEContextInternal(parent);
+      this.internal = new AIGNEContextShared(parent, ...args);
     }
   }
 
@@ -184,7 +195,7 @@ export class AIGNEContext implements Context {
 
   id = v7();
 
-  readonly internal: AIGNEContextInternal;
+  readonly internal: AIGNEContextShared;
 
   get model() {
     return this.internal.model;
@@ -206,8 +217,15 @@ export class AIGNEContext implements Context {
     return this.internal.usage;
   }
 
+  get userContext() {
+    return this.internal.userContext;
+  }
+  set userContext(userContext: Context["userContext"]) {
+    this.internal.userContext = userContext;
+  }
+
   newContext({ reset }: { reset?: boolean } = {}) {
-    if (reset) return new AIGNEContext(this.internal);
+    if (reset) return new AIGNEContext(this, { userContext: {} });
     return new AIGNEContext(this);
   }
 
@@ -217,6 +235,7 @@ export class AIGNEContext implements Context {
       message,
       options,
     });
+    if (options?.userContext) Object.assign(this.userContext, options.userContext);
 
     if (isNil(message)) {
       return UserAgent.from({
@@ -273,7 +292,9 @@ export class AIGNEContext implements Context {
     );
   }) as Context["invoke"];
 
-  publish = ((topic, payload) => {
+  publish = ((topic, payload, options) => {
+    if (options?.userContext) Object.assign(this.userContext, options.userContext);
+
     return this.internal.messageQueue.publish(topic, {
       ...toMessagePayload(payload),
       context: this,
@@ -323,13 +344,15 @@ export class AIGNEContext implements Context {
   }
 }
 
-class AIGNEContextInternal {
+class AIGNEContextShared {
   constructor(
     private readonly parent?: Pick<Context, "model" | "skills" | "limits"> & {
       messageQueue?: MessageQueue;
     },
+    overrides?: Partial<Context>,
   ) {
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
+    this.userContext = overrides?.userContext ?? {};
   }
 
   readonly messageQueue: MessageQueue;
@@ -349,6 +372,8 @@ class AIGNEContextInternal {
   }
 
   usage: ContextUsage = newEmptyContextUsage();
+
+  userContext: Context["userContext"];
 
   private abortController = new AbortController();
 
@@ -396,6 +421,7 @@ class AIGNEContextInternal {
 
       if (options?.sourceAgent && activeAgent !== options.sourceAgent) {
         options.sourceAgent.hooks.onHandoff?.({
+          context,
           source: options.sourceAgent,
           target: activeAgent,
           input,

@@ -10,7 +10,7 @@ import {
   PromptBuilder,
   createMessage,
 } from "@aigne/core";
-import { DefaultMemory } from "@aigne/core/memory/default-memory.js";
+import { DefaultMemory } from "@aigne/core/memory/default-memory/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 

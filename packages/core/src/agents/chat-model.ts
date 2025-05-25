@@ -130,11 +130,11 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
    * @param output Output message
    * @param options Options for invoking the agent
    */
-  protected override postprocess(
+  protected override async postprocess(
     input: ChatModelInput,
     output: ChatModelOutput,
     options: AgentInvokeOptions,
-  ): void {
+  ): Promise<void> {
     // Restore original tool names in the output
     if (output.toolCalls?.length) {
       const toolsMap = input._toolsMap as Record<string, ChatModelInputTool> | undefined;

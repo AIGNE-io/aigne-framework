@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.12.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-router-v1.12.0...example-workflow-router-v1.12.1) (2025-05-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.10.1
+    * @aigne/core bumped to 1.17.0
+    * @aigne/openai bumped to 0.2.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.3.1
+
 ## [1.12.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-router-v1.11.1...example-workflow-router-v1.12.0) (2025-05-23)
 
 

@@ -22,6 +22,13 @@
 * rename @aigne/core-next to @aigne/core ([3a81009](https://github.com/AIGNE-io/aigne-framework/commit/3a8100962c81813217b687ae28e8de604419c622))
 * use text resource from MCP correctly ([8b9eba8](https://github.com/AIGNE-io/aigne-framework/commit/8b9eba83352ec096a2a5d4f410d4c4bde7420bce))
 
+## [1.17.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.16.0...core-v1.17.0) (2025-05-25)
+
+
+### Features
+
+* add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
+
 ## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.15.0...core-v1.16.0) (2025-05-23)
 
 

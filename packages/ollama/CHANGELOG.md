@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/ollama-v0.1.0...ollama-v0.2.0) (2025-05-25)
+
+
+### Features
+
+* add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.2.0
+  * devDependencies
+    * @aigne/core bumped to 1.17.0
+    * @aigne/test-utils bumped to 0.3.1
+
 ## [0.1.0](https://github.com/AIGNE-io/aigne-framework/compare/ollama-v0.0.1...ollama-v0.1.0) (2025-05-23)
 
 

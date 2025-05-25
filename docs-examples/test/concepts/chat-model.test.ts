@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import { ChatModel, type ChatModelInput, type ChatModelOutput } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -13,6 +13,14 @@ test("Example ChatModel: OpenAI", async () => {
   // #endregion example-chat-models-openai-create-model
 
   // #region example-chat-models-openai-invoke
+  spyOn(model, "process").mockReturnValueOnce({
+    model: "gpt-4o-mini-2024-07-18",
+    text: "Hello! How can I assist you today?",
+    usage: {
+      inputTokens: 8,
+      outputTokens: 9,
+    },
+  });
   const result = await model.invoke({
     messages: [{ role: "user", content: "Hello" }],
   });

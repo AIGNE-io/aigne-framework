@@ -106,6 +106,19 @@ test("Build first agent: MCP server as Agent", async () => {
 });
 
 test("Build first agent: add skills to agent", async () => {
+  spyOn(MCPAgent, "from").mockReturnValueOnce(
+    new MCPAgent({
+      name: "ccxt",
+      client: mock() as unknown as MCPAgent["client"],
+      skills: [
+        FunctionAgent.from({
+          name: "get-ticker",
+          process: () => ({}),
+        }),
+      ],
+    }),
+  );
+
   // #region example-add-skills-to-agent
 
   const aigne = new AIGNE({

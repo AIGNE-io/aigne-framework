@@ -1,5 +1,9 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import assert from "node:assert";
+import { randomUUID } from "node:crypto";
+import { mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { AIAgent, AIGNE, FunctionAgent, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
@@ -138,6 +142,10 @@ test("Build first agent: add skills to agent", async () => {
 });
 
 test("Build first agent: enable memory for agent", async () => {
+  const tmp = join(tmpdir(), randomUUID());
+  const memoryStoragePath = join(tmp, "memory.db");
+  await mkdir(tmp, { recursive: true });
+
   // #region example-enable-memory-for-agent
 
   const aigne = new AIGNE({
@@ -148,7 +156,11 @@ test("Build first agent: enable memory for agent", async () => {
   // #region example-enable-memory-for-agent-enable-memory
   const agent = AIAgent.from({
     instructions: "You are a helpful assistant for Crypto market analysis",
-    memory: true,
+    memory: {
+      storage: {
+        path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+      },
+    },
   });
   // #endregion example-enable-memory-for-agent-enable-memory
 
@@ -201,6 +213,8 @@ test("Build first agent: enable memory for agent", async () => {
   // #endregion example-enable-memory-for-agent-invoke-agent-4
 
   // #endregion example-enable-memory-for-agent
+
+  await rm(tmp, { recursive: true, force: true });
 });
 
 test("Build first agent: serve agent as API service", async () => {

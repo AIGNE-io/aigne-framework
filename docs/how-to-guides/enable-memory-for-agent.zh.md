@@ -18,17 +18,18 @@
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-enable-memory" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
-  memory: true,
+  memory: {
+    storage: {
+      path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+    },
+  },
 });
 ```
 
 **说明**：
 
-* **简单配置**：仅需将 `memory` 参数设置为 `true` 即可启用内置的默认 memory agent(in memory)
-* **内部机制**：框架会使用默认的内存存储模式管理对话历史
+* **持久化存储**：通过配置 `storage.path` 可以将记忆数据持久化到文件
 * **零代码管理**：记忆的存储、检索和上下文构建都由框架自动处理
-* **自定义选项**：框架也支持自定义其他 memory agent，不仅限于默认的内存模式
-* **指令配合**：为取得最佳效果，`instructions` 应设计为能利用上下文信息
 * **底层实现**：系统使用对话历史作为模型的上下文输入，实现"记忆"效果
 
 ### 第一轮对话 - 提供个人信息
@@ -118,7 +119,11 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
-  memory: true,
+  memory: {
+    storage: {
+      path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+    },
+  },
 });
 
 const result1 = await aigne.invoke(

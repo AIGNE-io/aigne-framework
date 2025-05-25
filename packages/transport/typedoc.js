@@ -6,4 +6,5 @@ import base from "../../typedoc.base.js";
 export default {
   ...base,
   entryPoints: ["src/http-server/index.ts", "src/http-client/index.ts"],
+  readme: "README.md",
 };

@@ -110,10 +110,7 @@ console.log(result2);
 
 ## Documentation
 
-* [Cookbook](./docs/cookbook.md) ([中文](./docs/cookbook.zh.md)): Practical recipes and patterns for AIGNE Framework API usage
-* [CLI Guide](./docs/cli.md) ([中文](./docs/cli.zh.md)): Comprehensive guide to the AIGNE CLI tool
-* [Agent Development Guide](./docs/agent-development.md) ([中文](./docs/agent-development.zh.md)): Guide to developing AIGNE agents using YAML/JS configuration files
-* [API References](https://aigne-io.github.io/#/api/@aigne/core/README)
+[AIGNE Framework Documentation](https://aigne-io.github.io/aigne-framework) provides comprehensive guides and API references to help developers quickly get started and master the framework.
 
 ## Architecture
 

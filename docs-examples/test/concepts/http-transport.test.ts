@@ -32,7 +32,8 @@ test("Example HTTPTransport: AIGNEHTTPServer and AIGNEHTTPClient", async () => {
   const app = express();
 
   app.post("/api/chat", async (req, res) => {
-    await server.invoke(req, res);
+    const userId = "user_123"; // Example user ID, replace with actual logic to get user ID
+    await server.invoke(req, res, { userContext: { userId } });
   });
 
   let port = 3000;

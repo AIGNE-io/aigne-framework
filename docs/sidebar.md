@@ -9,6 +9,7 @@
   * [MCP Server as Agent](/how-to-guides/mcp-server-as-agent.zh.md)
   * [Add Skills to Agent](/how-to-guides/add-skills-to-agent.zh.md)
   * [Enable Memory for Agent](/how-to-guides/enable-memory-for-agent.zh.md)
+  * [Custom User Context](/how-to-guides/custom-user-context.zh.md)
   * [Serve Agent as API](/how-to-guides/serve-agent-as-api.zh.md)
   * [Available Chat Models](/how-to-guides/available-chat-models.zh.md)
 

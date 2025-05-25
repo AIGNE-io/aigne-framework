@@ -217,14 +217,67 @@ test("Build first agent: enable memory for agent", async () => {
   await rm(tmp, { recursive: true, force: true });
 });
 
+test("Build first agent: custom user context", async () => {
+  const tmp = join(tmpdir(), randomUUID());
+  const memoryStoragePath = join(tmp, "memory.db");
+  await mkdir(tmp, { recursive: true });
+
+  // #region example-custom-user-context
+
+  const aigne = new AIGNE({
+    model: new OpenAIChatModel(),
+  });
+  assert(aigne.model);
+
+  // #region example-custom-user-context-create-agent
+  const agent = AIAgent.from({
+    instructions: "You are a helpful assistant for Crypto market analysis",
+    memory: {
+      storage: {
+        path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+        getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
+      },
+    },
+  });
+  // #endregion example-custom-user-context-create-agent
+
+  // #region example-custom-user-context-invoke-agent
+  spyOn(aigne.model, "process").mockReturnValueOnce({
+    text: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?",
+  });
+  const result = await aigne.invoke(agent, "My name is John Doe and I like to invest in Bitcoin.", {
+    userContext: { userId: "user_123" },
+  });
+  console.log(result);
+  // Output: { $message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
+  expect(result).toEqual({
+    $message:
+      "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?",
+  });
+  // #endregion example-custom-user-context-invoke-agent
+
+  // #endregion example-custom-user-context
+
+  await rm(tmp, { recursive: true, force: true });
+});
+
 test("Build first agent: serve agent as API service", async () => {
+  const tmp = join(tmpdir(), randomUUID());
+  const memoryStoragePath = join(tmp, "memory.db");
+  await mkdir(tmp, { recursive: true });
+
   // #region example-serve-agent-as-api-service
 
   // #region example-serve-agent-as-api-service-create-named-agent
   const agent = AIAgent.from({
     name: "chatbot",
     instructions: "You are a helpful assistant",
-    memory: true,
+    memory: {
+      storage: {
+        path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+        getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
+      },
+    },
   });
   // #endregion example-serve-agent-as-api-service-create-named-agent
 
@@ -242,7 +295,8 @@ test("Build first agent: serve agent as API service", async () => {
   const app = express();
 
   app.post("/api/chat", async (req, res) => {
-    await server.invoke(req, res);
+    const userId = "user_123"; // Example user ID, replace with actual logic to get user ID, such as `req.user.id` in a real application
+    await server.invoke(req, res, { userContext: { userId } });
   });
 
   let port = 3000;
@@ -274,4 +328,6 @@ test("Build first agent: serve agent as API service", async () => {
 
   httpServer.closeAllConnections();
   httpServer.close();
+
+  await rm(tmp, { recursive: true, force: true });
 });

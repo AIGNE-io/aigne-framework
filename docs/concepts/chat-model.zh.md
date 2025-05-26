@@ -1,5 +1,7 @@
 # ChatModel
 
+[English](./chat-model.md) | [中文](./chat-model.zh.md)
+
 ## 概述
 
 ChatModel 是 AIGNE 框架中的一个核心组件，它为与大型语言模型（LLM）的交互提供了统一的接口。作为 Agent 类的扩展，ChatModel 抽象了不同 AI 服务提供商的细节差异，使开发者能够以一致的方式使用各种语言模型，如 OpenAI、Anthropic、Bedrock 等。ChatModel 支持文本生成、工具调用、JSON 结构化输出和图像理解等功能，为构建复杂的 AI 应用提供了坚实的基础。

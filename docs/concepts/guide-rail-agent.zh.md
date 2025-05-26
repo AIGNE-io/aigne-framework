@@ -1,5 +1,7 @@
 # GuideRailAgent
 
+[English](./guide-rail-agent.md) | [中文](./guide-rail-agent.zh.md)
+
 ## 概述
 
 GuideRailAgent 是 AIGNE 框架中的一个特殊代理类型，它用于对其他代理的输入和输出进行验证、过滤和控制。GuideRailAgent 可以被视为一种"守护者"或"审查员"，它能够检查代理的响应是否符合特定的规则或政策，并在必要时阻止不合规的响应。这种机制对于构建安全、合规的 AI 应用至关重要，可以防止代理生成有害、不准确或不适当的内容。通过 GuideRailAgent，开发者可以实现内容审核、事实核查、格式验证等多种控制机制，确保 AI 系统的输出符合预期标准。

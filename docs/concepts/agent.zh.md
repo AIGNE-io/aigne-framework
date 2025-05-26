@@ -1,5 +1,7 @@
 # Agent
 
+[English](./agent.md) | [中文](./agent.zh.md)
+
 Agent 是 AIGNE 框架的核心基石，它不仅仅是一个简单的类，而是整个 Agent 生态系统的灵魂。通过 Agent 类，您可以构建从简单对话助手到复杂决策系统的各种智能应用，它为所有 Agent 提供了定义输入/输出架构和实现处理逻辑的统一机制。
 
 想象 Agent 为您的 AI 应用提供了一个强大而灵活的骨架，您可以通过扩展它来打造具有丰富能力的 Agent：
@@ -16,12 +18,12 @@ Agent 是 AIGNE 框架的核心基石，它不仅仅是一个简单的类，而�
 
 AIGNE 提供了一系列预构建的强大代理类型，满足各种应用场景需求：
 
-* [FunctionAgent](./agent-function-agent.zh.md) - 通过函数实现逻辑的轻量级代理，适合简单明确的任务
-* [AIAgent](./agent-ai-agent.zh.md) - 融合大型语言模型能力的智能代理，适合复杂自然语言交互
-* [TeamAgent](./agent-team-agent.zh.md) - 协调多个专家代理协同工作的团队管理者，解决复杂多步骤问题
-* [MCPAgent](./agent-mcp-agent.zh.md) - 连接外部 MCP 服务器的桥梁代理，扩展系统能力边界
-* [MemoryAgent](./agent-memory-agent.zh.md) - 具有上下文记忆能力的增强代理，实现持续对话和学习
-* [GuideRailAgent](./agent-guide-rail-agent.zh.md) - 提供安全指导规则的监督代理，确保输出符合预期标准
+* [FunctionAgent](./function-agent.zh.md) - 通过函数实现逻辑的轻量级代理，适合简单明确的任务
+* [AIAgent](./ai-agent.zh.md) - 融合大型语言模型能力的智能代理，适合复杂自然语言交互
+* [TeamAgent](./team-agent.zh.md) - 协调多个专家代理协同工作的团队管理者，解决复杂多步骤问题
+* [MCPAgent](./mcp-agent.zh.md) - 连接外部 MCP 服务器的桥梁代理，扩展系统能力边界
+* [MemoryAgent](./memory-agent.zh.md) - 具有上下文记忆能力的增强代理，实现持续对话和学习
+* [GuideRailAgent](./guide-rail-agent.zh.md) - 提供安全指导规则的监督代理，确保输出符合预期标准
 
 ## Agent 类详解
 

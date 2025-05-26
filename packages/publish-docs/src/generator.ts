@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { type Tokens, type TokensList, marked } from "marked";
-import { Converter } from "./converter/index.ts";
-import { slugify } from "./utils/slugify.ts";
+import { Converter } from "./converter/index.js";
+import { slugify } from "./utils/slugify.js";
 
 const resolveSubpageLexical = (slug: string) =>
   `{"root":{"children":[{"type":"subpage-listing","version":1,"format":"","data":{"mode":"children","docPostId":"${slug}"}}],"direction":null,"format":"","indent":0,"type":"root","version":1}}`;
@@ -18,6 +18,7 @@ export interface DocNode {
 }
 
 export interface GeneratorOptions {
+  sidebarPath: string;
   slugPrefix?: string;
 }
 
@@ -27,8 +28,8 @@ export class Generator {
   private sidebarPath: string;
   private converter: Converter;
 
-  constructor(options: GeneratorOptions = {}) {
-    this.sidebarPath = path.join(process.cwd(), "docs/_sidebar.md");
+  constructor(options: GeneratorOptions) {
+    this.sidebarPath = options.sidebarPath;
     this.slugs = new Set<string>();
     this.slugPrefix = options.slugPrefix;
     this.converter = new Converter({ slugPrefix: options.slugPrefix });

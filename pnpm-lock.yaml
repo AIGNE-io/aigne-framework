@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@aigne/publish-docs':
+        specifier: workspace:^
+        version: link:packages/publish-docs
       '@biomejs/biome':
         specifier: ^1.9.4
         version: 1.9.4
@@ -17,45 +20,9 @@ importers:
       '@biomejs/wasm-nodejs':
         specifier: ^1.9.4
         version: 1.9.4
-      '@lexical/code':
-        specifier: ^0.31.2
-        version: 0.31.2
-      '@lexical/headless':
-        specifier: ^0.31.2
-        version: 0.31.2
-      '@lexical/html':
-        specifier: ^0.31.2
-        version: 0.31.2
-      '@lexical/link':
-        specifier: ^0.31.2
-        version: 0.31.2
-      '@lexical/list':
-        specifier: ^0.31.2
-        version: 0.31.2
-      '@lexical/react':
-        specifier: ^0.31.2
-        version: 0.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yjs@13.6.27)
-      '@lexical/rich-text':
-        specifier: ^0.31.2
-        version: 0.31.2
-      '@lexical/table':
-        specifier: ^0.31.2
-        version: 0.31.2
-      '@types/jsdom':
-        specifier: ^21.1.7
-        version: 21.1.7
       fenceparser:
         specifier: ^2.2.0
         version: 2.2.0
-      jsdom:
-        specifier: ^26.1.0
-        version: 26.1.0
-      lexical:
-        specifier: ^0.31.2
-        version: 0.31.2
-      marked:
-        specifier: ^15.0.12
-        version: 15.0.12
       mdast:
         specifier: ^3.0.0
         version: 3.0.0
@@ -89,9 +56,6 @@ importers:
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
-      zod:
-        specifier: ^3.25.23
-        version: 3.25.23
       zx:
         specifier: ^8.5.4
         version: 8.5.4
@@ -885,6 +849,61 @@ importers:
       '@types/node':
         specifier: ^22.15.15
         version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/publish-docs:
+    dependencies:
+      '@lexical/code':
+        specifier: ^0.31.2
+        version: 0.31.2
+      '@lexical/headless':
+        specifier: ^0.31.2
+        version: 0.31.2
+      '@lexical/html':
+        specifier: ^0.31.2
+        version: 0.31.2
+      '@lexical/link':
+        specifier: ^0.31.2
+        version: 0.31.2
+      '@lexical/list':
+        specifier: ^0.31.2
+        version: 0.31.2
+      '@lexical/react':
+        specifier: ^0.31.2
+        version: 0.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yjs@13.6.27)
+      '@lexical/rich-text':
+        specifier: ^0.31.2
+        version: 0.31.2
+      '@lexical/table':
+        specifier: ^0.31.2
+        version: 0.31.2
+      jsdom:
+        specifier: ^26.1.0
+        version: 26.1.0
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
+      lexical:
+        specifier: ^0.31.2
+        version: 0.31.2
+      marked:
+        specifier: ^15.0.12
+        version: 15.0.12
+      open:
+        specifier: ^10.1.2
+        version: 10.1.2
+    devDependencies:
+      '@types/jsdom':
+        specifier: ^21.1.7
+        version: 21.1.7
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -1787,11 +1806,11 @@ packages:
   '@types/is-empty@1.2.3':
     resolution: {integrity: sha512-4J1l5d79hoIvsrKh5VUKVRA1aIdsOb10Hu5j3J2VfP/msDnfTdGPmNp2E1Wg+vs97Bktzo+MZePFFXSGoykYJw==}
 
-  '@types/json-schema@7.0.15':
-    resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
-
   '@types/jsdom@21.1.7':
     resolution: {integrity: sha512-yOriVnggzrnQ3a9OKOCxaVuSug3w3/SbOj5i7VwXWZEyUNl3bLF9V3MfxGbZKuwqJOQyRfqXyROBB1CoZLFWzA==}
+
+  '@types/json-schema@7.0.15':
+    resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
   '@types/jsonwebtoken@9.0.9':
     resolution: {integrity: sha512-uoe+GxEuHbvy12OUQct2X9JenKM3qAscquYymuQN4fMWG9DBQtykrQEFcAbVACF7qaLw9BePSodUL0kquqBJpQ==}
@@ -6008,13 +6027,13 @@ snapshots:
 
   '@types/is-empty@1.2.3': {}
 
-  '@types/json-schema@7.0.15': {}
-
   '@types/jsdom@21.1.7':
     dependencies:
       '@types/node': 22.15.15
       '@types/tough-cookie': 4.0.5
       parse5: 7.3.0
+
+  '@types/json-schema@7.0.15': {}
 
   '@types/jsonwebtoken@9.0.9':
     dependencies:

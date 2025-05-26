@@ -15,7 +15,7 @@ import {
   TextNode,
 } from "lexical";
 import { type RendererObject, marked } from "marked";
-import { slugify } from "../utils/slugify.ts";
+import { slugify } from "../utils/slugify.js";
 import { ImageNode } from "./nodes/image-node.js";
 import { MermaidNode } from "./nodes/mermaid-node.js";
 

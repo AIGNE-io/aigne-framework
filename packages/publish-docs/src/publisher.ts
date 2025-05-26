@@ -1,5 +1,5 @@
-import type { DocNode } from "./generator.ts";
-import { getComponentMountPoint } from "./utils/get-component-mount-point.ts";
+import type { DocNode } from "./generator.js";
+import { getComponentMountPoint } from "./utils/get-component-mount-point.js";
 
 interface PublishResult {
   success: boolean;

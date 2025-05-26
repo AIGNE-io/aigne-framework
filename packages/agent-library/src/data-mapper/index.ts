@@ -1,8 +1,8 @@
 import { AIGNE, type ChatModel, UserInputTopic, UserOutputTopic } from "@aigne/core";
 
-import toJsonSchema from "to-json-schema";
 import mapper from "./agents/mapper.js";
 import reviewer from "./agents/reviewer.js";
+import { getSchemaFromData } from "./tools.js";
 
 export interface TransformInput {
   responseSchema: string;
@@ -18,35 +18,30 @@ export async function generateMapping({
   model,
 }: {
   input: TransformInput;
-  model?: ChatModel;
+  model: ChatModel;
 }): Promise<{
   jsonata: string;
   confidence: number;
   confidenceReasoning: string;
 } | null> {
-  try {
-    if (!model) throw new Error("model is required to run data mapper");
+  if (!model) throw new Error("model is required to run data mapper");
 
-    // if sourceSchema is not provided, generate it from sourceData
-    if (!input.sourceSchema && input.sourceData) {
-      input.sourceSchema = JSON.stringify(toJsonSchema(JSON.parse(input.sourceData)));
-    }
-
-    const engine = new AIGNE({ model, agents: [mapper, reviewer] });
-
-    engine.publish(UserInputTopic, input);
-
-    const { message } = await engine.subscribe(UserOutputTopic);
-
-    return {
-      jsonata: (message.jsonata as string) || "",
-      confidence: (message.confidence as number) || 0,
-      confidenceReasoning: (message.confidenceReasoning as string) || "",
-    };
-  } catch (error: unknown) {
-    console.error("Error generating mapping:", String(error));
+  // if sourceSchema is not provided, generate it from sourceData
+  if (!input.sourceSchema && input.sourceData) {
+    input.sourceSchema = JSON.stringify(getSchemaFromData(JSON.parse(input.sourceData)));
   }
-  return null;
+
+  const aigne = new AIGNE({ model, agents: [mapper, reviewer] });
+
+  aigne.publish(UserInputTopic, input);
+
+  const { message } = await aigne.subscribe(UserOutputTopic);
+
+  return {
+    jsonata: (message.jsonata as string) || "",
+    confidence: (message.confidence as number) || 0,
+    confidenceReasoning: (message.confidenceReasoning as string) || "",
+  };
 }
 
 export { applyJsonata } from "./tools.js";

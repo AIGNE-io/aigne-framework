@@ -1,4 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
+import type { ChatModel } from "@aigne/core";
 import type { Schema } from "jsonschema";
 import { generateMapping } from "../../src/data-mapper/index.js";
 import {
@@ -398,7 +399,7 @@ test("addNullableToOptional - top level array schema", () => {
 // Testing error handling for generateMapping
 test("generateMapping - error handling", async () => {
   // Testing when no model is provided
-  const result = await generateMapping({ input: testData });
+  const result = await generateMapping({ input: testData, model: null as unknown as ChatModel });
   expect(result).toBeNull();
 });
 

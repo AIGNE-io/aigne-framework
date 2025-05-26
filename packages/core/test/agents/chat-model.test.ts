@@ -75,7 +75,6 @@ test("ChatModel with streaming response", async () => {
     {
       messages: [{ role: "user", content: "Hello" }],
     },
-    undefined,
     { streaming: true },
   );
 
@@ -115,7 +114,6 @@ test("ChatModel with streaming response with async generator", async () => {
     {
       messages: [{ role: "user", content: "Hello" }],
     },
-    undefined,
     { streaming: true },
   );
 

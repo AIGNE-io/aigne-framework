@@ -1,6 +1,11 @@
 import { v7 } from "uuid";
 import { type ZodType, z } from "zod";
-import { Agent, type AgentOptions, type Message } from "../agents/agent.js";
+import {
+  Agent,
+  type AgentInvokeOptions,
+  type AgentOptions,
+  type Message,
+} from "../agents/agent.js";
 import type { Context } from "../aigne/context.js";
 import type { MessagePayload } from "../aigne/message-queue.js";
 import { checkArguments, remove } from "../utils/type-utils.js";
@@ -9,6 +14,7 @@ import type { MemoryRetriever, MemoryRetrieverInput, MemoryRetrieverOutput } fro
 
 export interface Memory {
   id: string;
+  sessionId?: string | null;
   content: unknown;
   createdAt: string;
 }
@@ -105,7 +111,7 @@ export class MemoryAgent extends Agent {
    * MemoryAgent doesn't directly process messages like other agents, so this method
    * throws an error when called. Use the specialized retrieve() and record() methods instead.
    */
-  async process(_input: Message, _context: Context): Promise<Message> {
+  async process(_input: Message, _options: AgentInvokeOptions): Promise<Message> {
     throw new Error("Method not implemented.");
   }
 

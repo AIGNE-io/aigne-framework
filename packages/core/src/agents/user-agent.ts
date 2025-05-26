@@ -46,23 +46,23 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     if (this._process) super.subscribeToTopics(context);
   }
 
-  protected override async publishToTopics(output: O, context: Context) {
-    if (this._process) super.publishToTopics(output, context);
+  protected override async publishToTopics(output: O, options: AgentInvokeOptions) {
+    if (this._process) super.publishToTopics(output, options);
   }
 
-  override invoke = ((input: string | I, context?: Context, options?: AgentInvokeOptions) => {
-    if (!context) this.context = this.context.newContext({ reset: true });
+  override invoke = ((input: string | I, options: Partial<AgentInvokeOptions> = {}) => {
+    if (!options.context) this.context = this.context.newContext({ reset: true });
 
-    return super.invoke(input, context ?? this.context, options);
+    return super.invoke(input, { ...options, context: this.context });
   }) as Agent<I, O>["invoke"];
 
-  async process(input: I, context: Context): Promise<AgentProcessResult<O>> {
+  async process(input: I, options: AgentInvokeOptions): Promise<AgentProcessResult<O>> {
     if (this._process) {
-      return this._process(input, context);
+      return this._process(input, options);
     }
 
     if (this.activeAgent) {
-      const [output, agent] = await context.invoke(this.activeAgent, input, {
+      const [output, agent] = await options.context.invoke(this.activeAgent, input, {
         returnActiveAgent: true,
         streaming: true,
       });
@@ -76,7 +76,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
       typeof this.publishTopic === "function" ? await this.publishTopic(input) : this.publishTopic;
 
     if (publicTopic?.length) {
-      context.publish(publicTopic, input);
+      options.context.publish(publicTopic, input);
 
       if (this.subscribeTopic) {
         return this.subscribe(this.subscribeTopic).then((res) => res.message as O);
@@ -124,7 +124,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     });
   }
 
-  protected override checkAgentInvokesUsage(_context: Context): void {
+  protected override checkAgentInvokesUsage(_options: AgentInvokeOptions): void {
     // ignore calls usage check for UserAgent
   }
 }

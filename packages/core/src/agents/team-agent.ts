@@ -1,8 +1,8 @@
-import type { Context } from "../aigne/context.js";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { type PromiseOrValue, isEmpty } from "../utils/type-utils.js";
 import {
   Agent,
+  type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
   type AgentResponseChunk,
@@ -108,15 +108,15 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * - In parallel mode: Process input through all agents simultaneously and combine their outputs
    *
    * @param input The message to process
-   * @param context The execution context
+   * @param options The invocation options
    * @returns A stream of message chunks that collectively form the response
    */
-  process(input: I, context: Context): PromiseOrValue<AgentProcessResult<O>> {
+  process(input: I, options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>> {
     switch (this.mode) {
       case ProcessMode.sequential:
-        return this._processSequential(input, context);
+        return this._processSequential(input, options);
       case ProcessMode.parallel:
-        return this._processParallel(input, context);
+        return this._processParallel(input, options);
     }
   }
 
@@ -130,12 +130,15 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * 4. Updates the team's agent list with any changes that occurred during processing
    *
    * @param input The message to process
-   * @param context The execution context
+   * @param options The invocation options
    * @returns A stream of message chunks from all agents
    *
    * @private
    */
-  async *_processSequential(input: I, context: Context): PromiseOrValue<AgentProcessResult<O>> {
+  async *_processSequential(
+    input: I,
+    options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<O>> {
     const output: Message = {};
 
     // Clone the agents to run, so that we can update the agents list during the loop
@@ -143,14 +146,14 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     const newAgents: Agent[] = [];
 
     for (const agent of agents) {
-      const [o, transferToAgent] = await context.invoke(
+      const [o, transferToAgent] = await options.context.invoke(
         agent,
         { ...input, ...output },
         { returnActiveAgent: true, streaming: true },
       );
 
       for await (const chunk of o) {
-        yield chunk;
+        yield chunk as AgentResponseChunk<O>;
         mergeAgentResponseChunk(output, chunk);
       }
       newAgents.push(await transferToAgent);
@@ -169,15 +172,18 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * 3. Updates the team's agent list with any changes that occurred during processing
    *
    * @param input The message to process
-   * @param context The execution context
+   * @param options The invocation options
    * @returns A stream of combined message chunks from all agents
    *
    * @private
    */
-  async *_processParallel(input: I, context: Context): PromiseOrValue<AgentProcessResult<O>> {
+  async *_processParallel(
+    input: I,
+    options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<O>> {
     const result = await Promise.all(
       this.skills.map((agent) =>
-        context.invoke(agent, input, { returnActiveAgent: true, streaming: true }),
+        options.context.invoke(agent, input, { returnActiveAgent: true, streaming: true }),
       ),
     );
 
@@ -226,7 +232,8 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
           }
         }
 
-        if (!isEmpty(delta.json) || !isEmpty(text)) yield { delta: { ...delta, text } };
+        if (!isEmpty(delta.json) || !isEmpty(text))
+          yield { delta: { ...delta, text } } as AgentResponseChunk<O>;
       }
     }
 

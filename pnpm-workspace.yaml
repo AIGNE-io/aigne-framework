@@ -1,6 +1,8 @@
 packages:
   - packages/*
   - examples/*
+  - docs-examples
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - simple-git-hooks
+  - sqlite3

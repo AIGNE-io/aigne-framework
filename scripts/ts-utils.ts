@@ -1,5 +1,5 @@
 import { Biome, Distribution } from "@biomejs/js-api";
-import { Project, SyntaxKind } from "ts-morph";
+import { type Node, Project, SyntaxKind } from "ts-morph";
 
 export function removeFunctionCallsFromCode(sourceCode: string, functionName: string[]): string {
   const project = new Project();
@@ -8,10 +8,27 @@ export function removeFunctionCallsFromCode(sourceCode: string, functionName: st
   for (const e of sourceFile
     .getDescendantsOfKind(SyntaxKind.CallExpression)
     .filter((i) => functionName.includes(i.getExpression().getText()))) {
-    (
+    if (e?.wasForgotten()) continue;
+    const node =
       e.getFirstAncestorByKind(SyntaxKind.VariableStatement) ??
-      e.getFirstAncestorByKind(SyntaxKind.ExpressionStatement)
-    )?.replaceWithText("");
+      e.getFirstAncestorByKind(SyntaxKind.ExpressionStatement);
+    node?.replaceWithText("");
+  }
+
+  return sourceFile.getText();
+}
+
+export function removeCommentsFromCode(
+  sourceCode: string,
+  predict: (comment: Node) => boolean,
+): string {
+  const project = new Project();
+  const sourceFile = project.createSourceFile("temp.ts", sourceCode, { overwrite: true });
+
+  for (const e of sourceFile
+    .getDescendantsOfKind(SyntaxKind.SingleLineCommentTrivia)
+    .filter(predict)) {
+    e.replaceWithText("");
   }
 
   return sourceFile.getText();
@@ -83,8 +100,8 @@ export function extractRegionCode(
 
   const comments = sourceFile.getDescendantsOfKind(SyntaxKind.SingleLineCommentTrivia);
 
-  const regionStart = comments.find((comment) => comment.getText().includes(`#region ${region}`));
-  const regionEnd = comments.find((comment) => comment.getText().includes(`#endregion ${region}`));
+  const regionStart = comments.find((comment) => comment.getText().endsWith(`#region ${region}`));
+  const regionEnd = comments.find((comment) => comment.getText().endsWith(`#endregion ${region}`));
 
   if (!regionEnd) {
     console.log(

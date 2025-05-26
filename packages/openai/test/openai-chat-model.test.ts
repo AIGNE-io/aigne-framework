@@ -59,7 +59,7 @@ test("OpenAI chat model basic usage", async () => {
 });
 
 test("OpenAI chat model with streaming using async generator", async () => {
-  // #region example-openai-chat-model-streaming
+  // #region example-openai-chat-model-stream
   const model = new OpenAIChatModel({
     apiKey: "your-api-key",
     model: "gpt-4o",
@@ -84,7 +84,6 @@ test("OpenAI chat model with streaming using async generator", async () => {
     {
       messages: [{ role: "user", content: "Hello, who are you?" }],
     },
-    undefined,
     { streaming: true },
   );
 
@@ -105,7 +104,7 @@ test("OpenAI chat model with streaming using async generator", async () => {
     model: "gpt-4o",
     usage: { inputTokens: 10, outputTokens: 9 },
   });
-  // #endregion example-openai-chat-model-streaming
+  // #endregion example-openai-chat-model-stream
 });
 
 let model: OpenAIChatModel;
@@ -159,7 +158,6 @@ test("OpenAIChatModel.invoke with streaming", async () => {
     {
       messages: [{ role: "user", content: "hello" }],
     },
-    undefined,
     { streaming: true },
   );
 

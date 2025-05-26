@@ -14,7 +14,7 @@ const config = {
   jsDocCompatibility: {
     exampleTag: false,
   },
-  readme: "none",
+  readme: "README.md",
   mergeReadme: true,
   router: "module",
   disableSources: true,
@@ -23,6 +23,7 @@ const config = {
   useCodeBlocks: false,
   expandObjects: true,
   hidePageHeader: true,
+  hideBreadcrumbs: true,
   indexFormat: "list",
   parametersFormat: "table",
   interfacePropertiesFormat: "table",

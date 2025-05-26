@@ -1,6 +1,10 @@
 import { expect, test } from "bun:test";
 import type { AgentResponseChunk, Message } from "@aigne/core";
-import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
+import {
+  AgentResponseStreamParser,
+  AgentResponseStreamSSE,
+  EventStreamParser,
+} from "@aigne/core/utils/event-stream.js";
 import { arrayToReadableStream, readableStreamToArray } from "@aigne/core/utils/stream-utils";
 
 test("EventStreamParser should enqueue an error for invalid json", async () => {
@@ -32,4 +36,18 @@ test("AgentResponseStreamParser should raise error from upstream", async () => {
   ]).pipeThrough(new AgentResponseStreamParser());
 
   expect(readableStreamToArray(stream)).rejects.toThrow("should raise error");
+});
+
+test("AgentResponseStreamSSE should convert AgentResponseStream to SSE format", async () => {
+  const stream = new AgentResponseStreamSSE(
+    arrayToReadableStream([
+      { delta: { text: { text: "hello" } } },
+      { delta: { text: { text: " world" } } },
+    ]),
+  );
+
+  expect(readableStreamToArray(stream)).resolves.toEqual([
+    `data: {"delta":{"text":{"text":"hello"}}}\n\n`,
+    `data: {"delta":{"text":{"text":" world"}}}\n\n`,
+  ]);
 });

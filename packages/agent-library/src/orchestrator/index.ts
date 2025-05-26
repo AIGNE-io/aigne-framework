@@ -1,6 +1,7 @@
 import {
   AIAgent,
   Agent,
+  type AgentInvokeOptions,
   type AgentOptions,
   type Context,
   type Message,
@@ -171,11 +172,11 @@ export class OrchestratorAgent<
    *    c. Otherwise, execute steps in the plan
    *
    * @param input - Input message containing the objective
-   * @param context - Execution context with model and other necessary info
+   * @param options - Agent invocation options
    * @returns Processing result
    */
-  async process(input: I, context: Context) {
-    const { model } = context;
+  override async process(input: I, options: AgentInvokeOptions) {
+    const { model } = options.context;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
     const objective = getMessage(input);
@@ -190,16 +191,16 @@ export class OrchestratorAgent<
     const maxIterations = this.maxIterations ?? DEFAULT_MAX_ITERATIONS;
 
     while (iterations++ < maxIterations) {
-      const plan = await this.getFullPlan(result, context);
+      const plan = await this.getFullPlan(result, options.context);
 
       result.plan = plan;
 
       if (plan.isComplete) {
-        return this.synthesizePlanResult(result, context);
+        return this.synthesizePlanResult(result, options.context);
       }
 
       for (const step of plan.steps) {
-        const stepResult = await this.executeStep(result, step, context);
+        const stepResult = await this.executeStep(result, step, options.context);
 
         result.steps.push(stepResult);
       }

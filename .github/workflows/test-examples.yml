@@ -13,7 +13,7 @@ jobs:
       matrix:
         provider:
           - OpenAI
-          - Claude
+          - Anthropic
           - XAI
           - Gemini
           - DeepSeek
@@ -90,12 +90,12 @@ jobs:
 
           declare -A PROVIDER_SLEEP_SECONDS
           PROVIDER_SLEEP_SECONDS["Gemini"]=10
-          PROVIDER_SLEEP_SECONDS["Claude"]=10
+          PROVIDER_SLEEP_SECONDS["Anthropic"]=10
           PROVIDER_SLEEP_SECONDS["Bedrock"]=10
 
           if [ "${{ matrix.provider }}" = "OpenAI" ]; then
             MODELS="gpt-4.1-mini gpt-4o-mini o4-mini o3-mini"
-          elif [ "${{ matrix.provider }}" = "Claude" ]; then
+          elif [ "${{ matrix.provider }}" = "Anthropic" ]; then
             MODELS="claude-3-7-sonnet-latest claude-3-5-haiku-latest"
           elif [ "${{ matrix.provider }}" = "XAI" ]; then
             MODELS="grok-3 grok-2"

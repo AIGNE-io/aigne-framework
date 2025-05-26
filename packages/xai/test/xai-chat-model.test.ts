@@ -83,7 +83,6 @@ test("X.AI chat model with streaming using async generator", async () => {
     {
       messages: [{ role: "user", content: "Tell me about yourself" }],
     },
-    undefined,
     { streaming: true },
   );
 

@@ -108,7 +108,11 @@ export function createAccessorArray<T>(
   }) as T[] & { [key: string]: T };
 }
 
-export function checkArguments<T>(prefix: string, schema: ZodType<T>, args: T | unknown): T {
+export function checkArguments<T extends ZodType>(
+  prefix: string,
+  schema: T,
+  args: unknown,
+): z.infer<T> {
   try {
     return schema.parse(args, {
       errorMap: (issue, ctx) => {

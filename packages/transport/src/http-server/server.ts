@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import type { AIGNE } from "@aigne/core";
+import type { AIGNE, UserContext } from "@aigne/core";
 import { AgentResponseStreamSSE } from "@aigne/core/utils/event-stream.js";
 import { checkArguments, isRecord, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import contentType from "content-type";
@@ -25,10 +25,9 @@ export const invokePayloadSchema = z.object({
   agent: z.string(),
   input: z.union([z.string(), z.record(z.string(), z.unknown())]),
   options: z
-    .object({
-      streaming: z.boolean().nullish(),
-    })
-    .nullish(),
+    .object({ streaming: z.boolean().nullish() })
+    .nullish()
+    .transform((v) => v ?? undefined),
 });
 
 /**
@@ -46,6 +45,10 @@ export interface AIGNEHTTPServerOptions {
    * @default "4mb"
    */
   maximumBodySize?: string;
+}
+
+export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext> {
+  userContext?: U;
 }
 
 /**
@@ -91,7 +94,10 @@ export class AIGNEHTTPServer {
    * Here's a simple example of how to use AIGNEServer with Hono:
    * {@includeCode ../../test/http-server/http-server.test.ts#example-aigne-server-hono}
    */
-  async invoke(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response>;
+  async invoke(
+    request: Record<string, unknown> | Request | IncomingMessage,
+    options?: ServerResponse | AIGNEHTTPServerInvokeOptions,
+  ): Promise<Response>;
   /**
    * Invokes an agent with the provided input and streams the response to a Node.js ServerResponse.
    * This overload is specifically designed for Node.js HTTP server environments.
@@ -109,12 +115,16 @@ export class AIGNEHTTPServer {
   async invoke(
     request: Record<string, unknown> | Request | IncomingMessage,
     response: ServerResponse,
+    options?: AIGNEHTTPServerInvokeOptions,
   ): Promise<void>;
   async invoke(
     request: Record<string, unknown> | Request | IncomingMessage,
-    response?: ServerResponse,
+    response?: ServerResponse | AIGNEHTTPServerInvokeOptions,
+    options?: AIGNEHTTPServerInvokeOptions,
   ): Promise<Response | void> {
-    const result = await this._invoke(request);
+    const opts = !(response instanceof ServerResponse) ? options || response : options;
+
+    const result = await this._invoke(request, { userContext: opts?.userContext });
 
     if (response instanceof ServerResponse) {
       await this._writeResponse(result, response);
@@ -133,7 +143,10 @@ export class AIGNEHTTPServer {
    * @returns A standard Response object with the invocation result
    * @private
    */
-  async _invoke(request: Record<string, unknown> | Request | IncomingMessage): Promise<Response> {
+  async _invoke(
+    request: Record<string, unknown> | Request | IncomingMessage,
+    { userContext }: AIGNEHTTPServerInvokeOptions = {},
+  ): Promise<Response> {
     const { engine } = this;
 
     try {
@@ -142,7 +155,7 @@ export class AIGNEHTTPServer {
       const {
         agent: agentName,
         input,
-        options,
+        options: { streaming } = {},
       } = tryOrThrow(
         () => checkArguments(`Invoke agent ${payload.agent}`, invokePayloadSchema, payload),
         (error) => new ServerError(400, error.message),
@@ -151,14 +164,14 @@ export class AIGNEHTTPServer {
       const agent = engine.agents[agentName];
       if (!agent) throw new ServerError(404, `Agent ${agentName} not found`);
 
-      if (!options?.streaming) {
-        const result = await engine.invoke(agent, input);
+      if (!streaming) {
+        const result = await engine.invoke(agent, input, { userContext });
         return new Response(JSON.stringify(result), {
           headers: { "Content-Type": "application/json" },
         });
       }
 
-      const stream = await engine.invoke(agent, input, { streaming: true });
+      const stream = await engine.invoke(agent, input, { userContext, streaming: true });
 
       return new Response(new AgentResponseStreamSSE(stream), {
         headers: {

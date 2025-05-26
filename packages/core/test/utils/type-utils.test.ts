@@ -7,6 +7,7 @@ import {
   isEmpty,
   isNil,
   isNonNullable,
+  isNotEmpty,
   isRecord,
   omitBy,
   orArrayToArray,
@@ -35,7 +36,7 @@ test("type-utils.isRecord", async () => {
   expect(isRecord(true)).toBe(false);
 });
 
-test("types-utils.isEmpty", async () => {
+test("type-utils.isEmpty", async () => {
   expect(isEmpty({})).toBe(true);
   expect(isEmpty("")).toBe(true);
   expect(isEmpty([])).toBe(true);
@@ -44,6 +45,11 @@ test("types-utils.isEmpty", async () => {
   expect(isEmpty({ foo: "bar" })).toBe(false);
   expect(isEmpty("test")).toBe(false);
   expect(isEmpty([1])).toBe(false);
+});
+
+test("type-utils.isNotEmpty", async () => {
+  expect(isNotEmpty([])).toBe(false);
+  expect(isNotEmpty([1])).toBe(true);
 });
 
 test("type-utils.duplicates", async () => {

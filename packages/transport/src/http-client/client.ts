@@ -27,7 +27,7 @@ export interface AIGNEHTTPClientOptions {
  * Options for invoking an agent through the AIGNEHTTPClient.
  * Extends the standard AgentInvokeOptions with client-specific options.
  */
-export interface AIGNEHTTPClientInvokeOptions extends AgentInvokeOptions {
+export interface AIGNEHTTPClientInvokeOptions extends Omit<AgentInvokeOptions, "context"> {
   /**
    * Additional fetch API options to customize the HTTP request.
    * These options will be merged with the default options used by the client.

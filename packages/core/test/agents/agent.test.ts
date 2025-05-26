@@ -5,9 +5,10 @@ import {
   AIAgentToolChoice,
   AIGNE,
   Agent,
+  type AgentInvokeOptions,
   type AgentProcessAsyncGenerator,
+  type AgentResponseChunk,
   type AgentResponseStream,
-  type Context,
   FunctionAgent,
   type Message,
   textDelta,
@@ -91,7 +92,7 @@ test("Agent returning a ReadableStream", async () => {
   }
 
   const agent = new StreamResponseAgent();
-  const stream = await agent.invoke("Hello", undefined, { streaming: true });
+  const stream = await agent.invoke("Hello", { streaming: true });
 
   let fullText = "";
   for await (const chunk of stream) {
@@ -109,7 +110,10 @@ test("Agent using AsyncGenerator", async () => {
   // #region example-process-async-generator
 
   class AsyncGeneratorAgent extends Agent {
-    async *process(_input: Message, _context: Context): AgentProcessAsyncGenerator<Message> {
+    async *process(
+      _input: Message,
+      _options: AgentInvokeOptions,
+    ): AgentProcessAsyncGenerator<Message> {
       // Use async generator to produce streaming results
       yield textDelta({ message: "This" });
       yield textDelta({ message: "," });
@@ -125,7 +129,7 @@ test("Agent using AsyncGenerator", async () => {
   }
 
   const agent = new AsyncGeneratorAgent();
-  const stream = await agent.invoke("Hello", undefined, { streaming: true });
+  const stream = await agent.invoke("Hello", { streaming: true });
 
   const message: string[] = [];
   let json: Message | undefined;
@@ -285,7 +289,7 @@ test("FunctionAgent.from a function return stream", async () => {
   // #region example-function-agent-stream
 
   const agent = FunctionAgent.from(({ name }: { name: string }) => {
-    return new ReadableStream({
+    return new ReadableStream<AgentResponseChunk<{ text: string }>>({
       start(controller) {
         controller.enqueue(textDelta({ text: "Hello" }));
         controller.enqueue(textDelta({ text: ", " }));
@@ -446,14 +450,12 @@ test("Agent can be intercepted by guide rails", async () => {
     guideRails: [financial],
   });
 
-  // Mock the model's response (the potential price prediction)
   spyOn(model, "process").mockReturnValueOnce(
     Promise.resolve({
       text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
     }),
   );
 
-  // Mock the guide rail's response (rejecting the price prediction)
   spyOn(legalModel, "process").mockReturnValueOnce(
     Promise.resolve({
       json: {

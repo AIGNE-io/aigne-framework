@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, normalize, resolve } from "node:path";
-import { AIAgent, type AIAgentOptions, type Context, type Message } from "@aigne/core";
+import { AIAgent, type AIAgentOptions, type AgentInvokeOptions, type Message } from "@aigne/core";
 import {
   type Memory,
   MemoryAgent,
@@ -117,12 +117,15 @@ class FSMemoryRetriever extends MemoryRetriever {
 
   agent: AIAgent<FSMemoryRetrieverAgentInput, FSMemoryRetrieverAgentOutput>;
 
-  async process(input: MemoryRetrieverInput, context: Context): Promise<MemoryRetrieverOutput> {
+  override async process(
+    input: MemoryRetrieverInput,
+    options: AgentInvokeOptions,
+  ): Promise<MemoryRetrieverOutput> {
     if (!(await exists(this.options.memoryFileName))) return { memories: [] };
 
     const allMemory = await readFile(this.options.memoryFileName, "utf-8");
 
-    const { memories } = await context.invoke(this.agent, { ...input, allMemory });
+    const { memories } = await options.context.invoke(this.agent, { ...input, allMemory });
     const result: Memory[] = memories.map((memory) => ({
       id: newMemoryId(),
       content: memory.content,
@@ -167,12 +170,15 @@ class FSMemoryRecorder extends MemoryRecorder {
 
   agent: AIAgent<FSMemoryRecorderAgentInput, FSMemoryRecorderAgentOutput>;
 
-  async process(input: MemoryRecorderInput, context: Context): Promise<MemoryRecorderOutput> {
+  override async process(
+    input: MemoryRecorderInput,
+    options: AgentInvokeOptions,
+  ): Promise<MemoryRecorderOutput> {
     const allMemory = (await exists(this.options.memoryFileName))
       ? await readFile(this.options.memoryFileName, "utf-8")
       : "";
 
-    const { memories } = await context.invoke(this.agent, { ...input, allMemory });
+    const { memories } = await options.context.invoke(this.agent, { ...input, allMemory });
 
     const raw = stringify(
       memories.map((i) => ({

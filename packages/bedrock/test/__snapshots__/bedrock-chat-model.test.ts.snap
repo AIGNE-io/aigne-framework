@@ -159,19 +159,6 @@ exports[`BedrockChatModel.invoke with streaming 1`] = `
         "usage": {
           "inputTokens": 1,
           "outputTokens": 51,
-          "totalTokens": 52,
-        },
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "model": "us.amazon.nova-lite-v1:0",
-        "text": "Hello! How can I assist you today? If you have any questions or need information on a particular topic, feel free to let me know. Whether it's about science, technology, history, or something else, I'm here to help.",
-        "usage": {
-          "inputTokens": 1,
-          "outputTokens": 51,
         },
       },
     },

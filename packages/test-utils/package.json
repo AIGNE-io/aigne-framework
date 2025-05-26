@@ -1,6 +1,6 @@
 {
   "name": "@aigne/test-utils",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "description": "Test utils for AIGNE framework",
   "publishConfig": {
     "access": "public"

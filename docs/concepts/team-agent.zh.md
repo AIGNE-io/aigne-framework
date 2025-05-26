@@ -1,5 +1,7 @@
 # TeamAgent
 
+[English](./team-agent.md) | [中文](./team-agent.zh.md)
+
 ## 概述
 
 TeamAgent 是 AIGNE 框架中的一个强大组件，它允许开发者将多个代理组合成一个团队，以协同工作的方式解决复杂问题。TeamAgent 支持两种处理模式：顺序处理（sequential）和并行处理（parallel），使开发者能够根据任务的依赖关系灵活选择最合适的工作流程。通过 TeamAgent，可以构建复杂的多阶段工作流，每个阶段由专门的代理负责，从而实现更高效、更专业的任务处理。无论是需要按特定顺序执行的任务链，还是可以同时进行的独立任务，TeamAgent 都能提供简洁而强大的解决方案。

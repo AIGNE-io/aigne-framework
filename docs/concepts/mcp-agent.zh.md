@@ -1,5 +1,7 @@
 # MCPAgent
 
+[English](./mcp-agent.md) | [中文](./mcp-agent.zh.md)
+
 ## 概述
 
 MCPAgent 是 AIGNE 框架中的一个专门组件，用于与遵循模型上下文协议（Model Context Protocol，MCP）的服务器进行交互。它允许开发者连接到远程 MCP 服务器，并访问这些服务器提供的工具、提示和资源。MCPAgent 充当应用程序与 MCP 服务器之间的桥梁，使开发者能够轻松地将外部服务集成到他们的 AI 应用中。

@@ -1,6 +1,3 @@
-## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.1.0...agent-library-v1.2.0) (2025-03-18)
-
-- chore: release 1.2.0
 
 ## [1.10.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.9.0...agent-library-v1.10.0) (2025-05-25)
 

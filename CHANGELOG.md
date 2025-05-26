@@ -1,9 +1,4 @@
-## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.1.0...aigne-framework-v1.2.0) (2025-03-18)
-
-* chore: release v1.2.0
-
 ## [1.18.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.17.0...aigne-framework-v1.18.0) (2025-05-25)
-
 
 ### Features
 

@@ -2,15 +2,15 @@
 
 [English](./function-agent.md) | [中文](./function-agent.zh.md)
 
-## 概述
+## Overview
 
-FunctionAgent 是 AIGNE 框架中的一个核心组件，它允许开发者将普通函数转换为智能代理。本文档详细介绍了 FunctionAgent 的四种创建模式（基础、极简、流式和生成器）以及如何调用这些代理。FunctionAgent 的主要优势在于其灵活性和类型安全性，支持同步/异步处理、流式输出和类型推断，使开发者能够根据不同场景选择最合适的实现方式。无论是需要严格类型定义的复杂应用，还是快速原型开发，FunctionAgent 都能提供简洁而强大的解决方案。
+FunctionAgent is a core component in the AIGNE framework that allows developers to convert ordinary functions into intelligent agents. This document details the four creation patterns of FunctionAgent (basic, minimal, streaming, and generator) and how to invoke these agents. The main advantages of FunctionAgent lie in its flexibility and type safety, supporting synchronous/asynchronous processing, streaming output, and type inference, enabling developers to choose the most suitable implementation approach for different scenarios. Whether for complex applications requiring strict type definitions or rapid prototype development, FunctionAgent provides concise yet powerful solutions.
 
-## 创建方式
+## Creation Methods
 
-### 基础模式
+### Basic Pattern
 
-在基础示例中，我们使用 FunctionAgent.from() 方法并提供相应的选项来创建一个能够获取天气信息的 Agent。这种方式创建的 Agent 涵盖了输入/输出的类型定义和处理逻辑，是最基础的创建方式。
+In the basic example, we use the FunctionAgent.from() method and provide corresponding options to create an Agent capable of getting weather information. Agents created this way cover input/output type definitions and processing logic, representing the most fundamental creation approach.
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic-create-agent"
 import { FunctionAgent } from "@aigne/core";
@@ -38,15 +38,15 @@ const weather = FunctionAgent.from({
 });
 ```
 
-主要特点：
+Key features:
 
-* 使用名称和描述字段来定义 Agent 的功能
-* 通过输入和输出模式定义使用 zod 定义数据结构
-* 实现异步处理逻辑
+* Use name and description fields to define Agent functionality
+* Define data structures using zod through input and output schema definitions
+* Implement asynchronous processing logic
 
-### 极简模式
+### Minimal Pattern
 
-当需要快速创建一个 Agent，而你并不需要显式定义 inputSchema、outputSchema 等时，可以使用极简模式。
+When you need to quickly create an Agent without explicitly defining inputSchema, outputSchema, etc., you can use the minimal pattern.
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-pure-function-create-agent"
 import { FunctionAgent } from "@aigne/core";
@@ -61,15 +61,15 @@ const weather = FunctionAgent.from(async ({ city }) => {
 });
 ```
 
-主要特点：
+Key features:
 
-* 直接传递一个函数，该函数可以是同步函数、异步函数、生成器函数或返回 ReadableStream 的函数
-* TypeScript 会根据传入函数自动推断输入/输出的类型
-* 适合对类型严谨度要求不高或需要快速实现的场景
+* Directly pass a function, which can be a synchronous function, asynchronous function, generator function, or function returning ReadableStream
+* TypeScript automatically infers input/output types based on the passed function
+* Suitable for scenarios with less strict type requirements or needing rapid implementation
 
-### 流式输出模式
+### Streaming Output Pattern
 
-在某些场景中，需要以流式的方式持续输出部分结果，例如实时获取进度、持续返回数据片段等。FunctionAgent 同样支持这种需求。
+In some scenarios, you need to continuously output partial results in a streaming manner, such as real-time progress updates, continuous data fragment returns, etc. FunctionAgent also supports this requirement.
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-create-agent"
 import { FunctionAgent } from "@aigne/core";
@@ -101,15 +101,15 @@ const weather = FunctionAgent.from({
 });
 ```
 
-主要特点：
+Key features:
 
-* 处理函数返回一个 ReadableStream
-* 通过流控制器将数据依次推送出去
-* 适合需要逐渐返回数据、实时更新的场景
+* Processing function returns a ReadableStream
+* Push data sequentially through stream controller
+* Suitable for scenarios requiring gradual data return and real-time updates
 
-### 生成器模式
+### Generator Pattern
 
-如果不想在内部直接返回 ReadableStream，可使用生成器函数（generator）在异步过程中逐步 yield 数据，从而实现流式或分段返回。
+If you don't want to directly return ReadableStream internally, you can use generator functions to gradually yield data during asynchronous processes, achieving streaming or segmented returns.
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-generator-create-agent"
 import { FunctionAgent } from "@aigne/core";
@@ -139,18 +139,18 @@ const weather = FunctionAgent.from({
 });
 ```
 
-主要特点：
+Key features:
 
-* 使用异步生成器函数处理数据
-* 通过 yield 产生新的数据块
-* 可以在最后返回一个完整或部分最终结果
-* 语法层面更贴近 JavaScript 函数式编程风格
+* Use async generator functions to process data
+* Generate new data chunks through yield
+* Can return a complete or partial final result at the end
+* Syntax is closer to JavaScript functional programming style
 
-## 调用方法
+## Invocation Methods
 
-### 基本调用
+### Basic Invocation
 
-使用调用方法即可执行创建好的智能代理。最常见的调用方式是传入参数对象，等待执行完成后获取返回结果。
+Use the invocation method to execute the created intelligent agent. The most common invocation method is passing a parameter object and waiting for execution completion to get the return result.
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic-invoke"
 const result = await weather.invoke({ city: "New York" });
@@ -158,9 +158,9 @@ console.log(result);
 // Output: { $message: "Hello, I'm AIGNE!", temperature: 25 }
 ```
 
-### 流式调用
+### Streaming Invocation
 
-当需要处理流式数据时，可以启用流式选项，然后使用异步迭代来逐步获取数据块，实现流式读取、分段处理的逻辑。
+When you need to handle streaming data, you can enable streaming options, then use async iteration to gradually get data chunks, implementing streaming reading and segmented processing logic.
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-invoke"
 const stream = await weather.invoke({ city: "New York" }, { streaming: true });
@@ -174,12 +174,12 @@ console.log(text); // Output: Hello, I'm AIGNE!
 console.log(json); // Output: { temperature: 25 }
 ```
 
-## 总结
+## Summary
 
-FunctionAgent 是 AIGNE 中一个强大且灵活的工具，为用户提供了多种创建和调用的方式，适合不同场景的需求：
+FunctionAgent is a powerful and flexible tool in AIGNE that provides users with multiple creation and invocation methods, suitable for different scenario requirements:
 
-1. 常规模式：显式定义输入/输出的类型和处理逻辑，适合对输入输出要求严格的场景。
-2. 极简模式：用最少代码快速创建 Agent，提高开发效率。
-3. 流式/生成器模式：方便处理长时间、实时或分段输出的任务。
+1. Regular Pattern: Explicitly define input/output types and processing logic, suitable for scenarios with strict input/output requirements.
+2. Minimal Pattern: Create Agents quickly with minimal code, improving development efficiency.
+3. Streaming/Generator Pattern: Convenient for handling long-running, real-time, or segmented output tasks.
 
-根据实际需求，开发者可以灵活选择合适的模式来实现"函数即智能代理"。
+Based on actual requirements, developers can flexibly choose appropriate patterns to implement "functions as intelligent agents."

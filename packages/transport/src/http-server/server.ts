@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import type { AIGNE, UserContext } from "@aigne/core";
+import type { AIGNE, AgentInvokeOptions, InvokeOptions, UserContext } from "@aigne/core";
 import { AgentResponseStreamSSE } from "@aigne/core/utils/event-stream.js";
 import { checkArguments, isRecord, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import contentType from "content-type";
@@ -25,7 +25,20 @@ export const invokePayloadSchema = z.object({
   agent: z.string(),
   input: z.union([z.string(), z.record(z.string(), z.unknown())]),
   options: z
-    .object({ streaming: z.boolean().nullish() })
+    .object({
+      streaming: z
+        .boolean()
+        .nullish()
+        .transform((v) => v ?? undefined),
+      userContext: z
+        .record(z.string(), z.unknown())
+        .nullish()
+        .transform((v) => v ?? undefined),
+      memories: z
+        .array(z.object({ content: z.custom<object>() }))
+        .nullish()
+        .transform((v) => v ?? undefined),
+    })
     .nullish()
     .transform((v) => v ?? undefined),
 });
@@ -47,9 +60,8 @@ export interface AIGNEHTTPServerOptions {
   maximumBodySize?: string;
 }
 
-export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext> {
-  userContext?: U;
-}
+export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext>
+  extends Pick<AgentInvokeOptions<U>, "userContext" | "memories"> {}
 
 /**
  * AIGNEHTTPServer provides HTTP API access to AIGNE capabilities.
@@ -124,7 +136,10 @@ export class AIGNEHTTPServer {
   ): Promise<Response | void> {
     const opts = !(response instanceof ServerResponse) ? options || response : options;
 
-    const result = await this._invoke(request, { userContext: opts?.userContext });
+    const result = await this._invoke(request, {
+      userContext: opts?.userContext,
+      memories: opts?.memories,
+    });
 
     if (response instanceof ServerResponse) {
       await this._writeResponse(result, response);
@@ -140,12 +155,13 @@ export class AIGNEHTTPServer {
    * with either streaming or non-streaming response handling.
    *
    * @param request - The parsed or raw request to process
+   * @param options - Additional options for the invocation, such as user context and memories
    * @returns A standard Response object with the invocation result
    * @private
    */
   async _invoke(
     request: Record<string, unknown> | Request | IncomingMessage,
-    { userContext }: AIGNEHTTPServerInvokeOptions = {},
+    options: AIGNEHTTPServerInvokeOptions = {},
   ): Promise<Response> {
     const { engine } = this;
 
@@ -155,7 +171,7 @@ export class AIGNEHTTPServer {
       const {
         agent: agentName,
         input,
-        options: { streaming } = {},
+        options: { streaming, ...opts } = {},
       } = tryOrThrow(
         () => checkArguments(`Invoke agent ${payload.agent}`, invokePayloadSchema, payload),
         (error) => new ServerError(400, error.message),
@@ -164,14 +180,23 @@ export class AIGNEHTTPServer {
       const agent = engine.agents[agentName];
       if (!agent) throw new ServerError(404, `Agent ${agentName} not found`);
 
+      const mergedOptions: InvokeOptions = {
+        userContext: { ...opts.userContext, ...options.userContext },
+        memories: [...(opts.memories ?? []), ...(options.memories ?? [])],
+      };
+
       if (!streaming) {
-        const result = await engine.invoke(agent, input, { userContext });
+        const result = await engine.invoke(agent, input, mergedOptions);
         return new Response(JSON.stringify(result), {
           headers: { "Content-Type": "application/json" },
         });
       }
 
-      const stream = await engine.invoke(agent, input, { userContext, streaming: true });
+      const stream = await engine.invoke(agent, input, {
+        ...mergedOptions,
+        returnActiveAgent: false,
+        streaming: true,
+      });
 
       return new Response(new AgentResponseStreamSSE(stream), {
         headers: {

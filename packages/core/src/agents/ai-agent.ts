@@ -299,10 +299,10 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     if (!model) throw new Error("model is required to run AIAgent");
 
     const { toolAgents, ...modelInput } = await this.instructions.build({
+      ...options,
       agent: this,
       input,
       model,
-      context: options.context,
     });
 
     const toolsMap = new Map<string, Agent>(toolAgents?.map((i) => [i.name, i]));

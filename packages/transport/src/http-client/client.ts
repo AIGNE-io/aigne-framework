@@ -11,6 +11,7 @@ import type {
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import type { AIGNEHTTPServerInvokeOptions } from "../http-server/server.js";
 
 /**
  * Configuration options for the AIGNEHTTPClient.
@@ -27,7 +28,9 @@ export interface AIGNEHTTPClientOptions {
  * Options for invoking an agent through the AIGNEHTTPClient.
  * Extends the standard AgentInvokeOptions with client-specific options.
  */
-export interface AIGNEHTTPClientInvokeOptions extends Omit<AgentInvokeOptions, "context"> {
+export interface AIGNEHTTPClientInvokeOptions
+  extends AIGNEHTTPServerInvokeOptions,
+    Pick<AgentInvokeOptions, "streaming"> {
   /**
    * Additional fetch API options to customize the HTTP request.
    * These options will be merged with the default options used by the client.

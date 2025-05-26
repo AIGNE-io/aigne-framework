@@ -2,7 +2,7 @@ import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
-import type { MemoryAgent } from "../memory/memory.js";
+import type { Memory, MemoryAgent } from "../memory/memory.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
 import {
@@ -190,6 +190,10 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
    * and returns the final JSON result
    */
   streaming?: boolean;
+
+  userContext?: U;
+
+  memories?: Pick<Memory, "content">[];
 }
 
 /**
@@ -508,6 +512,10 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
       ...options,
       context: options.context ?? (await this.newDefaultContext()),
     };
+
+    if (options.userContext) {
+      Object.assign(opts.context.userContext, options.userContext);
+    }
 
     const message = typeof input === "string" ? (createMessage(input) as I) : input;
 

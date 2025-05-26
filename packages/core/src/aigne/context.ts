@@ -76,7 +76,6 @@ export interface InvokeOptions<U extends UserContext = UserContext>
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
   sourceAgent?: Agent;
-  userContext?: U;
 }
 
 /**

@@ -399,8 +399,9 @@ test("addNullableToOptional - top level array schema", () => {
 // Testing error handling for generateMapping
 test("generateMapping - error handling", async () => {
   // Testing when no model is provided
-  const result = await generateMapping({ input: testData, model: null as unknown as ChatModel });
-  expect(result).toBeNull();
+  await expect(
+    generateMapping({ input: testData, model: null as unknown as ChatModel }),
+  ).rejects.toThrow("model is required to run data mapper");
 });
 
 // Testing auto schema generation for source data

@@ -71,9 +71,9 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: pnpm publish:docs
         env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          APP_URL: ${{ vars.APP_URL }}
-          BOARD_ID: ${{ vars.BOARD_ID }}
+          DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_DISCUSS_KIT_ACCESS_TOKEN }}
+          DOC_DISCUSS_KIT_URL: ${{ vars.DOC_DISCUSS_KIT_URL }}
+          DOC_DISCUSS_KIT_BOARD_ID: ${{ vars.DOC_DISCUSS_KIT_BOARD_ID }}
 
       - name: Deploy to GitHub Pages
         if: ${{ steps.release.outputs.release_created }}

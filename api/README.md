@@ -315,6 +315,7 @@ AIGNE Framework has a vibrant developer community offering various support chann
 - [@aigne/ollama](@aigne/ollama.md)
 - [@aigne/open-router](@aigne/open-router.md)
 - [@aigne/openai](@aigne/openai.md)
+- [@aigne/publish-docs](@aigne/publish-docs.md)
 - [@aigne/test-utils](@aigne/test-utils.md)
 - [@aigne/transport](@aigne/transport/README.md)
 - [@aigne/xai](@aigne/xai.md)

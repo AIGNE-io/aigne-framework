@@ -1,12 +1,12 @@
 {
-  "name": "@aigne/agent-library",
-  "version": "1.11.0",
-  "description": "Collection of agent libraries for AIGNE framework",
+  "name": "@aigne/publish-docs",
+  "version": "0.1.0",
+  "description": "AIGNE Publish Docs for publishing docs to Discuss Kit",
   "publishConfig": {
     "access": "public"
   },
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
-  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/packages/agent-library",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework",
   "license": "Elastic-2.0",
   "repository": {
     "type": "git",
@@ -25,17 +25,10 @@
   "module": "./lib/esm/index.js",
   "types": "./lib/dts/index.d.ts",
   "exports": {
-    "./*": {
-      "import": "./lib/esm/*",
-      "require": "./lib/cjs/*",
-      "types": "./lib/dts/*"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./lib/dts/*"
-      ]
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/dts/index.d.ts"
     }
   },
   "scripts": {
@@ -43,23 +36,28 @@
     "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib test/coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "bun --cwd test test",
-    "test:coverage": "bun --cwd test test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {
-    "@aigne/core": "workspace:^",
-    "@aigne/openai": "workspace:^",
-    "jsonata": "^2.0.6",
-    "jsonschema": "^1.5.0",
-    "to-json-schema": "^0.2.5",
-    "fastq": "^1.19.1",
-    "yaml": "^2.7.1",
-    "zod": "^3.24.4"
+    "@lexical/code": "^0.31.2",
+    "@lexical/headless": "^0.31.2",
+    "@lexical/html": "^0.31.2",
+    "@lexical/link": "^0.31.2",
+    "@lexical/list": "^0.31.2",
+    "@lexical/react": "^0.31.2",
+    "@lexical/rich-text": "^0.31.2",
+    "@lexical/table": "^0.31.2",
+    "jsdom": "^26.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "lexical": "^0.31.2",
+    "marked": "^15.0.12",
+    "open": "^10.1.2",
+    "ufo": "^1.6.1"
   },
   "devDependencies": {
-    "@types/to-json-schema": "^0.2.4",
-    "@types/bun": "^1.2.12",
+    "@types/jsdom": "^21.1.7",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"

@@ -4,6 +4,19 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.19.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.18.0...aigne-framework-v1.19.0) (2025-05-27)
+
+
+### Features
+
+* add schema transform ([#35](https://github.com/AIGNE-io/aigne-framework/issues/35)) ([c7d9a2c](https://github.com/AIGNE-io/aigne-framework/commit/c7d9a2c9fcab8d384d4198db5ff6ba4603846cdf))
+* support automatic document publishing ([#134](https://github.com/AIGNE-io/aigne-framework/issues/134)) ([5c14d7b](https://github.com/AIGNE-io/aigne-framework/commit/5c14d7bd0ed2fb054cbf1bd1b9e6b075570ad6ab))
+
+
+### Bug Fixes
+
+* add ufo library to improve robustness ([#136](https://github.com/AIGNE-io/aigne-framework/issues/136)) ([cfead29](https://github.com/AIGNE-io/aigne-framework/commit/cfead294c9783ab8af18a236c71b56758ffad4b8))
+
 ## [1.17.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.16.0...aigne-framework-v1.17.0) (2025-05-23)
 
 ### Features

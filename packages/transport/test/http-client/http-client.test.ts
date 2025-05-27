@@ -1,6 +1,13 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { AIAgent, AIGNE, ChatModel, type Message, createMessage } from "@aigne/core";
+import {
+  AIAgent,
+  AIGNE,
+  ChatModel,
+  type ContextEventMap,
+  type Message,
+  createMessage,
+} from "@aigne/core";
 import { DefaultMemoryStorage } from "@aigne/core/memory/default-memory/default-memory-storage/index.js";
 import { Memories } from "@aigne/core/memory/default-memory/default-memory-storage/models/memory.js";
 import { DefaultMemory } from "@aigne/core/memory/default-memory/index.js";
@@ -219,6 +226,24 @@ test.each(table)(
     }
   },
 );
+
+test("AIGNEClient example simple", async () => {
+  const { url, close } = await createHonoServer();
+
+  const client = new AIGNEHTTPClient({ url });
+
+  expect(() => client.publish("chat", "Hello world!")).toThrowError("Method not implemented.");
+  expect(() => client.subscribe("chat")).toThrowError("Method not implemented.");
+  expect(() => client.unsubscribe("chat", () => {})).toThrowError("Method not implemented.");
+  expect(() => client.emit("agentFailed", {} as ContextEventMap["agentFailed"][0])).toThrowError(
+    "Method not implemented.",
+  );
+  expect(() => client.on("agentFailed", () => {})).toThrowError("Method not implemented.");
+  expect(() => client.once("agentFailed", () => {})).toThrowError("Method not implemented.");
+  expect(() => client.off("agentFailed", () => {})).toThrowError("Method not implemented.");
+
+  await close();
+});
 
 test("AIGNEClient should support custom memory for client agent", async () => {
   const { url, close, aigne } = await createExpressServer();

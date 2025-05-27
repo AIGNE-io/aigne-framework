@@ -156,8 +156,8 @@ const client = new AIGNEHTTPClient({
 ### Invoke Agent Services
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-aigne-http-client-invoke-agent" exclude_imports
-const result = await client.invoke(
-  "chatbot",
+const chatbot = await client.getAgent({ name: "chatbot" });
+const result = await chatbot.invoke(
   "What is the crypto price of ABT/USD on coinbase?",
 );
 console.log(result);
@@ -185,8 +185,8 @@ const client = new AIGNEHTTPClient({
   url: `http://localhost:${port}/api/chat`,
 });
 
-const result = await client.invoke(
-  "chatbot",
+const chatbot = await client.getAgent({ name: "chatbot" });
+const result = await chatbot.invoke(
   "What is the crypto price of ABT/USD on coinbase?",
 );
 console.log(result);

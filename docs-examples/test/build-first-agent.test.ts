@@ -331,7 +331,8 @@ test("Build first agent: serve agent as API service", async () => {
   });
 
   // #region example-aigne-http-client-invoke-agent
-  const result = await client.invoke("chatbot", "What is the crypto price of ABT/USD on coinbase?");
+  const chatbot = await client.getAgent({ name: "chatbot" });
+  const result = await chatbot.invoke("What is the crypto price of ABT/USD on coinbase?");
   console.log(result);
   // Output: { $message: "The current price of ABT/USD on Coinbase is $0.9684." }
   expect(result).toEqual({ $message: "The current price of ABT/USD on Coinbase is $0.9684." });
@@ -343,4 +344,95 @@ test("Build first agent: serve agent as API service", async () => {
   httpServer.close();
 
   await rm(tmp, { recursive: true, force: true });
+});
+
+test("Build first agent: setup memory for client agent", async () => {
+  // #region example-client-agent-memory
+
+  // #region example-client-agent-memory-create-agent
+  const agent = AIAgent.from({
+    name: "chatbot",
+    instructions: "You are a helpful assistant",
+  });
+
+  const aigne = new AIGNE({
+    model: new OpenAIChatModel(),
+    agents: [agent],
+  });
+  assert(aigne.model);
+  // #endregion example-client-agent-memory-create-agent
+
+  // #region example-client-agent-memory-create-server
+  const server = new AIGNEHTTPServer(aigne);
+
+  const app = express();
+
+  app.post("/api/chat", async (req, res) => {
+    await server.invoke(req, res);
+  });
+
+  let port = 3000;
+  port = await detectPort();
+
+  const httpServer = app.listen(port);
+  // #endregion example-client-agent-memory-create-server
+
+  // #region example-client-agent-memory-create-client
+  const client = new AIGNEHTTPClient({ url: `http://localhost:${port}/api/chat` });
+  // #endregion example-client-agent-memory-create-client
+
+  spyOn(aigne.model, "process").mockReturnValueOnce({
+    text: "The current price of ABT/USD on Coinbase is $0.9684.",
+  });
+
+  // #region example-client-agent-memory-invoke-agent
+  const chatbot = await client.getAgent({
+    name: "chatbot",
+    memory: {
+      storage: {
+        url: "file:memories.sqlite3",
+      },
+    },
+  });
+  const result = await chatbot.invoke("What is the crypto price of ABT/USD on coinbase?");
+  console.log(result);
+  // Output: { $message: "The current price of ABT/USD on Coinbase is $0.9684." }
+  expect(result).toEqual({ $message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  // #endregion example-client-agent-memory-invoke-agent
+
+  // #region example-client-agent-memory-invoke-agent-1
+  const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce({
+    text: "You just asked about the crypto price of ABT/USD on Coinbase.",
+  });
+  const result1 = await chatbot.invoke("What question did I just ask?");
+  console.log(result1);
+  // Output: { $message: "You just asked about the crypto price of ABT/USD on Coinbase." }
+  expect(result1).toEqual({
+    $message: "You just asked about the crypto price of ABT/USD on Coinbase.",
+  });
+  expect(modelProcess).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      messages: expect.arrayContaining([
+        expect.objectContaining({
+          role: "system",
+          content: expect.stringContaining("What is the crypto price of ABT/USD on coinbase?"),
+        }),
+        expect.objectContaining({
+          role: "system",
+          content: expect.stringContaining("The current price of ABT/USD on Coinbase is $0.9684."),
+        }),
+        expect.objectContaining({
+          role: "user",
+          content: "What question did I just ask?",
+        }),
+      ]),
+    }),
+    expect.anything(),
+  );
+  // #endregion example-client-agent-memory-invoke-agent-1
+
+  // #endregion example-client-agent-memory
+
+  httpServer.closeAllConnections();
+  httpServer.close();
 });

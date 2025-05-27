@@ -11,6 +11,7 @@
   * [Enable Memory for Agent](/how-to-guides/enable-memory-for-agent.md)
   * [Custom User Context](/how-to-guides/custom-user-context.md)
   * [Serve Agent as API](/how-to-guides/serve-agent-as-api.md)
+  * [Enable Memory for Client Agent](/how-to-guides/enable-memory-for-client-agent.md)
   * [Available Chat Models](/how-to-guides/available-chat-models.md)
 
 * Concepts

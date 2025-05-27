@@ -1,3 +1,4 @@
+import { joinURL } from "ufo";
 import type { DocNode } from "./generator.js";
 import { getComponentMountPoint } from "./utils/get-component-mount-point.js";
 
@@ -25,7 +26,7 @@ export async function publisher(input: {
     );
     console.log(`Found Discuss Kit mount point: ${mountPoint}`);
 
-    const publishUrl = `${url.origin}${mountPoint}/api/docs/create-docs-collection`;
+    const publishUrl = joinURL(url.origin, mountPoint, "/api/docs/create-docs-collection");
     console.log(`Publishing docs collection to ${publishUrl}`);
 
     const response = await fetch(publishUrl, {

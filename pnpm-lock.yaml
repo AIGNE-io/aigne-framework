@@ -900,6 +900,9 @@ importers:
       open:
         specifier: ^10.1.2
         version: 10.1.2
+      ufo:
+        specifier: ^1.6.1
+        version: 1.6.1
     devDependencies:
       '@types/jsdom':
         specifier: ^21.1.7

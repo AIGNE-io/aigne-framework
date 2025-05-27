@@ -3,65 +3,54 @@ import { authenticator } from "./authenticator.js";
 import { Generator } from "./generator.js";
 import { publisher } from "./publisher.js";
 
-export interface PublishDocsOptions {
-  sidebarPath: string;
-  boardId?: string;
-  appUrl?: string;
-  accessToken?: string;
-  scope?: string;
-  clientId?: string;
-  clientSecret?: string;
-  redirectUri?: string;
-}
+const withTokenSchema = z.object({
+  sidebarPath: z.string(),
+  boardId: z.string(),
+  appUrl: z.string().url(),
+  accessToken: z.string(),
+});
+
+const withAuthSchema = z.object({
+  sidebarPath: z.string(),
+  boardId: z.string(),
+  appUrl: z.string().url(),
+  accessToken: z.undefined().optional(),
+  scope: z.string(),
+  clientId: z.string(),
+  clientSecret: z.string(),
+  redirectUri: z.string().url(),
+});
+
+const optionsSchema = z.union([withTokenSchema, withAuthSchema]);
+export type PublishDocsOptions = z.infer<typeof optionsSchema>;
 
 export async function publishDocs(options: PublishDocsOptions): Promise<{ success: boolean }> {
-  const baseSchema = z.object({
-    BOARD_ID: z.string(),
-    APP_URL: z.string().url(),
-    ACCESS_TOKEN: z.string().optional(),
-  });
-  const baseEnv = baseSchema.parse({
-    BOARD_ID: options.boardId ?? process.env.BOARD_ID,
-    APP_URL: options.appUrl ?? process.env.APP_URL,
-    ACCESS_TOKEN: options.accessToken ?? process.env.ACCESS_TOKEN,
-  });
+  const parsed = optionsSchema.parse(options);
 
   let accessToken: string;
-
-  if (baseEnv.ACCESS_TOKEN) {
-    accessToken = baseEnv.ACCESS_TOKEN;
+  if ("accessToken" in parsed && parsed.accessToken) {
+    accessToken = parsed.accessToken;
   } else {
-    const authSchema = z.object({
-      SCOPE: z.string(),
-      CLIENT_ID: z.string(),
-      CLIENT_SECRET: z.string(),
-      REDIRECT_URI: z.string().url(),
-    });
-    const authEnv = authSchema.parse({
-      SCOPE: options.scope ?? process.env.SCOPE,
-      CLIENT_ID: options.clientId ?? process.env.CLIENT_ID,
-      CLIENT_SECRET: options.clientSecret ?? process.env.CLIENT_SECRET,
-      REDIRECT_URI: options.redirectUri ?? process.env.REDIRECT_URI,
-    });
+    const auth = parsed as z.infer<typeof withAuthSchema>;
     accessToken = (
       await authenticator({
-        appUrl: baseEnv.APP_URL,
-        scope: authEnv.SCOPE,
-        clientId: authEnv.CLIENT_ID,
-        clientSecret: authEnv.CLIENT_SECRET,
-        redirectUri: authEnv.REDIRECT_URI,
+        appUrl: auth.appUrl,
+        scope: auth.scope,
+        clientId: auth.clientId,
+        clientSecret: auth.clientSecret,
+        redirectUri: auth.redirectUri,
       })
     ).accessToken;
   }
 
   const docs = await new Generator({
-    sidebarPath: options.sidebarPath,
-    slugPrefix: baseEnv.BOARD_ID,
+    sidebarPath: parsed.sidebarPath,
+    slugPrefix: parsed.boardId,
   }).generate();
 
   const published = await publisher({
-    data: { boardId: baseEnv.BOARD_ID, docs },
-    appUrl: baseEnv.APP_URL,
+    data: { boardId: parsed.boardId, docs },
+    appUrl: parsed.appUrl,
     accessToken,
   });
 

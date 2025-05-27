@@ -1,11 +1,14 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { AIAgent, AIGNE, ChatModel, type Message } from "@aigne/core";
+import { AIAgent, AIGNE, ChatModel, type Message, createMessage } from "@aigne/core";
+import { DefaultMemoryStorage } from "@aigne/core/memory/default-memory/default-memory-storage/index.js";
+import { Memories } from "@aigne/core/memory/default-memory/default-memory-storage/models/memory.js";
+import { DefaultMemory } from "@aigne/core/memory/default-memory/index.js";
 import {
   arrayToReadableStream,
   readableStreamToArray,
   stringToAgentResponseStream,
-} from "@aigne/core/utils/stream-utils";
+} from "@aigne/core/utils/stream-utils.js";
 import {
   AIGNEHTTPClient,
   type AIGNEHTTPClientInvokeOptions,
@@ -216,6 +219,82 @@ test.each(table)(
     }
   },
 );
+
+test("AIGNEClient should support custom memory for client agent", async () => {
+  const { url, close, aigne } = await createExpressServer();
+
+  try {
+    assert(aigne.model instanceof ChatModel);
+
+    const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce(
+      stringToAgentResponseStream("Hello Bob, How can I help you?"),
+    );
+
+    const client = new AIGNEHTTPClient({ url });
+
+    const clientAgent = await client.getAgent({
+      name: "chat",
+      memory: true,
+    });
+
+    expect(clientAgent.memories.length).toBe(1);
+    const memory = clientAgent.memories[0];
+    expect(memory).toBeInstanceOf(DefaultMemory);
+    assert(memory instanceof DefaultMemory);
+
+    const { storage } = memory;
+    assert(storage instanceof DefaultMemoryStorage);
+
+    const response = await clientAgent.invoke("Hello, I'm Bob!");
+    expect(response).toEqual({ $message: "Hello Bob, How can I help you?" });
+
+    const db = await storage.db;
+
+    const allMemories = await db.select().from(Memories).execute();
+    expect(allMemories).toEqual([
+      expect.objectContaining({
+        content: expect.objectContaining({
+          role: "user",
+          content: createMessage("Hello, I'm Bob!"),
+        }),
+      }),
+      expect.objectContaining({
+        content: expect.objectContaining({
+          role: "agent",
+          content: createMessage("Hello Bob, How can I help you?"),
+        }),
+      }),
+    ]);
+
+    spyOn(aigne.model, "process").mockReturnValueOnce(
+      stringToAgentResponseStream("Your name is Bob."),
+    );
+
+    const response2 = await clientAgent.invoke("My name is?");
+    expect(response2).toEqual({ $message: "Your name is Bob." });
+    expect(modelProcess).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        messages: expect.arrayContaining([
+          expect.objectContaining({
+            role: "system",
+            content: expect.stringContaining("Hello, I'm Bob!"),
+          }),
+          expect.objectContaining({
+            role: "system",
+            content: expect.stringContaining("Hello Bob, How can I help you?"),
+          }),
+          expect.objectContaining({
+            role: "user",
+            content: expect.stringContaining("My name is?"),
+          }),
+        ]),
+      }),
+      expect.anything(),
+    );
+  } finally {
+    close();
+  }
+});
 
 async function createExpressServer({
   enableCompression,

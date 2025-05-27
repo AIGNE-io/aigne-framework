@@ -4,5 +4,6 @@ packages:
   - docs-examples
 onlyBuiltDependencies:
   - '@biomejs/biome'
+  - esbuild
   - simple-git-hooks
   - sqlite3

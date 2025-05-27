@@ -1,4 +1,4 @@
-import { EventEmitter } from "node:events";
+import { Emitter, type EventMap } from "strict-event-emitter";
 import { z } from "zod";
 import type { Message } from "../agents/agent.js";
 import { createMessage } from "../prompt/prompt-builder.js";
@@ -66,11 +66,16 @@ export type MessageQueueListener = (message: MessagePayload) => void;
  */
 export type Unsubscribe = () => void;
 
+interface MessageQueueEventMap extends EventMap {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  [key: string]: any[];
+}
+
 /**
  * @hidden
  */
 export class MessageQueue {
-  events = new EventEmitter();
+  events = new Emitter<MessageQueueEventMap>();
 
   publish(topic: string | string[], payload: MessagePayload) {
     checkArguments("MessageQueue.publish", publishArgsSchema, {
@@ -131,7 +136,7 @@ export class MessageQueue {
 }
 
 function on<T>(
-  events: EventEmitter,
+  events: Emitter<MessageQueueEventMap>,
   event: string | string[],
   listener: (arg: T, ...args: unknown[]) => void,
 ): Unsubscribe {
@@ -140,7 +145,7 @@ function on<T>(
 }
 
 function once<T>(
-  events: EventEmitter,
+  events: Emitter<MessageQueueEventMap>,
   event: string | string[],
   listener: (arg: T, ...args: unknown[]) => void,
 ): Unsubscribe {

@@ -1,4 +1,3 @@
-import { readFile } from "node:fs/promises";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
@@ -13,9 +12,10 @@ import type {
   ChatModelInputToolChoice,
   ChatModelOptions,
 } from "../agents/chat-model.js";
-import type { Memory, MemoryAgent } from "../memory/memory.js";
+import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { isNil, orArrayToArray, unique } from "../utils/type-utils.js";
+import { nodejs } from "../utils/nodejs.js";
+import { isNil, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import {
   AgentMessageTemplate,
@@ -62,7 +62,6 @@ export interface PromptBuilderOptions {
 }
 
 export interface PromptBuildOptions extends AgentInvokeOptions {
-  memory?: MemoryAgent | MemoryAgent[];
   agent?: AIAgent;
   input?: Message;
   model?: ChatModel;
@@ -89,7 +88,7 @@ export class PromptBuilder {
   }
 
   private static async fromFile(path: string): Promise<PromptBuilder> {
-    const text = await readFile(path, "utf-8");
+    const text = await nodejs.fs.readFile(path, "utf-8");
     return PromptBuilder.from(text);
   }
 
@@ -148,10 +147,8 @@ export class PromptBuilder {
 
     const memories: Pick<Memory, "content">[] = [];
 
-    for (const memory of orArrayToArray(options.memory ?? options.agent?.memories)) {
-      const ms = (await memory.retrieve({ search: input && getMessage(input) }, options.context))
-        .memories;
-      memories.push(...ms);
+    if (options.agent) {
+      memories.push(...(await options.agent.retrieveMemories(options.input, options)));
     }
 
     if (options.memories?.length) {

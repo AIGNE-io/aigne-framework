@@ -1,10 +1,10 @@
-import { inspect } from "node:util";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { Memory, MemoryAgent } from "../memory/memory.js";
-import { createMessage } from "../prompt/prompt-builder.js";
+import { createMessage, getMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
+import { nodejs } from "../utils/nodejs.js";
 import {
   agentResponseStreamToObject,
   asyncGeneratorToReadableStream,
@@ -454,6 +454,41 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     return import("../aigne/context.js").then((m) => new m.AIGNEContext());
   }
 
+  async retrieveMemories(
+    input: string | I | undefined,
+    options: Pick<AgentInvokeOptions, "context">,
+  ) {
+    const memories: Pick<Memory, "content">[] = [];
+
+    for (const memory of this.memories) {
+      const ms = (
+        await memory.retrieve(
+          { search: typeof input === "string" ? input : input && getMessage(input) },
+          options.context,
+        )
+      ).memories;
+      memories.push(...ms);
+    }
+
+    return memories;
+  }
+
+  async recordMemories(input: I, output: O, options: Pick<AgentInvokeOptions, "context">) {
+    for (const memory of this.memories) {
+      if (memory.autoUpdate) {
+        await memory.record(
+          {
+            content: [
+              { role: "user", content: input },
+              { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
+            ],
+          },
+          options.context,
+        );
+      }
+    }
+  }
+
   /**
    * Invoke the agent with regular (non-streaming) response
    *
@@ -761,19 +796,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
     this.publishToTopics(output, options);
 
-    for (const memory of this.memories) {
-      if (memory.autoUpdate) {
-        await memory.record(
-          {
-            content: [
-              { role: "user", content: input },
-              { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
-            ],
-          },
-          options.context,
-        );
-      }
-    }
+    await this.recordMemories(input, output, options);
   }
 
   protected async publishToTopics(output: Message, options: AgentInvokeOptions) {
@@ -853,7 +876,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    *
    * @returns Agent name
    */
-  [inspect.custom]() {
+  [nodejs.customInspect]() {
     return this.name;
   }
 

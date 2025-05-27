@@ -36,8 +36,12 @@ test("PromptBuilder should build messages correctly", async () => {
     context,
   );
 
-  const prompt1 = await builder.build({
+  const agent = AIAgent.from({
     memory,
+  });
+
+  const prompt1 = await builder.build({
+    agent,
     input: createMessage("Hello"),
     context,
   });

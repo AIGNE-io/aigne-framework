@@ -1,11 +1,11 @@
-import { expect, mock, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, FunctionAgent } from "@aigne/core";
 import { loadAgentFromYamlFile } from "@aigne/core/loader/agent-yaml.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
 import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
-import { mockModule } from "../_mocks/mock-module.js";
+import { nodejs } from "@aigne/core/utils/nodejs.js";
 
 test("loadAgentFromYaml should load agent correctly", async () => {
   const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/chat.yaml"));
@@ -59,14 +59,10 @@ Your goal is to assist users in finding the information they need and to engage 
 });
 
 test("loadAgentFromYaml should error if agent.yaml file is invalid", async () => {
-  const readFile = mock()
+  spyOn(nodejs.fs, "readFile")
     .mockReturnValueOnce(Promise.reject(new Error("no such file or directory")))
     .mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"))
-    .mockReturnValueOnce("name: 123");
-
-  await using _ = await mockModule("node:fs/promises", () => ({
-    readFile,
-  }));
+    .mockReturnValueOnce(Promise.resolve("name: 123"));
 
   expect(loadAgentFromYamlFile("./not-exist-aigne.yaml")).rejects.toThrow(
     "no such file or directory",
@@ -82,20 +78,20 @@ test("loadAgentFromYaml should error if agent.yaml file is invalid", async () =>
 });
 
 test("loadAgentFromYaml should load mcp agent correctly", async () => {
-  const readFile = mock()
-    .mockReturnValueOnce(`\
+  spyOn(nodejs.fs, "readFile")
+    .mockReturnValueOnce(
+      Promise.resolve(`\
 type: mcp
 url: http://localhost:3000/sse
-`)
-    .mockReturnValueOnce(`\
+`),
+    )
+    .mockReturnValueOnce(
+      Promise.resolve(`\
 type: mcp
 command: npx
 args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
-`);
-
-  await using _ = await mockModule("node:fs/promises", () => ({
-    readFile,
-  }));
+`),
+    );
 
   expect(await loadAgentFromYamlFile("./remote-mcp.yaml")).toEqual({
     type: "mcp",

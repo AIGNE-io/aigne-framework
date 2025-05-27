@@ -1,12 +1,12 @@
-import { expect, mock, spyOn, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, AIGNE, ChatModel, MCPAgent, createMessage } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
+import { nodejs } from "@aigne/core/utils/nodejs.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { nanoid } from "nanoid";
 import { ClaudeChatModel, OpenAIChatModel, XAIChatModel } from "../_mocks/mock-models.js";
-import { mockModule } from "../_mocks/mock-module.js";
 
 test("AIGNE.load should load agents correctly", async () => {
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
@@ -82,10 +82,8 @@ test("loader should error if agent file is not supported", async () => {
 });
 
 test("load should process path correctly", async () => {
-  const stat = mock();
-  const readFile = mock();
-
-  await using _ = await mockModule("node:fs/promises", () => ({ stat, readFile }));
+  const stat = spyOn(nodejs.fs, "stat");
+  const readFile = spyOn(nodejs.fs, "readFile");
 
   // mock a non-existing file
   stat.mockReturnValueOnce(Promise.reject(new Error("no such file or directory")));
@@ -94,7 +92,9 @@ test("load should process path correctly", async () => {
   ).rejects.toThrow("no such file or directory");
 
   // mock a yaml file with invalid content
-  stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => false }));
+  stat.mockReturnValueOnce(
+    Promise.resolve({ isDirectory: () => false }) as ReturnType<typeof nodejs.fs.stat>,
+  );
   readFile.mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"));
   expect(
     load({
@@ -105,8 +105,10 @@ test("load should process path correctly", async () => {
   expect(readFile).toHaveBeenLastCalledWith("invalid-yaml/aigne.yaml", "utf8");
 
   // mock a valid yaml but invalid properties
-  stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => false }));
-  readFile.mockReturnValueOnce("chat_model: 123");
+  stat.mockReturnValueOnce(
+    Promise.resolve({ isDirectory: () => false }) as ReturnType<typeof nodejs.fs.stat>,
+  );
+  readFile.mockReturnValueOnce(Promise.resolve("chat_model: 123"));
   expect(
     load({
       models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
@@ -116,9 +118,13 @@ test("load should process path correctly", async () => {
   expect(readFile).toHaveBeenLastCalledWith("invalid-properties/aigne.yaml", "utf8");
 
   // mock a directory with a .yaml file
-  stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => true }));
-  stat.mockReturnValueOnce(Promise.resolve({ isFile: () => true }));
-  readFile.mockReturnValueOnce("chat_model: gpt-4o-mini");
+  stat.mockReturnValueOnce(
+    Promise.resolve({ isDirectory: () => true }) as ReturnType<typeof nodejs.fs.stat>,
+  );
+  stat.mockReturnValueOnce(
+    Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
+  );
+  readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
   expect(
     load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "foo" }),
   ).resolves.toEqual(
@@ -131,11 +137,17 @@ test("load should process path correctly", async () => {
   expect(readFile).toHaveBeenLastCalledWith("foo/aigne.yaml", "utf8");
 
   // mock a directory with a .yml file
-  stat.mockReturnValueOnce(Promise.resolve({ isDirectory: () => true }));
+  stat.mockReturnValueOnce(
+    Promise.resolve({ isDirectory: () => true }) as ReturnType<typeof nodejs.fs.stat>,
+  );
   stat
-    .mockReturnValueOnce(Promise.resolve({ isFile: () => false }))
-    .mockReturnValueOnce(Promise.resolve({ isFile: () => true }));
-  readFile.mockReturnValueOnce("chat_model: gpt-4o-mini");
+    .mockReturnValueOnce(
+      Promise.resolve({ isFile: () => false }) as ReturnType<typeof nodejs.fs.stat>,
+    )
+    .mockReturnValueOnce(
+      Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
+    );
+  readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
   expect(
     load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "bar" }),
   ).resolves.toEqual(
@@ -149,10 +161,10 @@ test("load should process path correctly", async () => {
 });
 
 test("load should load model correctly", async () => {
-  const stat = mock().mockReturnValue(Promise.resolve({ isDirectory: () => false }));
-  const readFile = mock();
-
-  await using _ = await mockModule("node:fs/promises", () => ({ stat, readFile }));
+  spyOn(nodejs.fs, "stat").mockReturnValue(
+    Promise.resolve({ isDirectory: () => false }) as ReturnType<typeof nodejs.fs.stat>,
+  );
+  const readFile = spyOn(nodejs.fs, "readFile");
 
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o"));
   expect(
@@ -205,14 +217,12 @@ test("loadAgent should load MCP agent from url correctly", async () => {
 
   const from = spyOn(MCPAgent, "from").mockReturnValueOnce(testMcp);
 
-  const readFile = mock().mockReturnValueOnce(`\
+  spyOn(nodejs.fs, "readFile").mockReturnValueOnce(
+    Promise.resolve(`\
 type: mcp
 url: http://localhost:3000/sse
-`);
-
-  await using _ = await mockModule("node:fs/promises", () => ({
-    readFile,
-  }));
+`),
+  );
 
   expect(await loadAgent("./remote-mcp.yaml")).toBe(testMcp);
   expect(from).toHaveBeenLastCalledWith({
@@ -227,15 +237,13 @@ test("loadAgent should load MCP agent from command correctly", async () => {
   });
   const from = spyOn(MCPAgent, "from").mockReturnValueOnce(fsMcp);
 
-  const readFile = mock().mockReturnValueOnce(`\
+  spyOn(nodejs.fs, "readFile").mockReturnValueOnce(
+    Promise.resolve(`\
 type: mcp
 command: npx
 args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
-`);
-
-  await using _ = await mockModule("node:fs/promises", () => ({
-    readFile,
-  }));
+`),
+  );
 
   expect(await loadAgent("./local-mcp.yaml")).toBe(fsMcp);
   expect(from).toHaveBeenLastCalledWith({
@@ -245,13 +253,11 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
 });
 
 test("loadAgent should error if MCP agent options is not valid", async () => {
-  const readFile = mock().mockReturnValueOnce(`\
+  spyOn(nodejs.fs, "readFile").mockReturnValueOnce(
+    Promise.resolve(`\
 type: mcp
-`);
-
-  await using _ = await mockModule("node:fs/promises", () => ({
-    readFile,
-  }));
+`),
+  );
 
   expect(loadAgent("./local-mcp.yaml")).rejects.toThrow("Missing url or command in mcp agent");
 });

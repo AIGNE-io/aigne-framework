@@ -1,18 +1,17 @@
+import { type InferSelectModel, desc, eq, isNull } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/libsql";
 import type { AgentInvokeOptions } from "../../../agents/agent.js";
-import "sqlite3";
-import { Sequelize } from "sequelize";
 import type { Context } from "../../../aigne/context.js";
-import { logger } from "../../../utils/logger.js";
 import type { PromiseOrValue } from "../../../utils/type-utils.js";
 import type { Memory } from "../../memory.js";
 import { MemoryStorage } from "../storage.js";
 import { migrate } from "./migrate.js";
-import { initMemoryModel } from "./models/memory.js";
+import { Memories } from "./models/memory.js";
 
 const DEFAULT_MAX_MEMORY_COUNT = 10;
 
 export interface DefaultMemoryStorageOptions {
-  path?: string;
+  url?: string;
   getSessionId?: (context: Context) => PromiseOrValue<string>;
 }
 
@@ -25,25 +24,23 @@ export class DefaultMemoryStorage extends MemoryStorage {
     super();
   }
 
-  private _models?: Promise<{
-    Memory: ReturnType<typeof initMemoryModel>;
-  }>;
+  private _db: ReturnType<typeof this.initSqlite> | undefined;
 
-  private get models() {
-    this._models ??= (async () => {
-      const sequelize = initSequelize(this.options?.path);
+  private async initSqlite() {
+    const db = drizzle(this.options?.url ?? ":memory:");
 
-      await migrate(sequelize);
+    await migrate(db);
 
-      return {
-        Memory: initMemoryModel(sequelize),
-      };
-    })();
-
-    return this._models;
+    return db;
   }
 
-  private convertMemory(m: import("./models/memory.js").Memory): Memory {
+  get db() {
+    this._db ??= this.initSqlite();
+
+    return this._db;
+  }
+
+  private convertMemory(m: InferSelectModel<typeof Memories>): Memory {
     return {
       id: m.id,
       sessionId: m.sessionId,
@@ -60,13 +57,15 @@ export class DefaultMemoryStorage extends MemoryStorage {
 
     const sessionId = (await this.options?.getSessionId?.(context)) ?? null;
 
-    const { Memory } = await this.models;
+    const db = await this.db;
 
-    const memories = await Memory.findAll({
-      where: { sessionId },
-      order: [["id", "DESC"]],
-      limit,
-    });
+    const memories = await db
+      .select()
+      .from(Memories)
+      .where(sessionId ? eq(Memories.sessionId, sessionId) : isNull(Memories.sessionId))
+      .orderBy(desc(Memories.id))
+      .limit(limit)
+      .execute();
 
     return {
       result: memories.reverse().map(this.convertMemory),
@@ -79,23 +78,19 @@ export class DefaultMemoryStorage extends MemoryStorage {
   ): Promise<{ result: Memory }> {
     const sessionId = (await this.options?.getSessionId?.(context)) ?? null;
 
-    const { Memory } = await this.models;
+    const db = await this.db;
 
-    const m = await Memory.create({
-      ...memory,
-      sessionId,
-    });
+    const [result] = await db
+      .insert(Memories)
+      .values({
+        ...memory,
+        sessionId,
+      })
+      .returning()
+      .execute();
 
-    return { result: this.convertMemory(m) };
+    if (!result) throw new Error("Failed to create memory");
+
+    return { result: this.convertMemory(result) };
   }
-}
-
-export function initSequelize(path?: string) {
-  const sequelize = new Sequelize({
-    logging: (sql) => logger.debug(sql),
-    storage: path,
-    dialect: "sqlite",
-  });
-
-  return sequelize;
 }

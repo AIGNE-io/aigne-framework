@@ -171,7 +171,7 @@ test("Build first agent: enable memory for agent", async () => {
     instructions: "You are a helpful assistant for Crypto market analysis",
     memory: {
       storage: {
-        path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+        url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
       },
     },
   });
@@ -247,7 +247,7 @@ test("Build first agent: custom user context", async () => {
     instructions: "You are a helpful assistant for Crypto market analysis",
     memory: {
       storage: {
-        path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+        url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
         getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
       },
     },
@@ -287,7 +287,7 @@ test("Build first agent: serve agent as API service", async () => {
     instructions: "You are a helpful assistant",
     memory: {
       storage: {
-        path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+        url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
         getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
       },
     },

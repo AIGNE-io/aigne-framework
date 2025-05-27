@@ -22,7 +22,7 @@ const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
   memory: {
     storage: {
-      path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+      url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
     },
   },
 });
@@ -123,7 +123,7 @@ const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
   memory: {
     storage: {
-      path: memoryStoragePath, // Path to store memory data, such as './memory.db'
+      url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
     },
   },
 });

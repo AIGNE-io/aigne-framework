@@ -1,4 +1,4 @@
-import EventEmitter from "node:events";
+import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
 import { type ZodType, z } from "zod";
 import {
@@ -363,7 +363,8 @@ class AIGNEContextShared {
 
   readonly messageQueue: MessageQueue;
 
-  readonly events = new EventEmitter<ContextEventMap>();
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  readonly events = new Emitter<any>();
 
   get model() {
     return this.parent?.model;

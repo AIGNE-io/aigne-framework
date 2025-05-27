@@ -1,5 +1,5 @@
-import { isatty } from "node:tty";
 import debug from "debug";
+import { nodejs } from "./nodejs.js";
 
 export enum LogLevel {
   ERROR = "error",
@@ -24,14 +24,14 @@ export class Logger {
 
     for (const logger of [this.debugLogger, this.infoLogger, this.warnLogger]) {
       // @ts-ignore
-      logger.useColors = isatty(process.stdout.fd);
+      logger.useColors = nodejs.isStdoutATTY;
       logger.enabled = true;
       logger.log = (...args: unknown[]) => this.logMessage(...args);
     }
 
     this.errorLogger.log = (...args: unknown[]) => this.logError(...args);
     // @ts-ignore
-    this.errorLogger.useColors = isatty(process.stderr.fd);
+    this.errorLogger.useColors = nodejs.isStderrATTY;
     this.errorLogger.enabled = true;
   }
 

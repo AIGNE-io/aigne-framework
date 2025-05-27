@@ -1,26 +1,40 @@
-import type { Sequelize } from "sequelize";
-import { type MigrateDownOptions, type MigrateUpOptions, SequelizeStorage, Umzug } from "umzug";
+import type { LibSQLDatabase } from "drizzle-orm/libsql";
+import { sql } from "drizzle-orm/sql";
+import init from "./migrations/001-init.js";
 
-import * as init from "./migrations/20250523165801-init.js";
+export async function migrate(db: LibSQLDatabase) {
+  const migrations: { hash: string; sql: string[] }[] = [init];
 
-export const migrate = async (
-  sequelize: Sequelize,
-  {
-    type = "up",
-    upOptions,
-    downOptions,
-  }: { type?: "up" | "down"; upOptions?: MigrateUpOptions; downOptions?: MigrateDownOptions } = {},
-) => {
-  const umzug = new Umzug({
-    migrations: [{ ...init, name: "20241224202701-init" }],
-    context: sequelize.getQueryInterface(),
-    storage: new SequelizeStorage({ sequelize }),
-    logger: console,
-  });
+  const migrationsTable = "__drizzle_migrations";
+  const migrationTableCreate = sql`
+    CREATE TABLE IF NOT EXISTS ${sql.identifier(migrationsTable)} (
+      id SERIAL PRIMARY KEY,
+      hash text NOT NULL
+    )
+  `;
 
-  if (type === "down") {
-    await umzug.down(downOptions);
-  } else {
-    await umzug.up(upOptions);
+  await db.run(migrationTableCreate).execute();
+
+  const dbMigrations = await db
+    .values<[number, string]>(
+      sql`SELECT id, hash FROM ${sql.identifier(migrationsTable)} ORDER BY id DESC LIMIT 1`,
+    )
+    .execute();
+
+  const lastDbMigration = dbMigrations[0];
+
+  const queriesToRun = [];
+
+  for (const migration of migrations) {
+    if (!lastDbMigration || lastDbMigration[1] < migration.hash) {
+      queriesToRun.push(
+        ...migration.sql,
+        `INSERT INTO \`${migrationsTable}\` ("hash") VALUES('${migration.hash}')`,
+      );
+    }
   }
-};
+
+  for (const query of queriesToRun) {
+    await db.run(query).execute();
+  }
+}

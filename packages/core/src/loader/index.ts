@@ -1,5 +1,3 @@
-import { readFile, stat } from "node:fs/promises";
-import { dirname, extname, join } from "node:path";
 import type { Camelize } from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
@@ -7,6 +5,7 @@ import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
+import { nodejs } from "../utils/nodejs.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { loadAgentFromYamlFile } from "./agent-yaml.js";
@@ -19,18 +18,16 @@ export interface LoadOptions {
 }
 
 export async function load(options: LoadOptions) {
-  const { path } = options;
-
-  const aigneFilePath = await getAIGNEFilePath(path);
-  const rootDir = dirname(aigneFilePath);
+  const aigneFilePath = await getAIGNEFilePath(options.path);
+  const rootDir = nodejs.path.dirname(aigneFilePath);
 
   const aigne = await loadAIGNEFile(aigneFilePath);
 
   const agents = await Promise.all(
-    (aigne.agents ?? []).map((filename) => loadAgent(join(rootDir, filename))),
+    (aigne.agents ?? []).map((filename) => loadAgent(nodejs.path.join(rootDir, filename))),
   );
   const skills = await Promise.all(
-    (aigne.skills ?? []).map((filename) => loadAgent(join(rootDir, filename))),
+    (aigne.skills ?? []).map((filename) => loadAgent(nodejs.path.join(rootDir, filename))),
   );
 
   return {
@@ -42,12 +39,12 @@ export async function load(options: LoadOptions) {
 }
 
 export async function loadAgent(path: string): Promise<Agent> {
-  if (extname(path) === ".js") {
+  if (nodejs.path.extname(path) === ".js") {
     const agent = await loadAgentFromJsFile(path);
     return FunctionAgent.from(agent);
   }
 
-  if (extname(path) === ".yaml" || extname(path) === ".yml") {
+  if (nodejs.path.extname(path) === ".yaml" || nodejs.path.extname(path) === ".yml") {
     const agent = await loadAgentFromYamlFile(path);
     if (agent.type === "ai") {
       return AIAgent.from({
@@ -55,7 +52,9 @@ export async function loadAgent(path: string): Promise<Agent> {
         skills:
           agent.skills &&
           (await Promise.all(
-            agent.skills.map((filename) => loadAgent(join(dirname(path), filename))),
+            agent.skills.map((filename) =>
+              loadAgent(nodejs.path.join(nodejs.path.dirname(path), filename)),
+            ),
           )),
       });
     }
@@ -126,7 +125,7 @@ const aigneFileSchema = z.object({
 
 export async function loadAIGNEFile(path: string) {
   const raw = await tryOrThrow(
-    () => readFile(path, "utf8"),
+    () => nodejs.fs.readFile(path, "utf8"),
     (error) => new Error(`Failed to load aigne.yaml from ${path}: ${error.message}`),
   );
 
@@ -144,12 +143,12 @@ export async function loadAIGNEFile(path: string) {
 }
 
 async function getAIGNEFilePath(path: string) {
-  const s = await stat(path);
+  const s = await nodejs.fs.stat(path);
 
   if (s.isDirectory()) {
     for (const file of AIGNE_FILE_NAME) {
-      const filePath = join(path, file);
-      if ((await stat(filePath)).isFile()) return filePath;
+      const filePath = nodejs.path.join(path, file);
+      if ((await nodejs.fs.stat(filePath)).isFile()) return filePath;
     }
   }
 

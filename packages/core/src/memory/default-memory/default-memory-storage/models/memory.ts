@@ -1,52 +1,19 @@
-import {
-  type CreationOptional,
-  DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
-  Model,
-} from "sequelize";
-import type { ModelStatic, Sequelize } from "sequelize";
+import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v7 } from "uuid";
+import { datetime, json } from "../type.js";
 
-const nextId = () => v7();
-
-export interface Memory extends Model<InferAttributes<Memory>, InferCreationAttributes<Memory>> {
-  id: CreationOptional<string>;
-
-  createdAt: CreationOptional<Date>;
-
-  updatedAt: CreationOptional<Date>;
-
-  sessionId?: string | null;
-
-  content: unknown;
-}
-
-export function initMemoryModel(sequelize: Sequelize) {
-  return (class Memory extends Model {} as ModelStatic<Memory>).init(
-    {
-      id: {
-        type: DataTypes.STRING,
-        primaryKey: true,
-        allowNull: false,
-        defaultValue: nextId,
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      sessionId: {
-        type: DataTypes.STRING,
-      },
-      content: {
-        type: DataTypes.JSON,
-        allowNull: false,
-      },
-    },
-    { sequelize },
-  );
-}
+export const Memories = sqliteTable("Memories", {
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => v7()),
+  createdAt: datetime("createdAt")
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: datetime("updatedAt")
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+  sessionId: text("sessionId"),
+  content: json("content").notNull(),
+});

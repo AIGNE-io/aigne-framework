@@ -127,7 +127,7 @@ test("DefaultMemory should persist memories if path options is provided", async 
   const path = join(tmpdir(), `${v7()}.db`);
   try {
     const memoryAgent = new DefaultMemory({
-      storage: { path },
+      storage: { url: `file:${path}` },
     });
     const storage = memoryAgent.storage;
     assert(storage instanceof DefaultMemoryStorage);

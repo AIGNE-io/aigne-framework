@@ -12,7 +12,7 @@ const agent = AIAgent.from({
   memory: [
     new DefaultMemory({
       storage: {
-        url: join(import.meta.dirname, "memory.db"),
+        url: `file:${join(import.meta.dirname, "memory.db")}`,
       },
     }),
     new FSMemory({ rootDir: join(import.meta.dirname, "memories") }),

@@ -1,12 +1,7 @@
 import { joinURL } from "ufo";
 import type { DocNode } from "./generator.js";
+import type { PublishResult } from "./types.js";
 import { getComponentMountPoint } from "./utils/get-component-mount-point.js";
-
-interface PublishResult {
-  success: boolean;
-  docs?: unknown[];
-  error?: string;
-}
 
 export async function publisher(input: {
   data: {

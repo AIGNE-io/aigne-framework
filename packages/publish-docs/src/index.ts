@@ -2,6 +2,7 @@ import { z } from "zod";
 import { authenticator } from "./authenticator.js";
 import { Generator } from "./generator.js";
 import { publisher } from "./publisher.js";
+import type { PublishResult } from "./types.js";
 
 const withTokenSchema = z.object({
   sidebarPath: z.string(),
@@ -24,7 +25,7 @@ const withAuthSchema = z.object({
 const optionsSchema = z.union([withTokenSchema, withAuthSchema]);
 export type PublishDocsOptions = z.infer<typeof optionsSchema>;
 
-export async function publishDocs(options: PublishDocsOptions): Promise<{ success: boolean }> {
+export async function publishDocs(options: PublishDocsOptions): Promise<PublishResult> {
   const parsed = optionsSchema.parse(options);
 
   let accessToken: string;
@@ -54,5 +55,5 @@ export async function publishDocs(options: PublishDocsOptions): Promise<{ succes
     accessToken,
   });
 
-  return { success: published.success };
+  return published;
 }

@@ -67,7 +67,9 @@ test("AIGNE HTTP Client should work in browser", async () => {
 
   serve({ port, fetch: honoApp.fetch });
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
 
   const pageURL = `http://localhost:${port}`;
   const aigneURL = `http://localhost:${port}/aigne/invoke`;

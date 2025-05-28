@@ -20,11 +20,11 @@ Let's understand the implementation details of each step:
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-enable-memory" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
-  memory: {
+  memory: new DefaultMemory({
     storage: {
       url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
     },
-  },
+  }),
 });
 ```
 
@@ -112,6 +112,7 @@ console.log(result4);
 The following example shows how to create an Agent with memory functionality and test its memory capability in continuous conversations:
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent"
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -121,11 +122,11 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
-  memory: {
+  memory: new DefaultMemory({
     storage: {
       url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
     },
-  },
+  }),
 });
 
 const result1 = await aigne.invoke(

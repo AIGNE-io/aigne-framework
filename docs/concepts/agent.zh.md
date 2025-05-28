@@ -179,7 +179,7 @@ console.log(result);
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-enable-memory-for-agent" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 ```
 

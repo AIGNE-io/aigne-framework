@@ -72,11 +72,11 @@ const client = new AIGNEHTTPClient({
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-invoke-agent" exclude_imports
 const chatbot = await client.getAgent({
   name: "chatbot",
-  memory: {
+  memory: new DefaultMemory({
     storage: {
       url: "file:memories.sqlite3",
     },
-  },
+  }),
 });
 const result = await chatbot.invoke(
   "What is the crypto price of ABT/USD on coinbase?",

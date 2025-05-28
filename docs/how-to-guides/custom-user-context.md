@@ -18,12 +18,12 @@ Let's understand the implementation details of each step:
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-custom-user-context-create-agent" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
-  memory: {
+  memory: new DefaultMemory({
     storage: {
       url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
       getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
     },
-  },
+  }),
 });
 ```
 
@@ -61,6 +61,7 @@ console.log(result);
 The following code demonstrates how to create an Agent and extract session ID from user context to implement multi-user isolated memory functionality:
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-custom-user-context"
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -70,12 +71,12 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
-  memory: {
+  memory: new DefaultMemory({
     storage: {
       url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
       getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
     },
-  },
+  }),
 });
 
 const result = await aigne.invoke(

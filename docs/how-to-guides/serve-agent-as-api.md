@@ -29,12 +29,12 @@ Let's understand the server-side implementation details step by step:
 const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
-  memory: {
+  memory: new DefaultMemory({
     storage: {
       url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
       getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
     },
-  },
+  }),
 });
 ```
 
@@ -99,6 +99,7 @@ const httpServer = app.listen(port);
 The following example shows how to create an API server to provide Agent services:
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-serve-agent-as-api-service"
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
@@ -107,12 +108,12 @@ import express from "express";
 const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
-  memory: {
+  memory: new DefaultMemory({
     storage: {
       url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
       getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
     },
-  },
+  }),
 });
 
 const aigne = new AIGNE({

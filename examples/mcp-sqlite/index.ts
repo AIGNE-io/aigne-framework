@@ -1,6 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import { join } from "node:path";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent, PromptBuilder } from "@aigne/core";
 
@@ -22,7 +23,7 @@ await runWithAIGNE(
     const agent = AIAgent.from({
       instructions: PromptBuilder.from(prompt),
       skills: [sqlite],
-      memory: true,
+      memory: new DefaultMemory(),
     });
 
     return agent;

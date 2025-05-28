@@ -1,10 +1,10 @@
 #!/usr/bin/env npx -y bun
 
 import { join } from "node:path";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { FSMemory } from "@aigne/agent-library/fs-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent } from "@aigne/core";
-import { DefaultMemory } from "@aigne/core/memory/default-memory/index.js";
 
 const agent = AIAgent.from({
   name: "memory_example",

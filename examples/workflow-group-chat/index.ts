@@ -2,6 +2,7 @@
 
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import {
   AIAgent,
   AIAgentToolChoice,
@@ -34,7 +35,7 @@ const writer = AIAgent.from({
   name: "writer",
   description: "Writer for creating any text content",
   publishTopic: DEFAULT_TOPIC,
-  memory: { subscribeTopic: DEFAULT_TOPIC },
+  memory: new DefaultMemory({ subscribeTopic: DEFAULT_TOPIC }),
   instructions: "You are a Writer. You produce good work.",
 });
 
@@ -42,7 +43,7 @@ const editor = AIAgent.from({
   name: "editor",
   description: "Editor for planning and reviewing the content",
   publishTopic: DEFAULT_TOPIC,
-  memory: { subscribeTopic: DEFAULT_TOPIC },
+  memory: new DefaultMemory({ subscribeTopic: DEFAULT_TOPIC }),
   instructions: `\
 You are an Editor. Plan and guide the task given by the user.
 Provide critical feedbacks to the draft and illustration produced by Writer and Illustrator.
@@ -67,7 +68,7 @@ const illustrator = AIAgent.from({
   name: "illustrator",
   description: "An illustrator for creating images",
   publishTopic: DEFAULT_TOPIC,
-  memory: { subscribeTopic: DEFAULT_TOPIC },
+  memory: new DefaultMemory({ subscribeTopic: DEFAULT_TOPIC }),
   instructions: `\
 You are an Illustrator. You use the generate_image tool to create images given user's requirement.
 Make sure the images have consistent characters and style.`,
@@ -114,7 +115,7 @@ const manager = AIAgent.from({
   name: "manager",
   subscribeTopic: DEFAULT_TOPIC,
   publishTopic: (output) => output.role,
-  memory: { subscribeTopic: DEFAULT_TOPIC },
+  memory: new DefaultMemory({ subscribeTopic: DEFAULT_TOPIC }),
   instructions: PromptTemplate.from(`\
   You are participating in a role-playing game. The available roles are:
 

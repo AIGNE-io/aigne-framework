@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE, FunctionAgent, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
@@ -169,11 +170,11 @@ test("Build first agent: enable memory for agent", async () => {
   // #region example-enable-memory-for-agent-enable-memory
   const agent = AIAgent.from({
     instructions: "You are a helpful assistant for Crypto market analysis",
-    memory: {
+    memory: new DefaultMemory({
       storage: {
         url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
       },
-    },
+    }),
   });
   // #endregion example-enable-memory-for-agent-enable-memory
 
@@ -245,12 +246,12 @@ test("Build first agent: custom user context", async () => {
   // #region example-custom-user-context-create-agent
   const agent = AIAgent.from({
     instructions: "You are a helpful assistant for Crypto market analysis",
-    memory: {
+    memory: new DefaultMemory({
       storage: {
         url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
         getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
       },
-    },
+    }),
   });
   // #endregion example-custom-user-context-create-agent
 
@@ -285,12 +286,12 @@ test("Build first agent: serve agent as API service", async () => {
   const agent = AIAgent.from({
     name: "chatbot",
     instructions: "You are a helpful assistant",
-    memory: {
+    memory: new DefaultMemory({
       storage: {
         url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
         getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
       },
-    },
+    }),
   });
   // #endregion example-serve-agent-as-api-service-create-named-agent
 
@@ -388,11 +389,11 @@ test("Build first agent: setup memory for client agent", async () => {
   // #region example-client-agent-memory-invoke-agent
   const chatbot = await client.getAgent({
     name: "chatbot",
-    memory: {
+    memory: new DefaultMemory({
       storage: {
         url: "file:memories.sqlite3",
       },
-    },
+    }),
   });
   const result = await chatbot.invoke("What is the crypto price of ABT/USD on coinbase?");
   console.log(result);

@@ -1,5 +1,4 @@
-import type { AgentInvokeOptions } from "../../agents/agent.js";
-import type { Memory } from "../memory.js";
+import type { AgentInvokeOptions, Memory } from "@aigne/core";
 
 export abstract class MemoryStorage {
   abstract create(

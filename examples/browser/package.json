@@ -15,10 +15,14 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
+    "lint": "tsc --noEmit",
     "build": "vite build",
-    "lint": "tsc --noEmit"
+    "clean": "rimraf lib test/coverage",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
+    "@aigne/agent-library": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/transport": "workspace:^",

@@ -8,9 +8,6 @@ import {
   type Message,
   createMessage,
 } from "@aigne/core";
-import { DefaultMemoryStorage } from "@aigne/core/memory/default-memory/default-memory-storage/index.js";
-import { Memories } from "@aigne/core/memory/default-memory/default-memory-storage/models/memory.js";
-import { DefaultMemory } from "@aigne/core/memory/default-memory/index.js";
 import {
   arrayToReadableStream,
   readableStreamToArray,
@@ -26,6 +23,7 @@ import compression from "compression";
 import { detect } from "detect-port";
 import express from "express";
 import { Hono } from "hono";
+import { MockMemory } from "../_mocks_/mock-memory.js";
 import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
 test("AIGNEClient example simple", async () => {
@@ -259,24 +257,20 @@ test("AIGNEClient should support custom memory for client agent", async () => {
 
     const clientAgent = await client.getAgent({
       name: "chat",
-      memory: true,
+      memory: new MockMemory(),
     });
 
     expect(clientAgent.memories.length).toBe(1);
     const memory = clientAgent.memories[0];
-    expect(memory).toBeInstanceOf(DefaultMemory);
-    assert(memory instanceof DefaultMemory);
+    expect(memory).toBeInstanceOf(MockMemory);
+    assert(memory instanceof MockMemory);
 
     const { storage } = memory;
-    assert(storage instanceof DefaultMemoryStorage);
 
     const response = await clientAgent.invoke("Hello, I'm Bob!");
     expect(response).toEqual({ $message: "Hello Bob, How can I help you?" });
 
-    const db = await storage.db;
-
-    const allMemories = await db.select().from(Memories).execute();
-    expect(allMemories).toEqual([
+    expect(storage).toEqual([
       expect.objectContaining({
         content: expect.objectContaining({
           role: "user",

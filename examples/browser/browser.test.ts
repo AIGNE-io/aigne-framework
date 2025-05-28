@@ -1,6 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { nodejs } from "@aigne/core/utils/nodejs.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
@@ -139,13 +140,16 @@ async function runAgentInBrowser({
 
   const result = await page.evaluate(
     async ({ agentName, url, input }: { agentName: string; url: string; input: string }) => {
-      const g = globalThis as unknown as { AIGNEHTTPClient: typeof AIGNEHTTPClient };
+      const g = globalThis as unknown as {
+        AIGNEHTTPClient: typeof AIGNEHTTPClient;
+        DefaultMemory: typeof DefaultMemory;
+      };
 
       const client = new g.AIGNEHTTPClient({ url });
 
       const agent = await client.getAgent({
         name: agentName,
-        memory: { storage: { url: "memories.sqlite3" } },
+        memory: new DefaultMemory({ storage: { url: "memories.sqlite3" } }),
       });
 
       const response = await agent.invoke(input);

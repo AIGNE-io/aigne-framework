@@ -1,6 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import assert from "node:assert";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent, PromptBuilder } from "@aigne/core";
 import { UnauthorizedError, refreshAuthorization } from "@modelcontextprotocol/sdk/client/auth.js";
@@ -123,7 +124,7 @@ await runWithAIGNE(
         "You are a helpful assistant that can help users query and analyze data from the blocklet. You can perform various database queries on the blocklet database, before performing any queries, please try to understand the user's request and generate a query base on the database schema.",
       ),
       skills: [blocklet],
-      memory: true,
+      memory: new DefaultMemory(),
     });
 
     return agent;

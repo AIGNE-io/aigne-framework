@@ -1,5 +1,6 @@
 import assert from "node:assert";
 import { join } from "node:path";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -22,7 +23,7 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a database administrator",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 console.log(

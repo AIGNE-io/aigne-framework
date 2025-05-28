@@ -1,4 +1,5 @@
 import assert from "node:assert";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -25,7 +26,7 @@ const agent = AIAgent.from({
 1. navigate to the url
 2. evaluate document.body.innerText to get the content
 `,
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 const result = await aigne.invoke(agent, "extract content from https://www.arcblock.io");

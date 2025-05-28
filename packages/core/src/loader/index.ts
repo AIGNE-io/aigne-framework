@@ -5,6 +5,7 @@ import { type Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
+import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { nodejs } from "../utils/nodejs.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
@@ -14,6 +15,7 @@ const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
 export interface LoadOptions {
   models: { new (parameters: { model?: string; modelOptions?: ChatModelOptions }): ChatModel }[];
+  memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
   path: string;
 }
 
@@ -38,7 +40,7 @@ export async function load(options: LoadOptions) {
   };
 }
 
-export async function loadAgent(path: string): Promise<Agent> {
+export async function loadAgent(path: string, options?: LoadOptions): Promise<Agent> {
   if (nodejs.path.extname(path) === ".js") {
     const agent = await loadAgentFromJsFile(path);
     return FunctionAgent.from(agent);
@@ -49,6 +51,14 @@ export async function loadAgent(path: string): Promise<Agent> {
     if (agent.type === "ai") {
       return AIAgent.from({
         ...agent,
+        memory:
+          !options?.memories?.length || !agent.memory
+            ? undefined
+            : await loadMemory(
+                options.memories,
+                typeof agent.memory === "object" ? agent.memory.provider : undefined,
+                typeof agent.memory === "object" ? agent.memory : {},
+              ),
         skills:
           agent.skills &&
           (await Promise.all(
@@ -75,6 +85,19 @@ export async function loadAgent(path: string): Promise<Agent> {
   }
 
   throw new Error(`Unsupported agent file type: ${path}`);
+}
+
+async function loadMemory(
+  memories: NonNullable<LoadOptions["memories"]>,
+  provider?: string,
+  options?: MemoryAgentOptions,
+) {
+  const M = !provider
+    ? memories[0]
+    : memories.find((i) => i.name.toLowerCase().includes(provider.toLowerCase()));
+  if (!M) throw new Error(`Unsupported memory: ${provider}`);
+
+  return new M(options);
 }
 
 const { MODEL_PROVIDER, MODEL_NAME } = nodejs.env;

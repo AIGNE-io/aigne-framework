@@ -1,5 +1,6 @@
 #!/usr/bin/env bunwrapper
 
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent } from "@aigne/core";
 
@@ -19,7 +20,7 @@ await runWithAIGNE(
   2. evaluate document.body.innerText to get the content
   `,
       skills: [puppeteer],
-      memory: true,
+      memory: new DefaultMemory(),
     });
 
     return agent;

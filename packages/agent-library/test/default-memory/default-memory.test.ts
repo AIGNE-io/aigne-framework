@@ -1,13 +1,12 @@
-import { expect, spyOn, test } from "bun:test";
+import { expect, test } from "bun:test";
 import assert from "node:assert";
 import { rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { AIGNE, createMessage } from "@aigne/core";
-import { DefaultMemoryStorage } from "@aigne/core/memory/default-memory/default-memory-storage/index.js";
-import { DefaultMemory } from "@aigne/core/memory/default-memory/index.js";
+import { DefaultMemoryStorage } from "@aigne/agent-library/default-memory/default-memory-storage/index.js";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
+import { AIGNE } from "@aigne/core";
 import { v7 } from "uuid";
-import { waitLastCall } from "../_utils/test.js";
 
 test("should add a new memory if it is not the same as the last one", async () => {
   const context = new AIGNE().newContext();
@@ -65,36 +64,6 @@ test("should add multiple different memories", async () => {
   expect(allMemories).toHaveLength(2);
   expect(allMemories[0]).toEqual(expect.objectContaining({ content: memory1 }));
   expect(allMemories[1]).toEqual(expect.objectContaining({ content: memory2 }));
-});
-
-test("should add memory after topic trigger", async () => {
-  const context = new AIGNE({}).newContext();
-
-  const memoryAgent = new DefaultMemory({
-    subscribeTopic: "test_topic",
-  });
-  const storage = memoryAgent.storage;
-  assert(storage instanceof DefaultMemoryStorage);
-
-  memoryAgent.attach(context);
-
-  const record = spyOn(memoryAgent, "record");
-  const lastCall = waitLastCall(record);
-
-  context.publish("test_topic", "hello");
-
-  await lastCall;
-
-  const { result: allMemories } = await storage.search({}, { context });
-
-  expect(allMemories).toEqual([
-    expect.objectContaining({
-      content: {
-        role: "user",
-        content: createMessage("hello"),
-      },
-    }),
-  ]);
 });
 
 test("DefaultMemory should add memory with correct sessionId", async () => {

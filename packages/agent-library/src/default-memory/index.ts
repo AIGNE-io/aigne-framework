@@ -1,16 +1,16 @@
-import equal from "fast-deep-equal";
-import type { AgentInvokeOptions } from "../../agents/agent.js";
-import { type Memory, MemoryAgent, type MemoryAgentOptions } from "../memory.js";
 import {
+  type AgentInvokeOptions,
+  type Memory,
+  MemoryAgent,
+  type MemoryAgentOptions,
   MemoryRecorder,
   type MemoryRecorderInput,
   type MemoryRecorderOutput,
-} from "../recorder.js";
-import {
   MemoryRetriever,
   type MemoryRetrieverInput,
   type MemoryRetrieverOutput,
-} from "../retriever.js";
+} from "@aigne/core";
+import equal from "fast-deep-equal";
 import {
   DefaultMemoryStorage,
   type DefaultMemoryStorageOptions,

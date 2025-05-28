@@ -1,5 +1,6 @@
 #!/usr/bin/env bunwrapper
 
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, FunctionAgent } from "@aigne/core";
 import { z } from "zod";
@@ -32,7 +33,7 @@ You are a proficient coder. You write code to solve problems.
 Work with the sandbox to execute your code.
 `,
   skills: [sandbox],
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 await runWithAIGNE(coder, {

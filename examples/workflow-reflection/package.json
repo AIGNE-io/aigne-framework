@@ -21,6 +21,7 @@
     "test:llm": "bun test"
   },
   "dependencies": {
+    "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",

@@ -1,6 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import assert from "node:assert";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent } from "@aigne/core";
 
@@ -32,7 +33,7 @@ await runWithAIGNE(
   Always provide clear, concise responses with relevant information from GitHub.
   `,
       skills: [github],
-      memory: true,
+      memory: new DefaultMemory(),
     });
 
     return agent;

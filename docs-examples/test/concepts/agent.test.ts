@@ -1,5 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import {
   AIAgent,
   AIGNE,
@@ -175,7 +176,7 @@ test("Example Agent: enable memory for agent", async () => {
   // #region example-agent-enable-memory-for-agent
   const agent = AIAgent.from({
     instructions: "You are a helpful assistant for Crypto market analysis",
-    memory: true,
+    memory: new DefaultMemory(),
   });
   // #endregion example-agent-enable-memory-for-agent
 

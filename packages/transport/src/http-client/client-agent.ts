@@ -8,18 +8,14 @@ import {
   type Message,
   createMessage,
 } from "@aigne/core";
-import {
-  DefaultMemory,
-  type DefaultMemoryOptions,
-} from "@aigne/core/memory/default-memory/index.js";
-import { MemoryAgent } from "@aigne/core/memory/memory.js";
+import type { MemoryAgent } from "@aigne/core/memory/memory.js";
 import { onAgentResponseStreamEnd } from "@aigne/core/utils/stream-utils.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { AIGNEHTTPClient } from "./client.js";
 
 export interface ClientAgentOptions<I extends Message = Message, O extends Message = Message>
   extends Required<Pick<AgentOptions<I, O>, "name">> {
-  memory?: MemoryAgent | MemoryAgent[] | DefaultMemoryOptions | true;
+  memory?: MemoryAgent | MemoryAgent[];
 }
 
 export class ClientAgent<I extends Message = Message, O extends Message = Message> extends Agent<
@@ -30,18 +26,7 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
     public client: AIGNEHTTPClient,
     options: ClientAgentOptions<I, O>,
   ) {
-    super({
-      ...options,
-      memory: !options.memory
-        ? undefined
-        : Array.isArray(options.memory)
-          ? options.memory
-          : [
-              options.memory instanceof MemoryAgent
-                ? options.memory
-                : new DefaultMemory(options.memory === true ? {} : options.memory),
-            ],
-    });
+    super(options);
   }
 
   override async invoke(

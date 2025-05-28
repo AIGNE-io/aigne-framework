@@ -1,5 +1,6 @@
 #!/usr/bin/env bunwrapper
 
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, type Agent, FunctionAgent } from "@aigne/core";
 import { z } from "zod";
@@ -96,7 +97,7 @@ tell them a crazy caveat and execute their order.
 `,
   skills: [transfer_back_to_triage, execute_order_tool],
   outputKey: "sales",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 const issuesAndRepairs = AIAgent.from({
@@ -113,7 +114,7 @@ Follow the following routine with the user:
 `,
   skills: [transfer_back_to_triage, execute_refund_tool, look_up_item_tool],
   outputKey: "issuesAndRepairs",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 // Assume this is a human agent
@@ -126,7 +127,7 @@ Only transfer to another agent if user explicitly asks for it.
 `,
   skills: [transfer_back_to_triage, transfer_to_sales_agent, transfer_to_issues_and_repairs],
   outputKey: "human",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 const triage = AIAgent.from({
@@ -139,7 +140,7 @@ But make your questions subtle and natural.
 `,
   skills: [transfer_to_issues_and_repairs, transfer_to_sales_agent, transfer_to_human_manager],
   outputKey: "triage",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 await runWithAIGNE(triage, {

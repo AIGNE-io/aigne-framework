@@ -1,6 +1,4 @@
 import { type ZodObject, type ZodType, z } from "zod";
-import { DefaultMemory, type DefaultMemoryOptions } from "../memory/default-memory/index.js";
-import { MemoryAgent } from "../memory/memory.js";
 import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
 import { checkArguments, isEmpty } from "../utils/type-utils.js";
@@ -33,7 +31,7 @@ import { isTransferAgentOutput } from "./types.js";
  * @template O The output message type the agent returns
  */
 export interface AIAgentOptions<I extends Message = Message, O extends Message = Message>
-  extends Omit<AgentOptions<I, O>, "memory"> {
+  extends AgentOptions<I, O> {
   /**
    * The language model to use for this agent
    *
@@ -91,8 +89,6 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    * The template receives a {{memories}} variable containing serialized memory content.
    */
   memoryPromptTemplate?: string;
-
-  memory?: AgentOptions<I, O>["memory"] | DefaultMemoryOptions | true;
 }
 
 /**
@@ -197,14 +193,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
    * @param options Configuration options for the AI agent
    */
   constructor(options: AIAgentOptions<I, O>) {
-    super({
-      ...options,
-      memory: !options.memory
-        ? undefined
-        : Array.isArray(options.memory) || options.memory instanceof MemoryAgent
-          ? options.memory
-          : new DefaultMemory(options.memory === true ? {} : options.memory),
-    });
+    super(options);
     checkArguments("AIAgent", aiAgentOptionsSchema, options);
 
     this.model = options.model;

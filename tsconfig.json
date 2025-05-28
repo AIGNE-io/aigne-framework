@@ -9,7 +9,7 @@
     "allowJs": true,
 
     // Bundler mode
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

@@ -1,13 +1,10 @@
+import { createStdioClientTransport } from "@aigne/platform-helpers/mcp/stdio-client-transport.js";
 import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
 import {
   SSEClientTransport,
   type SSEClientTransportOptions,
 } from "@modelcontextprotocol/sdk/client/sse.js";
-import {
-  StdioClientTransport,
-  type StdioServerParameters,
-  getDefaultEnvironment,
-} from "@modelcontextprotocol/sdk/client/stdio.js";
+import type { StdioServerParameters } from "@modelcontextprotocol/sdk/client/stdio.js";
 import {
   StreamableHTTPClientTransport,
   type StreamableHTTPClientTransportOptions,
@@ -30,6 +27,7 @@ import {
   resourceFromMCPResource,
   toolFromMCPTool,
 } from "../utils/mcp-utils.js";
+import { nodejs } from "../utils/nodejs.js";
 import { type PromiseOrValue, checkArguments, createAccessorArray } from "../utils/type-utils.js";
 import { Agent, type AgentInvokeOptions, type AgentOptions, type Message } from "./agent.js";
 
@@ -41,7 +39,7 @@ const DEFAULT_TIMEOUT = () =>
     .number()
     .int()
     .min(0)
-    .safeParse(process.env.MCP_TIMEOUT || process.env.TIMEOUT).data || 60e3;
+    .safeParse(nodejs.env.MCP_TIMEOUT || nodejs.env.TIMEOUT).data || 60e3;
 
 export interface MCPAgentOptions extends AgentOptions {
   client: Client;
@@ -176,15 +174,7 @@ export class MCPAgent extends Agent {
     }
 
     if (isStdioServerParameters(options)) {
-      const transport = () =>
-        new StdioClientTransport({
-          ...options,
-          env: {
-            ...getDefaultEnvironment(),
-            ...options.env,
-          },
-          stderr: "pipe",
-        });
+      const transport = async () => createStdioClientTransport(options);
       return MCPAgent.fromTransport(transport, options);
     }
 
@@ -192,7 +182,7 @@ export class MCPAgent extends Agent {
   }
 
   private static async fromTransport(
-    transportCreator: () => Transport,
+    transportCreator: () => PromiseOrValue<Transport>,
     options: MCPAgentOptions | MCPServerOptions,
   ): Promise<MCPAgent> {
     const client = new ClientWithReconnect(
@@ -204,7 +194,7 @@ export class MCPAgent extends Agent {
       isSSEServerParameters(options) ? { transportCreator, ...options } : undefined,
     );
 
-    const transport = transportCreator();
+    const transport = await transportCreator();
 
     logger.debug(`Connecting to MCP server: ${getMCPServerString(options)}`);
     await client.connect(transport);

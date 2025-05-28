@@ -1,0 +1,38 @@
+{
+  "name": "@aigne/example-browser",
+  "version": "0.0.1",
+  "description": "A demonstration of using AIGNE Framework in the browser",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/brwoser",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "type": "module",
+  "bin": "index.ts",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aigne/core": "workspace:^",
+    "@aigne/openai": "workspace:^",
+    "@aigne/transport": "workspace:^",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.9",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "detect-port": "^2.1.0",
+    "hono": "^4.7.10",
+    "puppeteer": "^24.9.0",
+    "vite": "^6.3.5"
+  }
+}

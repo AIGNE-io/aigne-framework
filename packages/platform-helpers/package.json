@@ -1,6 +1,6 @@
 {
-  "name": "@aigne/core",
-  "version": "1.17.0",
+  "name": "@aigne/platform-helpers",
+  "version": "0.0.1",
   "description": "AIGNE core library for building AI-powered applications",
   "publishConfig": {
     "access": "public"
@@ -14,50 +14,26 @@
   },
   "files": [
     "lib/cjs",
-    "lib/dts",
     "lib/esm",
     "LICENSE",
     "README.md",
     "CHANGELOG.md"
   ],
   "type": "module",
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
-  "types": "./lib/dts/index.d.ts",
   "exports": {
-    ".": {
-      "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js",
-      "types": "./lib/dts/index.d.ts"
-    },
-    "./*": {
-      "import": "./lib/esm/*",
-      "require": "./lib/cjs/*",
-      "types": "./lib/dts/*"
+    "./mcp/stdio-client-transport.js": {
+      "browser": "./lib/esm/mcp/stdio-client-transport.browser.js",
+      "node": {
+        "require": "./lib/cjs/mcp/stdio-client-transport.node.js",
+        "import": "./lib/esm/mcp/stdio-client-transport.node.js"
+      },
+      "default": "./lib/esm/mcp/stdio-client-transport.js"
     }
   },
   "typesVersions": {
     "*": {
-      ".": [
-        "./lib/dts/index.d.ts"
-      ],
-      "agents/*": [
-        "./lib/dts/agents/*"
-      ],
-      "aigne/*": [
-        "./lib/dts/aigne/*"
-      ],
-      "loader/*": [
-        "./lib/dts/loader/*"
-      ],
-      "memory/*": [
-        "./lib/dts/memory/*"
-      ],
-      "prompt/*": [
-        "./lib/dts/prompt/*"
-      ],
-      "utils/*": [
-        "./lib/dts/utils/*"
+      "*": [
+        "./lib/esm/*"
       ]
     }
   },
@@ -66,14 +42,13 @@
     "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib test/coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "bun --cwd test test",
-    "test:coverage": "bun --cwd test test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {
     "@aigne/json-schema-to-zod": "^1.3.3",
-    "@aigne/platform-helpers": "workspace:^",
-    "@aigne/sqlite": "workspace:^",
+    "@libsql/client": "^0.15.7",
     "@modelcontextprotocol/sdk": "^1.11.0",
     "@types/debug": "^4.1.12",
     "camelize-ts": "^3.0.0",
@@ -87,6 +62,7 @@
     "nanoid": "^5.1.5",
     "p-retry": "^6.2.1",
     "raw-body": "^3.0.0",
+    "sqlocal": "^0.14.1",
     "strict-event-emitter": "^0.5.1",
     "ufo": "^1.6.1",
     "uuid": "^11.1.0",

@@ -3,6 +3,8 @@
   "release-type": "node",
   "packages": {
     ".": {},
+    "packages/platform-helpers": {},
+    "packages/sqlite": {},
     "packages/agent-library": {},
     "packages/core": {},
     "packages/cli": {},

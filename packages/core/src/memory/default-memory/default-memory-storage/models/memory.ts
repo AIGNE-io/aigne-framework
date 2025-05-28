@@ -1,6 +1,6 @@
+import { datetime, json } from "@aigne/sqlite/type.js";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v7 } from "uuid";
-import { datetime, json } from "../type.js";
 
 export const Memories = sqliteTable("Memories", {
   id: text("id")

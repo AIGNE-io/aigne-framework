@@ -77,7 +77,7 @@ export async function loadAgent(path: string): Promise<Agent> {
   throw new Error(`Unsupported agent file type: ${path}`);
 }
 
-const { MODEL_PROVIDER, MODEL_NAME } = process.env;
+const { MODEL_PROVIDER, MODEL_NAME } = nodejs.env;
 const DEFAULT_MODEL_PROVIDER = "openai";
 
 export async function loadModel(

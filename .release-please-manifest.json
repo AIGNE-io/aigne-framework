@@ -1,5 +1,7 @@
 {
   ".": "1.19.0",
+  "packages/platform-helpers": "0.0.1",
+  "packages/sqlite": "0.0.1",
   "packages/agent-library": "1.11.0",
   "packages/core": "1.17.0",
   "packages/cli": "1.10.1",

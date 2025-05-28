@@ -5,6 +5,8 @@ export const nodejs = {
 
   isStderrATTY: isNodejsEnvironment() && process.stderr?.isTTY,
 
+  env: isNodejsEnvironment() ? process.env : {},
+
   get fs(): typeof import("node:fs/promises") {
     ensureNodejsEnvironment();
     return require("node:fs/promises");

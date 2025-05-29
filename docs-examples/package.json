@@ -29,6 +29,7 @@
     "@aigne/transport": "workspace:^",
     "@aigne/xai": "workspace:^",
     "express": "^5.1.0",
+    "helmet": "^8.1.0",
     "hono": "^4.7.10",
     "zod": "^3.24.4"
   },

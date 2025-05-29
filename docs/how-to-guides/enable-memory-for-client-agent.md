@@ -13,6 +13,66 @@ Unlike traditional server-side memory, client-side memory offers the following p
 * **User Control**: Users have complete control over their memory data and can delete or backup at any time
 * **Privacy Security**: Sensitive conversation content never leaves the user's device
 
+## Client Requirements
+
+**⚠️Important Notice⚠️**: For client memory functionality to work properly and persist data, you must set the following headers in your client page server:
+
+```
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+These headers are required to enable SharedArrayBuffer and other advanced browser features that are fundamental to client memory persistence.
+
+```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-create-client"
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+
+const client = new AIGNEHTTPClient({
+  url: `http://localhost:${port}/api/chat`,
+});
+```
+
+### Express Server Configuration
+
+If you are using Express as your client HTTP server, make sure to add the following middleware on the server side to set the necessary headers:
+
+```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-client-server-headers"
+import helmet from "helmet";
+
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: { policy: "require-corp" },
+    crossOriginOpenerPolicy: { policy: "same-origin" },
+  }),
+);
+```
+
+### Vite Configuration
+
+If you are using Vite as your client development server, add the following configuration to `vite.config.ts`:
+
+* `server.headers` to set the necessary headers
+* `worker.format` set to `es` to support modern browser modularity
+
+```ts file="../../examples/browser/vite.config.ts"
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  server: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
+  },
+  plugins: [react()],
+  worker: {
+    format: "es",
+  },
+});
+```
+
 ## Basic Process
 
 ### Create Server-side Agent
@@ -39,6 +99,7 @@ const aigne = new AIGNE({
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-create-server"
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import express from "express";
+import helmet from "helmet";
 
 const server = new AIGNEHTTPServer(aigne);
 
@@ -47,6 +108,13 @@ const app = express();
 app.post("/api/chat", async (req, res) => {
   await server.invoke(req, res);
 });
+
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: { policy: "require-corp" },
+    crossOriginOpenerPolicy: { policy: "same-origin" },
+  }),
+);
 
 const port = 3000;
 

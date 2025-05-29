@@ -11,6 +11,7 @@ import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import detectPort from "detect-port";
 import express from "express";
+import helmet from "helmet";
 
 test("Build first agent: basic", async () => {
   // #region example-build-first-agent
@@ -371,6 +372,15 @@ test("Build first agent: setup memory for client agent", async () => {
   app.post("/api/chat", async (req, res) => {
     await server.invoke(req, res);
   });
+
+  // #region example-client-agent-memory-client-server-headers
+  app.use(
+    helmet({
+      crossOriginEmbedderPolicy: { policy: "require-corp" },
+      crossOriginOpenerPolicy: { policy: "same-origin" },
+    }),
+  );
+  // #endregion example-client-agent-memory-client-server-headers
 
   let port = 3000;
   port = await detectPort();

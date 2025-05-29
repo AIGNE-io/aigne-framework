@@ -13,6 +13,66 @@
 * **用户控制**：用户完全控制自己的记忆数据，可以随时删除或备份
 * **隐私安全**：敏感对话内容不会离开用户设备
 
+## 客户端要求
+
+**⚠️重要提示⚠️**：为了使客户端记忆功能正常工作并持久化数据，您必须在客户端页面服务器中设置以下 headers：
+
+```
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+这些 headers 是启用 SharedArrayBuffer 和其他高级浏览器功能所必需的，这些功能是客户端记忆持久化的基础。
+
+```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-create-client"
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+
+const client = new AIGNEHTTPClient({
+  url: `http://localhost:${port}/api/chat`,
+});
+```
+
+### Express 服务器配置
+
+如果您使用 Express 作为 客户端 HTTP 服务器，请确保在服务器端添加以下中间件来设置必要的 headers：
+
+```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-client-server-headers"
+import helmet from "helmet";
+
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: { policy: "require-corp" },
+    crossOriginOpenerPolicy: { policy: "same-origin" },
+  }),
+);
+```
+
+### Vite 配置
+
+如果您使用 Vite 作为客户端开发服务器，请在 `vite.config.ts` 中添加以下配置：
+
+* `server.headers` 用于设置必要的 headers
+* `worker.format` 设置为 `es` 以支持现代浏览器的模块化
+
+```ts file="../../examples/browser/vite.config.ts"
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  server: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
+  },
+  plugins: [react()],
+  worker: {
+    format: "es",
+  },
+});
+```
+
 ## 基本流程
 
 ### 创建服务端 Agent
@@ -39,6 +99,7 @@ const aigne = new AIGNE({
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-create-server"
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import express from "express";
+import helmet from "helmet";
 
 const server = new AIGNEHTTPServer(aigne);
 
@@ -48,6 +109,13 @@ app.post("/api/chat", async (req, res) => {
   await server.invoke(req, res);
 });
 
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: { policy: "require-corp" },
+    crossOriginOpenerPolicy: { policy: "same-origin" },
+  }),
+);
+
 const port = 3000;
 
 const httpServer = app.listen(port);
@@ -56,14 +124,6 @@ const httpServer = app.listen(port);
 **说明**：启动 HTTP 服务器，为客户端提供 Agent 调用接口。服务器端不需要配置任何记忆相关的设置。
 
 ### 创建客户端连接
-
-```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-create-client"
-import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
-
-const client = new AIGNEHTTPClient({
-  url: `http://localhost:${port}/api/chat`,
-});
-```
 
 **说明**：创建 HTTP 客户端，用于连接到远程 AIGNE 服务器。
 

@@ -14,10 +14,6 @@ export interface DefaultMemoryStorageOptions {
 }
 
 export class DefaultMemoryStorage extends MemoryStorage {
-  memories: {
-    [groupId: string]: Memory[];
-  } = {};
-
   constructor(public options?: DefaultMemoryStorageOptions) {
     super();
   }

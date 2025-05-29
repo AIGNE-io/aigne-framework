@@ -2,6 +2,8 @@ import { ZodObject, type ZodType, z } from "zod";
 import type { Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { Memory, MemoryAgent } from "../memory/memory.js";
+import type { MemoryRecorderInput } from "../memory/recorder.js";
+import type { MemoryRetrieverInput } from "../memory/retriever.js";
 import { createMessage, getMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
 import { nodejs } from "../utils/nodejs.js";
@@ -134,6 +136,11 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    * One or more memory agents this agent can use
    */
   memory?: MemoryAgent | MemoryAgent[];
+
+  /**
+   * Maximum number of memory items to retrieve
+   */
+  maxRetrieveMemoryCount?: number;
 }
 
 export const agentOptionsSchema: ZodObject<{
@@ -151,6 +158,7 @@ export const agentOptionsSchema: ZodObject<{
   skills: z.array(z.union([z.custom<Agent>(), z.custom<FunctionAgentFn>()])).optional(),
   disableEvents: z.boolean().optional(),
   memory: z.union([z.custom<MemoryAgent>(), z.array(z.custom<MemoryAgent>())]).optional(),
+  maxRetrieveMemoryCount: z.number().optional(),
   hooks: z
     .object({
       onStart: z.custom<AgentHooks["onStart"]>().optional(),
@@ -241,6 +249,8 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
       this.memories.push(options.memory);
     }
 
+    this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
+
     this.hooks = options.hooks ?? {};
     this.guideRails = options.guideRails;
   }
@@ -249,6 +259,11 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * List of memories this agent can use
    */
   readonly memories: MemoryAgent[] = [];
+
+  /**
+   * Maximum number of memory items to retrieve
+   */
+  maxRetrieveMemoryCount?: number;
 
   /**
    * Lifecycle hooks for agent processing.
@@ -455,7 +470,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
   }
 
   async retrieveMemories(
-    input: string | I | undefined,
+    input: Pick<MemoryRetrieverInput, "limit"> & { search?: Message | string },
     options: Pick<AgentInvokeOptions, "context">,
   ) {
     const memories: Pick<Memory, "content">[] = [];
@@ -463,7 +478,11 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     for (const memory of this.memories) {
       const ms = (
         await memory.retrieve(
-          { search: typeof input === "string" ? input : input && getMessage(input) },
+          {
+            ...input,
+            search: typeof input === "string" ? input : input && getMessage(input),
+            limit: input.limit ?? this.maxRetrieveMemoryCount,
+          },
           options.context,
         )
       ).memories;
@@ -473,18 +492,10 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     return memories;
   }
 
-  async recordMemories(input: I, output: O, options: Pick<AgentInvokeOptions, "context">) {
+  async recordMemories(input: MemoryRecorderInput, options: Pick<AgentInvokeOptions, "context">) {
     for (const memory of this.memories) {
       if (memory.autoUpdate) {
-        await memory.record(
-          {
-            content: [
-              { role: "user", content: input },
-              { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
-            ],
-          },
-          options.context,
-        );
+        await memory.record(input, options.context);
       }
     }
   }
@@ -796,7 +807,15 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
     this.publishToTopics(output, options);
 
-    await this.recordMemories(input, output, options);
+    await this.recordMemories(
+      {
+        content: [
+          { role: "user", content: input },
+          { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
+        ],
+      },
+      options,
+    );
   }
 
   protected async publishToTopics(output: Message, options: AgentInvokeOptions) {

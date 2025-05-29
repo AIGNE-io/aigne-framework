@@ -7,6 +7,7 @@ import {
   type AgentResponseStream,
   type Message,
   createMessage,
+  replaceTransferAgentToName,
 } from "@aigne/core";
 import type { MemoryAgent } from "@aigne/core/memory/memory.js";
 import { onAgentResponseStreamEnd } from "@aigne/core/utils/stream-utils.js";
@@ -45,7 +46,10 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
     input: I | string,
     options?: Partial<AgentInvokeOptions>,
   ): Promise<AgentResponse<O>> {
-    const memories = await this.retrieveMemories(input, { ...options, context: this.client });
+    const memories = await this.retrieveMemories(
+      { search: input },
+      { ...options, context: this.client },
+    );
 
     const result = await this.client._invoke(this.name, input, {
       ...options,
@@ -73,6 +77,14 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
   }
 
   override async postprocess(input: I, output: O, options: AgentInvokeOptions): Promise<void> {
-    await this.recordMemories(input, output, options);
+    await this.recordMemories(
+      {
+        content: [
+          { role: "user", content: input },
+          { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
+        ],
+      },
+      options,
+    );
   }
 }

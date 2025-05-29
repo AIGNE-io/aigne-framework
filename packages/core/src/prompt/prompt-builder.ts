@@ -148,7 +148,7 @@ export class PromptBuilder {
     const memories: Pick<Memory, "content">[] = [];
 
     if (options.agent) {
-      memories.push(...(await options.agent.retrieveMemories(options.input, options)));
+      memories.push(...(await options.agent.retrieveMemories({ search: options.input }, options)));
     }
 
     if (options.memories?.length) {

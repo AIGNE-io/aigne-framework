@@ -17,6 +17,8 @@ import {
 } from "./default-memory-storage/index.js";
 import { MemoryStorage } from "./storage.js";
 
+const DEFAULT_RETRIEVE_MEMORY_COUNT = 10;
+
 export interface DefaultMemoryOptions extends Partial<MemoryAgentOptions> {
   storage?: MemoryStorage | DefaultMemoryStorageOptions;
 }
@@ -49,7 +51,10 @@ class DefaultMemoryRetriever extends MemoryRetriever {
     input: MemoryRetrieverInput,
     options: AgentInvokeOptions,
   ): Promise<MemoryRetrieverOutput> {
-    const { result } = await this.memory.storage.search(input, options);
+    const { result } = await this.memory.storage.search(
+      { ...input, limit: input.limit ?? DEFAULT_RETRIEVE_MEMORY_COUNT },
+      options,
+    );
     return { memories: result };
   }
 }

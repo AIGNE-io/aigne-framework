@@ -32,7 +32,9 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          pnpm install
+          npx puppeteer browsers install chrome
 
       - name: Build
         run: pnpm build

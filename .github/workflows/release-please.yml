@@ -39,7 +39,9 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          pnpm install
+          npx puppeteer browsers install chrome
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Build

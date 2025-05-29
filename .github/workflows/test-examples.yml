@@ -63,7 +63,9 @@ jobs:
           curl -LsSf https://astral.sh/uv/install.sh | sh
 
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          pnpm install
+          npx puppeteer browsers install chrome
 
       - name: Build
         run: |

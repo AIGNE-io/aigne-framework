@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.2.0...transport-v0.3.0) (2025-05-29)
+
+
+### Features
+
+* add memory agents support for client agent ([#139](https://github.com/AIGNE-io/aigne-framework/issues/139)) ([57044fa](https://github.com/AIGNE-io/aigne-framework/commit/57044fa87b8abcba395cd05f941d6d312ab65764))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.2.1
+  * devDependencies
+    * @aigne/core bumped to 1.18.0
+    * @aigne/test-utils bumped to 0.3.2
+
 ## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.1.0...transport-v0.2.0) (2025-05-25)
 
 

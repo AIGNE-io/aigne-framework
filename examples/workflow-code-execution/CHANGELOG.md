@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.12.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.11.1...example-workflow-code-execution-v1.12.0) (2025-05-29)
+
+
+### Features
+
+* add memory agents support for client agent ([#139](https://github.com/AIGNE-io/aigne-framework/issues/139)) ([57044fa](https://github.com/AIGNE-io/aigne-framework/commit/57044fa87b8abcba395cd05f941d6d312ab65764))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.12.0
+    * @aigne/cli bumped to 1.11.0
+    * @aigne/core bumped to 1.18.0
+    * @aigne/openai bumped to 0.2.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.3.2
+
 ## [1.11.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.11.0...example-workflow-code-execution-v1.11.1) (2025-05-25)
 
 

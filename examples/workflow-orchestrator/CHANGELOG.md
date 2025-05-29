@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.10.3](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.10.2...example-workflow-orchestrator-v1.10.3) (2025-05-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.12.0
+    * @aigne/cli bumped to 1.11.0
+    * @aigne/core bumped to 1.18.0
+    * @aigne/openai bumped to 0.2.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.3.2
+
 ## [1.10.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.10.1...example-workflow-orchestrator-v1.10.2) (2025-05-27)
 
 

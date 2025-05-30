@@ -6,6 +6,7 @@
   "packages/core": "1.18.0",
   "packages/cli": "1.11.0",
   "packages/test-utils": "0.3.2",
+  "packages/publish-docs": "0.1.0",
   "packages/anthropic": "0.2.1",
   "packages/bedrock": "0.2.1",
   "packages/deepseek": "0.2.1",

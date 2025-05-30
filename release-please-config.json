@@ -9,6 +9,7 @@
     "packages/core": {},
     "packages/cli": {},
     "packages/test-utils": {},
+    "packages/publish-docs": {},
     "packages/anthropic": {},
     "packages/bedrock": {},
     "packages/deepseek": {},

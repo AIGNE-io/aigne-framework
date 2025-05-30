@@ -1,9 +1,9 @@
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodObject, type ZodType, z } from "zod";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { customCamelize } from "../utils/camelize.js";
-import { nodejs } from "../utils/nodejs.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { inputOutputSchema } from "./schema.js";
 

@@ -56,7 +56,7 @@ export const createRunAIGNECommand = (name = "run") =>
     .option(
       "--log-level <level>",
       `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
-      customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(String(s).toLowerCase())),
+      customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
       getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
     );
 

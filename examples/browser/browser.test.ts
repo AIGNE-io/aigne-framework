@@ -1,9 +1,9 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
+import { exists, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
-import { nodejs } from "@aigne/core/utils/nodejs.js";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { OpenAIChatModel } from "@aigne/openai";
 import type { AIGNEHTTPClient } from "@aigne/transport/http-client/client.js";
@@ -56,11 +56,11 @@ test("AIGNE HTTP Client should work in browser", async () => {
         const index = join(root, "index.html");
         const p = join(root, path);
 
-        if (await nodejs.fs.exists(p)) {
-          return await nodejs.fs.readFile(p);
+        if (await exists(p)) {
+          return await readFile(p);
         }
 
-        return await nodejs.fs.readFile(index);
+        return await readFile(index);
       },
     }),
   );

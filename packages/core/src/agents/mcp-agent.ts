@@ -1,4 +1,5 @@
 import { createStdioClientTransport } from "@aigne/platform-helpers/mcp/stdio-client-transport.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client, type ClientOptions } from "@modelcontextprotocol/sdk/client/index.js";
 import {
   SSEClientTransport,
@@ -27,7 +28,6 @@ import {
   resourceFromMCPResource,
   toolFromMCPTool,
 } from "../utils/mcp-utils.js";
-import { nodejs } from "../utils/nodejs.js";
 import { type PromiseOrValue, checkArguments, createAccessorArray } from "../utils/type-utils.js";
 import { Agent, type AgentInvokeOptions, type AgentOptions, type Message } from "./agent.js";
 

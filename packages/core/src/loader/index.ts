@@ -1,3 +1,4 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { Camelize } from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
@@ -6,7 +7,6 @@ import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
-import { nodejs } from "../utils/nodejs.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { loadAgentFromYamlFile } from "./agent-yaml.js";

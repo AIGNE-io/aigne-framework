@@ -28,6 +28,14 @@
         "import": "./lib/esm/mcp/stdio-client-transport.node.js"
       },
       "default": "./lib/esm/mcp/stdio-client-transport.js"
+    },
+    "./nodejs/index.js": {
+      "browser": "./lib/esm/nodejs/index.browser.js",
+      "node": {
+        "require": "./lib/cjs/nodejs/index.node.js",
+        "import": "./lib/esm/nodejs/index.node.js"
+      },
+      "default": "./lib/esm/nodejs/index.js"
     }
   },
   "typesVersions": {

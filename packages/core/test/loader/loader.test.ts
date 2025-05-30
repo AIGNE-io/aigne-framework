@@ -3,7 +3,7 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, AIGNE, ChatModel, MCPAgent, createMessage } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
-import { nodejs } from "@aigne/core/utils/nodejs.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { nanoid } from "nanoid";
 import { ClaudeChatModel, OpenAIChatModel, XAIChatModel } from "../_mocks/mock-models.js";

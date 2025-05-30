@@ -1,3 +1,4 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { ZodObject, type ZodType, z } from "zod";
 import type { Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
@@ -6,7 +7,6 @@ import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
 import { createMessage, getMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
-import { nodejs } from "../utils/nodejs.js";
 import {
   agentResponseStreamToObject,
   asyncGeneratorToReadableStream,

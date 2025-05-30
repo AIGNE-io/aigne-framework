@@ -1,5 +1,5 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import debug from "debug";
-import { nodejs } from "./nodejs.js";
 
 export enum LogLevel {
   ERROR = "error",

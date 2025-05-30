@@ -22,22 +22,32 @@ import { MermaidNode } from "./nodes/mermaid-node.js";
 export class Converter {
   private slugPrefix?: string;
   public usedSlugs: Record<string, string[]>;
+  public blankFilePaths: string[];
 
   constructor(options: { slugPrefix?: string } = {}) {
     this.slugPrefix = options.slugPrefix;
     this.usedSlugs = {};
+    this.blankFilePaths = [];
   }
 
   public async markdownToLexical(
     markdown: string,
     filePath: string,
-  ): Promise<{ title: string | undefined; content: SerializedEditorState }> {
+  ): Promise<{
+    title: string | undefined;
+    content: SerializedEditorState | null;
+  }> {
     let title: string | undefined;
     let content = markdown;
     const titleMatch = markdown.trim().match(/^#\s+(.+)$/m);
     if (titleMatch?.[1]) {
       title = titleMatch[1].trim();
       content = markdown.replace(/^#\s+.+$/m, "").trim();
+    }
+
+    if (content.trim() === "") {
+      this.blankFilePaths.push(filePath);
+      return { title, content: null };
     }
 
     const slugPrefix = this.slugPrefix;

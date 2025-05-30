@@ -137,6 +137,8 @@ export class Generator {
     const tree = this.parseSidebar(tokens as TokensList);
     await Promise.all(tree.map((x) => this.fillInfo(x)));
 
+    console.warn("Blank files:", this.converter.blankFilePaths);
+
     console.warn(
       "Referenced but not uploaded documents:",
       Object.entries(this.converter.usedSlugs)

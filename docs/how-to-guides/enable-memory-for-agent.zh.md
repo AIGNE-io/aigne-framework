@@ -15,7 +15,10 @@
 
 ### 创建带有记忆功能的 Agent
 
-```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-enable-memory" exclude_imports
+```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-enable-memory"
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
+import { AIAgent } from "@aigne/core";
+
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
   memory: new DefaultMemory({

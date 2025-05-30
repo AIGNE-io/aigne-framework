@@ -1,3 +1,4 @@
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
 import { DeepSeekChatModel } from "@aigne/deepseek";
@@ -20,3 +21,5 @@ export const availableModels = [
   OpenRouterChatModel,
   XAIChatModel,
 ];
+
+export const availableMemories = [DefaultMemory];

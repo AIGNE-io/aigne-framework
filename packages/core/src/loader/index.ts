@@ -26,10 +26,10 @@ export async function load(options: LoadOptions) {
   const aigne = await loadAIGNEFile(aigneFilePath);
 
   const agents = await Promise.all(
-    (aigne.agents ?? []).map((filename) => loadAgent(nodejs.path.join(rootDir, filename))),
+    (aigne.agents ?? []).map((filename) => loadAgent(nodejs.path.join(rootDir, filename), options)),
   );
   const skills = await Promise.all(
-    (aigne.skills ?? []).map((filename) => loadAgent(nodejs.path.join(rootDir, filename))),
+    (aigne.skills ?? []).map((filename) => loadAgent(nodejs.path.join(rootDir, filename), options)),
   );
 
   return {
@@ -63,7 +63,7 @@ export async function loadAgent(path: string, options?: LoadOptions): Promise<Ag
           agent.skills &&
           (await Promise.all(
             agent.skills.map((filename) =>
-              loadAgent(nodejs.path.join(nodejs.path.dirname(path), filename)),
+              loadAgent(nodejs.path.join(nodejs.path.dirname(path), filename), options),
             ),
           )),
       });

@@ -8,7 +8,7 @@ import { logger } from "@aigne/core/utils/logger.js";
 import { isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import type { Command } from "commander";
-import { availableModels } from "../constants.js";
+import { availableMemories, availableModels } from "../constants.js";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import {
@@ -121,7 +121,7 @@ async function loadAIGNE(path: string, options: RunOptions) {
     ? await loadModel(availableModels, parseModelOption(options.model))
     : undefined;
 
-  return await AIGNE.load(path, { models: availableModels, model });
+  return await AIGNE.load(path, { models: availableModels, memories: availableMemories, model });
 }
 
 async function downloadPackage(url: string, cacheDir: string) {

@@ -76,9 +76,9 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   static async load(
     path: string,
-    options: AIGNEOptions & Pick<LoadOptions, "models">,
+    options: AIGNEOptions & Omit<LoadOptions, "path">,
   ): Promise<AIGNE> {
-    const { model, agents, skills, ...aigne } = await load({ models: options.models, path });
+    const { model, agents, skills, ...aigne } = await load({ ...options, path });
     return new AIGNE({
       ...options,
       model: options?.model || model,

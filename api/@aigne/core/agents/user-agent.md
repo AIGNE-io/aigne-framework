@@ -52,6 +52,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 | `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
 | `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

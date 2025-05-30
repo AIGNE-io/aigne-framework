@@ -187,6 +187,10 @@ console.log(json); // { model: "grok-2-latest", usage: { inputTokens: 6, outputT
 
 - `OpenAIChatModel`
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

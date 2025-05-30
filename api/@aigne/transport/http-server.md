@@ -284,14 +284,12 @@ request parsing, payload limits, and response handling.
 
 ### AIGNEHTTPServerInvokeOptions\<U\>
 
+#### Extends
+
+- `Pick`\<[`AgentInvokeOptions`](../core/agents/agent.md#agentinvokeoptions)\<`U`\>, `"userContext"` \| `"memories"`\>
+
 #### Type Parameters
 
 | Type Parameter              | Default type  |
 | --------------------------- | ------------- |
 | `U` _extends_ `UserContext` | `UserContext` |
-
-#### Properties
-
-| Property                                | Type |
-| --------------------------------------- | ---- |
-| <a id="usercontext"></a> `userContext?` | `U`  |

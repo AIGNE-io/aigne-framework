@@ -697,6 +697,7 @@ The Puppeteer MCP server allows AIGNE Framework to access and manipulate web con
 **Example**:
 
 ```typescript file="../examples/mcp-puppeteer/usages.ts"
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -722,7 +723,7 @@ const agent = AIAgent.from({
 1. navigate to the url
 2. evaluate document.body.innerText to get the content
 `,
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 const result = await aigne.invoke(
@@ -755,6 +756,7 @@ The SQLite MCP server allows AIGNE Framework to interact with SQLite databases.
 
 ```typescript file="../examples/mcp-sqlite/usages.ts"
 import { join } from "node:path";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -781,7 +783,7 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a database administrator",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 
 console.log(

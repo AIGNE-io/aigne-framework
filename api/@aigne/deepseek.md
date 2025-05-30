@@ -187,6 +187,10 @@ console.log(json); // { model: "deepseek-chat", usage: { inputTokens: 7, outputT
 
 - `OpenAIChatModel`
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

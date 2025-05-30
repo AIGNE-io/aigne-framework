@@ -61,6 +61,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 | `I` _extends_ [`Message`](#message) | [`Message`](#message) | The input message type the agent accepts  |
 | `O` _extends_ [`Message`](#message) | [`Message`](#message) | The output message type the agent returns |
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor
@@ -84,6 +88,12 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 > `readonly` **memories**: [`MemoryAgent`](../memory.md#memoryagent)[] = `[]`
 
 List of memories this agent can use
+
+##### maxRetrieveMemoryCount?
+
+> `optional` **maxRetrieveMemoryCount**: `number`
+
+Maximum number of memory items to retrieve
 
 ##### hooks
 
@@ -393,6 +403,36 @@ building more complex behaviors.
 ###### Returns
 
 `void`
+
+##### retrieveMemories()
+
+> **retrieveMemories**(`input`, `options`): `Promise`\<`Pick`\<[`Memory`](../memory.md#memory), `"content"`\>[]\>
+
+###### Parameters
+
+| Parameter | Type                                                                                                                                   |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `input`   | `Pick`\<[`MemoryRetrieverInput`](../memory.md#memoryretrieverinput), `"limit"`\> & \{ `search?`: `string` \| [`Message`](#message); \} |
+| `options` | `Pick`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>, `"context"`\>                                                    |
+
+###### Returns
+
+`Promise`\<`Pick`\<[`Memory`](../memory.md#memory), `"content"`\>[]\>
+
+##### recordMemories()
+
+> **recordMemories**(`input`, `options`): `Promise`\<`void`\>
+
+###### Parameters
+
+| Parameter | Type                                                                                |
+| --------- | ----------------------------------------------------------------------------------- |
+| `input`   | [`MemoryRecorderInput`](../memory.md#memoryrecorderinput)                           |
+| `options` | `Pick`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>, `"context"`\> |
+
+###### Returns
+
+`Promise`\<`void`\>
 
 ##### invoke()
 
@@ -850,21 +890,6 @@ class MyAgent extends Agent {
 await using agent = new MyAgent();
 ```
 
-##### \[custom\]()
-
-> **\[custom\]**(): `string`
-
-Custom object inspection behavior
-
-When using Node.js's util.inspect function to inspect an agent,
-only the agent's name will be shown, making output more concise
-
-###### Returns
-
-`string`
-
-Agent name
-
 ##### \[asyncDispose\]()
 
 > **\[asyncDispose\]**(): `Promise`\<`void`\>
@@ -930,6 +955,10 @@ console.log(result); // Output: { greeting: "Hello, Alice!" }
 | ----------------------------------- | --------------------- | ------------------------- |
 | `I` _extends_ [`Message`](#message) | [`Message`](#message) | Agent input message type  |
 | `O` _extends_ [`Message`](#message) | [`Message`](#message) | Agent output message type |
+
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
 
 #### Constructors
 
@@ -1081,6 +1110,7 @@ Configuration options for an agent
 #### Extended by
 
 - [`FunctionAgentOptions`](#functionagentoptions)
+- [`AIAgentOptions`](ai-agent.md#aiagentoptions)
 - [`MCPAgentOptions`](mcp-agent.md#mcpagentoptions)
 - [`MCPBaseOptions`](mcp-agent.md#mcpbaseoptions)
 - [`TeamAgentOptions`](team-agent.md#teamagentoptions)
@@ -1096,18 +1126,19 @@ Configuration options for an agent
 
 #### Properties
 
-| Property                                                  | Type                                                                                                                           | Description                                                                                                                                  |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="subscribetopic-1"></a> `subscribeTopic?`           | [`SubscribeTopic`](#subscribetopic)                                                                                            | Topics the agent should subscribe to These topics determine which messages the agent will receive from the system                            |
-| <a id="publishtopic-1"></a> `publishTopic?`               | [`PublishTopic`](#publishtopic)\<`O`\>                                                                                         | Topics the agent should publish to These topics determine where the agent's output messages will be sent in the system                       |
-| <a id="name"></a> `name?`                                 | `string`                                                                                                                       | Name of the agent Used for identification and logging. Defaults to the constructor name if not specified                                     |
-| <a id="description"></a> `description?`                   | `string`                                                                                                                       | Description of the agent A human-readable description of what the agent does, useful for documentation and debugging                         |
-| <a id="inputschema"></a> `inputSchema?`                   | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`I`\>                                                                     | Zod schema defining the input message structure Used to validate that input messages conform to the expected format                          |
-| <a id="outputschema"></a> `outputSchema?`                 | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`O`\>                                                                     | Zod schema defining the output message structure Used to validate that output messages conform to the expected format                        |
-| <a id="includeinputinoutput"></a> `includeInputInOutput?` | `boolean`                                                                                                                      | Whether to include input in the output When true, the agent will merge input fields into the output object                                   |
-| <a id="skills"></a> `skills?`                             | ([`Agent`](#agent)\<[`Message`](#message), [`Message`](#message)\> \| [`FunctionAgentFn`](#functionagentfn)\<`any`, `any`\>)[] | List of skills (other agents or functions) this agent has These skills can be used by the agent to delegate tasks or extend its capabilities |
-| <a id="disableevents"></a> `disableEvents?`               | `boolean`                                                                                                                      | Whether to disable emitting events for agent actions When true, the agent won't emit events like agentStarted, agentSucceed, or agentFailed  |
-| <a id="memory"></a> `memory?`                             | [`MemoryAgent`](../memory.md#memoryagent) \| [`MemoryAgent`](../memory.md#memoryagent)[]                                       | One or more memory agents this agent can use                                                                                                 |
+| Property                                                      | Type                                                                                                                           | Description                                                                                                                                  |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="subscribetopic-1"></a> `subscribeTopic?`               | [`SubscribeTopic`](#subscribetopic)                                                                                            | Topics the agent should subscribe to These topics determine which messages the agent will receive from the system                            |
+| <a id="publishtopic-1"></a> `publishTopic?`                   | [`PublishTopic`](#publishtopic)\<`O`\>                                                                                         | Topics the agent should publish to These topics determine where the agent's output messages will be sent in the system                       |
+| <a id="name"></a> `name?`                                     | `string`                                                                                                                       | Name of the agent Used for identification and logging. Defaults to the constructor name if not specified                                     |
+| <a id="description"></a> `description?`                       | `string`                                                                                                                       | Description of the agent A human-readable description of what the agent does, useful for documentation and debugging                         |
+| <a id="inputschema"></a> `inputSchema?`                       | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`I`\>                                                                     | Zod schema defining the input message structure Used to validate that input messages conform to the expected format                          |
+| <a id="outputschema"></a> `outputSchema?`                     | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`O`\>                                                                     | Zod schema defining the output message structure Used to validate that output messages conform to the expected format                        |
+| <a id="includeinputinoutput"></a> `includeInputInOutput?`     | `boolean`                                                                                                                      | Whether to include input in the output When true, the agent will merge input fields into the output object                                   |
+| <a id="skills"></a> `skills?`                                 | ([`Agent`](#agent)\<[`Message`](#message), [`Message`](#message)\> \| [`FunctionAgentFn`](#functionagentfn)\<`any`, `any`\>)[] | List of skills (other agents or functions) this agent has These skills can be used by the agent to delegate tasks or extend its capabilities |
+| <a id="disableevents"></a> `disableEvents?`                   | `boolean`                                                                                                                      | Whether to disable emitting events for agent actions When true, the agent won't emit events like agentStarted, agentSucceed, or agentFailed  |
+| <a id="memory"></a> `memory?`                                 | [`MemoryAgent`](../memory.md#memoryagent) \| [`MemoryAgent`](../memory.md#memoryagent)[]                                       | One or more memory agents this agent can use                                                                                                 |
+| <a id="maxretrievememorycount"></a> `maxRetrieveMemoryCount?` | `number`                                                                                                                       | Maximum number of memory items to retrieve                                                                                                   |
 
 ---
 
@@ -1121,10 +1152,12 @@ Configuration options for an agent
 
 #### Properties
 
-| Property                            | Type             | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ----------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="context"></a> `context`      | `Context`\<`U`\> | The execution context for the agent The context provides the runtime environment for agent execution, including: - Event emission and subscription management - Inter-agent communication and message passing - Resource usage tracking and limits enforcement - Timeout and status management - Memory and state management across agent invocations Each agent invocation requires a context to coordinate with the broader agent system and maintain proper isolation and resource control. |
-| <a id="streaming"></a> `streaming?` | `boolean`        | Whether to enable streaming response When true, the invoke method returns a ReadableStream that emits chunks of the response as they become available, allowing for real-time display of results When false or undefined, the invoke method waits for full completion and returns the final JSON result                                                                                                                                                                                        |
+| Property                                | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="context"></a> `context`          | `Context`\<`U`\>                                         | The execution context for the agent The context provides the runtime environment for agent execution, including: - Event emission and subscription management - Inter-agent communication and message passing - Resource usage tracking and limits enforcement - Timeout and status management - Memory and state management across agent invocations Each agent invocation requires a context to coordinate with the broader agent system and maintain proper isolation and resource control. |
+| <a id="streaming"></a> `streaming?`     | `boolean`                                                | Whether to enable streaming response When true, the invoke method returns a ReadableStream that emits chunks of the response as they become available, allowing for real-time display of results When false or undefined, the invoke method waits for full completion and returns the final JSON result                                                                                                                                                                                        |
+| <a id="usercontext"></a> `userContext?` | `U`                                                      | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| <a id="memories"></a> `memories?`       | `Pick`\<[`Memory`](../memory.md#memory), `"content"`\>[] | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 ---
 

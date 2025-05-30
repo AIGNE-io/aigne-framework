@@ -79,6 +79,10 @@ console.log(result);
 | `I` _extends_ [`Message`](agent.md#message) |
 | `O` _extends_ [`Message`](agent.md#message) |
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

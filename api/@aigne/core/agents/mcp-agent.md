@@ -46,6 +46,10 @@ console.log(result);
 
 - [`Agent`](agent.md#agent)
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor
@@ -464,6 +468,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 | `I` _extends_ [`Message`](agent.md#message) | The input message type the agent accepts  |
 | `O` _extends_ [`Message`](agent.md#message) | The output message type the agent returns |
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor
@@ -534,6 +542,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 #### Extends
 
 - [`MCPBase`](#mcpbase)\<[`Message`](agent.md#message), `CallToolResult`\>
+
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
 
 #### Methods
 
@@ -730,6 +742,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 - [`MCPBase`](#mcpbase)\<[`MCPPromptInput`](#mcppromptinput), `GetPromptResult`\>
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Methods
 
 ##### process()
@@ -924,6 +940,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 #### Extends
 
 - [`MCPBase`](#mcpbase)\<[`MCPPromptInput`](#mcppromptinput), `ReadResourceResult`\>
+
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
 
 #### Constructors
 

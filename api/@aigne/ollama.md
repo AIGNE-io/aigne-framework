@@ -183,6 +183,10 @@ console.log(json); // { model: "llama3" }
 
 - `OpenAIChatModel`
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

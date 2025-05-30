@@ -207,6 +207,10 @@ console.log(json); // { model: "anthropic/claude-3-opus", usage: { inputTokens: 
 
 - `OpenAIChatModel`
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

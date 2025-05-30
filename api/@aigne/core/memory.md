@@ -18,6 +18,11 @@ instead provides memory management capabilities to the system.
 #### Extended by
 
 - [`FSMemory`](../agent-library/fs-memory.md#fsmemory)
+- [`DefaultMemory`](../agent-library/default-memory.md#defaultmemory)
+
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
 
 #### Constructors
 
@@ -242,6 +247,10 @@ implementations of the process method to handle the actual storage logic.
 
 - [`Agent`](agents/agent.md#agent)\<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)\>
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor
@@ -284,6 +293,10 @@ implementations of the process method to handle the actual retrieval logic.
 #### Extends
 
 - [`Agent`](agents/agent.md#agent)\<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)\>
+
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
 
 #### Constructors
 

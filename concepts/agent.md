@@ -179,7 +179,7 @@ Imagine an assistant that can remember all your past conversations - this is the
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-enable-memory-for-agent" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 ```
 

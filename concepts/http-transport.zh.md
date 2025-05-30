@@ -15,12 +15,13 @@ AIGNEHTTPServer 允许开发者将 AIGNE 实例及其代理通过 HTTP 接口暴
 首先，我们需要创建一个命名的代理和 AIGNE 实例：
 
 ```ts file="../../docs-examples/test/concepts/http-transport.test.ts" region="example-http-transport-create-named-agent"
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent } from "@aigne/core";
 
 const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
-  memory: true,
+  memory: new DefaultMemory(),
 });
 ```
 

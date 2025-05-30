@@ -11,6 +11,7 @@
   * [Enable Memory for Agent](/how-to-guides/enable-memory-for-agent.md)
   * [Custom User Context](/how-to-guides/custom-user-context.md)
   * [Serve Agent as API](/how-to-guides/serve-agent-as-api.md)
+  * [Enable Memory for Client Agent](/how-to-guides/enable-memory-for-client-agent.md)
   * [Available Chat Models](/how-to-guides/available-chat-models.md)
 
 * Concepts
@@ -31,6 +32,7 @@
 
     * [orchestrator](/api/@aigne/agent-library/orchestrator.md)
     * [fs-memory](/api/@aigne/agent-library/fs-memory.md)
+    * [default-memory](/api/@aigne/agent-library/default-memory.md)
 
   * [@aigne/anthropic](/api/@aigne/anthropic.md)
 
@@ -63,7 +65,11 @@
 
   * [@aigne/openai](/api/@aigne/openai.md)
 
+  * [@aigne/platform-helpers](/api/@aigne/platform-helpers.md)
+
   * [@aigne/publish-docs](/api/@aigne/publish-docs.md)
+
+  * [@aigne/sqlite](/api/@aigne/sqlite.md)
 
   * [@aigne/test-utils](/api/@aigne/test-utils.md)
 

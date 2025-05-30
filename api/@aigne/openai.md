@@ -189,6 +189,10 @@ console.log(json); // { model: "gpt-4o", usage: { inputTokens: 10, outputTokens:
 
 - `ChatModel`
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

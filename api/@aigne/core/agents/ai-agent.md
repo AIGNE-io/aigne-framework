@@ -63,6 +63,10 @@ console.log(result); // Expected output: { $message: "Hello, How can I help you?
 | `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
 | `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor
@@ -467,7 +471,7 @@ like model configuration, prompt instructions, and tool choice.
 
 #### Extends
 
-- `Omit`\<[`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>, `"memory"`\>
+- [`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>
 
 #### Type Parameters
 
@@ -487,4 +491,3 @@ like model configuration, prompt instructions, and tool choice.
 | <a id="catchtoolserror"></a> `catchToolsError?`           | `boolean`                                                                                                                              | Whether to catch errors from tool execution and continue processing. If set to false, the agent will throw an error if a tool fails. **Default** `true`                                                                                                                                       |
 | <a id="memoryagentsastools"></a> `memoryAgentsAsTools?`   | `boolean`                                                                                                                              | Whether to include memory agents as tools for the AI model When set to true, memory agents will be made available as tools that the model can call directly to retrieve or store information. This enables the agent to explicitly interact with its memories. **Default** `false`            |
 | <a id="memoryprompttemplate"></a> `memoryPromptTemplate?` | `string`                                                                                                                               | Custom prompt template for formatting memory content Allows customization of how memories are presented to the AI model. If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used. The template receives a {{memories}} variable containing serialized memory content. |
-| <a id="memory"></a> `memory?`                             | `true` \| [`MemoryAgent`](../memory.md#memoryagent) \| [`MemoryAgent`](../memory.md#memoryagent)[] \| `DefaultMemoryOptions`           | -                                                                                                                                                                                                                                                                                             |

@@ -37,6 +37,10 @@ console.log(result2);
 
 - [`MemoryAgent`](../core/memory.md#memoryagent)
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

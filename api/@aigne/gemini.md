@@ -178,6 +178,10 @@ console.log(json); // { model: "gemini-1.5-flash" }
 
 - `OpenAIChatModel`
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

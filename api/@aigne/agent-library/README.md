@@ -146,3 +146,4 @@ Elastic-2.0
 
 - [orchestrator](orchestrator.md)
 - [fs-memory](fs-memory.md)
+- [default-memory](default-memory.md)

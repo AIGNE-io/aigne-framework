@@ -31,6 +31,10 @@ Workflow:
 | `I` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
 | `O` _extends_ [`Message`](../core/agents/agent.md#message) | [`Message`](../core/agents/agent.md#message) |
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

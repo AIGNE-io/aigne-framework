@@ -192,6 +192,10 @@ console.log(json); // { model: "claude-3-haiku-20240307", usage: { inputTokens: 
 
 - `ChatModel`
 
+#### Indexable
+
+\[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
 #### Constructors
 
 ##### Constructor

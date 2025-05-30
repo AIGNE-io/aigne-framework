@@ -4,6 +4,14 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.20.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.1...aigne-framework-v1.20.2) (2025-05-30)
+
+
+### Bug Fixes
+
+* blank file handling in converter ([#146](https://github.com/AIGNE-io/aigne-framework/issues/146)) ([4323522](https://github.com/AIGNE-io/aigne-framework/commit/432352202ab958ed4788cd2eeb81a918831e07e7))
+* provide available memories for AIGNE ([#145](https://github.com/AIGNE-io/aigne-framework/issues/145)) ([c5dc960](https://github.com/AIGNE-io/aigne-framework/commit/c5dc9605e0fb7ca60e1f5fa2f0da67ffec00c601))
+
 ## [1.20.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.0...aigne-framework-v1.20.1) (2025-05-30)
 
 

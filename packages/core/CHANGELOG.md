@@ -5,6 +5,13 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.18.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.18.1...core-v1.18.2) (2025-05-30)
+
+
+### Bug Fixes
+
+* provide available memories for AIGNE ([#145](https://github.com/AIGNE-io/aigne-framework/issues/145)) ([c5dc960](https://github.com/AIGNE-io/aigne-framework/commit/c5dc9605e0fb7ca60e1f5fa2f0da67ffec00c601))
+
 ## [1.18.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.18.0...core-v1.18.1) (2025-05-30)
 
 

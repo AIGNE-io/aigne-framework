@@ -1,10 +1,10 @@
-# Creating AI Agents - Making Intelligence Accessible
+# Creating AI Agents
 
 **English** | [中文](agent.zh.md)
 
-Want to have your own AI assistant? Using AIGNE's YAML configuration approach, you can create powerful AI agents in just a few minutes! No complex programming knowledge required - it's as simple as filling out a form.
+Using AIGNE's YAML configuration approach, you can quickly create powerful AI agents. Through simple configuration files, you can define AI behavior, input/output formats, and skills.
 
-## Basic Structure - Building Your AI Assistant Blueprint
+## Basic Structure
 
 ```yaml
 name: chat
@@ -33,33 +33,33 @@ skills:
   - plus.js
 ```
 
-## Configuration Options Explained - The Secret Behind Each Parameter
+## Configuration Options
 
-* `name`: Unique identifier for the agent, like giving your AI assistant a name
-* `description`: Brief description of the agent's functionality and purpose, so others know what it can do at a glance
-* `instructions`: Detailed instructions guiding the agent's behavior (using YAML's multi-line text format), this is the AI's "personality setting"
-* `input_schema`: \[Optional] JSON Schema definition for input parameters, defining what kind of data the AI receives
+* `name`: Unique identifier for the agent
+* `description`: Brief description of the agent's functionality and purpose
+* `instructions`: Detailed instructions guiding the agent's behavior (using YAML's multi-line text format)
+* `input_schema`: \[Optional] JSON Schema definition for input parameters
   * `type`: Input data type (top level must be `object`)
-  * `properties`: Detailed definition of input parameters, like designing form fields
-  * `required`: List of parameters that must be provided, ensuring key information isn't missed
+  * `properties`: Detailed definition of input parameters
+  * `required`: List of parameters that must be provided
 * `output_schema`: \[Optional] JSON Schema definition for output results (only use when structured data output is needed)
   * `type`: Output data type (top level must be `object`)
-  * `properties`: Detailed definition of output results, letting AI know what format to return
-  * `required`: List of parameters that must be returned, ensuring output completeness
+  * `properties`: Detailed definition of output results
+  * `required`: List of parameters that must be returned
 * `output_key`: \[Optional] Key name for output text (defaults to `$message`, only effective when there's no `output_schema`)
-* `skills`: \[Optional] List of tools the agent can use (JavaScript files implementing specific functions), equipping your AI with superpowers
-* `memory`: \[Optional] Enable the agent's conversation memory feature, letting AI remember your conversation history. Can be:
+* `skills`: \[Optional] List of tools the agent can use (JavaScript files implementing specific functions)
+* `memory`: \[Optional] Enable the agent's conversation memory feature. Can be:
   * Boolean value (`true` to enable, `false` to disable)
   * Object containing configuration options:
     * `subscribe_topic`: Array of memory topics the agent should subscribe to
 
 ***
 
-**Congratulations!** Through the above configuration, you've mastered the core skills of creating AIGNE agents. Now you can:
+Through the above configuration, you can create feature-rich AIGNE agents. Main capabilities include:
 
-✅ Create AI assistants with different personalities
-✅ Equip AI with various skills and tools
-✅ Give AI memory and learning capabilities
-✅ Seamlessly integrate with other systems and resources
+* Create AI assistants with different behavior patterns
+* Equip AI with various skills and tools
+* Enable conversation memory and learning capabilities
+* Integrate with other systems and resources
 
-**Pro Tip:** Start with a simple chatbot and gradually add more features - you'll discover the infinite possibilities of AI agents!
+**Recommendation:** Start with a simple chatbot and gradually add more features to expand AI agent capabilities.

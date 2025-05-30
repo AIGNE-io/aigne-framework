@@ -1,10 +1,10 @@
-# Creating Agents through JS Functions - Programmer's Favorite
+# Creating Agents through JS Functions
 
 **English** | [中文](function.zh.md)
 
-Code is power! For programmers, nothing is more exciting than creating AI agents using familiar JavaScript. This approach gives you complete control and lets you implement any functionality you can imagine.
+Using JavaScript functions to create AI agents provides developers with a flexible programming approach. Through familiar JavaScript syntax, you can implement complex business logic and custom functionality.
 
-## Basic Structure - Concise yet Powerful Code Pattern
+## Basic Structure
 
 ```javascript
 export default async function plus({ a, b }) {
@@ -31,18 +31,18 @@ plus.output_schema = {
 };
 ```
 
-## Structure Explained - Every Line of Code Has Deep Meaning
+## Structure Description
 
-* `export default async function xxx()`: Main function that exports the tool, this is your AI agent's brain! Receives input parameters and returns results
-* `xxx.description`: Function description, giving your agent a clear identity introduction
-* `xxx.input_schema`: JSON Schema definition for input parameters, telling AI what kind of data to expect
-* `xxx.output_schema`: JSON Schema definition for output results, ensuring returned data format is standardized
+* `export default async function xxx()`: Main exported function that receives input parameters and returns results
+* `xxx.description`: Function description
+* `xxx.input_schema`: JSON Schema definition for input parameters
+* `xxx.output_schema`: JSON Schema definition for output results
 
-## Agent Test Files - Quality Assurance Guardian
+## Test Files
 
-Quality is a programmer's life! AIGNE perfectly supports Node.js built-in testing framework, making it easy to write tests for agents. Test files are usually located in the same directory as the agent implementation file, named `xxx.test.js`.
+AIGNE supports Node.js built-in testing framework, allowing you to write test cases for agents. Test files are usually located in the same directory as the agent implementation file, named `xxx.test.js`.
 
-### Basic Test Example - Quick Function Validation
+### Basic Test Example
 
 ```javascript
 import assert from "node:assert";
@@ -51,7 +51,7 @@ import plus from "./plus.js";
 assert.deepEqual(await plus({ a: 1, b: 2 }), { sum: 3 });
 ```
 
-### Advanced Test Example - Comprehensive Coverage of Various Scenarios
+### Advanced Test Example
 
 ```javascript
 import assert from "node:assert";
@@ -83,13 +83,11 @@ describe("Plus Agent", () => {
 
 ***
 
-**Perfect!** You've unlocked all the skills of JavaScript agents. Now you can:
+Main advantages of creating agents through JavaScript functions:
 
-✅ Create intelligent agents using familiar JavaScript syntax
-✅ Implement complex business logic and algorithms
-✅ Write comprehensive test cases to ensure quality
-✅ Enjoy the perfect combination of programming fun and AI intelligence
+* Use familiar JavaScript syntax
+* Implement complex business logic and algorithms
+* Write comprehensive test cases to ensure quality
+* Complete control over code logic and execution flow
 
-**Programmer's Advantage:** Complete control, unlimited possibilities, code as documentation!
-
-**Start coding!** Let your creativity become intelligent AI agents through code!
+**Development Recommendation:** Start by implementing basic functionality, then gradually add error handling and edge case testing.

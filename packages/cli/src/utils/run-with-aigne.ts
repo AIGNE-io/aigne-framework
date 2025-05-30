@@ -3,7 +3,7 @@ import { isatty } from "node:tty";
 import { promisify } from "node:util";
 import { AIGNE, type Agent, type ChatModelOptions, UserAgent, createMessage } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
-import { LogLevel, logger } from "@aigne/core/utils/logger.js";
+import { LogLevel, getLevelFromEnv, logger } from "@aigne/core/utils/logger.js";
 import { readAllString } from "@aigne/core/utils/stream-utils.js";
 import { type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { Command } from "commander";
@@ -56,8 +56,8 @@ export const createRunAIGNECommand = (name = "run") =>
     .option(
       "--log-level <level>",
       `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
-      customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
-      LogLevel.INFO,
+      customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(String(s).toLowerCase())),
+      getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
     );
 
 export const parseModelOption = (model?: string) => {

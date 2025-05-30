@@ -5,7 +5,7 @@ import { AIAgent, FunctionAgent } from "@aigne/core";
 import { loadAgentFromYamlFile } from "@aigne/core/loader/agent-yaml.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
 import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
-import { nodejs } from "@aigne/core/utils/nodejs.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 
 test("loadAgentFromYaml should load agent correctly", async () => {
   const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/chat.yaml"));

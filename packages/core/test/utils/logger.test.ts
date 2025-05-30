@@ -1,5 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
-import { LogLevel, Logger, logger } from "@aigne/core/utils/logger.js";
+import { LogLevel, Logger, getLevelFromEnv, logger } from "@aigne/core/utils/logger.js";
+import debug from "debug";
 
 test("Logger.enabled should return correct value", async () => {
   expect(new Logger({ ns: "test", level: LogLevel.DEBUG }).enabled(LogLevel.ERROR)).toBe(true);
@@ -44,4 +45,19 @@ test("logger should logging messages", async () => {
   expect(logError.mock.lastCall?.[0]).toMatch("test error message");
 
   logger.level = originalLevel;
+});
+
+test("getLevelFromEnv should return correct log level", async () => {
+  const originalDebugEnv = process.env.DEBUG;
+  const namespace = "aigne:test";
+
+  debug.enable(`${namespace}:*`);
+  expect(getLevelFromEnv(namespace)).toBe(LogLevel.DEBUG);
+
+  for (const level of Object.values(LogLevel)) {
+    debug.enable(`${namespace}:${level.toLowerCase()}`);
+    expect(getLevelFromEnv(namespace)).toBe(level);
+  }
+
+  debug.enable(originalDebugEnv || "");
 });

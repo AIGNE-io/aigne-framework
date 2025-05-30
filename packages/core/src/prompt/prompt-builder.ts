@@ -1,3 +1,4 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
@@ -14,7 +15,6 @@ import type {
 } from "../agents/chat-model.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { nodejs } from "../utils/nodejs.js";
 import { isNil, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import {

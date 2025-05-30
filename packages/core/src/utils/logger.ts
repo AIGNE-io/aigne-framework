@@ -1,5 +1,5 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import debug from "debug";
-import { nodejs } from "./nodejs.js";
 
 export enum LogLevel {
   ERROR = "error",
@@ -10,17 +10,22 @@ export enum LogLevel {
 
 const levels = Object.values(LogLevel);
 
-export class Logger {
-  constructor(options: {
-    level: LogLevel;
-    ns: string;
-  }) {
-    this.level = options.level;
+export function getLevelFromEnv(ns: string): LogLevel | undefined {
+  for (const level of levels.toReversed()) {
+    if (debug.enabled(`${ns}:${level}`)) {
+      return level;
+    }
+  }
+}
 
-    this.debugLogger = debug(`${options.ns}:debug`);
-    this.infoLogger = debug(`${options.ns}:info`);
-    this.warnLogger = debug(`${options.ns}:warn`);
-    this.errorLogger = debug(`${options.ns}:error`);
+export class Logger {
+  constructor(public options: { level: LogLevel; ns: string }) {
+    this.debugLogger = debug(`${options.ns}:${LogLevel.DEBUG}`);
+    this.infoLogger = debug(`${options.ns}:${LogLevel.INFO}`);
+    this.warnLogger = debug(`${options.ns}:${LogLevel.WARN}`);
+    this.errorLogger = debug(`${options.ns}:${LogLevel.ERROR}`);
+
+    this.level = getLevelFromEnv(options.ns) || options.level;
 
     for (const logger of [this.debugLogger, this.infoLogger, this.warnLogger]) {
       // @ts-ignore

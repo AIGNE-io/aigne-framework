@@ -46,9 +46,7 @@ jobs:
 
       - name: Build
         if: ${{ steps.release.outputs.release_created }}
-        run: |
-          pnpm build
-          pnpm build:docs
+        run: pnpm build
 
       - name: Lint
         run: pnpm lint

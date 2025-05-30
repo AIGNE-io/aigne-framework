@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "AIGNE Publish Docs for publishing docs to Discuss Kit",
   "publishConfig": {
-    "access": "public"
+    "access": "restricted"
   },
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework",

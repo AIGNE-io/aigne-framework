@@ -26,6 +26,22 @@
   * [Chat Model](/concepts/chat-model.md)
   * [HTTP Transport](/concepts/http-transport.md)
 
+* [AIGNE CLI](/cli/index.md)
+
+  * [Create Project](/cli/create.md)
+
+  * [Run Agent](/cli/run.md)
+
+  * [Serve Agent](/cli/serve.md)
+
+  * [Test Agent](/cli/test.md)
+
+  * [Agent Definitions](/cli/definitions/index.md)
+
+    * [AI Agent](/cli/definitions/agent.md)
+    * [MCP Agent](/cli/definitions/mcp.md)
+    * [Function Agent](/cli/definitions/function.md)
+
 <!-- api reference -->
 
 * Contributing

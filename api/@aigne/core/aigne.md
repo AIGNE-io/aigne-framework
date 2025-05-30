@@ -128,10 +128,10 @@ This static method provides a convenient way to initialize an AIGNE system from 
 
 ###### Parameters
 
-| Parameter | Type                                                                  | Description                                           |
-| --------- | --------------------------------------------------------------------- | ----------------------------------------------------- |
-| `path`    | `string`                                                              | Path to the directory containing the aigne.yaml file. |
-| `options` | [`AIGNEOptions`](#aigneoptions) & `Pick`\<`LoadOptions`, `"models"`\> | Options to override the loaded configuration.         |
+| Parameter | Type                                                                | Description                                           |
+| --------- | ------------------------------------------------------------------- | ----------------------------------------------------- |
+| `path`    | `string`                                                            | Path to the directory containing the aigne.yaml file. |
+| `options` | [`AIGNEOptions`](#aigneoptions) & `Omit`\<`LoadOptions`, `"path"`\> | Options to override the loaded configuration.         |
 
 ###### Returns
 

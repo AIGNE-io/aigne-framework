@@ -129,7 +129,9 @@ const httpServer = app.listen(port);
 
 ### 配置客户端记忆并进行对话
 
-```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-invoke-agent" exclude_imports
+```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-invoke-agent"
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
+
 const chatbot = await client.getAgent({
   name: "chatbot",
   memory: new DefaultMemory({

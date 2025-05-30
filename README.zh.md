@@ -110,7 +110,7 @@ console.log(result2);
 
 ## 文档
 
-[AIGNE Framework 文档](https://aigne-io.github.io/aigne-framework) 提供了全面的 API 参考和使用指南，帮助开发者快速上手。
+[AIGNE Framework 文档](https://www.arcblock.io/docs/aigne-framework) 提供了全面的 API 参考和使用指南，帮助开发者快速上手。
 
 ## 架构
 
@@ -316,5 +316,5 @@ AIGNE Framework 是一个开源项目，欢迎社区贡献。我们使用 [relea
 
 AIGNE Framework 拥有活跃的开发者社区，提供多种支持渠道：
 
-* [文档中心](https://aigne-io.github.io/#/api/@aigne/core/README)：全面的官方文档，帮助开发者快速入门。
+* [文档中心](https://www.arcblock.io/docs/aigne-framework)：全面的官方文档，帮助开发者快速入门。
 * [技术论坛](https://community.arcblock.io/discussions/boards/aigne)：与全球开发者交流经验，解决技术问题。

@@ -4,6 +4,13 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.20.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.0...aigne-framework-v1.20.1) (2025-05-30)
+
+
+### Bug Fixes
+
+* respect DEBUG env for logger ([#142](https://github.com/AIGNE-io/aigne-framework/issues/142)) ([f84738a](https://github.com/AIGNE-io/aigne-framework/commit/f84738acb382d9fb4f47253fcf91c92c02200053))
+
 ## [1.20.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.19.0...aigne-framework-v1.20.0) (2025-05-29)
 
 

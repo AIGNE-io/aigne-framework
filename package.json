@@ -1,6 +1,6 @@
 {
   "name": "aigne-framework",
-  "version": "1.20.0",
+  "version": "1.20.1",
   "description": "AIGNE framework is a collection of libraries and tools for building AI-powered applications",
   "private": true,
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
@@ -22,7 +22,7 @@
     "test": "pnpm -r run test",
     "test:coverage": "pnpm -r run test:coverage",
     "postinstall": "npx simple-git-hooks",
-    "publish:docs": "npm run build:docs && bun scripts/publish-docs.ts",
+    "publish:docs": "pnpm build:docs && bun scripts/publish-docs.ts",
     "build:markdown": "remark ./*.md docs/ -o --silently-ignore"
   },
   "devDependencies": {

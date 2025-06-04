@@ -18,6 +18,7 @@ import {
 } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
 import { createMessage } from "../prompt/prompt-builder.js";
+import { promiseWithResolvers } from "../utils/promise.js";
 import {
   agentResponseStreamToObject,
   asyncGeneratorToReadableStream,
@@ -263,7 +264,7 @@ export class AIGNEContext implements Context {
           return output;
         }
 
-        const activeAgentPromise = Promise.withResolvers<Agent>();
+        const activeAgentPromise = promiseWithResolvers<Agent>();
 
         const stream = onAgentResponseStreamEnd(
           asyncGeneratorToReadableStream(response),
@@ -478,7 +479,7 @@ async function* withAbortSignal<T extends Message>(
 ): AgentProcessAsyncGenerator<T> {
   const iterator = fn();
 
-  const timeoutPromise = Promise.withResolvers<never>();
+  const timeoutPromise = promiseWithResolvers<never>();
 
   const listener = () => {
     timeoutPromise.reject(error);

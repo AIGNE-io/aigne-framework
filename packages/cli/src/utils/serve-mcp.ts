@@ -1,10 +1,10 @@
 import { type AIGNE, getMessage } from "@aigne/core";
+import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import express, { type Request, type Response, Router, json } from "express";
 import { ZodObject, type ZodRawShape } from "zod";
 import { AIGNE_CLI_VERSION } from "../constants.js";
-import { promiseWithResolvers } from "./promise-with-resolvers.js";
 
 export async function serveMCPServer({
   pathname = "/mcp",

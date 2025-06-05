@@ -5,6 +5,22 @@
 
 * add schema transform ([#35](https://github.com/AIGNE-io/aigne-framework/issues/35)) ([c7d9a2c](https://github.com/AIGNE-io/aigne-framework/commit/c7d9a2c9fcab8d384d4198db5ff6ba4603846cdf))
 
+## [1.12.3](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.12.2...agent-library-v1.12.3) (2025-06-05)
+
+
+### Bug Fixes
+
+* compatible nodejs version &gt;=20 ([#149](https://github.com/AIGNE-io/aigne-framework/issues/149)) ([d5ae9f2](https://github.com/AIGNE-io/aigne-framework/commit/d5ae9f245972e87e70fd87cdd960ade9940f288c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.18.3
+    * @aigne/openai bumped to 0.2.4
+    * @aigne/sqlite bumped to 0.1.1
+
 ## [1.12.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.12.1...agent-library-v1.12.2) (2025-05-30)
 
 

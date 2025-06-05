@@ -4,6 +4,13 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.20.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.2...aigne-framework-v1.20.3) (2025-06-05)
+
+
+### Bug Fixes
+
+* compatible nodejs version &gt;=20 ([#149](https://github.com/AIGNE-io/aigne-framework/issues/149)) ([d5ae9f2](https://github.com/AIGNE-io/aigne-framework/commit/d5ae9f245972e87e70fd87cdd960ade9940f288c))
+
 ## [1.20.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.1...aigne-framework-v1.20.2) (2025-05-30)
 
 

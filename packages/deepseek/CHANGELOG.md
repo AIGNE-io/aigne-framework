@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.4](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.2.3...deepseek-v0.2.4) (2025-06-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.2.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.3.5
+
 ## [0.2.3](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.2.2...deepseek-v0.2.3) (2025-05-30)
 
 

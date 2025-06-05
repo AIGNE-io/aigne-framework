@@ -1,16 +1,14 @@
-# 🚀 构建你的 AI Agent 军团
+# Agent 定义
 
 [English](index.md) | **中文**
 
-欢迎来到 AIGNE 的魔法世界！🎭 在这里，您可以像搭积木一样轻松创建强大的 AI 代理。无论是聊天机器人、工具助手，还是复杂的智能系统，AIGNE 都能让您的创意变为现实。
+AIGNE 提供了灵活的 AI 代理创建方式。您可以通过简单的配置文件创建各种类型的 AI 代理，包括聊天机器人、工具助手和复杂的智能系统。
 
-✨ **只需几行配置，即可拥有专属 AI 助手！**
-
-## 🎯 项目配置文件 (aigne.yaml) - 您的 AI 世界指挥中心
+## 项目配置文件 (aigne.yaml)
 
 `aigne.yaml` 是 AIGNE 项目的主配置文件，定义项目的整体设置以及包含的代理列表。
 
-### 📝 基本结构 - 简单到令人惊喜
+### 基本结构
 
 ```yaml
 chat_model:
@@ -21,7 +19,7 @@ agents:
   - chat.yaml
 ```
 
-### 🔧 配置选项详解 - 每个参数都有它的魔法
+### 配置选项
 
 * `chat_model`: 定义默认使用的 AI 模型配置
   * `provider`: 【可选】模型提供商，可选值为 `openai`、`claude`、`xai`
@@ -32,24 +30,24 @@ agents:
   * `presence_penalty`: 【可选】增加新 token 出现的概率
 * `agents`: 项目包含的所有代理配置文件路径列表
 
-## 🎨 Agent 定义 - 三种创建方式，任您选择
+## Agent 创建方式
 
-就像选择画笔一样，AIGNE 为您提供了三种不同的 Agent 创建方式。每种方式都有其独特的优势，选择最适合您项目需求的那一种：
+AIGNE 提供三种不同的 Agent 创建方式，您可以根据项目需求选择合适的方式：
 
-### 🤖 [创建 AI Agent](agent.zh.md) - 最直观的方式
+### [创建 AI Agent](agent.zh.md)
 
-* 📋 项目配置文件 (aigne.yaml) - 一切的起点
-* 💬 YAML 格式代理定义 (chat.yaml) - 简洁优雅
-* 🛠️ 基本配置和开发流程 - 新手友好
+* 使用 YAML 格式的代理定义文件
+* 适合快速创建聊天机器人和简单 AI 助手
+* 配置简单，易于上手
 
-### 🔗 [创建 MCP Agent](mcp.zh.md) - 连接外部世界的桥梁
+### [创建 MCP Agent](mcp.zh.md)
 
-* 📁 MCP 代理配置 (filesystem.yaml) - 文件系统集成
-* 🌐 连接外部工具和资源 - 无限可能
-* 🔌 Model Context Protocol 集成 - 标准化连接
+* 通过 Model Context Protocol 连接外部资源
+* 支持文件系统、数据库等外部工具集成
+* 适合需要访问外部数据的复杂应用
 
-### ⚡ [通过 JS Function 创建 Agent](function.zh.md) - 程序员的最爱
+### [通过 JS Function 创建 Agent](function.zh.md)
 
-* 💻 JavaScript 代理实现 (plus.js) - 代码即智能
-* 🧪 代理测试文件 (plus.test.js) - 质量保证
-* 🚀 高级功能和最佳实践 - 释放全部潜能
+* 使用 JavaScript 函数实现自定义逻辑
+* 支持完整的测试框架
+* 适合需要复杂业务逻辑的高级应用

@@ -1,14 +1,14 @@
-# Creating MCP Agents - Bridge to the External World
+# Creating MCP Agents
 
 **English** | [中文](mcp.zh.md)
 
-Want to give your AI agent superpowers? MCP (Model Context Protocol) is the master key! Through MCP, your AI can easily connect to file systems, databases, APIs, and various external resources, instantly transforming into a versatile assistant.
+Want to give your AI Agent more powerful capabilities? MCP (Model Context Protocol) is a standard protocol for connecting external resources. Through MCP, your AI can access file systems, databases, APIs, and various external resources, becoming a feature-rich intelligent assistant.
 
-## Basic Structure - Two Connection Methods at Your Choice
+## Basic Structure
 
-MCP agents are like bridges, with two ways to build them:
+MCP agents provide two connection methods:
 
-1. **Using Local Commands** - Start services locally:
+1. **Using Local Commands** - Start local MCP services:
 
 ```yaml
 type: mcp
@@ -18,13 +18,13 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
 
 When using local commands:
 
-* `type`: Must be set to `mcp`, telling AIGNE this is an MCP agent
+* `type`: Must be set to `mcp`, specifying this is an MCP agent
 * `command`: Base command to run the MCP server
 * `args`: Array of arguments passed to the command
   * First element is usually the package name implementing the MCP server
   * Additional parameters can be passed based on specific MCP server requirements
 
-2. **Using URL to Connect to Remote Servers** - Power across networks:
+2. **Using URL to Connect to Remote Servers**:
 
 ```yaml
 type: mcp
@@ -36,25 +36,25 @@ When connecting to remote servers:
 * `type`: Must be set to `mcp`, identifying this as an MCP agent
 * `url`: URL of the remote MCP server to connect to, can be local or remote
 
-## How MCP Agents Work - How the Magic Happens
+## How It Works
 
-MCP agents act like translators, helping AI communicate with the external world. These MCP servers are like specialized assistants that can provide:
+MCP agents act as a bridge between AI and the external world, helping AI access various external resources. MCP servers can provide:
 
-1. **Tools**: Executable functions that can be called by AI, giving AI "hands-on" capabilities
-2. **Resources**: Data sources accessible by AI, providing rich knowledge bases
-3. **Resource Templates**: Patterns for dynamically generating resources, allowing AI to flexibly adapt to different scenarios
+1. **Tools**: Executable functions that can be called by AI, extending AI's operational capabilities
+2. **Resources**: Data sources accessible by AI, providing rich information
+3. **Resource Templates**: Patterns for dynamically generating resources, supporting flexible resource access
 
-When an MCP agent initializes, the AIGNE framework orchestrates everything like a director:
+When an MCP agent initializes, the AIGNE framework performs the following steps:
 
 1. Start the MCP server using the provided command and arguments
 2. Connect to the server and discover available tools and resources
 3. Make these tools and resources available to AI through standardized interfaces
 
-## Popular MCP Servers - Ready-to-Use Superpower Packages
+## Popular MCP Servers
 
-Curated popular MCP servers, ready out of the box:
+Here are some commonly used MCP server examples:
 
-1. **File System Server** - Make AI a file management expert:
+1. **File System Server** - Provides file operation capabilities:
 
 ```yaml
 type: mcp
@@ -62,7 +62,7 @@ command: npx
 args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
 ```
 
-2. **SQLite Database Server** - AI becomes a data analyst in seconds:
+2. **SQLite Database Server** - Provides database operation capabilities:
 
 ```yaml
 type: mcp
@@ -70,7 +70,7 @@ command: npx
 args: ["-y", "@modelcontextprotocol/server-sqlite", "database.db"]
 ```
 
-3. **GitHub Server** - Intelligent assistant for code repositories:
+3. **GitHub Server** - Provides GitHub repository access capabilities:
 
 ```yaml
 type: mcp
@@ -80,13 +80,13 @@ args: ["-y", "@modelcontextprotocol/server-github"]
 
 ***
 
-**Excellent!** You've mastered the secrets of creating MCP agents. Now your AI is no longer an island, but can:
+Now you understand how to create MCP agents. Through MCP agents, your AI has:
 
-✅ Be an intelligent butler that can read and write files
-✅ Become a data expert capable of operating databases
-✅ Act as a universal interface connecting various APIs
-✅ Seamlessly collaborate with any MCP server
+* File system access and operation capabilities
+* Database query and management functions
+* Various external API connection capabilities
+* Collaboration capabilities with standard MCP servers
 
-**Next Step:** Try connecting to the external services you need most, and let AI become your capable assistant!
+**Next Step:** Choose the appropriate MCP server according to your needs to expand AI's functional scope.
 
-**Learn More:** [MCP Official Documentation](https://modelcontextprotocol.io)
+**Reference:** [MCP Official Documentation](https://modelcontextprotocol.io)

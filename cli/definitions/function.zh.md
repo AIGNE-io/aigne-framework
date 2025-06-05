@@ -1,10 +1,10 @@
-# ⚡ 通过 JS Function 创建 Agent - 程序员的最爱
+# 通过 JS Function 创建 Agent
 
 [English](function.md) | **中文**
 
-💻 代码就是力量！对于程序员来说，没有什么比用熟悉的 JavaScript 来创建 AI Agent 更令人兴奋的了。这种方式让您拥有完全的控制权，可以实现任何您能想象的功能。
+使用 JavaScript 函数创建 AI Agent 为开发者提供了灵活的编程方式。通过熟悉的 JavaScript 语法，您可以实现复杂的业务逻辑和自定义功能。
 
-## 💡 基本结构 - 简洁而强大的代码模式
+## 基本结构
 
 ```javascript
 export default async function plus({ a, b }) {
@@ -31,18 +31,18 @@ plus.output_schema = {
 };
 ```
 
-## 🔧 结构详解 - 每一行代码都有深意
+## 结构说明
 
-* `export default async function xxx()`: 🎯 导出工具的主函数，这就是您的 AI Agent 的大脑！接收输入参数并返回结果
-* `xxx.description`: 📝 函数描述，给您的 Agent 一个清晰的身份介绍
-* `xxx.input_schema`: 📥 输入参数的 JSON Schema 定义，告诉 AI 期望接收什么样的数据
-* `xxx.output_schema`: 📤 输出结果的 JSON Schema 定义，确保返回的数据格式规范统一
+* `export default async function xxx()`: 导出的主函数，接收输入参数并返回结果
+* `xxx.description`: 函数描述
+* `xxx.input_schema`: 输入参数的 JSON Schema 定义
+* `xxx.output_schema`: 输出结果的 JSON Schema 定义
 
-## 🧪 代理测试文件 - 品质保证的守护神
+## 测试文件
 
-质量是程序员的生命！AIGNE 完美支持 Node.js 内置测试框架，让您轻松为 Agent 编写测试。测试文件通常与代理实现文件位于同一目录，命名为 `xxx.test.js`。
+AIGNE 支持 Node.js 内置测试框架，您可以为 Agent 编写测试用例。测试文件通常与代理实现文件位于同一目录，命名为 `xxx.test.js`。
 
-### 🚀 基本测试示例 - 快速验证功能
+### 基本测试示例
 
 ```javascript
 import assert from "node:assert";
@@ -51,7 +51,7 @@ import plus from "./plus.js";
 assert.deepEqual(await plus({ a: 1, b: 2 }), { sum: 3 });
 ```
 
-### 🏆 高级测试示例 - 全面覆盖各种场景
+### 高级测试示例
 
 ```javascript
 import assert from "node:assert";
@@ -83,13 +83,11 @@ describe("Plus Agent", () => {
 
 ***
 
-🎊 **完美！** 您已经解锁了 JavaScript Agent 的全部技能。现在您可以：
+通过 JavaScript 函数创建 Agent 的主要优势：
 
-✅ 用熟悉的 JavaScript 语法创建智能 Agent
-✅ 实现复杂的业务逻辑和算法
-✅ 编写完整的测试用例保证质量
-✅ 享受编程的乐趣与 AI 的智能完美结合
+* 使用熟悉的 JavaScript 语法
+* 实现复杂的业务逻辑和算法
+* 编写完整的测试用例保证质量
+* 完全控制代码逻辑和执行流程
 
-💪 **程序员的优势：** 完全控制、无限可能、代码即文档！
-
-🚀 **开始编码吧！** 让您的创意通过代码变成智能的 AI Agent！
+**开发建议：** 先实现基本功能，然后逐步添加错误处理和边界情况的测试。

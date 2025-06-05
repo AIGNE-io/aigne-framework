@@ -1,16 +1,14 @@
-# Build Your AI Agent Army
+# Agent Definitions
 
 **English** | [中文](index.zh.md)
 
-Welcome to the magical world of AIGNE! Here, you can easily create powerful AI agents like building blocks. Whether it's chatbots, tool assistants, or complex intelligent systems, AIGNE can turn your creativity into reality.
+AIGNE provides flexible AI agent creation methods. You can create various types of AI agents through simple configuration files, including chatbots, tool assistants, and complex intelligent systems.
 
-**Create your own AI assistant with just a few lines of configuration!**
-
-## Project Configuration File (aigne.yaml) - Your AI World Command Center
+## Project Configuration File (aigne.yaml)
 
 `aigne.yaml` is the main configuration file for AIGNE projects, defining the overall project settings and the list of included agents.
 
-### Basic Structure - Surprisingly Simple
+### Basic Structure
 
 ```yaml
 chat_model:
@@ -21,7 +19,7 @@ agents:
   - chat.yaml
 ```
 
-### Configuration Options Explained - Every Parameter Has Its Magic
+### Configuration Options
 
 * `chat_model`: Defines the default AI model configuration to use
   * `provider`: \[Optional] Model provider, options include `openai`, `claude`, `xai`
@@ -32,24 +30,24 @@ agents:
   * `presence_penalty`: \[Optional] Increases the probability of new tokens appearing
 * `agents`: List of all agent configuration file paths included in the project
 
-## Agent Definition - Three Creation Methods, Your Choice
+## Agent Creation Methods
 
-Like choosing paintbrushes, AIGNE provides three different ways to create agents. Each method has its unique advantages - choose the one that best fits your project needs:
+AIGNE provides three different agent creation methods. You can choose the appropriate method based on your project requirements:
 
-### [Creating AI Agents](agent.md) - The Most Intuitive Way
+### [Creating AI Agents](agent.md)
 
-* Project configuration file (aigne.yaml) - The starting point
-* YAML format agent definition (chat.yaml) - Clean and elegant
-* Basic configuration and development workflow - Beginner-friendly
+* Use YAML format agent definition files
+* Suitable for quickly creating chatbots and simple AI assistants
+* Simple configuration, easy to get started
 
-### [Creating MCP Agents](mcp.md) - Bridge to the External World
+### [Creating MCP Agents](mcp.md)
 
-* MCP agent configuration (filesystem.yaml) - File system integration
-* Connect external tools and resources - Unlimited possibilities
-* Model Context Protocol integration - Standardized connections
+* Connect external resources through Model Context Protocol
+* Support file system, database and other external tool integration
+* Suitable for complex applications that need to access external data
 
-### [Creating Agents through JS Functions](function.md) - Programmer's Favorite
+### [Creating Agents through JS Functions](function.md)
 
-* JavaScript agent implementation (plus.js) - Code as intelligence
-* Agent test files (plus.test.js) - Quality assurance
-* Advanced features and best practices - Unleash full potential
+* Use JavaScript functions to implement custom logic
+* Support complete testing framework
+* Suitable for advanced applications requiring complex business logic

@@ -11,6 +11,7 @@ import {
   DEFAULT_OUTPUT_KEY,
   type Message,
 } from "@aigne/core";
+import { NO_PARENT_ID, USE_SELF_AS_ROOT_ID } from "@aigne/core/aigne/constants.js";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
 import { omit } from "@aigne/core/utils/type-utils.js";
@@ -137,7 +138,14 @@ export class TerminalTracer {
     context.on("agentFailed", onAgentFailed);
 
     try {
-      const result = await listr.run(() => context.invoke(agent, input, { streaming: true }));
+      context.observer?.serve();
+      const result = await listr.run(() =>
+        context.invoke(agent, input, {
+          streaming: true,
+          parentId: NO_PARENT_ID,
+          rootId: USE_SELF_AS_ROOT_ID,
+        }),
+      );
 
       return { result, context };
     } finally {

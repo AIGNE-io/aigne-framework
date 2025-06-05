@@ -208,3 +208,81 @@ exports[`TeamAgent should return streaming response with parallel process method
   },
 ]
 `;
+
+exports[`TeamAgent with sequential mode should yield output chunks correctly 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "question": "What is AIGNE?",
+        "result": [
+          {
+            "link": "https://example.com/1",
+            "title": "First Result",
+          },
+          {
+            "link": "https://example.com/2",
+            "title": "Second Result",
+          },
+        ],
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "summary": "First",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "summary": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "summary": "Result",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "summary": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "summary": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "summary": "Second",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "summary": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "summary": "Result",
+      },
+    },
+  },
+]
+`;

@@ -1,3 +1,4 @@
+import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
 import { type ZodType, z } from "zod";
@@ -6,9 +7,11 @@ import {
   type AgentInvokeOptions,
   type AgentProcessAsyncGenerator,
   type AgentResponse,
+  type AgentResponseChunk,
   type AgentResponseStream,
   type FunctionAgentFn,
   type Message,
+  isEmptyChunk,
 } from "../agents/agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
 import {
@@ -27,6 +30,7 @@ import {
 import {
   type OmitPropertiesFromArrayFirstElement,
   checkArguments,
+  isEmpty,
   isNil,
   omitBy,
 } from "../utils/type-utils.js";
@@ -422,7 +426,6 @@ class AIGNEContextShared {
     options?: InvokeOptions,
   ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
     let activeAgent: Agent = agent;
-    let output: O | undefined;
 
     for (;;) {
       const result: Message = {};
@@ -438,12 +441,22 @@ class AIGNEContextShared {
 
       const stream = await activeAgent.invoke(input, { ...options, context, streaming: true });
       for await (const value of stream) {
-        if (value.delta.text) {
-          yield { delta: { text: value.delta.text } as Message };
+        if (value.delta.json) {
+          for (const [key, val] of Object.entries(value.delta.json)) {
+            if (equal(result[key], val)) delete value.delta.json[key];
+          }
+          if (isEmpty(value.delta.json)) delete value.delta[`${"json"}`];
         }
+
         if (value.delta.json) {
           Object.assign(result, value.delta.json);
         }
+
+        delete value.delta.json?.[transferAgentOutputKey];
+
+        if (isEmptyChunk(value)) continue;
+
+        yield value as AgentResponseChunk<O & { __activeAgent__: Agent }>;
       }
 
       if (!options?.disableTransfer) {
@@ -455,18 +468,12 @@ class AIGNEContextShared {
           continue;
         }
       }
-      output = result as O;
       break;
     }
 
-    if (!output) throw new Error("Unexpected empty output");
-
     yield {
       delta: {
-        json: {
-          ...output,
-          __activeAgent__: activeAgent,
-        },
+        json: { __activeAgent__: activeAgent } as Partial<O & { __activeAgent__: Agent }>,
       },
     };
   }

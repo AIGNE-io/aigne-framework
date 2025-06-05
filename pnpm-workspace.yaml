@@ -1,10 +1,11 @@
 packages:
   - packages/*
+  - packages/observability/frontend
   - examples/*
   - tests/*
   - docs-examples
 onlyBuiltDependencies:
-  - '@biomejs/biome'
+  - "@biomejs/biome"
   - esbuild
   - puppeteer
   - simple-git-hooks

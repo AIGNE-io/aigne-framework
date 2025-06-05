@@ -139,7 +139,7 @@ test("AIGNE example invoke get an user agent ", async () => {
     description: "A chat agent",
   });
 
-  const userAgent = aigne.invoke(agent);
+  const userAgent = await aigne.invoke(agent);
 
   const result1 = await userAgent.invoke("hello");
   console.log(result1); // { $message: "Hello, How can I assist you today?" }
@@ -177,7 +177,7 @@ test("AIGNE example publish message", async () => {
 
   const subscription = aigne.subscribe("result_topic");
 
-  aigne.publish("test_topic", "hello");
+  await aigne.publish("test_topic", "hello");
 
   const { message } = await subscription;
 
@@ -215,7 +215,7 @@ test("AIGNE example subscribe topic", async () => {
     unsubscribe();
   });
 
-  aigne.publish("test_topic", "hello");
+  await aigne.publish("test_topic", "hello");
 
   // #endregion example-subscribe-topic
 });
@@ -239,7 +239,7 @@ test("AIGNE.invoke with reflection", async () => {
   });
 
   const aigne = new AIGNE({ agents: [plusOne, reviewer] });
-  aigne.publish(UserInputTopic, { num: 1 });
+  await aigne.publish(UserInputTopic, { num: 1 });
   const { message: result } = await aigne.subscribe(UserOutputTopic);
 
   expect(result).toEqual({ num: 11, approval: "approve" });
@@ -344,14 +344,14 @@ test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
 
   aigne.subscribe("test_topic", listener);
 
-  aigne.publish("test_topic", "hello");
+  await aigne.publish("test_topic", "hello");
   expect(listener).toBeCalledTimes(1);
   expect(listener).toHaveBeenCalledWith(
     expect.objectContaining({ message: createMessage("hello") }),
   );
 
   aigne.unsubscribe("test_topic", listener);
-  aigne.publish("test_topic", "hello");
+  await aigne.publish("test_topic", "hello");
   expect(listener).toBeCalledTimes(1);
 });
 
@@ -417,7 +417,7 @@ test("AIGNE.publish support custom user context", async () => {
     text: "I am a test agent",
   });
   const result = aigne.subscribe("test_topic");
-  aigne.publish("test_topic1", "hello", {
+  await aigne.publish("test_topic1", "hello", {
     userContext: { id: "test_user_id", name: "test_user_name" },
   });
   const { message: response } = await result;

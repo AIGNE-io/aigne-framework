@@ -2,6 +2,7 @@ import type { AgentInvokeOptions, Context, Memory } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { initDatabase } from "@aigne/sqlite";
 import { type InferSelectModel, desc, eq, isNull } from "drizzle-orm";
+import type { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
 import { MemoryStorage } from "../storage.js";
 import { migrate } from "./migrate.js";
 import { Memories } from "./models/memory.js";
@@ -21,7 +22,7 @@ export class DefaultMemoryStorage extends MemoryStorage {
   private _db: ReturnType<typeof this.initSqlite> | undefined;
 
   private async initSqlite() {
-    const db = await initDatabase({ url: this.options?.url });
+    const db = (await initDatabase({ url: this.options?.url })) as unknown as SqliteRemoteDatabase;
 
     await migrate(db);
 

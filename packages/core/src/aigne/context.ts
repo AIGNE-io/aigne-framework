@@ -442,13 +442,7 @@ class AIGNEContextShared {
       const stream = await activeAgent.invoke(input, { ...options, context, streaming: true });
       for await (const value of stream) {
         if (value.delta.json) {
-          for (const [key, val] of Object.entries(value.delta.json)) {
-            if (equal(result[key], val)) delete value.delta.json[key];
-          }
-          if (isEmpty(value.delta.json)) delete value.delta[`${"json"}`];
-        }
-
-        if (value.delta.json) {
+          value.delta.json = omitExistsProperties(result, value.delta.json);
           Object.assign(result, value.delta.json);
         }
 
@@ -477,6 +471,13 @@ class AIGNEContextShared {
       },
     };
   }
+}
+
+function omitExistsProperties(result: Message, { ...delta }: Message) {
+  for (const [key, val] of Object.entries(delta)) {
+    if (equal(result[key], val)) delete delta[key];
+  }
+  return isEmpty(delta) ? undefined : delta;
 }
 
 async function* withAbortSignal<T extends Message>(

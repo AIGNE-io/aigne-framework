@@ -375,10 +375,8 @@ test("Build first agent: setup memory for client agent", async () => {
 
   // #region example-client-agent-memory-client-server-headers
   app.use(
-    helmet({
-      crossOriginEmbedderPolicy: { policy: "require-corp" },
-      crossOriginOpenerPolicy: { policy: "same-origin" },
-    }),
+    helmet.crossOriginOpenerPolicy({ policy: "same-origin" }),
+    helmet.crossOriginEmbedderPolicy({ policy: "require-corp" }),
   );
   // #endregion example-client-agent-memory-client-server-headers
 

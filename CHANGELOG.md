@@ -4,6 +4,13 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.20.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.3...aigne-framework-v1.20.4) (2025-06-05)
+
+
+### Bug Fixes
+
+* **core:** prioritize returning json chunks ([#151](https://github.com/AIGNE-io/aigne-framework/issues/151)) ([8bf49a1](https://github.com/AIGNE-io/aigne-framework/commit/8bf49a18c083b33d2e0b35e8d0f22f68d9d6effa))
+
 ## [1.20.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.2...aigne-framework-v1.20.3) (2025-06-05)
 
 

@@ -40,10 +40,8 @@ const client = new AIGNEHTTPClient({
 import helmet from "helmet";
 
 app.use(
-  helmet({
-    crossOriginEmbedderPolicy: { policy: "require-corp" },
-    crossOriginOpenerPolicy: { policy: "same-origin" },
-  }),
+  helmet.crossOriginOpenerPolicy({ policy: "same-origin" }),
+  helmet.crossOriginEmbedderPolicy({ policy: "require-corp" }),
 );
 ```
 
@@ -53,6 +51,7 @@ app.use(
 
 * `server.headers` 用于设置必要的 headers
 * `worker.format` 设置为 `es` 以支持现代浏览器的模块化
+* `optimizeDeps.exclude` 用于排除 `sqlocal` 依赖的优化
 
 ```ts file="../../examples/browser/vite.config.ts"
 import react from "@vitejs/plugin-react";
@@ -69,6 +68,9 @@ export default defineConfig({
   plugins: [react()],
   worker: {
     format: "es",
+  },
+  optimizeDeps: {
+    exclude: ["sqlocal"],
   },
 });
 ```
@@ -110,10 +112,8 @@ app.post("/api/chat", async (req, res) => {
 });
 
 app.use(
-  helmet({
-    crossOriginEmbedderPolicy: { policy: "require-corp" },
-    crossOriginOpenerPolicy: { policy: "same-origin" },
-  }),
+  helmet.crossOriginOpenerPolicy({ policy: "same-origin" }),
+  helmet.crossOriginEmbedderPolicy({ policy: "require-corp" }),
 );
 
 const port = 3000;

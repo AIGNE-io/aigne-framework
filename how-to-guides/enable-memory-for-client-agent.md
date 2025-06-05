@@ -40,10 +40,8 @@ If you are using Express as your client HTTP server, make sure to add the follow
 import helmet from "helmet";
 
 app.use(
-  helmet({
-    crossOriginEmbedderPolicy: { policy: "require-corp" },
-    crossOriginOpenerPolicy: { policy: "same-origin" },
-  }),
+  helmet.crossOriginOpenerPolicy({ policy: "same-origin" }),
+  helmet.crossOriginEmbedderPolicy({ policy: "require-corp" }),
 );
 ```
 
@@ -53,6 +51,7 @@ If you are using Vite as your client development server, add the following confi
 
 * `server.headers` to set the necessary headers
 * `worker.format` set to `es` to support modern browser modularity
+* `optimizeDeps.exclude` to exclude `sqlocal` from dependency optimization
 
 ```ts file="../../examples/browser/vite.config.ts"
 import react from "@vitejs/plugin-react";
@@ -69,6 +68,9 @@ export default defineConfig({
   plugins: [react()],
   worker: {
     format: "es",
+  },
+  optimizeDeps: {
+    exclude: ["sqlocal"],
   },
 });
 ```
@@ -110,10 +112,8 @@ app.post("/api/chat", async (req, res) => {
 });
 
 app.use(
-  helmet({
-    crossOriginEmbedderPolicy: { policy: "require-corp" },
-    crossOriginOpenerPolicy: { policy: "same-origin" },
-  }),
+  helmet.crossOriginOpenerPolicy({ policy: "same-origin" }),
+  helmet.crossOriginEmbedderPolicy({ policy: "require-corp" }),
 );
 
 const port = 3000;

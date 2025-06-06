@@ -91,6 +91,14 @@ Configuration options for connecting to the AIGNE server
 
 `Context.userContext`
 
+##### memories
+
+> **memories**: `Pick`\<[`Memory`](../core/memory.md#memory), `"content"`\>[] = `[]`
+
+###### Implementation of
+
+`Context.memories`
+
 #### Methods
 
 ##### invoke()

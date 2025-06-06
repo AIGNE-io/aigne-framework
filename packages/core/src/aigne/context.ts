@@ -20,6 +20,7 @@ import {
   transferAgentOutputKey,
 } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
+import type { Memory } from "../memory/memory.js";
 import { createMessage } from "../prompt/prompt-builder.js";
 import { promiseWithResolvers } from "../utils/promise.js";
 import {
@@ -104,6 +105,8 @@ export interface Context<U extends UserContext = UserContext>
   status?: "normal" | "timeout";
 
   userContext: U;
+
+  memories?: Pick<Memory, "content">[];
 
   /**
    * Create a user agent to consistently invoke an agent
@@ -232,6 +235,13 @@ export class AIGNEContext implements Context {
     this.internal.userContext = userContext;
   }
 
+  get memories() {
+    return this.internal.memories;
+  }
+  set memories(memories: Context["memories"]) {
+    this.internal.memories = memories;
+  }
+
   newContext({ reset }: { reset?: boolean } = {}) {
     if (reset) return new AIGNEContext(this, { userContext: {} });
     return new AIGNEContext(this);
@@ -244,6 +254,7 @@ export class AIGNEContext implements Context {
       options,
     });
     if (options?.userContext) Object.assign(this.userContext, options.userContext);
+    if (options?.memories) this.memories = options.memories;
 
     if (isNil(message)) {
       return UserAgent.from({
@@ -305,6 +316,7 @@ export class AIGNEContext implements Context {
 
   publish = ((topic, payload, options) => {
     if (options?.userContext) Object.assign(this.userContext, options.userContext);
+    if (options?.memories) this.memories = options.memories;
 
     return this.internal.messageQueue.publish(topic, {
       ...toMessagePayload(payload),
@@ -386,6 +398,8 @@ class AIGNEContextShared {
   usage: ContextUsage = newEmptyContextUsage();
 
   userContext: Context["userContext"];
+
+  memories?: Context["memories"];
 
   private abortController = new AbortController();
 

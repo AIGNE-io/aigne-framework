@@ -525,3 +525,38 @@ test("AIAgent should use self model first and then use model from context", asyn
   const result = await engine.invoke(agent, "Hello");
   expect(result).toEqual(createMessage("Answer from claude model"));
 });
+
+test("AIAgent should pass memories from invocation options to the tools", async () => {
+  const model = new OpenAIChatModel();
+  const aigne = new AIGNE({ model });
+
+  const sales = AIAgent.from({ name: "sales", inputSchema: z.object({ indent: z.string() }) });
+
+  const agent = AIAgent.from({
+    skills: [sales],
+    toolChoice: AIAgentToolChoice.router,
+  });
+
+  const salesInvoke = spyOn(sales, "invoke");
+
+  spyOn(model, "process")
+    .mockReturnValueOnce(
+      Promise.resolve({ toolCalls: [createToolCallResponse("sales", { indent: "T-shirt" })] }),
+    )
+    .mockReturnValueOnce(
+      Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
+    );
+
+  await aigne.invoke(agent, "Hello, I want to buy a T-shirt", {
+    memories: [{ content: "I like cartoon styles" }],
+  });
+
+  expect(salesInvoke).toHaveBeenLastCalledWith(
+    expect.anything(),
+    expect.objectContaining({
+      context: expect.objectContaining({
+        memories: [{ content: "I like cartoon styles" }],
+      }),
+    }),
+  );
+});

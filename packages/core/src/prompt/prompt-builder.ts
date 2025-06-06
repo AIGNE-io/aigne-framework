@@ -61,7 +61,7 @@ export interface PromptBuilderOptions {
   instructions?: string | ChatMessagesTemplate;
 }
 
-export interface PromptBuildOptions extends AgentInvokeOptions {
+export interface PromptBuildOptions extends Pick<AgentInvokeOptions, "context"> {
   agent?: AIAgent;
   input?: Message;
   model?: ChatModel;
@@ -151,8 +151,8 @@ export class PromptBuilder {
       memories.push(...(await options.agent.retrieveMemories({ search: options.input }, options)));
     }
 
-    if (options.memories?.length) {
-      memories.push(...options.memories);
+    if (options.context.memories?.length) {
+      memories.push(...options.context.memories);
     }
 
     if (memories.length) messages.push(...this.convertMemoriesToMessages(memories, options));

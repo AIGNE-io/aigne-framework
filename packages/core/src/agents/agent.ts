@@ -561,9 +561,11 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
     if (options.userContext) {
       Object.assign(opts.context.userContext, options.userContext);
+      options.userContext = undefined;
     }
-    if (options.memories) {
-      opts.context.memories = options.memories;
+    if (options.memories?.length) {
+      opts.context.memories.push(...options.memories);
+      options.memories = undefined;
     }
 
     const message = typeof input === "string" ? (createMessage(input) as I) : input;

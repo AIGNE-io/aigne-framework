@@ -106,7 +106,7 @@ export interface Context<U extends UserContext = UserContext>
 
   userContext: U;
 
-  memories?: Pick<Memory, "content">[];
+  memories: Pick<Memory, "content">[];
 
   /**
    * Create a user agent to consistently invoke an agent
@@ -253,8 +253,14 @@ export class AIGNEContext implements Context {
       message,
       options,
     });
-    if (options?.userContext) Object.assign(this.userContext, options.userContext);
-    if (options?.memories) this.memories = options.memories;
+    if (options?.userContext) {
+      Object.assign(this.userContext, options.userContext);
+      options.userContext = undefined;
+    }
+    if (options?.memories?.length) {
+      this.memories.push(...options.memories);
+      options.memories = undefined;
+    }
 
     if (isNil(message)) {
       return UserAgent.from({
@@ -315,8 +321,14 @@ export class AIGNEContext implements Context {
   }) as Context["invoke"];
 
   publish = ((topic, payload, options) => {
-    if (options?.userContext) Object.assign(this.userContext, options.userContext);
-    if (options?.memories) this.memories = options.memories;
+    if (options?.userContext) {
+      Object.assign(this.userContext, options.userContext);
+      options.userContext = undefined;
+    }
+    if (options?.memories?.length) {
+      this.memories.push(...options.memories);
+      options.memories = undefined;
+    }
 
     return this.internal.messageQueue.publish(topic, {
       ...toMessagePayload(payload),
@@ -376,6 +388,7 @@ class AIGNEContextShared {
   ) {
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
     this.userContext = overrides?.userContext ?? {};
+    this.memories = overrides?.memories ?? [];
   }
 
   readonly messageQueue: MessageQueue;
@@ -399,7 +412,7 @@ class AIGNEContextShared {
 
   userContext: Context["userContext"];
 
-  memories?: Context["memories"];
+  memories: Context["memories"];
 
   private abortController = new AbortController();
 

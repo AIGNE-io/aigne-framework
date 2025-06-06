@@ -69,6 +69,8 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
 
   userContext: U = {} as U;
 
+  memories: Context["memories"] = [];
+
   invoke<I extends Message, O extends Message>(agent: Agent<I, O> | string): UserAgent<I, O>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,

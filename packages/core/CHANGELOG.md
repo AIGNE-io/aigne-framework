@@ -5,6 +5,13 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.18.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.18.4...core-v1.18.5) (2025-06-06)
+
+
+### Bug Fixes
+
+* **core:** should pass memories from invocation options to nested agents ([#153](https://github.com/AIGNE-io/aigne-framework/issues/153)) ([57629a5](https://github.com/AIGNE-io/aigne-framework/commit/57629a5da6cf2a295356dfe32ecbb15154e098fe))
+
 ## [1.18.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.18.3...core-v1.18.4) (2025-06-05)
 
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.5](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.3.4...transport-v0.3.5) (2025-06-06)
+
+
+### Bug Fixes
+
+* **core:** should pass memories from invocation options to nested agents ([#153](https://github.com/AIGNE-io/aigne-framework/issues/153)) ([57629a5](https://github.com/AIGNE-io/aigne-framework/commit/57629a5da6cf2a295356dfe32ecbb15154e098fe))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.2.6
+  * devDependencies
+    * @aigne/core bumped to 1.18.5
+    * @aigne/test-utils bumped to 0.3.7
+
 ## [0.3.4](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.3.3...transport-v0.3.4) (2025-06-05)
 
 

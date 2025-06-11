@@ -4,6 +4,14 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.20.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.5...aigne-framework-v1.20.6) (2025-06-11)
+
+
+### Bug Fixes
+
+* **core:** add async generator polyfill for ReadableStream on safari ([#158](https://github.com/AIGNE-io/aigne-framework/issues/158)) ([70ef026](https://github.com/AIGNE-io/aigne-framework/commit/70ef026f413726c369f6a0781efc7f0333735406))
+* **core:** exclude nested skills from final tool list in invokable skill ([#156](https://github.com/AIGNE-io/aigne-framework/issues/156)) ([91645f1](https://github.com/AIGNE-io/aigne-framework/commit/91645f12e79110a00f8f2db8ebc19401ddbd5a80))
+
 ## [1.20.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.4...aigne-framework-v1.20.5) (2025-06-06)
 
 

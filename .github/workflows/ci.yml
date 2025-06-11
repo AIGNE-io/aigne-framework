@@ -34,7 +34,8 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install
-          pnpm exec playwright install
+          pnpm exec playwright install --with-deps
+
 
       - name: Build
         run: pnpm build

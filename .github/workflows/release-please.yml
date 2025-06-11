@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install
-          pnpm exec playwright install
+          pnpm exec playwright install --with-deps
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Build

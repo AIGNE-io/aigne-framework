@@ -21,7 +21,7 @@ import { type BrowserType, type Page, chromium, webkit } from "playwright";
 
 test.each<Readonly<[AIGNEHTTPClientInvokeOptions, string, BrowserType]>>(
   [{ streaming: false }, { streaming: true }].flatMap((options) =>
-    [["webkit", webkit] as const, ["webkit", chromium] as const].map(
+    [["webkit", webkit] as const, ["chromium", chromium] as const].map(
       (browser) => [options, ...browser] as const,
     ),
   ),

@@ -280,7 +280,7 @@ export class AIGNEContext implements Context {
     return new AIGNEContext(this, { parentId, rootId });
   }
 
-  invoke = (async (agent, message, options) => {
+  invoke = ((agent, message, options) => {
     checkArguments("AIGNEContext.invoke", aigneContextInvokeArgsSchema, {
       agent,
       message,

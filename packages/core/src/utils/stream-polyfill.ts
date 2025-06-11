@@ -26,7 +26,9 @@ ReadableStream.prototype.values ??= function ({ preventCancel = false } = {}) {
     [Symbol.asyncIterator]() {
       return this;
     },
-    async [Symbol.asyncDispose]() {},
+    async [Symbol.asyncDispose]() {
+      reader.releaseLock();
+    },
   };
 };
 

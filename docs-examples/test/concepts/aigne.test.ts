@@ -54,7 +54,7 @@ test("Example AIGNE: basic", async () => {
   spyOn(aigne.model, "process").mockReturnValueOnce({
     text: "AIGNE is a platform for building AI agents.",
   });
-  const userAgent = aigne.invoke(agent);
+  const userAgent = await aigne.invoke(agent);
   const result1 = await userAgent.invoke("What is AIGNE?");
   console.log(result1);
   // Output: { $message: "AIGNE is a platform for building AI agents." }

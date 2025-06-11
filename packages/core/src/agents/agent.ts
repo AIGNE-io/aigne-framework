@@ -571,6 +571,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
     const message = typeof input === "string" ? (createMessage(input) as I) : input;
 
     logger.debug("Invoke agent %s started with input: %O", this.name, input);
+
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input: message });
 
     try {

@@ -8,6 +8,7 @@ import {
 } from "../agents/agent.js";
 import type { MESSAGE_KEY } from "../prompt/prompt-builder.js";
 import { type PromiseOrValue, omitBy } from "./type-utils.js";
+import "./stream-polyfill.js";
 
 export function objectToAgentResponseStream<T extends Message>(json: T): AgentResponseStream<T> {
   return new ReadableStream({

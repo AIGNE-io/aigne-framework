@@ -203,6 +203,8 @@ export class TerminalTracer {
   }
 
   formatResult(context: Context, m: Message = {}) {
+    const { isTTY } = process.stdout;
+
     const prefix = logger.enabled(LogLevel.INFO)
       ? `${chalk.grey(figures.tick)} 🤖 ${this.formatTokenUsage(context.usage)}`
       : null;
@@ -211,12 +213,13 @@ export class TerminalTracer {
     const message = omitBy(m, (_, k) => k === MESSAGE_KEY);
 
     const text =
-      msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;
-
-    const json =
-      Object.keys(message).length > 0
-        ? inspect(message, { colors: process.stdout.isTTY })
+      msg && typeof msg === "string"
+        ? isTTY
+          ? this.marked.parse(msg, { async: false }).trim()
+          : msg
         : undefined;
+
+    const json = Object.keys(message).length > 0 ? inspect(message, { colors: isTTY }) : undefined;
 
     return [prefix, text, json].filter(Boolean).join(EOL);
   }

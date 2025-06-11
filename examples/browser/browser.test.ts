@@ -6,7 +6,10 @@ import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { OpenAIChatModel } from "@aigne/openai";
-import type { AIGNEHTTPClient } from "@aigne/transport/http-client/client.js";
+import type {
+  AIGNEHTTPClient,
+  AIGNEHTTPClientInvokeOptions,
+} from "@aigne/transport/http-client/client.js";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import detectPort from "detect-port";
@@ -14,9 +17,103 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { serveStatic } from "hono/serve-static";
-import puppeteer, { type Browser } from "puppeteer";
+import { type BrowserType, type Page, chromium, webkit } from "playwright";
 
-test("AIGNE HTTP Client should work in browser", async () => {
+test.each<Readonly<[AIGNEHTTPClientInvokeOptions, string, BrowserType]>>(
+  [{ streaming: false }, { streaming: true }].flatMap((options) =>
+    [["webkit", webkit] as const, ["webkit", chromium] as const].map(
+      (browser) => [options, ...browser] as const,
+    ),
+  ),
+)(
+  "AIGNE HTTP Client should work in browser with %p %s",
+  async (options, _, browserType) => {
+    const { server, aigne, pageURL, aigneURL } = await startServer();
+
+    const browser = await browserType.launch({});
+    const page = await browser.newPage();
+
+    spyOn(aigne.model, "process").mockReturnValueOnce(
+      stringToAgentResponseStream("Hello, How can I help you?"),
+    );
+
+    await page.goto(pageURL);
+
+    const result = await runAgentInBrowser({
+      ...options,
+      page,
+      aigneURL,
+      agentName: "chatbot",
+      input: "Hello, AIGNE!",
+    });
+
+    expect(result).toEqual({
+      $message: "Hello, How can I help you?",
+    });
+
+    await browser.close();
+    await server.stop(true);
+  },
+  60e3,
+);
+
+test("AIGNE HTTP Client should work with client memory in browser", async () => {
+  const { server, aigne, pageURL, aigneURL } = await startServer();
+
+  const browser = await chromium.launch({});
+  const page = await browser.newPage();
+  await page.goto(pageURL);
+
+  spyOn(aigne.model, "process").mockReturnValueOnce(
+    stringToAgentResponseStream("Hello, How can I help you?"),
+  );
+  const result = await runAgentInBrowser({
+    page,
+    aigneURL,
+    agentName: "chatbot",
+    input: "Hello, AIGNE!",
+  });
+  expect(result).toEqual({
+    $message: "Hello, How can I help you?",
+  });
+
+  const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce(
+    stringToAgentResponseStream('You just said, "Hello, AIGNE!"'),
+  );
+  const result2 = await runAgentInBrowser({
+    page,
+    aigneURL,
+    agentName: "chatbot",
+    input: "What did I just say?",
+  });
+  expect(result2).toEqual({
+    $message: 'You just said, "Hello, AIGNE!"',
+  });
+  expect(modelProcess).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      messages: expect.arrayContaining([
+        expect.objectContaining({
+          role: "system",
+          content: expect.stringContaining("Hello, AIGNE!"),
+        }),
+        expect.objectContaining({
+          role: "system",
+          content: expect.stringContaining("Hello, How can I help you?"),
+        }),
+        expect.objectContaining({
+          role: "user",
+          content: "What did I just say?",
+        }),
+      ]),
+    }),
+    expect.anything(),
+  );
+
+  await browser.close();
+  await server.stop(true);
+}, 60e3);
+
+async function startServer() {
   const port = await detectPort();
 
   const agent = AIAgent.from({
@@ -65,84 +162,36 @@ test("AIGNE HTTP Client should work in browser", async () => {
     }),
   );
 
-  serve({ port, fetch: honoApp.fetch });
-
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-
-  const pageURL = `http://localhost:${port}`;
-  const aigneURL = `http://localhost:${port}/aigne/invoke`;
-
-  spyOn(aigne.model, "process").mockReturnValueOnce(
-    stringToAgentResponseStream("Hello, How can I help you?"),
-  );
-  const result = await runAgentInBrowser({
-    browser,
-    pageURL,
-    aigneURL,
-    agentName: "chatbot",
-    input: "Hello, AIGNE!",
-  });
-  expect(result).toEqual({
-    $message: "Hello, How can I help you?",
-  });
-
-  const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce(
-    stringToAgentResponseStream('You just said, "Hello, AIGNE!"'),
-  );
-  const result2 = await runAgentInBrowser({
-    browser,
-    pageURL,
-    aigneURL,
-    agentName: "chatbot",
-    input: "What did I just say?",
-  });
-  expect(result2).toEqual({
-    $message: 'You just said, "Hello, AIGNE!"',
-  });
-  expect(modelProcess).toHaveBeenLastCalledWith(
-    expect.objectContaining({
-      messages: expect.arrayContaining([
-        expect.objectContaining({
-          role: "system",
-          content: expect.stringContaining("Hello, AIGNE!"),
-        }),
-        expect.objectContaining({
-          role: "system",
-          content: expect.stringContaining("Hello, How can I help you?"),
-        }),
-        expect.objectContaining({
-          role: "user",
-          content: "What did I just say?",
-        }),
-      ]),
-    }),
-    expect.anything(),
-  );
-
-  await browser.close();
-}, 60e3);
+  return {
+    port,
+    aigne: aigne as AIGNE & Required<Pick<AIGNE, "model">>,
+    pageURL: `http://localhost:${port}`,
+    aigneURL: `http://localhost:${port}/aigne/invoke`,
+    server: serve({ port, fetch: honoApp.fetch }),
+  };
+}
 
 async function runAgentInBrowser({
-  browser,
-  pageURL,
+  page,
   aigneURL,
   agentName,
   input,
+  streaming = false,
 }: {
-  browser: Browser;
-  pageURL: string;
+  page: Page;
   aigneURL: string;
   agentName: string;
   input: string;
+  streaming?: boolean;
 }) {
-  const page = await browser.newPage();
-  await page.goto(pageURL);
-
   const result = await page.evaluate(
-    async ({ agentName, url, input }: { agentName: string; url: string; input: string }) => {
-      const g = globalThis as unknown as {
+    async ({
+      agentName,
+      url,
+      input,
+      streaming,
+    }: { agentName: string; url: string; input: string; streaming?: boolean }) => {
+      const g = globalThis as unknown as typeof import("@aigne/core") & {
         AIGNEHTTPClient: typeof AIGNEHTTPClient;
         DefaultMemory: typeof DefaultMemory;
       };
@@ -154,14 +203,21 @@ async function runAgentInBrowser({
         memory: new DefaultMemory({ storage: { url: "memories.sqlite3" } }),
       });
 
-      const response = await agent.invoke(input);
+      if (!streaming) {
+        return await agent.invoke(input);
+      }
 
-      return response;
+      const response = await agent.invoke(input, { streaming: true });
+      const result = {};
+
+      for await (const chunk of response) {
+        g.mergeAgentResponseChunk(result, chunk);
+      }
+
+      return result;
     },
-    { agentName, url: aigneURL, input },
+    { agentName, url: aigneURL, input, streaming },
   );
-
-  await page.close();
 
   return result;
 }

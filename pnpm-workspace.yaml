@@ -6,6 +6,4 @@ packages:
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - esbuild
-  - puppeteer
   - simple-git-hooks
-  - sqlite3

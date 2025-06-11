@@ -65,7 +65,7 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install
-          npx puppeteer browsers install chrome
+          pnpm exec playwright install
 
       - name: Build
         run: |

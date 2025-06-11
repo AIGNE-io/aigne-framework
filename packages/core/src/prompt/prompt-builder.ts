@@ -208,8 +208,7 @@ export class PromptBuilder {
       (options.context?.skills ?? [])
         .concat(options.agent?.skills ?? [])
         .concat(options.agent?.memoryAgentsAsTools ? options.agent.memories : [])
-        // TODO: support nested tools?
-        .flatMap((i) => (i.isInvokable ? i.skills.concat(i) : i.skills)),
+        .flatMap((i) => (i.isInvokable ? i : i.skills)),
       (i) => i.name,
     );
 

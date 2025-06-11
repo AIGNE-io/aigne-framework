@@ -6,10 +6,13 @@ import {
   AIAgentToolChoice,
   AIGNE,
   FunctionAgent,
+  MCPAgent,
   MESSAGE_KEY,
   PromptBuilder,
+  TeamAgent,
   createMessage,
 } from "@aigne/core";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { MockMemory } from "../_mocks/mock-memory.js";
@@ -118,10 +121,41 @@ test("PromptBuilder should build skills correctly", async () => {
     }),
   });
 
+  const teamAgentSkill = TeamAgent.from({
+    name: "TestTeamAgent",
+    skills: [
+      AIAgent.from({
+        name: "TestSkillInTeamAgent1",
+      }),
+      AIAgent.from({
+        name: "TestSkillInTeamAgent2",
+      }),
+    ],
+  });
+
+  // MCPAgent is not invokable, so we use it as a skill container
+  const mcpAgentSkill = new MCPAgent({
+    name: "TestMCPAgent",
+    client: new Client({
+      name: "TestClient",
+      version: "1.0.0",
+    }),
+    skills: [
+      AIAgent.from({
+        name: "TestMCPSkill1",
+        instructions: "TestMCPSkill1 instructions",
+      }),
+      AIAgent.from({
+        name: "TestMCPSkill2",
+        instructions: "TestMCPSkill2 instructions",
+      }),
+    ],
+  });
+
   const agent = AIAgent.from({
     name: "TestAgent",
     instructions: "Test instructions",
-    skills: [skill],
+    skills: [skill, teamAgentSkill, mcpAgentSkill],
     toolChoice: skill,
   });
 
@@ -142,6 +176,29 @@ test("PromptBuilder should build skills correctly", async () => {
           required: ["name"],
           additionalProperties: false,
         }),
+      },
+    },
+    // TeamAgent as skill, nested skills should no longer be included in the tools
+    {
+      type: "function",
+      function: {
+        name: "TestTeamAgent",
+        parameters: {},
+      },
+    },
+    // MCPAgent is not invokable, so it should not be included in the tools, and the nested skills should be included
+    {
+      type: "function",
+      function: {
+        name: "TestMCPSkill1",
+        parameters: {},
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "TestMCPSkill2",
+        parameters: {},
       },
     },
   ]);

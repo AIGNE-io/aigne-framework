@@ -13,6 +13,12 @@ exports[`TerminalTracer should render output message with markdown highlight 1`]
 \x1B[0mI am from \x1B[34m\x1B[1mAIGNE\x1B[22m (\x1B[34m\x1B[4mhttps://www.aigne.io\x1B[24m\x1B[39m\x1B[34m)\x1B[39m\x1B[0m"
 `;
 
+exports[`TerminalTracer should render output message without markdown highlight in non-tty 1`] = `
+"\x1B[90m✔\x1B[39m 🤖 \x1B[90m(\x1B[39m\x1B[33m0\x1B[39m \x1B[90minput tokens\x1B[39m\x1B[32m, \x1B[39m\x1B[36m0\x1B[39m \x1B[90moutput tokens\x1B[39m\x1B[90m)\x1B[39m
+## Hello
+I am from [**AIGNE**](https://www.aigne.io)"
+`;
+
 exports[`TerminalTracer.marked should stripe code block meta 1`] = `
 "\x1B[0mhello\x1B[0m
 

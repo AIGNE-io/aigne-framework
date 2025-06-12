@@ -1,14 +1,24 @@
 import { fstat } from "node:fs";
+import { mkdir, stat, writeFile } from "node:fs/promises";
+import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
-import { AIGNE, type Agent, type ChatModelOptions, UserAgent, createMessage } from "@aigne/core";
+import { exists } from "@aigne/agent-library/utils/fs.js";
+import {
+  AIGNE,
+  type Agent,
+  type ChatModelOptions,
+  MESSAGE_KEY,
+  UserAgent,
+  createMessage,
+} from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { LogLevel, getLevelFromEnv, logger } from "@aigne/core/utils/logger.js";
 import { readAllString } from "@aigne/core/utils/stream-utils.js";
 import { type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { Command } from "commander";
 import PrettyError from "pretty-error";
-import { ZodError, z } from "zod";
+import { ZodError, ZodObject, z } from "zod";
 import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
 import { type ChatLoopOptions, runChatLoopInTerminal } from "./run-chat-loop.js";
@@ -21,7 +31,9 @@ export interface RunAIGNECommandOptions {
   presencePenalty?: number;
   frequencyPenalty?: number;
   input?: string;
+  output?: string;
   logLevel?: LogLevel;
+  force?: boolean;
 }
 
 export const createRunAIGNECommand = (name = "run") =>
@@ -53,6 +65,12 @@ export const createRunAIGNECommand = (name = "run") =>
       customZodError("--frequency-penalty", (s) => z.coerce.number().min(-2).max(2).parse(s)),
     )
     .option("--input -i <input>", "Input to the agent")
+    .option("--output -o <output>", "Output file to save the result (default: stdout)")
+    .option(
+      "--force",
+      "Truncate the output file if it exists, and create directory if the output path is not exists",
+      false,
+    )
     .option(
       "--log-level <level>",
       `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
@@ -86,6 +104,22 @@ export async function runWithAIGNE(
         logger.level = options.logLevel;
       }
 
+      if (options.output) {
+        const outputPath = isAbsolute(options.output)
+          ? options.output
+          : join(process.cwd(), options.output);
+        if (await exists(outputPath)) {
+          const s = await stat(outputPath);
+          if (!s.isFile()) throw new Error(`Output path ${outputPath} is not a file`);
+          if (s.size > 0 && !options.force) {
+            throw new Error(`Output file ${outputPath} already exists. Use --force to overwrite.`);
+          }
+        } else {
+          await mkdir(dirname(outputPath), { recursive: true });
+        }
+        await writeFile(outputPath, "", "utf8");
+      }
+
       const model = await loadModel(
         availableModels,
         {
@@ -103,7 +137,38 @@ export async function runWithAIGNE(
       try {
         const agent = typeof agentCreator === "function" ? await agentCreator(aigne) : agentCreator;
 
-        await runAgentWithAIGNE(aigne, agent, { ...options, chatLoopOptions, modelOptions });
+        const cmd = new Command()
+          .description(`Run agent ${agent.name} with AIGNE`)
+          .allowUnknownOption(true)
+          .allowExcessArguments(true);
+
+        const inputSchemaShape =
+          agent.inputSchema instanceof ZodObject ? Object.keys(agent.inputSchema.shape) : [];
+
+        for (const option of inputSchemaShape) {
+          cmd.option(`--input-${option} <${option}>`);
+        }
+
+        await cmd
+          .action(async (agentInputOptions) => {
+            const input = Object.fromEntries(
+              Object.entries(agentInputOptions).map(([key, value]) => {
+                let k = key.replace(/^input/, "");
+                k = k.charAt(0).toLowerCase() + k.slice(1);
+
+                return [k, value];
+              }),
+            );
+
+            await runAgentWithAIGNE(aigne, agent, {
+              ...options,
+              ...agentInputOptions,
+              chatLoopOptions,
+              modelOptions,
+              input,
+            });
+          })
+          .parseAsync(argv);
       } finally {
         await aigne.shutdown();
       }
@@ -162,12 +227,20 @@ export async function runAgentWithAIGNE(
     printRequest: logger.enabled(LogLevel.INFO),
   });
 
-  return await tracer.run(
+  const { result } = await tracer.run(
     agent,
     chatLoopOptions?.inputKey && typeof input === "string"
       ? { [chatLoopOptions.inputKey]: input }
       : createMessage(input),
   );
+
+  if (options.output) {
+    const message = result[MESSAGE_KEY];
+    const content = typeof message === "string" ? message : JSON.stringify(message, null, 2);
+    const path = isAbsolute(options.output) ? options.output : join(process.cwd(), options.output);
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, content, "utf8");
+  }
 }
 
 async function stdinHasData(): Promise<boolean> {

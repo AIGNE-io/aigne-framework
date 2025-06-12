@@ -38,6 +38,8 @@ export interface RunAIGNECommandOptions {
 
 export const createRunAIGNECommand = (name = "run") =>
   new Command(name)
+    .allowUnknownOption(true)
+    .allowExcessArguments(true)
     .description("Run agent with AIGNE in terminal")
     .option("--chat", "Run chat loop in terminal", false)
     .option(

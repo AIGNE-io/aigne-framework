@@ -243,6 +243,8 @@ export async function runAgentWithAIGNE(
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, content, "utf8");
   }
+
+  return { result };
 }
 
 async function stdinHasData(): Promise<boolean> {

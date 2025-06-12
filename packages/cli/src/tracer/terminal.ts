@@ -184,7 +184,19 @@ export class TerminalTracer {
     return title;
   }
 
-  private marked = new Marked().use(markedTerminal({ forceHyperLink: false }));
+  private marked = new Marked().use(
+    {
+      // marked-terminal does not support code block meta, so we need to strip it
+      walkTokens: (token) => {
+        if (token.type === "code") {
+          if (typeof token.lang === "string") {
+            token.lang = token.lang.trim().split(/\s+/)[0];
+          }
+        }
+      },
+    },
+    markedTerminal({ forceHyperLink: false }),
+  );
 
   formatRequest(_context: Context, m: Message = {}) {
     if (!logger.enabled(LogLevel.INFO)) return;

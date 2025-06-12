@@ -52,7 +52,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
   override invoke = ((input: I, options: Partial<AgentInvokeOptions> = {}) => {
     if (!options.context) this.context = this.context.newContext({ reset: true });
 
-    return super.invoke(input, { ...options, context: this.context });
+    return super.invoke(input, options);
   }) as Agent<I, O>["invoke"];
 
   async process(input: I, options: AgentInvokeOptions): Promise<AgentProcessResult<O>> {
@@ -64,6 +64,9 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
       const [output, agent] = await options.context.invoke(this.activeAgent, input, {
         returnActiveAgent: true,
         streaming: true,
+        // Do not create a new context for the nested agent invocation,
+        // We are resetting the context in the override invoke method
+        newContext: false,
       });
       agent.then((agent) => {
         this.activeAgent = agent;

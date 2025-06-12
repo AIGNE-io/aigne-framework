@@ -10,7 +10,6 @@ import {
   type ContextUsage,
   type Message,
 } from "@aigne/core";
-import { NO_PARENT_ID, USE_SELF_AS_ROOT_ID } from "@aigne/core/aigne/constants.js";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
 import { omit } from "@aigne/core/utils/type-utils.js";
@@ -35,7 +34,7 @@ export class TerminalTracer {
   private tasks: { [callId: string]: Task } = {};
 
   async run(agent: Agent, input: Message) {
-    const context = this.context.newContext({ reset: true });
+    const { context } = this;
 
     const listr = new AIGNEListr(
       {
@@ -137,13 +136,7 @@ export class TerminalTracer {
 
     try {
       context.observer?.serve();
-      const result = await listr.run(() =>
-        context.invoke(agent, input, {
-          streaming: true,
-          parentId: NO_PARENT_ID,
-          rootId: USE_SELF_AS_ROOT_ID,
-        }),
-      );
+      const result = await listr.run(() => agent.invoke(input, { streaming: true }));
 
       return { result, context };
     } finally {

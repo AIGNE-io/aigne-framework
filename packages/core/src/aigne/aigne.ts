@@ -10,7 +10,6 @@ import { ChatModel } from "../agents/chat-model.js";
 import type { UserAgent } from "../agents/user-agent.js";
 import { type LoadOptions, load } from "../loader/index.js";
 import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
-import { NO_PARENT_ID } from "./constants.js";
 import { AIGNEContext, type Context, type InvokeOptions, type UserContext } from "./context.js";
 import {
   type MessagePayload,
@@ -184,8 +183,13 @@ export class AIGNE<U extends UserContext = UserContext> {
    *
    * @returns A new AIGNEContext instance bound to this AIGNE.
    */
-  newContext(options?: Partial<Context>) {
-    return new AIGNEContext(this, options);
+  newContext(options?: Partial<Pick<Context, "userContext" | "memories">>) {
+    const context = new AIGNEContext(this);
+
+    if (options?.userContext) context.userContext = options.userContext;
+    if (options?.memories) context.memories = options.memories;
+
+    return context;
   }
 
   /**
@@ -294,7 +298,7 @@ export class AIGNE<U extends UserContext = UserContext> {
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]> {
     this.observer?.serve();
     const context = new AIGNEContext(this);
-    return context.invoke(agent, message, { ...options, parentId: NO_PARENT_ID });
+    return context.invoke(agent, message, options);
   }
 
   /**

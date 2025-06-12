@@ -37,7 +37,6 @@ import {
   omitBy,
 } from "../utils/type-utils.js";
 import type { Args, Listener, TypedEventEmitter } from "../utils/typed-event-emtter.js";
-import { NO_PARENT_ID, USE_SELF_AS_ROOT_ID } from "./constants.js";
 import {
   type MessagePayload,
   MessageQueue,
@@ -84,8 +83,14 @@ export interface InvokeOptions<U extends UserContext = UserContext>
   returnActiveAgent?: boolean;
   disableTransfer?: boolean;
   sourceAgent?: Agent;
-  parentId?: string;
-  rootId?: string;
+
+  /**
+   * Whether to create a new context for this invocation.
+   * If false, the invocation will use the current context.
+   *
+   * @default true
+   */
+  newContext?: boolean;
 }
 
 /**
@@ -198,24 +203,24 @@ export interface Context<U extends UserContext = UserContext>
    * @param options.reset create a new context with initial state (such as: usage)
    * @returns new context
    */
-  newContext(options?: { reset?: boolean; parentId?: string; rootId?: string }): Context;
+  newContext(options?: { reset?: boolean }): Context;
 }
 
 /**
  * @hidden
  */
 export class AIGNEContext implements Context {
-  constructor(...[parent, options, ...args]: ConstructorParameters<typeof AIGNEContextShared>) {
-    if (parent instanceof AIGNEContext) {
-      this.parentId =
-        options?.parentId === NO_PARENT_ID ? undefined : (options?.parentId ?? parent.id);
-      this.rootId =
-        options?.rootId === USE_SELF_AS_ROOT_ID
-          ? this.id
-          : (options?.rootId ?? parent.rootId ?? this.id);
+  constructor(
+    parent?: ConstructorParameters<typeof AIGNEContextShared>[0],
+    { reset }: { reset?: boolean } = {},
+  ) {
+    if (parent instanceof AIGNEContext && !reset) {
       this.internal = parent.internal;
+      this.parentId = parent.id;
+      this.rootId = parent.rootId;
     } else {
-      this.internal = new AIGNEContextShared(parent, options, ...args);
+      this.internal = new AIGNEContextShared(parent);
+      this.rootId = this.id;
     }
   }
 
@@ -225,7 +230,7 @@ export class AIGNEContext implements Context {
 
   parentId?: string;
 
-  rootId: string = this.id;
+  rootId: string;
 
   readonly internal: AIGNEContextShared;
 
@@ -267,13 +272,8 @@ export class AIGNEContext implements Context {
     this.internal.memories = memories;
   }
 
-  newContext({
-    reset,
-    parentId,
-    rootId,
-  }: { reset?: boolean; parentId?: string; rootId?: string } = {}) {
-    if (reset) return new AIGNEContext(this, { userContext: {}, parentId, rootId });
-    return new AIGNEContext(this, { parentId, rootId });
+  newContext({ reset }: { reset?: boolean } = {}) {
+    return new AIGNEContext(this, { reset });
   }
 
   invoke = ((agent, message, options) => {
@@ -298,7 +298,7 @@ export class AIGNEContext implements Context {
       });
     }
 
-    const newContext = this.newContext({ parentId: options?.parentId, rootId: options?.rootId });
+    const newContext = options?.newContext === false ? this : this.newContext({});
     const msg = createMessage(message);
 
     return Promise.resolve(newContext.internal.invoke(agent, msg, newContext, options)).then(
@@ -463,11 +463,8 @@ class AIGNEContextShared {
     private readonly parent?: Pick<Context, "model" | "skills" | "limits" | "observer"> & {
       messageQueue?: MessageQueue;
     },
-    overrides?: Partial<Context>,
   ) {
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
-    this.userContext = overrides?.userContext ?? {};
-    this.memories = overrides?.memories ?? [];
   }
 
   readonly messageQueue: MessageQueue;
@@ -493,9 +490,9 @@ class AIGNEContextShared {
 
   usage: ContextUsage = newEmptyContextUsage();
 
-  userContext: Context["userContext"];
+  userContext: Context["userContext"] = {};
 
-  memories: Context["memories"];
+  memories: Context["memories"] = [];
 
   private abortController = new AbortController();
 

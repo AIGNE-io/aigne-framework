@@ -115,6 +115,28 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
 
+  examples/aigne-wiki:
+    dependencies:
+      '@aigne/agent-library':
+        specifier: workspace:^
+        version: link:../../packages/agent-library
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      zod:
+        specifier: ^3.25.23
+        version: 3.25.23
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.9
+        version: 1.2.12
+
   examples/browser:
     dependencies:
       '@aigne/agent-library':

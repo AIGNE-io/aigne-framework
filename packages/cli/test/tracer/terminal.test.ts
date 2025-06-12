@@ -59,3 +59,21 @@ test("TerminalTracer should render output message with markdown highlight", asyn
     ),
   ).toMatchSnapshot();
 });
+
+test("TerminalTracer.marked should stripe code block meta", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const tracer = new TerminalTracer(context);
+
+  expect(
+    tracer["marked"].parse(`\
+hello
+
+${"```"}ts file="test.ts" region="test-region"
+function test() {
+}
+${"```"}
+`),
+  ).toMatchSnapshot();
+});

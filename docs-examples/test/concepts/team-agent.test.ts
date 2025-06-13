@@ -52,11 +52,9 @@ test("Example TeamAgent: sequential", async () => {
   console.log(result);
   // Output:
   // {
-  //   translation: "AIGNE 是一个构建人工智能代理的优秀框架。",
   //   formatted: "AIGNE 是一个出色的人工智能代理构建框架。",
   // }
   expect(result).toEqual({
-    translation: "AIGNE 是一个构建人工智能代理的优秀框架。",
     formatted: "AIGNE 是一个出色的人工智能代理构建框架。",
   });
   // #endregion example-agent-sequential-invoke

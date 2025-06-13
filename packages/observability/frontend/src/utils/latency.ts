@@ -1,6 +1,6 @@
-export function parseDuration(startedAt?: number, endedAt?: number): string {
-  if (!startedAt || !endedAt) return "-";
-  const duration = endedAt - startedAt;
+export function parseDuration(startTime?: number, endTime?: number): string {
+  if (!startTime || !endTime) return "-";
+  const duration = endTime - startTime;
   const milliseconds = duration % 1000;
   const seconds = Math.floor(duration / 1000);
   const minutes = Math.floor(seconds / 60);

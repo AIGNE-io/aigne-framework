@@ -28,10 +28,9 @@
     ".": {
       "browser": "./lib/esm/index.browser.js",
       "node": {
-        "require": "./lib/cjs/index.js",
-        "import": "./lib/esm/index.js"
+        "require": "./lib/cjs/index.node.js",
+        "import": "./lib/esm/index.node.js"
       },
-      "types": "./lib/esm/index.d.ts",
       "default": "./lib/esm/index.js"
     }
   },

@@ -1,10 +1,10 @@
 import type { Server } from "node:http";
 import path from "node:path";
 import { trace } from "@opentelemetry/api";
+import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import { initOpenTelemetry } from "../instrument/init.js";
 import { startServer } from "../server/index.js";
 import detect from "../server/utils/detect-port.js";
-import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "./type.js";
 
 export class AIGNEObserver {
   private server: AIGNEObserverOptions["server"];

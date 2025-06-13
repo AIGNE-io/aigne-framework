@@ -1,28 +1,28 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { parseDuration } from "../../utils/latency.ts";
-import type { RunData } from "./types.ts";
+import Box from "@mui/material/Box"
+import Typography from "@mui/material/Typography"
+import {parseDuration} from "../../utils/latency.ts"
+import type {RunData} from "./types.ts"
 
 function formatRunMeta(run: RunData) {
-  const parts: string[] = [];
-  if (run.output?.model) {
-    parts.push(run.output.model);
+  const parts: string[] = []
+  if (run.attributes.output?.model) {
+    parts.push(run.attributes.output.model)
   }
-  const inputTokens = run.output?.usage?.inputTokens;
-  const outputTokens = run.output?.usage?.outputTokens;
-  const tokenParts: string[] = [];
+  const inputTokens = run.attributes.output?.usage?.inputTokens
+  const outputTokens = run.attributes.output?.usage?.outputTokens
+  const tokenParts: string[] = []
   if (typeof inputTokens === "number") {
-    tokenParts.push(`${inputTokens} input tokens`);
+    tokenParts.push(`${inputTokens} input tokens`)
   }
   if (typeof outputTokens === "number") {
-    tokenParts.push(`${outputTokens} output tokens`);
+    tokenParts.push(`${outputTokens} output tokens`)
   }
   if (tokenParts.length > 0) {
-    parts.push(tokenParts.join(", "));
+    parts.push(tokenParts.join(", "))
   }
-  const duration = parseDuration(run.startedAt, run.endedAt);
-  parts.push(`[${duration}]`);
-  return parts.join(", ");
+  const duration = parseDuration(run.startTime, run.endTime)
+  parts.push(`[${duration}]`)
+  return parts.join(", ")
 }
 
 export function RunTree({
@@ -31,19 +31,19 @@ export function RunTree({
   isLast = true,
   onSelect,
 }: {
-  run: RunData;
-  level?: number;
-  isLast?: boolean;
-  onSelect?: (run: RunData) => void;
+  run: RunData
+  level?: number
+  isLast?: boolean
+  onSelect?: (run: RunData) => void
 }) {
-  const fontSize = 15;
-  const lineColor = "#888";
-  const lineWidth = 2;
-  const indent = 20;
-  const children = run.children || [];
+  const fontSize = 15
+  const lineColor = "#888"
+  const lineWidth = 2
+  const indent = 20
+  const children = run.children || []
 
   return (
-    <Box sx={{ position: "relative", ml: level === 0 ? 0 : 2 }}>
+    <Box sx={{position: "relative", ml: level === 0 ? 0 : 2}}>
       <Box
         sx={{
           display: "flex",
@@ -54,13 +54,12 @@ export function RunTree({
         }}
         onClick={
           onSelect
-            ? (e) => {
-                e.stopPropagation();
-                onSelect(run);
+            ? e => {
+                e.stopPropagation()
+                onSelect(run)
               }
             : undefined
-        }
-      >
+        }>
         {level > 0 && (
           <Box
             sx={{
@@ -70,8 +69,7 @@ export function RunTree({
               display: "flex",
               alignItems: "center",
               justifyContent: "flex-end",
-            }}
-          >
+            }}>
             <Box
               sx={{
                 position: "absolute",
@@ -98,9 +96,9 @@ export function RunTree({
             />
           </Box>
         )}
-        <Typography fontSize={fontSize} sx={{ ml: level > 0 ? 0.5 : 0 }}>
+        <Typography fontSize={fontSize} sx={{ml: level > 0 ? 0.5 : 0}}>
           {run.name || "Unknown"}
-          <Box component="span" sx={{ ml: 1, color: "#888" }}>
+          <Box component="span" sx={{ml: 1, color: "#888"}}>
             {formatRunMeta(run)}
           </Box>
         </Typography>
@@ -119,5 +117,5 @@ export function RunTree({
         </Box>
       )}
     </Box>
-  );
+  )
 }

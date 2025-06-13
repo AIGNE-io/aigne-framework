@@ -1,4 +1,6 @@
 import type { AIGNEObserver } from "@aigne/observability";
+import type { Span } from "@opentelemetry/api";
+import { SpanStatusCode, context, trace } from "@opentelemetry/api";
 import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
@@ -117,6 +119,8 @@ export interface Context<U extends UserContext = UserContext>
 
   observer?: AIGNEObserver;
 
+  span?: Span;
+
   usage: ContextUsage;
 
   limits?: ContextLimits;
@@ -214,6 +218,8 @@ export interface Context<U extends UserContext = UserContext>
  * @hidden
  */
 export class AIGNEContext implements Context {
+  span?: Span;
+
   constructor(
     parent?: ConstructorParameters<typeof AIGNEContextShared>[0],
     { reset }: { reset?: boolean } = {},
@@ -222,15 +228,28 @@ export class AIGNEContext implements Context {
       this.internal = parent.internal;
       this.parentId = parent.id;
       this.rootId = parent.rootId;
+
+      if (parent.span) {
+        this.span = parent?.observer?.tracer.startSpan(
+          "childAIGNEContext",
+          undefined,
+          trace.setSpan(context.active(), parent.span),
+        );
+      } else {
+        this.span = parent?.observer?.tracer.startSpan("AIGNEContext");
+      }
     } else {
       this.internal = new AIGNEContextShared(parent);
-      this.rootId = this.id;
+      this.span = parent?.observer?.tracer.startSpan("AIGNEContext");
+
+      // 修改了 rootId 是否会之前的有影响？，之前为 this.id
+      this.rootId = this.span?.spanContext().traceId ?? v7();
     }
+
+    this.id = this.span?.spanContext().spanId ?? v7();
   }
 
-  traceId?: string;
-
-  id = v7();
+  id: string;
 
   parentId?: string;
 
@@ -417,39 +436,40 @@ export class AIGNEContext implements Context {
     args: Args<K, ContextEmitEventMap>,
     b: AgentEvent,
   ): Promise<void> {
-    const observer = this.internal.observer;
-    if (!observer) return;
+    const span = this.span;
+    if (!span) return;
 
     try {
       switch (eventName) {
         case "agentStarted": {
           const { agent, input } = args[0] as ContextEventMap["agentStarted"][0];
-          const res = await observer.record({
-            name: agent.name,
-            id: this.id,
-            rootId: this.rootId,
-            parentId: this.parentId,
-            startedAt: b.timestamp,
-            input,
-          });
-          this.traceId = res?.id;
+          span.updateName(agent.name);
+
+          span.setAttribute("custom.trace_id", this.rootId);
+          span.setAttribute("custom.span_id", this.id);
+
+          if (this.parentId) {
+            span.setAttribute("custom.parent_id", this.parentId);
+          }
+
+          span.setAttribute("custom.started_at", b.timestamp);
+          span.setAttribute("input", JSON.stringify(input));
+
           break;
         }
         case "agentSucceed": {
-          if (!this.traceId) return;
           const { output } = args[0] as ContextEventMap["agentSucceed"][0];
-          observer.update({ id: this.traceId, status: "succeed", endedAt: b.timestamp, output });
+          span.setAttribute("output", JSON.stringify(output));
+          span.setStatus({ code: SpanStatusCode.OK, message: "Agent succeed" });
+          span.end();
+
           break;
         }
         case "agentFailed": {
-          if (!this.traceId) return;
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
-          observer.update({
-            id: this.traceId,
-            status: "failed",
-            endedAt: b.timestamp,
-            error: { name: error.name, message: error.message, stack: error.stack },
-          });
+          span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+          span.end();
+
           break;
         }
       }
@@ -481,6 +501,8 @@ export class AIGNEContext implements Context {
 }
 
 class AIGNEContextShared {
+  span?: Span;
+
   constructor(
     private readonly parent?: Pick<Context, "model" | "skills" | "limits" | "observer"> & {
       messageQueue?: MessageQueue;

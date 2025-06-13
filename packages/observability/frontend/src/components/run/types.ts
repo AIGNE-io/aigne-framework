@@ -1,17 +1,19 @@
 export interface RunData {
   id: string;
   name: string;
-  input: string;
-  startedAt?: number;
-  endedAt?: number;
-  output?: {
-    model?: string;
-    usage?: {
-      inputTokens: number;
-      outputTokens: number;
-    };
-    [key: string]: unknown;
-  };
+  startTime?: number;
+  endTime?: number;
   error?: string;
   children?: RunData[];
+  attributes: {
+    input?: Record<string, unknown>;
+    output?: {
+      model?: string;
+      usage?: {
+        inputTokens: number;
+        outputTokens: number;
+      };
+      [key: string]: unknown;
+    };
+  };
 }

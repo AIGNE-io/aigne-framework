@@ -1,62 +1,51 @@
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import { useEffect, useState } from "react";
-import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx";
-import type { RunData } from "./components/run/types.ts";
-import { parseDuration } from "./utils/latency.ts";
-
-interface RunResponse {
-  id: string;
-  name: string;
-  input: string;
-  output: string;
-  error: string;
-  startedAt: number;
-  endedAt: number;
-  children: RunResponse[];
-}
+import Box from "@mui/material/Box"
+import Paper from "@mui/material/Paper"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import {useEffect, useState} from "react"
+import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx"
+import type {RunData} from "./components/run/types.ts"
+import {parseDuration} from "./utils/latency.ts"
 
 interface RunsResponse {
-  data: RunResponse[];
+  data: RunData[]
 }
 
 function App() {
-  const [runs, setRuns] = useState<RunData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedRun, setSelectedRun] = useState<RunData | null>(null);
+  const [runs, setRuns] = useState<RunData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [selectedRun, setSelectedRun] = useState<RunData | null>(null)
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     fetch("/api/trace/tree")
-      .then((res) => res.json() as Promise<RunsResponse>)
-      .then(({ data }) => {
-        const format = (run: RunResponse): RunData => ({
+      .then(res => res.json() as Promise<RunsResponse>)
+      .then(({data}) => {
+        const format = (run: RunData): RunData => ({
           ...run,
-          output: JSON.parse(run.output),
-          children: run.children.map(format),
-        });
-        const formatted = data.map(format);
-        setRuns(formatted);
-        setLoading(false);
+          startTime: Number(run.startTime),
+          endTime: Number(run.endTime),
+        })
+        const formatted = data.map(format)
+        setRuns(formatted)
+        setLoading(false)
       })
-      .catch(() => setLoading(false));
-  }, []);
+      .catch(() => setLoading(false))
+  }, [])
 
   const formatTime = (ts?: number) => {
-    if (!ts) return "-";
-    const d = new Date(ts);
-    return d.toLocaleString();
-  };
+    if (!ts) return "-"
+    const d = new Date(ts)
+    return d.toLocaleString()
+  }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#fff", p: 4 }}>
+    <Box sx={{minHeight: "100vh", bgcolor: "#fff", p: 4}}>
       <Paper
         elevation={0}
         sx={{
@@ -64,8 +53,7 @@ function App() {
           p: 3,
           minHeight: 500,
           overflow: "hidden",
-        }}
-      >
+        }}>
         <TableContainer>
           <Table>
             <TableHead>
@@ -94,24 +82,23 @@ function App() {
                   </TableCell>
                 </TableRow>
               ) : (
-                runs.map((run) => (
+                runs.map(run => (
                   <TableRow
                     key={run.id}
                     hover
-                    style={{ cursor: "pointer" }}
+                    style={{cursor: "pointer"}}
                     onClick={() => {
-                      setSelectedRun(run);
-                      setDrawerOpen(true);
-                    }}
-                  >
+                      setSelectedRun(run)
+                      setDrawerOpen(true)
+                    }}>
                     <TableCell>{run.id}</TableCell>
                     <TableCell>{run.name}</TableCell>
-                    <TableCell>{run.input}</TableCell>
-                    <TableCell>{JSON.stringify(run.output)}</TableCell>
+                    <TableCell>{JSON.stringify(run.attributes.input)}</TableCell>
+                    <TableCell>{JSON.stringify(run.attributes.output)}</TableCell>
                     <TableCell>{run.error}</TableCell>
-                    <TableCell>{formatTime(run.startedAt)}</TableCell>
-                    <TableCell>{formatTime(run.endedAt)}</TableCell>
-                    <TableCell>{parseDuration(run.startedAt, run.endedAt)}</TableCell>
+                    <TableCell>{formatTime(run.startTime)}</TableCell>
+                    <TableCell>{formatTime(run.endTime)}</TableCell>
+                    <TableCell>{parseDuration(run.startTime, run.endTime)}</TableCell>
                   </TableRow>
                 ))
               )}
@@ -122,13 +109,13 @@ function App() {
       <RunDetailDrawer
         open={drawerOpen}
         onClose={() => {
-          setDrawerOpen(false);
-          setSelectedRun(null);
+          setDrawerOpen(false)
+          setSelectedRun(null)
         }}
         run={selectedRun}
       />
     </Box>
-  );
+  )
 }
 
-export default App;
+export default App

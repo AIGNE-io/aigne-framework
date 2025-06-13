@@ -1,1 +1,1 @@
-export * from "./aigne-observer.browser.js";
+export * from "./observer/aigne-observer.browser.js";

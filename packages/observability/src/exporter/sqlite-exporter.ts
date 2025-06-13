@@ -2,7 +2,7 @@ import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode, hrTimeToMilliseconds } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
-import { recordTraceBatchSchema } from "../schema.js";
+import { recordTraceBatchSchema } from "../core/schema.js";
 import { migrate } from "../server/migrate.js";
 import { Trace } from "../server/models/trace.js";
 

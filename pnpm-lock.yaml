@@ -67,34 +67,34 @@ importers:
         version: link:../packages/agent-library
       '@aigne/anthropic':
         specifier: workspace:^
-        version: link:../packages/anthropic
+        version: link:../models/anthropic
       '@aigne/bedrock':
         specifier: workspace:^
-        version: link:../packages/bedrock
+        version: link:../models/bedrock
       '@aigne/core':
         specifier: workspace:^
         version: link:../packages/core
       '@aigne/deepseek':
         specifier: workspace:^
-        version: link:../packages/deepseek
+        version: link:../models/deepseek
       '@aigne/gemini':
         specifier: workspace:^
-        version: link:../packages/gemini
+        version: link:../models/gemini
       '@aigne/ollama':
         specifier: workspace:^
-        version: link:../packages/ollama
+        version: link:../models/ollama
       '@aigne/open-router':
         specifier: workspace:^
-        version: link:../packages/open-router
+        version: link:../models/open-router
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../packages/openai
+        version: link:../models/openai
       '@aigne/transport':
         specifier: workspace:^
         version: link:../packages/transport
       '@aigne/xai':
         specifier: workspace:^
-        version: link:../packages/xai
+        version: link:../models/xai
       express:
         specifier: ^5.1.0
         version: 5.1.0
@@ -125,7 +125,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
       '@aigne/transport':
         specifier: workspace:^
         version: link:../../packages/transport
@@ -218,7 +218,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -240,7 +240,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -262,7 +262,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -303,7 +303,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
       zod:
         specifier: ^3.24.4
         version: 3.25.23
@@ -328,7 +328,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -350,7 +350,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
       zod:
         specifier: ^3.24.4
         version: 3.25.23
@@ -375,7 +375,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
       zod:
         specifier: ^3.24.4
         version: 3.25.23
@@ -400,7 +400,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -422,7 +422,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
       zod:
         specifier: ^3.24.4
         version: 3.25.23
@@ -447,7 +447,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -469,7 +469,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -478,6 +478,245 @@ importers:
         specifier: ^1.2.9
         version: 1.2.12
 
+  models/anthropic:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@anthropic-ai/sdk':
+        specifier: ^0.41.0
+        version: 0.41.0(encoding@0.1.13)
+      zod:
+        specifier: ^3.24.4
+        version: 3.25.23
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  models/bedrock:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aws-sdk/client-bedrock-runtime':
+        specifier: ^3.812.0
+        version: 3.812.0
+      nanoid:
+        specifier: ^5.1.5
+        version: 5.1.5
+      zod:
+        specifier: ^3.24.4
+        version: 3.25.23
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  models/deepseek:
+    dependencies:
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
+    devDependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  models/gemini:
+    dependencies:
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
+    devDependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  models/ollama:
+    dependencies:
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
+    devDependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  models/open-router:
+    dependencies:
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
+    devDependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  models/openai:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      nanoid:
+        specifier: ^5.1.5
+        version: 5.1.5
+      openai:
+        specifier: ^4.87.3
+        version: 4.97.0(encoding@0.1.13)(ws@8.18.2)(zod@3.25.23)
+      zod:
+        specifier: ^3.24.4
+        version: 3.25.23
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  models/xai:
+    dependencies:
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
+    devDependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   packages/agent-library:
     dependencies:
       '@aigne/core':
@@ -485,7 +724,7 @@ importers:
         version: link:../core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../openai
+        version: link:../../models/openai
       '@aigne/sqlite':
         specifier: workspace:^
         version: link:../sqlite
@@ -530,71 +769,6 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/anthropic:
-    dependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      '@anthropic-ai/sdk':
-        specifier: ^0.41.0
-        version: 0.41.0(encoding@0.1.13)
-      zod:
-        specifier: ^3.24.4
-        version: 3.25.23
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/bedrock:
-    dependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      '@aws-sdk/client-bedrock-runtime':
-        specifier: ^3.812.0
-        version: 3.812.0
-      nanoid:
-        specifier: ^5.1.5
-        version: 5.1.5
-      zod:
-        specifier: ^3.24.4
-        version: 3.25.23
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
   packages/cli:
     dependencies:
       '@aigne/agent-library':
@@ -602,19 +776,19 @@ importers:
         version: link:../agent-library
       '@aigne/anthropic':
         specifier: workspace:^
-        version: link:../anthropic
+        version: link:../../models/anthropic
       '@aigne/bedrock':
         specifier: workspace:^
-        version: link:../bedrock
+        version: link:../../models/bedrock
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
       '@aigne/deepseek':
         specifier: workspace:^
-        version: link:../deepseek
+        version: link:../../models/deepseek
       '@aigne/gemini':
         specifier: workspace:^
-        version: link:../gemini
+        version: link:../../models/gemini
       '@aigne/listr2':
         specifier: ^1.0.10
         version: 1.0.10
@@ -623,16 +797,16 @@ importers:
         version: 7.3.1(marked@15.0.12)
       '@aigne/ollama':
         specifier: workspace:^
-        version: link:../ollama
+        version: link:../../models/ollama
       '@aigne/open-router':
         specifier: workspace:^
-        version: link:../open-router
+        version: link:../../models/open-router
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../openai
+        version: link:../../models/openai
       '@aigne/xai':
         specifier: workspace:^
-        version: link:../xai
+        version: link:../../models/xai
       '@modelcontextprotocol/sdk':
         specifier: ^1.11.0
         version: 1.11.0
@@ -800,149 +974,6 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.1.0
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/deepseek:
-    dependencies:
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../openai
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/gemini:
-    dependencies:
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../openai
-    devDependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/ollama:
-    dependencies:
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../openai
-    devDependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/open-router:
-    dependencies:
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../openai
-    devDependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/openai:
-    dependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      nanoid:
-        specifier: ^5.1.5
-        version: 5.1.5
-      openai:
-        specifier: ^4.87.3
-        version: 4.97.0(encoding@0.1.13)(ws@8.18.2)(zod@3.25.23)
-      zod:
-        specifier: ^3.24.4
-        version: 3.25.23
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -1168,7 +1199,7 @@ importers:
     dependencies:
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../openai
+        version: link:../../models/openai
     devDependencies:
       '@aigne/core':
         specifier: workspace:^
@@ -1213,34 +1244,6 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
 
-  packages/xai:
-    dependencies:
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../openai
-    devDependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
   tests/nodejs:
     dependencies:
       '@aigne/agent-library':
@@ -1254,7 +1257,7 @@ importers:
         version: link:../../packages/core
       '@aigne/openai':
         specifier: workspace:^
-        version: link:../../packages/openai
+        version: link:../../models/openai
     devDependencies:
       tsx:
         specifier: ^4.19.4
@@ -6817,7 +6820,7 @@ snapshots:
       ini: 4.1.3
       nopt: 7.2.1
       proc-log: 4.2.0
-      semver: 7.7.1
+      semver: 7.7.2
       walk-up-path: 3.0.1
     transitivePeerDependencies:
       - bluebird
@@ -6837,7 +6840,7 @@ snapshots:
       proc-log: 4.2.0
       promise-inflight: 1.0.1
       promise-retry: 2.0.1
-      semver: 7.7.1
+      semver: 7.7.2
       which: 4.0.0
     transitivePeerDependencies:
       - bluebird
@@ -6865,7 +6868,7 @@ snapshots:
       json-parse-even-better-errors: 3.0.2
       normalize-package-data: 6.0.2
       proc-log: 4.2.0
-      semver: 7.7.1
+      semver: 7.7.2
     transitivePeerDependencies:
       - bluebird
 
@@ -9513,14 +9516,14 @@ snapshots:
   normalize-package-data@6.0.2:
     dependencies:
       hosted-git-info: 7.0.2
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-license: 3.0.4
 
   normalize-path@3.0.0: {}
 
   npm-install-checks@6.3.0:
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
 
   npm-normalize-package-bin@3.0.1: {}
 
@@ -9528,7 +9531,7 @@ snapshots:
     dependencies:
       hosted-git-info: 7.0.2
       proc-log: 4.2.0
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-name: 5.0.1
 
   npm-pick-manifest@9.1.0:
@@ -9536,7 +9539,7 @@ snapshots:
       npm-install-checks: 6.3.0
       npm-normalize-package-bin: 3.0.1
       npm-package-arg: 11.0.3
-      semver: 7.7.1
+      semver: 7.7.2
 
   npm-run-all@4.1.5:
     dependencies:
@@ -10333,8 +10336,7 @@ snapshots:
 
   semver@7.7.1: {}
 
-  semver@7.7.2:
-    optional: true
+  semver@7.7.2: {}
 
   send@1.2.0:
     dependencies:

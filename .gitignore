@@ -11,6 +11,7 @@
 .pnpm-store
 node_modules
 packages/*/lib
+models/*/lib
 
 # testing
 coverage
@@ -44,7 +45,6 @@ lerna-debug.log*
 .blocklet-server/
 .blocklet-tests/
 .playwright/
-
 
 *storybook.log
 .data

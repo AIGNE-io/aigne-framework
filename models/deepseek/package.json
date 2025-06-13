@@ -44,6 +44,7 @@
     "@aigne/openai": "workspace:^"
   },
   "devDependencies": {
+    "@aigne/core": "workspace:^",
     "@aigne/test-utils": "workspace:^",
     "@types/bun": "^1.2.12",
     "@types/node": "^22.15.15",

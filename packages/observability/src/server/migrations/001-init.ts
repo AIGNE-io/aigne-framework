@@ -15,7 +15,7 @@ export default {
       userId TEXT,
       sessionId TEXT
     );`,
-    "CREATE INDEX idx_trace_rootId ON Trace (rootId);",
-    "CREATE INDEX idx_trace_parentId ON Trace (parentId);",
+    "CREATE INDEX IF NOT EXISTS idx_trace_rootId ON Trace (rootId);",
+    "CREATE INDEX IF NOT EXISTS idx_trace_parentId ON Trace (parentId);",
   ],
 };

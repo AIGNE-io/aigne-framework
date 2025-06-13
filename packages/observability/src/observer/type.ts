@@ -8,7 +8,7 @@ export const AIGNEObserverOptionsSchema = z
         port: z.number().optional(),
       })
       .optional(),
-    storage: z.object({ url: z.string() }).optional().default({ url: "file:observer.sqlite3" }),
+    storage: z.object({ url: z.string() }).optional().default({ url: "file:observer.db" }),
   })
   .optional()
   .default({});

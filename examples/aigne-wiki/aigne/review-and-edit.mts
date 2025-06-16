@@ -6,9 +6,14 @@ import { ReflectionAgent } from "../reflection-agent.ts";
 export default new ReflectionAgent({
   name: "reviewAndEdit",
   maxIterations: 2,
+  inputSchema: z.object({
+    sources: z.string().describe("Sources to generate markdown from"),
+    markdown: z.string().describe("Markdown to review and edit"),
+  }),
   reviewer: AIAgent.from({
     name: "reviewer",
     inputSchema: z.object({
+      sources: z.string(),
       markdown: z.string(),
     }),
     outputSchema: z.object({
@@ -23,6 +28,7 @@ export default new ReflectionAgent({
   editor: AIAgent.from<{ markdown: string; feedback?: string | null }, { markdown: string }>({
     name: "editor",
     inputSchema: z.object({
+      sources: z.string(),
       markdown: z.string(),
       feedback: z.string().nullish().describe("Feedback from the reviewer"),
     }),

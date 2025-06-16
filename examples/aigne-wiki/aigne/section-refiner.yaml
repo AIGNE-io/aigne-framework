@@ -5,6 +5,9 @@ instructions:
 input_schema:
   type: object
   properties:
+    sources:
+      type: string
+      description: Sources file of the wiki article
     markdown:
       type: string
       description: Markdown content of the wiki article

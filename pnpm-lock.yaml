@@ -871,6 +871,9 @@ importers:
       wrap-ansi:
         specifier: ^9.0.0
         version: 9.0.0
+      yaml:
+        specifier: ^2.7.1
+        version: 2.7.1
       zod:
         specifier: ^3.24.4
         version: 3.25.23

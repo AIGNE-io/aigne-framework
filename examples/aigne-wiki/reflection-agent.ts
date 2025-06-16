@@ -39,7 +39,7 @@ export class ReflectionAgent<
   maxIterations: number;
 
   override async process(input: I, options: AgentInvokeOptions): Promise<AgentProcessResult<I>> {
-    let previousResult = input;
+    const previousResult = { ...input };
     let reviewResult: RO | undefined;
     let iterations = 0;
 
@@ -49,10 +49,13 @@ export class ReflectionAgent<
       if (isApproved === true) {
         return previousResult;
       }
-      previousResult = await options.context.invoke(this.editor, {
-        ...previousResult,
-        ...reviewResult,
-      });
+      Object.assign(
+        previousResult,
+        await options.context.invoke(this.editor, {
+          ...previousResult,
+          ...reviewResult,
+        }),
+      );
     } while (++iterations < this.maxIterations);
 
     return previousResult;

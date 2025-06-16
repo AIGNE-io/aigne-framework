@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-memory",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "A demonstration of using AIGNE Framework with memory.",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/memory",

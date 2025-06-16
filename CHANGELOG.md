@@ -4,6 +4,13 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.21.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.6...aigne-framework-v1.21.0) (2025-06-16)
+
+
+### Features
+
+* support respond progressing chunks by enable `returnProgressChunks` option for aigne.invoke ([cf4c313](https://github.com/AIGNE-io/aigne-framework/commit/cf4c313ee69f255be799ac196da675b79f69bf76))
+
 ## [1.20.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.5...aigne-framework-v1.20.6) (2025-06-11)
 
 

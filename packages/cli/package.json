@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.11.6",
+  "version": "1.11.7",
   "description": "cli for AIGNE framework",
   "publishConfig": {
     "access": "public"

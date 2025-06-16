@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.2.7...deepseek-v0.3.0) (2025-06-16)
+
+
+### Features
+
+* support respond progressing chunks by enable `returnProgressChunks` option for aigne.invoke ([cf4c313](https://github.com/AIGNE-io/aigne-framework/commit/cf4c313ee69f255be799ac196da675b79f69bf76))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.3.0
+  * devDependencies
+    * @aigne/core bumped to 1.19.0
+    * @aigne/test-utils bumped to 0.4.0
+
 ## [0.2.7](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.2.6...deepseek-v0.2.7) (2025-06-11)
 
 

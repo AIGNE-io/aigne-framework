@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.3.8...test-utils-v0.4.0) (2025-06-16)
+
+
+### Features
+
+* support respond progressing chunks by enable `returnProgressChunks` option for aigne.invoke ([cf4c313](https://github.com/AIGNE-io/aigne-framework/commit/cf4c313ee69f255be799ac196da675b79f69bf76))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.19.0
+
 ## [0.3.8](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.3.7...test-utils-v0.3.8) (2025-06-11)
 
 

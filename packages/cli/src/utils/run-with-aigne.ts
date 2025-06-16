@@ -150,9 +150,10 @@ export async function parseAgentInputByCommander(
   });
 
   const rawInput =
-    options.input || isatty(process.stdin.fd) || !(await stdinHasData())
+    options.input ||
+    (isatty(process.stdin.fd) || !(await stdinHasData())
       ? null
-      : [await readAllString(process.stdin)];
+      : [await readAllString(process.stdin)]);
 
   if (rawInput?.length) {
     for (let raw of rawInput) {

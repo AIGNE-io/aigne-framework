@@ -42,7 +42,6 @@ export function createRunCommand(): Command {
       "Directory to download the package to (defaults to the ~/.aigne/xxx)",
     )
     .action(async (options: RunOptions) => {
-      console.log(options);
       const { path } = options;
 
       if (options.logLevel) logger.level = options.logLevel;

@@ -23,6 +23,7 @@ import { parseDuration } from "../utils/time.js";
 
 export interface TerminalTracerOptions {
   printRequest?: boolean;
+  outputKey?: string;
 }
 
 export class TerminalTracer {
@@ -198,6 +199,10 @@ export class TerminalTracer {
     markedTerminal({ forceHyperLink: false }),
   );
 
+  get outputKey() {
+    return this.options.outputKey || MESSAGE_KEY;
+  }
+
   formatRequest(_context: Context, m: Message = {}) {
     if (!logger.enabled(LogLevel.INFO)) return;
 
@@ -221,8 +226,8 @@ export class TerminalTracer {
       ? `${chalk.grey(figures.tick)} 🤖 ${this.formatTokenUsage(context.usage)}`
       : null;
 
-    const msg = m[MESSAGE_KEY];
-    const message = omitBy(m, (_, k) => k === MESSAGE_KEY);
+    const msg = m[this.outputKey];
+    const message = omitBy(m, (_, k) => k === this.outputKey);
 
     const text =
       msg && typeof msg === "string"

@@ -9,13 +9,14 @@ import {
   type Agent,
   type ChatModelOptions,
   MESSAGE_KEY,
+  type Message,
   UserAgent,
   createMessage,
 } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { LogLevel, getLevelFromEnv, logger } from "@aigne/core/utils/logger.js";
 import { readAllString } from "@aigne/core/utils/stream-utils.js";
-import { type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import { type PromiseOrValue, isNonNullable, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { Command } from "commander";
 import PrettyError from "pretty-error";
 import { ZodError, ZodObject, z } from "zod";
@@ -30,7 +31,7 @@ export interface RunAIGNECommandOptions {
   topP?: number;
   presencePenalty?: number;
   frequencyPenalty?: number;
-  input?: string;
+  input?: string | Message;
   output?: string;
   logLevel?: LogLevel;
   force?: boolean;
@@ -69,6 +70,11 @@ export const createRunAIGNECommand = (name = "run") =>
     .option("--input -i <input>", "Input to the agent")
     .option("--output -o <output>", "Output file to save the result (default: stdout)")
     .option(
+      "--output-key <output-key>",
+      "Key in the result to save to the output file",
+      MESSAGE_KEY,
+    )
+    .option(
       "--force",
       "Truncate the output file if it exists, and create directory if the output path is not exists",
       false,
@@ -79,6 +85,51 @@ export const createRunAIGNECommand = (name = "run") =>
       customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
       getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
     );
+
+export async function parseAgentInputByCommander(agent: Agent): Promise<Message> {
+  const cmd = new Command()
+    .description(`Run agent ${agent.name} with AIGNE`)
+    .allowUnknownOption(true)
+    .allowExcessArguments(true)
+    .option("--input -i <input>", "Input to the agent");
+
+  const inputSchemaShape =
+    agent.inputSchema instanceof ZodObject ? Object.keys(agent.inputSchema.shape) : [];
+
+  for (const option of inputSchemaShape) {
+    cmd.option(`--input-${option} <${option}>`);
+  }
+
+  return await new Promise((resolve, reject) => {
+    cmd
+      .action(async (agentInputOptions) => {
+        try {
+          const input = Object.fromEntries(
+            Object.entries(agentInputOptions)
+              .map(([key, value]) => {
+                let k = key.replace(/^input/, "");
+                k = k.charAt(0).toLowerCase() + k.slice(1);
+
+                if (!k) return null;
+
+                return [k, value];
+              })
+              .filter(isNonNullable),
+          );
+
+          if (typeof agentInputOptions["input"] === "string") {
+            input[MESSAGE_KEY] = agentInputOptions["input"];
+          }
+
+          resolve(input);
+        } catch (error) {
+          reject(error);
+        }
+      })
+      .parseAsync(process.argv)
+      .catch((error) => reject(error));
+  });
+}
 
 export const parseModelOption = (model?: string) => {
   const { provider, name } = model?.match(/(?<provider>[^:]+)(:(?<name>(\S+)))?/)?.groups ?? {};
@@ -92,10 +143,12 @@ export async function runWithAIGNE(
     argv = process.argv,
     chatLoopOptions,
     modelOptions,
+    outputKey,
   }: {
     argv?: typeof process.argv;
     chatLoopOptions?: ChatLoopOptions;
     modelOptions?: ChatModelOptions;
+    outputKey?: string;
   } = {},
 ) {
   await createRunAIGNECommand()
@@ -139,38 +192,15 @@ export async function runWithAIGNE(
       try {
         const agent = typeof agentCreator === "function" ? await agentCreator(aigne) : agentCreator;
 
-        const cmd = new Command()
-          .description(`Run agent ${agent.name} with AIGNE`)
-          .allowUnknownOption(true)
-          .allowExcessArguments(true);
+        const input = await parseAgentInputByCommander(agent);
 
-        const inputSchemaShape =
-          agent.inputSchema instanceof ZodObject ? Object.keys(agent.inputSchema.shape) : [];
-
-        for (const option of inputSchemaShape) {
-          cmd.option(`--input-${option} <${option}>`);
-        }
-
-        await cmd
-          .action(async (agentInputOptions) => {
-            const input = Object.fromEntries(
-              Object.entries(agentInputOptions).map(([key, value]) => {
-                let k = key.replace(/^input/, "");
-                k = k.charAt(0).toLowerCase() + k.slice(1);
-
-                return [k, value];
-              }),
-            );
-
-            await runAgentWithAIGNE(aigne, agent, {
-              ...options,
-              ...agentInputOptions,
-              chatLoopOptions,
-              modelOptions,
-              input,
-            });
-          })
-          .parseAsync(argv);
+        await runAgentWithAIGNE(aigne, agent, {
+          ...options,
+          outputKey,
+          chatLoopOptions,
+          modelOptions,
+          input,
+        });
       } finally {
         await aigne.shutdown();
       }
@@ -194,10 +224,12 @@ export async function runAgentWithAIGNE(
   aigne: AIGNE,
   agent: Agent,
   {
+    outputKey,
     chatLoopOptions,
     modelOptions,
     ...options
   }: {
+    outputKey?: string;
     chatLoopOptions?: ChatLoopOptions;
     modelOptions?: ChatModelOptions;
   } & RunAIGNECommandOptions = {},
@@ -227,6 +259,7 @@ export async function runAgentWithAIGNE(
 
   const tracer = new TerminalTracer(aigne.newContext(), {
     printRequest: logger.enabled(LogLevel.INFO),
+    outputKey,
   });
 
   const { result } = await tracer.run(
@@ -237,8 +270,8 @@ export async function runAgentWithAIGNE(
   );
 
   if (options.output) {
-    const message = result[MESSAGE_KEY];
-    const content = typeof message === "string" ? message : JSON.stringify(message, null, 2);
+    const message = result[outputKey || MESSAGE_KEY];
+    const content = typeof message === "string" ? message : JSON.stringify(result, null, 2);
     const path = isAbsolute(options.output) ? options.output : join(process.cwd(), options.output);
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, content, "utf8");

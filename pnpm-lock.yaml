@@ -8,6 +8,12 @@ importers:
 
   .:
     devDependencies:
+      '@aigne/aigne-wiki':
+        specifier: workspace:^
+        version: link:examples/aigne-wiki
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:packages/cli
       '@aigne/publish-docs':
         specifier: workspace:^
         version: link:packages/publish-docs

@@ -1,0 +1,52 @@
+name: outline
+description: Generate outline for a wiki article
+instructions:
+  url: ../prompts/outline.zh.md
+input_schema:
+  type: object
+  properties:
+    sources:
+      type: string
+      description: Sources file to generate outline
+    examples:
+      type: string
+      description: Examples file to generate outline
+  required:
+    - sources
+    - examples
+output_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      description: Title of the wiki article
+    sections:
+      type: array
+      description: Sections of the wiki article
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+            description: Title of the section
+          description:
+            type: string
+            description: Description of the section
+          code:
+            type: string
+            description: Code snippet for the section
+          codePath:
+            type: string
+            description: Path to the code snippet file
+          codeRegion:
+            type: string
+            description: Region of the code snippet
+        required:
+          - title
+          - description
+          - code
+          - codePath
+          - codeRegion
+  required:
+    - title
+    - sections

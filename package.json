@@ -26,6 +26,8 @@
     "build:markdown": "remark ./*.md docs/ -o --silently-ignore"
   },
   "devDependencies": {
+    "@aigne/aigne-wiki": "workspace:^",
+    "@aigne/cli": "workspace:^",
     "@biomejs/biome": "^1.9.4",
     "@biomejs/js-api": "^0.7.1",
     "@biomejs/wasm-nodejs": "^1.9.4",

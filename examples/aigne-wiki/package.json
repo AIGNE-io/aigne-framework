@@ -9,6 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
+  "type": "module",
   "bin": "index.ts",
   "files": [
     ".env.local.example",

@@ -1,0 +1,13 @@
+name: sectionRefiner
+description: Refine all sections of the wiki article
+instructions:
+  url: ../prompts/section-refiner.zh.md
+input_schema:
+  type: object
+  properties:
+    markdown:
+      type: string
+      description: Markdown content of the wiki article
+  required:
+    - markdown
+output_key: markdown

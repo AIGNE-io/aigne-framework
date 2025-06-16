@@ -1,0 +1,13 @@
+name: summarizer
+description: Add summary to the wiki article
+instructions:
+  url: ../prompts/summarizer.zh.md
+input_schema:
+  type: object
+  properties:
+    markdown:
+      type: string
+      description: Markdown content of the wiki article
+  required:
+    - markdown
+output_key: markdown

@@ -1,0 +1,10 @@
+chat_model:
+  provider: openai
+  name: gpt-4o
+agents:
+  - wiki.yaml
+  - load-sources.mjs
+  - outline.yaml
+  - section-refiner.yaml
+  - summarizer.yaml
+  - review-and-edit.mts

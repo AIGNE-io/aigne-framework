@@ -1,0 +1,23 @@
+type: team
+name: wiki
+description: Generate wiki article for given sources
+input_schema:
+  type: object
+  properties:
+    sources:
+      type: string
+      description: Sources file to generate outline
+    examples:
+      type: string
+      description: Examples file to generate outline
+  required:
+    - sources
+    - examples
+skills:
+  - load-sources.mjs
+  - outline.yaml
+  - outline-to-markdown.mjs
+  - section-refiner.yaml
+  - summarizer.yaml
+  - review-and-edit.mts
+mode: sequential

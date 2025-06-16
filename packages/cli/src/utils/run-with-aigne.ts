@@ -105,8 +105,7 @@ export async function parseAgentInputByCommander(
   const cmd = new Command()
     .description(`Run agent ${agent.name} with AIGNE`)
     .allowUnknownOption(true)
-    .allowExcessArguments(true)
-    .option("--input -i <input>", "Input to the agent");
+    .allowExcessArguments(true);
 
   const inputSchemaShape =
     agent.inputSchema instanceof ZodObject ? Object.keys(agent.inputSchema.shape) : [];

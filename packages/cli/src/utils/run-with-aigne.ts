@@ -1,5 +1,6 @@
+import assert from "node:assert";
 import { fstat } from "node:fs";
-import { mkdir, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
@@ -12,13 +13,19 @@ import {
   type Message,
   UserAgent,
   createMessage,
+  readAllString,
 } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { LogLevel, getLevelFromEnv, logger } from "@aigne/core/utils/logger.js";
-import { readAllString } from "@aigne/core/utils/stream-utils.js";
-import { type PromiseOrValue, isNonNullable, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import {
+  type PromiseOrValue,
+  isEmpty,
+  isNonNullable,
+  tryOrThrow,
+} from "@aigne/core/utils/type-utils.js";
 import { Command } from "commander";
 import PrettyError from "pretty-error";
+import { parse } from "yaml";
 import { ZodError, ZodObject, z } from "zod";
 import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
@@ -31,7 +38,8 @@ export interface RunAIGNECommandOptions {
   topP?: number;
   presencePenalty?: number;
   frequencyPenalty?: number;
-  input?: string | Message;
+  input?: string[];
+  format?: "text" | "json" | "yaml";
   output?: string;
   logLevel?: LogLevel;
   force?: boolean;
@@ -67,7 +75,11 @@ export const createRunAIGNECommand = (name = "run") =>
       "Frequency penalty for the model (penalizes frequency of token usage). Range: -2.0 to 2.0",
       customZodError("--frequency-penalty", (s) => z.coerce.number().min(-2).max(2).parse(s)),
     )
-    .option("--input -i <input>", "Input to the agent")
+    .option("--input -i <input...>", "Input to the agent, use @<file> to read from a file")
+    .option(
+      "--format <format>",
+      "Input format for the agent (available: text, json, yaml default: text)",
+    )
     .option("--output -o <output>", "Output file to save the result (default: stdout)")
     .option(
       "--output-key <output-key>",
@@ -86,7 +98,10 @@ export const createRunAIGNECommand = (name = "run") =>
       getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
     );
 
-export async function parseAgentInputByCommander(agent: Agent): Promise<Message> {
+export async function parseAgentInputByCommander(
+  agent: Agent,
+  options: RunAIGNECommandOptions & { inputKey?: string },
+): Promise<Message> {
   const cmd = new Command()
     .description(`Run agent ${agent.name} with AIGNE`)
     .allowUnknownOption(true)
@@ -100,21 +115,26 @@ export async function parseAgentInputByCommander(agent: Agent): Promise<Message>
     cmd.option(`--input-${option} <${option}>`);
   }
 
-  return await new Promise((resolve, reject) => {
+  const input = await new Promise<Message>((resolve, reject) => {
     cmd
       .action(async (agentInputOptions) => {
         try {
           const input = Object.fromEntries(
-            Object.entries(agentInputOptions)
-              .map(([key, value]) => {
-                let k = key.replace(/^input/, "");
-                k = k.charAt(0).toLowerCase() + k.slice(1);
+            (
+              await Promise.all(
+                Object.entries(agentInputOptions).map(async ([key, value]) => {
+                  let k = key.replace(/^input/, "");
+                  k = k.charAt(0).toLowerCase() + k.slice(1);
+                  if (!k) return null;
 
-                if (!k) return null;
+                  if (typeof value === "string" && value.startsWith("@")) {
+                    value = await readFile(value.slice(1), "utf8");
+                  }
 
-                return [k, value];
-              })
-              .filter(isNonNullable),
+                  return [k, value];
+                }),
+              )
+            ).filter(isNonNullable),
           );
 
           if (typeof agentInputOptions["input"] === "string") {
@@ -129,6 +149,32 @@ export async function parseAgentInputByCommander(agent: Agent): Promise<Message>
       .parseAsync(process.argv)
       .catch((error) => reject(error));
   });
+
+  const rawInput =
+    options.input || isatty(process.stdin.fd) || !(await stdinHasData())
+      ? null
+      : [await readAllString(process.stdin)];
+
+  if (rawInput?.length) {
+    for (let raw of rawInput) {
+      if (raw.startsWith("@")) {
+        raw = await readFile(raw.slice(1), "utf8");
+      }
+
+      if (options.format === "json") {
+        Object.assign(input, JSON.parse(raw));
+      } else if (options.format === "yaml") {
+        Object.assign(input, parse(raw));
+      } else {
+        Object.assign(
+          input,
+          typeof options.inputKey === "string" ? { [options.inputKey]: raw } : createMessage(raw),
+        );
+      }
+    }
+  }
+
+  return input;
 }
 
 export const parseModelOption = (model?: string) => {
@@ -192,7 +238,14 @@ export async function runWithAIGNE(
       try {
         const agent = typeof agentCreator === "function" ? await agentCreator(aigne) : agentCreator;
 
-        const input = await parseAgentInputByCommander(agent);
+        const input = await parseAgentInputByCommander(agent, {
+          ...options,
+          inputKey: chatLoopOptions?.inputKey,
+        });
+
+        if (isEmpty(input)) {
+          Object.assign(input, chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion);
+        }
 
         await runAgentWithAIGNE(aigne, agent, {
           ...options,
@@ -232,7 +285,8 @@ export async function runAgentWithAIGNE(
     outputKey?: string;
     chatLoopOptions?: ChatLoopOptions;
     modelOptions?: ChatModelOptions;
-  } & RunAIGNECommandOptions = {},
+    input?: Message;
+  } & Omit<RunAIGNECommandOptions, "input"> = {},
 ) {
   if (options.chat) {
     if (!isatty(process.stdout.fd)) {
@@ -248,26 +302,13 @@ export async function runAgentWithAIGNE(
     return;
   }
 
-  const input =
-    options.input ||
-    (isatty(process.stdin.fd) || !(await stdinHasData())
-      ? null
-      : await readAllString(process.stdin)) ||
-    chatLoopOptions?.initialCall ||
-    chatLoopOptions?.defaultQuestion ||
-    {};
-
   const tracer = new TerminalTracer(aigne.newContext(), {
     printRequest: logger.enabled(LogLevel.INFO),
     outputKey,
   });
 
-  const { result } = await tracer.run(
-    agent,
-    chatLoopOptions?.inputKey && typeof input === "string"
-      ? { [chatLoopOptions.inputKey]: input }
-      : createMessage(input),
-  );
+  assert(options.input);
+  const { result } = await tracer.run(agent, options.input);
 
   if (options.output) {
     const message = result[outputKey || MESSAGE_KEY];

@@ -28,7 +28,11 @@ interface RunOptions extends RunAIGNECommandOptions {
 export function createRunCommand(): Command {
   return createRunAIGNECommand()
     .description("Run AIGNE from the specified agent")
-    .option("--path <path>", "Path to the agents directory or URL to aigne project", ".")
+    .option(
+      "--url, --path <path_or_url>",
+      "Path to the agents directory or URL to aigne project",
+      ".",
+    )
     .option(
       "--entry-agent <entry-agent>",
       "Name of the agent to run (defaults to the first agent found)",
@@ -38,6 +42,7 @@ export function createRunCommand(): Command {
       "Directory to download the package to (defaults to the ~/.aigne/xxx)",
     )
     .action(async (options: RunOptions) => {
+      console.log(options);
       const { path } = options;
 
       if (options.logLevel) logger.level = options.logLevel;
@@ -110,7 +115,7 @@ export function createRunCommand(): Command {
       assert(aigne);
       assert(agent);
 
-      const input = await parseAgentInputByCommander(agent);
+      const input = await parseAgentInputByCommander(agent, options);
 
       try {
         await runAgentWithAIGNE(aigne, agent, { ...options, input });

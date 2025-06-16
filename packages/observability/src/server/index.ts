@@ -1,6 +1,7 @@
 import type { Server } from "node:http";
 import path from "node:path";
 import { initDatabase } from "@aigne/sqlite";
+import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
 import { ZodError } from "zod";
 import { migrate } from "./migrate.js";
@@ -21,6 +22,8 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
 
   app.use(express.static(distPath));
   app.use(express.json());
+  app.use(cors());
+
   app.use("/api/trace", traceRouter);
 
   app.get("/{*splat}", (_req, res) => {

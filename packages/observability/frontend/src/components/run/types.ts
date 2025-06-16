@@ -5,6 +5,10 @@ export interface RunData {
   endTime?: number;
   error?: string;
   children?: RunData[];
+  status?: {
+    code: number;
+    message: string;
+  };
   attributes: {
     input?: Record<string, unknown>;
     output?: {

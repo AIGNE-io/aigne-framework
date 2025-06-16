@@ -54,12 +54,20 @@
   },
   "dependencies": {
     "@aigne/sqlite": "workspace:^",
+    "@arcblock/ux": "^2.13.68",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/core": "^2.0.1",
+    "@opentelemetry/sdk-node": "^0.202.0",
+    "@opentelemetry/sdk-trace-base": "^2.0.1",
+    "cors": "^2.8.5",
     "drizzle-orm": "^0.43.1",
     "express": "^5.1.0",
+    "flat": "^6.0.1",
     "uuid": "^11.1.0",
     "zod": "^3.25.23"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"

@@ -1,11 +1,10 @@
 import Box from "@mui/material/Box"
 import Drawer from "@mui/material/Drawer"
-import Tab from "@mui/material/Tab"
-import Tabs from "@mui/material/Tabs"
-import Typography from "@mui/material/Typography"
 import {useEffect, useState} from "react"
 import {parseDuration} from "../../utils/latency.ts"
-import {RunTree} from "./RunTree.tsx"
+import RunStatsHeader from "./RunStatsHeader.tsx"
+import TraceDetailPanel from "./TraceDetailPanel.tsx"
+import TraceItemList from "./TraceItem.tsx"
 import type {RunData} from "./types.ts"
 
 interface RunDetailDrawerProps {
@@ -15,7 +14,6 @@ interface RunDetailDrawerProps {
 }
 
 export default function RunDetailDrawer({open, onClose, run}: RunDetailDrawerProps) {
-  const [tabValue, setTabValue] = useState(0)
   const [selectedRun, setSelectedRun] = useState(run)
 
   useEffect(() => {
@@ -43,85 +41,39 @@ export default function RunDetailDrawer({open, onClose, run}: RunDetailDrawerPro
   const renderContent = () => {
     if (!run) return null
     const stats = getRunStats(run)
+    const totalTokens = stats.inputTokens + stats.outputTokens
+    const latency = parseDuration(run.startTime, run.endTime)
+    const timestamp = new Date(run.startTime || Date.now()).toLocaleString()
 
     return (
       <Box sx={{height: "100%", display: "flex", flexDirection: "column"}}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            px: 4,
-            pt: 4,
-            pb: 2,
-          }}>
-          <Box sx={{textAlign: "center"}}>
-            <Typography fontWeight={500}>Agent Call Count</Typography>
-            <Typography>{stats.count}</Typography>
-          </Box>
-          <Box sx={{textAlign: "center"}}>
-            <Typography fontWeight={500}>Total Input Tokens</Typography>
-            <Typography>{stats.inputTokens}</Typography>
-          </Box>
-          <Box sx={{textAlign: "center"}}>
-            <Typography fontWeight={500}>Total Output Tokens</Typography>
-            <Typography>{stats.outputTokens}</Typography>
-          </Box>
-          <Box sx={{textAlign: "center"}}>
-            <Typography fontWeight={500}>Latency</Typography>
-            <Typography>{parseDuration(run.startTime, run.endTime)}</Typography>
-          </Box>
-        </Box>
-        <Box sx={{borderBottom: "1px solid #bbb", mx: 2}} />
+        <RunStatsHeader
+          inputTokens={stats.inputTokens}
+          outputTokens={stats.outputTokens}
+          tokens={totalTokens}
+          count={stats.count}
+          latency={latency}
+          timestamp={timestamp}
+        />
 
         <Box sx={{flex: 1, display: "flex", minHeight: 0}}>
           <Box
             sx={{
-              width: 360,
+              flex: 1,
               py: 4,
               px: 2,
               borderRight: "1px solid #bbb",
               minWidth: 300,
             }}>
-            <RunTree run={run} onSelect={setSelectedRun} />
+            <TraceItemList
+              steps={[run]}
+              onSelect={run => setSelectedRun(run ?? null)}
+              selectedRun={selectedRun}
+            />
           </Box>
 
-          <Box sx={{flex: 1, p: 4, minWidth: 0}}>
-            <Typography fontWeight={600} fontSize={20} mb={2}>
-              {selectedRun?.name}
-            </Typography>
-            <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{mb: 2}}>
-              <Tab label="Call" />
-              <Tab label="Metadata" />
-            </Tabs>
-            <Box sx={{borderBottom: "1px solid #bbb", mb: 2}} />
-            <Typography fontWeight={500} mb={1}>
-              Input
-            </Typography>
-            <Box
-              sx={{
-                border: "1px solid #bbb",
-                borderRadius: 4,
-                minHeight: 80,
-                mb: 3,
-                px: 2,
-                py: 2,
-              }}>
-              {JSON.stringify(selectedRun?.attributes.input, null, 2)}
-            </Box>
-            <Typography fontWeight={500} mb={1}>
-              Output
-            </Typography>
-            <Box
-              sx={{
-                border: "1px solid #bbb",
-                borderRadius: 4,
-                minHeight: 80,
-                px: 2,
-                py: 2,
-                whiteSpace: "pre-wrap",
-              }}>
-              {JSON.stringify(selectedRun?.attributes.output, null, 2)}
-            </Box>
+          <Box sx={{flex: 1, minWidth: 0}}>
+            <TraceDetailPanel run={selectedRun} />
           </Box>
         </Box>
       </Box>
@@ -133,7 +85,7 @@ export default function RunDetailDrawer({open, onClose, run}: RunDetailDrawerPro
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{sx: {width: 900, p: 0, boxSizing: "border-box"}}}>
+      PaperProps={{sx: {width: "80vw", p: 0, boxSizing: "border-box"}}}>
       {renderContent()}
     </Drawer>
   )

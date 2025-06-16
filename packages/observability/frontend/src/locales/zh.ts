@@ -1,0 +1,21 @@
+import { flatten } from "flat";
+
+export default flatten({
+  agentName: "Agent Name",
+  input: "输入",
+  output: "输出",
+  status: "状态",
+  startedAt: "开始时间",
+  endedAt: "结束时间",
+  latency: "执行时间",
+  noData: "暂无数据",
+  loading: "加载中...",
+  success: "成功",
+  failed: "失败",
+  errorMessage: "错误信息",
+  inputTokens: "输入Tokens",
+  outputTokens: "输出Tokens",
+  tokens: "Tokens",
+  count: "次数",
+  timestamp: "时间",
+});

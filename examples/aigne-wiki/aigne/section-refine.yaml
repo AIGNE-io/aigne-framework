@@ -1,4 +1,4 @@
-name: sectionRefiner
+name: sectionRefine
 description: Refine all sections of the wiki article
 instructions:
   url: ../prompts/section-refiner.zh.md

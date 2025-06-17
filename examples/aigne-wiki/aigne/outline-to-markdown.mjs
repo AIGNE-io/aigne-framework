@@ -3,7 +3,7 @@ export default async function outlineToMarkdown({ title, sections }) {
     return `\
 ## ${section.title}
 
-${section.description}
+${section.content}
 
 ${"```"}ts file="${section.codePath}" region="${section.codeRegion}"
 ${section.code}
@@ -34,7 +34,7 @@ outlineToMarkdown.input_schema = {
           title: {
             type: "string",
           },
-          description: {
+          content: {
             type: "string",
           },
           code: {
@@ -47,7 +47,7 @@ outlineToMarkdown.input_schema = {
             type: "string",
           },
         },
-        required: ["title", "description", "code", "codePath", "codeRegion"],
+        required: ["title", "content", "code", "codePath", "codeRegion"],
       },
     },
   },

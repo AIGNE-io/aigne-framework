@@ -1,21 +1,13 @@
-# FunctionAgent
+```markdown
+# FunctionAgent: Implementing and Utilizing Function-Based Agents in Aigne Framework
 
-[English](./function-agent.md) | [中文](./function-agent.zh.md)
+The FunctionAgent module in the Aigne Framework is a flexible component designed to encapsulate functionality using a function-based approach. It is particularly useful for scenarios requiring custom logic, such as data processing or external API interactions, by offering seamless integration with other system components. This document demonstrates practical implementations of FunctionAgent for tasks like weather data retrieval, highlighting different methodologies including synchronous processing, asynchronous generators, and streaming responses.
 
-## Overview
+## Creating a Basic FunctionAgent for Weather Retrieval
 
-FunctionAgent is a core component in the AIGNE framework that allows developers to convert ordinary functions into intelligent agents. This document details the four creation patterns of FunctionAgent (basic, minimal, streaming, and generator) and how to invoke these agents. The main advantages of FunctionAgent lie in its flexibility and type safety, supporting synchronous/asynchronous processing, streaming output, and type inference, enabling developers to choose the most suitable implementation approach for different scenarios. Whether for complex applications requiring strict type definitions or rapid prototype development, FunctionAgent provides concise yet powerful solutions.
+The creation of a basic FunctionAgent outlines a minimal example of defining an agent using functional programming principles. In this demonstration, the agent is configured using Aigne's core FunctionAgent module to retrieve current weather data for a specific location. Through the usage of Zod schemas for structuring input and output, the FunctionAgent provides validation and structure to the data processing operation. The process function serves to fetch and return weather information, underscoring the seamless integration of validation, data handling, and operation execution within Aigne's agent-based model.
 
-## Creation Methods
-
-### Basic Pattern
-
-In the basic example, we use the FunctionAgent.from() method and provide corresponding options to create an Agent capable of getting weather information. Agents created this way cover input/output type definitions and processing logic, representing the most fundamental creation approach.
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic-create-agent"
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic"
 const weather = FunctionAgent.from({
   name: "getWeather",
   description: "Get the current weather for a given location.",
@@ -36,45 +28,47 @@ const weather = FunctionAgent.from({
     };
   },
 });
+
+const result = await weather.invoke({ city: "New York" });
+console.log(result);
 ```
 
-Key features:
+## Implementing a FunctionAgent with an Async Generator
 
-* Use name and description fields to define Agent functionality
-* Define data structures using zod through input and output schema definitions
-* Implement asynchronous processing logic
+This example demonstrates the implementation of a FunctionAgent that utilizes an asynchronous generator for streaming responses. This approach allows for incremental output delivery, catering to scenarios where real-time responses are crucial. The agent yields partial results over time, managing both textual message composition and data updates asynchronously, thus leveraging the powerful capabilities of JavaScript async generators.
 
-### Minimal Pattern
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/function-agent.test.ts" region="example-agent-generator"
+const weather = FunctionAgent.from({
+  inputSchema: z.object({
+    city: z.string().describe("The city to get the weather for."),
+  }),
+  outputSchema: z.object({
+    $message: z.string().describe("The message from the agent."),
+    temperature: z.number().describe("The current temperature in Celsius."),
+  }),
+  process: async function* ({ city }) {
+    console.log(`Fetching weather for ${city}`);
 
-When you need to quickly create an Agent without explicitly defining inputSchema, outputSchema, etc., you can use the minimal pattern.
+    yield { delta: { text: { $message: "Hello" } } };
+    yield { delta: { text: { $message: "," } } };
+    yield { delta: { text: { $message: " I'm" } } };
+    yield { delta: { text: { $message: " AIGNE" } } };
+    yield { delta: { text: { $message: "!" } } };
+    yield { delta: { json: { temperature: 25 } } };
 
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-pure-function-create-agent"
-import { FunctionAgent } from "@aigne/core";
-
-const weather = FunctionAgent.from(async ({ city }) => {
-  console.log(`Fetching weather for ${city}`);
-
-  return {
-    $message: "Hello, I'm AIGNE!",
-    temperature: 25,
-  };
+    return { temperature: 25 };
+  },
 });
+
+const result = await weather.invoke({ city: "New York" });
+console.log(result);
 ```
 
-Key features:
+## Streaming Responses Using FunctionAgent
 
-* Directly pass a function, which can be a synchronous function, asynchronous function, generator function, or function returning ReadableStream
-* TypeScript automatically infers input/output types based on the passed function
-* Suitable for scenarios with less strict type requirements or needing rapid implementation
+In scenarios demanding real-time updates, such as interactive user interfaces, a streaming response functionality is essential. This section demonstrates how a FunctionAgent can be constructed to provide such streaming capabilities. By implementing ReadableStream in the process function, the agent streams incremental data chunks to the client, allowing for progressive updates. This technique is particularly useful for reducing latency and improving the user experience in applications requiring immediate feedback.
 
-### Streaming Output Pattern
-
-In some scenarios, you need to continuously output partial results in a streaming manner, such as real-time progress updates, continuous data fragment returns, etc. FunctionAgent also supports this requirement.
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-create-agent"
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming"
 const weather = FunctionAgent.from({
   inputSchema: z.object({
     city: z.string().describe("The city to get the weather for."),
@@ -99,91 +93,27 @@ const weather = FunctionAgent.from({
     });
   },
 });
-```
-
-Key features:
-
-* Processing function returns a ReadableStream
-* Push data sequentially through stream controller
-* Suitable for scenarios requiring gradual data return and real-time updates
-
-### Generator Pattern
-
-If you don't want to directly return ReadableStream internally, you can use generator functions to gradually yield data during asynchronous processes, achieving streaming or segmented returns.
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-generator-create-agent"
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
-const weather = FunctionAgent.from({
-  inputSchema: z.object({
-    city: z.string().describe("The city to get the weather for."),
-  }),
-  outputSchema: z.object({
-    $message: z.string().describe("The message from the agent."),
-    temperature: z.number().describe("The current temperature in Celsius."),
-  }),
-  process: async function* ({ city }) {
-    console.log(`Fetching weather for ${city}`);
-
-    yield { delta: { text: { $message: "Hello" } } };
-    yield { delta: { text: { $message: "," } } };
-    yield { delta: { text: { $message: " I'm" } } };
-    yield { delta: { text: { $message: " AIGNE" } } };
-    yield { delta: { text: { $message: "!" } } };
-    yield { delta: { json: { temperature: 25 } } };
-
-    // Or you can return a partial result at the end
-    return { temperature: 25 };
-  },
-});
-```
-
-Key features:
-
-* Use async generator functions to process data
-* Generate new data chunks through yield
-* Can return a complete or partial final result at the end
-* Syntax is closer to JavaScript functional programming style
-
-## Invocation Methods
-
-### Basic Invocation
-
-Use the invocation method to execute the created intelligent agent. The most common invocation method is passing a parameter object and waiting for execution completion to get the return result.
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic-invoke"
-const result = await weather.invoke({ city: "New York" });
-console.log(result);
-// Output: { $message: "Hello, I'm AIGNE!", temperature: 25 }
-```
-
-### Streaming Invocation
-
-When you need to handle streaming data, you can enable streaming options, then use async iteration to gradually get data chunks, implementing streaming reading and segmented processing logic.
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-invoke"
-import { isAgentResponseDelta } from "@aigne/core";
 
 const stream = await weather.invoke({ city: "New York" }, { streaming: true });
-let text = "";
-const json = {};
-for await (const chunk of stream) {
-  if (isAgentResponseDelta(chunk)) {
-    if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
-    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
-  }
-}
-console.log(text); // Output: Hello, I'm AIGNE!
-console.log(json); // Output: { temperature: 25 }
 ```
 
-## Summary
+## Deploying a FunctionAgent as a Pure Function
 
-FunctionAgent is a powerful and flexible tool in AIGNE that provides users with multiple creation and invocation methods, suitable for different scenario requirements:
+This example highlights the simplicity and effectiveness of deploying a FunctionAgent using a pure function. By directly passing a function as an argument to the agent creation factory method, developers can create lightweight agents that focus solely on the core logic without additional configuration. This pattern is ideal for scenarios where the agent logic is straightforward, and overhead reduction is prioritized.
 
-1. Regular Pattern: Explicitly define input/output types and processing logic, suitable for scenarios with strict input/output requirements.
-2. Minimal Pattern: Create Agents quickly with minimal code, improving development efficiency.
-3. Streaming/Generator Pattern: Convenient for handling long-running, real-time, or segmented output tasks.
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/function-agent.test.ts" region="example-agent-pure-function"
+const weather = FunctionAgent.from(async ({ city }) => {
+  console.log(`Fetching weather for ${city}`);
 
-Based on actual requirements, developers can flexibly choose appropriate patterns to implement "functions as intelligent agents."
+  return {
+    $message: "Hello, I'm AIGNE!",
+    temperature: 25,
+  };
+});
+
+const result = await weather.invoke({ city: "New York" });
+console.log(result);
+```
+
+The examples provided illustrate the versatility of the FunctionAgent module for different operational requirements. From basic synchronous handling to more complex streaming and generator-based agents, developers can select the appropriate pattern based on the application's performance needs and interaction model. Additionally, the use of pure functions for creating FunctionAgents allows for efficient and straightforward deployment in scenarios with simpler logic.
+```

@@ -28,19 +28,18 @@
 
 - 仅插入两段文字，其余原文结构、标题、代码、补充说明等内容 **一律不得更改或重排**。
 - 保持 Markdown 格式正确，确保段落插入位置精准无误。
-- 不输出任何解释性语言或包装，**仅输出最终 Markdown 完整文本**。
+- 输出语言统一为 {{language}}，整体风格技术化、面向开发者，不使用口语表达。
 - 使用 {{language}} 编写并输出。
 
 
-这是 Markdown 对应的源代码：
+## 你将收到以下数据
+
+- 这是 Markdown 对应的源代码：
 <sources>
 {{sources}}
 </sources>
 
-你将处理如下 Markdown 内容：
-
+- 你将处理如下 Markdown 内容：
 <markdown>
 {{markdown}}
 </markdown>
-
-直接输出修改后的完整 Markdown 文本，不包含任何解释或指令。

@@ -17,7 +17,7 @@ skills:
   - load-sources.mjs
   - outline.yaml
   - outline-to-markdown.mjs
-  - section-refiner.yaml
-  - summarizer.yaml
-  - review-and-edit.mts
+  - section-refine.yaml
+  - summarize.yaml
+  # - review-and-edit.mts
 mode: sequential

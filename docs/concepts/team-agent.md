@@ -1,19 +1,13 @@
-# TeamAgent
+<markdown>
+# TeamAgent Module in Aigne Framework
 
-[English](./team-agent.md) | [中文](./team-agent.zh.md)
+The TeamAgent module in the Aigne Framework is designed to manage and coordinate a group of agents working collectively to accomplish tasks, either sequentially or in parallel. It provides flexible processing modes to suit different task coordination needs, such as creating agent workflows that require staged outputs or executing independent tasks concurrently. This module is particularly useful in scenarios like building complex agent systems with specialized components that work together seamlessly or executing multiple analyses that require independent processing.
 
-## Overview
+## Sequential Execution of TeamAgent
 
-TeamAgent is a powerful component in the AIGNE framework that allows developers to combine multiple agents into a team to solve complex problems through collaborative work. TeamAgent supports two processing modes: sequential and parallel, enabling developers to flexibly choose the most suitable workflow based on task dependencies. Through TeamAgent, complex multi-stage workflows can be built, with each stage handled by specialized agents, achieving more efficient and professional task processing. Whether for task chains that need to be executed in a specific order or independent tasks that can be performed simultaneously, TeamAgent provides concise yet powerful solutions.
+This section explains the sequential mode in TeamAgent, which is designed to process various agents one by one. Each agent in the team executes in order, receiving the combined output from its predecessors. This mode is ideal for workflows where the output of one agent is required as input for the subsequent agent, thereby fostering a coordinated processing pipeline.
 
-## Sequential Processing Mode
-
-In sequential processing mode, agents in TeamAgent execute in the order they were added, with the output of the previous agent serving as the input for the next agent. This mode is suitable for handling tasks with clear dependencies, such as translation followed by text beautification.
-
-```ts file="../../docs-examples/test/concepts/team-agent.test.ts" region="example-agent-sequential-create-agent"
-import { AIAgent, ProcessMode, TeamAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/team-agent.test.ts" region="example-agent-sequential-create-agent"
 const translatorAgent = AIAgent.from({
   name: "translator",
   inputSchema: z.object({
@@ -39,21 +33,11 @@ const teamAgent = TeamAgent.from({
 });
 ```
 
-In the above example, we created two AIAgents:
+## Invoking TeamAgent in Sequential Mode
 
-1. `translatorAgent`: Responsible for translating text to Chinese and storing the result in the `translation` field
-2. `prettierAgent`: Receives the translated text, performs beautification processing, and stores the result in the `formatted` field
+Here, the TeamAgent is utilized to translate and then format text sequentially. The example highlights the invocation process where the input content is translated and subsequently prettified using a sequence of agents operating synchronously. This demonstrates the utility of TeamAgent in scenarios necessitating gradual transformation and refinement of data through staged operations.
 
-Then, we use the `TeamAgent.from()` method to create a sequential processing team agent, adding these two agents as skills to the team. By setting `mode: ProcessMode.sequential`, we ensure these agents execute in the order they were added.
-
-### Invoking Sequential Processing Team
-
-After creating a TeamAgent, you can use AIGNE's invoke method to send requests to the team and get responses. In sequential processing mode, each agent's output serves as input for the next agent, ultimately returning results containing all agents' outputs.
-
-```ts file="../../docs-examples/test/concepts/team-agent.test.ts" region="example-agent-sequential-invoke"
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/team-agent.test.ts" region="example-agent-sequential-invoke"
 const model = new OpenAIChatModel();
 const aigne = new AIGNE({ model });
 
@@ -63,25 +47,18 @@ const result = await aigne.invoke(teamAgent, {
 console.log(result);
 // Output:
 // {
-//   translation: "AIGNE 是一个构建人工智能代理的优秀框架。",
 //   formatted: "AIGNE 是一个出色的人工智能代理构建框架。",
 // }
+expect(result).toEqual({
+  formatted: "AIGNE 是一个出色的人工智能代理构建框架。",
+});
 ```
 
-In this example, we first created an OpenAIChatModel instance and an AIGNE instance. Then, we call the `aigne.invoke()` method, passing in the team agent and initial input. The processing flow is as follows:
+## Parallel Execution of TeamAgent
 
-1. `translatorAgent` receives input `{ content: "AIGNE is a great framework to build AI agents." }`, translates the text to Chinese, and outputs `{ translation: "AIGNE 是一个构建人工智能代理的优秀框架。" }`
-2. `prettierAgent` receives `translatorAgent`'s output as input, beautifies the translated text, and outputs `{ formatted: "AIGNE 是一个出色的人工智能代理构建框架。" }`
-3. The final result contains all agents' outputs: `{ translation: "...", formatted: "..." }`
+The parallel processing mode of TeamAgent allows simultaneous execution of all agents with a shared input. This facilitates the parallel generation and amalgamation of outputs, making it suitable for tasks where multiple analyses or transformations need to be conducted concurrently without dependencies on intermediary results.
 
-## Parallel Processing Mode
-
-In parallel processing mode, all agents in TeamAgent execute simultaneously, each processing the same input. This mode is suitable for handling mutually independent tasks, such as simultaneously analyzing different aspects of a product.
-
-```ts file="../../docs-examples/test/concepts/team-agent.test.ts" region="example-agent-parallel-create-agent"
-import { AIAgent, ProcessMode, TeamAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/team-agent.test.ts" region="example-agent-parallel-create-agent"
 const featureAnalyzer = AIAgent.from({
   name: "feature-analyzer",
   inputSchema: z.object({
@@ -117,21 +94,11 @@ const analysisTeam = TeamAgent.from({
 });
 ```
 
-In the above example, we created two AIAgents:
+## Invoking TeamAgent in Parallel Mode
 
-1. `featureAnalyzer`: Responsible for analyzing product features and storing the result in the `features` field
-2. `audienceAnalyzer`: Responsible for analyzing target audience and storing the result in the `audience` field
+In this example, the TeamAgent processes an input description for a product by invoking both feature and audience analysis in parallel. This demonstrates the capability of handling complex analyses in tandem, with each agent focusing on specific data aspects, facilitating comprehensive insights without waiting for sequential outputs.
 
-Then, we use the `TeamAgent.from()` method to create a parallel processing team agent, adding these two agents as skills to the team. By setting `mode: ProcessMode.parallel`, we ensure these agents execute simultaneously, each processing the same input.
-
-### Invoking Parallel Processing Team
-
-After creating a parallel processing TeamAgent, you can use AIGNE's invoke method to send requests to the team and get responses. In parallel processing mode, all agents simultaneously receive the same input, ultimately returning results containing all agents' outputs.
-
-```ts file="../../docs-examples/test/concepts/team-agent.test.ts" region="example-agent-parallel-invoke"
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/team-agent.test.ts" region="example-agent-parallel-invoke"
 const model = new OpenAIChatModel();
 const aigne = new AIGNE({ model });
 
@@ -145,36 +112,15 @@ console.log(result);
 //   features: "- No-code platform\n- Generative AI capabilities\n- App engine functionality\n- Easy integration",
 //   audience: "- Business professionals\n- Non-technical users\n- Organizations seeking AI solutions\n- Developers looking for rapid prototyping",
 // }
+
+expect(result).toEqual({
+  features:
+    "- No-code platform\n- Generative AI capabilities\n- App engine functionality\n- Easy integration",
+  audience:
+    "- Business professionals\n- Non-technical users\n- Organizations seeking AI solutions\n- Developers looking for rapid prototyping",
+});
 ```
 
-In this example, we first created an OpenAIChatModel instance and an AIGNE instance. Then, we call the `aigne.invoke()` method, passing in the team agent and initial input. The processing flow is as follows:
+The TeamAgent module in the Aigne Framework offers substantial flexibility in building and coordinating complex multi-agent systems. By supporting both sequential and parallel execution modes, it caters to diverse use cases, ranging from pipeline transformations requiring data hand-offs between agents to parallel analyses that maximize throughput. Integrating and expanding the TeamAgent with custom agents can further tailor system behavior to specific application requirements, leveraging the core strengths of process orchestration and modular composition.
 
-1. `featureAnalyzer` and `audienceAnalyzer` simultaneously receive input `{ product: "AIGNE is a No-code Generative AI Apps Engine" }`
-2. `featureAnalyzer` analyzes product features, outputting `{ features: "- No-code platform\n- ..." }`
-3. `audienceAnalyzer` analyzes target audience, outputting `{ audience: "- Business professionals\n- ..." }`
-4. The final result merges all agents' outputs: `{ features: "...", audience: "..." }`
-
-## Combining Sequential and Parallel Processing
-
-A powerful feature of TeamAgent is the ability to combine sequential and parallel processing to build complex workflows. For example, you can first analyze different aspects of a product in parallel, then sequentially pass the analysis results to content creation agents.
-
-This combined usage can be achieved through nested TeamAgents. For example, you can create a parallel processing TeamAgent as the first skill of a sequential processing TeamAgent, then add other agents that depend on parallel processing results as subsequent skills.
-
-## Summary
-
-TeamAgent is a powerful and flexible tool in the AIGNE framework that provides users with the ability to combine multiple agents for collaborative work:
-
-1. **Sequential Processing Mode**: Agents execute in the order they were added, with the previous agent's output serving as input for the next agent. Suitable for handling tasks with clear dependencies, such as translation followed by text beautification.
-
-2. **Parallel Processing Mode**: All agents execute simultaneously, each processing the same input. Suitable for handling mutually independent tasks, such as simultaneously analyzing different aspects of a product.
-
-3. **Combined Usage**: Through nested TeamAgents, sequential and parallel processing modes can be combined to build complex workflows.
-
-The main advantages of TeamAgent are:
-
-* **Modular Design**: Each agent focuses on specific tasks, improving processing quality and efficiency
-* **Flexible Combination**: Choose sequential or parallel processing modes based on task dependencies
-* **Scalability**: Easily add or remove skills, adjust workflows
-* **Structured Output**: Each agent's output has clear field names, facilitating subsequent processing
-
-Based on actual requirements, developers can flexibly choose appropriate processing modes to build efficient, professional multi-agent workflows.
+</markdown>

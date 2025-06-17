@@ -1,19 +1,12 @@
-# AIAgent
+# AI Agent 框架：设计具有自适应工具使用的智能体
 
-[English](./ai-agent.md) | [中文](./ai-agent.zh.md)
+AI Agent 框架旨在促进创建利用自适应工具使用的智能代理，以增强其功能。此框架允许创建能够处理输入、生成响应并在各个领域执行特定功能的人工智能代理。典型使用场景包括构建会话代理、动态调整用户需求以及集成真实世界数据检索过程。
 
-## 概述
+## 基本 AI Agent 初始化和调用
 
-AIAgent 是 AIGNE 框架中的一个核心组件，它允许开发者轻松创建由大型语言模型（LLM）驱动的智能代理。本文档详细介绍了 AIAgent 的多种创建模式（基础、自定义指令、带变量的自定义指令、结构化输出和技能集成）以及如何调用这些代理。AIAgent 的主要优势在于其简单性和灵活性，支持多种语言模型、自定义指令和结构化输出，使开发者能够根据不同场景快速构建智能对话系统。无论是需要简单问答的应用，还是复杂的多技能代理，AIAgent 都能提供简洁而强大的解决方案。
+使用 AI Agent 的基础方面涉及使用必要的模型配置创建实例并调用其执行任务。AI Agent 利用底层语言模型来处理和响应输入，调整处理能力以满足上下文需求。在典型场景中，Agent 以语言模型进行初始化，调用时，提供从模型响应中提取的指定消息的处理输出。这概括了 AI Agent 运作的基本机制，实际上作为输入查询与基于模型的智能输出之间的桥梁。
 
-## 基础模式
-
-在基础示例中，我们使用 AIAgent.from() 方法并提供一个语言模型来创建一个基本的 AI 代理。这种方式创建的代理可以直接回答用户的问题，是最简单的创建方式。
-
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-create-agent"
-import { AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-create-agent"
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
   model: "gpt-4o-mini",
@@ -22,82 +15,22 @@ const model = new OpenAIChatModel({
 const agent = AIAgent.from({ model });
 ```
 
-## 调用 Agent
+## 定制 AI Agent 指令
 
-创建 AIAgent 后，可以使用 invoke 方法向代理发送请求并获取响应。在基本调用中，只需传入一个字符串作为用户的问题或指令。
+定制指令使 AI Agent 能够根据预定义的风格或格式调整其响应。这种定制通过在代理初始化阶段集成特定指令实现。指令可以从风格化元素（如以俳句格式说话）到更加专业化的命令模式。这种指令定制的灵活性使开发人员能够精确调整代理的响应，以适应应用程序上下文，从而增强代理与用户期望和功能角色的对齐。
 
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-invoke"
-const result = await agent.invoke("What is AIGNE?");
-console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
-```
-
-## 流式响应
-
-流式响应是一种实时获取 AI 回答的方式，它允许应用程序在完整响应生成过程中逐步接收和显示内容，而不是等待整个响应完成后一次性返回。这种方式特别适合需要即时反馈的交互式应用，如聊天机器人或实时辅助工具。
-
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-invoke-stream"
-import { isAgentResponseDelta } from "@aigne/core";
-
-const stream = await agent.invoke("What is AIGNE?", { streaming: true });
-let response = "";
-for await (const chunk of stream) {
-  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
-    response += chunk.delta.text.$message;
-}
-console.log(response);
-// Output:  "AIGNE is a platform for building AI agents."
-```
-
-主要特点：
-
-* 通过设置 `streaming: true` 选项启用流式响应
-* 使用 `for await...of` 循环处理响应流中的每个数据块
-* 支持实时显示 AI 生成的内容，提升用户体验
-* 适合需要即时反馈的应用场景，如聊天界面或实时内容生成
-* 可以在长回答生成过程中提前开始处理或显示部分内容
-
-## 自定义指令
-
-当需要控制 AI 代理的行为或风格时，可以通过提供自定义指令来创建代理。
-
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-create-agent"
-import { AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
-const model = new OpenAIChatModel();
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-create-agent"
 const agent = AIAgent.from({
   model,
   instructions: "Only speak in Haikus.",
 });
 ```
 
-下面的示例展示了如何调用带有自定义指令的代理，并获取符合指定风格（俳句）的回答：
+## 可变指令模板
 
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-invoke"
-const result = await agent.invoke("What is AIGNE?");
-console.log(result);
-// Output: { $message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined." }
-```
+通过在指令模板中合并变量，AI Agent 获得了能够根据运行时输入动态调整其交流风格的能力。这种能力增强了响应的适应性，允许对代理如何表述信息进行细粒度控制。变量提供了上下文占位符，在调用时填充，促进了交互式定制体验。在响应风格需要根据输入条件或用户偏好广泛变化的场景中，这种动态模板方法尤其具有优势。
 
-主要特点：
-
-* 通过 instructions 参数提供自定义指令
-* 控制 AI 代理的回答风格或行为
-* 适合需要特定风格或专业领域回答的场景
-
-### 带变量的自定义指令
-
-在某些场景中，需要根据用户输入动态调整指令。AIAgent 支持在指令中使用变量，实现更灵活的控制。
-
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-with-variables-create-agent"
-import { AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-import { z } from "zod";
-
-const model = new OpenAIChatModel();
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-with-variables-create-agent"
 const agent = AIAgent.from({
   model,
   inputSchema: z.object({
@@ -107,35 +40,11 @@ const agent = AIAgent.from({
 });
 ```
 
-下面的示例展示了如何调用带有变量的自定义指令代理。通过 createMessage 函数创建一个包含用户问题和变量值的消息，使代理能够根据提供的风格（Haikus）生成回答：
+## 结构化输出处理
 
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-with-variables-invoke"
-import { createMessage } from "@aigne/core";
+在紧凑数据表示至关重要的情况下，管理结构化输出的能力对 AI Agent 至关重要。通过定义输出结构，代理可以以结构化格式提供响应，这在需要从模型响应中精确提取数据的场景中非常有利。这种结构化方法促进了改进的数据集成，因为响应可以轻松解析并在更广泛的应用工作流中使用，增强了代理响应在技术生态系统中的实用性和集成性。
 
-const result = await agent.invoke(
-  createMessage("What is AIGNE?", { style: "Haikus" }),
-);
-console.log(result);
-// Output: { $message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
-```
-
-主要特点：
-
-* 使用双大括号 `{{变量名}}` 在指令中插入变量
-* 通过 inputSchema 定义输入参数的结构和类型
-* 适合需要动态调整 AI 行为的场景
-
-### 结构化输出
-
-当需要 AI 代理返回特定结构的数据时，可以通过定义输出模式来实现。
-
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-structured-output-create-agent"
-import { AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-import { z } from "zod";
-
-const model = new OpenAIChatModel();
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-structured-output-create-agent"
 const agent = AIAgent.from({
   model,
   inputSchema: z.object({
@@ -145,36 +54,15 @@ const agent = AIAgent.from({
     topic: z.string().describe("The topic of the request"),
     response: z.string().describe("The response to the request"),
   }),
-  instructions: "Only speak in {{style}}.",
+  instructions: "Only speak in {{style}}."
 });
 ```
 
-下面的示例展示了如何调用具有结构化输出的代理。与带变量的自定义指令类似，我们使用 createMessage 函数传递用户问题和变量值，但这次代理会返回符合我们定义的输出模式的结构化数据：
+## 集成功能技能以增强响应能力
 
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-structured-output-invoke"
-import { createMessage } from "@aigne/core";
+将功能技能集成到 AI Agent 中，通过允许其执行超出单纯语言处理的任务来扩展其操作能力。例如，集成天气检索技能使代理能够在其响应过程中获取和报告真实世界数据。这种技能集成使代理能够作为更具多功能性和响应性的实体，能够执行复杂、多方面的任务，这些任务与命令输入和环境数据相一致，从而扩大了它们能够有效应对的应用和场景范围。
 
-const result = await agent.invoke(
-  createMessage("What is AIGNE?", { style: "Haikus" }),
-);
-console.log(result);
-// Output: { topic: "AIGNE", response: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
-```
-
-主要特点：
-
-* 通过 outputSchema 定义输出数据的结构和类型
-* 确保 AI 返回的数据符合预期格式
-* 适合需要处理结构化数据的应用场景
-
-### 技能集成
-
-AIAgent 可以集成其他代理作为技能，扩展其功能范围。
-
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-with-skills-create-skill"
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-with-skills-create-skill"
 const getWeather = FunctionAgent.from({
   name: "get_weather",
   description: "Get the current weather for a location.",
@@ -188,7 +76,6 @@ const getWeather = FunctionAgent.from({
   }),
   process: async ({ location }) => {
     console.log(`Fetching weather for ${location}`);
-    // This would typically call a weather API
     return {
       temperature: 22,
       condition: "Sunny",
@@ -198,42 +85,4 @@ const getWeather = FunctionAgent.from({
 });
 ```
 
-下面的示例展示了如何创建一个集成了天气查询技能的 AIAgent。通过将之前创建的 getWeather 函数代理添加到 skills 数组中，使 AI 代理能够访问和使用这个技能：
-
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-with-skills-create-agent"
-import { AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
-const agent = AIAgent.from({
-  model: new OpenAIChatModel(),
-  instructions:
-    "You are a helpful assistant that can provide weather information.",
-  skills: [getWeather],
-});
-```
-
-下面的示例展示了如何调用具有技能的代理。当用户询问北京的天气时，代理会自动识别这是一个天气查询请求，并调用 getWeather 技能来获取天气数据，然后以自然语言形式返回结果：
-
-```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-with-skills-invoke"
-const result = await agent.invoke("What's the weather like in Beijing today?");
-console.log(result);
-// Output: { $message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity." }
-```
-
-主要特点：
-
-* 通过 skills 参数集成其他代理作为技能
-* 扩展 AI 代理的功能范围
-* 适合构建多功能、复杂的智能代理
-
-## 总结
-
-AIAgent 是 AIGNE 中一个强大且灵活的工具，为用户提供了多种创建和调用的方式，适合不同场景的需求：
-
-1. 基础模式：快速创建简单的 AI 代理，适合基本问答场景。
-2. 自定义指令模式：控制 AI 代理的行为和风格，适合特定领域或风格的应用。
-3. 带变量的自定义指令模式：根据用户输入动态调整指令，实现更灵活的控制。
-4. 结构化输出模式：确保 AI 返回符合预期格式的数据，适合需要处理结构化数据的应用。
-5. 技能集成模式：扩展 AI 代理的功能范围，构建多功能、复杂的智能代理。
-
-根据实际需求，开发者可以灵活选择合适的模式来实现功能丰富的 AI 代理。
+总之，AI Agent 框架为开发能够适应各种需求的智能代理提供了广泛的能力。从初始设置和指令定制到动态模板和技能集成，每个组件协同工作以支持复杂场景并增强响应能力。鼓励开发人员探索这些功能的组合，以充分利用框架的灵活性，培养出专门针对其应用程序需求的高度专业化和响应迅速的代理。

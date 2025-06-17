@@ -1,4 +1,4 @@
-name: summarizer
+name: summarize
 description: Add summary to the wiki article
 instructions:
   url: ../prompts/summarizer.zh.md

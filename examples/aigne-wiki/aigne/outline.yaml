@@ -1,7 +1,7 @@
 name: outline
 description: Generate outline for a wiki article
 instructions:
-  url: ../prompts/outline.zh.md
+  url: ../prompts/outliner.zh.md
 input_schema:
   type: object
   properties:
@@ -29,9 +29,9 @@ output_schema:
           title:
             type: string
             description: Title of the section
-          description:
+          content:
             type: string
-            description: Description of the section
+            description: Content of the section
           code:
             type: string
             description: Code snippet for the section

@@ -19,4 +19,7 @@ export default flatten({
   count: "Count",
   timestamp: "Timestamp",
   duration: "Duration",
+  traceDashboard: "Trace Dashboard",
+  traces: "Traces",
+  metadata: "Metadata",
 });

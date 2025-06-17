@@ -1,13 +1,15 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
+import Tag from "@arcblock/ux/lib/Tag"
 import QueryBuilderIcon from "@mui/icons-material/QueryBuilder"
 import TokenIcon from "@mui/icons-material/Token"
 import Box from "@mui/material/Box"
 import Tab from "@mui/material/Tab"
 import Tabs from "@mui/material/Tabs"
 import Typography from "@mui/material/Typography"
+import {isUndefined, omitBy} from "lodash"
 import {useMemo, useState} from "react"
 import ReactJson from "react-json-view"
-import {parseDuration} from "../../utils/latency.ts"
+import {parseDuration, parseDurationMs} from "../../utils/latency.ts"
 import type {RunData} from "./types.ts"
 
 export default function TraceDetailPanel({run}: {run?: RunData | null}) {
@@ -25,6 +27,17 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
     }
 
     if (tab === 2) {
+      return omitBy(
+        {
+          model: run?.attributes?.output?.model,
+          inputTokens: run?.attributes?.output?.usage?.inputTokens,
+          outputTokens: run?.attributes?.output?.usage?.outputTokens,
+        },
+        isUndefined
+      )
+    }
+
+    if (tab === 3) {
       return run?.status?.message
     }
 
@@ -34,6 +47,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
   const tabs = [
     {label: t("input"), value: 0},
     {label: t("output"), value: 1},
+    {label: t("metadata"), value: 2},
     ...(hasError ? [{label: t("errorMessage"), value: 2}] : []),
   ]
 
@@ -53,15 +67,23 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
       </Box>
 
       <Box sx={{display: "flex", alignItems: "center", gap: 2, mt: 1, color: "text.secondary"}}>
-        <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
-          <QueryBuilderIcon fontSize="small" />
-          <Typography fontSize={14}>{`${parseDuration(run.startTime, run.endTime)}`}</Typography>
-        </Box>
+        {!!parseDurationMs(run.startTime, run.endTime) && (
+          <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+            <QueryBuilderIcon fontSize="small" />
+            <Typography fontSize={14}>{`${parseDuration(run.startTime, run.endTime)}`}</Typography>
+          </Box>
+        )}
 
         {inputTokens + outputTokens > 0 && (
           <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
             <TokenIcon fontSize="small" />
             <Typography fontSize={14}>{`${inputTokens + outputTokens} tokens`}</Typography>
+          </Box>
+        )}
+
+        {run?.attributes?.output?.model && (
+          <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+            <Tag>{run.attributes.output?.model}</Tag>
           </Box>
         )}
       </Box>
@@ -81,7 +103,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
             borderRadius: 2,
             overflowX: "auto",
           }}>
-          {value === undefined || value === null || value === "" ? (
+          {value === undefined || value === null ? (
             <Typography color="grey.500">{t("noData")}</Typography>
           ) : typeof value === "object" ? (
             <ReactJson

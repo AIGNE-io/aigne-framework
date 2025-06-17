@@ -38,6 +38,8 @@ function TraceItem({
         ml: depth * 2,
         overflow: "hidden",
         transition: "all 0.2s ease-in-out",
+        border: "1px solid transparent",
+        borderColor: selected ? "primary.main" : "transparent",
       }}
       onClick={() => onSelect?.()}>
       <Box
@@ -72,6 +74,7 @@ function TraceItem({
           sx={{
             width: "100%",
             maxWidth: "200px",
+            minWidth: "100px",
             position: "relative",
             height: 10,
             borderRadius: 5,
@@ -181,7 +184,7 @@ export default function TraceItemList({
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
+      <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={2}>
         <Typography
           sx={{
             flex: 1,

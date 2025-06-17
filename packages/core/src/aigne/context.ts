@@ -218,8 +218,6 @@ export interface Context<U extends UserContext = UserContext>
  * @hidden
  */
 export class AIGNEContext implements Context {
-  span?: Span;
-
   constructor(
     parent?: ConstructorParameters<typeof AIGNEContextShared>[0],
     { reset }: { reset?: boolean } = {},
@@ -255,6 +253,8 @@ export class AIGNEContext implements Context {
 
   rootId: string;
 
+  span?: Span;
+  
   readonly internal: AIGNEContextShared;
 
   get model() {

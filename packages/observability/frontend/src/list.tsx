@@ -9,7 +9,6 @@ import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
 import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx"
 import type {RunData} from "./components/run/types.ts"
 import {parseDuration} from "./utils/latency.ts"
-import type {GridPaginationModel} from "@mui/x-data-grid"
 import RelativeTime from "@arcblock/ux/lib/RelativeTime"
 
 interface RunsResponse {
@@ -20,15 +19,12 @@ interface RunsResponse {
 const origin = process.env.NODE_ENV === "development" ? "http://localhost:7890" : ""
 
 function App() {
+  const {t} = useLocaleContext()
   const [runs, setRuns] = useState<RunData[]>([])
   const [loading, setLoading] = useState(true)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedRun, setSelectedRun] = useState<RunData | null>(null)
-  const {t} = useLocaleContext()
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 10,
-  })
+  const [paginationModel, setPaginationModel] = useState({page: 0, pageSize: 10})
   const [total, setTotal] = useState(0)
 
   useEffect(() => {
@@ -56,6 +52,7 @@ function App() {
   }, [paginationModel.page, paginationModel.pageSize])
 
   const columns: GridColDef<RunData>[] = [
+    {field: "id", headerName: "ID", flex: 1, minWidth: 120},
     {field: "name", headerName: t("agentName"), flex: 1, minWidth: 120},
     {
       field: "input",

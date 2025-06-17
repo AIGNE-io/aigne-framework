@@ -460,6 +460,7 @@ export class AIAgent<
     if (!call) {
       throw new Error("Router toolChoice requires exactly one tool to be executed");
     }
+    
 
     const tool = toolsMap.get(call.function.name);
     if (!tool) throw new Error(`Tool not found: ${call.function.name}`);

@@ -2,18 +2,12 @@ import Dashboard from "@arcblock/ux/lib/Layout/dashboard"
 import LocaleSelector from "@arcblock/ux/lib/Locale/selector"
 import ThemeModeToggle from "@arcblock/ux/lib/Config/theme-mode-toggle"
 import ManageSearchIcon from "@mui/icons-material/ManageSearch"
-
-const links = [
-  {
-    url: "/",
-    title: "Trace",
-    name: "trace",
-    showBadge: false,
-    icon: <ManageSearchIcon />,
-  },
-]
+import {useMemo} from "react"
+import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
 
 export default function Layout({children}: {children: React.ReactNode}) {
+  const {t} = useLocaleContext()
+
   const renderAddons = () => {
     let addonsArray = []
 
@@ -29,12 +23,24 @@ export default function Layout({children}: {children: React.ReactNode}) {
   const renderedAddons = renderAddons()
   const nodes = Array.isArray(renderedAddons) ? renderedAddons : [renderedAddons]
 
+  const links = useMemo(() => {
+    return [
+      {
+        url: "/",
+        title: t("traces"),
+        name: "traces",
+        showBadge: false,
+        icon: <ManageSearchIcon />,
+      },
+    ]
+  }, [])
+
   return (
     <Dashboard
       links={links}
-      title="Trace Dashboard"
+      title={t("traceDashboard")}
       headerProps={{
-        brand: "Trace Dashboard",
+        brand: t("traceDashboard"),
         addons: nodes,
       }}
       fullWidth

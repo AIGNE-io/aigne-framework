@@ -163,12 +163,16 @@ console.log(result);
 当需要处理流式数据时，可以启用流式选项，然后使用异步迭代来逐步获取数据块，实现流式读取、分段处理的逻辑。
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-invoke"
+import { isAgentResponseDelta } from "@aigne/core";
+
 const stream = await weather.invoke({ city: "New York" }, { streaming: true });
 let text = "";
 const json = {};
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 console.log(text); // Output: Hello, I'm AIGNE!
 console.log(json); // Output: { temperature: 25 }

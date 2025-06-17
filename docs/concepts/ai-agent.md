@@ -37,10 +37,13 @@ console.log(result);
 Streaming response is a way to get AI answers in real-time, allowing applications to progressively receive and display content during the complete response generation process, rather than waiting for the entire response to complete before returning it all at once. This approach is particularly suitable for interactive applications that need immediate feedback, such as chatbots or real-time assistance tools.
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-invoke-stream"
+import { isAgentResponseDelta } from "@aigne/core";
+
 const stream = await agent.invoke("What is AIGNE?", { streaming: true });
 let response = "";
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
+    response += chunk.delta.text.$message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."

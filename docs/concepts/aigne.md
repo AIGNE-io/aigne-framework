@@ -33,7 +33,7 @@ The following examples demonstrate how to use the AIGNE framework in real projec
 Before using AIGNE, you need to import the necessary modules. The following code imports the AIGNE core framework and OpenAI chat model, which are the foundational components for building AI applications.
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic" only_imports
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 ```
 
@@ -90,7 +90,9 @@ For application scenarios that require real-time feedback, AIGNE supports stream
 const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
 let response = "";
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  }
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."

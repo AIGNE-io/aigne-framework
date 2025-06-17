@@ -36,7 +36,7 @@ pnpm add @aigne/core @aigne/openai
 首先，我们需要导入 AIGNE 框架的核心组件和模型实现：
 
 ```ts file="../../docs-examples/test/quick-start.test.ts" region="example-quick-start-basic" only_imports
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 ```
 
@@ -114,7 +114,8 @@ const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
 let response = "";
 for await (const chunk of stream) {
   console.log(chunk);
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
+    response += chunk.delta.text.$message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."
@@ -134,7 +135,7 @@ console.log(response);
 下面是一个完整的示例，包含了以上所有步骤：
 
 ```ts file="../../docs-examples/test/quick-start.test.ts" region="example-quick-start-basic"
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
 const aigne = new AIGNE({
@@ -157,7 +158,8 @@ const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
 let response = "";
 for await (const chunk of stream) {
   console.log(chunk);
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
+    response += chunk.delta.text.$message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."

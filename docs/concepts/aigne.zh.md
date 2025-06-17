@@ -33,7 +33,7 @@ AIGNE 的核心是 Agent 编排。它通过以下机制实现这一点：
 在使用 AIGNE 之前，需要先导入必要的模块。以下代码导入了 AIGNE 核心框架和 OpenAI 聊天模型，这是构建 AI 应用的基础组件。
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic" only_imports
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 ```
 
@@ -90,7 +90,9 @@ console.log(result);
 const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
 let response = "";
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  }
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."

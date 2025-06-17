@@ -244,7 +244,8 @@ const stream = await agent.invoke("What is the price of ABT?", {
 });
 let response = "";
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
+    response += chunk.delta.text.$message;
 }
 console.log(response);
 // Output:  "ABT is currently priced at $1000."

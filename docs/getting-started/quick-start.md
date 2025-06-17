@@ -38,7 +38,7 @@ Next, we'll build a simple but fully functional AI Agent step by step. Each step
 First, we need to import the core components and model implementations of the AIGNE framework:
 
 ```ts file="../../docs-examples/test/quick-start.test.ts" region="example-quick-start-basic" only_imports
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 ```
 
@@ -116,7 +116,8 @@ const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
 let response = "";
 for await (const chunk of stream) {
   console.log(chunk);
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
+    response += chunk.delta.text.$message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."
@@ -136,7 +137,7 @@ Streaming output is particularly useful for building real-time chat interfaces o
 Below is a complete example that includes all the above steps:
 
 ```ts file="../../docs-examples/test/quick-start.test.ts" region="example-quick-start-basic"
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
 const aigne = new AIGNE({
@@ -159,7 +160,8 @@ const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
 let response = "";
 for await (const chunk of stream) {
   console.log(chunk);
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
+    response += chunk.delta.text.$message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."

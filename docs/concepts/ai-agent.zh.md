@@ -37,10 +37,13 @@ console.log(result);
 流式响应是一种实时获取 AI 回答的方式，它允许应用程序在完整响应生成过程中逐步接收和显示内容，而不是等待整个响应完成后一次性返回。这种方式特别适合需要即时反馈的交互式应用，如聊天机器人或实时辅助工具。
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-invoke-stream"
+import { isAgentResponseDelta } from "@aigne/core";
+
 const stream = await agent.invoke("What is AIGNE?", { streaming: true });
 let response = "";
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
+    response += chunk.delta.text.$message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."

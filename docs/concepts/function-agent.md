@@ -163,12 +163,16 @@ console.log(result);
 When you need to handle streaming data, you can enable streaming options, then use async iteration to gradually get data chunks, implementing streaming reading and segmented processing logic.
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-invoke"
+import { isAgentResponseDelta } from "@aigne/core";
+
 const stream = await weather.invoke({ city: "New York" }, { streaming: true });
 let text = "";
 const json = {};
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 console.log(text); // Output: Hello, I'm AIGNE!
 console.log(json); // Output: { temperature: 25 }

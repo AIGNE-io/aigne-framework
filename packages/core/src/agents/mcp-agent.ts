@@ -441,7 +441,7 @@ export class MCPTool extends MCPBase<Message, CallToolResult> {
   }
 }
 
-export interface MCPPromptInput extends Message {
+export interface MCPPromptInput extends Record<string, unknown> {
   [key: string]: string;
 }
 

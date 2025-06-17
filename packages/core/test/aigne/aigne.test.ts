@@ -4,6 +4,7 @@ import {
   AIAgent,
   AIGNE,
   FunctionAgent,
+  type InvokeOptions,
   type MessageQueueListener,
   UserInputTopic,
   UserOutputTopic,
@@ -19,6 +20,7 @@ import {
 } from "@aigne/core/utils/stream-utils.js";
 import { omit } from "@aigne/core/utils/type-utils.js";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
+import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 
 test("AIGNE simple example", async () => {
   // #region example-simple
@@ -500,4 +502,60 @@ test("AIGNE.invoke should respond progressing chunks (with failed chunks) correc
         : i,
     ),
   ).toMatchSnapshot();
+});
+
+test.each<[InvokeOptions]>([
+  [{ streaming: true, returnMetadata: true }],
+  [{ streaming: false, returnMetadata: true }],
+])("AIGNE.invoke should respond $meta field with usage metrics with %p", async (options) => {
+  const model = new OpenAIChatModel();
+
+  spyOn(model, "process")
+    .mockReturnValueOnce({
+      toolCalls: [createToolCallResponse("greet", {})],
+      usage: { inputTokens: 3, outputTokens: 4 },
+    })
+    .mockReturnValueOnce(
+      arrayToReadableStream([
+        { delta: { text: { text: "Hello" } } },
+        { delta: { text: { text: " world" } } },
+        { delta: { json: { usage: { inputTokens: 10, outputTokens: 20 } } } },
+      ]),
+    );
+
+  const aigne = new AIGNE({
+    model,
+  });
+
+  const agent = AIAgent.from({
+    name: "chat",
+    skills: [
+      FunctionAgent.from({
+        name: "greet",
+        process: () => ({
+          $message: "Hello world",
+        }),
+      }),
+    ],
+  });
+
+  const response = await aigne.invoke(agent, "hello", options);
+
+  if (options.streaming) {
+    assert(response instanceof ReadableStream);
+    expect(await readableStreamToArray(response, { catchError: true })).toMatchSnapshot();
+  } else {
+    expect(response).toMatchInlineSnapshot(`
+        {
+          "$message": "Hello world",
+          "$meta": {
+            "usage": {
+              "agentCalls": 4,
+              "inputTokens": 13,
+              "outputTokens": 24,
+            },
+          },
+        }
+      `);
+  }
 });

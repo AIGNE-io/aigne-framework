@@ -2,6 +2,7 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { ZodObject, type ZodType, z } from "zod";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
+import type { ContextUsage } from "../aigne/usage.js";
 import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
@@ -35,7 +36,11 @@ export * from "./types.js";
 /**
  * Basic message type that can contain any key-value pairs
  */
-export type Message = Record<string, unknown>;
+export interface Message extends Record<string, unknown> {
+  $meta?: {
+    usage: ContextUsage;
+  };
+}
 
 /**
  * Topics the agent subscribes to, can be a single topic string or an array of topic strings

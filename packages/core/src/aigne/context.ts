@@ -36,7 +36,7 @@ import {
   checkArguments,
   isEmpty,
   isNil,
-  omitBy,
+  omit,
 } from "../utils/type-utils.js";
 import type { Args, Listener, TypedEventEmitter } from "../utils/typed-event-emtter.js";
 import {
@@ -84,6 +84,7 @@ export interface InvokeOptions<U extends UserContext = UserContext>
   extends Partial<Omit<AgentInvokeOptions<U>, "context">> {
   returnActiveAgent?: boolean;
   returnProgressChunks?: boolean;
+  returnMetadata?: boolean;
   disableTransfer?: boolean;
   sourceAgent?: Agent;
 }
@@ -283,8 +284,9 @@ export class AIGNEContext implements Context {
     return Promise.resolve(newContext.internal.invoke(agent, msg, newContext, options)).then(
       async (response) => {
         if (!options?.streaming) {
-          const { __activeAgent__: activeAgent, ...output } =
+          let { __activeAgent__: activeAgent, ...output } =
             await agentResponseStreamToObject(response);
+          output = await this.onInvocationResult(output, options);
 
           if (options?.returnActiveAgent) {
             return [output, activeAgent];
@@ -302,7 +304,7 @@ export class AIGNEContext implements Context {
                 ...chunk,
                 delta: {
                   ...chunk.delta,
-                  json: omitBy(chunk.delta.json, (_, k) => k === "__activeAgent__") as Exclude<
+                  json: omit(chunk.delta.json, "__activeAgent__") as Exclude<
                     typeof chunk.delta.json,
                     TransferAgentOutput
                   >,
@@ -310,8 +312,9 @@ export class AIGNEContext implements Context {
               };
             }
           },
-          onResult({ __activeAgent__: activeAgent }) {
-            activeAgentPromise.resolve(activeAgent);
+          onResult: async (output) => {
+            activeAgentPromise.resolve(output.__activeAgent__);
+            return await this.onInvocationResult(output, options);
           },
         });
 
@@ -327,6 +330,23 @@ export class AIGNEContext implements Context {
       },
     );
   }) as Context["invoke"];
+
+  private async onInvocationResult<O extends Message>(
+    output: O,
+    options?: InvokeOptions,
+  ): Promise<O> {
+    if (!options?.returnMetadata) {
+      return output;
+    }
+
+    return {
+      ...output,
+      $meta: {
+        ...output.$meta,
+        usage: this.usage,
+      },
+    };
+  }
 
   publish = ((topic, payload, options) => {
     if (options?.userContext) {

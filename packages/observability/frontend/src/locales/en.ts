@@ -18,4 +18,5 @@ export default flatten({
   tokens: "Tokens",
   count: "Count",
   timestamp: "Timestamp",
+  duration: "Duration",
 });

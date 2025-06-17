@@ -18,4 +18,5 @@ export default flatten({
   tokens: "Tokens",
   count: "次数",
   timestamp: "时间",
+  duration: "执行时间",
 });

@@ -83,7 +83,7 @@ function TraceItem({
             borderRadius: 5,
             overflow: "visible",
           }}>
-          <Tooltip title={`${t("latency")}: ${duration}s`}>
+          <Tooltip title={`${t("duration")}: ${duration}s`}>
             <Box
               sx={{
                 position: "absolute",
@@ -187,30 +187,28 @@ export default function TraceItemList({
 
   return (
     <Box>
-      <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
-          <Typography
-            sx={{
-              flex: 1,
-              minWidth: 0,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-            fontWeight={600}>
-            {t("agentName")}
-          </Typography>
+      <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
+        <Typography
+          sx={{
+            flex: 1,
+            minWidth: 0,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          fontWeight={600}>
+          {t("agentName")}
+        </Typography>
 
-          <Box
-            sx={{
-              width: "100%",
-              maxWidth: "200px",
-              position: "relative",
-              borderRadius: 5,
-              fontWeight: 600,
-            }}>
-            {t("duration")}
-          </Box>
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: "200px",
+            position: "relative",
+            borderRadius: 5,
+            fontWeight: 600,
+          }}>
+          {t("duration")}
         </Box>
       </Box>
 

@@ -1,5 +1,5 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
-import {Box, Chip, LinearProgress, Typography} from "@mui/material"
+import {Box, Chip, LinearProgress, Tooltip, Typography} from "@mui/material"
 import type {JSX} from "react"
 import {parseDurationMs} from "../../utils/latency.ts"
 import type {RunData} from "./types.ts"
@@ -84,19 +84,21 @@ function TraceItem({
             borderRadius: 5,
             overflow: "visible",
           }}>
-          <Box
-            sx={{
-              position: "absolute",
-              left: `${marginLeftPercent}%`,
-              width: `${widthPercent}%`,
-              height: "100%",
-            }}>
-            <LinearProgress
-              variant="determinate"
-              value={100}
-              sx={{height: "100%", borderRadius: 5}}
-            />
-          </Box>
+          <Tooltip title={`${t("latency")}: ${duration}s`}>
+            <Box
+              sx={{
+                position: "absolute",
+                left: `${marginLeftPercent}%`,
+                width: `${widthPercent}%`,
+                height: "100%",
+              }}>
+              <LinearProgress
+                variant="determinate"
+                value={100}
+                sx={{height: "100%", borderRadius: 5}}
+              />
+            </Box>
+          </Tooltip>
         </Box>
       </Box>
     </Box>

@@ -1,22 +1,19 @@
 import Box from "@mui/material/Box"
 import Chip from "@mui/material/Chip"
 import Paper from "@mui/material/Paper"
-import Table from "@mui/material/Table"
-import TableBody from "@mui/material/TableBody"
-import TableCell from "@mui/material/TableCell"
-import TableContainer from "@mui/material/TableContainer"
-import TableHead from "@mui/material/TableHead"
-import TableRow from "@mui/material/TableRow"
 import {useEffect, useState} from "react"
-import {joinURL} from "ufo"
+import {joinURL, withQuery} from "ufo"
+import {DataGrid} from "@mui/x-data-grid"
+import type {GridColDef} from "@mui/x-data-grid"
 
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
 import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx"
 import type {RunData} from "./components/run/types.ts"
 import {parseDuration} from "./utils/latency.ts"
-
+import type {GridPaginationModel} from "@mui/x-data-grid"
 interface RunsResponse {
   data: RunData[]
+  total: number
 }
 
 const origin = process.env.NODE_ENV === "development" ? "http://localhost:7890" : ""
@@ -27,13 +24,23 @@ function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedRun, setSelectedRun] = useState<RunData | null>(null)
   const {t} = useLocaleContext()
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  })
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
     setLoading(true)
 
-    fetch(joinURL(origin, "/api/trace/tree"))
+    fetch(
+      withQuery(joinURL(origin, "/api/trace/tree"), {
+        page: paginationModel.page,
+        pageSize: paginationModel.pageSize,
+      })
+    )
       .then(res => res.json() as Promise<RunsResponse>)
-      .then(({data}) => {
+      .then(({data, total: totalCount}) => {
         const format = (run: RunData) => ({
           ...run,
           startTime: Number(run.startTime),
@@ -42,9 +49,58 @@ function App() {
         const formatted = data.map(format)
         setRuns(formatted)
         setLoading(false)
+        setTotal(totalCount)
       })
       .catch(() => setLoading(false))
-  }, [])
+  }, [paginationModel.page, paginationModel.pageSize])
+
+  const columns: GridColDef<RunData>[] = [
+    {field: "name", headerName: t("agentName"), flex: 1, minWidth: 120},
+    {
+      field: "input",
+      headerName: t("input"),
+      flex: 1,
+      minWidth: 120,
+      valueGetter: (_, row) => JSON.stringify(row.attributes?.input),
+    },
+    {
+      field: "output",
+      headerName: t("output"),
+      flex: 1,
+      minWidth: 120,
+      valueGetter: (_, row) => JSON.stringify(row.attributes?.output),
+    },
+    {
+      field: "status",
+      headerName: t("status"),
+      minWidth: 100,
+      renderCell: ({row}) => (
+        <Chip
+          label={row.status?.code === 1 ? t("success") : t("failed")}
+          size="small"
+          color={row.status?.code === 1 ? "success" : "error"}
+        />
+      ),
+    },
+    {
+      field: "startTime",
+      headerName: t("startedAt"),
+      minWidth: 160,
+      valueGetter: (_, row) => formatTime(row.startTime),
+    },
+    {
+      field: "endTime",
+      headerName: t("endedAt"),
+      minWidth: 160,
+      valueGetter: (_, row) => formatTime(row.endTime),
+    },
+    {
+      field: "latency",
+      headerName: t("latency"),
+      minWidth: 100,
+      valueGetter: (_, row) => parseDuration(row.startTime, row.endTime),
+    },
+  ]
 
   const formatTime = (ts?: number) => {
     if (!ts) return "-"
@@ -55,63 +111,21 @@ function App() {
   return (
     <Box sx={{minHeight: "100vh", bgcolor: "#fff", p: 4}}>
       <Paper elevation={0} sx={{borderRadius: 5, p: 3, minHeight: 500, overflow: "hidden"}}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t("agentName")}</TableCell>
-                <TableCell>{t("input")}</TableCell>
-                <TableCell>{t("output")}</TableCell>
-                <TableCell>{t("status")}</TableCell>
-                <TableCell>{t("startedAt")}</TableCell>
-                <TableCell>{t("endedAt")}</TableCell>
-                <TableCell>{t("latency")}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    {t("loading")}
-                  </TableCell>
-                </TableRow>
-              ) : runs.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    {t("noData")}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                runs.map(run => (
-                  <TableRow
-                    key={run.id}
-                    hover
-                    style={{cursor: "pointer"}}
-                    onClick={() => {
-                      setSelectedRun(run)
-                      setDrawerOpen(true)
-                    }}>
-                    <TableCell>{run.name}</TableCell>
-                    <TableCell>{JSON.stringify(run.attributes.input)}</TableCell>
-                    <TableCell>{JSON.stringify(run.attributes.output)}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={run.status?.code === 1 ? t("success") : t("failed")}
-                        size="small"
-                        color={run.status?.code === 1 ? "success" : "error"}
-                      />
-                    </TableCell>
-                    <TableCell sx={{width: 200}}>{formatTime(run.startTime)}</TableCell>
-                    <TableCell sx={{width: 200}}>{formatTime(run.endTime)}</TableCell>
-                    <TableCell sx={{width: 100}}>
-                      {parseDuration(run.startTime, run.endTime)}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DataGrid
+          rows={runs}
+          columns={columns}
+          loading={loading}
+          pageSizeOptions={[10, 20, 50]}
+          pagination
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          rowCount={total}
+          paginationMode="server"
+          onRowClick={({row}) => {
+            setSelectedRun(row)
+            setDrawerOpen(true)
+          }}
+        />
       </Paper>
 
       <RunDetailDrawer

@@ -5,6 +5,7 @@ import Tabs from "@mui/material/Tabs"
 import Typography from "@mui/material/Typography"
 import {useMemo, useState} from "react"
 import type {RunData} from "./types.ts"
+import {parseDuration} from "../../utils/latency.ts"
 
 export default function TraceDetailPanel({run}: {run?: RunData | null}) {
   const [tab, setTab] = useState(0)
@@ -32,9 +33,14 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
 
   return (
     <Box sx={{p: 2, height: "100%", overflowY: "auto"}}>
-      <Typography fontWeight={600} fontSize={20} mb={2}>
-        {run?.name}
-      </Typography>
+      <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+        <Typography fontWeight={600} fontSize={20} mb={2}>
+          {`${run?.name}`}
+        </Typography>
+        <Typography fontWeight={500} fontSize={16} mb={2}>
+          {`(${parseDuration(run.startTime, run.endTime)})`}
+        </Typography>
+      </Box>
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} textColor="inherit" indicatorColor="primary">
         <Tab label={t("input")} />

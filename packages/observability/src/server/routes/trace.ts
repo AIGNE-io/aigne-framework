@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.get("/tree", async (req: Request, res: Response) => {
   const db = req.app.locals.db as LibSQLDatabase;
-  const page = Number(req.query.page) || 1;
+  const page = Number(req.query.page) || 0;
   const pageSize = Number(req.query.pageSize) || 10;
-  const offset = (page - 1) * pageSize;
+  const offset = page * pageSize;
 
   const count = await db
     .select({ count: sql`count(*)` })

@@ -205,22 +205,6 @@ export async function runWithAIGNE(
         logger.level = options.logLevel;
       }
 
-      if (options.output) {
-        const outputPath = isAbsolute(options.output)
-          ? options.output
-          : join(process.cwd(), options.output);
-        if (await exists(outputPath)) {
-          const s = await stat(outputPath);
-          if (!s.isFile()) throw new Error(`Output path ${outputPath} is not a file`);
-          if (s.size > 0 && !options.force) {
-            throw new Error(`Output file ${outputPath} already exists. Use --force to overwrite.`);
-          }
-        } else {
-          await mkdir(dirname(outputPath), { recursive: true });
-        }
-        await writeFile(outputPath, "", "utf8");
-      }
-
       const model = await loadModel(
         availableModels,
         {
@@ -288,6 +272,22 @@ export async function runAgentWithAIGNE(
     input?: Message;
   } & Omit<RunAIGNECommandOptions, "input"> = {},
 ) {
+  if (options.output) {
+    const outputPath = isAbsolute(options.output)
+      ? options.output
+      : join(process.cwd(), options.output);
+    if (await exists(outputPath)) {
+      const s = await stat(outputPath);
+      if (!s.isFile()) throw new Error(`Output path ${outputPath} is not a file`);
+      if (s.size > 0 && !options.force) {
+        throw new Error(`Output file ${outputPath} already exists. Use --force to overwrite.`);
+      }
+    } else {
+      await mkdir(dirname(outputPath), { recursive: true });
+    }
+    await writeFile(outputPath, "", "utf8");
+  }
+
   if (options.chat) {
     if (!isatty(process.stdout.fd)) {
       throw new Error("--chat mode requires a TTY terminal");

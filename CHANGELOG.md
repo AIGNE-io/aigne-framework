@@ -4,6 +4,13 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.22.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.21.0...aigne-framework-v1.22.0) (2025-06-17)
+
+
+### Features
+
+* support return $meta output by enable returnMetadata option ([#163](https://github.com/AIGNE-io/aigne-framework/issues/163)) ([ac73759](https://github.com/AIGNE-io/aigne-framework/commit/ac73759615d44a09fa71b3bfbd3e9356ffe1d2ed))
+
 ## [1.21.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.20.6...aigne-framework-v1.21.0) (2025-06-16)
 
 

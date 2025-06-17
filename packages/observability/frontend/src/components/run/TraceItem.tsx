@@ -1,5 +1,5 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
-import {Box, Chip, LinearProgress, Tooltip, Typography} from "@mui/material"
+import {Box, Card, Chip, LinearProgress, Tooltip, Typography} from "@mui/material"
 import type {JSX} from "react"
 import {parseDurationMs} from "../../utils/latency.ts"
 import type {RunData} from "./types.ts"
@@ -30,20 +30,14 @@ function TraceItem({
   const {t} = useLocaleContext()
 
   return (
-    <Box
+    <Card
       sx={{
         cursor: "pointer",
-        backgroundColor: "#2e2e2e",
         p: 2,
-        borderRadius: 1,
         mb: 1,
-        border: selected ? "2px solid #4a9eff" : "2px solid transparent",
         ml: depth * 2,
         overflow: "hidden",
         transition: "all 0.2s ease-in-out",
-        "&:hover": {
-          backgroundColor: "#363636",
-        },
       }}
       onClick={() => onSelect?.()}>
       <Box
@@ -100,7 +94,7 @@ function TraceItem({
           </Tooltip>
         </Box>
       </Box>
-    </Box>
+    </Card>
   )
 }
 

@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@arcblock/ux": "^2.13.69",
+    "@blocklet/ui-react": "^2.13.69",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/material": "^7.1.1",
+    "@mui/material": "^5.15.19",
     "@mui/x-data-grid": "^8.5.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -30,5 +32,8 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5"
+  },
+  "resolutions": {
+    "@mui/material": "5.15.19"
   }
 }

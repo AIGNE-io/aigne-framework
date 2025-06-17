@@ -1,6 +1,5 @@
-import {LocaleProvider} from "@arcblock/ux/lib/Locale/context"
 import {ToastProvider} from "@arcblock/ux/lib/Toast"
-import {Box, CssBaseline, ThemeProvider} from "@mui/material"
+import {Box, CssBaseline} from "@mui/material"
 import {Suspense} from "react"
 import {
   Route,
@@ -8,40 +7,37 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom"
+import {ConfigProvider} from "@arcblock/ux/lib/Config"
 
 import {translations} from "./locales/index.ts"
-
-import {createTheme} from "@mui/material/styles"
 import List from "./list.tsx"
+import Layout from "./layout"
 
-const theme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-})
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ConfigProvider translations={translations} prefer="system">
       <CssBaseline>
         <ToastProvider>
-          <LocaleProvider
-            translations={translations}
-            fallbackLocale="en"
-            locale={undefined}
-            onLoadingTranslation={undefined}
-            languages={undefined}>
-            <Suspense fallback={<Box>Loading...</Box>}>
-              <AppRoutes />
-            </Suspense>
-          </LocaleProvider>
+          <Suspense fallback={<Box>Loading...</Box>}>
+            <AppRoutes />
+          </Suspense>
         </ToastProvider>
       </CssBaseline>
-    </ThemeProvider>
+    </ConfigProvider>
   )
 }
 
 const router = createBrowserRouter(
-  createRoutesFromElements(<Route path="/" element={<List />} />),
+  createRoutesFromElements(
+    <Route
+      path="/"
+      element={
+        <Layout>
+          <List />
+        </Layout>
+      }
+    />
+  ),
   {basename: "/"}
 )
 

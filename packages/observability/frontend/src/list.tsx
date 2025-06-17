@@ -1,4 +1,3 @@
-import Box from "@mui/material/Box"
 import Chip from "@mui/material/Chip"
 import Paper from "@mui/material/Paper"
 import {useEffect, useState} from "react"
@@ -11,6 +10,7 @@ import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx"
 import type {RunData} from "./components/run/types.ts"
 import {parseDuration} from "./utils/latency.ts"
 import type {GridPaginationModel} from "@mui/x-data-grid"
+import RelativeTime from "@arcblock/ux/lib/RelativeTime"
 
 interface RunsResponse {
   data: RunData[]
@@ -72,6 +72,12 @@ function App() {
       valueGetter: (_, row) => JSON.stringify(row.attributes?.output),
     },
     {
+      field: "latency",
+      headerName: t("latency"),
+      minWidth: 100,
+      valueGetter: (_, row) => parseDuration(row.startTime, row.endTime),
+    },
+    {
       field: "status",
       headerName: t("status"),
       minWidth: 100,
@@ -87,31 +93,19 @@ function App() {
       field: "startTime",
       headerName: t("startedAt"),
       minWidth: 160,
-      valueGetter: (_, row) => formatTime(row.startTime),
+      renderCell: ({row}) => (row.startTime ? <RelativeTime value={row.startTime} /> : "-"),
     },
     {
       field: "endTime",
       headerName: t("endedAt"),
       minWidth: 160,
-      valueGetter: (_, row) => formatTime(row.endTime),
-    },
-    {
-      field: "latency",
-      headerName: t("latency"),
-      minWidth: 100,
-      valueGetter: (_, row) => parseDuration(row.startTime, row.endTime),
+      renderCell: ({row}) => (row.endTime ? <RelativeTime value={row.endTime} /> : "-"),
     },
   ]
 
-  const formatTime = (ts?: number) => {
-    if (!ts) return "-"
-    const d = new Date(ts)
-    return d.toLocaleString()
-  }
-
   return (
-    <Box sx={{minHeight: "100vh", p: 4}}>
-      <Paper elevation={0} sx={{borderRadius: 5, p: 3, minHeight: 500, overflow: "hidden"}}>
+    <>
+      <Paper elevation={0}>
         <DataGrid
           rows={runs}
           columns={columns}
@@ -126,6 +120,10 @@ function App() {
             setSelectedRun(row)
             setDrawerOpen(true)
           }}
+          disableRowSelectionOnClick
+          disableColumnFilter
+          disableColumnMenu
+          sx={{cursor: "pointer"}}
         />
       </Paper>
 
@@ -137,7 +135,7 @@ function App() {
         }}
         run={selectedRun}
       />
-    </Box>
+    </>
   )
 }
 

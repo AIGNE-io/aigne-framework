@@ -1,6 +1,6 @@
-* Getting Started
+* [Getting Started](/getting-started/index.md)
 
-  * [What is AIGNE](/getting-started/what-is-aigne.md)
+  * [What is AIGNE?](/getting-started/what-is-aigne.md)
   * [Quick Start](/getting-started/quick-start.md)
 
 * How to guides

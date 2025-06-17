@@ -147,6 +147,8 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     const newAgents: Agent[] = [];
 
     for (const agent of agents) {
+      const isLastAgent = agent === agents.at(-1);
+
       const [o, transferToAgent] = await options.context.invoke(
         agent,
         { ...input, ...output },
@@ -154,7 +156,10 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
       );
 
       for await (const chunk of o) {
-        yield chunk as AgentResponseChunk<O>;
+        if (this.includeInputInOutput || isLastAgent) {
+          yield chunk as AgentResponseChunk<O>;
+        }
+
         mergeAgentResponseChunk(output, chunk);
       }
       newAgents.push(await transferToAgent);

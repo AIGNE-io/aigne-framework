@@ -1,14 +1,15 @@
 {
-  "name": "@aigne/example-memory",
-  "version": "0.3.8",
-  "description": "A demonstration of using AIGNE Framework with memory.",
+  "name": "@aigne/aigne-wiki",
+  "version": "0.0.1",
+  "description": "A demonstration of using AIGNE Framework to generate professional wiki",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
-  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/memory",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/aigne-wiki",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
+  "type": "module",
   "bin": "index.ts",
   "files": [
     ".env.local.example",
@@ -23,7 +24,8 @@
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
-    "@aigne/core": "workspace:^"
+    "@aigne/core": "workspace:^",
+    "zod": "^3.25.23"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

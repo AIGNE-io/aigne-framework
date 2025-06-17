@@ -5,27 +5,6 @@ exports[`TeamAgent should return streaming response with sequential process meth
   {
     "delta": {
       "text": {
-        "first": "Hello",
-      },
-    },
-  },
-  {
-    "delta": {
-      "text": {
-        "first": ",",
-      },
-    },
-  },
-  {
-    "delta": {
-      "text": {
-        "first": " ",
-      },
-    },
-  },
-  {
-    "delta": {
-      "text": {
         "second": "Hello",
       },
     },
@@ -148,27 +127,6 @@ exports[`TeamAgent should return streaming response with sequential process meth
   {
     "delta": {
       "text": {
-        "text": "Hello",
-      },
-    },
-  },
-  {
-    "delta": {
-      "text": {
-        "text": ",",
-      },
-    },
-  },
-  {
-    "delta": {
-      "text": {
-        "text": " ",
-      },
-    },
-  },
-  {
-    "delta": {
-      "text": {
         "text": "world",
       },
     },
@@ -211,23 +169,6 @@ exports[`TeamAgent should return streaming response with parallel process method
 
 exports[`TeamAgent with sequential mode should yield output chunks correctly 1`] = `
 [
-  {
-    "delta": {
-      "json": {
-        "question": "What is AIGNE?",
-        "result": [
-          {
-            "link": "https://example.com/1",
-            "title": "First Result",
-          },
-          {
-            "link": "https://example.com/2",
-            "title": "Second Result",
-          },
-        ],
-      },
-    },
-  },
   {
     "delta": {
       "text": {

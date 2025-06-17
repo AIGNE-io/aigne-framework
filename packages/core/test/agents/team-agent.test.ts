@@ -36,12 +36,10 @@ test("TeamAgent.from with sequential mode", async () => {
   const result = await teamAgent.invoke({ text: "Hello world" });
 
   expect(result).toEqual({
-    translation: "Hello world (translation)",
     formatted: "[formatted] Hello world (translation)",
   });
   console.log(result);
   // Expected output: {
-  //   translation: "Hello world (translation)",
   //   formatted: "[formatted] Hello world (translation)"
   // }
 
@@ -85,6 +83,37 @@ test("TeamAgent.from with parallel mode", async () => {
   // }
 
   // #endregion example-team-agent-parallel
+});
+
+test("TeamAgent sequential mode should merge and respond every agent's output if includeInputInOutput is enabled", async () => {
+  const translatorAgent = FunctionAgent.from({
+    name: "translator",
+    process: (input: Message) => ({
+      translation: `${input.text} (translation)`,
+    }),
+  });
+
+  const formatterAgent = FunctionAgent.from({
+    name: "formatter",
+    process: (input: Message) => ({
+      formatted: `[formatted] ${input.translation || input.text}`,
+    }),
+  });
+
+  const teamAgent = TeamAgent.from({
+    name: "sequential-team",
+    mode: ProcessMode.sequential,
+    skills: [translatorAgent, formatterAgent],
+    includeInputInOutput: true,
+  });
+
+  const result = await teamAgent.invoke({ text: "Hello world" });
+
+  expect(result).toEqual({
+    text: "Hello world",
+    translation: "Hello world (translation)",
+    formatted: "[formatted] Hello world (translation)",
+  });
 });
 
 const processModes = Object.values(ProcessMode);

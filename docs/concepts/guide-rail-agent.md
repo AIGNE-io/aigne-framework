@@ -1,20 +1,13 @@
-# GuideRailAgent
+<markdown>
+# GuideRail Agent: Validation and Control in Agent Systems
 
-[English](./guide-rail-agent.md) | [中文](./guide-rail-agent.zh.md)
+GuideRail agents function as integral components in agent systems, offering validation, transformation, and control over message flows between agents. Designed to enforce rules and ensure adherence to predefined constraints, they are particularly useful in scenarios demanding strict compliance and data integrity. Typical use cases include financial environments where accuracy and ethical operations are paramount.
 
-## Overview
+## Creating a Financial GuideRailAgent
 
-GuideRailAgent is a special agent type in the AIGNE framework that is used to validate, filter, and control the input and output of other agents. GuideRailAgent can be viewed as a "guardian" or "reviewer" that can check whether an agent's responses comply with specific rules or policies, and block non-compliant responses when necessary. This mechanism is crucial for building safe and compliant AI applications, preventing agents from generating harmful, inaccurate, or inappropriate content. Through GuideRailAgent, developers can implement various control mechanisms such as content moderation, fact-checking, format validation, etc., ensuring that AI system outputs meet expected standards.
+GuideRail agents serve as validators, transformers, or controllers within an agent system, specifically designed to enforce rules and ensure that messages between agents adhere to predefined constraints. This section demonstrates how to create a specialized GuideRailAgent as a financial assistant that prohibits providing speculative cryptocurrency price predictions. Such GuideRails are instrumental in environments where compliance and data integrity are crucial, ensuring that agents operate under well-defined behavioral constraints.
 
-## Basic Usage
-
-### Creating GuideRailAgent
-
-The method to create a GuideRailAgent is to use the AIAgent.from() method and pass guideRailAgentOptions as the base configuration:
-
-```ts file="../../docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-create-guide-rail"
-import { AIAgent, guideRailAgentOptions } from "@aigne/core";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-create-guide-rail"
 const financial = AIAgent.from({
   ...guideRailAgentOptions,
   instructions: `You are a financial assistant. You must ensure that you do not provide cryptocurrency price predictions or forecasts.
@@ -29,90 +22,48 @@ const financial = AIAgent.from({
 });
 ```
 
-In the above example, we created a financial domain GuideRailAgent whose task is to ensure that the agent does not provide cryptocurrency price predictions. The instructions contain two placeholders:
+## Integrating GuideRails into an Agent
 
-* `{{input}}`: Will be replaced with the user's input
-* `{{output}}`: Will be replaced with the agent's output
+This section demonstrates integrating GuideRailAgents into an existing agent framework. By associating GuideRails with agents, developers can impose additional layers of control and validation over message flows. This is particularly useful for establishing a hierarchy of rules that an agent must follow, thereby preventing erroneous outputs and enhancing overall system robustness.
 
-The GuideRailAgent will evaluate whether the agent's output complies with the rules based on these instructions and decide whether to allow that output to pass to the user.
-
-### Applying GuideRailAgent to an Agent
-
-After creating a GuideRailAgent, we need to apply it to the agent that needs protection:
-
-```ts file="../../docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-create-agent"
-import { AIAgent } from "@aigne/core";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-create-agent"
 const agent = AIAgent.from({
   guideRails: [financial],
 });
 ```
 
-In this example, we created a new AIAgent and applied the previously created financial GuideRailAgent to this agent through the guideRails parameter. An agent can apply multiple GuideRailAgents, which will be executed sequentially in the order they were added.
+## Creating the AIGNE Instance
 
-### Creating AIGNE Instance
+The AIGNE instance encapsulates the overall context in which agent interactions occur, supporting various models for processing. This section showcases initializing an AIGNE object with a specific model, like OpenAIChatModel, setting the stage for sophisticated agent-system interactions, enabled by different processing algorithms.
 
-Next, we create an AIGNE instance to execute the agent:
-
-```ts file="../../docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-create-aigne"
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-create-aigne"
 const aigne = new AIGNE({ model: new OpenAIChatModel() });
+assert(aigne.model);
 ```
 
-In this example, we created an AIGNE instance and specified OpenAIChatModel as the language model.
+## Invoking the Agent with GuideRails
 
-### Invoking an Agent with Applied GuideRailAgent
+This section illustrates the process of invoking an agent with associated GuideRails, exemplifying a control mechanism where the agent's response to a user query is filtered through the GuideRail's logic. Such invocation scenarios are critical for maintaining agent behavior inline with predefined constraints, ensuring that guide rails effectively override or alter the flow when necessary. This is vital for upholding operational boundaries defined by business rules or compliance constraints.
 
-Now, we can invoke the agent with the applied GuideRailAgent and observe its behavior:
-
-```ts file="../../docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-invoke"
-const result = await aigne.invoke(
-  agent,
-  "What will be the price of Bitcoin next month?",
-);
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-invoke"
+spyOn(aigne.model, "process")
+  .mockReturnValueOnce(
+    Promise.resolve({
+      text: "Bitcoin will likely reach $100,000 by next month based on current market trends.",
+    }),
+  )
+  .mockReturnValueOnce(
+    Promise.resolve({
+      json: {
+        abort: true,
+        reason:
+          "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
+      },
+    }),
+  );
+const result = await aigne.invoke(agent, "What will be the price of Bitcoin next month?");
 console.log(result);
-// Output:
-// {
-//   "$status": "GuideRailError",
-//   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
-// }
 ```
 
-In this example, the user asked about Bitcoin's price next month. Since our GuideRailAgent is configured to block cryptocurrency price predictions, it detected that the agent's response violated this rule, so it blocked the original response and returned an error message with `$status: "GuideRailError"`, explaining why such predictions cannot be provided.
-
-## How GuideRailAgent Works
-
-The workflow of GuideRailAgent is as follows:
-
-1. User sends a request to the agent
-2. Agent generates a response
-3. Before the response is returned to the user, GuideRailAgent checks this response
-4. If the response complies with the rules, GuideRailAgent allows it to pass to the user
-5. If the response violates the rules, GuideRailAgent blocks it and returns an explanatory error message
-
-GuideRailAgent blocks non-compliant responses by returning an object containing `abort: true` and `reason` fields. This object is converted to an error response with `$status: "GuideRailError"` and `$message` fields returned to the user.
-
-## Use Cases
-
-GuideRailAgent is suitable for various scenarios, including:
-
-1. **Content Moderation**: Prevent generation of harmful, offensive, or inappropriate content
-2. **Fact Checking**: Verify whether information provided by agents is accurate
-3. **Format Validation**: Ensure agent outputs conform to specific format requirements
-4. **Compliance Checking**: Ensure agent responses comply with legal, ethical, or organizational policies
-5. **Sensitive Information Filtering**: Prevent leakage of personally identifiable information, passwords, and other sensitive data
-6. **Domain-Specific Rules**: Implement domain-specific rules such as financial advice restrictions, medical information accuracy, etc.
-
-## Summary
-
-GuideRailAgent is a powerful tool in the AIGNE framework that provides necessary safety guarantees and quality control mechanisms for AI systems:
-
-1. **Safety Assurance**: Prevent generation of harmful, offensive, or inappropriate content
-2. **Quality Control**: Ensure agent outputs meet specific quality standards
-3. **Compliance**: Help AI systems comply with legal, ethical, and organizational policies
-4. **Flexibility**: Support creation of custom validation and control rules
-5. **Composability**: Allow combination of multiple GuideRailAgents to achieve multi-level control
-
-Through GuideRailAgent, developers can build safer and more reliable AI applications, reducing risks and negative impacts that AI systems might bring. Whether for simple content filtering or complex multi-level validation, GuideRailAgent provides a flexible and powerful solution.
+This document has detailed the creation and integration of GuideRail agents, emphasizing their role in validating and controlling message flows within agent systems. By constructing financial-specific agents, integrating them within a broader framework, and analyzing invocation processes, developers can ensure that agents adhere strictly to compliance and data integrity norms. Future work may involve exploring expanded rule sets and more complex interaction scenarios for enhanced system robustness.
+</markdown>

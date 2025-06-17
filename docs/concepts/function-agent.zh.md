@@ -1,34 +1,26 @@
-# FunctionAgent
+```markdown
+# FunctionAgent: 在 Aigne 框架中实现和使用基于函数的智能体
 
-[English](./function-agent.md) | [中文](./function-agent.zh.md)
+Aigne 框架中的 FunctionAgent 模块是一个灵活的组件，旨在通过基于函数的方法封装功能。对于需要自定义逻辑的场景，如数据处理或外部 API 交互，该模块提供了与其他系统组件的无缝集成。本文件展示了 FunctionAgent 在天气数据检索等任务中的实际应用，强调了包括同步处理、异步生成器和流响应在内的不同方法。
 
-## 概述
+## 创建用于天气检索的基本 FunctionAgent
 
-FunctionAgent 是 AIGNE 框架中的一个核心组件，它允许开发者将普通函数转换为智能代理。本文档详细介绍了 FunctionAgent 的四种创建模式（基础、极简、流式和生成器）以及如何调用这些代理。FunctionAgent 的主要优势在于其灵活性和类型安全性，支持同步/异步处理、流式输出和类型推断，使开发者能够根据不同场景选择最合适的实现方式。无论是需要严格类型定义的复杂应用，还是快速原型开发，FunctionAgent 都能提供简洁而强大的解决方案。
+创建基本 FunctionAgent 展示了基于函数式编程原则定义智能体的最小示例。在此示例中，智能体使用 Aigne 核心的 FunctionAgent 模块配置，以检索特定位置的当前天气数据。通过使用 Zod 结构来构建输入和输出，FunctionAgent 为数据处理操作提供了验证和结构。处理函数用于获取并返回天气信息，强调了在 Aigne 的智能体模型中，验证、数据处理和操作执行的无缝集成。
 
-## 创建方式
-
-### 基础模式
-
-在基础示例中，我们使用 FunctionAgent.from() 方法并提供相应的选项来创建一个能够获取天气信息的 Agent。这种方式创建的 Agent 涵盖了输入/输出的类型定义和处理逻辑，是最基础的创建方式。
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic-create-agent"
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic"
 const weather = FunctionAgent.from({
   name: "getWeather",
-  description: "Get the current weather for a given location.",
+  description: "获取给定地点的当前天气。",
   inputSchema: z.object({
-    city: z.string().describe("The city to get the weather for."),
+    city: z.string().describe("要获取天气的城市。"),
   }),
   outputSchema: z.object({
-    $message: z.string().describe("The message from the agent."),
-    temperature: z.number().describe("The current temperature in Celsius."),
+    $message: z.string().describe("智能体的信息。"),
+    temperature: z.number().describe("当前温度，单位为摄氏度。"),
   }),
   process: async ({ city }) => {
     console.log(`Fetching weather for ${city}`);
-    const temperature = 25; // You can replace this with actual weather fetching logic
+    const temperature = 25; // 你可以用实际天气获取逻辑替换此处
 
     return {
       $message: "Hello, I'm AIGNE!",
@@ -36,52 +28,54 @@ const weather = FunctionAgent.from({
     };
   },
 });
+
+const result = await weather.invoke({ city: "New York" });
+console.log(result);
 ```
 
-主要特点：
+## 实现一个带有异步生成器的 FunctionAgent
 
-* 使用名称和描述字段来定义 Agent 的功能
-* 通过输入和输出模式定义使用 zod 定义数据结构
-* 实现异步处理逻辑
+这个示例展示了如何实现一个利用异步生成器来进行响应流式传输的 FunctionAgent。这种方法允许增量输出交付，适用于实时响应至关重要的场景。智能体随着时间推移产生部分结果，异步管理文本消息的组合和数据更新，充分利用 JavaScript 异步生成器的强大功能。
 
-### 极简模式
-
-当需要快速创建一个 Agent，而你并不需要显式定义 inputSchema、outputSchema 等时，可以使用极简模式。
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-pure-function-create-agent"
-import { FunctionAgent } from "@aigne/core";
-
-const weather = FunctionAgent.from(async ({ city }) => {
-  console.log(`Fetching weather for ${city}`);
-
-  return {
-    $message: "Hello, I'm AIGNE!",
-    temperature: 25,
-  };
-});
-```
-
-主要特点：
-
-* 直接传递一个函数，该函数可以是同步函数、异步函数、生成器函数或返回 ReadableStream 的函数
-* TypeScript 会根据传入函数自动推断输入/输出的类型
-* 适合对类型严谨度要求不高或需要快速实现的场景
-
-### 流式输出模式
-
-在某些场景中，需要以流式的方式持续输出部分结果，例如实时获取进度、持续返回数据片段等。FunctionAgent 同样支持这种需求。
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-create-agent"
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/function-agent.test.ts" region="example-agent-generator"
 const weather = FunctionAgent.from({
   inputSchema: z.object({
-    city: z.string().describe("The city to get the weather for."),
+    city: z.string().describe("要获取天气的城市。"),
   }),
   outputSchema: z.object({
-    $message: z.string().describe("The message from the agent."),
-    temperature: z.number().describe("The current temperature in Celsius."),
+    $message: z.string().describe("智能体的信息。"),
+    temperature: z.number().describe("当前温度，单位为摄氏度。"),
+  }),
+  process: async function* ({ city }) {
+    console.log(`Fetching weather for ${city}`);
+
+    yield { delta: { text: { $message: "Hello" } } };
+    yield { delta: { text: { $message: "," } } };
+    yield { delta: { text: { $message: " I'm" } } };
+    yield { delta: { text: { $message: " AIGNE" } } };
+    yield { delta: { text: { $message: "!" } } };
+    yield { delta: { json: { temperature: 25 } } };
+
+    return { temperature: 25 };
+  },
+});
+
+const result = await weather.invoke({ city: "New York" });
+console.log(result);
+```
+
+## 使用 FunctionAgent 进行流式响应
+
+在需要实时更新的场景中，如交互式用户界面，流响应功能至关重要。本节演示了如何构建 FunctionAgent 来提供此类流式功能。通过在处理函数中实现 ReadableStream，智能体可以向客户端传输增量数据块，实现渐进式更新。这种技术对于减少延迟和提高需要即时反馈的应用程序的用户体验非常有用。
+
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming"
+const weather = FunctionAgent.from({
+  inputSchema: z.object({
+    city: z.string().describe("要获取天气的城市。"),
+  }),
+  outputSchema: z.object({
+    $message: z.string().describe("智能体的信息。"),
+    temperature: z.number().describe("当前温度，单位为摄氏度。"),
   }),
   process: async ({ city }) => {
     console.log(`Fetching weather for ${city}`);
@@ -99,91 +93,27 @@ const weather = FunctionAgent.from({
     });
   },
 });
-```
-
-主要特点：
-
-* 处理函数返回一个 ReadableStream
-* 通过流控制器将数据依次推送出去
-* 适合需要逐渐返回数据、实时更新的场景
-
-### 生成器模式
-
-如果不想在内部直接返回 ReadableStream，可使用生成器函数（generator）在异步过程中逐步 yield 数据，从而实现流式或分段返回。
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-generator-create-agent"
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
-const weather = FunctionAgent.from({
-  inputSchema: z.object({
-    city: z.string().describe("The city to get the weather for."),
-  }),
-  outputSchema: z.object({
-    $message: z.string().describe("The message from the agent."),
-    temperature: z.number().describe("The current temperature in Celsius."),
-  }),
-  process: async function* ({ city }) {
-    console.log(`Fetching weather for ${city}`);
-
-    yield { delta: { text: { $message: "Hello" } } };
-    yield { delta: { text: { $message: "," } } };
-    yield { delta: { text: { $message: " I'm" } } };
-    yield { delta: { text: { $message: " AIGNE" } } };
-    yield { delta: { text: { $message: "!" } } };
-    yield { delta: { json: { temperature: 25 } } };
-
-    // Or you can return a partial result at the end
-    return { temperature: 25 };
-  },
-});
-```
-
-主要特点：
-
-* 使用异步生成器函数处理数据
-* 通过 yield 产生新的数据块
-* 可以在最后返回一个完整或部分最终结果
-* 语法层面更贴近 JavaScript 函数式编程风格
-
-## 调用方法
-
-### 基本调用
-
-使用调用方法即可执行创建好的智能代理。最常见的调用方式是传入参数对象，等待执行完成后获取返回结果。
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic-invoke"
-const result = await weather.invoke({ city: "New York" });
-console.log(result);
-// Output: { $message: "Hello, I'm AIGNE!", temperature: 25 }
-```
-
-### 流式调用
-
-当需要处理流式数据时，可以启用流式选项，然后使用异步迭代来逐步获取数据块，实现流式读取、分段处理的逻辑。
-
-```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-invoke"
-import { isAgentResponseDelta } from "@aigne/core";
 
 const stream = await weather.invoke({ city: "New York" }, { streaming: true });
-let text = "";
-const json = {};
-for await (const chunk of stream) {
-  if (isAgentResponseDelta(chunk)) {
-    if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
-    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
-  }
-}
-console.log(text); // Output: Hello, I'm AIGNE!
-console.log(json); // Output: { temperature: 25 }
 ```
 
-## 总结
+## 部署为纯函数的 FunctionAgent
 
-FunctionAgent 是 AIGNE 中一个强大且灵活的工具，为用户提供了多种创建和调用的方式，适合不同场景的需求：
+此示例强调了使用纯函数部署 FunctionAgent 的简洁性和有效性。通过直接将函数作为参数传递给智能体创建工厂方法，开发人员可以创建仅专注于核心逻辑的轻量级智能体，无需额外配置。这种模式非常适合于智能体逻辑简单的场景，优先考虑减少开销。
 
-1. 常规模式：显式定义输入/输出的类型和处理逻辑，适合对输入输出要求严格的场景。
-2. 极简模式：用最少代码快速创建 Agent，提高开发效率。
-3. 流式/生成器模式：方便处理长时间、实时或分段输出的任务。
+```ts file="/Users/chao/Projects/blocklet/aigne-framework/docs-examples/test/concepts/function-agent.test.ts" region="example-agent-pure-function"
+const weather = FunctionAgent.from(async ({ city }) => {
+  console.log(`Fetching weather for ${city}`);
 
-根据实际需求，开发者可以灵活选择合适的模式来实现"函数即智能代理"。
+  return {
+    $message: "Hello, I'm AIGNE!",
+    temperature: 25,
+  };
+});
+
+const result = await weather.invoke({ city: "New York" });
+console.log(result);
+```
+
+所提供的示例展示了 FunctionAgent 模块在不同操作需求中的多样性。从基本的同步处理到更复杂的流媒体和基于生成器的智能体，开发人员可以根据应用程序的性能需求和交互模型选择合适的模式。此外，使用纯函数创建 FunctionAgent 可以在逻辑简单的场景中实现高效和直接的部署。
+```

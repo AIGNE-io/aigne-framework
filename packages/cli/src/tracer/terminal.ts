@@ -23,6 +23,7 @@ import { parseDuration } from "../utils/time.js";
 
 export interface TerminalTracerOptions {
   printRequest?: boolean;
+  outputKey?: string;
 }
 
 export class TerminalTracer {
@@ -184,7 +185,23 @@ export class TerminalTracer {
     return title;
   }
 
-  private marked = new Marked().use(markedTerminal({ forceHyperLink: false }));
+  private marked = new Marked().use(
+    {
+      // marked-terminal does not support code block meta, so we need to strip it
+      walkTokens: (token) => {
+        if (token.type === "code") {
+          if (typeof token.lang === "string") {
+            token.lang = token.lang.trim().split(/\s+/)[0];
+          }
+        }
+      },
+    },
+    markedTerminal({ forceHyperLink: false }),
+  );
+
+  get outputKey() {
+    return this.options.outputKey || MESSAGE_KEY;
+  }
 
   formatRequest(_context: Context, m: Message = {}) {
     if (!logger.enabled(LogLevel.INFO)) return;
@@ -203,20 +220,23 @@ export class TerminalTracer {
   }
 
   formatResult(context: Context, m: Message = {}) {
+    const { isTTY } = process.stdout;
+
     const prefix = logger.enabled(LogLevel.INFO)
       ? `${chalk.grey(figures.tick)} 🤖 ${this.formatTokenUsage(context.usage)}`
       : null;
 
-    const msg = m[MESSAGE_KEY];
-    const message = omitBy(m, (_, k) => k === MESSAGE_KEY);
+    const msg = m[this.outputKey];
+    const message = omitBy(m, (_, k) => k === this.outputKey);
 
     const text =
-      msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;
-
-    const json =
-      Object.keys(message).length > 0
-        ? inspect(message, { colors: process.stdout.isTTY })
+      msg && typeof msg === "string"
+        ? isTTY
+          ? this.marked.parse(msg, { async: false }).trim()
+          : msg
         : undefined;
+
+    const json = Object.keys(message).length > 0 ? inspect(message, { colors: isTTY }) : undefined;
 
     return [prefix, text, json].filter(Boolean).join(EOL);
   }

@@ -1,34 +1,27 @@
-# TeamAgent
+# Aigne 框架中的 TeamAgent 模块
 
-[English](./team-agent.md) | [中文](./team-agent.zh.md)
+Aigne 框架中的 TeamAgent 模块旨在管理和协调一组 Agent，以集体完成任务，无论是顺序执行还是并行执行。它提供了灵活的处理模式，以满足不同任务协调需求，如创建需要阶段性输出的 Agent 工作流或同时执行独立任务。该模块在构建具有专门组件的复杂 Agent 系统且要求无缝协作或需要独立处理的多重分析时尤其有用。
 
-## 概述
+## TeamAgent 的顺序执行
 
-TeamAgent 是 AIGNE 框架中的一个强大组件，它允许开发者将多个代理组合成一个团队，以协同工作的方式解决复杂问题。TeamAgent 支持两种处理模式：顺序处理（sequential）和并行处理（parallel），使开发者能够根据任务的依赖关系灵活选择最合适的工作流程。通过 TeamAgent，可以构建复杂的多阶段工作流，每个阶段由专门的代理负责，从而实现更高效、更专业的任务处理。无论是需要按特定顺序执行的任务链，还是可以同时进行的独立任务，TeamAgent 都能提供简洁而强大的解决方案。
+本节介绍 TeamAgent 中的顺序模式，旨在逐一处理各个 Agent。团队中的每个 Agent 按顺序执行，接收到其前驱的组合输出。这种模式非常适合于一个 Agent 的输出作为下一个 Agent 输入的工作流，从而促进协调的处理管道。
 
-## 顺序处理模式
-
-在顺序处理模式中，TeamAgent 中的代理按照添加的顺序依次执行，前一个代理的输出将作为后一个代理的输入。这种模式适合处理有明确依赖关系的任务，例如翻译后再进行文本美化。
-
-```ts file="../../docs-examples/test/concepts/team-agent.test.ts" region="example-agent-sequential-create-agent"
-import { AIAgent, ProcessMode, TeamAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts
 const translatorAgent = AIAgent.from({
   name: "translator",
   inputSchema: z.object({
-    content: z.string().describe("The text content to translate"),
+    content: z.string().describe("要翻译的文本内容"),
   }),
-  instructions: "Translate the text to Chinese:\n{{content}}",
+  instructions: "将文本翻译成中文：\n{{content}}",
   outputKey: "translation",
 });
 
 const prettierAgent = AIAgent.from({
   name: "prettier",
   inputSchema: z.object({
-    translation: z.string().describe("The translated text"),
+    translation: z.string().describe("已翻译的文本"),
   }),
-  instructions: "Prettier the following text:\n{{translation}}",
+  instructions: "美化以下文字：\n{{translation}}",
   outputKey: "formatted",
 });
 
@@ -39,21 +32,11 @@ const teamAgent = TeamAgent.from({
 });
 ```
 
-在上面的示例中，我们创建了两个 AIAgent：
+## 顺序模式下调用 TeamAgent
 
-1. `translatorAgent`：负责将文本翻译成中文，并将结果存储在 `translation` 字段中
-2. `prettierAgent`：接收翻译后的文本，进行美化处理，并将结果存储在 `formatted` 字段中
+在这里，TeamAgent 被用于依次翻译和格式化文本。该实例展示了输入内容的翻译过程和随后通过一系列同步运行的 Agent 进行的美化过程。这展示了 TeamAgent 在需要通过分阶段操作逐步转换和提炼数据的情境中的实用性。
 
-然后，我们使用 `TeamAgent.from()` 方法创建一个顺序处理的团队代理，将这两个代理作为技能添加到团队中。通过设置 `mode: ProcessMode.sequential`，确保这些代理按照添加的顺序依次执行。
-
-### 调用顺序处理团队
-
-创建 TeamAgent 后，可以使用 AIGNE 的 invoke 方法向团队发送请求并获取响应。在顺序处理模式中，每个代理的输出会作为下一个代理的输入，最终返回包含所有代理输出的结果。
-
-```ts file="../../docs-examples/test/concepts/team-agent.test.ts" region="example-agent-sequential-invoke"
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
+```ts
 const model = new OpenAIChatModel();
 const aigne = new AIGNE({ model });
 
@@ -61,37 +44,30 @@ const result = await aigne.invoke(teamAgent, {
   content: "AIGNE is a great framework to build AI agents.",
 });
 console.log(result);
-// Output:
+// 输出：
 // {
-//   translation: "AIGNE 是一个构建人工智能代理的优秀框架。",
 //   formatted: "AIGNE 是一个出色的人工智能代理构建框架。",
 // }
+expect(result).toEqual({
+  formatted: "AIGNE 是一个出色的人工智能代理构建框架。",
+});
 ```
 
-在这个示例中，我们首先创建了一个 OpenAIChatModel 实例和一个 AIGNE 实例。然后，我们调用 `aigne.invoke()` 方法，传入团队代理和初始输入。处理流程如下：
+## TeamAgent 的并行执行
 
-1. `translatorAgent` 接收输入 `{ content: "AIGNE is a great framework to build AI agents." }`，将文本翻译成中文，并输出 `{ translation: "AIGNE 是一个构建人工智能代理的优秀框架。" }`
-2. `prettierAgent` 接收 `translatorAgent` 的输出作为输入，对翻译后的文本进行美化，并输出 `{ formatted: "AIGNE 是一个出色的人工智能代理构建框架。" }`
-3. 最终结果包含所有代理的输出：`{ translation: "...", formatted: "..." }`
+TeamAgent 的并行处理模式允许所有 Agent 在共享输入下同时执行。这促进了输出的并行生成和合并，非常适合于那些需要同时进行多个分析或转换的任务，而无需依赖中间结果。
 
-## 并行处理模式
-
-在并行处理模式中，TeamAgent 中的所有代理同时执行，各自处理相同的输入。这种模式适合处理相互独立的任务，例如同时分析产品的不同方面。
-
-```ts file="../../docs-examples/test/concepts/team-agent.test.ts" region="example-agent-parallel-create-agent"
-import { AIAgent, ProcessMode, TeamAgent } from "@aigne/core";
-import { z } from "zod";
-
+```ts
 const featureAnalyzer = AIAgent.from({
   name: "feature-analyzer",
   inputSchema: z.object({
-    product: z.string().describe("The product description to analyze"),
+    product: z.string().describe("要分析的产品描述"),
   }),
   instructions: `\
-You are a product analyst. Given a product description, identify and list the key features of the product.
-Be specific and focus only on the features. Format as bullet points.
+您是一名产品分析师。根据产品描述，识别并列出产品的主要特征。
+要具体化并仅关注特征。格式为要点。
 
-Product description:
+产品描述：
 {{product}}`,
   outputKey: "features",
 });
@@ -99,13 +75,13 @@ Product description:
 const audienceAnalyzer = AIAgent.from({
   name: "audience-analyzer",
   inputSchema: z.object({
-    product: z.string().describe("The product description to analyze"),
+    product: z.string().describe("要分析的产品描述"),
   }),
   instructions: `\
-You are a market researcher. Given a product description, identify the target audience for this product.
-Consider demographics, interests, needs, and pain points. Format as bullet points.
+您是一名市场研究员。根据产品描述，识别该产品的目标受众。
+考虑人口统计信息、兴趣、需求和痛点。格式为要点。
 
-Product description:
+产品描述：
 {{product}}`,
   outputKey: "audience",
 });
@@ -117,21 +93,11 @@ const analysisTeam = TeamAgent.from({
 });
 ```
 
-在上面的示例中，我们创建了两个 AIAgent：
+## 并行模式下调用 TeamAgent
 
-1. `featureAnalyzer`：负责分析产品特性，并将结果存储在 `features` 字段中
-2. `audienceAnalyzer`：负责分析目标受众，并将结果存储在 `audience` 字段中
+在这个例子中，TeamAgent 通过并行调用功能和受众分析来处理产品的输入描述。这展示了其同时处理复杂分析的能力，每个 Agent 专注于特定的数据方面，从而在不用等待顺序输出的情况下促进全面的洞察。
 
-然后，我们使用 `TeamAgent.from()` 方法创建一个并行处理的团队代理，将这两个代理作为技能添加到团队中。通过设置 `mode: ProcessMode.parallel`，确保这些代理同时执行，各自处理相同的输入。
-
-### 调用并行处理团队
-
-创建并行处理的 TeamAgent 后，可以使用 AIGNE 的 invoke 方法向团队发送请求并获取响应。在并行处理模式中，所有代理同时接收相同的输入，最终返回包含所有代理输出的结果。
-
-```ts file="../../docs-examples/test/concepts/team-agent.test.ts" region="example-agent-parallel-invoke"
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
+```ts
 const model = new OpenAIChatModel();
 const aigne = new AIGNE({ model });
 
@@ -140,41 +106,18 @@ const result = await aigne.invoke(analysisTeam, {
 });
 
 console.log(result);
-// Output would include:
+// 输出将包括：
 // {
-//   features: "- No-code platform\n- Generative AI capabilities\n- App engine functionality\n- Easy integration",
-//   audience: "- Business professionals\n- Non-technical users\n- Organizations seeking AI solutions\n- Developers looking for rapid prototyping",
+//   features: "- 无代码平台\n- 生成式 AI 功能\n- 应用引擎功能\n- 易于集成",
+//   audience: "- 商业专业人士\n- 非技术用户\n- 寻求 AI 解决方案的组织\n- 寻找快速原型的开发者",
 // }
+
+expect(result).toEqual({
+  features:
+    "- 无代码平台\n- 生成式 AI 功能\n- 应用引擎功能\n- 易于集成",
+  audience:
+    "- 商业专业人士\n- 非技术用户\n- 寻求 AI 解决方案的组织\n- 寻找快速原型的开发者",
+});
 ```
 
-在这个示例中，我们首先创建了一个 OpenAIChatModel 实例和一个 AIGNE 实例。然后，我们调用 `aigne.invoke()` 方法，传入团队代理和初始输入。处理流程如下：
-
-1. `featureAnalyzer` 和 `audienceAnalyzer` 同时接收输入 `{ product: "AIGNE is a No-code Generative AI Apps Engine" }`
-2. `featureAnalyzer` 分析产品特性，输出 `{ features: "- No-code platform\n- ..." }`
-3. `audienceAnalyzer` 分析目标受众，输出 `{ audience: "- Business professionals\n- ..." }`
-4. 最终结果合并所有代理的输出：`{ features: "...", audience: "..." }`
-
-## 组合使用顺序和并行处理
-
-TeamAgent 的一个强大特性是可以将顺序处理和并行处理组合使用，构建复杂的工作流。例如，可以先并行分析产品的不同方面，然后将分析结果顺序传递给内容创建代理。
-
-这种组合使用的方式可以通过嵌套 TeamAgent 来实现。例如，可以创建一个并行处理的 TeamAgent 作为顺序处理 TeamAgent 的第一个技能，然后添加其他需要依赖并行处理结果的代理作为后续技能。
-
-## 总结
-
-TeamAgent 是 AIGNE 框架中一个强大且灵活的工具，为用户提供了组合多个代理协同工作的能力：
-
-1. **顺序处理模式**：代理按照添加的顺序依次执行，前一个代理的输出作为后一个代理的输入。适合处理有明确依赖关系的任务，如翻译后再美化文本。
-
-2. **并行处理模式**：所有代理同时执行，各自处理相同的输入。适合处理相互独立的任务，如同时分析产品的不同方面。
-
-3. **组合使用**：通过嵌套 TeamAgent，可以组合使用顺序和并行处理模式，构建复杂的工作流。
-
-TeamAgent 的主要优势在于：
-
-* **模块化设计**：每个代理专注于特定任务，提高处理质量和效率
-* **灵活组合**：根据任务依赖关系选择顺序或并行处理模式
-* **可扩展性**：轻松添加或移除技能，调整工作流程
-* **结构化输出**：每个代理的输出都有明确的字段名，便于后续处理
-
-根据实际需求，开发者可以灵活选择合适的处理模式，构建高效、专业的多代理工作流。
+Aigne 框架中的 TeamAgent 模块在构建和协调复杂的多 Agent 系统方面提供了巨大的灵活性。通过支持顺序和并行执行模式，它能够应对多种用例，范围从需要通过 Agent 数据交接的管道转换到最大化吞吐量的并行分析。通过集成和扩展自定义 Agent 的 TeamAgent，可以进一步根据特定的应用需求来调整系统行为，利用过程调度和模块化组合的核心优势。

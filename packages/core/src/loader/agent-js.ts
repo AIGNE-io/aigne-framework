@@ -1,6 +1,6 @@
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { type ZodFunction, type ZodObject, type ZodTuple, type ZodType, z } from "zod";
-import type { Message } from "../agents/agent.js";
+import { Agent, type Message } from "../agents/agent.js";
 import { customCamelize } from "../utils/camelize.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { inputOutputSchema } from "./schema.js";
@@ -25,6 +25,8 @@ export async function loadAgentFromJsFile(path: string) {
     () => import(path),
     (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
   );
+
+  if (agent instanceof Agent) return agent;
 
   if (typeof agent !== "function") {
     throw new Error(`Agent file ${path} must export a default function, but got ${typeof agent}`);

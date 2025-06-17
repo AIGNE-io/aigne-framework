@@ -1,16 +1,20 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
+import QueryBuilderIcon from "@mui/icons-material/QueryBuilder"
+import TokenIcon from "@mui/icons-material/Token"
 import Box from "@mui/material/Box"
 import Tab from "@mui/material/Tab"
 import Tabs from "@mui/material/Tabs"
 import Typography from "@mui/material/Typography"
 import {useMemo, useState} from "react"
-import type {RunData} from "./types.ts"
+import ReactJson from "react-json-view"
 import {parseDuration} from "../../utils/latency.ts"
+import type {RunData} from "./types.ts"
 
 export default function TraceDetailPanel({run}: {run?: RunData | null}) {
   const [tab, setTab] = useState(0)
   const {t} = useLocaleContext()
 
+  const hasError = run?.status?.code === 2
   const value = useMemo(() => {
     if (tab === 0) {
       return run?.attributes?.input
@@ -27,25 +31,45 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
     return null
   }, [tab, run?.attributes?.input, run?.attributes?.output, run?.status?.message])
 
+  const tabs = [
+    {label: t("input"), value: 0},
+    {label: t("output"), value: 1},
+    ...(hasError ? [{label: t("errorMessage"), value: 2}] : []),
+  ]
+
   if (!run) {
     return null
   }
 
+  const inputTokens = run.attributes.output?.usage?.inputTokens || 0
+  const outputTokens = run.attributes.output?.usage?.outputTokens || 0
+
   return (
     <Box sx={{p: 2, height: "100%", overflowY: "auto"}}>
       <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
-        <Typography fontWeight={600} fontSize={20} mb={2}>
+        <Typography fontWeight={600} fontSize={20} color="text.primary">
           {`${run?.name}`}
-        </Typography>
-        <Typography fontWeight={500} fontSize={16} mb={2}>
-          {`(${parseDuration(run.startTime, run.endTime)})`}
         </Typography>
       </Box>
 
+      <Box sx={{display: "flex", alignItems: "center", gap: 2, mt: 1, color: "text.secondary"}}>
+        <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+          <QueryBuilderIcon fontSize="small" />
+          <Typography fontSize={14}>{`${parseDuration(run.startTime, run.endTime)}`}</Typography>
+        </Box>
+
+        {inputTokens + outputTokens > 0 && (
+          <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+            <TokenIcon fontSize="small" />
+            <Typography fontSize={14}>{`${inputTokens + outputTokens} tokens`}</Typography>
+          </Box>
+        )}
+      </Box>
+
       <Tabs value={tab} onChange={(_, v) => setTab(v)} textColor="inherit" indicatorColor="primary">
-        <Tab label={t("input")} />
-        <Tab label={t("output")} />
-        {run.status?.code === 2 && <Tab label={t("errorMessage")} />}
+        {tabs.map(t => (
+          <Tab key={t.value} label={t.label} />
+        ))}
       </Tabs>
 
       <Box mt={2}>
@@ -53,12 +77,25 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
           component="pre"
           sx={{
             backgroundColor: "#1e1e1e",
-            color: "common.white",
             p: 2,
             borderRadius: 2,
             overflowX: "auto",
           }}>
-          <Box>{JSON.stringify(value, null, 2)}</Box>
+          {value === undefined || value === null || value === "" ? (
+            <Typography color="grey.500">{t("noData")}</Typography>
+          ) : typeof value === "object" ? (
+            <ReactJson
+              src={value}
+              name={false}
+              collapsed={3}
+              enableClipboard={true}
+              displayDataTypes={false}
+              style={{background: "none", color: "inherit", fontSize: 14}}
+              theme="monokai"
+            />
+          ) : (
+            <Typography sx={{whiteSpace: "pre-wrap"}}>{String(value)}</Typography>
+          )}
         </Box>
       </Box>
     </Box>

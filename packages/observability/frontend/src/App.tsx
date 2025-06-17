@@ -14,7 +14,11 @@ import {translations} from "./locales/index.ts"
 import {createTheme} from "@mui/material/styles"
 import List from "./list.tsx"
 
-const theme = createTheme({})
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+})
 export default function App() {
   return (
     <ThemeProvider theme={theme}>

@@ -54,7 +54,6 @@ function TraceItem({
         gap={1}>
         <Typography
           sx={{
-            color: "common.white",
             flex: 1,
             minWidth: 0,
             whiteSpace: "nowrap",
@@ -71,7 +70,7 @@ function TraceItem({
           />
         </Typography>
 
-        <Typography variant="caption" color="common.white" sx={{flexShrink: 0, ml: "auto", mr: 1}}>
+        <Typography variant="caption" sx={{flexShrink: 0, ml: "auto", mr: 1}}>
           {duration}s
         </Typography>
 
@@ -184,11 +183,43 @@ export default function TraceItemList({
   selectedRun?: RunData | null
 }) {
   const annotatedSteps = annotateTraceSteps({steps, start: 0, selectedRun})
+  const {t} = useLocaleContext()
 
-  return renderTraceItems({
-    items: annotatedSteps,
-    totalDuration: annotatedSteps[0].duration,
-    depth: 0,
-    onSelect,
-  })
+  return (
+    <Box>
+      <Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
+          <Typography
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+            fontWeight={600}>
+            {t("agentName")}
+          </Typography>
+
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "200px",
+              position: "relative",
+              borderRadius: 5,
+              fontWeight: 600,
+            }}>
+            {t("duration")}
+          </Box>
+        </Box>
+      </Box>
+
+      {renderTraceItems({
+        items: annotatedSteps,
+        totalDuration: annotatedSteps[0].duration,
+        depth: 0,
+        onSelect,
+      })}
+    </Box>
+  )
 }

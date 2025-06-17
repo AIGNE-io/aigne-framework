@@ -11,6 +11,7 @@ import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx"
 import type {RunData} from "./components/run/types.ts"
 import {parseDuration} from "./utils/latency.ts"
 import type {GridPaginationModel} from "@mui/x-data-grid"
+
 interface RunsResponse {
   data: RunData[]
   total: number
@@ -109,7 +110,7 @@ function App() {
   }
 
   return (
-    <Box sx={{minHeight: "100vh", bgcolor: "#fff", p: 4}}>
+    <Box sx={{minHeight: "100vh", p: 4}}>
       <Paper elevation={0} sx={{borderRadius: 5, p: 3, minHeight: 500, overflow: "hidden"}}>
         <DataGrid
           rows={runs}

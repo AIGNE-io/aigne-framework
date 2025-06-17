@@ -54,17 +54,11 @@ export default function RunDetailDrawer({open, onClose, run}: RunDetailDrawerPro
           count={stats.count}
           latency={latency}
           timestamp={timestamp}
+          onClose={onClose}
         />
 
         <Box sx={{flex: 1, display: "flex", minHeight: 0}}>
-          <Box
-            sx={{
-              flex: 1,
-              py: 4,
-              px: 2,
-              borderRight: "1px solid #bbb",
-              minWidth: 300,
-            }}>
+          <Box sx={{flex: 1, py: 4, px: 2, borderRight: "1px solid #fff", minWidth: 300}}>
             <TraceItemList
               steps={[run]}
               onSelect={run => setSelectedRun(run ?? null)}

@@ -1,6 +1,8 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
 import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
 import Typography from "@mui/material/Typography"
+import CloseIcon from "@mui/icons-material/Close"
 
 interface StatsItemProps {
   label: string
@@ -18,15 +20,12 @@ function StatsItem({label, value}: StatsItemProps) {
         flexDirection: "column",
         gap: 0.5,
       }}>
-      <Typography variant="body2" color="text.secondary" sx={{fontWeight: 500}}>
+      <Typography variant="body2" color="text.primary" sx={{fontWeight: 500}}>
         {label}
       </Typography>
       <Typography
         variant="body1"
-        sx={{
-          fontFamily: "monospace",
-          fontWeight: 500,
-        }}>
+        sx={{fontFamily: "monospace", fontWeight: 400, color: "text.secondary"}}>
         {value}
       </Typography>
     </Box>
@@ -40,6 +39,7 @@ interface RunStatsHeaderProps {
   count: number
   latency: string
   timestamp: string
+  onClose: () => void
 }
 
 export default function RunStatsHeader({
@@ -49,6 +49,7 @@ export default function RunStatsHeader({
   tokens,
   latency,
   timestamp,
+  onClose,
 }: RunStatsHeaderProps) {
   const {t} = useLocaleContext()
   return (
@@ -58,14 +59,13 @@ export default function RunStatsHeader({
         alignItems: "center",
         px: 3,
         py: 1.5,
-        bgcolor: "background.paper",
         borderBottom: theme => `1px solid ${theme.palette.divider}`,
         gap: 1,
       }}>
       <StatsItem label={t("inputTokens")} value={inputTokens} />
-      <Typography sx={{color: "text.secondary"}}>+</Typography>
+      <Typography>+</Typography>
       <StatsItem label={t("outputTokens")} value={outputTokens} />
-      <Typography sx={{color: "text.secondary"}}>=</Typography>
+      <Typography>=</Typography>
       <StatsItem label={t("tokens")} value={tokens} />
       <Box sx={{flex: 1}} />
       <StatsItem label={t("count")} value={count} />
@@ -76,6 +76,10 @@ export default function RunStatsHeader({
         sx={{pl: 2, borderLeft: theme => `1px solid ${theme.palette.divider}`}}>
         {timestamp}
       </Typography>
+
+      <IconButton onClick={onClose}>
+        <CloseIcon />
+      </IconButton>
     </Box>
   )
 }

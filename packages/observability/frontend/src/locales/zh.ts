@@ -1,7 +1,7 @@
 import { flatten } from "flat";
 
 export default flatten({
-  agentName: "Agent Name",
+  agentName: "Agent 名称",
   input: "输入",
   output: "输出",
   status: "状态",
@@ -13,8 +13,8 @@ export default flatten({
   success: "成功",
   failed: "失败",
   errorMessage: "错误信息",
-  inputTokens: "输入Tokens",
-  outputTokens: "输出Tokens",
+  inputTokens: "输入 Tokens",
+  outputTokens: "输出 Tokens",
   tokens: "Tokens",
   count: "次数",
   timestamp: "时间",

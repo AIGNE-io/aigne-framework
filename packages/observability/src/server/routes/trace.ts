@@ -1,4 +1,4 @@
-import { inArray, isNull, sql } from "drizzle-orm";
+import { desc, inArray, isNull, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import express, { type Request, type Response } from "express";
 import { Trace } from "../models/trace.js";
@@ -23,6 +23,7 @@ router.get("/tree", async (req: Request, res: Response) => {
     .select()
     .from(Trace)
     .where(isNull(Trace.parentId))
+    .orderBy(desc(Trace.startTime))
     .limit(pageSize)
     .offset(offset)
     .execute();

@@ -86,7 +86,7 @@ export default function RunDetailDrawer({open, onClose, run}: RunDetailDrawerPro
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{sx: {width: "80vw", p: 0, boxSizing: "border-box"}}}>
+      PaperProps={{sx: {width: "85vw", p: 0, boxSizing: "border-box"}}}>
       {renderContent()}
     </Drawer>
   )

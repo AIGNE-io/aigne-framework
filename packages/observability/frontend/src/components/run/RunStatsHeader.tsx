@@ -1,8 +1,9 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
+import CloseIcon from "@mui/icons-material/Close"
 import Box from "@mui/material/Box"
+import Divider from "@mui/material/Divider"
 import IconButton from "@mui/material/IconButton"
 import Typography from "@mui/material/Typography"
-import CloseIcon from "@mui/icons-material/Close"
 
 interface StatsItemProps {
   label: string
@@ -62,6 +63,12 @@ export default function RunStatsHeader({
         borderBottom: theme => `1px solid ${theme.palette.divider}`,
         gap: 1,
       }}>
+      <IconButton onClick={onClose}>
+        <CloseIcon />
+      </IconButton>
+
+      <Divider orientation="vertical" flexItem />
+
       <StatsItem label={t("inputTokens")} value={inputTokens} />
       <Typography>+</Typography>
       <StatsItem label={t("outputTokens")} value={outputTokens} />
@@ -70,16 +77,12 @@ export default function RunStatsHeader({
       <Box sx={{flex: 1}} />
       <StatsItem label={t("count")} value={count} />
       <StatsItem label={t("latency")} value={latency} />
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{pl: 2, borderLeft: theme => `1px solid ${theme.palette.divider}`}}>
+
+      <Divider orientation="vertical" flexItem />
+
+      <Typography variant="body2" color="text.secondary" sx={{pl: 2}}>
         {timestamp}
       </Typography>
-
-      <IconButton onClick={onClose}>
-        <CloseIcon />
-      </IconButton>
     </Box>
   )
 }

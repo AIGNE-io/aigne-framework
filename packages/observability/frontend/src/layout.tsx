@@ -1,15 +1,15 @@
-import Dashboard from "@arcblock/ux/lib/Layout/dashboard"
-import LocaleSelector from "@arcblock/ux/lib/Locale/selector"
 import ThemeModeToggle from "@arcblock/ux/lib/Config/theme-mode-toggle"
+import Dashboard from "@arcblock/ux/lib/Layout/dashboard"
+import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
+import LocaleSelector from "@arcblock/ux/lib/Locale/selector"
 import ManageSearchIcon from "@mui/icons-material/ManageSearch"
 import {useMemo} from "react"
-import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
 
 export default function Layout({children}: {children: React.ReactNode}) {
   const {t} = useLocaleContext()
 
   const renderAddons = () => {
-    let addonsArray = []
+    const addonsArray = []
 
     // 启用了多语言，且检测到了 locale context，且有多种语言可以切换
     addonsArray.push(<LocaleSelector key="locale-selector" showText={false} />)
@@ -33,7 +33,7 @@ export default function Layout({children}: {children: React.ReactNode}) {
         icon: <ManageSearchIcon />,
       },
     ]
-  }, [])
+  }, [t])
 
   return (
     <Dashboard

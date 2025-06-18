@@ -1,15 +1,16 @@
 import Chip from "@mui/material/Chip"
 import Paper from "@mui/material/Paper"
-import {useEffect, useState} from "react"
-import {joinURL, withQuery} from "ufo"
 import {DataGrid} from "@mui/x-data-grid"
 import type {GridColDef} from "@mui/x-data-grid"
+import {useEffect, useState} from "react"
+import {joinURL, withQuery} from "ufo"
 
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
+import RelativeTime from "@arcblock/ux/lib/RelativeTime"
 import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx"
 import type {RunData} from "./components/run/types.ts"
 import {parseDuration} from "./utils/latency.ts"
-import RelativeTime from "@arcblock/ux/lib/RelativeTime"
+import {useSubscription} from "./ws.tsx"
 
 interface RunsResponse {
   data: RunData[]
@@ -83,6 +84,7 @@ function App() {
           label={row.status?.code === 1 ? t("success") : t("failed")}
           size="small"
           color={row.status?.code === 1 ? "success" : "error"}
+          variant="outlined"
         />
       ),
     },
@@ -90,15 +92,27 @@ function App() {
       field: "startTime",
       headerName: t("startedAt"),
       minWidth: 160,
-      renderCell: ({row}) => (row.startTime ? <RelativeTime value={row.startTime} /> : "-"),
+      renderCell: ({row}) =>
+        row.startTime ? (
+          <RelativeTime value={row.startTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
+        ) : (
+          "-"
+        ),
     },
     {
       field: "endTime",
       headerName: t("endedAt"),
       minWidth: 160,
-      renderCell: ({row}) => (row.endTime ? <RelativeTime value={row.endTime} /> : "-"),
+      renderCell: ({row}) =>
+        row.endTime ? (
+          <RelativeTime value={row.endTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
+        ) : (
+          "-"
+        ),
     },
   ]
+
+  useSubscription("poll.updated", console.log, [])
 
   return (
     <>
@@ -118,8 +132,6 @@ function App() {
             setDrawerOpen(true)
           }}
           disableRowSelectionOnClick
-          disableColumnFilter
-          disableColumnMenu
           sx={{cursor: "pointer"}}
         />
       </Paper>

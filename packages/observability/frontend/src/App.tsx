@@ -1,3 +1,4 @@
+import {ConfigProvider} from "@arcblock/ux/lib/Config"
 import {ToastProvider} from "@arcblock/ux/lib/Toast"
 import {Box, CssBaseline} from "@mui/material"
 import {Suspense} from "react"
@@ -7,11 +8,10 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom"
-import {ConfigProvider} from "@arcblock/ux/lib/Config"
 
-import {translations} from "./locales/index.ts"
+import Layout from "./layout.tsx"
 import List from "./list.tsx"
-import Layout from "./layout"
+import {translations} from "./locales/index.ts"
 
 export default function App() {
   return (

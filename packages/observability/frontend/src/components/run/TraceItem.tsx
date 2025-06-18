@@ -1,6 +1,6 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
 import {Box, Card, Chip, LinearProgress, Tooltip, Typography} from "@mui/material"
-import type {JSX} from "react"
+import type {ReactElement} from "react"
 import {parseDurationMs} from "../../utils/latency.ts"
 import type {RunData} from "./types.ts"
 
@@ -63,6 +63,7 @@ function TraceItem({
             size="small"
             color={status === 1 ? "success" : "error"}
             sx={{ml: 1}}
+            variant="outlined"
           />
         </Typography>
 
@@ -151,7 +152,7 @@ export function renderTraceItems({
   totalDuration: number
   depth?: number
   onSelect?: (step?: RunData) => void
-}): JSX.Element[] {
+}): ReactElement[] {
   return items.flatMap(item => [
     <TraceItem
       key={item.name + (item.start ?? 0)}

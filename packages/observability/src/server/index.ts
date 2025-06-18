@@ -6,6 +6,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import { ZodError } from "zod";
 import { migrate } from "./migrate.js";
 import traceRouter from "./routes/trace.js";
+import wsServer from "./ws.js";
 
 export interface StartServerOptions {
   port: number;
@@ -42,6 +43,12 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
   const server: Server = app.listen(port, () => {
     console.log(`Running observability server on http://localhost:${port}`);
   });
+
+  wsServer.attach(server);
+
+  setInterval(() => {
+    wsServer.broadcast("poll.updated", { pollId: "1", type: "pollUpdated" });
+  }, 4000);
 
   return server;
 }

@@ -19,6 +19,6 @@ export interface RunData {
       };
       [key: string]: unknown;
     };
-    agentName?:string
+    agentTag?: string;
   };
 }

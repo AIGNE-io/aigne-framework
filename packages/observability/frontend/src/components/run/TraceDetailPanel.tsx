@@ -1,7 +1,8 @@
+import InfoRow from "@arcblock/ux/lib/InfoRow"
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
+import RelativeTime from "@arcblock/ux/lib/RelativeTime"
 import Tag from "@arcblock/ux/lib/Tag"
-import QueryBuilderIcon from "@mui/icons-material/QueryBuilder"
-import TokenIcon from "@mui/icons-material/Token"
+import styled from "@emotion/styled"
 import Box from "@mui/material/Box"
 import Tab from "@mui/material/Tab"
 import Tabs from "@mui/material/Tabs"
@@ -9,7 +10,8 @@ import Typography from "@mui/material/Typography"
 import {isUndefined, omitBy} from "lodash"
 import {useMemo, useState} from "react"
 import ReactJson from "react-json-view"
-import {parseDuration, parseDurationMs} from "../../utils/latency.ts"
+import {parseDuration} from "../../utils/latency.ts"
+import {AgentTag} from "./AgentTag.tsx"
 import type {RunData} from "./types.ts"
 
 export default function TraceDetailPanel({run}: {run?: RunData | null}) {
@@ -66,26 +68,70 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
         </Typography>
       </Box>
 
-      <Box sx={{display: "flex", alignItems: "center", gap: 2, mt: 1, color: "text.secondary"}}>
-        {!!parseDurationMs(run.startTime, run.endTime) && (
-          <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
-            <QueryBuilderIcon fontSize="small" />
-            <Typography fontSize={14}>{`${parseDuration(run.startTime, run.endTime)}`}</Typography>
-          </Box>
-        )}
+      <Box sx={{mt: 2}}>
+        <Box sx={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px"}}>
+          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="ID">
+            <Box sx={{textAlign: "right", fontSize: 14}}>{run?.id}</Box>
+          </InfoRowBox>
 
-        {inputTokens + outputTokens > 0 && (
-          <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
-            <TokenIcon fontSize="small" />
-            <Typography fontSize={14}>{`${inputTokens + outputTokens} tokens`}</Typography>
-          </Box>
-        )}
+          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="Agent Type">
+            <Box sx={{textAlign: "right", fontSize: 14}}>
+              <AgentTag agentTag={run?.attributes?.agentTag} />
+            </Box>
+          </InfoRowBox>
 
-        {run?.attributes?.output?.model && (
-          <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
-            <Tag>{run.attributes.output?.model}</Tag>
-          </Box>
-        )}
+          {!!inputTokens && (
+            <InfoRowBox
+              valueComponent="div"
+              nameFormatter={v => v}
+              nameWidth={120}
+              name="Input Tokens">
+              <Box sx={{textAlign: "right", fontSize: 14}}>{inputTokens}</Box>
+            </InfoRowBox>
+          )}
+
+          {!!outputTokens && (
+            <InfoRowBox
+              valueComponent="div"
+              nameFormatter={v => v}
+              nameWidth={120}
+              name="Output Tokens">
+              <Box sx={{textAlign: "right", fontSize: 14}}>{outputTokens}</Box>
+            </InfoRowBox>
+          )}
+
+          {outputTokens + inputTokens > 0 && (
+            <InfoRowBox
+              valueComponent="div"
+              nameFormatter={v => v}
+              nameWidth={120}
+              name="Total Tokens">
+              <Box sx={{textAlign: "right", fontSize: 14}}>{outputTokens + inputTokens}</Box>
+            </InfoRowBox>
+          )}
+
+          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="Start Time">
+            <Box sx={{textAlign: "right", fontSize: 14}}>
+              {run?.startTime && (
+                <RelativeTime value={run?.startTime} type="all" disableTimezone useShortTimezone />
+              )}
+            </Box>
+          </InfoRowBox>
+
+          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="Duration">
+            <Box sx={{textAlign: "right", fontSize: 14}}>
+              {run?.startTime && run?.endTime && `${parseDuration(run.startTime, run.endTime)}`}
+            </Box>
+          </InfoRowBox>
+
+          {!!run?.attributes?.output?.model && (
+            <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="Model">
+              <Box sx={{textAlign: "right", fontSize: 14}}>
+                <Tag>{run?.attributes?.output?.model}</Tag>
+              </Box>
+            </InfoRowBox>
+          )}
+        </Box>
       </Box>
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} textColor="inherit" indicatorColor="primary">
@@ -123,3 +169,17 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
     </Box>
   )
 }
+
+const InfoRowBox = styled(InfoRow)({
+  marginBottom: 0,
+
+  ".info-row__name": {
+    fontSize: 13,
+    color: "#6e6e6e",
+  },
+
+  ".info-row__value": {
+    fontSize: 13,
+    color: "#222",
+  },
+})

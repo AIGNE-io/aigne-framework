@@ -19,7 +19,8 @@ export default flatten({
   count: "Count",
   timestamp: "Timestamp",
   duration: "Duration",
-  traceDashboard: "Trace Dashboard",
+  dashboardTitle: "Aigne Observability",
+  dashboardDescription: "Web Interface to manage your Aigne Agent",
   traces: "Traces",
   metadata: "Metadata",
 });

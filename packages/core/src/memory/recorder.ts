@@ -66,6 +66,8 @@ export const memoryRecorderOutputSchema = z.object({
  * implementations of the process method to handle the actual storage logic.
  */
 export abstract class MemoryRecorder extends Agent<MemoryRecorderInput, MemoryRecorderOutput> {
+  tag = "MemoryRecorderAgent";
+
   /**
    * Creates a new MemoryRecorder instance with predefined input and output schemas.
    *

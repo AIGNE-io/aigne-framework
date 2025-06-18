@@ -254,7 +254,7 @@ export class AIGNEContext implements Context {
   rootId: string;
 
   span?: Span;
-  
+
   readonly internal: AIGNEContextShared;
 
   get model() {
@@ -454,6 +454,7 @@ export class AIGNEContext implements Context {
 
           span.setAttribute("custom.started_at", b.timestamp);
           span.setAttribute("input", JSON.stringify(input));
+          span.setAttribute("agentTag", agent.tag ?? "UnknownAgent");
 
           break;
         }

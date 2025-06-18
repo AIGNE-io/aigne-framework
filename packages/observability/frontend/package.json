@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "@arcblock/ux": "^2.13.70",
-    "@arcblock/ws": "^1.20.14",
     "@blocklet/ui-react": "^2.13.69",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/material": "^5.15.19",
     "@mui/x-data-grid": "^8.5.2",
     "lodash": "^4.17.21",

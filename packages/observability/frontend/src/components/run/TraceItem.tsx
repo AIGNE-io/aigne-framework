@@ -1,7 +1,8 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
-import {Box, Card, Chip, LinearProgress, Tooltip, Typography} from "@mui/material"
+import {Box, Card, LinearProgress, Tooltip, Typography} from "@mui/material"
 import type {ReactElement} from "react"
 import {parseDurationMs} from "../../utils/latency.ts"
+import {AgentTag} from "./AgentTag.tsx"
 import type {RunData} from "./types.ts"
 
 type TraceItemProps = {
@@ -13,6 +14,7 @@ type TraceItemProps = {
   depth?: number
   onSelect?: () => void
   status?: number
+  agentTag?: string
 }
 
 function TraceItem({
@@ -24,10 +26,23 @@ function TraceItem({
   depth = 0,
   onSelect,
   status,
+  agentTag,
 }: TraceItemProps) {
   const widthPercent = (duration / totalDuration) * 100
   const marginLeftPercent = (start / totalDuration) * 100
   const {t} = useLocaleContext()
+
+  const getBorderColor = () => {
+    if (status === 1) {
+      if (selected) {
+        return "primary.main"
+      }
+
+      return "transparent"
+    }
+
+    return "error.main"
+  }
 
   return (
     <Card
@@ -39,7 +54,7 @@ function TraceItem({
         overflow: "hidden",
         transition: "all 0.2s ease-in-out",
         border: "1px solid transparent",
-        borderColor: selected ? "primary.main" : "transparent",
+        borderColor: getBorderColor(),
       }}
       onClick={() => onSelect?.()}>
       <Box
@@ -58,14 +73,11 @@ function TraceItem({
           }}
           fontWeight="medium">
           {name}
-          <Chip
-            label={status === 1 ? t("success") : t("failed")}
-            size="small"
-            color={status === 1 ? "success" : "error"}
-            sx={{ml: 1}}
-            variant="outlined"
-          />
         </Typography>
+
+        <Box sx={{mr: 2}}>
+          <AgentTag agentTag={agentTag} />
+        </Box>
 
         <Typography variant="caption" sx={{flexShrink: 0, ml: "auto", mr: 1}}>
           {duration}s
@@ -109,6 +121,7 @@ type TraceStep = {
   children?: TraceStep[]
   start?: number
   run?: RunData
+  agentTag?: string
   status?: {
     code: number
     message: string
@@ -136,6 +149,7 @@ export function annotateTraceSteps({
         ? annotateTraceSteps({steps: step.children, start: current, selectedRun})
         : undefined,
       run: step,
+      agentTag: step.attributes?.agentTag,
     }
     current += annotated.duration
     return annotated
@@ -163,6 +177,7 @@ export function renderTraceItems({
       selected={item.selected}
       depth={depth}
       status={item.status?.code}
+      agentTag={item.agentTag}
       onSelect={() => onSelect?.(item.run)}
     />,
     ...(item.children

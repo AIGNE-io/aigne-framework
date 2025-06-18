@@ -65,6 +65,8 @@ export interface TeamAgentOptions<I extends Message, O extends Message> extends 
  * {@includeCode ../../test/agents/team-agent.test.ts#example-team-agent-sequential}
  */
 export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O> {
+  tag = "TeamAgent";
+
   /**
    * Create a TeamAgent from the provided options.
    *

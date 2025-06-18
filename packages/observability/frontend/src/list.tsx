@@ -9,8 +9,8 @@ import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
 import RelativeTime from "@arcblock/ux/lib/RelativeTime"
 import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx"
 import type {RunData} from "./components/run/types.ts"
+import {watchSSE} from "./utils/event.ts"
 import {parseDuration} from "./utils/latency.ts"
-import {useSubscription} from "./ws.tsx"
 
 interface RunsResponse {
   data: RunData[]
@@ -27,6 +27,47 @@ function App() {
   const [selectedRun, setSelectedRun] = useState<RunData | null>(null)
   const [paginationModel, setPaginationModel] = useState({page: 0, pageSize: 10})
   const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+    const abortController = new AbortController()
+
+    ;(async () => {
+      const res = await watchSSE({
+        signal: abortController.signal,
+      })
+      const reader = res.getReader()
+
+      while (true) {
+        const {done, value} = await reader.read()
+        if (done) {
+          break
+        }
+
+        if (value) {
+          switch (value.type) {
+            case "change": {
+              console.log("change", value)
+              break
+            }
+            case "complete": {
+              console.log("complete", value)
+              break
+            }
+            case "error": {
+              console.log("error", value)
+              break
+            }
+            default:
+              console.warn("Unsupported event", value)
+          }
+        }
+      }
+    })()
+
+    return () => {
+      abortController.abort()
+    }
+  }, [])
 
   useEffect(() => {
     setLoading(true)
@@ -111,8 +152,6 @@ function App() {
         ),
     },
   ]
-
-  useSubscription("poll.updated", console.log, [])
 
   return (
     <>

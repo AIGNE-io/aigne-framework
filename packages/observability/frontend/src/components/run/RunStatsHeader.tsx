@@ -1,4 +1,5 @@
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
+import RelativeTime from "@arcblock/ux/lib/RelativeTime"
 import CloseIcon from "@mui/icons-material/Close"
 import Box from "@mui/material/Box"
 import Divider from "@mui/material/Divider"
@@ -81,7 +82,7 @@ export default function RunStatsHeader({
       <Divider orientation="vertical" flexItem />
 
       <Typography variant="body2" color="text.secondary" sx={{pl: 2}}>
-        {timestamp}
+        <RelativeTime value={timestamp} type="all" disableTimezone useShortTimezone />
       </Typography>
     </Box>
   )

@@ -1,18 +1,21 @@
 import type { Server } from "node:http";
 import path from "node:path";
 import { initDatabase } from "@aigne/sqlite";
+import compression from "compression";
 import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
+import SSE from "express-sse";
 import { ZodError } from "zod";
 import { migrate } from "./migrate.js";
 import traceRouter from "./routes/trace.js";
-import wsServer from "./ws.js";
 
 export interface StartServerOptions {
   port: number;
   dbUrl?: string;
   distPath: string;
 }
+
+const sse = new SSE();
 
 export async function startServer({ port, distPath, dbUrl }: StartServerOptions): Promise<Server> {
   const db = await initDatabase({ url: dbUrl });
@@ -31,6 +34,8 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
     res.sendFile(path.join(distPath, "index.html"));
   });
 
+  app.get("/sse", compression(), sse.init);
+
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof ZodError) {
       res.status(400).json({ success: false, error: err.errors });
@@ -42,13 +47,13 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
 
   const server: Server = app.listen(port, () => {
     console.log(`Running observability server on http://localhost:${port}`);
+
+    setInterval(() => {
+      sse.send({
+        type: "change",
+      });
+    }, 5000);
   });
-
-  wsServer.attach(server);
-
-  setInterval(() => {
-    wsServer.broadcast("poll.updated", { pollId: "1", type: "pollUpdated" });
-  }, 4000);
 
   return server;
 }

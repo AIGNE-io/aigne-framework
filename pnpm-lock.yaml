@@ -992,9 +992,6 @@ importers:
       '@aigne/sqlite':
         specifier: workspace:^
         version: link:../sqlite
-      '@arcblock/ws':
-        specifier: ^1.20.14
-        version: 1.20.14
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1007,6 +1004,9 @@ importers:
       '@opentelemetry/sdk-trace-base':
         specifier: ^2.0.1
         version: 2.0.1(@opentelemetry/api@1.9.0)
+      compression:
+        specifier: ^1.8.0
+        version: 1.8.0
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -1016,6 +1016,9 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.1.0
+      express-sse:
+        specifier: ^1.0.0
+        version: 1.0.0
       flat:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1044,9 +1047,6 @@ importers:
       '@arcblock/ux':
         specifier: ^2.13.70
         version: 2.13.70(34eab03247400b4f386b7372f905cad5)
-      '@arcblock/ws':
-        specifier: ^1.20.14
-        version: 1.20.14
       '@blocklet/ui-react':
         specifier: ^2.13.69
         version: 2.13.69(3f16165d9657a46b7a56e068b62fdfc1)
@@ -1056,6 +1056,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.2.0))(@types/react@18.2.0)(react@18.2.0)
+      '@microsoft/fetch-event-source':
+        specifier: ^2.0.1
+        version: 2.0.1
       '@mui/material':
         specifier: ^5.15.19
         version: 5.17.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.2.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.2.0))(@types/react@18.2.0)(react@18.2.0))(@types/react@18.2.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -2540,6 +2543,9 @@ packages:
     resolution: {integrity: sha512-NES0P2pyx5XjveTYotTG03eoJwx0haJBYWXfqmcPLmbQ5u03Qmd7rxhLfWDdIRj4PrdhVProwdB0FA82ryLcKQ==}
     cpu: [x64]
     os: [win32]
+
+  '@microsoft/fetch-event-source@2.0.1':
+    resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
 
   '@modelcontextprotocol/sdk@1.11.0':
     resolution: {integrity: sha512-k/1pb70eD638anoi0e8wUGAlbMJXyvdV4p62Ko+EZ7eBe1xMx8Uhak1R5DgfoofsK5IBBnRwsYGTaLZl+6/+RQ==}
@@ -5201,6 +5207,10 @@ packages:
     engines: {node: '>= 16'}
     peerDependencies:
       express: ^4.11 || 5 || ^5.0.0-beta.1
+
+  express-sse@1.0.0:
+    resolution: {integrity: sha512-ny3nCXjrWwQki8edZe0DwuXjLbw0ga3pc0CZX19VOB0GKuUnlIH2fqPBwTJcGHZPtmjJ2EVNPVeCgORpX6Nsrw==}
+    engines: {node: '>=16.0.0'}
 
   express@5.1.0:
     resolution: {integrity: sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==}
@@ -11353,6 +11363,8 @@ snapshots:
   '@libsql/win32-x64-msvc@0.5.11':
     optional: true
 
+  '@microsoft/fetch-event-source@2.0.1': {}
+
   '@modelcontextprotocol/sdk@1.11.0':
     dependencies:
       content-type: 1.0.5
@@ -14754,6 +14766,8 @@ snapshots:
   express-rate-limit@7.5.0(express@5.1.0):
     dependencies:
       express: 5.1.0
+
+  express-sse@1.0.0: {}
 
   express@5.1.0:
     dependencies:

@@ -19,7 +19,8 @@ export default flatten({
   count: "次数",
   timestamp: "时间",
   duration: "执行时间",
-  traceDashboard: "Trace 仪表盘",
+  dashboardTitle: "Aigne 数据分析",
+  dashboardDescription: "Web 界面来管理您的Aigne Agent",
   traces: "Trace 列表",
   metadata: "Metadata",
 });

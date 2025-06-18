@@ -38,10 +38,12 @@ export default function Layout({children}: {children: React.ReactNode}) {
   return (
     <Dashboard
       links={links}
-      title={t("traceDashboard")}
+      title={t("dashboardTitle")}
       headerProps={{
-        brand: t("traceDashboard"),
+        brand: t("dashboardTitle"),
+        description: t("dashboardDescription"),
         addons: nodes,
+        logo: <img src="https://www.aigne.io/.well-known/service/blocklet/logo" alt="Aigne" />,
       }}
       fullWidth
       legacy={false}>

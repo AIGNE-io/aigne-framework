@@ -198,7 +198,7 @@ const InfoRowBox = styled(InfoRow)`
   margin-bottom: 0;
 
   .info-row__name {
-    font-size: 13px;
+    font-size: 11px;
     color: ${({theme}) => theme.palette.text.secondary};
   }
 

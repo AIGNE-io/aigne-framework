@@ -86,6 +86,7 @@ export const AgentTag = ({agentTag}: {agentTag?: string}) => {
           backgroundColor: `${agentColors[agentTag as keyof typeof agentColors]?.backgroundColor} !important`,
           color: `${agentColors[agentTag as keyof typeof agentColors]?.color} !important`,
           border: 0,
+          fontSize: 10,
         }}
       />
     </Tooltip>

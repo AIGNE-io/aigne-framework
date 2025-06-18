@@ -70,8 +70,7 @@ function TraceItem({
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
-          }}
-          fontWeight="medium">
+          }}>
           {name}
         </Typography>
 
@@ -209,7 +208,7 @@ export default function TraceItemList({
             overflow: "hidden",
             textOverflow: "ellipsis",
           }}
-          fontWeight={600}>
+          fontWeight={500}>
           {t("agentName")}
         </Typography>
 
@@ -219,7 +218,7 @@ export default function TraceItemList({
             maxWidth: "200px",
             position: "relative",
             borderRadius: 5,
-            fontWeight: 600,
+            fontWeight: 500,
           }}>
           {t("duration")}
         </Box>

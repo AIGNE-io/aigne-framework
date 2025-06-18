@@ -15,6 +15,7 @@ export default flatten({
   errorMessage: "Error Message",
   inputTokens: "Input Tokens",
   outputTokens: "Output Tokens",
+  totalTokens: "Total Tokens",
   tokens: "Tokens",
   count: "Count",
   timestamp: "Timestamp",
@@ -23,4 +24,7 @@ export default flatten({
   dashboardDescription: "Web Interface to manage your Aigne Agent",
   traces: "Traces",
   metadata: "Metadata",
+  startTime: "Start Time",
+  model: "Model",
+  agentTag: "Agent Type",
 });

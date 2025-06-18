@@ -1077,6 +1077,9 @@ importers:
       react-json-view:
         specifier: ^1.21.3
         version: 1.21.3(@types/react@18.2.0)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      tinycolor2:
+        specifier: ^1.6.0
+        version: 1.6.0
     devDependencies:
       '@eslint/js':
         specifier: ^9.25.0

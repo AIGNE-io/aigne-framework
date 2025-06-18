@@ -45,12 +45,8 @@ function App() {
 
         if (value) {
           switch (value.type) {
-            case "change": {
-              console.log("change", value)
-              break
-            }
-            case "complete": {
-              console.log("complete", value)
+            case "event": {
+              console.log("event", value)
               break
             }
             case "error": {

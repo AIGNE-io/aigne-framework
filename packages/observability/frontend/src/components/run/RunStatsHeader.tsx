@@ -22,12 +22,10 @@ function StatsItem({label, value}: StatsItemProps) {
         flexDirection: "column",
         gap: 0.5,
       }}>
-      <Typography variant="body2" color="text.primary" sx={{fontWeight: 500}}>
+      <Typography variant="body2" color="text.primary">
         {label}
       </Typography>
-      <Typography
-        variant="body1"
-        sx={{fontFamily: "monospace", fontWeight: 400, color: "text.secondary"}}>
+      <Typography variant="body1" sx={{fontFamily: "monospace", color: "text.secondary"}}>
         {value}
       </Typography>
     </Box>
@@ -81,7 +79,7 @@ export default function RunStatsHeader({
 
       <Divider orientation="vertical" flexItem />
 
-      <Typography variant="body2" color="text.secondary" sx={{pl: 2}}>
+      <Typography variant="body2" sx={{pl: 2}}>
         <RelativeTime value={timestamp} type="all" disableTimezone useShortTimezone />
       </Typography>
     </Box>

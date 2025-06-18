@@ -37,7 +37,11 @@ export class AIGNEObserver {
       throw new Error(`Port ${port} is already in use`);
     }
 
-    initOpenTelemetry(this.storage.url);
+    initOpenTelemetry({
+      dbUrl: this.storage.url,
+      apiUrl: `http://localhost:${detected}`,
+      useAPI: false,
+    });
 
     this.server.port = detected;
 

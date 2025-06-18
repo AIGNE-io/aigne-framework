@@ -2,11 +2,11 @@ import InfoRow from "@arcblock/ux/lib/InfoRow"
 import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
 import RelativeTime from "@arcblock/ux/lib/RelativeTime"
 import Tag from "@arcblock/ux/lib/Tag"
-import styled from "@emotion/styled"
 import Box from "@mui/material/Box"
 import Tab from "@mui/material/Tab"
 import Tabs from "@mui/material/Tabs"
 import Typography from "@mui/material/Typography"
+import {styled} from "@mui/material/styles"
 import {isUndefined, omitBy} from "lodash"
 import {useMemo, useState} from "react"
 import ReactJson from "react-json-view"
@@ -63,19 +63,23 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
   return (
     <Box sx={{p: 2, height: "100%", overflowY: "auto"}}>
       <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
-        <Typography fontWeight={600} fontSize={20} color="text.primary">
+        <Typography fontSize={20} color="text.primary">
           {`${run?.name}`}
         </Typography>
       </Box>
 
-      <Box sx={{mt: 2}}>
+      <Box sx={{my: 2}}>
         <Box sx={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px"}}>
           <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="ID">
-            <Box sx={{textAlign: "right", fontSize: 14}}>{run?.id}</Box>
+            <Box sx={{textAlign: "right"}}>{run?.id}</Box>
           </InfoRowBox>
 
-          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="Agent Type">
-            <Box sx={{textAlign: "right", fontSize: 14}}>
+          <InfoRowBox
+            valueComponent="div"
+            nameFormatter={v => v}
+            nameWidth={120}
+            name={t("agentTag")}>
+            <Box sx={{textAlign: "right"}}>
               <AgentTag agentTag={run?.attributes?.agentTag} />
             </Box>
           </InfoRowBox>
@@ -85,8 +89,8 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
               valueComponent="div"
               nameFormatter={v => v}
               nameWidth={120}
-              name="Input Tokens">
-              <Box sx={{textAlign: "right", fontSize: 14}}>{inputTokens}</Box>
+              name={t("inputTokens")}>
+              <Box sx={{textAlign: "right"}}>{inputTokens}</Box>
             </InfoRowBox>
           )}
 
@@ -95,8 +99,8 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
               valueComponent="div"
               nameFormatter={v => v}
               nameWidth={120}
-              name="Output Tokens">
-              <Box sx={{textAlign: "right", fontSize: 14}}>{outputTokens}</Box>
+              name={t("outputTokens")}>
+              <Box sx={{textAlign: "right"}}>{outputTokens}</Box>
             </InfoRowBox>
           )}
 
@@ -105,28 +109,40 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
               valueComponent="div"
               nameFormatter={v => v}
               nameWidth={120}
-              name="Total Tokens">
-              <Box sx={{textAlign: "right", fontSize: 14}}>{outputTokens + inputTokens}</Box>
+              name={t("totalTokens")}>
+              <Box sx={{textAlign: "right"}}>{outputTokens + inputTokens}</Box>
             </InfoRowBox>
           )}
 
-          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="Start Time">
-            <Box sx={{textAlign: "right", fontSize: 14}}>
+          <InfoRowBox
+            valueComponent="div"
+            nameFormatter={v => v}
+            nameWidth={120}
+            name={t("startTime")}>
+            <Box sx={{textAlign: "right"}}>
               {run?.startTime && (
                 <RelativeTime value={run?.startTime} type="all" disableTimezone useShortTimezone />
               )}
             </Box>
           </InfoRowBox>
 
-          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="Duration">
-            <Box sx={{textAlign: "right", fontSize: 14}}>
+          <InfoRowBox
+            valueComponent="div"
+            nameFormatter={v => v}
+            nameWidth={120}
+            name={t("duration")}>
+            <Box sx={{textAlign: "right"}}>
               {run?.startTime && run?.endTime && `${parseDuration(run.startTime, run.endTime)}`}
             </Box>
           </InfoRowBox>
 
           {!!run?.attributes?.output?.model && (
-            <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="Model">
-              <Box sx={{textAlign: "right", fontSize: 14}}>
+            <InfoRowBox
+              valueComponent="div"
+              nameFormatter={v => v}
+              nameWidth={120}
+              name={t("model")}>
+              <Box sx={{textAlign: "right"}}>
                 <Tag>{run?.attributes?.output?.model}</Tag>
               </Box>
             </InfoRowBox>
@@ -170,16 +186,17 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
   )
 }
 
-const InfoRowBox = styled(InfoRow)({
-  marginBottom: 0,
+const InfoRowBox = styled(InfoRow)`
+  margin-bottom: 0;
 
-  ".info-row__name": {
-    fontSize: 13,
-    color: "#6e6e6e",
-  },
+  .info-row__name {
+    font-size: 13px;
+    color: ${({theme}) => theme.palette.text.secondary};
+  }
 
-  ".info-row__value": {
-    fontSize: 13,
-    color: "#222",
-  },
-})
+  .info-row__value {
+    font-size: 13px;
+    color: ${({theme}) => theme.palette.text.primary};
+    font-weight: 400;
+  }
+`

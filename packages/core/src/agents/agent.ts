@@ -6,7 +6,6 @@ import type { ContextUsage } from "../aigne/usage.js";
 import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
-import { createMessage, getMessage } from "../prompt/prompt-builder.js";
 import { logger } from "../utils/logger.js";
 import {
   agentResponseStreamToObject,
@@ -485,7 +484,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
         await memory.retrieve(
           {
             ...input,
-            search: typeof input === "string" ? input : input && getMessage(input),
+            search: typeof input.search === "string" ? input.search : JSON.stringify(input.search),
             limit: input.limit ?? this.maxRetrieveMemoryCount,
           },
           options.context,
@@ -511,7 +510,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * Regular mode waits for the agent to complete processing and return the final result,
    * suitable for scenarios where a complete result is needed at once.
    *
-   * @param input Input message to the agent, can be a string or structured object
+   * @param input Input message to the agent
    * @param options Invocation options, must set streaming to false or leave unset
    * @returns Final JSON response
    *
@@ -519,10 +518,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * Here's an example of invoking an agent with regular mode:
    * {@includeCode ../../test/agents/agent.test.ts#example-invoke}
    */
-  async invoke(
-    input: I | string,
-    options?: Partial<AgentInvokeOptions> & { streaming?: false },
-  ): Promise<O>;
+  async invoke(input: I, options?: Partial<AgentInvokeOptions> & { streaming?: false }): Promise<O>;
 
   /**
    * Invoke the agent with streaming response
@@ -531,7 +527,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * suitable for scenarios requiring real-time progress updates, such as
    * chat bot typing effects.
    *
-   * @param input Input message to the agent, can be a string or structured object
+   * @param input Input message to the agent
    * @param options Invocation options, must set streaming to true for this overload
    * @returns Streaming response object
    *
@@ -540,7 +536,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * {@includeCode ../../test/agents/agent.test.ts#example-invoke-streaming}
    */
   async invoke(
-    input: I | string,
+    input: I,
     options: Partial<AgentInvokeOptions> & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
@@ -553,12 +549,9 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @param options Invocation options
    * @returns Agent response (streaming or regular)
    */
-  async invoke(input: I | string, options?: Partial<AgentInvokeOptions>): Promise<AgentResponse<O>>;
+  async invoke(input: I, options?: Partial<AgentInvokeOptions>): Promise<AgentResponse<O>>;
 
-  async invoke(
-    input: I | string,
-    options: Partial<AgentInvokeOptions> = {},
-  ): Promise<AgentResponse<O>> {
+  async invoke(input: I, options: Partial<AgentInvokeOptions> = {}): Promise<AgentResponse<O>> {
     const opts: AgentInvokeOptions = {
       ...options,
       context: options.context ?? (await this.newDefaultContext()),
@@ -573,15 +566,13 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
       options.memories = undefined;
     }
 
-    const message = typeof input === "string" ? (createMessage(input) as I) : input;
-
     logger.debug("Invoke agent %s started with input: %O", this.name, input);
-    if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input: message });
+    if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });
 
     try {
-      await this.hooks.onStart?.({ context: opts.context, input: message });
+      await this.hooks.onStart?.({ context: opts.context, input });
 
-      const parsedInput = checkArguments(`Agent ${this.name} input`, this.inputSchema, message);
+      const parsedInput = checkArguments(`Agent ${this.name} input`, this.inputSchema, input);
 
       await this.preprocess(parsedInput, opts);
 
@@ -601,13 +592,13 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
               : objectToAgentResponseStream(response as O);
 
         return this.checkResponseByGuideRails(
-          message,
+          input,
           onAgentResponseStreamEnd(stream, {
             onResult: async (result) => {
               return await this.processAgentOutput(parsedInput, result, opts);
             },
             onError: async (error) => {
-              return await this.processAgentError(message, error, opts);
+              return await this.processAgentError(input, error, opts);
             },
           }),
           opts,
@@ -615,7 +606,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
       }
 
       return await this.checkResponseByGuideRails(
-        message,
+        input,
         this.processAgentOutput(
           parsedInput,
           response instanceof ReadableStream
@@ -628,7 +619,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
         opts,
       );
     } catch (error) {
-      throw await this.processAgentError(message, error, opts);
+      throw await this.processAgentError(input, error, opts);
     }
   }
 

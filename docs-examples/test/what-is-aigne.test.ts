@@ -12,6 +12,7 @@ test("Example what is aigne: basic", async () => {
       model: "gpt-4o-mini",
     }),
     instructions: "You are a helpful assistant",
+    inputKey: "message",
   });
 
   assert(agent.model);
@@ -19,10 +20,10 @@ test("Example what is aigne: basic", async () => {
     text: "AIGNE is a platform for building AI agents.",
   });
 
-  const result = await agent.invoke("What is AIGNE?");
+  const result = await agent.invoke({ message: "What is AIGNE?" });
   console.log(result);
-  // Output: { $message: "AIGNE is a platform for building AI agents." }
-  expect(result).toEqual({ $message: "AIGNE is a platform for building AI agents." });
+  // Output: { message: "AIGNE is a platform for building AI agents." }
+  expect(result).toEqual({ message: "AIGNE is a platform for building AI agents." });
 
   // #endregion example-what-is-aigne-basic
 });

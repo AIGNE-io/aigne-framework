@@ -13,6 +13,7 @@ test("Example model usage with AIGNE", async () => {
   const agent = AIAgent.from({
     model,
     instructions: "You are a helpful assistant.",
+    inputKey: "message",
   });
 
   spyOn(model, "process").mockReturnValueOnce(
@@ -21,15 +22,15 @@ test("Example model usage with AIGNE", async () => {
     }),
   );
 
-  const result = await aigne.invoke(agent, "Hello");
+  const result = await aigne.invoke(agent, { message: "Hello" });
 
   expect(result).toEqual({
-    $message: "Hello! How can I assist you today?",
+    message: "Hello! How can I assist you today?",
   });
 
   console.log(result);
   // Output:
   // {
-  //   $message: "Hello! How can I assist you today?",
+  //   message: "Hello! How can I assist you today?",
   // }
 });

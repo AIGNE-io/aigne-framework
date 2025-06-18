@@ -98,10 +98,12 @@ test.each(processModes)(
 
     const first = AIAgent.from({
       outputKey: "first",
+      inputKey: "message",
     });
 
     const second = AIAgent.from({
       outputKey: "second",
+      inputKey: "message",
     });
 
     spyOn(model, "process")
@@ -113,7 +115,7 @@ test.each(processModes)(
       mode,
     });
 
-    const stream = await aigne.invoke(team, "hello", { streaming: true });
+    const stream = await aigne.invoke(team, { message: "hello" }, { streaming: true });
 
     expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
   },
@@ -143,7 +145,7 @@ test.each(processModes)(
       mode,
     });
 
-    const stream = await aigne.invoke(team, "hello", { streaming: true });
+    const stream = await aigne.invoke(team, { message: "hello" }, { streaming: true });
 
     expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
   },

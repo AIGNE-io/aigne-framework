@@ -24,6 +24,6 @@ test("AIGNE cli should work in Node.js", async () => {
   });
 
   expect(result?.result).toEqual({
-    $message: "Hello, I am a chatbot!",
+    message: "Hello, I am a chatbot!",
   });
 });

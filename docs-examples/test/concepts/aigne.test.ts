@@ -21,6 +21,7 @@ test("Example AIGNE: basic", async () => {
   // #region example-aigne-basic-add-agent
   const agent = AIAgent.from({
     instructions: "You are a helpful assistant",
+    inputKey: "message",
   });
 
   aigne.addAgent(agent);
@@ -30,21 +31,21 @@ test("Example AIGNE: basic", async () => {
   spyOn(aigne.model, "process").mockReturnValueOnce({
     text: "AIGNE is a platform for building AI agents.",
   });
-  const result = await aigne.invoke(agent, "What is AIGNE?");
+  const result = await aigne.invoke(agent, { message: "What is AIGNE?" });
   console.log(result);
-  // Output: { $message: "AIGNE is a platform for building AI agents." }
-  expect(result).toEqual({ $message: "AIGNE is a platform for building AI agents." });
+  // Output: { message: "AIGNE is a platform for building AI agents." }
+  expect(result).toEqual({ message: "AIGNE is a platform for building AI agents." });
   // #endregion example-aigne-basic-invoke-agent
 
   // #region example-aigne-basic-invoke-agent-streaming
   spyOn(aigne.model, "process").mockReturnValueOnce(
     stringToAgentResponseStream("AIGNE is a platform for building AI agents."),
   );
-  const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
+  const stream = await aigne.invoke(agent, { message: "What is AIGNE?" }, { streaming: true });
   let response = "";
   for await (const chunk of stream) {
     if (isAgentResponseDelta(chunk)) {
-      if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+      if (chunk.delta.text?.message) response += chunk.delta.text.message;
     }
   }
   console.log(response);
@@ -57,10 +58,10 @@ test("Example AIGNE: basic", async () => {
     text: "AIGNE is a platform for building AI agents.",
   });
   const userAgent = aigne.invoke(agent);
-  const result1 = await userAgent.invoke("What is AIGNE?");
+  const result1 = await userAgent.invoke({ message: "What is AIGNE?" });
   console.log(result1);
-  // Output: { $message: "AIGNE is a platform for building AI agents." }
-  expect(result1).toEqual({ $message: "AIGNE is a platform for building AI agents." });
+  // Output: { message: "AIGNE is a platform for building AI agents." }
+  expect(result1).toEqual({ message: "AIGNE is a platform for building AI agents." });
   // #endregion example-aigne-basic-invoke-agent-user-agent
 
   // #region example-aigne-basic-shutdown

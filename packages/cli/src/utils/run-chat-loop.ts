@@ -1,6 +1,8 @@
-import { type Message, type UserAgent, createMessage } from "@aigne/core";
+import type { Message, UserAgent } from "@aigne/core";
 import inquirer from "inquirer";
 import { TerminalTracer } from "../tracer/terminal.js";
+
+export const DEFAULT_CHAT_INPUT_KEY = "message";
 
 export interface ChatLoopOptions {
   initialCall?: Message | string;
@@ -10,7 +12,10 @@ export interface ChatLoopOptions {
   skipLoop?: boolean;
 }
 
-export async function runChatLoopInTerminal(userAgent: UserAgent, options: ChatLoopOptions = {}) {
+export async function runChatLoopInTerminal(
+  userAgent: UserAgent<any, any>,
+  options: ChatLoopOptions = {},
+) {
   const { initialCall = process.env.INITIAL_CALL, skipLoop = process.env.SKIP_LOOP === "true" } =
     options;
 
@@ -59,9 +64,7 @@ async function callAgent(userAgent: UserAgent, input: Message | string, options:
 
   await tracer.run(
     userAgent,
-    options.inputKey && typeof input === "string"
-      ? { [options.inputKey]: input }
-      : createMessage(input),
+    typeof input === "string" ? { [options.inputKey || DEFAULT_CHAT_INPUT_KEY]: input } : input,
   );
 }
 

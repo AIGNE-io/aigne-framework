@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, AIGNE, ChatModel, MCPAgent, createMessage } from "@aigne/core";
+import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -50,8 +50,8 @@ test("AIGNE.load should load agents correctly", async () => {
     )
     .mockReturnValueOnce(Promise.resolve({ text: "1 + 2 = 3" }));
 
-  const result = await aigne.invoke(chat, "1 + 2 = ?");
-  expect(result).toEqual(expect.objectContaining(createMessage("1 + 2 = 3")));
+  const result = await aigne.invoke(chat, { message: "1 + 2 = ?" });
+  expect(result).toEqual(expect.objectContaining({ message: "1 + 2 = 3" }));
 });
 
 test("loader should use override options", async () => {

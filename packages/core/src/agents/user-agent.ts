@@ -49,7 +49,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     if (this._process) super.publishToTopics(output, options);
   }
 
-  override invoke = ((input: string | I, options: Partial<AgentInvokeOptions> = {}) => {
+  override invoke = ((input: I, options: Partial<AgentInvokeOptions> = {}) => {
     if (!options.context) this.context = this.context.newContext({ reset: true });
 
     return super.invoke(input, { ...options, context: this.context });

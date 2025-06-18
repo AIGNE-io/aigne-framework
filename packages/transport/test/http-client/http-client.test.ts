@@ -6,7 +6,6 @@ import {
   ChatModel,
   type ContextEventMap,
   type Message,
-  createMessage,
   isAgentResponseDelta,
 } from "@aigne/core";
 import {
@@ -40,11 +39,11 @@ test("AIGNEClient example simple", async () => {
 
   const client = new AIGNEHTTPClient({ url });
 
-  const response = await client.invoke("chat", { $message: "hello" });
+  const response = await client.invoke("chat", { message: "hello" });
 
-  console.log(response); // Output: {$message: "Hello world!"}
+  console.log(response); // Output: {message: "Hello world!"}
 
-  expect(response).toEqual({ $message: "Hello world!" });
+  expect(response).toEqual({ message: "Hello world!" });
 
   // #endregion example-aigne-client-simple
 
@@ -64,12 +63,12 @@ test("AIGNEClient example with streaming", async () => {
 
   const client = new AIGNEHTTPClient({ url });
 
-  const stream = await client.invoke("chat", { $message: "hello" }, { streaming: true });
+  const stream = await client.invoke("chat", { message: "hello" }, { streaming: true });
 
   let text = "";
   for await (const chunk of stream) {
     if (isAgentResponseDelta(chunk)) {
-      if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+      if (chunk.delta.text?.message) text += chunk.delta.text.message;
     }
   }
 
@@ -126,7 +125,7 @@ test.each(table)(
       );
 
       const client = new AIGNEHTTPClient({ url });
-      const response = await client.invoke("chat", { $message: "hello" }, options);
+      const response = await client.invoke("chat", { message: "hello" }, options);
 
       if (options.streaming) {
         assert(response instanceof ReadableStream);
@@ -159,7 +158,7 @@ test.each(table)(
       );
 
       const client = new AIGNEHTTPClient({ url });
-      const response = client.invoke("chat", { $message: "hello" }, options);
+      const response = client.invoke("chat", { message: "hello" }, options);
 
       if (options.streaming) {
         const stream = await response;
@@ -226,7 +225,7 @@ test.each(table)(
       const response = client.invoke("chat", [] as unknown as Message, options);
 
       expect(response).rejects.toThrow(
-        "status 400: Invoke agent chat check arguments error: input: Expected string or object, received array",
+        "status 400: Invoke agent chat check arguments error: input: Expected object, received array",
       );
     } finally {
       await close();
@@ -276,20 +275,20 @@ test("AIGNEClient should support custom memory for client agent", async () => {
 
     const { storage } = memory;
 
-    const response = await clientAgent.invoke("Hello, I'm Bob!");
-    expect(response).toEqual({ $message: "Hello Bob, How can I help you?" });
+    const response = await clientAgent.invoke({ message: "Hello, I'm Bob!" });
+    expect(response).toEqual({ message: "Hello Bob, How can I help you?" });
 
     expect(storage).toEqual([
       expect.objectContaining({
         content: expect.objectContaining({
           role: "user",
-          content: createMessage("Hello, I'm Bob!"),
+          content: { message: "Hello, I'm Bob!" },
         }),
       }),
       expect.objectContaining({
         content: expect.objectContaining({
           role: "agent",
-          content: createMessage("Hello Bob, How can I help you?"),
+          content: { message: "Hello Bob, How can I help you?" },
         }),
       }),
     ]);
@@ -298,8 +297,8 @@ test("AIGNEClient should support custom memory for client agent", async () => {
       stringToAgentResponseStream("Your name is Bob."),
     );
 
-    const response2 = await clientAgent.invoke("My name is?");
-    expect(response2).toEqual({ $message: "Your name is Bob." });
+    const response2 = await clientAgent.invoke({ message: "My name is?" });
+    expect(response2).toEqual({ message: "Your name is Bob." });
     expect(modelProcess).toHaveBeenLastCalledWith(
       expect.objectContaining({
         messages: expect.arrayContaining([
@@ -387,6 +386,7 @@ async function createAIGNE() {
 
   const chat = AIAgent.from({
     name: "chat",
+    inputKey: "message",
   });
 
   return new AIGNE({ model, agents: [chat] });

@@ -2,12 +2,12 @@
 
 exports[`AIGNEServer example with expression 1`] = `
 {
-  "$message": "Hello world!",
+  "message": "Hello world!",
 }
 `;
 
 exports[`AIGNEServer example with hono 1`] = `
 {
-  "$message": "Hello world!",
+  "message": "Hello world!",
 }
 `;

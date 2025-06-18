@@ -190,14 +190,14 @@ export class AIGNE<U extends UserContext = UserContext> {
    * This overload is useful when you need to track which agent was ultimately responsible for generating the response.
    *
    * @param agent - Target agent to invoke
-   * @param message - Input message to send to the agent (can be a string or a structured message object)
+   * @param message - Input message to send to the agent
    * @param options.returnActiveAgent - Must be true to return the final active agent
    * @param options.streaming - Must be false to return a response stream
    * @returns A promise resolving to a tuple containing the agent's response and the final active agent
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I | string,
+    message: I,
     options: InvokeOptions<U> & { returnActiveAgent: true; streaming?: false },
   ): Promise<[O, Agent]>;
 
@@ -206,14 +206,14 @@ export class AIGNE<U extends UserContext = UserContext> {
    * This overload is useful when you need streaming responses while also tracking which agent provided them.
    *
    * @param agent - Target agent to invoke
-   * @param message - Input message to send to the agent (can be a string or a structured message object)
+   * @param message - Input message to send to the agent
    * @param options.returnActiveAgent - Must be true to return the final active agent
    * @param options.streaming - Must be true to return a response stream
    * @returns A promise resolving to a tuple containing the agent's response stream and a promise for the final agent
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I | string,
+    message: I,
     options: InvokeOptions<U> & { returnActiveAgent: true; streaming: true },
   ): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
 
@@ -222,7 +222,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    * This is the standard way to invoke an agent when you only need the response.
    *
    * @param agent - Target agent to invoke
-   * @param message - Input message to send to the agent (can be a string or a structured message object)
+   * @param message - Input message to send to the agent
    * @param options - Optional configuration parameters for the invocation
    * @returns A promise resolving to the agent's complete response
    *
@@ -232,7 +232,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I | string,
+    message: I,
     options?: InvokeOptions<U> & { returnActiveAgent?: false; streaming?: false },
   ): Promise<O>;
 
@@ -241,7 +241,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    * This allows processing the response incrementally as it's being generated.
    *
    * @param agent - Target agent to invoke
-   * @param message - Input message to send to the agent (can be a string or a structured message object)
+   * @param message - Input message to send to the agent
    * @param options - Configuration with streaming enabled to receive incremental response chunks
    * @returns A promise resolving to a stream of the agent's response that can be consumed incrementally
    *
@@ -251,7 +251,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I | string,
+    message: I,
     options: InvokeOptions<U> & { returnActiveAgent?: false; streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
@@ -267,13 +267,13 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message?: I | string,
+    message?: I,
     options?: InvokeOptions<U>,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]>;
 
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message?: I | string,
+    message?: I,
     options?: InvokeOptions<U>,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]> {
     return new AIGNEContext(this).invoke(agent, message, options);
@@ -294,7 +294,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   publish(
     topic: string | string[],
-    payload: Omit<MessagePayload, "context"> | Message | string,
+    payload: Omit<MessagePayload, "context"> | Message,
     options?: InvokeOptions<U>,
   ) {
     return new AIGNEContext(this).publish(topic, payload, options);

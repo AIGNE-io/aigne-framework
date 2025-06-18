@@ -7,21 +7,13 @@ import {
   AIGNE,
   FunctionAgent,
   MCPAgent,
-  MESSAGE_KEY,
   PromptBuilder,
   TeamAgent,
-  createMessage,
 } from "@aigne/core";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { MockMemory } from "../_mocks/mock-memory.js";
-
-test("userInput function should return correct object", () => {
-  const message = "Hello";
-  const result = createMessage(message);
-  expect(result).toEqual({ [MESSAGE_KEY]: message });
-});
 
 test("PromptBuilder should build messages correctly", async () => {
   const context = new AIGNE().newContext();
@@ -32,7 +24,7 @@ test("PromptBuilder should build messages correctly", async () => {
   await memory.record(
     {
       role: "agent",
-      content: [createMessage("Hello, How can I help you?")],
+      content: [{ message: "Hello, How can I help you?" }],
       source: "TestAgent",
     },
 
@@ -41,11 +33,12 @@ test("PromptBuilder should build messages correctly", async () => {
 
   const agent = AIAgent.from({
     memory,
+    inputKey: "message",
   });
 
   const prompt1 = await builder.build({
     agent,
-    input: createMessage("Hello"),
+    input: { message: "Hello" },
     context,
   });
 
@@ -65,7 +58,7 @@ test("PromptBuilder should build messages correctly", async () => {
   ]);
 
   const prompt2 = await builder.build({
-    input: createMessage({ name: "foo" }),
+    input: { name: "foo" },
     context,
   });
   expect(prompt2.messages).toEqual([

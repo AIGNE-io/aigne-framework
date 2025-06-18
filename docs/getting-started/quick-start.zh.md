@@ -74,6 +74,7 @@ const aigne = new AIGNE({
 ```ts file="../../docs-examples/test/quick-start.test.ts" region="example-quick-start-create-agent" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant",
+  inputKey: "message",
 });
 ```
 
@@ -90,9 +91,9 @@ const agent = AIAgent.from({
 现在我们可以调用 Agent 来处理用户的请求：
 
 ```ts file="../../docs-examples/test/quick-start.test.ts" region="example-quick-start-invoke" exclude_imports
-const result = await aigne.invoke(agent, "What is AIGNE?");
+const result = await aigne.invoke(agent, { message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 这段代码：
@@ -109,13 +110,17 @@ console.log(result);
 对于长回答或需要实时显示生成内容的场景，AIGNE 支持流式输出：
 
 ```ts file="../../docs-examples/test/quick-start.test.ts" region="example-quick-start-streaming" exclude_imports
-const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
+const stream = await aigne.invoke(
+  agent,
+  { message: "What is AIGNE?" },
+  { streaming: true },
+);
 
 let response = "";
 for await (const chunk of stream) {
   console.log(chunk);
-  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
-    response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message)
+    response += chunk.delta.text.message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."
@@ -147,19 +152,24 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant",
+  inputKey: "message",
 });
 
-const result = await aigne.invoke(agent, "What is AIGNE?");
+const result = await aigne.invoke(agent, { message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 
-const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
+const stream = await aigne.invoke(
+  agent,
+  { message: "What is AIGNE?" },
+  { streaming: true },
+);
 
 let response = "";
 for await (const chunk of stream) {
   console.log(chunk);
-  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
-    response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message)
+    response += chunk.delta.text.message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."

@@ -3,7 +3,7 @@ import assert from "node:assert";
 import { exists, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, type Message } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { OpenAIChatModel } from "@aigne/openai";
 import type {
@@ -44,11 +44,11 @@ test.each<Readonly<[AIGNEHTTPClientInvokeOptions, string, BrowserType]>>(
       page,
       aigneURL,
       agentName: "chatbot",
-      input: "Hello, AIGNE!",
+      input: { message: "Hello, AIGNE!" },
     });
 
     expect(result).toEqual({
-      $message: "Hello, How can I help you?",
+      message: "Hello, How can I help you?",
     });
 
     await browser.close();
@@ -71,10 +71,10 @@ test("AIGNE HTTP Client should work with client memory in browser", async () => 
     page,
     aigneURL,
     agentName: "chatbot",
-    input: "Hello, AIGNE!",
+    input: { message: "Hello, AIGNE!" },
   });
   expect(result).toEqual({
-    $message: "Hello, How can I help you?",
+    message: "Hello, How can I help you?",
   });
 
   const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce(
@@ -84,10 +84,10 @@ test("AIGNE HTTP Client should work with client memory in browser", async () => 
     page,
     aigneURL,
     agentName: "chatbot",
-    input: "What did I just say?",
+    input: { message: "What did I just say?" },
   });
   expect(result2).toEqual({
-    $message: 'You just said, "Hello, AIGNE!"',
+    message: 'You just said, "Hello, AIGNE!"',
   });
   expect(modelProcess).toHaveBeenLastCalledWith(
     expect.objectContaining({
@@ -119,6 +119,7 @@ async function startServer() {
   const agent = AIAgent.from({
     name: "chatbot",
     memory: [],
+    inputKey: "message",
   });
 
   const aigne = new AIGNE({
@@ -181,7 +182,7 @@ async function runAgentInBrowser({
   page: Page;
   aigneURL: string;
   agentName: string;
-  input: string;
+  input: Message;
   streaming?: boolean;
 }) {
   const result = await page.evaluate(
@@ -190,7 +191,7 @@ async function runAgentInBrowser({
       url,
       input,
       streaming,
-    }: { agentName: string; url: string; input: string; streaming?: boolean }) => {
+    }: { agentName: string; url: string; input: Message; streaming?: boolean }) => {
       const g = globalThis as unknown as typeof import("@aigne/core") & {
         AIGNEHTTPClient: typeof AIGNEHTTPClient;
         DefaultMemory: typeof DefaultMemory;

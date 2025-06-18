@@ -1,11 +1,5 @@
 import { expect, mock, spyOn, test } from "bun:test";
-import {
-  AIAgent,
-  AIGNE,
-  type ContextEventMap,
-  type MessageQueueListener,
-  createMessage,
-} from "@aigne/core";
+import { AIAgent, AIGNE, type ContextEventMap, type MessageQueueListener } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import type { Listener } from "@aigne/core/utils/typed-event-emtter";
 
@@ -16,20 +10,20 @@ test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
 
   context.subscribe("test_topic", listener);
 
-  context.publish("test_topic", "hello");
+  context.publish("test_topic", { message: "hello" });
   expect(listener).toBeCalledTimes(1);
-  expect(listener).toHaveBeenCalledWith(
-    expect.objectContaining({ message: createMessage("hello") }),
-  );
+  expect(listener).toHaveBeenCalledWith(expect.objectContaining({ message: { message: "hello" } }));
 
   context.unsubscribe("test_topic", listener);
-  context.publish("test_topic", "hello");
+  context.publish("test_topic", { message: "hello" });
   expect(listener).toBeCalledTimes(1);
 });
 
 test("AIGNEContext should emit/on correctly", async () => {
   for (const listenMethod of ["on", "once"] as const) {
-    const agent = AIAgent.from({});
+    const agent = AIAgent.from({
+      inputKey: "message",
+    });
 
     const parentContext = new AIGNE({}).newContext();
     const context = parentContext.newContext();
@@ -42,23 +36,23 @@ test("AIGNEContext should emit/on correctly", async () => {
     parentContext[listenMethod]("agentSucceed", onAgentSucceed);
     parentContext[listenMethod]("agentFailed", onAgentFailed);
 
-    context.emit("agentStarted", { agent, input: createMessage("hello") });
+    context.emit("agentStarted", { agent, input: { message: "hello" } });
     expect(onAgentStarted).toHaveBeenLastCalledWith(
       expect.objectContaining({
         contextId: context.id,
         parentContextId: parentContext.id,
         agent,
-        input: createMessage("hello"),
+        input: { message: "hello" },
       }),
     );
 
-    context.emit("agentSucceed", { agent, output: createMessage("hello") });
+    context.emit("agentSucceed", { agent, output: { message: "hello" } });
     expect(onAgentSucceed).toHaveBeenLastCalledWith(
       expect.objectContaining({
         contextId: context.id,
         parentContextId: parentContext.id,
         agent,
-        output: createMessage("hello"),
+        output: { message: "hello" },
       }),
     );
 
@@ -85,7 +79,9 @@ test("AIGNEContext should emit/on correctly", async () => {
 });
 
 test("AIGNEContext should receive agentStarted/agentSucceed/agentFailed message", async () => {
-  const agent = AIAgent.from({});
+  const agent = AIAgent.from({
+    inputKey: "message",
+  });
 
   const parentContext = new AIGNE({}).newContext();
   const context = parentContext.newContext();
@@ -101,20 +97,20 @@ test("AIGNEContext should receive agentStarted/agentSucceed/agentFailed message"
   spyOn(agent, "process")
     .mockReturnValueOnce(
       arrayToAgentProcessAsyncGenerator([
-        { delta: { json: createMessage("hello, this is a test response message") } },
+        { delta: { json: { message: "hello, this is a test response message" } } },
       ]),
     )
     .mockReturnValueOnce(arrayToAgentProcessAsyncGenerator([new Error("test error")]));
 
-  const result1 = context.invoke(agent, "hello");
+  const result1 = context.invoke(agent, { message: "hello" });
 
-  expect(result1).resolves.toEqual(createMessage("hello, this is a test response message"));
+  expect(result1).resolves.toEqual({ message: "hello, this is a test response message" });
   expect(onAgentStarted).toHaveBeenLastCalledWith(
     expect.objectContaining({
       contextId: expect.any(String),
       parentContextId: context.id,
       agent,
-      input: expect.objectContaining(createMessage("hello")),
+      input: expect.objectContaining({ message: "hello" }),
     }),
   );
   expect(onAgentSucceed).toHaveBeenLastCalledWith(
@@ -122,11 +118,11 @@ test("AIGNEContext should receive agentStarted/agentSucceed/agentFailed message"
       contextId: expect.any(String),
       parentContextId: context.id,
       agent,
-      output: expect.objectContaining(createMessage("hello, this is a test response message")),
+      output: expect.objectContaining({ message: "hello, this is a test response message" }),
     }),
   );
 
-  const result2 = context.invoke(agent, "hello");
+  const result2 = context.invoke(agent, { message: "hello" });
 
   expect(result2).rejects.toThrowError("test error");
   expect(onAgentFailed).toHaveBeenLastCalledWith(

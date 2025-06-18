@@ -66,7 +66,7 @@ export interface GuideRailAgentOutput extends Message {
  */
 export type GuideRailAgent = Agent<GuideRailAgentInput, GuideRailAgentOutput>;
 
-export const guideRailAgentOptions: AgentOptions<GuideRailAgentInput, GuideRailAgentOutput> = {
+export const guideRailAgentOptions: AgentOptions<any, GuideRailAgentOutput> = {
   inputSchema: z.object({
     input: z.unknown(),
     output: z.unknown(),

@@ -37,6 +37,7 @@ User's question:
   outputSchema: z.object({
     code: z.string().describe("Your code"),
   }),
+  inputKey: "message",
 });
 
 const reviewer = AIAgent.from({
@@ -69,7 +70,9 @@ Please review the code. If previous feedback was provided, see if it was address
 });
 
 const aigne = new AIGNE({ model, agents: [coder, reviewer] });
-aigne.publish(UserInputTopic, "Write a function to find the sum of all even numbers in a list.");
+aigne.publish(UserInputTopic, {
+  message: "Write a function to find the sum of all even numbers in a list.",
+});
 
 const { message } = await aigne.subscribe(UserOutputTopic);
 console.log(message);

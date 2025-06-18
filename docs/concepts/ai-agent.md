@@ -19,7 +19,10 @@ const model = new OpenAIChatModel({
   model: "gpt-4o-mini",
 });
 
-const agent = AIAgent.from({ model });
+const agent = AIAgent.from({
+  model,
+  inputKey: "message",
+});
 ```
 
 ## Invoking Agents
@@ -27,9 +30,9 @@ const agent = AIAgent.from({ model });
 After creating an AIAgent, you can use the invoke method to send requests to the agent and get responses. In basic invocation, simply pass a string as the user's question or instruction.
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-invoke"
-const result = await agent.invoke("What is AIGNE?");
+const result = await agent.invoke({ message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ## Streaming Response
@@ -39,11 +42,14 @@ Streaming response is a way to get AI answers in real-time, allowing application
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-invoke-stream"
 import { isAgentResponseDelta } from "@aigne/core";
 
-const stream = await agent.invoke("What is AIGNE?", { streaming: true });
+const stream = await agent.invoke(
+  { message: "What is AIGNE?" },
+  { streaming: true },
+);
 let response = "";
 for await (const chunk of stream) {
-  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
-    response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message)
+    response += chunk.delta.text.message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."
@@ -70,15 +76,16 @@ const model = new OpenAIChatModel();
 const agent = AIAgent.from({
   model,
   instructions: "Only speak in Haikus.",
+  inputKey: "message",
 });
 ```
 
 The following example shows how to invoke an agent with custom instructions and get answers that conform to the specified style (haiku):
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-invoke"
-const result = await agent.invoke("What is AIGNE?");
+const result = await agent.invoke({ message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined." }
+// Output: { message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined." }
 ```
 
 Key features:
@@ -104,19 +111,19 @@ const agent = AIAgent.from({
     style: z.string().describe("The style of the response."),
   }),
   instructions: "Only speak in {{style}}.",
+  inputKey: "message",
 });
 ```
 
 The following example shows how to invoke an agent with custom instructions containing variables. By using the createMessage function to create a message containing the user's question and variable values, the agent can generate answers based on the provided style (Haikus):
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-with-variables-invoke"
-import { createMessage } from "@aigne/core";
-
-const result = await agent.invoke(
-  createMessage("What is AIGNE?", { style: "Haikus" }),
-);
+const result = await agent.invoke({
+  message: "What is AIGNE?",
+  style: "Haikus",
+});
 console.log(result);
-// Output: { $message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
+// Output: { message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
 ```
 
 Key features:
@@ -146,17 +153,17 @@ const agent = AIAgent.from({
     response: z.string().describe("The response to the request"),
   }),
   instructions: "Only speak in {{style}}.",
+  inputKey: "message",
 });
 ```
 
 The following example shows how to invoke an agent with structured output. Similar to custom instructions with variables, we use the createMessage function to pass user questions and variable values, but this time the agent will return structured data that conforms to our defined output schema:
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-structured-output-invoke"
-import { createMessage } from "@aigne/core";
-
-const result = await agent.invoke(
-  createMessage("What is AIGNE?", { style: "Haikus" }),
-);
+const result = await agent.invoke({
+  message: "What is AIGNE?",
+  style: "Haikus",
+});
 console.log(result);
 // Output: { topic: "AIGNE", response: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
 ```
@@ -209,15 +216,18 @@ const agent = AIAgent.from({
   instructions:
     "You are a helpful assistant that can provide weather information.",
   skills: [getWeather],
+  inputKey: "message",
 });
 ```
 
 The following example shows how to invoke an agent with skills. When a user asks about the weather in Beijing, the agent will automatically recognize this as a weather query request and call the getWeather skill to obtain weather data, then return the result in natural language:
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-with-skills-invoke"
-const result = await agent.invoke("What's the weather like in Beijing today?");
+const result = await agent.invoke({
+  message: "What's the weather like in Beijing today?",
+});
 console.log(result);
-// Output: { $message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity." }
+// Output: { message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity." }
 ```
 
 Key features:

@@ -2,7 +2,7 @@
 
 exports[`TerminalTracer should work correctly 1`] = `
 {
-  "$message": "hello, this is a test response message",
+  "message": "hello, this is a test response message",
 }
 `;
 

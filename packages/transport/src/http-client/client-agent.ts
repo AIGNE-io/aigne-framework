@@ -6,7 +6,6 @@ import {
   type AgentResponse,
   type AgentResponseStream,
   type Message,
-  createMessage,
   replaceTransferAgentToName,
 } from "@aigne/core";
 import type { MemoryAgent } from "@aigne/core/memory/memory.js";
@@ -31,19 +30,16 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
   }
 
   override async invoke(
-    input: string | I,
+    input: I,
     options?: Partial<AgentInvokeOptions> & { streaming?: false },
   ): Promise<O>;
   override async invoke(
-    input: string | I,
+    input: I,
     options: Partial<AgentInvokeOptions> & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
+  override async invoke(input: I, options?: Partial<AgentInvokeOptions>): Promise<AgentResponse<O>>;
   override async invoke(
-    input: string | I,
-    options?: Partial<AgentInvokeOptions>,
-  ): Promise<AgentResponse<O>>;
-  override async invoke(
-    input: I | string,
+    input: I,
     options?: Partial<AgentInvokeOptions>,
   ): Promise<AgentResponse<O>> {
     const memories = await this.retrieveMemories(
@@ -57,7 +53,7 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
       memories,
     });
     if (!(result instanceof ReadableStream)) {
-      await this.postprocess(createMessage(input) as I, result as O, {
+      await this.postprocess(input, result as O, {
         ...options,
         context: this.client,
       });
@@ -66,7 +62,7 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
 
     return onAgentResponseStreamEnd(result, {
       onResult: async (result) => {
-        await this.postprocess(createMessage(input) as I, result as O, {
+        await this.postprocess(input, result, {
           ...options,
           context: this.client,
         });

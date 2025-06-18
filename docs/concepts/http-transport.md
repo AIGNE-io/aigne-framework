@@ -22,6 +22,7 @@ const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 ```
 
@@ -95,12 +96,11 @@ In this example, we created an AIGNEHTTPClient instance, specifying the server's
 After creating the client, we can use the invoke method to call remote agents:
 
 ```ts file="../../docs-examples/test/concepts/http-transport.test.ts" region="example-http-client-invoke-agent"
-const result = await client.invoke(
-  "chatbot",
-  "What is the crypto price of ABT/USD on coinbase?",
-);
+const result = await client.invoke("chatbot", {
+  message: "What is the crypto price of ABT/USD on coinbase?",
+});
 console.log(result);
-// Output: { $message: "The current price of ABT/USD on Coinbase is $0.9684." }
+// Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
 ```
 
 In this example, we:

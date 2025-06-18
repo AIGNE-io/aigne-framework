@@ -48,7 +48,7 @@ test("serveMCPServer should work", async () => {
     ],
   });
 
-  expect(client.callTool({ name: "chat", arguments: { $message: "hello" } })).resolves.toEqual({
+  expect(client.callTool({ name: "chat", arguments: { message: "hello" } })).resolves.toEqual({
     content: [{ type: "text", text: "hello, how can I help you?" }],
   });
 
@@ -111,7 +111,7 @@ test("serveMCPServer should respond error from agent processing", async () => {
 
   await client.connect(transport);
 
-  expect(client.callTool({ name: "chat", arguments: { $message: "hello" } })).resolves.toEqual({
+  expect(client.callTool({ name: "chat", arguments: { message: "hello" } })).resolves.toEqual({
     isError: true,
     content: [
       {

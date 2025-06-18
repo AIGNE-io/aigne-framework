@@ -6,6 +6,7 @@ test("AIGNE core should work in Node.js", async () => {
   const agent = AIAgent.from({
     name: "memory_example",
     instructions: "You are a friendly chatbot",
+    inputKey: "message",
   });
 
   const aigne = new AIGNE({
@@ -17,9 +18,9 @@ test("AIGNE core should work in Node.js", async () => {
     text: "Hello, I am a chatbot!",
   });
 
-  const result = await aigne.invoke(agent, "Hello, What is your name?");
+  const result = await aigne.invoke(agent, { message: "Hello, What is your name?" });
 
   expect(result).toEqual({
-    $message: "Hello, I am a chatbot!",
+    message: "Hello, I am a chatbot!",
   });
 });

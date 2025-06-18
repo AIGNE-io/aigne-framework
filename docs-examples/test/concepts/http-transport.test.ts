@@ -16,6 +16,7 @@ test("Example HTTPTransport: AIGNEHTTPServer and AIGNEHTTPClient", async () => {
     name: "chatbot",
     instructions: "You are a helpful assistant",
     memory: new DefaultMemory(),
+    inputKey: "message",
   });
   // #endregion example-http-transport-create-named-agent
 
@@ -56,10 +57,12 @@ test("Example HTTPTransport: AIGNEHTTPServer and AIGNEHTTPClient", async () => {
   });
 
   // #region example-http-client-invoke-agent
-  const result = await client.invoke("chatbot", "What is the crypto price of ABT/USD on coinbase?");
+  const result = await client.invoke("chatbot", {
+    message: "What is the crypto price of ABT/USD on coinbase?",
+  });
   console.log(result);
-  // Output: { $message: "The current price of ABT/USD on Coinbase is $0.9684." }
-  expect(result).toEqual({ $message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  // Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
+  expect(result).toEqual({ message: "The current price of ABT/USD on Coinbase is $0.9684." });
   // #endregion example-http-client-invoke-agent
 
   // #endregion example-http-client-usage

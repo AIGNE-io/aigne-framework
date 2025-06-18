@@ -1,6 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
-import { AIAgent, AIGNE, UserAgent, createMessage } from "@aigne/core";
+import { AIAgent, AIGNE, UserAgent } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import inquirer from "inquirer";
 
@@ -30,7 +30,9 @@ test("runChatLoopInTerminal should respond /help /exit commands", async () => {
 test("runChatLoopInTerminal should trigger initial call", async () => {
   const aigne = new AIGNE({});
 
-  const agent = AIAgent.from({});
+  const agent = AIAgent.from({
+    inputKey: "message",
+  });
 
   const user = aigne.invoke(agent);
 
@@ -49,13 +51,15 @@ test("runChatLoopInTerminal should trigger initial call", async () => {
   });
   expect(await result).toBeUndefined();
   expect(agentProcess).toHaveBeenCalledWith(
-    createMessage("hello, this is a test message"),
+    { message: "hello, this is a test message" },
     expect.anything(),
   );
 });
 
 test("runChatLoopInTerminal should invoke agent correctly", async () => {
-  const agent = AIAgent.from({});
+  const agent = AIAgent.from({
+    inputKey: "message",
+  });
 
   const aigne = new AIGNE({});
 
@@ -78,14 +82,16 @@ test("runChatLoopInTerminal should invoke agent correctly", async () => {
 
   expect(await runChatLoopInTerminal(userAgent)).toBeUndefined();
   expect(agentProcess).toHaveBeenCalledWith(
-    createMessage("hello, this is a test message"),
+    { message: "hello, this is a test message" },
     expect.anything(),
   );
 });
 
 test("runChatLoopInTerminal should skip loop If initialCall is provided and skipLoop is true", async () => {
   const aigne = new AIGNE({});
-  const agent = AIAgent.from({});
+  const agent = AIAgent.from({
+    inputKey: "message",
+  });
   const userAgent = aigne.invoke(agent);
 
   const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
@@ -101,7 +107,7 @@ test("runChatLoopInTerminal should skip loop If initialCall is provided and skip
 
   expect(agentProcess).toHaveBeenCalledTimes(1);
   expect(agentProcess).toHaveBeenCalledWith(
-    createMessage("hello, this is a test message"),
+    { message: "hello, this is a test message" },
     expect.anything(),
   );
 });

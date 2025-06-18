@@ -67,6 +67,7 @@ const aigne = await AIGNE.load(path, { models: [OpenAIChatModel] });
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic-add-agent" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant",
+  inputKey: "message",
 });
 
 aigne.addAgent(agent);
@@ -77,9 +78,9 @@ aigne.addAgent(agent);
 添加 Agent 后，可以通过 AIGNE 实例调用它。以下代码展示了如何向指定的 Agent 发送消息并获取响应。在这个例子中，向 Agent 询问了关于 AIGNE 的信息，并输出了响应结果。
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic-invoke-agent" exclude_imports
-const result = await aigne.invoke(agent, "What is AIGNE?");
+const result = await aigne.invoke(agent, { message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ### 流式响应
@@ -87,11 +88,15 @@ console.log(result);
 对于需要实时反馈的应用场景，AIGNE 支持流式响应。这种方式允许在 Agent 生成响应的同时接收部分结果，特别适合于聊天应用等需要即时反馈的场景。以下代码演示了如何使用流式模式调用 Agent 并逐步处理响应内容。
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic-invoke-agent-streaming" exclude_imports
-const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
+const stream = await aigne.invoke(
+  agent,
+  { message: "What is AIGNE?" },
+  { streaming: true },
+);
 let response = "";
 for await (const chunk of stream) {
   if (isAgentResponseDelta(chunk)) {
-    if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+    if (chunk.delta.text?.message) response += chunk.delta.text.message;
   }
 }
 console.log(response);
@@ -104,9 +109,9 @@ AIGNE 提供了用户 Agent 的概念，允许创建与特定 Agent 关联的用
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic-invoke-agent-user-agent" exclude_imports
 const userAgent = aigne.invoke(agent);
-const result1 = await userAgent.invoke("What is AIGNE?");
+const result1 = await userAgent.invoke({ message: "What is AIGNE?" });
 console.log(result1);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ### 关闭和清理

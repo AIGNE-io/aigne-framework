@@ -1,5 +1,5 @@
 import { type ZodObject, type ZodType, z } from "zod";
-import { MESSAGE_KEY, PromptBuilder } from "../prompt/prompt-builder.js";
+import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
 import { checkArguments, isEmpty } from "../utils/type-utils.js";
 import {
@@ -22,6 +22,8 @@ import {
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
 import { isTransferAgentOutput } from "./types.js";
 
+const DEFAULT_OUTPUT_KEY = "message";
+
 /**
  * Configuration options for an AI Agent
  *
@@ -31,8 +33,11 @@ import { isTransferAgentOutput } from "./types.js";
  * @template I The input message type the agent accepts
  * @template O The output message type the agent returns
  */
-export interface AIAgentOptions<I extends Message = Message, O extends Message = Message>
-  extends AgentOptions<I, O> {
+export interface AIAgentOptions<
+  InputKey extends string = string,
+  I extends Message & InputMessage<InputKey> = Message & InputMessage<InputKey>,
+  O extends Message = Message,
+> extends AgentOptions<Omit<I, InputKey> & Partial<InputMessage<InputKey>>, O> {
   /**
    * The language model to use for this agent
    *
@@ -49,9 +54,14 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
   instructions?: string | PromptBuilder;
 
   /**
+   * Pick a message from input to use as the user's message
+   */
+  inputKey?: InputKey;
+
+  /**
    * Custom key to use for text output in the response
    *
-   * Defaults to $message if not specified
+   * Defaults to `message` if not specified
    */
   outputKey?: string;
 
@@ -145,11 +155,16 @@ export const aiAgentOptionsSchema: ZodObject<{
 }> = agentOptionsSchema.extend({
   model: z.instanceof(ChatModel).optional(),
   instructions: z.union([z.string(), z.instanceof(PromptBuilder)]).optional(),
+  inputKey: z.string().optional(),
   outputKey: z.string().optional(),
   toolChoice: aiAgentToolChoiceSchema.optional(),
   memoryAgentsAsTools: z.boolean().optional(),
   memoryPromptTemplate: z.string().optional(),
-});
+}) as ZodObject<{
+  [key in keyof AIAgentOptions]: ZodType<AIAgentOptions[key]>;
+}>;
+
+type InputMessage<K> = K extends string ? { [key in K]: string } : Message;
 
 /**
  * AI-powered agent that leverages language models
@@ -171,7 +186,11 @@ export const aiAgentOptionsSchema: ZodObject<{
  * Basic AIAgent creation:
  * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-basic}
  */
-export class AIAgent<I extends Message = Message, O extends Message = Message> extends Agent<I, O> {
+export class AIAgent<
+  InputKey extends string = string,
+  I extends Message & InputMessage<InputKey> = Message & InputMessage<InputKey>,
+  O extends Message = Message,
+> extends Agent<I, O> {
   /**
    * Create an AIAgent with the specified options
    *
@@ -184,7 +203,11 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
    * AI agent with custom instructions:
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-instructions}
    */
-  static from<I extends Message, O extends Message>(options: AIAgentOptions<I, O>): AIAgent<I, O> {
+  static from<
+    InputKey extends string,
+    I extends Message & InputMessage<InputKey>,
+    O extends Message,
+  >(options: AIAgentOptions<InputKey, I, O>): AIAgent<InputKey, I, O> {
     return new AIAgent(options);
   }
 
@@ -193,8 +216,8 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
    *
    * @param options Configuration options for the AI agent
    */
-  constructor(options: AIAgentOptions<I, O>) {
-    super(options);
+  constructor(options: AIAgentOptions<InputKey, I, O>) {
+    super({ ...options, inputSchema: options.inputSchema as ZodType<I> });
     checkArguments("AIAgent", aiAgentOptionsSchema, options);
 
     this.model = options.model;
@@ -202,13 +225,19 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
       typeof options.instructions === "string"
         ? PromptBuilder.from(options.instructions)
         : (options.instructions ?? new PromptBuilder());
-    this.outputKey = options.outputKey;
+    this.inputKey = options.inputKey;
+
+    this.outputKey = options.outputKey || DEFAULT_OUTPUT_KEY;
     this.toolChoice = options.toolChoice;
     this.memoryAgentsAsTools = options.memoryAgentsAsTools;
     this.memoryPromptTemplate = options.memoryPromptTemplate;
 
     if (typeof options.catchToolsError === "boolean")
       this.catchToolsError = options.catchToolsError;
+
+    if (!this.inputKey && !this.instructions) {
+      throw new Error("AIAgent requires either inputKey or instructions to be set");
+    }
   }
 
   /**
@@ -231,13 +260,18 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
   instructions: PromptBuilder;
 
   /**
+   * Pick a message from input to use as the user's message
+   */
+  inputKey?: InputKey;
+
+  /**
    * Custom key to use for text output in the response
    *
    * @example
    * Setting a custom output key:
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-custom-output-key}
    */
-  outputKey?: string;
+  outputKey: string;
 
   /**
    * Controls how the agent uses tools during execution
@@ -302,7 +336,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
     }
 
     const toolCallMessages: ChatModelInputMessage[] = [];
-    const outputKey = this.outputKey || MESSAGE_KEY;
+    const outputKey = this.outputKey;
 
     for (;;) {
       const modelOutput: ChatModelOutput = {};
@@ -398,7 +432,7 @@ export class AIAgent<I extends Message = Message, O extends Message = Message> e
   protected override async onGuideRailError(
     error: GuideRailAgentOutput,
   ): Promise<O | GuideRailAgentOutput> {
-    const outputKey = this.outputKey || MESSAGE_KEY;
+    const outputKey = this.outputKey || DEFAULT_OUTPUT_KEY;
     return {
       [outputKey]: error.reason,
     };

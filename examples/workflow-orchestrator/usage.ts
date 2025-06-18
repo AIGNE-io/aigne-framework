@@ -54,20 +54,20 @@ const agent = OrchestratorAgent.from({
   skills: [finder, writer],
   maxIterations: 3,
   tasksConcurrency: 1, // puppeteer can only run one task at a time
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({ model });
 
-const result = await aigne.invoke(
-  agent,
-  `\
+const result = await aigne.invoke(agent, {
+  message: `\
 Conduct an in-depth research on ArcBlock using only the official website\
 (avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
 The report should include comprehensive insights into the company's products \
 (with detailed research findings and links), technical architecture, and future plans.`,
-);
+});
 console.log(result);
 // Output:
 // {
-//   $message: "The objective of conducting in-depth research on ArcBlock using only the official website has been successfully completed...",
+//   message: "The objective of conducting in-depth research on ArcBlock using only the official website has been successfully completed...",
 // }

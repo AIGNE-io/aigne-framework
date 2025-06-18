@@ -67,6 +67,7 @@ After creating an AIGNE instance, you can add various Agents to it. The followin
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic-add-agent" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant",
+  inputKey: "message",
 });
 
 aigne.addAgent(agent);
@@ -77,9 +78,9 @@ aigne.addAgent(agent);
 After adding Agents, you can invoke them through the AIGNE instance. The following code shows how to send a message to a specified Agent and get a response. In this example, the Agent is asked about AIGNE information and the response result is output.
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic-invoke-agent" exclude_imports
-const result = await aigne.invoke(agent, "What is AIGNE?");
+const result = await aigne.invoke(agent, { message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ### Streaming Response
@@ -87,11 +88,15 @@ console.log(result);
 For application scenarios that require real-time feedback, AIGNE supports streaming responses. This approach allows receiving partial results while the Agent is generating responses, particularly suitable for scenarios requiring immediate feedback such as chat applications. The following code demonstrates how to invoke an Agent in streaming mode and progressively process response content.
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic-invoke-agent-streaming" exclude_imports
-const stream = await aigne.invoke(agent, "What is AIGNE?", { streaming: true });
+const stream = await aigne.invoke(
+  agent,
+  { message: "What is AIGNE?" },
+  { streaming: true },
+);
 let response = "";
 for await (const chunk of stream) {
   if (isAgentResponseDelta(chunk)) {
-    if (chunk.delta.text?.$message) response += chunk.delta.text.$message;
+    if (chunk.delta.text?.message) response += chunk.delta.text.message;
   }
 }
 console.log(response);
@@ -104,9 +109,9 @@ AIGNE provides the concept of user Agents, allowing the creation of user session
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic-invoke-agent-user-agent" exclude_imports
 const userAgent = aigne.invoke(agent);
-const result1 = await userAgent.invoke("What is AIGNE?");
+const result1 = await userAgent.invoke({ message: "What is AIGNE?" });
 console.log(result1);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ### Shutdown and Cleanup

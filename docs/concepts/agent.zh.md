@@ -155,20 +155,20 @@ const financial = AIAgent.from({
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant that provides financial advice.",
   guideRails: [financial],
+  inputKey: "message",
 });
 ```
 
 看看它如何保护用户免受不当建议：
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-guide-rails-invoke" exclude_imports
-const result = await aigne.invoke(
-  agent,
-  "What will be the price of Bitcoin next month?",
-);
+const result = await aigne.invoke(agent, {
+  message: "What will be the price of Bitcoin next month?",
+});
 console.log(result);
 // Output:
 // {
-//   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
+//   "message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
 // }
 ```
 
@@ -180,18 +180,18 @@ console.log(result);
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 ```
 
 有了记忆，Agent 可以记住之前的对话内容，提供更加个性化和连贯的体验：
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-enable-memory-invoke-1" exclude_imports
-const result2 = await aigne.invoke(
-  agent,
-  "What is my favorite cryptocurrency?",
-);
+const result2 = await aigne.invoke(agent, {
+  message: "What is my favorite cryptocurrency?",
+});
 console.log(result2);
-// Output: { $message: "Your favorite cryptocurrency is Bitcoin." }
+// Output: { message: "Your favorite cryptocurrency is Bitcoin." }
 ```
 
 ### 技能（Skills）
@@ -219,6 +219,7 @@ const getCryptoPrice = FunctionAgent.from({
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
   skills: [getCryptoPrice],
+  inputKey: "message",
 });
 ```
 
@@ -231,21 +232,22 @@ const agent = AIAgent.from({
 1. **常规模式** - 等待 Agent 完成所有处理并返回最终结果，适合需要一次性获取完整答案的场景：
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-invoke" exclude_imports
-const result = await agent.invoke("What is the price of ABT?");
+const result = await agent.invoke({ message: "What is the price of ABT?" });
 console.log(result);
-// Output: { $message: "ABT is currently priced at $1000." }
+// Output: { message: "ABT is currently priced at $1000." }
 ```
 
 2. **流式模式** - 允许 Agent 以增量方式实时返回结果，非常适合需要即时反馈的交互场景，例如聊天机器人的打字效果：
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-invoke-stream" exclude_imports
-const stream = await agent.invoke("What is the price of ABT?", {
-  streaming: true,
-});
+const stream = await agent.invoke(
+  { message: "What is the price of ABT?" },
+  { streaming: true },
+);
 let response = "";
 for await (const chunk of stream) {
-  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
-    response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message)
+    response += chunk.delta.text.message;
 }
 console.log(response);
 // Output:  "ABT is currently priced at $1000."
@@ -268,16 +270,16 @@ class CustomAgent extends Agent {
   ): PromiseOrValue<AgentProcessResult<Message>> {
     console.log("Custom agent processing input:", input);
     return {
-      $message: "AIGNE is a platform for building AI agents.",
+      message: "AIGNE is a platform for building AI agents.",
     };
   }
 }
 
 const agent = new CustomAgent();
 
-const result = await agent.invoke("What is the price of ABT?");
+const result = await agent.invoke({ message: "What is the price of ABT?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ### shutdown 方法

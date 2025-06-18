@@ -1,6 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { AIAgent, FunctionAgent, createMessage, isAgentResponseDelta } from "@aigne/core";
+import { AIAgent, FunctionAgent, isAgentResponseDelta } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { OpenAIChatModel } from "@aigne/openai";
 import { z } from "zod";
@@ -14,28 +14,31 @@ test("Example AIAgent: basic", async () => {
     model: "gpt-4o-mini",
   });
 
-  const agent = AIAgent.from({ model });
+  const agent = AIAgent.from({
+    model,
+    inputKey: "message",
+  });
   // #endregion example-agent-basic-create-agent
 
   // #region example-agent-basic-invoke
   spyOn(model, "process").mockReturnValueOnce({
     text: "AIGNE is a platform for building AI agents.",
   });
-  const result = await agent.invoke("What is AIGNE?");
+  const result = await agent.invoke({ message: "What is AIGNE?" });
   console.log(result);
-  // Output: { $message: "AIGNE is a platform for building AI agents." }
-  expect(result).toEqual({ $message: "AIGNE is a platform for building AI agents." });
+  // Output: { message: "AIGNE is a platform for building AI agents." }
+  expect(result).toEqual({ message: "AIGNE is a platform for building AI agents." });
   // #endregion example-agent-basic-invoke
 
   // #region example-agent-basic-invoke-stream
   spyOn(model, "process").mockReturnValueOnce(
     stringToAgentResponseStream("AIGNE is a platform for building AI agents."),
   );
-  const stream = await agent.invoke("What is AIGNE?", { streaming: true });
+  const stream = await agent.invoke({ message: "What is AIGNE?" }, { streaming: true });
   let response = "";
   for await (const chunk of stream) {
-    if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
-      response += chunk.delta.text.$message;
+    if (isAgentResponseDelta(chunk) && chunk.delta.text?.message)
+      response += chunk.delta.text.message;
   }
   console.log(response);
   // Output:  "AIGNE is a platform for building AI agents."
@@ -55,6 +58,7 @@ test("Example AIAgent: custom instructions", async () => {
   const agent = AIAgent.from({
     model,
     instructions: "Only speak in Haikus.",
+    inputKey: "message",
   });
   // #endregion example-agent-custom-instructions-create-agent
 
@@ -62,11 +66,11 @@ test("Example AIAgent: custom instructions", async () => {
   spyOn(model, "process").mockReturnValueOnce({
     text: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined.",
   });
-  const result = await agent.invoke("What is AIGNE?");
+  const result = await agent.invoke({ message: "What is AIGNE?" });
   console.log(result);
-  // Output: { $message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined." }
+  // Output: { message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined." }
   expect(result).toEqual({
-    $message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined.",
+    message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined.",
   });
   // #endregion example-agent-custom-instructions-invoke
 
@@ -86,6 +90,7 @@ test("Example AIAgent: custom instructions with variables", async () => {
       style: z.string().describe("The style of the response."),
     }),
     instructions: "Only speak in {{style}}.",
+    inputKey: "message",
   });
   // #endregion example-agent-custom-instructions-with-variables-create-agent
 
@@ -93,11 +98,11 @@ test("Example AIAgent: custom instructions with variables", async () => {
   spyOn(model, "process").mockReturnValueOnce({
     text: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms.",
   });
-  const result = await agent.invoke(createMessage("What is AIGNE?", { style: "Haikus" }));
+  const result = await agent.invoke({ message: "What is AIGNE?", style: "Haikus" });
   console.log(result);
-  // Output: { $message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
+  // Output: { message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
   expect(result).toEqual({
-    $message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms.",
+    message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms.",
   });
   // #endregion example-agent-custom-instructions-with-variables-invoke
 
@@ -121,6 +126,7 @@ test("Example AIAgent: structured output", async () => {
       response: z.string().describe("The response to the request"),
     }),
     instructions: "Only speak in {{style}}.",
+    inputKey: "message",
   });
   // #endregion example-agent-structured-output-create-agent
 
@@ -131,7 +137,7 @@ test("Example AIAgent: structured output", async () => {
       response: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms.",
     },
   });
-  const result = await agent.invoke(createMessage("What is AIGNE?", { style: "Haikus" }));
+  const result = await agent.invoke({ message: "What is AIGNE?", style: "Haikus" });
   console.log(result);
   // Output: { topic: "AIGNE", response: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
   expect(result).toEqual({
@@ -175,6 +181,7 @@ test("Example AIAgent: with weather skill", async () => {
     model: new OpenAIChatModel(),
     instructions: "You are a helpful assistant that can provide weather information.",
     skills: [getWeather],
+    inputKey: "message",
   });
   assert(agent.model);
   // #endregion example-agent-with-skills-create-agent
@@ -186,11 +193,11 @@ test("Example AIAgent: with weather skill", async () => {
     }),
   );
 
-  const result = await agent.invoke("What's the weather like in Beijing today?");
+  const result = await agent.invoke({ message: "What's the weather like in Beijing today?" });
   console.log(result);
-  // Output: { $message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity." }
+  // Output: { message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity." }
   expect(result).toEqual({
-    $message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity.",
+    message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity.",
   });
   // #endregion example-agent-with-skills-invoke
 

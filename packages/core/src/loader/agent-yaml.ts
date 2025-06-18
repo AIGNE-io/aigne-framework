@@ -19,6 +19,10 @@ const agentFileSchema = z.discriminatedUnion("type", [
       .string()
       .nullish()
       .transform((v) => v ?? undefined),
+    input_key: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
     input_schema: inputOutputSchema
       .nullish()
       .transform((v) => (v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined)),

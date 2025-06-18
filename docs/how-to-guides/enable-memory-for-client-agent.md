@@ -86,6 +86,7 @@ import { OpenAIChatModel } from "@aigne/openai";
 const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({
@@ -148,11 +149,11 @@ const chatbot = await client.getAgent({
     },
   }),
 });
-const result = await chatbot.invoke(
-  "What is the crypto price of ABT/USD on coinbase?",
-);
+const result = await chatbot.invoke({
+  message: "What is the crypto price of ABT/USD on coinbase?",
+});
 console.log(result);
-// Output: { $message: "The current price of ABT/USD on Coinbase is $0.9684." }
+// Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
 ```
 
 **Explanation**:
@@ -165,9 +166,11 @@ console.log(result);
 ### Test Memory Capability
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-invoke-agent-1" exclude_imports
-const result1 = await chatbot.invoke("What question did I just ask?");
+const result1 = await chatbot.invoke({
+  message: "What question did I just ask?",
+});
 console.log(result1);
-// Output: { $message: "You just asked about the crypto price of ABT/USD on Coinbase." }
+// Output: { message: "You just asked about the crypto price of ABT/USD on Coinbase." }
 ```
 
 **Explanation**: The Agent can remember previous conversation content, proving that the memory functionality is working properly. Importantly, this memory data is stored entirely locally on the client.

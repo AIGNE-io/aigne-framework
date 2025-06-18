@@ -5,77 +5,77 @@ exports[`AIAgent.invoke with streaming true 1`] = `
   {
     "delta": {
       "text": {
-        "$message": "Here",
+        "message": "Here",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "is",
+        "message": "is",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "a",
+        "message": "a",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "beautiful",
+        "message": "beautiful",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "T",
+        "message": "T",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "-",
+        "message": "-",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "shirt",
+        "message": "shirt",
       },
     },
   },
@@ -84,7 +84,7 @@ exports[`AIAgent.invoke with streaming true 1`] = `
 
 exports[`AIAgent.invoke with streaming false 1`] = `
 {
-  "$message": "Here is a beautiful T-shirt",
+  "message": "Here is a beautiful T-shirt",
 }
 `;
 
@@ -93,77 +93,77 @@ exports[`AIAgent with router toolChoice should return router result with streami
   {
     "delta": {
       "text": {
-        "$message": "Here",
+        "message": "Here",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "is",
+        "message": "is",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "a",
+        "message": "a",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "beautiful",
+        "message": "beautiful",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "T",
+        "message": "T",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "-",
+        "message": "-",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "shirt",
+        "message": "shirt",
       },
     },
   },
@@ -172,6 +172,6 @@ exports[`AIAgent with router toolChoice should return router result with streami
 
 exports[`AIAgent with router toolChoice should return router result with streaming false 1`] = `
 {
-  "$message": "Here is a beautiful T-shirt",
+  "message": "Here is a beautiful T-shirt",
 }
 `;

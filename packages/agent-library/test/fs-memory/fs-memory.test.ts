@@ -28,11 +28,11 @@ test("FSMemory simple example", async () => {
     }),
   );
 
-  const result1 = await engine.invoke(agent, "I like blue color");
+  const result1 = await engine.invoke(agent, { message: "I like blue color" });
 
-  expect(result1).toEqual({ $message: "Great! I will remember that you like blue color." });
+  expect(result1).toEqual({ message: "Great! I will remember that you like blue color." });
   console.log(result1);
-  // Output: { $message: 'Great! I will remember that you like blue color.' }
+  // Output: { message: 'Great! I will remember that you like blue color.' }
 
   spyOn(memory, "retrieve").mockReturnValueOnce(
     Promise.resolve({
@@ -52,10 +52,10 @@ test("FSMemory simple example", async () => {
     }),
   );
 
-  const result2 = await engine.invoke(agent, "What color do I like?");
-  expect(result2).toEqual({ $message: "You like blue color." });
+  const result2 = await engine.invoke(agent, { message: "What color do I like?" });
+  expect(result2).toEqual({ message: "You like blue color." });
   console.log(result2);
-  // Output: { $message: 'You like blue color.' }
+  // Output: { message: 'You like blue color.' }
 
   // #endregion example-fs-memory-simple
 });

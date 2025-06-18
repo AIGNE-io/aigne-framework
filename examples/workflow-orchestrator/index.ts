@@ -45,12 +45,14 @@ const agent = OrchestratorAgent.from({
   skills: [finder, writer],
   maxIterations: 3,
   tasksConcurrency: 1, // puppeteer can only run one task at a time
+  inputKey: "message",
 });
 
 await runWithAIGNE(agent, {
   modelOptions: { parallelToolCalls: false },
   chatLoopOptions: {
     welcome: "Welcome to the Orchestrator Agent!",
+    inputKey: "message",
     defaultQuestion: `\
   Conduct an in-depth research on ArcBlock using only the official website\
   (avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \

@@ -6,8 +6,6 @@ import {
   type Context,
   type Message,
   PromptTemplate,
-  createMessage,
-  getMessage,
 } from "@aigne/core";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import fastq from "fastq";
@@ -89,6 +87,8 @@ export interface OrchestratorAgentOptions<I extends Message = Message, O extends
    * Default: 5
    */
   tasksConcurrency?: number;
+
+  inputKey: string;
 }
 
 /**
@@ -131,8 +131,9 @@ export class OrchestratorAgent<
     super({ ...options });
     this.maxIterations = options.maxIterations;
     this.tasksConcurrency = options.tasksConcurrency;
+    this.inputKey = options.inputKey;
 
-    this.planner = new AIAgent<FullPlanInput, FullPlanOutput>({
+    this.planner = new AIAgent<"objective", FullPlanInput, FullPlanOutput>({
       name: "llm_orchestration_planner",
       instructions: FULL_PLAN_PROMPT_TEMPLATE,
       outputSchema: () => getFullPlanSchema(this.skills),
@@ -145,9 +146,11 @@ export class OrchestratorAgent<
     });
   }
 
-  private planner: AIAgent<FullPlanInput, FullPlanOutput>;
+  private planner: AIAgent<"objective", FullPlanInput, FullPlanOutput>;
 
-  private completer: AIAgent<FullPlanInput, O>;
+  private completer: AIAgent<"objective", FullPlanInput, O>;
+
+  inputKey: string;
 
   /**
    * Maximum number of iterations
@@ -179,8 +182,9 @@ export class OrchestratorAgent<
     const { model } = options.context;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
-    const objective = getMessage(input);
-    if (!objective) throw new Error("Objective is required to run OrchestratorAgent");
+    const objective = input[this.inputKey];
+    if (typeof objective !== "string")
+      throw new Error("Objective is required to run OrchestratorAgent");
 
     const result: FullPlanWithResult = {
       objective,
@@ -235,7 +239,7 @@ export class OrchestratorAgent<
   private async synthesizePlanResult(planResult: FullPlanWithResult, context: Context): Promise<O> {
     return context.invoke(this.completer, {
       ...this.getFullPlanInput(planResult),
-      ...createMessage(SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE),
+      message: SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE,
     });
   }
 
@@ -263,7 +267,7 @@ export class OrchestratorAgent<
       let result: string;
 
       if (agent.isInvokable) {
-        result = getMessageOrJsonString(await context.invoke(agent, prompt));
+        result = getMessageOrJsonString(await context.invoke(agent, { message: prompt }));
       } else {
         const executor = AIAgent.from({
           name: "llm_orchestration_task_executor",
@@ -287,7 +291,7 @@ export class OrchestratorAgent<
 
     const result = getMessageOrJsonString(
       await context.invoke(
-        AIAgent.from<SynthesizeStepPromptInput, Message>({
+        AIAgent.from<"objective", SynthesizeStepPromptInput, Message>({
           name: "llm_orchestration_step_synthesizer",
           instructions: SYNTHESIZE_STEP_PROMPT_TEMPLATE,
         }),

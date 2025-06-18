@@ -1,7 +1,6 @@
 import { Emitter, type EventMap } from "strict-event-emitter";
 import { z } from "zod";
 import type { Message } from "../agents/agent.js";
-import { createMessage } from "../prompt/prompt-builder.js";
 import { checkArguments, isNil, orArrayToArray } from "../utils/type-utils.js";
 import type { Context } from "./context.js";
 
@@ -43,16 +42,16 @@ function isMessagePayload(payload: unknown): payload is Omit<MessagePayload, "co
  * @hidden
  */
 export function toMessagePayload(
-  payload: Omit<MessagePayload, "context"> | string | Message,
+  payload: Omit<MessagePayload, "context"> | Message,
   options?: Partial<Pick<MessagePayload, "role" | "source">>,
 ): Omit<MessagePayload, "context"> {
   if (isMessagePayload(payload)) {
-    return { ...payload, message: createMessage(payload.message), ...options };
+    return { ...payload, ...options };
   }
   return {
     role: options?.role || "user",
     source: options?.source,
-    message: createMessage(payload),
+    message: payload,
   };
 }
 

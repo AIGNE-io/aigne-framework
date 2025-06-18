@@ -45,9 +45,9 @@ test("AIGNEServer example with expression", async () => {
   const client = new AIGNEHTTPClient({ url });
 
   // Invoke the agent by client
-  const response = await client.invoke("chat", { $message: "hello" });
+  const response = await client.invoke("chat", { message: "hello" });
 
-  console.log(response); // Output: {$message: "Hello world!"}
+  console.log(response); // Output: {message: "Hello world!"}
 
   expect(response).toMatchSnapshot();
 
@@ -92,8 +92,8 @@ test("AIGNEServer example with hono", async () => {
   const client = new AIGNEHTTPClient({ url });
 
   // Invoke the agent by client
-  const response = await client.invoke("chat", { $message: "hello" });
-  console.log(response); // Output: {$message: "Hello world!"}
+  const response = await client.invoke("chat", { message: "hello" });
+  console.log(response); // Output: {message: "Hello world!"}
 
   expect(response).toMatchSnapshot();
 

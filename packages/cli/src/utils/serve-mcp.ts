@@ -1,4 +1,4 @@
-import { type AIGNE, getMessage } from "@aigne/core";
+import { AIAgent, type AIGNE } from "@aigne/core";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -111,7 +111,9 @@ export function createMcpServer(aigne: AIGNE) {
         content: [
           {
             type: "text",
-            text: getMessage(result) || JSON.stringify(result),
+            text:
+              (agent instanceof AIAgent && (result[agent.outputKey] as string)) ||
+              JSON.stringify(result),
           },
         ],
       };

@@ -11,6 +11,7 @@ const productSupport = AIAgent.from({
   Your goal is to provide accurate and helpful information about the product.
   Be polite, professional, and ensure the user feels supported.`,
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 
 const feedback = AIAgent.from({
@@ -20,6 +21,7 @@ const feedback = AIAgent.from({
   Your goal is to listen to the user's feedback, acknowledge their input, and provide appropriate responses.
   Be empathetic, understanding, and ensure the user feels heard.`,
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 
 const other = AIAgent.from({
@@ -29,6 +31,7 @@ const other = AIAgent.from({
   Your goal is to provide accurate and helpful information on a wide range of topics.
   Be friendly, knowledgeable, and ensure the user feels satisfied with the information provided.`,
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 
 const triage = AIAgent.from({
@@ -39,6 +42,7 @@ You must always choose a tool — do not answer the question directly or leave t
 Be concise, accurate, and ensure efficient handoff to the correct agent.`,
   skills: [productSupport, feedback, other],
   toolChoice: AIAgentToolChoice.router,
+  inputKey: "message",
 });
 
 await runWithAIGNE(triage, {
@@ -53,5 +57,6 @@ I can help you with any questions you have, such as
 How can I assist you today?
 `,
     defaultQuestion: "How do I use this product?",
+    inputKey: "message",
   },
 });

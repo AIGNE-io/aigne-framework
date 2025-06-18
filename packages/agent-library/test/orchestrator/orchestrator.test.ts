@@ -4,7 +4,7 @@ import {
   OrchestratorAgent,
   getFullPlanSchema,
 } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, AIGNE, MESSAGE_KEY, createMessage } from "@aigne/core";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
 test("AIAgent.invoke", async () => {
@@ -23,6 +23,7 @@ test("AIAgent.invoke", async () => {
 
   const agent = OrchestratorAgent.from({
     skills: [finder, writer],
+    inputKey: "message",
   });
 
   spyOn(model, "process")
@@ -76,18 +77,17 @@ test("AIAgent.invoke", async () => {
   const finderCall = spyOn(finder, "invoke");
   const writerCall = spyOn(writer, "invoke");
 
-  const result = await aigne.invoke(
-    agent,
-    "Deep research ArcBlock and write a professional report",
-  );
+  const result = await aigne.invoke(agent, {
+    message: "Deep research ArcBlock and write a professional report",
+  });
 
-  expect(result).toEqual(createMessage("Task finished"));
+  expect(result).toEqual({ message: "Task finished" });
   expect(finderCall).toHaveBeenLastCalledWith(
-    { [MESSAGE_KEY]: expect.stringContaining("Find the closest match to a user's request") },
+    { message: expect.stringContaining("Find the closest match to a user's request") },
     expect.anything(),
   );
   expect(writerCall).toHaveBeenLastCalledWith(
-    { [MESSAGE_KEY]: expect.stringContaining("Write to the filesystem") },
+    { message: expect.stringContaining("Write to the filesystem") },
     expect.anything(),
   );
 });

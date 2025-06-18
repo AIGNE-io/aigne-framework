@@ -13,7 +13,7 @@ test("Example FunctionAgent: basic", async () => {
       city: z.string().describe("The city to get the weather for."),
     }),
     outputSchema: z.object({
-      $message: z.string().describe("The message from the agent."),
+      message: z.string().describe("The message from the agent."),
       temperature: z.number().describe("The current temperature in Celsius."),
     }),
     process: async ({ city }) => {
@@ -21,7 +21,7 @@ test("Example FunctionAgent: basic", async () => {
       const temperature = 25; // You can replace this with actual weather fetching logic
 
       return {
-        $message: "Hello, I'm AIGNE!",
+        message: "Hello, I'm AIGNE!",
         temperature,
       };
     },
@@ -31,8 +31,8 @@ test("Example FunctionAgent: basic", async () => {
   // #region example-agent-basic-invoke
   const result = await weather.invoke({ city: "New York" });
   console.log(result);
-  // Output: { $message: "Hello, I'm AIGNE!", temperature: 25 }
-  expect(result).toEqual({ $message: "Hello, I'm AIGNE!", temperature: 25 });
+  // Output: { message: "Hello, I'm AIGNE!", temperature: 25 }
+  expect(result).toEqual({ message: "Hello, I'm AIGNE!", temperature: 25 });
   // #endregion example-agent-basic-invoke
 
   // #endregion example-agent-basic
@@ -47,17 +47,17 @@ test("Example FunctionAgent: generator", async () => {
       city: z.string().describe("The city to get the weather for."),
     }),
     outputSchema: z.object({
-      $message: z.string().describe("The message from the agent."),
+      message: z.string().describe("The message from the agent."),
       temperature: z.number().describe("The current temperature in Celsius."),
     }),
     process: async function* ({ city }) {
       console.log(`Fetching weather for ${city}`);
 
-      yield { delta: { text: { $message: "Hello" } } };
-      yield { delta: { text: { $message: "," } } };
-      yield { delta: { text: { $message: " I'm" } } };
-      yield { delta: { text: { $message: " AIGNE" } } };
-      yield { delta: { text: { $message: "!" } } };
+      yield { delta: { text: { message: "Hello" } } };
+      yield { delta: { text: { message: "," } } };
+      yield { delta: { text: { message: " I'm" } } };
+      yield { delta: { text: { message: " AIGNE" } } };
+      yield { delta: { text: { message: "!" } } };
       yield { delta: { json: { temperature: 25 } } };
 
       // Or you can return a partial result at the end
@@ -68,8 +68,8 @@ test("Example FunctionAgent: generator", async () => {
 
   // #region example-agent-generator-invoke-non-streaming
   const result = await weather.invoke({ city: "New York" });
-  console.log(result); // Output: { $message: "Hello, I'm AIGNE!", temperature: 25 }
-  expect(result).toEqual({ $message: "Hello, I'm AIGNE!", temperature: 25 });
+  console.log(result); // Output: { message: "Hello, I'm AIGNE!", temperature: 25 }
+  expect(result).toEqual({ message: "Hello, I'm AIGNE!", temperature: 25 });
   // #endregion example-agent-generator-invoke-non-streaming
 
   // #endregion example-agent-generator
@@ -84,7 +84,7 @@ test("Example FunctionAgent: streaming", async () => {
       city: z.string().describe("The city to get the weather for."),
     }),
     outputSchema: z.object({
-      $message: z.string().describe("The message from the agent."),
+      message: z.string().describe("The message from the agent."),
       temperature: z.number().describe("The current temperature in Celsius."),
     }),
     process: async ({ city }) => {
@@ -92,11 +92,11 @@ test("Example FunctionAgent: streaming", async () => {
 
       return new ReadableStream({
         start(controller) {
-          controller.enqueue({ delta: { text: { $message: "Hello" } } });
-          controller.enqueue({ delta: { text: { $message: "," } } });
-          controller.enqueue({ delta: { text: { $message: " I'm" } } });
-          controller.enqueue({ delta: { text: { $message: " AIGNE" } } });
-          controller.enqueue({ delta: { text: { $message: "!" } } });
+          controller.enqueue({ delta: { text: { message: "Hello" } } });
+          controller.enqueue({ delta: { text: { message: "," } } });
+          controller.enqueue({ delta: { text: { message: " I'm" } } });
+          controller.enqueue({ delta: { text: { message: " AIGNE" } } });
+          controller.enqueue({ delta: { text: { message: "!" } } });
           controller.enqueue({ delta: { json: { temperature: 25 } } });
           controller.close();
         },
@@ -111,7 +111,7 @@ test("Example FunctionAgent: streaming", async () => {
   const json = {};
   for await (const chunk of stream) {
     if (isAgentResponseDelta(chunk)) {
-      if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+      if (chunk.delta.text?.message) text += chunk.delta.text.message;
       if (chunk.delta.json) Object.assign(json, chunk.delta.json);
     }
   }
@@ -123,8 +123,8 @@ test("Example FunctionAgent: streaming", async () => {
 
   // #region example-agent-streaming-invoke-non-streaming
   const result = await weather.invoke({ city: "New York" });
-  console.log(result); // Output: { $message: "Hello, I'm AIGNE!", temperature: 25 }
-  expect(result).toEqual({ $message: "Hello, I'm AIGNE!", temperature: 25 });
+  console.log(result); // Output: { message: "Hello, I'm AIGNE!", temperature: 25 }
+  expect(result).toEqual({ message: "Hello, I'm AIGNE!", temperature: 25 });
   // #endregion example-agent-streaming-invoke-non-streaming
 
   // #endregion example-agent-streaming
@@ -138,15 +138,15 @@ test("Example FunctionAgent: pure function", async () => {
     console.log(`Fetching weather for ${city}`);
 
     return {
-      $message: "Hello, I'm AIGNE!",
+      message: "Hello, I'm AIGNE!",
       temperature: 25,
     };
   });
   // #endregion example-agent-pure-function-create-agent
 
   const result = await weather.invoke({ city: "New York" });
-  console.log(result); // Output: { $message: "Hello, I'm AIGNE!", temperature: 25 }
-  expect(result).toEqual({ $message: "Hello, I'm AIGNE!", temperature: 25 });
+  console.log(result); // Output: { message: "Hello, I'm AIGNE!", temperature: 25 }
+  expect(result).toEqual({ message: "Hello, I'm AIGNE!", temperature: 25 });
 
   // #endregion example-agent-pure-function
 });

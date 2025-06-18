@@ -7,40 +7,40 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -60,7 +60,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -88,10 +88,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -112,20 +112,20 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
@@ -137,7 +137,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
       "output": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -146,10 +146,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -160,7 +160,7 @@ exports[`AIGNEClient should return correct process options {
   streaming: false,
 } for express server 1`] = `
 {
-  "$message": "Hello world!",
+  "message": "Hello world!",
 }
 `;
 
@@ -171,40 +171,40 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -224,7 +224,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -252,10 +252,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -276,20 +276,20 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
@@ -301,7 +301,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
       "output": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -310,10 +310,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -324,7 +324,7 @@ exports[`AIGNEClient should return correct process options {
   streaming: false,
 } for express (with json middleware) server 1`] = `
 {
-  "$message": "Hello world!",
+  "message": "Hello world!",
 }
 `;
 
@@ -335,40 +335,40 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -388,7 +388,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -416,10 +416,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -440,20 +440,20 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
@@ -465,7 +465,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
       "output": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -474,10 +474,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -488,7 +488,7 @@ exports[`AIGNEClient should return correct process options {
   streaming: false,
 } for express (with compression middleware) server 1`] = `
 {
-  "$message": "Hello world!",
+  "message": "Hello world!",
 }
 `;
 
@@ -499,40 +499,40 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -552,7 +552,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -580,10 +580,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -604,20 +604,20 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
@@ -629,7 +629,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
       "output": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -638,10 +638,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -652,7 +652,7 @@ exports[`AIGNEClient should return correct process options {
   streaming: false,
 } for express (pass body directly) server 1`] = `
 {
-  "$message": "Hello world!",
+  "message": "Hello world!",
 }
 `;
 
@@ -663,40 +663,40 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -716,7 +716,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -744,10 +744,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -768,20 +768,20 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello ",
+        "message": "Hello ",
       },
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
+        "message": "Hello world",
       },
       "text": {
-        "$message": "world",
+        "message": "world",
       },
     },
   },
@@ -793,7 +793,7 @@ exports[`AIGNEClient should return correct process options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
       "output": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -802,10 +802,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "$message": "Hello world!",
+        "message": "Hello world!",
       },
       "text": {
-        "$message": "!",
+        "message": "!",
       },
     },
   },
@@ -816,7 +816,7 @@ exports[`AIGNEClient should return correct process options {
   streaming: false,
 } for hono server 1`] = `
 {
-  "$message": "Hello world!",
+  "message": "Hello world!",
 }
 `;
 
@@ -827,20 +827,20 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -861,7 +861,7 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -901,10 +901,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -923,10 +923,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -941,20 +941,20 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -975,7 +975,7 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1015,10 +1015,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -1037,10 +1037,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -1055,20 +1055,20 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -1089,7 +1089,7 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1129,10 +1129,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -1151,10 +1151,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -1169,20 +1169,20 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -1203,7 +1203,7 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1243,10 +1243,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -1265,10 +1265,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -1283,20 +1283,20 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },
@@ -1317,7 +1317,7 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1357,10 +1357,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello",
+        "message": "Hello",
       },
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -1379,10 +1379,10 @@ exports[`AIGNEClient should return error with options {
   {
     "delta": {
       "json": {
-        "$message": "Hello, world",
+        "message": "Hello, world",
       },
       "text": {
-        "$message": ", world",
+        "message": ", world",
       },
     },
   },

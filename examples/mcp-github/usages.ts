@@ -36,32 +36,30 @@ You can perform various GitHub operations like:
 
 Always provide clear, concise responses with relevant information from GitHub.
 `,
+  inputKey: "message",
 });
 
 // Example 1: Search for repositories
 console.log("Example 1: Searching for repositories");
-const searchResult = await aigne.invoke(
-  agent,
-  "Search for repositories related to 'modelcontextprotocol' and limit to 3 results",
-);
+const searchResult = await aigne.invoke(agent, {
+  message: "Search for repositories related to 'modelcontextprotocol' and limit to 3 results",
+});
 console.log(searchResult);
 console.log("\n------------------------\n");
 
 // Example 2: Get file contents
 console.log("Example 2: Getting file contents");
-const fileResult = await aigne.invoke(
-  agent,
-  "Get the content of README.md from modelcontextprotocol/servers repository",
-);
+const fileResult = await aigne.invoke(agent, {
+  message: "Get the content of README.md from modelcontextprotocol/servers repository",
+});
 console.log(fileResult);
 console.log("\n------------------------\n");
 
 // Example 3: List commits
 console.log("Example 3: Listing commits");
-const commitsResult = await aigne.invoke(
-  agent,
-  "List the latest 3 commits from the modelcontextprotocol/servers repository",
-);
+const commitsResult = await aigne.invoke(agent, {
+  message: "List the latest 3 commits from the modelcontextprotocol/servers repository",
+});
 console.log(commitsResult);
 
 await aigne.shutdown();

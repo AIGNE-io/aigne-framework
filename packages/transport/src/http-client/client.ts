@@ -77,37 +77,37 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
   invoke<I extends Message, O extends Message>(agent: Agent<I, O> | string): UserAgent<I, O>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,
-    message: I | string,
+    message: I,
     options: AIGNEHTTPClientInvokeOptions & { returnActiveAgent: true; streaming?: false },
   ): Promise<[O, Agent]>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,
-    message: I | string,
+    message: I,
     options: AIGNEHTTPClientInvokeOptions & { returnActiveAgent: true; streaming: true },
   ): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,
-    message: I | string,
+    message: I,
     options?: AIGNEHTTPClientInvokeOptions & { returnActiveAgent?: false; streaming?: false },
   ): Promise<O>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,
-    message: I | string,
+    message: I,
     options: AIGNEHTTPClientInvokeOptions & { returnActiveAgent?: false; streaming: true },
   ): Promise<AgentResponseStream<O>>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,
-    message: I | string,
+    message: I,
     options: AIGNEHTTPClientInvokeOptions & { returnActiveAgent?: false },
   ): Promise<O | AgentResponseStream<O>>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,
-    message?: I | string,
+    message?: I,
     options?: AIGNEHTTPClientInvokeOptions,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,
-    message?: I | string,
+    message?: I,
     options?: AIGNEHTTPClientInvokeOptions,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]> {
     if (options?.returnActiveAgent) throw new Error("Method not implemented.");

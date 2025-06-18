@@ -51,6 +51,7 @@ Key points of this step:
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-build-first-agent-create-agent" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market cap",
+  inputKey: "message",
 });
 ```
 
@@ -64,9 +65,9 @@ In this concise yet powerful configuration:
 ### Use Agent to Process User Input
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-build-first-agent-invoke-agent" exclude_imports
-const result = await aigne.invoke(agent, "What is crypto?");
+const result = await aigne.invoke(agent, { message: "What is crypto?" });
 console.log(result);
-// Output: { $message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
+// Output: { message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
 ```
 
 This invocation process demonstrates:
@@ -93,11 +94,12 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market cap",
+  inputKey: "message",
 });
 
-const result = await aigne.invoke(agent, "What is crypto?");
+const result = await aigne.invoke(agent, { message: "What is crypto?" });
 console.log(result);
-// Output: { $message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
+// Output: { message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
 ```
 
 ## Tips

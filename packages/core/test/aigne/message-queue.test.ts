@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { AIGNE, MessageQueue, createMessage } from "@aigne/core";
+import { AIGNE, MessageQueue } from "@aigne/core";
 
 test("MessageQueue.subscribe should resolve a message", async () => {
   const context = new AIGNE().newContext();
@@ -9,13 +9,13 @@ test("MessageQueue.subscribe should resolve a message", async () => {
   const message = messageQueue.subscribe("test_topic");
   messageQueue.publish("test_topic", {
     role: "user",
-    message: createMessage("hello"),
+    message: { message: "hello" },
     source: "test_user",
     context,
   });
   expect(message).resolves.toEqual({
     role: "user",
-    message: createMessage("hello"),
+    message: { message: "hello" },
     source: "test_user",
     context,
   });

@@ -31,13 +31,14 @@ You are a proficient coder. You write code to solve problems.
 Work with the sandbox to execute your code.
 `,
   skills: [sandbox],
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({ model });
 
-const result = await aigne.invoke(coder, "10! = ?");
+const result = await aigne.invoke(coder, { message: "10! = ?" });
 console.log(result);
 // Output:
 // {
-//   $message: "The value of \\(10!\\) (10 factorial) is 3,628,800.",
+//   message: "The value of \\(10!\\) (10 factorial) is 3,628,800.",
 // }

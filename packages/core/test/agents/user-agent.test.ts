@@ -1,5 +1,5 @@
 import { expect, mock, spyOn, test } from "bun:test";
-import { AIAgent, AIGNE, UserAgent, createMessage } from "@aigne/core";
+import { AIAgent, AIGNE, UserAgent } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 
 test("UserAgent.stream", async () => {
@@ -12,12 +12,12 @@ test("UserAgent.stream", async () => {
   });
 
   const reader = userAgent.stream.getReader();
-  userAgent.publish("test_topic", "hello");
+  userAgent.publish("test_topic", { message: "hello" });
   expect(reader.read()).resolves.toEqual({
     value: {
       topic: "test_topic",
       role: "user",
-      message: createMessage("hello"),
+      message: { message: "hello" },
       source: "user_agent",
       context: expect.anything(),
     },
@@ -36,8 +36,8 @@ test("UserAgent.invoke should invoke process correctly", async () => {
     process: (input) => input,
   });
 
-  const result = await aigne.invoke(userAgent, "hello");
-  expect(result).toEqual(createMessage("hello"));
+  const result = await aigne.invoke(userAgent, { message: "hello" });
+  expect(result).toEqual({ message: "hello" });
 });
 
 test("UserAgent.invoke should invoke activeAgent correctly", async () => {
@@ -52,12 +52,12 @@ test("UserAgent.invoke should invoke activeAgent correctly", async () => {
   });
 
   const testAgentProcess = spyOn(testAgent, "process").mockReturnValueOnce(
-    arrayToAgentProcessAsyncGenerator([{ delta: { json: createMessage("world") } }]),
+    arrayToAgentProcessAsyncGenerator([{ delta: { json: { message: "world" } } }]),
   );
 
-  const result = await aigne.invoke(userAgent, "hello");
-  expect(result).toEqual(createMessage("world"));
-  expect(testAgentProcess).toHaveBeenLastCalledWith(createMessage("hello"), expect.anything());
+  const result = await aigne.invoke(userAgent, { message: "hello" });
+  expect(result).toEqual({ message: "world" });
+  expect(testAgentProcess).toHaveBeenLastCalledWith({ message: "hello" }, expect.anything());
 });
 
 test("UserAgent.invoke should publish topic correctly", async () => {
@@ -71,11 +71,11 @@ test("UserAgent.invoke should publish topic correctly", async () => {
 
   const sub = aigne.subscribe("test_publish_topic");
 
-  await aigne.invoke(userAgent, "hello");
+  await aigne.invoke(userAgent, { message: "hello" });
 
   expect(sub).resolves.toEqual(
     expect.objectContaining({
-      message: createMessage("hello"),
+      message: { message: "hello" },
     }),
   );
 });
@@ -92,14 +92,14 @@ test("UserAgent pub/sub should work correctly", async () => {
   const listener = mock();
   userAgent.subscribe("test_sub", listener);
 
-  userAgent.publish("test_sub", "hello");
+  userAgent.publish("test_sub", { message: "hello" });
   expect(listener).toHaveBeenLastCalledWith(
     expect.objectContaining({
-      message: createMessage("hello"),
+      message: { message: "hello" },
     }),
   );
 
   userAgent.unsubscribe("test_sub", listener);
-  userAgent.publish("test_sub", "hello");
+  userAgent.publish("test_sub", { message: "hello" });
   expect(listener).toHaveBeenCalledTimes(1);
 });

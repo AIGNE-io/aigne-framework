@@ -24,6 +24,7 @@ test("Example GuideRailAgent: basic", async () => {
   // #region example-guide-rail-agent-basic-create-agent
   const agent = AIAgent.from({
     guideRails: [financial],
+    inputKey: "message",
   });
   // #endregion example-guide-rail-agent-basic-create-agent
 
@@ -48,16 +49,18 @@ test("Example GuideRailAgent: basic", async () => {
         },
       }),
     );
-  const result = await aigne.invoke(agent, "What will be the price of Bitcoin next month?");
+  const result = await aigne.invoke(agent, {
+    message: "What will be the price of Bitcoin next month?",
+  });
   console.log(result);
   // Output:
   // {
   //   "$status": "GuideRailError",
-  //   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
+  //   "message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
   // }
   expect(result).toEqual({
     $status: "GuideRailError",
-    $message:
+    message:
       "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading.",
   });
   // #endregion example-guide-rail-agent-basic-invoke

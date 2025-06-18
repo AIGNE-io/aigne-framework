@@ -9,7 +9,7 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
       },
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
     },
   },
@@ -36,91 +36,91 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
   {
     "delta": {
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": ",",
+        "message": ",",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "How",
+        "message": "How",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "can",
+        "message": "can",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "I",
+        "message": "I",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "assist",
+        "message": "assist",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "you",
+        "message": "you",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " ",
+        "message": " ",
       },
     },
   },
@@ -138,14 +138,14 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
   {
     "delta": {
       "text": {
-        "$message": "today",
+        "message": "today",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": "?",
+        "message": "?",
       },
     },
   },
@@ -156,7 +156,7 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
       },
       "event": "agentSucceed",
       "output": {
-        "$message": "Hello, How can I assist you today?",
+        "message": "Hello, How can I assist you today?",
       },
     },
   },
@@ -172,7 +172,7 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       },
       "event": "agentStarted",
       "input": {
-        "$message": "hello",
+        "message": "hello",
       },
     },
   },
@@ -208,7 +208,7 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
   {
     "delta": {
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
@@ -224,7 +224,7 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
   {
     "delta": {
       "text": {
-        "$message": " world",
+        "message": " world",
       },
     },
   },
@@ -240,21 +240,20 @@ exports[`AIGNE.invoke should respond $meta field with usage metrics with {
   {
     "delta": {
       "text": {
-        "$message": "Hello",
+        "message": "Hello",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "$message": " world",
+        "message": " world",
       },
     },
   },
   {
     "delta": {
       "json": {
-        "$message": "Hello world",
         "$meta": {
           "usage": {
             "agentCalls": 4,
@@ -262,6 +261,7 @@ exports[`AIGNE.invoke should respond $meta field with usage metrics with {
             "outputTokens": 24,
           },
         },
+        "message": "Hello world",
       },
     },
   },

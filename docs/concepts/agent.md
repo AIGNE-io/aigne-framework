@@ -155,20 +155,20 @@ Apply guide rails to an Agent:
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant that provides financial advice.",
   guideRails: [financial],
+  inputKey: "message",
 });
 ```
 
 See how it protects users from inappropriate advice:
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-guide-rails-invoke" exclude_imports
-const result = await aigne.invoke(
-  agent,
-  "What will be the price of Bitcoin next month?",
-);
+const result = await aigne.invoke(agent, {
+  message: "What will be the price of Bitcoin next month?",
+});
 console.log(result);
 // Output:
 // {
-//   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
+//   "message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
 // }
 ```
 
@@ -180,18 +180,18 @@ Imagine an assistant that can remember all your past conversations - this is the
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 ```
 
 With memory, Agents can remember previous conversation content, providing more personalized and coherent experiences:
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-enable-memory-invoke-1" exclude_imports
-const result2 = await aigne.invoke(
-  agent,
-  "What is my favorite cryptocurrency?",
-);
+const result2 = await aigne.invoke(agent, {
+  message: "What is my favorite cryptocurrency?",
+});
 console.log(result2);
-// Output: { $message: "Your favorite cryptocurrency is Bitcoin." }
+// Output: { message: "Your favorite cryptocurrency is Bitcoin." }
 ```
 
 ### Skills
@@ -219,6 +219,7 @@ const getCryptoPrice = FunctionAgent.from({
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
   skills: [getCryptoPrice],
+  inputKey: "message",
 });
 ```
 
@@ -231,21 +232,22 @@ This skill composition mechanism enables Agents to break down complex tasks, del
 1. **Regular Mode** - Wait for the Agent to complete all processing and return the final result, suitable for scenarios that need to obtain complete answers at once:
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-invoke" exclude_imports
-const result = await agent.invoke("What is the price of ABT?");
+const result = await agent.invoke({ message: "What is the price of ABT?" });
 console.log(result);
-// Output: { $message: "ABT is currently priced at $1000." }
+// Output: { message: "ABT is currently priced at $1000." }
 ```
 
 2. **Streaming Mode** - Allows Agents to return results incrementally in real-time, perfect for interactive scenarios that need immediate feedback, such as typing effects in chatbots:
 
 ```ts file="../../docs-examples/test/concepts/agent.test.ts" region="example-agent-invoke-stream" exclude_imports
-const stream = await agent.invoke("What is the price of ABT?", {
-  streaming: true,
-});
+const stream = await agent.invoke(
+  { message: "What is the price of ABT?" },
+  { streaming: true },
+);
 let response = "";
 for await (const chunk of stream) {
-  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
-    response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message)
+    response += chunk.delta.text.message;
 }
 console.log(response);
 // Output:  "ABT is currently priced at $1000."
@@ -268,16 +270,16 @@ class CustomAgent extends Agent {
   ): PromiseOrValue<AgentProcessResult<Message>> {
     console.log("Custom agent processing input:", input);
     return {
-      $message: "AIGNE is a platform for building AI agents.",
+      message: "AIGNE is a platform for building AI agents.",
     };
   }
 }
 
 const agent = new CustomAgent();
 
-const result = await agent.invoke("What is the price of ABT?");
+const result = await agent.invoke({ message: "What is the price of ABT?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ### shutdown Method

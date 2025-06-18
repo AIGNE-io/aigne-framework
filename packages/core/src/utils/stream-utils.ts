@@ -7,7 +7,6 @@ import {
   isAgentResponseDelta,
   isEmptyChunk,
 } from "../agents/agent.js";
-import type { MESSAGE_KEY } from "../prompt/prompt-builder.js";
 import { type PromiseOrValue, omitBy } from "./type-utils.js";
 import "./stream-polyfill.js";
 import type { ReadableStreamDefaultReadResult } from "bun";
@@ -210,7 +209,7 @@ export async function readableStreamToArray<T>(
 
 export function stringToAgentResponseStream(
   str: string,
-  key: "text" | typeof MESSAGE_KEY | string = "text",
+  key: "text" | string = "text",
 ): AgentResponseStream<Message> {
   const segmenter = new Intl.Segmenter(undefined, { granularity: "word" });
   const segments = segmenter.segment(str);

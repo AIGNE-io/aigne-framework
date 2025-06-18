@@ -24,6 +24,7 @@ const agent = AIAgent.from({
       getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
     },
   }),
+  inputKey: "message",
 });
 ```
 
@@ -39,13 +40,13 @@ const agent = AIAgent.from({
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-custom-user-context-invoke-agent" exclude_imports
 const result = await aigne.invoke(
   agent,
-  "My name is John Doe and I like to invest in Bitcoin.",
+  { message: "My name is John Doe and I like to invest in Bitcoin." },
   {
     userContext: { userId: "user_123" },
   },
 );
 console.log(result);
-// Output: { $message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
+// Output: { message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
 ```
 
 **Explanation**:
@@ -77,17 +78,18 @@ const agent = AIAgent.from({
       getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
     },
   }),
+  inputKey: "message",
 });
 
 const result = await aigne.invoke(
   agent,
-  "My name is John Doe and I like to invest in Bitcoin.",
+  { message: "My name is John Doe and I like to invest in Bitcoin." },
   {
     userContext: { userId: "user_123" },
   },
 );
 console.log(result);
-// Output: { $message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
+// Output: { message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
 ```
 
 ## Best Practices

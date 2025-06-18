@@ -19,7 +19,10 @@ const model = new OpenAIChatModel({
   model: "gpt-4o-mini",
 });
 
-const agent = AIAgent.from({ model });
+const agent = AIAgent.from({
+  model,
+  inputKey: "message",
+});
 ```
 
 ## 调用 Agent
@@ -27,9 +30,9 @@ const agent = AIAgent.from({ model });
 创建 AIAgent 后，可以使用 invoke 方法向代理发送请求并获取响应。在基本调用中，只需传入一个字符串作为用户的问题或指令。
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-invoke"
-const result = await agent.invoke("What is AIGNE?");
+const result = await agent.invoke({ message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ## 流式响应
@@ -39,11 +42,14 @@ console.log(result);
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-basic-invoke-stream"
 import { isAgentResponseDelta } from "@aigne/core";
 
-const stream = await agent.invoke("What is AIGNE?", { streaming: true });
+const stream = await agent.invoke(
+  { message: "What is AIGNE?" },
+  { streaming: true },
+);
 let response = "";
 for await (const chunk of stream) {
-  if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message)
-    response += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message)
+    response += chunk.delta.text.message;
 }
 console.log(response);
 // Output:  "AIGNE is a platform for building AI agents."
@@ -70,15 +76,16 @@ const model = new OpenAIChatModel();
 const agent = AIAgent.from({
   model,
   instructions: "Only speak in Haikus.",
+  inputKey: "message",
 });
 ```
 
 下面的示例展示了如何调用带有自定义指令的代理，并获取符合指定风格（俳句）的回答：
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-invoke"
-const result = await agent.invoke("What is AIGNE?");
+const result = await agent.invoke({ message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined." }
+// Output: { message: "AIGNE stands for  \nA new approach to learning,  \nKnowledge intertwined." }
 ```
 
 主要特点：
@@ -104,19 +111,19 @@ const agent = AIAgent.from({
     style: z.string().describe("The style of the response."),
   }),
   instructions: "Only speak in {{style}}.",
+  inputKey: "message",
 });
 ```
 
 下面的示例展示了如何调用带有变量的自定义指令代理。通过 createMessage 函数创建一个包含用户问题和变量值的消息，使代理能够根据提供的风格（Haikus）生成回答：
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-custom-instructions-with-variables-invoke"
-import { createMessage } from "@aigne/core";
-
-const result = await agent.invoke(
-  createMessage("What is AIGNE?", { style: "Haikus" }),
-);
+const result = await agent.invoke({
+  message: "What is AIGNE?",
+  style: "Haikus",
+});
 console.log(result);
-// Output: { $message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
+// Output: { message: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
 ```
 
 主要特点：
@@ -146,17 +153,17 @@ const agent = AIAgent.from({
     response: z.string().describe("The response to the request"),
   }),
   instructions: "Only speak in {{style}}.",
+  inputKey: "message",
 });
 ```
 
 下面的示例展示了如何调用具有结构化输出的代理。与带变量的自定义指令类似，我们使用 createMessage 函数传递用户问题和变量值，但这次代理会返回符合我们定义的输出模式的结构化数据：
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-structured-output-invoke"
-import { createMessage } from "@aigne/core";
-
-const result = await agent.invoke(
-  createMessage("What is AIGNE?", { style: "Haikus" }),
-);
+const result = await agent.invoke({
+  message: "What is AIGNE?",
+  style: "Haikus",
+});
 console.log(result);
 // Output: { topic: "AIGNE", response: "AIGNE, you ask now  \nArtificial Intelligence  \nGuidance, new tech blooms." }
 ```
@@ -209,15 +216,18 @@ const agent = AIAgent.from({
   instructions:
     "You are a helpful assistant that can provide weather information.",
   skills: [getWeather],
+  inputKey: "message",
 });
 ```
 
 下面的示例展示了如何调用具有技能的代理。当用户询问北京的天气时，代理会自动识别这是一个天气查询请求，并调用 getWeather 技能来获取天气数据，然后以自然语言形式返回结果：
 
 ```ts file="../../docs-examples/test/concepts/ai-agent.test.ts" region="example-agent-with-skills-invoke"
-const result = await agent.invoke("What's the weather like in Beijing today?");
+const result = await agent.invoke({
+  message: "What's the weather like in Beijing today?",
+});
 console.log(result);
-// Output: { $message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity." }
+// Output: { message: "The current weather in Beijing is 22°C with sunny conditions and 45% humidity." }
 ```
 
 主要特点：

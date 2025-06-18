@@ -6,12 +6,9 @@ import {
   AIGNE,
   ChatMessagesTemplate,
   FunctionAgent,
-  MESSAGE_KEY,
-  type Message,
   PromptBuilder,
   SystemMessageTemplate,
   UserMessageTemplate,
-  createMessage,
 } from "@aigne/core";
 import {
   readableStreamToArray,
@@ -27,7 +24,7 @@ test("AIAgent basic creation", async () => {
   // Create a simple AIAgent with minimal configuration
   const model = new OpenAIChatModel();
 
-  spyOn(model, "process").mockReturnValueOnce(
+  const modelProcess = spyOn(model, "process").mockReturnValueOnce(
     Promise.resolve(stringToAgentResponseStream("Hello, How can I help you?")),
   );
 
@@ -35,13 +32,25 @@ test("AIAgent basic creation", async () => {
     model,
     name: "assistant",
     description: "A helpful assistant",
+    inputKey: "message",
   });
 
-  const result = await agent.invoke("What is the weather today?");
+  const result = await agent.invoke({ message: "What is the weather today?" });
 
-  expect(result).toEqual({ $message: "Hello, How can I help you?" });
+  expect(result).toEqual({ message: "Hello, How can I help you?" });
+  expect(modelProcess).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      messages: expect.arrayContaining([
+        expect.objectContaining({
+          role: "user",
+          content: "What is the weather today?",
+        }),
+      ]),
+    }),
+    expect.anything(),
+  );
 
-  console.log(result); // Expected output: { $message: "Hello, How can I help you?" }
+  console.log(result); // Expected output: { message: "Hello, How can I help you?" }
 
   // #endregion example-ai-agent-basic
 });
@@ -60,13 +69,14 @@ test("AIAgent with custom instructions", async () => {
     name: "tutor",
     description: "A math tutor",
     instructions: "You are a math tutor who helps students understand concepts clearly.",
+    inputKey: "message",
   });
 
-  const result = await agent.invoke("What is 10 factorial?");
+  const result = await agent.invoke({ message: "What is 10 factorial?" });
 
-  expect(result).toEqual({ $message: "10 factorial is 3628800." });
+  expect(result).toEqual({ message: "10 factorial is 3628800." });
 
-  console.log(result); // Expected output: { $message: "10 factorial is 3628800." }
+  console.log(result); // Expected output: { message: "10 factorial is 3628800." }
 
   // #endregion example-ai-agent-instructions
 });
@@ -100,9 +110,9 @@ test("AIAgent with custom PromptBuilder", async () => {
 
   const result = await agent.invoke({ issue: "My computer won't start." });
 
-  expect(result).toEqual({ $message: "Is there any message on the screen?" });
+  expect(result).toEqual({ message: "Is there any message on the screen?" });
 
-  console.log(result); // Expected output: { $message: "Is there any message on the screen?" }
+  console.log(result); // Expected output: { message: "Is there any message on the screen?" }
 
   // #endregion example-ai-agent-prompt-builder
 });
@@ -120,9 +130,10 @@ test("AIAgent with custom output key", async () => {
   const agent = AIAgent.from({
     model,
     outputKey: "greeting",
+    inputKey: "message",
   });
 
-  const result = await agent.invoke("What is the weather today?");
+  const result = await agent.invoke({ message: "What is the weather today?" });
 
   expect(result).toEqual({ greeting: "Hello, How can I help you?" });
 
@@ -191,6 +202,7 @@ test("AIAgent with tool choice auto", async () => {
     description: "A helpful assistant with tool access",
     toolChoice: AIAgentToolChoice.auto, // Let the model decide when to use tools
     skills: [calculator, weatherService],
+    inputKey: "message",
   });
 
   spyOn(model, "process")
@@ -205,11 +217,11 @@ test("AIAgent with tool choice auto", async () => {
       ),
     );
 
-  const result1 = await agent.invoke("What is the weather in San Francisco?");
+  const result1 = await agent.invoke({ message: "What is the weather in San Francisco?" });
 
-  expect(result1).toEqual({ $message: "Weather forecast for San Francisco: Sunny, 75°F" });
+  expect(result1).toEqual({ message: "Weather forecast for San Francisco: Sunny, 75°F" });
 
-  console.log(result1); // Expected output: { $message: "Weather forecast for San Francisco: Sunny, 75°F" }
+  console.log(result1); // Expected output: { message: "Weather forecast for San Francisco: Sunny, 75°F" }
 
   spyOn(model, "process")
     .mockReturnValueOnce(
@@ -219,11 +231,11 @@ test("AIAgent with tool choice auto", async () => {
     )
     .mockReturnValueOnce(Promise.resolve(stringToAgentResponseStream("The result of 5 + 3 is 8")));
 
-  const result2 = await agent.invoke("Calculate 5 + 3");
+  const result2 = await agent.invoke({ message: "Calculate 5 + 3" });
 
-  expect(result2).toEqual({ $message: "The result of 5 + 3 is 8" });
+  expect(result2).toEqual({ message: "The result of 5 + 3 is 8" });
 
-  console.log(result2); // Expected output: { $message: "The result of 5 + 3 is 8" }
+  console.log(result2); // Expected output: { message: "The result of 5 + 3 is 8" }
 
   // #endregion example-ai-agent-tool-choice-auto
 });
@@ -268,6 +280,7 @@ test("AIAgent with router tool choice", async () => {
     description: "Assistant that routes to specialized agents",
     toolChoice: AIAgentToolChoice.router, // Use the router mode
     skills: [weatherAgent, translator],
+    inputKey: "message",
   });
 
   spyOn(model, "process").mockReturnValueOnce(
@@ -276,7 +289,7 @@ test("AIAgent with router tool choice", async () => {
     }),
   );
 
-  const result = await agent.invoke("What's the weather in San Francisco?");
+  const result = await agent.invoke({ message: "What's the weather in San Francisco?" });
 
   expect(result).toEqual({ forecast: "Weather in San Francisco: Sunny, 75°F" });
 
@@ -307,6 +320,7 @@ test("AIAgent with catchToolErrors enabled", async () => {
   const agent = AIAgent.from({
     model,
     skills: [plus],
+    inputKey: "message",
   });
 
   const process = spyOn(model, "process")
@@ -324,7 +338,7 @@ test("AIAgent with catchToolErrors enabled", async () => {
       text: "1 + 2 = 3",
     });
 
-  const result = await agent.invoke("1 + 2 = ?");
+  const result = await agent.invoke({ message: "1 + 2 = ?" });
 
   expect(process).toHaveBeenCalledTimes(3);
   expect(process).toHaveBeenLastCalledWith(
@@ -342,7 +356,7 @@ test("AIAgent with catchToolErrors enabled", async () => {
     expect.anything(),
   );
 
-  expect(result).toEqual({ $message: "1 + 2 = 3" });
+  expect(result).toEqual({ message: "1 + 2 = 3" });
 });
 
 test("AIAgent with catchToolErrors disabled", async () => {
@@ -368,6 +382,7 @@ test("AIAgent with catchToolErrors disabled", async () => {
     model,
     skills: [plus],
     catchToolsError: false,
+    inputKey: "message",
   });
 
   spyOn(model, "process").mockReturnValueOnce(
@@ -376,7 +391,7 @@ test("AIAgent with catchToolErrors disabled", async () => {
     }),
   );
 
-  const result = agent.invoke("1 + 2 = ?");
+  const result = agent.invoke({ message: "1 + 2 = ?" });
 
   expect(result).rejects.toThrowError("Invalid input: a or b is zero");
 });
@@ -386,13 +401,18 @@ test.each([true, false])("AIAgent.invoke with streaming %p", async (streaming) =
 
   const context = new AIGNE({ model }).newContext();
 
-  const agent = AIAgent.from<Message, { [MESSAGE_KEY]: string }>({});
+  const agent = AIAgent.from({
+    inputKey: "message",
+  });
 
   spyOn(model, "process").mockReturnValueOnce(
     Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
   );
 
-  const result = await agent.invoke("write a long blog about arcblock", { context, streaming });
+  const result = await agent.invoke(
+    { message: "write a long blog about arcblock" },
+    { context, streaming },
+  );
 
   if (streaming) {
     assert(result instanceof ReadableStream);
@@ -412,6 +432,7 @@ test("AIAgent.invoke with structured output", async () => {
       username: z.string(),
       questionCategory: z.string(),
     }),
+    inputKey: "message",
   });
 
   spyOn(model, "process").mockReturnValueOnce(
@@ -423,7 +444,7 @@ test("AIAgent.invoke with structured output", async () => {
     }),
   );
 
-  const result = await aigne.invoke(agent, "hello, i'm Alice");
+  const result = await aigne.invoke(agent, { message: "hello, i'm Alice" });
 
   expect(result).toEqual({ username: "Alice", questionCategory: "greeting" });
 });
@@ -442,11 +463,13 @@ test("AIAgent should pass both arguments (model generated) and input (user provi
     outputSchema: z.object({
       sum: z.number(),
     }),
+    inputKey: "message",
   });
 
   const agent = AIAgent.from({
     instructions: "You are a friendly chatbot",
     skills: [plus],
+    inputKey: "message",
   });
 
   const plusCall = spyOn(plus, "invoke");
@@ -458,13 +481,13 @@ test("AIAgent should pass both arguments (model generated) and input (user provi
     .mockReturnValueOnce(Promise.resolve({ json: { sum: 2 } }))
     .mockReturnValueOnce(Promise.resolve({ text: "The sum is 2" }));
 
-  const result = await aigne.invoke(agent, "1 + 1 = ?");
+  const result = await aigne.invoke(agent, { message: "1 + 1 = ?" });
 
   expect(plusCall).toHaveBeenLastCalledWith(
-    { ...createMessage("1 + 1 = ?"), a: 1, b: 1 },
+    { message: "1 + 1 = ?", a: 1, b: 1 },
     expect.anything(),
   );
-  expect(result).toEqual(createMessage("The sum is 2"));
+  expect(result).toEqual({ message: "The sum is 2" });
 });
 
 test.each([true, false])(
@@ -478,6 +501,7 @@ test.each([true, false])(
     const agent = AIAgent.from({
       skills: [sales],
       toolChoice: AIAgentToolChoice.router,
+      inputKey: "message",
     });
 
     const salesCall = spyOn(sales, "invoke");
@@ -490,7 +514,11 @@ test.each([true, false])(
         Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
       );
 
-    const result = await aigne.invoke(agent, "Hello, I want to buy a T-shirt", { streaming });
+    const result = await aigne.invoke(
+      agent,
+      { message: "Hello, I want to buy a T-shirt" },
+      { streaming },
+    );
 
     if (streaming) {
       assert(result instanceof ReadableStream);
@@ -500,7 +528,7 @@ test.each([true, false])(
     }
 
     expect(salesCall).toHaveBeenLastCalledWith(
-      { ...createMessage("Hello, I want to buy a T-shirt"), indent: "T-shirt" },
+      { message: "Hello, I want to buy a T-shirt", indent: "T-shirt" },
       expect.anything(),
     );
   },
@@ -513,6 +541,7 @@ test("AIAgent should use self model first and then use model from context", asyn
   const claudeModel = new ClaudeChatModel();
   const agent = AIAgent.from({
     model: claudeModel,
+    inputKey: "message",
   });
 
   spyOn(openaiModel, "process").mockReturnValueOnce(
@@ -522,8 +551,8 @@ test("AIAgent should use self model first and then use model from context", asyn
     Promise.resolve(stringToAgentResponseStream("Answer from claude model")),
   );
 
-  const result = await engine.invoke(agent, "Hello");
-  expect(result).toEqual(createMessage("Answer from claude model"));
+  const result = await engine.invoke(agent, { message: "Hello" });
+  expect(result).toEqual({ message: "Answer from claude model" });
 });
 
 test("AIAgent should pass memories from invocation options to the tools", async () => {
@@ -535,6 +564,7 @@ test("AIAgent should pass memories from invocation options to the tools", async 
   const agent = AIAgent.from({
     skills: [sales],
     toolChoice: AIAgentToolChoice.router,
+    inputKey: "message",
   });
 
   const salesInvoke = spyOn(sales, "invoke");
@@ -547,9 +577,11 @@ test("AIAgent should pass memories from invocation options to the tools", async 
       Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
     );
 
-  await aigne.invoke(agent, "Hello, I want to buy a T-shirt", {
-    memories: [{ content: "I like cartoon styles" }],
-  });
+  await aigne.invoke(
+    agent,
+    { message: "Hello, I want to buy a T-shirt" },
+    { memories: [{ content: "I like cartoon styles" }] },
+  );
 
   expect(salesInvoke).toHaveBeenLastCalledWith(
     expect.anything(),

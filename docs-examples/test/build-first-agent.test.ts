@@ -29,6 +29,7 @@ test("Build first agent: basic", async () => {
   // #region example-build-first-agent-create-agent
   const agent = AIAgent.from({
     instructions: "You are a helpful assistant for Crypto market cap",
+    inputKey: "message",
   });
   // #endregion example-build-first-agent-create-agent
 
@@ -37,13 +38,13 @@ test("Build first agent: basic", async () => {
   });
 
   // #region example-build-first-agent-invoke-agent
-  const result = await aigne.invoke(agent, "What is crypto?");
+  const result = await aigne.invoke(agent, { message: "What is crypto?" });
   console.log(result);
-  // Output: { $message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
+  // Output: { message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
   // #endregion example-build-first-agent-invoke-agent
 
   expect(result).toEqual({
-    $message:
+    message:
       "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security",
   });
 
@@ -139,6 +140,7 @@ test("Build first agent: add skills to agent", async () => {
   const agent = AIAgent.from({
     instructions: "You are a helpful assistant for Crypto market cap",
     skills: [ccxt],
+    inputKey: "message",
   });
   // #endregion example-add-skills-to-agent-add-skills
 
@@ -147,10 +149,12 @@ test("Build first agent: add skills to agent", async () => {
   });
 
   // #region example-add-skills-to-agent-invoke-agent
-  const result = await aigne.invoke(agent, "What is the crypto price of ABT/USD on coinbase?");
+  const result = await aigne.invoke(agent, {
+    message: "What is the crypto price of ABT/USD on coinbase?",
+  });
   console.log(result);
-  // Output: { $message:"The current price of ABT/USD on Coinbase is $0.9684." }
-  expect(result).toEqual({ $message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  // Output: { message:"The current price of ABT/USD on Coinbase is $0.9684." }
+  expect(result).toEqual({ message: "The current price of ABT/USD on Coinbase is $0.9684." });
   // #endregion example-add-skills-to-agent-invoke-agent
 
   // #endregion example-add-skills-to-agent
@@ -176,6 +180,7 @@ test("Build first agent: enable memory for agent", async () => {
         url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
       },
     }),
+    inputKey: "message",
   });
   // #endregion example-enable-memory-for-agent-enable-memory
 
@@ -194,37 +199,39 @@ test("Build first agent: enable memory for agent", async () => {
     });
 
   // #region example-enable-memory-for-agent-invoke-agent-1
-  const result1 = await aigne.invoke(agent, "My name is John Doe and I like to invest in Bitcoin.");
+  const result1 = await aigne.invoke(agent, {
+    message: "My name is John Doe and I like to invest in Bitcoin.",
+  });
   console.log(result1);
-  // Output: { $message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
+  // Output: { message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
   expect(result1).toEqual({
-    $message:
+    message:
       "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?",
   });
   // #endregion example-enable-memory-for-agent-invoke-agent-1
 
   // #region example-enable-memory-for-agent-invoke-agent-2
-  const result2 = await aigne.invoke(agent, "What is my favorite cryptocurrency?");
+  const result2 = await aigne.invoke(agent, { message: "What is my favorite cryptocurrency?" });
   console.log(result2);
-  // Output: { $message: "Your favorite cryptocurrency is Bitcoin." }
-  expect(result2).toEqual({ $message: "Your favorite cryptocurrency is Bitcoin." });
+  // Output: { message: "Your favorite cryptocurrency is Bitcoin." }
+  expect(result2).toEqual({ message: "Your favorite cryptocurrency is Bitcoin." });
   // #endregion example-enable-memory-for-agent-invoke-agent-2
 
   // #region example-enable-memory-for-agent-invoke-agent-3
-  const result3 = await aigne.invoke(agent, "I've invested $5000 in Ethereum.");
+  const result3 = await aigne.invoke(agent, { message: "I've invested $5000 in Ethereum." });
   console.log(result3);
-  // Output: { $message: "Got it, you've invested $5000 in Ethereum! That's a good investment. If there's anything else you'd like to share about your crypto portfolio or have questions, feel free!" }
+  // Output: { message: "Got it, you've invested $5000 in Ethereum! That's a good investment. If there's anything else you'd like to share about your crypto portfolio or have questions, feel free!" }
   expect(result3).toEqual({
-    $message:
+    message:
       "Got it, you've invested $5000 in Ethereum! That's a good investment. If there's anything else you'd like to share about your crypto portfolio or have questions, feel free!",
   });
   // #endregion example-enable-memory-for-agent-invoke-agent-3
 
   // #region example-enable-memory-for-agent-invoke-agent-4
-  const result4 = await aigne.invoke(agent, "How much have I invested in Ethereum?");
+  const result4 = await aigne.invoke(agent, { message: "How much have I invested in Ethereum?" });
   console.log(result4);
-  // Output: { $message: "You've invested $5000 in Ethereum." }
-  expect(result4).toEqual({ $message: "You've invested $5000 in Ethereum." });
+  // Output: { message: "You've invested $5000 in Ethereum." }
+  expect(result4).toEqual({ message: "You've invested $5000 in Ethereum." });
   // #endregion example-enable-memory-for-agent-invoke-agent-4
 
   // #endregion example-enable-memory-for-agent
@@ -253,6 +260,7 @@ test("Build first agent: custom user context", async () => {
         getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
       },
     }),
+    inputKey: "message",
   });
   // #endregion example-custom-user-context-create-agent
 
@@ -260,13 +268,17 @@ test("Build first agent: custom user context", async () => {
   spyOn(aigne.model, "process").mockReturnValueOnce({
     text: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?",
   });
-  const result = await aigne.invoke(agent, "My name is John Doe and I like to invest in Bitcoin.", {
-    userContext: { userId: "user_123" },
-  });
+  const result = await aigne.invoke(
+    agent,
+    { message: "My name is John Doe and I like to invest in Bitcoin." },
+    {
+      userContext: { userId: "user_123" },
+    },
+  );
   console.log(result);
-  // Output: { $message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
+  // Output: { message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
   expect(result).toEqual({
-    $message:
+    message:
       "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?",
   });
   // #endregion example-custom-user-context-invoke-agent
@@ -293,6 +305,7 @@ test("Build first agent: serve agent as API service", async () => {
         getSessionId: ({ userContext }) => userContext.userId as string, // Use userId from userContext as session ID
       },
     }),
+    inputKey: "message",
   });
   // #endregion example-serve-agent-as-api-service-create-named-agent
 
@@ -334,10 +347,12 @@ test("Build first agent: serve agent as API service", async () => {
 
   // #region example-aigne-http-client-invoke-agent
   const chatbot = await client.getAgent({ name: "chatbot" });
-  const result = await chatbot.invoke("What is the crypto price of ABT/USD on coinbase?");
+  const result = await chatbot.invoke({
+    message: "What is the crypto price of ABT/USD on coinbase?",
+  });
   console.log(result);
-  // Output: { $message: "The current price of ABT/USD on Coinbase is $0.9684." }
-  expect(result).toEqual({ $message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  // Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
+  expect(result).toEqual({ message: "The current price of ABT/USD on Coinbase is $0.9684." });
   // #endregion example-aigne-http-client-invoke-agent
 
   // #endregion example-aigne-http-client-usage
@@ -355,6 +370,7 @@ test("Build first agent: setup memory for client agent", async () => {
   const agent = AIAgent.from({
     name: "chatbot",
     instructions: "You are a helpful assistant",
+    inputKey: "message",
   });
 
   const aigne = new AIGNE({
@@ -403,21 +419,23 @@ test("Build first agent: setup memory for client agent", async () => {
       },
     }),
   });
-  const result = await chatbot.invoke("What is the crypto price of ABT/USD on coinbase?");
+  const result = await chatbot.invoke({
+    message: "What is the crypto price of ABT/USD on coinbase?",
+  });
   console.log(result);
-  // Output: { $message: "The current price of ABT/USD on Coinbase is $0.9684." }
-  expect(result).toEqual({ $message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  // Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
+  expect(result).toEqual({ message: "The current price of ABT/USD on Coinbase is $0.9684." });
   // #endregion example-client-agent-memory-invoke-agent
 
   // #region example-client-agent-memory-invoke-agent-1
   const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce({
     text: "You just asked about the crypto price of ABT/USD on Coinbase.",
   });
-  const result1 = await chatbot.invoke("What question did I just ask?");
+  const result1 = await chatbot.invoke({ message: "What question did I just ask?" });
   console.log(result1);
-  // Output: { $message: "You just asked about the crypto price of ABT/USD on Coinbase." }
+  // Output: { message: "You just asked about the crypto price of ABT/USD on Coinbase." }
   expect(result1).toEqual({
-    $message: "You just asked about the crypto price of ABT/USD on Coinbase.",
+    message: "You just asked about the crypto price of ABT/USD on Coinbase.",
   });
   expect(modelProcess).toHaveBeenLastCalledWith(
     expect.objectContaining({

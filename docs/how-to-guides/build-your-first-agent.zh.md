@@ -49,6 +49,7 @@ const aigne = new AIGNE({
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-build-first-agent-create-agent" exclude_imports
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market cap",
+  inputKey: "message",
 });
 ```
 
@@ -62,9 +63,9 @@ const agent = AIAgent.from({
 ### 使用 Agent 处理用户输入
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-build-first-agent-invoke-agent" exclude_imports
-const result = await aigne.invoke(agent, "What is crypto?");
+const result = await aigne.invoke(agent, { message: "What is crypto?" });
 console.log(result);
-// Output: { $message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
+// Output: { message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
 ```
 
 这个调用过程展示了：
@@ -91,11 +92,12 @@ const aigne = new AIGNE({
 
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market cap",
+  inputKey: "message",
 });
 
-const result = await aigne.invoke(agent, "What is crypto?");
+const result = await aigne.invoke(agent, { message: "What is crypto?" });
 console.log(result);
-// Output: { $message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
+// Output: { message: "Cryptocurrency, often referred to as crypto, is a type of digital or virtual currency that uses cryptography for security" }
 ```
 
 ## 提示

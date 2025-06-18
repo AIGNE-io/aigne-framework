@@ -1,7 +1,7 @@
 import { fstat } from "node:fs";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
-import { AIGNE, type Agent, type ChatModelOptions, UserAgent, createMessage } from "@aigne/core";
+import { AIGNE, type Agent, type ChatModelOptions, UserAgent } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { LogLevel, getLevelFromEnv, logger } from "@aigne/core/utils/logger.js";
 import { readAllString } from "@aigne/core/utils/stream-utils.js";
@@ -11,7 +11,11 @@ import PrettyError from "pretty-error";
 import { ZodError, z } from "zod";
 import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
-import { type ChatLoopOptions, runChatLoopInTerminal } from "./run-chat-loop.js";
+import {
+  type ChatLoopOptions,
+  DEFAULT_CHAT_INPUT_KEY,
+  runChatLoopInTerminal,
+} from "./run-chat-loop.js";
 
 export interface RunAIGNECommandOptions {
   chat?: boolean;
@@ -164,9 +168,9 @@ export async function runAgentWithAIGNE(
 
   return await tracer.run(
     agent,
-    chatLoopOptions?.inputKey && typeof input === "string"
-      ? { [chatLoopOptions.inputKey]: input }
-      : createMessage(input),
+    typeof input === "string"
+      ? { [chatLoopOptions?.inputKey || DEFAULT_CHAT_INPUT_KEY]: input }
+      : input,
   );
 }
 

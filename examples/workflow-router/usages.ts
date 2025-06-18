@@ -15,6 +15,7 @@ const productSupport = AIAgent.from({
   instructions: `You are an agent capable of handling any product-related questions.
   Your goal is to provide accurate and helpful information about the product.
   Be polite, professional, and ensure the user feels supported.`,
+  inputKey: "message",
   outputKey: "product_support",
 });
 
@@ -24,6 +25,7 @@ const feedback = AIAgent.from({
   instructions: `You are an agent capable of handling any feedback-related questions.
   Your goal is to listen to the user's feedback, acknowledge their input, and provide appropriate responses.
   Be empathetic, understanding, and ensure the user feels heard.`,
+  inputKey: "message",
   outputKey: "feedback",
 });
 
@@ -33,6 +35,7 @@ const other = AIAgent.from({
   instructions: `You are an agent capable of handling any general questions.
   Your goal is to provide accurate and helpful information on a wide range of topics.
   Be friendly, knowledgeable, and ensure the user feels satisfied with the information provided.`,
+  inputKey: "message",
   outputKey: "other",
 });
 
@@ -43,23 +46,24 @@ const triage = AIAgent.from({
   Be efficient, clear, and ensure the user is connected to the right resource quickly.`,
   skills: [productSupport, feedback, other],
   toolChoice: AIAgentToolChoice.router, // Set toolChoice to "router" to enable router mode
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({ model });
 
-const result1 = await aigne.invoke(triage, "How to use this product?");
+const result1 = await aigne.invoke(triage, { message: "How to use this product?" });
 console.log(result1);
 // {
 //   product_support: "I’d be happy to help you with that! However, I need to know which specific product you’re referring to. Could you please provide me with the name or type of product you have in mind?",
 // }
 
-const result2 = await aigne.invoke(triage, "I have feedback about the app.");
+const result2 = await aigne.invoke(triage, { message: "I have feedback about the app." });
 console.log(result2);
 // {
 //   feedback: "Thank you for sharing your feedback! I'm here to listen. Please go ahead and let me know what you’d like to share about the app.",
 // }
 
-const result3 = await aigne.invoke(triage, "What is the weather today?");
+const result3 = await aigne.invoke(triage, { message: "What is the weather today?" });
 console.log(result3);
 // {
 //   other: "I can't provide real-time weather updates. However, you can check a reliable weather website or a weather app on your phone for the current conditions in your area. If you tell me your location, I can suggest a few sources where you can find accurate weather information!",

@@ -15,7 +15,7 @@ import type {
 } from "../agents/chat-model.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { isNil, unique } from "../utils/type-utils.js";
+import { unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import {
   AgentMessageTemplate,
@@ -25,44 +25,12 @@ import {
   UserMessageTemplate,
 } from "./template.js";
 
-export const MESSAGE_KEY = "$message";
-
-export function createMessage<V extends Message>(
-  message: string,
-  variables?: V,
-): { [MESSAGE_KEY]: string } & typeof variables;
-export function createMessage<I extends Message, V extends Message>(
-  message: I,
-  variables?: V,
-): I & typeof variables;
-export function createMessage<I extends Message, V extends Message>(
-  message: string | I,
-  variables?: V,
-): ({ [MESSAGE_KEY]: string } | I) & typeof variables;
-export function createMessage<I extends Message, V extends Message>(
-  message: string | I,
-  variables?: V,
-): ({ [MESSAGE_KEY]: string } | I) & typeof variables {
-  return (
-    typeof message === "string"
-      ? { [MESSAGE_KEY]: message, ...variables }
-      : { ...message, ...variables }
-  ) as ({ [MESSAGE_KEY]: string } | I) & typeof variables;
-}
-
-export function getMessage(input: Message): string | undefined {
-  const userInputMessage = input[MESSAGE_KEY];
-  if (typeof userInputMessage === "string") return userInputMessage;
-  if (!isNil(userInputMessage)) return JSON.stringify(userInputMessage);
-  return undefined;
-}
-
 export interface PromptBuilderOptions {
   instructions?: string | ChatMessagesTemplate;
 }
 
 export interface PromptBuildOptions extends Pick<AgentInvokeOptions, "context"> {
-  agent?: AIAgent;
+  agent?: AIAgent<any, any, any>;
   input?: Message;
   model?: ChatModel;
   outputSchema?: Agent["outputSchema"];
@@ -139,6 +107,9 @@ export class PromptBuilder {
   private async buildMessages(options: PromptBuildOptions): Promise<ChatModelInputMessage[]> {
     const { input } = options;
 
+    const inputKey = options.agent?.inputKey;
+    const message = inputKey && typeof input?.[inputKey] === "string" ? input[inputKey] : undefined;
+
     const messages =
       (typeof this.instructions === "string"
         ? ChatMessagesTemplate.from([SystemMessageTemplate.from(this.instructions)])
@@ -147,8 +118,8 @@ export class PromptBuilder {
 
     const memories: Pick<Memory, "content">[] = [];
 
-    if (options.agent) {
-      memories.push(...(await options.agent.retrieveMemories({ search: options.input }, options)));
+    if (options.agent?.inputKey) {
+      memories.push(...(await options.agent.retrieveMemories({ search: message }, options)));
     }
 
     if (options.context.memories?.length) {
@@ -157,10 +128,11 @@ export class PromptBuilder {
 
     if (memories.length) messages.push(...this.convertMemoriesToMessages(memories, options));
 
-    const content = input && getMessage(input);
-    // add user input if it's not the same as the last message
-    if (content && messages.at(-1)?.content !== content) {
-      messages.push({ role: "user", content });
+    if (message) {
+      messages.push({
+        role: "user",
+        content: message,
+      });
     }
 
     return messages;

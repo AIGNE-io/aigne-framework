@@ -8,7 +8,6 @@ import {
   type MessageQueueListener,
   UserInputTopic,
   UserOutputTopic,
-  createMessage,
   isAgentResponseDelta,
   isAgentResponseProgress,
 } from "@aigne/core";
@@ -38,12 +37,13 @@ test("AIGNE simple example", async () => {
   const agent = AIAgent.from({
     name: "chat",
     description: "A chat agent",
+    inputKey: "message",
   });
 
-  const result = await aigne.invoke(agent, "hello");
-  console.log(result); // { $message: "Hello, How can I assist you today?" }
+  const result = await aigne.invoke(agent, { message: "hello" });
+  console.log(result); // { message: "Hello, How can I assist you today?" }
 
-  expect(result).toEqual({ $message: "Hello, How can I assist you today?" });
+  expect(result).toEqual({ message: "Hello, How can I assist you today?" });
   // #endregion example-simple
 });
 
@@ -63,14 +63,15 @@ test("AIGNE example with streaming response", async () => {
   const agent = AIAgent.from({
     name: "chat",
     description: "A chat agent",
+    inputKey: "message",
   });
 
   let text = "";
 
-  const stream = await aigne.invoke(agent, "hello", { streaming: true });
+  const stream = await aigne.invoke(agent, { message: "hello" }, { streaming: true });
   for await (const chunk of stream) {
-    if (isAgentResponseDelta(chunk) && chunk.delta.text?.$message) {
-      text += chunk.delta.text.$message;
+    if (isAgentResponseDelta(chunk) && chunk.delta.text?.message) {
+      text += chunk.delta.text.message;
     }
   }
 
@@ -97,9 +98,10 @@ test("AIGNE example shutdown", async () => {
   const agent = AIAgent.from({
     name: "chat",
     description: "A chat agent",
+    inputKey: "message",
   });
 
-  await aigne.invoke(agent, "hello");
+  await aigne.invoke(agent, { message: "hello" });
 
   await aigne.shutdown();
   // #endregion example-shutdown
@@ -121,9 +123,10 @@ test("AIGNE example shutdown by `using` statement", async () => {
   const agent = AIAgent.from({
     name: "chat",
     description: "A chat agent",
+    inputKey: "message",
   });
 
-  await aigne.invoke(agent, "hello");
+  await aigne.invoke(agent, { message: "hello" });
 
   // aigne will be automatically shutdown when exiting the using block
 
@@ -148,19 +151,20 @@ test("AIGNE example invoke get an user agent ", async () => {
   const agent = AIAgent.from({
     name: "chat",
     description: "A chat agent",
+    inputKey: "message",
   });
 
   const userAgent = aigne.invoke(agent);
 
-  const result1 = await userAgent.invoke("hello");
-  console.log(result1); // { $message: "Hello, How can I assist you today?" }
+  const result1 = await userAgent.invoke({ message: "hello" });
+  console.log(result1); // { message: "Hello, How can I assist you today?" }
 
-  expect(result1).toEqual({ $message: "Hello, How can I assist you today?" });
+  expect(result1).toEqual({ message: "Hello, How can I assist you today?" });
 
-  const result2 = await userAgent.invoke("I'm Bob!");
-  console.log(result2); // { $message: "Nice to meet you, Bob!" }
+  const result2 = await userAgent.invoke({ message: "I'm Bob!" });
+  console.log(result2); // { message: "Nice to meet you, Bob!" }
 
-  expect(result2).toEqual({ $message: "Nice to meet you, Bob!" });
+  expect(result2).toEqual({ message: "Nice to meet you, Bob!" });
   // #endregion example-user-agent
 });
 
@@ -177,6 +181,7 @@ test("AIGNE example publish message", async () => {
     description: "A chat agent",
     subscribeTopic: "test_topic",
     publishTopic: "result_topic",
+    inputKey: "message",
   });
 
   // AIGNE: Main execution engine of AIGNE Framework.
@@ -188,13 +193,13 @@ test("AIGNE example publish message", async () => {
 
   const subscription = aigne.subscribe("result_topic");
 
-  aigne.publish("test_topic", "hello");
+  aigne.publish("test_topic", { message: "hello" });
 
   const { message } = await subscription;
 
-  console.log(message); // { $message: "Hello, How can I assist you today?" }
+  console.log(message); // { message: "Hello, How can I assist you today?" }
 
-  expect(message).toEqual({ $message: "Hello, How can I assist you today?" });
+  expect(message).toEqual({ message: "Hello, How can I assist you today?" });
   // #endregion example-publish-message
 });
 
@@ -211,6 +216,7 @@ test("AIGNE example subscribe topic", async () => {
     description: "A chat agent",
     subscribeTopic: "test_topic",
     publishTopic: "result_topic",
+    inputKey: "message",
   });
 
   // AIGNE: Main execution engine of AIGNE Framework.
@@ -221,12 +227,12 @@ test("AIGNE example subscribe topic", async () => {
   });
 
   const unsubscribe = aigne.subscribe("result_topic", ({ message }) => {
-    console.log(message); // { $message: "Hello, How can I assist you today?" }
+    console.log(message); // { message: "Hello, How can I assist you today?" }
 
     unsubscribe();
   });
 
-  aigne.publish("test_topic", "hello");
+  aigne.publish("test_topic", { message: "hello" });
 
   // #endregion example-subscribe-topic
 });
@@ -314,7 +320,9 @@ test("AIGNE should throw error if reached max tokens", async () => {
     },
   });
 
-  const agent = AIAgent.from({});
+  const agent = AIAgent.from({
+    inputKey: "message",
+  });
 
   const aigne = new AIGNE({
     model,
@@ -323,10 +331,10 @@ test("AIGNE should throw error if reached max tokens", async () => {
     },
   });
 
-  expect(aigne.invoke(agent, "test")).resolves.toEqual(createMessage("hello"));
-  expect(aigne.invoke(TeamAgent.from({ skills: [agent, agent] }), "test")).rejects.toThrow(
-    "Exceeded max tokens 300/200",
-  );
+  expect(aigne.invoke(agent, { message: "test" })).resolves.toEqual({ message: "hello" });
+  expect(
+    aigne.invoke(TeamAgent.from({ skills: [agent, agent] }), { message: "test" }),
+  ).rejects.toThrow("Exceeded max tokens 300/200");
 });
 
 test("AIGNE should throw timeout error", async () => {
@@ -355,14 +363,12 @@ test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
 
   aigne.subscribe("test_topic", listener);
 
-  aigne.publish("test_topic", "hello");
+  aigne.publish("test_topic", { message: "hello" });
   expect(listener).toBeCalledTimes(1);
-  expect(listener).toHaveBeenCalledWith(
-    expect.objectContaining({ message: createMessage("hello") }),
-  );
+  expect(listener).toHaveBeenCalledWith(expect.objectContaining({ message: { message: "hello" } }));
 
   aigne.unsubscribe("test_topic", listener);
-  aigne.publish("test_topic", "hello");
+  aigne.publish("test_topic", { message: "hello" });
   expect(listener).toBeCalledTimes(1);
 });
 
@@ -382,9 +388,13 @@ test("AIGNE.invoke support custom user context", async () => {
   const agentProcess = spyOn(agent, "process");
   const childAgentProcess = spyOn(childAgent, "process");
 
-  const result = await aigne.invoke(agent, "hello", {
-    userContext: { id: "test_user_id", name: "test_user_name" },
-  });
+  const result = await aigne.invoke(
+    agent,
+    { message: "hello" },
+    {
+      userContext: { id: "test_user_id", name: "test_user_name" },
+    },
+  );
   expect(result).toEqual({ text: "I am a child agent" });
   expect(agentProcess).toHaveBeenLastCalledWith(
     expect.anything(),
@@ -428,9 +438,13 @@ test("AIGNE.publish support custom user context", async () => {
     text: "I am a test agent",
   });
   const result = aigne.subscribe("test_topic");
-  aigne.publish("test_topic1", "hello", {
-    userContext: { id: "test_user_id", name: "test_user_name" },
-  });
+  aigne.publish(
+    "test_topic1",
+    { message: "hello" },
+    {
+      userContext: { id: "test_user_id", name: "test_user_name" },
+    },
+  );
   const { message: response } = await result;
   expect(response).toEqual({ text: "I am a test agent" });
   expect(agentProcess).toHaveBeenLastCalledWith(
@@ -456,12 +470,17 @@ test("AIGNE.invoke should respond progressing chunks correctly", async () => {
 
   const agent = AIAgent.from({
     name: "chat",
+    inputKey: "message",
   });
 
-  const stream = await aigne.invoke(agent, "hello", {
-    streaming: true,
-    returnProgressChunks: true,
-  });
+  const stream = await aigne.invoke(
+    agent,
+    { message: "hello" },
+    {
+      streaming: true,
+      returnProgressChunks: true,
+    },
+  );
   expect(
     (await readableStreamToArray(stream)).map((i) =>
       isAgentResponseProgress(i)
@@ -489,12 +508,17 @@ test("AIGNE.invoke should respond progressing chunks (with failed chunks) correc
 
   const agent = AIAgent.from({
     name: "chat",
+    inputKey: "message",
   });
 
-  const stream = await aigne.invoke(agent, "hello", {
-    streaming: true,
-    returnProgressChunks: true,
-  });
+  const stream = await aigne.invoke(
+    agent,
+    { message: "hello" },
+    {
+      streaming: true,
+      returnProgressChunks: true,
+    },
+  );
   expect(
     (await readableStreamToArray(stream, { catchError: true })).map((i) =>
       !(i instanceof Error) && isAgentResponseProgress(i)
@@ -533,13 +557,13 @@ test.each<[InvokeOptions]>([
       FunctionAgent.from({
         name: "greet",
         process: () => ({
-          $message: "Hello world",
+          message: "Hello world",
         }),
       }),
     ],
   });
 
-  const response = await aigne.invoke(agent, "hello", options);
+  const response = await aigne.invoke(agent, { message: "hello" }, options);
 
   if (options.streaming) {
     assert(response instanceof ReadableStream);
@@ -547,7 +571,6 @@ test.each<[InvokeOptions]>([
   } else {
     expect(response).toMatchInlineSnapshot(`
         {
-          "$message": "Hello world",
           "$meta": {
             "usage": {
               "agentCalls": 4,
@@ -555,6 +578,7 @@ test.each<[InvokeOptions]>([
               "outputTokens": 24,
             },
           },
+          "message": "Hello world",
         }
       `);
   }

@@ -1,18 +1,18 @@
 import { EOL } from "node:os";
 import { inspect } from "node:util";
 import {
+  AIAgent,
   type Agent,
   ChatModel,
   type ChatModelOutput,
   type Context,
   type ContextEventMap,
   type ContextUsage,
-  MESSAGE_KEY,
   type Message,
 } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
-import { omitBy } from "@aigne/core/utils/type-utils.js";
+import { omit } from "@aigne/core/utils/type-utils.js";
 import type { Listener } from "@aigne/core/utils/typed-event-emtter.js";
 import { type Listr, figures } from "@aigne/listr2";
 import { markedTerminal } from "@aigne/marked-terminal";
@@ -39,8 +39,8 @@ export class TerminalTracer {
     const listr = new AIGNEListr(
       {
         formatRequest: () =>
-          this.options.printRequest ? this.formatRequest(context, input) : undefined,
-        formatResult: (result) => [this.formatResult(context, result)].filter(Boolean),
+          this.options.printRequest ? this.formatRequest(agent, context, input) : undefined,
+        formatResult: (result) => [this.formatResult(agent, context, result)].filter(Boolean),
       },
       [],
       { concurrent: true },
@@ -186,13 +186,15 @@ export class TerminalTracer {
 
   private marked = new Marked().use(markedTerminal({ forceHyperLink: false }));
 
-  formatRequest(_context: Context, m: Message = {}) {
+  formatRequest(agent: Agent, _context: Context, m: Message = {}) {
     if (!logger.enabled(LogLevel.INFO)) return;
 
     const prefix = `${chalk.grey(figures.pointer)} 💬 `;
 
-    const msg = m[MESSAGE_KEY];
-    const message = omitBy(m, (_, k) => k === MESSAGE_KEY);
+    const inputKey = agent instanceof AIAgent ? agent.inputKey : undefined;
+
+    const msg = inputKey ? m[inputKey] : undefined;
+    const message = inputKey ? omit(m, inputKey) : m;
 
     const text =
       msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;
@@ -202,13 +204,15 @@ export class TerminalTracer {
     return [prefix, [text, json].filter(Boolean).join(EOL)].join(" ");
   }
 
-  formatResult(context: Context, m: Message = {}) {
+  formatResult(agent: Agent, context: Context, m: Message = {}) {
+    const outputKey = agent instanceof AIAgent ? agent.outputKey : undefined;
+
     const prefix = logger.enabled(LogLevel.INFO)
       ? `${chalk.grey(figures.tick)} 🤖 ${this.formatTokenUsage(context.usage)}`
       : null;
 
-    const msg = m[MESSAGE_KEY];
-    const message = omitBy(m, (_, k) => k === MESSAGE_KEY);
+    const msg = outputKey ? m[outputKey] : undefined;
+    const message = outputKey ? omit(m, outputKey) : m;
 
     const text =
       msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;

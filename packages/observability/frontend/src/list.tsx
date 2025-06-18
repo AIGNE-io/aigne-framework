@@ -28,6 +28,24 @@ function App() {
   const [paginationModel, setPaginationModel] = useState({page: 0, pageSize: 10})
   const [total, setTotal] = useState(0)
 
+  const fetchRuns = async ({page, pageSize}: {page: number; pageSize: number}) => {
+    fetch(withQuery(joinURL(origin, "/api/trace/tree"), {page: page, pageSize: pageSize}))
+      .then(res => res.json() as Promise<RunsResponse>)
+      .then(({data, total: totalCount}) => {
+        const format = (run: RunData) => ({
+          ...run,
+          startTime: Number(run.startTime),
+          endTime: Number(run.endTime),
+        })
+        const formatted = data.map(format)
+        setRuns(formatted)
+        setLoading(false)
+        setTotal(totalCount)
+      })
+      .catch(() => setLoading(false))
+  }
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const abortController = new AbortController()
 
@@ -47,6 +65,7 @@ function App() {
           switch (value.type) {
             case "event": {
               console.log("event", value)
+              fetchRuns({page: 0, pageSize: paginationModel.pageSize})
               break
             }
             case "error": {
@@ -63,30 +82,13 @@ function App() {
     return () => {
       abortController.abort()
     }
-  }, [])
+  }, [paginationModel.pageSize])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setLoading(true)
 
-    fetch(
-      withQuery(joinURL(origin, "/api/trace/tree"), {
-        page: paginationModel.page,
-        pageSize: paginationModel.pageSize,
-      })
-    )
-      .then(res => res.json() as Promise<RunsResponse>)
-      .then(({data, total: totalCount}) => {
-        const format = (run: RunData) => ({
-          ...run,
-          startTime: Number(run.startTime),
-          endTime: Number(run.endTime),
-        })
-        const formatted = data.map(format)
-        setRuns(formatted)
-        setLoading(false)
-        setTotal(totalCount)
-      })
-      .catch(() => setLoading(false))
+    fetchRuns({page: paginationModel.page, pageSize: paginationModel.pageSize})
   }, [paginationModel.page, paginationModel.pageSize])
 
   const columns: GridColDef<RunData>[] = [

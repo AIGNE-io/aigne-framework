@@ -28,8 +28,13 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
   app.use(express.json());
   app.use(cors());
 
-  app.get("/sse", sse.init);
+  app.get("/api/sse", sse.init);
   app.use("/api/trace", traceRouter);
+
+  app.get("/api/ws", (req, res) => {
+    sse.send({ type: req.query.type, data: req.query.data });
+    res.json({ code: 0, message: "ok" });
+  });
 
   app.get("/{*splat}", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
@@ -46,11 +51,6 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
 
   const server: Server = app.listen(port, () => {
     console.log(`Running observability server on http://localhost:${port}`);
-
-    setInterval(() => {
-      console.log("sending event");
-      sse.send({ type: "event", data: { id: "123", name: "test event" } });
-    }, 5000);
   });
 
   return server;

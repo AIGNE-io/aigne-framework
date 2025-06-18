@@ -8,7 +8,7 @@ export async function watchSSE({
 }) {
   const origin =
     process.env.NODE_ENV === "development" ? "http://localhost:7890" : window.location.origin;
-  const url = joinURL(origin, "/sse");
+  const url = joinURL(origin, "/api/sse");
 
   return new ReadableStream<{ type: "event"; data: any } | { type: "error"; message: string }>({
     async start(controller) {

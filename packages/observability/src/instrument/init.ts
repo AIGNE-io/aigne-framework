@@ -12,7 +12,10 @@ export function initOpenTelemetry({
   apiUrl?: string;
   useAPI?: boolean;
 }) {
-  const traceExporter = useAPI && apiUrl ? new HttpApiExporter(apiUrl) : new SqliteExporter(dbUrl);
+  const useHttpExporter = useAPI && apiUrl;
+  const traceExporter = useHttpExporter
+    ? new HttpApiExporter(apiUrl)
+    : new SqliteExporter(dbUrl, apiUrl);
 
   const sdk = new NodeSDK({
     traceExporter,

@@ -2,6 +2,7 @@ import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
+import { joinURL, withQuery } from "ufo";
 import { migrate } from "../server/migrate.js";
 import { Trace } from "../server/models/trace.js";
 import { formatSpans } from "./util.js";
@@ -9,9 +10,11 @@ import { formatSpans } from "./util.js";
 class SqliteExporter implements SpanExporter {
   private db?: LibSQLDatabase;
   private isInitialized = false;
+  private apiUrl?: string;
 
-  constructor(url: string) {
+  constructor(url: string, apiUrl?: string) {
     this.initDb(url);
+    this.apiUrl = apiUrl;
   }
 
   private async initDb(url: string) {
@@ -37,6 +40,10 @@ class SqliteExporter implements SpanExporter {
       const validatedTraces = formatSpans(spans);
 
       await this.db.insert(Trace).values(validatedTraces).returning({ id: Trace.id }).execute();
+
+      if (this.apiUrl) {
+        fetch(withQuery(joinURL(this.apiUrl, "/api/ws"), { type: "event", data: {} }));
+      }
 
       resultCallback({ code: ExportResultCode.SUCCESS });
     } catch (error) {

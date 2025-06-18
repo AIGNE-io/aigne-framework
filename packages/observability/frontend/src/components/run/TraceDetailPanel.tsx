@@ -68,21 +68,29 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
         </Typography>
       </Box>
 
-      <Box sx={{my: 2}}>
-        <Box sx={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px"}}>
+      <Box sx={{my: 1}}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            columnGap: "48px",
+            rowGap: "4px",
+          }}>
           <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="ID">
             <Box sx={{textAlign: "right"}}>{run?.id}</Box>
           </InfoRowBox>
 
-          <InfoRowBox
-            valueComponent="div"
-            nameFormatter={v => v}
-            nameWidth={120}
-            name={t("agentTag")}>
-            <Box sx={{textAlign: "right"}}>
-              <AgentTag agentTag={run?.attributes?.agentTag} />
-            </Box>
-          </InfoRowBox>
+          {!!run?.attributes?.agentTag && (
+            <InfoRowBox
+              valueComponent="div"
+              nameFormatter={v => v}
+              nameWidth={120}
+              name={t("agentTag")}>
+              <Box sx={{textAlign: "right"}}>
+                <AgentTag agentTag={run?.attributes?.agentTag} />
+              </Box>
+            </InfoRowBox>
+          )}
 
           {!!inputTokens && (
             <InfoRowBox
@@ -121,7 +129,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
             name={t("startTime")}>
             <Box sx={{textAlign: "right"}}>
               {run?.startTime && (
-                <RelativeTime value={run?.startTime} type="all" disableTimezone useShortTimezone />
+                <RelativeTime value={run?.startTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
               )}
             </Box>
           </InfoRowBox>

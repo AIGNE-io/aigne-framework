@@ -57,7 +57,7 @@ export default function RunDetailDrawer({open, onClose, run}: RunDetailDrawerPro
           onClose={onClose}
         />
 
-        <Box sx={{flex: 1, display: "flex", minHeight: 0}}>
+        <Box sx={{flex: 1, display: "flex"}}>
           <Box
             sx={{
               flex: 1,

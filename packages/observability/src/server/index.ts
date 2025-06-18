@@ -29,12 +29,7 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
   app.use(cors());
 
   app.get("/api/sse", sse.init);
-  app.use("/api/trace", traceRouter);
-
-  app.get("/api/ws", (req, res) => {
-    sse.send({ type: req.query.type, data: req.query.data });
-    res.json({ code: 0, message: "ok" });
-  });
+  app.use("/api/trace", traceRouter(sse));
 
   app.get("/{*splat}", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));

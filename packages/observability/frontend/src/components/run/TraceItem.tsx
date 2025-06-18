@@ -48,7 +48,8 @@ function TraceItem({
     <Card
       sx={{
         cursor: "pointer",
-        p: 2,
+        px: 2,
+        py: 1,
         mb: 1,
         ml: depth * 2,
         overflow: "hidden",
@@ -78,7 +79,7 @@ function TraceItem({
           <AgentTag agentTag={agentTag} />
         </Box>
 
-        <Typography variant="caption" sx={{flexShrink: 0, ml: "auto", mr: 1}}>
+        <Typography variant="caption" sx={{minWidth: 60, flexShrink: 0, ml: "auto", mr: 1}}>
           {duration}s
         </Typography>
 

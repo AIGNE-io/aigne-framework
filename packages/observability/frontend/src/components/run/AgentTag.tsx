@@ -1,87 +1,93 @@
-import Tag from "@arcblock/ux/lib/Tag"
-import {Box, Tooltip} from "@mui/material"
-// import tinycolor from "tinycolor2";
+import {Chip, Tooltip} from "@mui/material"
+import tinycolor from "tinycolor2"
 
-const agentColors = {
+const agentTagColors = {
   OrchestratorAgent: {
-    color: "#1565c0", // 深蓝
-    backgroundColor: "#e3f2fd", // 浅蓝背景
+    color: "#0d47a1", // 更深的蓝色
+    backgroundColor: "#e3f2fd",
   },
   FunctionAgent: {
-    color: "#6a1b9a", // 深紫
-    backgroundColor: "#f3e5f5", // 浅紫背景
+    color: "#4a148c", // 更深的紫色
+    backgroundColor: "#f3e5f5",
   },
   AIAgent: {
-    color: "#2e7d32", // 深绿
-    backgroundColor: "#e8f5e9", // 浅绿背景
+    color: "#1b5e20", // 更深的绿色
+    backgroundColor: "#e8f5e9",
   },
   ChatModelAgent: {
-    color: "#f9a825", // 深黄
-    backgroundColor: "#fffde7", // 浅黄背景
+    color: "#7A4F01", // 更深的橙棕色
+    backgroundColor: "#fffde7",
   },
   MCPAgent: {
-    color: "#c62828", // 深红
-    backgroundColor: "#ffebee", // 浅红背景
+    color: "#7A0000", // 更深的红色
+    backgroundColor: "#ffebee",
   },
   MCPBaseAgent: {
-    color: "#b71c1c", // 更深红
-    backgroundColor: "#ffebee", // 浅红背景
+    color: "#880e4f", // 更深的红色
+    backgroundColor: "#ffebee",
   },
   MCPToolAgent: {
-    color: "#ad1457", // 洋红
-    backgroundColor: "#fce4ec", // 浅粉背景
+    color: "#880e4f", // 更深的洋红色
+    backgroundColor: "#fce4ec",
   },
   MCPPromptAgent: {
-    color: "#6d4c41", // 棕色
-    backgroundColor: "#efebe9", // 浅棕背景
+    color: "#3e2723", // 更深的棕色
+    backgroundColor: "#efebe9",
   },
   MCPResourceAgent: {
-    color: "#00838f", // 青色
-    backgroundColor: "#e0f7fa", // 浅青背景
+    color: "#006064", // 更深的青色
+    backgroundColor: "#e0f7fa",
   },
   TeamAgent: {
-    color: "#37474f", // 蓝灰
-    backgroundColor: "#eceff1", // 浅蓝灰背景
+    color: "#263238", // 更深的蓝灰色
+    backgroundColor: "#eceff1",
   },
   MemoryAgent: {
-    color: "#5d4037", // 棕色
-    backgroundColor: "#efebe9", // 浅棕背景
+    color: "#3e2723", // 更深的棕色
+    backgroundColor: "#efebe9",
   },
   MemoryRecorderAgent: {
-    color: "#8d6e63", // 浅棕
-    backgroundColor: "#efebe9", // 浅棕背景
+    color: "#4e342e", // 更深的棕色
+    backgroundColor: "#efebe9",
   },
   MemoryRetrieverAgent: {
-    color: "#bcaaa4", // 灰棕
-    backgroundColor: "#f5f5f5", // 浅灰背景
+    color: "#4e342e", // 更深的灰棕色
+    backgroundColor: "#f5f5f5",
   },
   ClientAgent: {
-    color: "#0277bd", // 浅蓝
-    backgroundColor: "#e1f5fe", // 浅蓝背景
+    color: "#01579b", // 更深的浅蓝色
+    backgroundColor: "#e1f5fe",
   },
 }
 
 export const AgentTag = ({agentTag}: {agentTag?: string}) => {
   if (!agentTag) return null
 
+  const agentColors = Object.entries(agentTagColors).reduce(
+    (acc, [key, value]) => {
+      acc[key] = {
+        color: value.color,
+        backgroundColor: tinycolor(value.color).lighten(70).toHexString(),
+      }
+      return acc
+    },
+    {} as Record<string, {color: string; backgroundColor: string}>
+  )
+
   return (
     <Tooltip title={agentTag}>
-      <Tag
+      <Chip
+        label={agentTag}
+        size="small"
+        variant="outlined"
         sx={{
+          height: 21,
           width: "150px",
           backgroundColor: `${agentColors[agentTag as keyof typeof agentColors]?.backgroundColor} !important`,
           color: `${agentColors[agentTag as keyof typeof agentColors]?.color} !important`,
-        }}>
-        <Box
-          sx={{
-            maxWidth: "150px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}>
-          {agentTag}
-        </Box>
-      </Tag>
+          border: 0,
+        }}
+      />
     </Tooltip>
   )
 }

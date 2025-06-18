@@ -3,8 +3,12 @@ import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
 import { joinURL } from "ufo";
 import { formatSpans } from "./util.js";
 
-class HttpApiExporter implements SpanExporter {
-  constructor(private apiUrl: string) {}
+class HttpExporter implements SpanExporter {
+  private apiUrl?: string;
+
+  constructor(apiUrl?: string) {
+    this.apiUrl = apiUrl;
+  }
 
   async export(
     spans: ReadableSpan[],
@@ -13,11 +17,15 @@ class HttpApiExporter implements SpanExporter {
     try {
       const validatedTraces = formatSpans(spans);
 
-      await fetch(joinURL(this.apiUrl, "/api/trace/tree"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(validatedTraces),
-      });
+      if (this.apiUrl) {
+        await fetch(joinURL(this.apiUrl, "/api/trace/tree"), {
+          method: "POST",
+          body: JSON.stringify(validatedTraces),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
 
       resultCallback({ code: ExportResultCode.SUCCESS });
     } catch (error) {
@@ -31,4 +39,4 @@ class HttpApiExporter implements SpanExporter {
   }
 }
 
-export default HttpApiExporter;
+export default HttpExporter;

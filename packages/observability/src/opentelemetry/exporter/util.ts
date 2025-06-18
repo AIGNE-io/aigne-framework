@@ -1,7 +1,7 @@
 import { hrTimeToMilliseconds } from "@opentelemetry/core";
 import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";
 
-import { recordTraceBatchSchema } from "../core/schema.js";
+import { recordTraceBatchSchema } from "../../core/schema.js";
 
 export const formatSpans = (spans: ReadableSpan[]) => {
   const payload = spans

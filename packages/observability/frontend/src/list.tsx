@@ -1,5 +1,5 @@
+import Box from "@mui/material/Box"
 import Chip from "@mui/material/Chip"
-import Paper from "@mui/material/Paper"
 import {DataGrid} from "@mui/x-data-grid"
 import type {GridColDef} from "@mui/x-data-grid"
 import {useEffect, useState} from "react"
@@ -64,7 +64,6 @@ function App() {
         if (value) {
           switch (value.type) {
             case "event": {
-              console.log("event", value)
               fetchRuns({page: 0, pageSize: paginationModel.pageSize})
               break
             }
@@ -92,8 +91,8 @@ function App() {
   }, [paginationModel.page, paginationModel.pageSize])
 
   const columns: GridColDef<RunData>[] = [
-    {field: "id", headerName: "ID", flex: 1, minWidth: 120},
-    {field: "name", headerName: t("agentName"), flex: 1, minWidth: 120},
+    {field: "id", headerName: "ID", width: 160},
+    {field: "name", headerName: t("agentName"), minWidth: 150},
     {
       field: "input",
       headerName: t("input"),
@@ -124,6 +123,7 @@ function App() {
           size="small"
           color={row.status?.code === 1 ? "success" : "error"}
           variant="outlined"
+          sx={{height: 21}}
         />
       ),
     },
@@ -153,7 +153,12 @@ function App() {
 
   return (
     <>
-      <Paper elevation={0}>
+      <Box
+        sx={{
+          ".striped-row": {
+            backgroundColor: "action.hover",
+          },
+        }}>
         <DataGrid
           rows={runs}
           columns={columns}
@@ -163,6 +168,10 @@ function App() {
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
           rowCount={total}
+          rowHeight={40}
+          getRowClassName={params =>
+            params.indexRelativeToCurrentPage % 2 === 0 ? "" : "striped-row"
+          }
           paginationMode="server"
           onRowClick={({row}) => {
             setSelectedRun(row)
@@ -171,7 +180,7 @@ function App() {
           disableRowSelectionOnClick
           sx={{cursor: "pointer"}}
         />
-      </Paper>
+      </Box>
 
       <RunDetailDrawer
         open={drawerOpen}

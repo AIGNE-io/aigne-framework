@@ -26,6 +26,7 @@ import {
 import { UserAgent } from "../agents/user-agent.js";
 import type { Memory } from "../memory/memory.js";
 import { AgentResponseProgressStream } from "../utils/event-stream.js";
+import { logger } from "../utils/logger.js";
 import { promiseWithResolvers } from "../utils/promise.js";
 import {
   agentResponseStreamToObject,
@@ -460,7 +461,14 @@ export class AIGNEContext implements Context {
         }
         case "agentSucceed": {
           const { output } = args[0] as ContextEventMap["agentSucceed"][0];
-          span.setAttribute("output", JSON.stringify(output));
+
+          try {
+            span.setAttribute("output", JSON.stringify(output));
+          } catch (_e) {
+            logger.error("parse output error", _e.message);
+            span.setAttribute("output", JSON.stringify({}));
+          }
+
           span.setStatus({ code: SpanStatusCode.OK, message: "Agent succeed" });
           span.end();
 

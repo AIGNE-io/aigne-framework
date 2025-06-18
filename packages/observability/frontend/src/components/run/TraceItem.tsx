@@ -144,7 +144,7 @@ export function annotateTraceSteps({
       steps[index + 1] &&
       steps[index + 1].startTime &&
       step.startTime &&
-      Math.abs(step.startTime - (steps[index + 1].startTime ?? 0)) <= 5
+      Math.abs(step.startTime - (steps[index + 1].startTime ?? 0)) <= 1
 
     const annotated: TraceStep = {
       ...step,

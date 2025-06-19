@@ -7,28 +7,29 @@ import dotenv from "dotenv-flow";
 import express, { type NextFunction, type Request, type Response } from "express";
 import SSE from "express-sse";
 
+import { z } from "zod";
+
 import { ZodError } from "zod";
 import { isBlocklet } from "../core/util.js";
 import { migrate } from "./migrate.js";
 import traceRouter from "./routes/trace.js";
 
-export interface StartServerOptions {
-  port: number;
-  dbUrl: string;
-  distPath: string;
-}
-
 const sse = new SSE();
 
 dotenv.config();
 
-export async function startServer({ port, distPath, dbUrl }: StartServerOptions): Promise<{
-  app: express.Express;
-  server: Server;
-}> {
-  if (!dbUrl) {
-    throw new Error("server db path is required");
-  }
+const startServerOptionsSchema = z.object({
+  port: z.number().int().positive(),
+  dbUrl: z.string().min(1),
+  distPath: z.string(),
+});
+
+export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
+
+export async function startServer(
+  options: StartServerOptions,
+): Promise<{ app: express.Express; server: Server }> {
+  const { port, distPath, dbUrl } = startServerOptionsSchema.parse(options);
 
   const db = await initDatabase({ url: dbUrl });
   await migrate(db);
@@ -64,10 +65,6 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
       res.status(500).json({ success: false, error: message });
     }
   });
-
-  if (!port) {
-    throw new Error("server port is required");
-  }
 
   const server: Server = app.listen(Number(port), () => {
     console.log(`Running observability server on http://localhost:${port}`);

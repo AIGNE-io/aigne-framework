@@ -181,7 +181,10 @@ function App() {
             setDrawerOpen(true)
           }}
           disableRowSelectionOnClick
-          sx={{cursor: "pointer"}}
+          sx={{
+            cursor: "pointer",
+            minHeight: 500,
+          }}
           slots={{
             noRowsOverlay: () => (
               <Box
@@ -190,7 +193,6 @@ function App() {
                   alignItems: "center",
                   justifyContent: "center",
                   height: "100%",
-                  minHeight: 500,
                 }}>
                 <Empty>{t("noData")}</Empty>
               </Box>

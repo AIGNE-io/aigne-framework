@@ -1,7 +1,7 @@
 {
-  "name": "@aigne/observability",
+  "name": "@blocklet/observability",
   "version": "0.0.1",
-  "description": "AIGNE Observability for tracing and observability",
+  "description": "Blocklet Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
   },
@@ -12,60 +12,24 @@
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
-  "files": [
-    "dist",
-    "src",
-    "lib/cjs",
-    "lib/dts",
-    "lib/esm",
-    "LICENSE",
-    "README.md",
-    "CHANGELOG.md"
-  ],
-  "type": "module",
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
-  "exports": {
-    ".": {
-      "browser": "./lib/esm/index.browser.js",
-      "node": {
-        "require": "./lib/cjs/index.node.js",
-        "import": "./lib/esm/index.node.js"
-      },
-      "default": "./lib/esm/index.js"
-    },
-    "./server": {
-      "browser": "./lib/esm/server/index.js",
-      "node": {
-        "require": "./lib/cjs/server/index.js",
-        "import": "./lib/esm/server/index.js"
-      },
-      "default": "./lib/esm/server/index.js"
-    },
-    "./list": {
-      "default": "./src/list.tsx"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "index.browser": [
-        "./lib/esm/index.browser.d.ts"
-      ]
-    }
-  },
   "scripts": {
     "clean": "node scripts/build-clean.mjs",
     "lint": "tsc --noEmit && eslint .",
-    "build": "run-p build:client build:api",
-    "build:client": "tsc -b && vite build",
-    "build:api": "tsc --build scripts/tsconfig.build.json",
-    "prepublishOnly": "run-s clean build",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
-    "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
+    "dev": "blocklet dev",
+    "lint:fix": "npm run lint -- --fix",
+    "start": "cross-env NODE_ENV=development nodemon --exec tsx api/dev.ts -w api",
+    "bundle": "tsc --noEmit && npm run bundle:client && npm run bundle:api",
+    "bundle:client": "vite build",
+    "bundle:api": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release --external @aigne/sqlite",
+    "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
+    "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json"
   },
   "dependencies": {
     "@aigne/sqlite": "workspace:^",
+    "@aigne/observability": "workspace:^",
+    "@aigne/openai": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/transport": "workspace:^",
     "@arcblock/did-connect": "^2.13.70",
     "@arcblock/ux": "^2.13.70",
     "@blocklet/sdk": "^1.16.44",

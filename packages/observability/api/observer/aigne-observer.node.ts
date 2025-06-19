@@ -25,9 +25,6 @@ export class AIGNEObserver {
   }
 
   async serve(): Promise<void> {
-    if (this.serverInstance) return;
-
-    const distPath = path.join(__dirname, "../../../dist");
     if (!this.server?.port || !this.storage?.url) {
       throw new Error("Server is not configured");
     }
@@ -37,19 +34,15 @@ export class AIGNEObserver {
     if (this.initPort && detected !== port) {
       throw new Error(`Port ${port} is already in use`);
     }
-
     this.server.port = detected;
 
     initOpenTelemetry({ apiUrl: `http://localhost:${this.server.port}` });
 
     if (isBlocklet) return;
 
+    const distPath = path.join(__dirname, "../../../dist");
     this.serverInstance = (
-      await startServer({
-        distPath,
-        port: this.server.port,
-        dbUrl: this.storage.url,
-      })
+      await startServer({ distPath, port: this.server.port, dbUrl: this.storage.url })
     ).server;
   }
 

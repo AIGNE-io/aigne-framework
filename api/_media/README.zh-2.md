@@ -1,114 +1,138 @@
-# @aigne/anthropic
+# @aigne/cli
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
-[![NPM Version](https://img.shields.io/npm/v/@aigne/anthropic)](https://www.npmjs.com/package/@aigne/anthropic)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/anthropic)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
+[![NPM Version](https://img.shields.io/npm/v/@aigne/cli)](https://www.npmjs.com/package/@aigne/cli)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/cli)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
 [English](README.md) | **中文**
 
-AIGNE Anthropic SDK，用于在 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework) 中集成 Anthropic 的 Claude AI 模型。
+[AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)的命令行工具，提供便捷的开发和管理功能。
 
 ## 简介
 
-`@aigne/anthropic` 提供了 AIGNE 框架与 Anthropic 的 Claude 语言模型和 API 之间的无缝集成。该包使开发者能够在 AIGNE 应用程序中轻松利用 Anthropic 的 Claude 模型，同时提供框架内一致的接口，充分发挥 Claude 先进的 AI 能力。
+`@aigne/cli` 是 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)的官方命令行工具，旨在简化 AIGNE 应用的开发、测试和部署流程。它提供了一系列实用命令，帮助开发者快速创建项目、运行代理、测试代码，以及部署应用等。
 
 ## 特性
 
-* **Anthropic API 集成**：使用官方 SDK 直接连接到 Anthropic 的 API 服务
-* **聊天完成**：支持 Claude 的聊天完成 API 和所有可用模型
-* **工具调用**：内置支持 Claude 的工具调用功能
-* **流式响应**：支持流式响应，提供更高响应性的应用程序体验
-* **类型安全**：为所有 API 和模型提供全面的 TypeScript 类型定义
-* **一致接口**：兼容 AIGNE 框架的模型接口
-* **错误处理**：健壮的错误处理和重试机制
-* **完整配置**：丰富的配置选项用于微调行为
+* **项目创建**：快速创建新的 AIGNE 项目，包含预设的文件结构和配置
+* **代理运行**：轻松运行和测试 AIGNE 代理
+* **测试支持**：内置测试命令，方便进行单元测试和集成测试
+* **MCP 服务**：支持将代理作为 MCP 服务器启动，与外部系统集成
+* **交互式界面**：美观的命令行界面，提供直观的使用体验
+* **多模型支持**：支持 OpenAI、Claude、XAI 等多种模型提供商
 
 ## 安装
 
 ### 使用 npm
 
 ```bash
-npm install @aigne/anthropic @aigne/core
+npm install -g @aigne/cli
 ```
 
 ### 使用 yarn
 
 ```bash
-yarn add @aigne/anthropic @aigne/core
+yarn global add @aigne/cli
 ```
 
 ### 使用 pnpm
 
 ```bash
-pnpm add @aigne/anthropic @aigne/core
+pnpm add -g @aigne/cli
 ```
 
-## 基本用法
+## 基本命令
 
-```typescript file="test/anthropic-chat-model.test.ts" region="example-anthropic-chat-model"
-import { AnthropicChatModel } from "@aigne/anthropic";
+AIGNE CLI 提供了以下主要命令：
 
-const model = new AnthropicChatModel({
-  // Provide API key directly or use environment variable ANTHROPIC_API_KEY or CLAUDE_API_KEY
-  apiKey: "your-api-key", // Optional if set in env variables
-  // Specify Claude model version (defaults to 'claude-3-7-sonnet-latest')
-  model: "claude-3-haiku-20240307",
-  // Configure model behavior
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
+```bash
+# 显示帮助信息
+aigne --help
 
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Tell me about yourself" }],
-});
+# 创建新项目
+aigne create [path]
 
-console.log(result);
-/* Output:
-  {
-    text: "I'm Claude, an AI assistant created by Anthropic. How can I help you today?",
-    model: "claude-3-haiku-20240307",
-    usage: {
-      inputTokens: 8,
-      outputTokens: 15
-    }
-  }
-  */
+# 运行代理
+aigne run [path]
+
+# 运行测试
+aigne test [path]
+
+# 启动 MCP 服务器
+aigne serve [path] --mcp
 ```
 
-## 流式响应
+## 创建命令 (create)
 
-```typescript file="test/anthropic-chat-model.test.ts" region="example-anthropic-chat-model-streaming-async-generator"
-import { AnthropicChatModel } from "@aigne/anthropic";
+创建一个带有代理配置文件的新 AIGNE 项目。
 
-const model = new AnthropicChatModel({
-  apiKey: "your-api-key",
-  model: "claude-3-haiku-20240307",
-});
+```bash
+# 在当前目录创建项目（会提示输入项目名称）
+aigne create
 
-const stream = await model.invoke(
-  {
-    messages: [{ role: "user", content: "Tell me about yourself" }],
-  },
-  undefined,
-  { streaming: true },
-);
-
-let fullText = "";
-const json = {};
-
-for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
-}
-
-console.log(fullText); // Output: "I'm Claude, an AI assistant created by Anthropic. How can I help you today?"
-console.log(json); // { model: "claude-3-haiku-20240307", usage: { inputTokens: 8, outputTokens: 15 } }
+# 在指定路径创建项目
+aigne create my-project
 ```
 
-## 许可证
+交互式创建过程会询问：
+
+* 项目名称
+* 项目模板（目前支持 default 模板）
+
+## 运行命令 (run)
+
+启动与指定代理的聊天循环。
+
+```bash
+# 运行当前目录中的代理
+aigne run
+
+# 运行指定路径中的代理
+aigne run path/to/agents
+
+# 运行远程 URL 中的代理
+aigne run https://example.com/aigne-project
+
+# 指定特定代理运行
+aigne run --entry-agent myAgent
+```
+
+可用选项：
+
+* `--entry-agent <代理>` - 指定要运行的代理名称（默认为找到的第一个代理）
+* `--cache-dir <目录>` - 指定下载包的目录（URL模式下使用）
+* `--model <提供商[:模型]>` - 指定AI模型，格式为'提供商\[:模型]'，其中模型是可选的（如'openai'或'openai:gpt-4o-mini'）
+* `--verbose` - 启用详细日志记录
+
+## 测试命令 (test)
+
+在指定的代理目录中运行测试。
+
+```bash
+# 测试当前目录中的代理
+aigne test
+
+# 测试指定路径中的代理
+aigne test path/to/agents
+```
+
+## 服务命令 (serve)
+
+将指定目录中的代理作为 MCP 服务器提供服务。
+
+```bash
+# 在默认端口 3000 启动 MCP 服务器
+aigne serve --mcp
+
+# 在指定端口启动 MCP 服务器
+aigne serve --mcp --port 3001
+
+# 为指定路径的代理启动 MCP 服务器
+aigne serve path/to/agents --mcp
+```
+
+## 协议
 
 Elastic-2.0

@@ -446,7 +446,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const result = await agent.invoke("hello");
+const result = await agent.invoke({ message: "hello" });
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
 ```
@@ -534,7 +534,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const result = await agent.invoke("hello");
+const result = await agent.invoke({ message: "hello" });
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
 ```
@@ -618,12 +618,14 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+  }
 }
 
 console.log(fullText); // Output: "Hello, This is..."
@@ -652,15 +654,17 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.message;
-  if (text) message.push(text);
-  if (chunk.delta.json) json = chunk.delta.json;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) message.push(text);
+    if (chunk.delta.json) json = chunk.delta.json;
+  }
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
@@ -689,7 +693,7 @@ class MainAgent extends Agent {
 const aigne = new AIGNE({});
 const mainAgent = new MainAgent();
 
-const result = await aigne.invoke(mainAgent, "technical question");
+const result = await aigne.invoke(mainAgent, { message: "technical question" });
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 
@@ -733,7 +737,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const result = await agent.invoke("hello");
+const result = await agent.invoke({ message: "hello" });
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
 ```
@@ -817,12 +821,14 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+  }
 }
 
 console.log(fullText); // Output: "Hello, This is..."
@@ -851,15 +857,17 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.message;
-  if (text) message.push(text);
-  if (chunk.delta.json) json = chunk.delta.json;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) message.push(text);
+    if (chunk.delta.json) json = chunk.delta.json;
+  }
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
@@ -888,7 +896,7 @@ class MainAgent extends Agent {
 const aigne = new AIGNE({});
 const mainAgent = new MainAgent();
 
-const result = await aigne.invoke(mainAgent, "technical question");
+const result = await aigne.invoke(mainAgent, { message: "technical question" });
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 
@@ -932,7 +940,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const result = await agent.invoke("hello");
+const result = await agent.invoke({ message: "hello" });
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
 ```
@@ -1042,12 +1050,14 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+  }
 }
 
 console.log(fullText); // Output: "Hello, This is..."
@@ -1076,15 +1086,17 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.message;
-  if (text) message.push(text);
-  if (chunk.delta.json) json = chunk.delta.json;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) message.push(text);
+    if (chunk.delta.json) json = chunk.delta.json;
+  }
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
@@ -1113,7 +1125,7 @@ class MainAgent extends Agent {
 const aigne = new AIGNE({});
 const mainAgent = new MainAgent();
 
-const result = await aigne.invoke(mainAgent, "technical question");
+const result = await aigne.invoke(mainAgent, { message: "technical question" });
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 
@@ -1183,11 +1195,9 @@ Configuration options for an agent
 
 ### MCPPromptInput
 
-Basic message type that can contain any key-value pairs
-
 #### Extends
 
-- [`Message`](agent.md#message)
+- `Record`\<`string`, `unknown`\>
 
 #### Indexable
 

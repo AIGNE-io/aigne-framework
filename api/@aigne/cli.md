@@ -6,7 +6,7 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/cli)](https://www.npmjs.com/package/@aigne/cli)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/cli)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
-**English** | [中文](../_media/README.zh-4.md)
+**English** | [中文](../_media/README.zh-2.md)
 
 Command-line tool for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing convenient development and management capabilities.
 

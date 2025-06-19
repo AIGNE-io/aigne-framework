@@ -80,9 +80,9 @@ const httpServer = server.listen(port);
 const client = new AIGNEHTTPClient({ url });
 
 // Invoke the agent by client
-const response = await client.invoke("chat", { $message: "hello" });
+const response = await client.invoke("chat", { message: "hello" });
 
-console.log(response); // Output: {$message: "Hello world!"}
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 Here's an example of how to use AIGNEServer with Hono:
@@ -111,24 +111,24 @@ const server = serve({ port, fetch: honoApp.fetch });
 const client = new AIGNEHTTPClient({ url });
 
 // Invoke the agent by client
-const response = await client.invoke("chat", { $message: "hello" });
-console.log(response); // Output: {$message: "Hello world!"}
+const response = await client.invoke("chat", { message: "hello" });
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 #### Constructors
 
 ##### Constructor
 
-> **new AIGNEHTTPServer**(`engine`, `options?`): [`AIGNEHTTPServer`](#aignehttpserver)
+> **new AIGNEHTTPServer**(`aigne`, `options?`): [`AIGNEHTTPServer`](#aignehttpserver)
 
 Creates a new AIGNEServer instance.
 
 ###### Parameters
 
-| Parameter  | Type                                                | Description                                                   |
-| ---------- | --------------------------------------------------- | ------------------------------------------------------------- |
-| `engine`   | [`AIGNE`](../core/aigne.md#aigne)                   | The AIGNE engine instance that will process agent invocations |
-| `options?` | [`AIGNEHTTPServerOptions`](#aignehttpserveroptions) | Configuration options for the server                          |
+| Parameter  | Type                                                | Description                                            |
+| ---------- | --------------------------------------------------- | ------------------------------------------------------ |
+| `aigne`    | [`AIGNE`](../core/aigne.md#aigne)                   | The AIGNE instance that will process agent invocations |
+| `options?` | [`AIGNEHTTPServerOptions`](#aignehttpserveroptions) | Configuration options for the server                   |
 
 ###### Returns
 
@@ -136,11 +136,11 @@ Creates a new AIGNEServer instance.
 
 #### Properties
 
-##### engine
+##### aigne
 
-> **engine**: [`AIGNE`](../core/aigne.md#aigne)
+> **aigne**: [`AIGNE`](../core/aigne.md#aigne)
 
-The AIGNE engine instance that will process agent invocations
+The AIGNE instance that will process agent invocations
 
 ##### options?
 
@@ -207,8 +207,8 @@ const server = serve({ port, fetch: honoApp.fetch });
 const client = new AIGNEHTTPClient({ url });
 
 // Invoke the agent by client
-const response = await client.invoke("chat", { $message: "hello" });
-console.log(response); // Output: {$message: "Hello world!"}
+const response = await client.invoke("chat", { message: "hello" });
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 ###### Call Signature
@@ -261,9 +261,9 @@ const httpServer = server.listen(port);
 const client = new AIGNEHTTPClient({ url });
 
 // Invoke the agent by client
-const response = await client.invoke("chat", { $message: "hello" });
+const response = await client.invoke("chat", { message: "hello" });
 
-console.log(response); // Output: {$message: "Hello world!"}
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 ## Interfaces
@@ -286,7 +286,7 @@ request parsing, payload limits, and response handling.
 
 #### Extends
 
-- `Pick`\<[`AgentInvokeOptions`](../core/agents/agent.md#agentinvokeoptions)\<`U`\>, `"userContext"` \| `"memories"`\>
+- `Pick`\<[`AgentInvokeOptions`](../core/agents/agent.md#agentinvokeoptions)\<`U`\>, `"userContext"` \| `"memories"`\>.`Pick`\<`InvokeOptions`, `"returnProgressChunks"`\>
 
 #### Type Parameters
 

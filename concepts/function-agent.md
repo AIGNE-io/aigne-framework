@@ -23,7 +23,7 @@ const weather = FunctionAgent.from({
     city: z.string().describe("The city to get the weather for."),
   }),
   outputSchema: z.object({
-    $message: z.string().describe("The message from the agent."),
+    message: z.string().describe("The message from the agent."),
     temperature: z.number().describe("The current temperature in Celsius."),
   }),
   process: async ({ city }) => {
@@ -31,7 +31,7 @@ const weather = FunctionAgent.from({
     const temperature = 25; // You can replace this with actual weather fetching logic
 
     return {
-      $message: "Hello, I'm AIGNE!",
+      message: "Hello, I'm AIGNE!",
       temperature,
     };
   },
@@ -55,7 +55,7 @@ const weather = FunctionAgent.from(async ({ city }) => {
   console.log(`Fetching weather for ${city}`);
 
   return {
-    $message: "Hello, I'm AIGNE!",
+    message: "Hello, I'm AIGNE!",
     temperature: 25,
   };
 });
@@ -80,7 +80,7 @@ const weather = FunctionAgent.from({
     city: z.string().describe("The city to get the weather for."),
   }),
   outputSchema: z.object({
-    $message: z.string().describe("The message from the agent."),
+    message: z.string().describe("The message from the agent."),
     temperature: z.number().describe("The current temperature in Celsius."),
   }),
   process: async ({ city }) => {
@@ -88,11 +88,11 @@ const weather = FunctionAgent.from({
 
     return new ReadableStream({
       start(controller) {
-        controller.enqueue({ delta: { text: { $message: "Hello" } } });
-        controller.enqueue({ delta: { text: { $message: "," } } });
-        controller.enqueue({ delta: { text: { $message: " I'm" } } });
-        controller.enqueue({ delta: { text: { $message: " AIGNE" } } });
-        controller.enqueue({ delta: { text: { $message: "!" } } });
+        controller.enqueue({ delta: { text: { message: "Hello" } } });
+        controller.enqueue({ delta: { text: { message: "," } } });
+        controller.enqueue({ delta: { text: { message: " I'm" } } });
+        controller.enqueue({ delta: { text: { message: " AIGNE" } } });
+        controller.enqueue({ delta: { text: { message: "!" } } });
         controller.enqueue({ delta: { json: { temperature: 25 } } });
         controller.close();
       },
@@ -120,17 +120,17 @@ const weather = FunctionAgent.from({
     city: z.string().describe("The city to get the weather for."),
   }),
   outputSchema: z.object({
-    $message: z.string().describe("The message from the agent."),
+    message: z.string().describe("The message from the agent."),
     temperature: z.number().describe("The current temperature in Celsius."),
   }),
   process: async function* ({ city }) {
     console.log(`Fetching weather for ${city}`);
 
-    yield { delta: { text: { $message: "Hello" } } };
-    yield { delta: { text: { $message: "," } } };
-    yield { delta: { text: { $message: " I'm" } } };
-    yield { delta: { text: { $message: " AIGNE" } } };
-    yield { delta: { text: { $message: "!" } } };
+    yield { delta: { text: { message: "Hello" } } };
+    yield { delta: { text: { message: "," } } };
+    yield { delta: { text: { message: " I'm" } } };
+    yield { delta: { text: { message: " AIGNE" } } };
+    yield { delta: { text: { message: "!" } } };
     yield { delta: { json: { temperature: 25 } } };
 
     // Or you can return a partial result at the end
@@ -155,7 +155,7 @@ Use the invocation method to execute the created intelligent agent. The most com
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-basic-invoke"
 const result = await weather.invoke({ city: "New York" });
 console.log(result);
-// Output: { $message: "Hello, I'm AIGNE!", temperature: 25 }
+// Output: { message: "Hello, I'm AIGNE!", temperature: 25 }
 ```
 
 ### Streaming Invocation
@@ -163,12 +163,16 @@ console.log(result);
 When you need to handle streaming data, you can enable streaming options, then use async iteration to gradually get data chunks, implementing streaming reading and segmented processing logic.
 
 ```ts file="../../docs-examples/test/concepts/function-agent.test.ts" region="example-agent-streaming-invoke"
+import { isAgentResponseDelta } from "@aigne/core";
+
 const stream = await weather.invoke({ city: "New York" }, { streaming: true });
 let text = "";
 const json = {};
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.message) text += chunk.delta.text.message;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 console.log(text); // Output: Hello, I'm AIGNE!
 console.log(json); // Output: { temperature: 25 }

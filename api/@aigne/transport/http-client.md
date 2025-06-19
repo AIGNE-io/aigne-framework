@@ -15,9 +15,9 @@ Here's a simple example of how to use AIGNEClient:
 ```ts
 const client = new AIGNEHTTPClient({ url });
 
-const response = await client.invoke("chat", { $message: "hello" });
+const response = await client.invoke("chat", { message: "hello" });
 
-console.log(response); // Output: {$message: "Hello world!"}
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 Here's an example of how to use AIGNEClient with streaming response:
@@ -27,13 +27,15 @@ const client = new AIGNEHTTPClient({ url });
 
 const stream = await client.invoke(
   "chat",
-  { $message: "hello" },
+  { message: "hello" },
   { streaming: true },
 );
 
 let text = "";
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.message) text += chunk.delta.text.message;
+  }
 }
 
 console.log(text); // Output: "Hello world!"
@@ -74,6 +76,14 @@ Creates a new AIGNEClient instance.
 > **options**: [`AIGNEHTTPClientOptions`](#aignehttpclientoptions)
 
 Configuration options for connecting to the AIGNE server
+
+##### id
+
+> **id**: `string`
+
+###### Implementation of
+
+`Context.id`
 
 ##### usage
 
@@ -150,7 +160,7 @@ Invoke an agent with a message and return the output and the active agent
 | Parameter | Type                                                                                                                        | Description                  |
 | --------- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
 | `agent`   | `string` \| [`Agent`](../core/agents/agent.md#agent)\<`I`, `O`\>                                                            | Agent to invoke              |
-| `message` | `string` \| `I`                                                                                                             | Message to pass to the agent |
+| `message` | `I`                                                                                                                         | Message to pass to the agent |
 | `options` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & \{ `returnActiveAgent`: `true`; `streaming?`: `false`; \} | -                            |
 
 ###### Returns
@@ -179,7 +189,7 @@ the output of the agent and the final active agent
 | Parameter | Type                                                                                                                      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `agent`   | `string` \| [`Agent`](../core/agents/agent.md#agent)\<`I`, `O`\>                                                          |
-| `message` | `string` \| `I`                                                                                                           |
+| `message` | `I`                                                                                                                       |
 | `options` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & \{ `returnActiveAgent`: `true`; `streaming`: `true`; \} |
 
 ###### Returns
@@ -208,7 +218,7 @@ Invoke an agent with a message
 | Parameter  | Type                                                                                                                          | Description                  |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
 | `agent`    | `string` \| [`Agent`](../core/agents/agent.md#agent)\<`I`, `O`\>                                                              | Agent to invoke              |
-| `message`  | `string` \| `I`                                                                                                               | Message to pass to the agent |
+| `message`  | `I`                                                                                                                           | Message to pass to the agent |
 | `options?` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & \{ `returnActiveAgent?`: `false`; `streaming?`: `false`; \} | -                            |
 
 ###### Returns
@@ -237,7 +247,7 @@ the output of the agent
 | Parameter | Type                                                                                                                        |
 | --------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `agent`   | `string` \| [`Agent`](../core/agents/agent.md#agent)\<`I`, `O`\>                                                            |
-| `message` | `string` \| `I`                                                                                                             |
+| `message` | `I`                                                                                                                         |
 | `options` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & \{ `returnActiveAgent?`: `false`; `streaming`: `true`; \} |
 
 ###### Returns
@@ -264,7 +274,7 @@ the output of the agent
 | Parameter | Type                                                                                                   |
 | --------- | ------------------------------------------------------------------------------------------------------ |
 | `agent`   | `string` \| [`Agent`](../core/agents/agent.md#agent)\<`I`, `O`\>                                       |
-| `message` | `string` \| `I`                                                                                        |
+| `message` | `I`                                                                                                    |
 | `options` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions) & \{ `returnActiveAgent?`: `false`; \} |
 
 ###### Returns
@@ -291,7 +301,7 @@ the output of the agent
 | Parameter  | Type                                                             |
 | ---------- | ---------------------------------------------------------------- |
 | `agent`    | `string` \| [`Agent`](../core/agents/agent.md#agent)\<`I`, `O`\> |
-| `message?` | `string` \| `I`                                                  |
+| `message?` | `I`                                                              |
 | `options?` | [`AIGNEHTTPClientInvokeOptions`](#aignehttpclientinvokeoptions)  |
 
 ###### Returns
@@ -581,9 +591,9 @@ Here's a simple example of how to use AIGNEClient:
 ```ts
 const client = new AIGNEHTTPClient({ url });
 
-const response = await client.invoke("chat", { $message: "hello" });
+const response = await client.invoke("chat", { message: "hello" });
 
-console.log(response); // Output: {$message: "Hello world!"}
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 ###### Call Signature
@@ -622,13 +632,15 @@ const client = new AIGNEHTTPClient({ url });
 
 const stream = await client.invoke(
   "chat",
-  { $message: "hello" },
+  { message: "hello" },
   { streaming: true },
 );
 
 let text = "";
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.message) text += chunk.delta.text.message;
+  }
 }
 
 console.log(text); // Output: "Hello world!"

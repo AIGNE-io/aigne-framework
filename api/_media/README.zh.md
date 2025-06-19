@@ -99,14 +99,14 @@ console.log(result2);
 * [packages/agent-library](./packages/agent-library) - 提供多种代理实现，简化代理的创建和管理。
 * [packages/cli](./packages/cli) - 命令行工具，提供便捷的命令行界面，简化开发和调试过程。
 * models - 大语言模型的实现，支持多种模型和 API
-  * [packages/openai](./packages/openai) - OpenAI 模型的实现，支持 OpenAI 的 API 和函数调用。
-  * [packages/anthropic](./packages/anthropic) - Anthropic 模型的实现，支持 Anthropic 的 API 和函数调用。
-  * [packages/bedrock](./packages/bedrock) - Bedrock 模型的实现，支持 Bedrock 的 API 和函数调用。
-  * [packages/deepseek](./packages/deepseek) - DeepSeek 模型的实现，支持 DeepSeek 的 API 和函数调用。
-  * [packages/gemini](./packages/gemini) - Gemini 模型的实现，支持 Gemini 的 API 和函数调用。
-  * [packages/ollama](./packages/ollama) - Ollama 模型的实现，支持 Ollama 的 API 和函数调用。
-  * [packages/open-router](./packages/open-router) - OpenRouter 模型的实现，支持 OpenRouter 的 API 和函数调用。
-  * [packages/xai](./packages/xai) - XAI 模型的实现，支持 XAI 的 API 和函数调用。
+  * [models/openai](./models/openai) - OpenAI 模型的实现，支持 OpenAI 的 API 和函数调用。
+  * [models/anthropic](./models/anthropic) - Anthropic 模型的实现，支持 Anthropic 的 API 和函数调用。
+  * [models/bedrock](./models/bedrock) - Bedrock 模型的实现，支持 Bedrock 的 API 和函数调用。
+  * [models/deepseek](./models/deepseek) - DeepSeek 模型的实现，支持 DeepSeek 的 API 和函数调用。
+  * [models/gemini](./models/gemini) - Gemini 模型的实现，支持 Gemini 的 API 和函数调用。
+  * [models/ollama](./models/ollama) - Ollama 模型的实现，支持 Ollama 的 API 和函数调用。
+  * [models/open-router](./models/open-router) - OpenRouter 模型的实现，支持 OpenRouter 的 API 和函数调用。
+  * [models/xai](./models/xai) - XAI 模型的实现，支持 XAI 的 API 和函数调用。
 
 ## 文档
 

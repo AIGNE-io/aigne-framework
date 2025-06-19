@@ -59,6 +59,10 @@ Creates an OrchestratorAgent instance
 
 #### Properties
 
+##### inputKey
+
+> **inputKey**: `string`
+
 ##### maxIterations?
 
 > `optional` **maxIterations**: `number`
@@ -154,3 +158,4 @@ Configuration options for the Orchestrator Agent
 | ------------------------------------------------- | -------- | ------------------------------------------------------------------ |
 | <a id="maxiterations"></a> `maxIterations?`       | `number` | Maximum number of iterations to prevent infinite loops Default: 30 |
 | <a id="tasksconcurrency"></a> `tasksConcurrency?` | `number` | Number of concurrent tasks Default: 5                              |
+| <a id="inputkey"></a> `inputKey`                  | `string` | -                                                                  |

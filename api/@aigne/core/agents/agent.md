@@ -36,7 +36,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const result = await agent.invoke("hello");
+const result = await agent.invoke({ message: "hello" });
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
 ```
@@ -149,12 +149,15 @@ const agent = AIAgent.from({
     },
   },
   skills: [weather],
+  inputKey: "message",
 });
 
-const result = await aigne.invoke(agent, "What is the weather in Paris?");
+const result = await aigne.invoke(agent, {
+  message: "What is the weather in Paris?",
+});
 
 console.log(result);
-// Output: { $message: "The weather in Paris is 25 degrees." }
+// Output: { message: "The weather in Paris is 25 degrees." }
 ```
 
 ##### guideRails?
@@ -202,16 +205,15 @@ const agent = AIAgent.from({
   guideRails: [financial],
 });
 
-const result = await aigne.invoke(
-  agent,
-  "What will be the price of Bitcoin next month?",
-);
+const result = await aigne.invoke(agent, {
+  message: "What will be the price of Bitcoin next month?",
+});
 
 console.log(result);
 // Output:
 // {
 //   "$status": "GuideRailError",
-//   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
+//   "message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
 // }
 ```
 
@@ -447,10 +449,10 @@ suitable for scenarios where a complete result is needed at once.
 
 ###### Parameters
 
-| Parameter  | Type                                                                                                     | Description                                                      |
-| ---------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `input`    | `string` \| `I`                                                                                          | Input message to the agent, can be a string or structured object |
-| `options?` | `Partial`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming?`: `false`; \} | Invocation options, must set streaming to false or leave unset   |
+| Parameter  | Type                                                                                                     | Description                                                    |
+| ---------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `input`    | `I`                                                                                                      | Input message to the agent                                     |
+| `options?` | `Partial`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming?`: `false`; \} | Invocation options, must set streaming to false or leave unset |
 
 ###### Returns
 
@@ -474,12 +476,13 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
 // Invoke the agent
-const result = await aigne.invoke(agent, "hello");
+const result = await aigne.invoke(agent, { message: "hello" });
 
-console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
+console.log(result); // Output: { message: "Hello, How can I assist you today?" }
 ```
 
 ###### Call Signature
@@ -496,7 +499,7 @@ chat bot typing effects.
 
 | Parameter | Type                                                                                                   | Description                                                      |
 | --------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| `input`   | `string` \| `I`                                                                                        | Input message to the agent, can be a string or structured object |
+| `input`   | `I`                                                                                                    | Input message to the agent                                       |
 | `options` | `Partial`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming`: `true`; \} | Invocation options, must set streaming to true for this overload |
 
 ###### Returns
@@ -521,18 +524,25 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
 // Invoke the agent with streaming enabled
-const stream = await aigne.invoke(agent, "hello", { streaming: true });
+const stream = await aigne.invoke(
+  agent,
+  { message: "hello" },
+  { streaming: true },
+);
 
 const chunks: string[] = [];
 
 // Read the stream using an async iterator
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.$message;
-  if (text) {
-    chunks.push(text);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) {
+      chunks.push(text);
+    }
   }
 }
 
@@ -551,7 +561,7 @@ Returns either streaming or regular response based on the streaming parameter in
 
 | Parameter  | Type                                                                      | Description                |
 | ---------- | ------------------------------------------------------------------------- | -------------------------- |
-| `input`    | `string` \| `I`                                                           | Input message to the agent |
+| `input`    | `I`                                                                       | Input message to the agent |
 | `options?` | `Partial`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>\> | Invocation options         |
 
 ###### Returns
@@ -764,12 +774,14 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+  }
 }
 
 console.log(fullText); // Output: "Hello, This is..."
@@ -798,15 +810,17 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.message;
-  if (text) message.push(text);
-  if (chunk.delta.json) json = chunk.delta.json;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) message.push(text);
+    if (chunk.delta.json) json = chunk.delta.json;
+  }
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
@@ -835,7 +849,7 @@ class MainAgent extends Agent {
 const aigne = new AIGNE({});
 const mainAgent = new MainAgent();
 
-const result = await aigne.invoke(mainAgent, "technical question");
+const result = await aigne.invoke(mainAgent, { message: "technical question" });
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 
@@ -1099,6 +1113,37 @@ Processing result
 
 ## Interfaces
 
+### Message
+
+Basic message type that can contain any key-value pairs
+
+#### Extends
+
+- `Record`\<`string`, `unknown`\>
+
+#### Extended by
+
+- [`GuideRailAgentInput`](guide-rail-agent.md#guiderailagentinput)
+- [`GuideRailAgentOutput`](guide-rail-agent.md#guiderailagentoutput)
+- [`TransferAgentOutput`](#transferagentoutput)
+- [`MemoryRecorderInput`](../memory.md#memoryrecorderinput)
+- [`MemoryRecorderOutput`](../memory.md#memoryrecorderoutput)
+- [`MemoryRetrieverInput`](../memory.md#memoryretrieverinput)
+- [`MemoryRetrieverOutput`](../memory.md#memoryretrieveroutput)
+
+#### Indexable
+
+\[`key`: `string`\]: `unknown`
+
+#### Properties
+
+| Property                   | Type                           |
+| -------------------------- | ------------------------------ |
+| <a id="meta"></a> `$meta?` | \{ `usage`: `ContextUsage`; \} |
+| `$meta.usage`              | `ContextUsage`                 |
+
+---
+
 ### AgentOptions\<I, O\>
 
 Configuration options for an agent
@@ -1210,6 +1255,16 @@ Used to represent a single incremental update in a streaming response
 
 ---
 
+### AgentResponseProgress
+
+#### Properties
+
+| Property                         | Type                                                                                                                                                                                                                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <a id="progress"></a> `progress` | \{ `event`: `"agentStarted"`; `input`: [`Message`](#message); \} \| \{ `event`: `"agentSucceed"`; `output`: [`Message`](#message); \} \| \{ `event`: `"agentFailed"`; `error`: `Error`; \} & `Omit`\<`AgentEvent`, `"agent"`\> & \{ `agent`: \{ `name`: `string`; \}; \} |
+
+---
+
 ### FunctionAgentOptions\<I, O\>
 
 Configuration options for a function agent
@@ -1255,14 +1310,6 @@ Basic message type that can contain any key-value pairs
 | `$transferAgentTo.agent`                        | [`Agent`](#agent)                 |
 
 ## Type Aliases
-
-### Message
-
-> **Message** = `Record`\<`string`, `unknown`\>
-
-Basic message type that can contain any key-value pairs
-
----
 
 ### SubscribeTopic
 
@@ -1324,7 +1371,7 @@ Streaming response type for an agent
 
 ### AgentResponseChunk\<T\>
 
-> **AgentResponseChunk**\<`T`\> = [`AgentResponseDelta`](#agentresponsedelta)\<`T`\>
+> **AgentResponseChunk**\<`T`\> = [`AgentResponseDelta`](#agentresponsedelta)\<`T`\> \| [`AgentResponseProgress`](#agentresponseprogress)
 
 Data chunk type for streaming responses
 
@@ -1451,6 +1498,50 @@ Check if a response chunk is empty
 `boolean`
 
 True if the chunk is empty
+
+---
+
+### isAgentResponseDelta()
+
+> **isAgentResponseDelta**\<`T`\>(`chunk`): `chunk is AgentResponseDelta<T>`
+
+#### Type Parameters
+
+| Type Parameter |
+| -------------- |
+| `T`            |
+
+#### Parameters
+
+| Parameter | Type                                               |
+| --------- | -------------------------------------------------- |
+| `chunk`   | [`AgentResponseChunk`](#agentresponsechunk)\<`T`\> |
+
+#### Returns
+
+`chunk is AgentResponseDelta<T>`
+
+---
+
+### isAgentResponseProgress()
+
+> **isAgentResponseProgress**\<`T`\>(`chunk`): `chunk is AgentResponseProgress`
+
+#### Type Parameters
+
+| Type Parameter |
+| -------------- |
+| `T`            |
+
+#### Parameters
+
+| Parameter | Type                                               |
+| --------- | -------------------------------------------------- |
+| `chunk`   | [`AgentResponseChunk`](#agentresponsechunk)\<`T`\> |
+
+#### Returns
+
+`chunk is AgentResponseProgress`
 
 ---
 

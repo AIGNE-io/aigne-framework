@@ -50,10 +50,6 @@
     * [fs-memory](/api/@aigne/agent-library/fs-memory.md)
     * [default-memory](/api/@aigne/agent-library/default-memory.md)
 
-  * [@aigne/anthropic](/api/@aigne/anthropic.md)
-
-  * [@aigne/bedrock](/api/@aigne/bedrock.md)
-
   * [@aigne/cli](/api/@aigne/cli.md)
 
   * [@aigne/core](/api/@aigne/core/README.md)
@@ -71,16 +67,6 @@
 
     * [memory](/api/@aigne/core/memory.md)
 
-  * [@aigne/deepseek](/api/@aigne/deepseek.md)
-
-  * [@aigne/gemini](/api/@aigne/gemini.md)
-
-  * [@aigne/ollama](/api/@aigne/ollama.md)
-
-  * [@aigne/open-router](/api/@aigne/open-router.md)
-
-  * [@aigne/openai](/api/@aigne/openai.md)
-
   * [@aigne/platform-helpers](/api/@aigne/platform-helpers.md)
 
   * [@aigne/publish-docs](/api/@aigne/publish-docs.md)
@@ -93,8 +79,6 @@
 
     * [http-server](/api/@aigne/transport/http-server.md)
     * [http-client](/api/@aigne/transport/http-client.md)
-
-  * [@aigne/xai](/api/@aigne/xai.md)
 
 * Contributing
 

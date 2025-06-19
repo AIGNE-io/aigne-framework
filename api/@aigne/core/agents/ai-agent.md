@@ -19,7 +19,7 @@ Controls how the agent decides to use tools during execution
 
 ## Classes
 
-### AIAgent\<I, O\>
+### AIAgent\<InputKey, I, O\>
 
 AI-powered agent that leverages language models
 
@@ -45,11 +45,12 @@ const agent = AIAgent.from({
   model,
   name: "assistant",
   description: "A helpful assistant",
+  inputKey: "message",
 });
 
-const result = await agent.invoke("What is the weather today?");
+const result = await agent.invoke({ message: "What is the weather today?" });
 
-console.log(result); // Expected output: { $message: "Hello, How can I help you?" }
+console.log(result); // Expected output: { message: "Hello, How can I help you?" }
 ```
 
 #### Extends
@@ -58,10 +59,11 @@ console.log(result); // Expected output: { $message: "Hello, How can I help you?
 
 #### Type Parameters
 
-| Type Parameter                              | Default type                  | Description                               |
-| ------------------------------------------- | ----------------------------- | ----------------------------------------- |
-| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
-| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
+| Type Parameter                                                             | Default type                                                 | Description                               |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------- |
+| `InputKey` _extends_ `string`                                              | `string`                                                     | -                                         |
+| `I` _extends_ [`Message`](agent.md#message) & `InputMessage`\<`InputKey`\> | [`Message`](agent.md#message) & `InputMessage`\<`InputKey`\> | The input message type the agent accepts  |
+| `O` _extends_ [`Message`](agent.md#message)                                | [`Message`](agent.md#message)                                | The output message type the agent returns |
 
 #### Indexable
 
@@ -71,19 +73,19 @@ console.log(result); // Expected output: { $message: "Hello, How can I help you?
 
 ##### Constructor
 
-> **new AIAgent**\<`I`, `O`\>(`options`): [`AIAgent`](#aiagent)\<`I`, `O`\>
+> **new AIAgent**\<`InputKey`, `I`, `O`\>(`options`): [`AIAgent`](#aiagent)\<`InputKey`, `I`, `O`\>
 
 Create an AIAgent instance
 
 ###### Parameters
 
-| Parameter | Type                                            | Description                            |
-| --------- | ----------------------------------------------- | -------------------------------------- |
-| `options` | [`AIAgentOptions`](#aiagentoptions)\<`I`, `O`\> | Configuration options for the AI agent |
+| Parameter | Type                                                        | Description                            |
+| --------- | ----------------------------------------------------------- | -------------------------------------- |
+| `options` | [`AIAgentOptions`](#aiagentoptions)\<`InputKey`, `I`, `O`\> | Configuration options for the AI agent |
 
 ###### Returns
 
-[`AIAgent`](#aiagent)\<`I`, `O`\>
+[`AIAgent`](#aiagent)\<`InputKey`, `I`, `O`\>
 
 ###### Overrides
 
@@ -139,12 +141,18 @@ const agent = AIAgent.from({
 
 const result = await agent.invoke({ issue: "My computer won't start." });
 
-console.log(result); // Expected output: { $message: "Is there any message on the screen?" }
+console.log(result); // Expected output: { message: "Is there any message on the screen?" }
 ```
 
-##### outputKey?
+##### inputKey?
 
-> `optional` **outputKey**: `string`
+> `optional` **inputKey**: `InputKey`
+
+Pick a message from input to use as the user's message
+
+##### outputKey
+
+> **outputKey**: `string`
 
 Custom key to use for text output in the response
 
@@ -159,9 +167,10 @@ const model = new OpenAIChatModel();
 const agent = AIAgent.from({
   model,
   outputKey: "greeting",
+  inputKey: "message",
 });
 
-const result = await agent.invoke("What is the weather today?");
+const result = await agent.invoke({ message: "What is the weather today?" });
 
 console.log(result); // Expected output: { greeting: "Hello, How can I help you?" }
 ```
@@ -242,15 +251,18 @@ const agent = AIAgent.from({
   description: "A helpful assistant with tool access",
   toolChoice: AIAgentToolChoice.auto, // Let the model decide when to use tools
   skills: [calculator, weatherService],
+  inputKey: "message",
 });
 
-const result1 = await agent.invoke("What is the weather in San Francisco?");
+const result1 = await agent.invoke({
+  message: "What is the weather in San Francisco?",
+});
 
-console.log(result1); // Expected output: { $message: "Weather forecast for San Francisco: Sunny, 75°F" }
+console.log(result1); // Expected output: { message: "Weather forecast for San Francisco: Sunny, 75°F" }
 
-const result2 = await agent.invoke("Calculate 5 + 3");
+const result2 = await agent.invoke({ message: "Calculate 5 + 3" });
 
-console.log(result2); // Expected output: { $message: "The result of 5 + 3 is 8" }
+console.log(result2); // Expected output: { message: "The result of 5 + 3 is 8" }
 ```
 
 Router tool choice:
@@ -293,9 +305,12 @@ const agent = AIAgent.from({
   description: "Assistant that routes to specialized agents",
   toolChoice: AIAgentToolChoice.router, // Use the router mode
   skills: [weatherAgent, translator],
+  inputKey: "message",
 });
 
-const result = await agent.invoke("What's the weather in San Francisco?");
+const result = await agent.invoke({
+  message: "What's the weather in San Francisco?",
+});
 
 console.log(result); // Expected output: { forecast: "Weather in San Francisco: Sunny, 75°F" }
 ```
@@ -338,7 +353,7 @@ true;
 
 ##### from()
 
-> `static` **from**\<`I`, `O`\>(`options`): [`AIAgent`](#aiagent)\<`I`, `O`\>
+> `static` **from**\<`InputKey`, `I`, `O`\>(`options`): [`AIAgent`](#aiagent)\<`InputKey`, `I`, `O`\>
 
 Create an AIAgent with the specified options
 
@@ -346,20 +361,21 @@ Factory method that provides a convenient way to create new AI agents
 
 ###### Type Parameters
 
-| Type Parameter                              |
-| ------------------------------------------- |
-| `I` _extends_ [`Message`](agent.md#message) |
-| `O` _extends_ [`Message`](agent.md#message) |
+| Type Parameter                                                                  |
+| ------------------------------------------------------------------------------- |
+| `InputKey` _extends_ `string`                                                   |
+| `I` _extends_ [`Message`](agent.md#message) & \{[`key`: `string`]: `string`; \} |
+| `O` _extends_ [`Message`](agent.md#message)                                     |
 
 ###### Parameters
 
-| Parameter | Type                                            | Description                            |
-| --------- | ----------------------------------------------- | -------------------------------------- |
-| `options` | [`AIAgentOptions`](#aiagentoptions)\<`I`, `O`\> | Configuration options for the AI agent |
+| Parameter | Type                                                        | Description                            |
+| --------- | ----------------------------------------------------------- | -------------------------------------- |
+| `options` | [`AIAgentOptions`](#aiagentoptions)\<`InputKey`, `I`, `O`\> | Configuration options for the AI agent |
 
 ###### Returns
 
-[`AIAgent`](#aiagent)\<`I`, `O`\>
+[`AIAgent`](#aiagent)\<`InputKey`, `I`, `O`\>
 
 A new AIAgent instance
 
@@ -377,11 +393,12 @@ const agent = AIAgent.from({
   description: "A math tutor",
   instructions:
     "You are a math tutor who helps students understand concepts clearly.",
+  inputKey: "message",
 });
 
-const result = await agent.invoke("What is 10 factorial?");
+const result = await agent.invoke({ message: "What is 10 factorial?" });
 
-console.log(result); // Expected output: { $message: "10 factorial is 3628800." }
+console.log(result); // Expected output: { message: "10 factorial is 3628800." }
 ```
 
 ##### process()
@@ -462,7 +479,7 @@ which tool to use, then routes the request directly to that tool
 
 ## Interfaces
 
-### AIAgentOptions\<I, O\>
+### AIAgentOptions\<InputKey, I, O\>
 
 Configuration options for an AI Agent
 
@@ -471,14 +488,15 @@ like model configuration, prompt instructions, and tool choice.
 
 #### Extends
 
-- [`AgentOptions`](agent.md#agentoptions)\<`I`, `O`\>
+- [`AgentOptions`](agent.md#agentoptions)\<`Omit`\<`I`, `InputKey`\> & `Partial`\<`InputMessage`\<`InputKey`\>\>, `O`\>
 
 #### Type Parameters
 
-| Type Parameter                              | Default type                  | Description                               |
-| ------------------------------------------- | ----------------------------- | ----------------------------------------- |
-| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
-| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
+| Type Parameter                                                             | Default type                                                 | Description                               |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------- |
+| `InputKey` _extends_ `string`                                              | `string`                                                     | -                                         |
+| `I` _extends_ [`Message`](agent.md#message) & `InputMessage`\<`InputKey`\> | [`Message`](agent.md#message) & `InputMessage`\<`InputKey`\> | The input message type the agent accepts  |
+| `O` _extends_ [`Message`](agent.md#message)                                | [`Message`](agent.md#message)                                | The output message type the agent returns |
 
 #### Properties
 
@@ -486,7 +504,8 @@ like model configuration, prompt instructions, and tool choice.
 | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <a id="model"></a> `model?`                               | `ChatModel`                                                                                                                            | The language model to use for this agent If not provided, the agent will use the model from the context                                                                                                                                                                                       |
 | <a id="instructions"></a> `instructions?`                 | `string` \| `PromptBuilder`                                                                                                            | Instructions to guide the AI model's behavior Can be a simple string or a full PromptBuilder instance for more complex prompt templates                                                                                                                                                       |
-| <a id="outputkey"></a> `outputKey?`                       | `string`                                                                                                                               | Custom key to use for text output in the response Defaults to $message if not specified                                                                                                                                                                                                       |
+| <a id="inputkey-1"></a> `inputKey?`                       | `InputKey`                                                                                                                             | Pick a message from input to use as the user's message                                                                                                                                                                                                                                        |
+| <a id="outputkey"></a> `outputKey?`                       | `string`                                                                                                                               | Custom key to use for text output in the response Defaults to `message` if not specified                                                                                                                                                                                                      |
 | <a id="toolchoice"></a> `toolChoice?`                     | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> \| [`AIAgentToolChoice`](#aiagenttoolchoice) | Controls how the agent uses tools during execution **Default** `AIAgentToolChoice.auto`                                                                                                                                                                                                       |
 | <a id="catchtoolserror"></a> `catchToolsError?`           | `boolean`                                                                                                                              | Whether to catch errors from tool execution and continue processing. If set to false, the agent will throw an error if a tool fails. **Default** `true`                                                                                                                                       |
 | <a id="memoryagentsastools"></a> `memoryAgentsAsTools?`   | `boolean`                                                                                                                              | Whether to include memory agents as tools for the AI model When set to true, memory agents will be made available as tools that the model can call directly to retrieve or store information. This enables the agent to explicitly interact with its memories. **Default** `false`            |

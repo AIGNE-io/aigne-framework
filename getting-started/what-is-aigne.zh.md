@@ -12,11 +12,12 @@ const agent = AIAgent.from({
     model: "gpt-4o-mini",
   }),
   instructions: "You are a helpful assistant",
+  inputKey: "message",
 });
 
-const result = await agent.invoke("What is AIGNE?");
+const result = await agent.invoke({ message: "What is AIGNE?" });
 console.log(result);
-// Output: { $message: "AIGNE is a platform for building AI agents." }
+// Output: { message: "AIGNE is a platform for building AI agents." }
 ```
 
 ## 主要特性

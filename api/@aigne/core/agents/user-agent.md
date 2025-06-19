@@ -36,7 +36,7 @@ class MyAgent extends Agent {
 
 const agent = new MyAgent();
 
-const result = await agent.invoke("hello");
+const result = await agent.invoke({ message: "hello" });
 
 console.log(result); // { text: "Hello, How can I assist you today?" }
 ```
@@ -99,7 +99,7 @@ suitable for scenarios where a complete result is needed at once.
 
 | Parameter  | Type                                                                                                             |
 | ---------- | ---------------------------------------------------------------------------------------------------------------- |
-| `input`    | `string` \| `I`                                                                                                  |
+| `input`    | `I`                                                                                                              |
 | `options?` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming?`: `false`; \} |
 
 ###### Returns
@@ -120,7 +120,7 @@ chat bot typing effects.
 
 | Parameter | Type                                                                                                           | Description                                                      |
 | --------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `input`   | `string` \| `I`                                                                                                | Input message to the agent, can be a string or structured object |
+| `input`   | `I`                                                                                                            | Input message to the agent                                       |
 | `options` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming`: `true`; \} | Invocation options, must set streaming to true for this overload |
 
 ###### Returns
@@ -145,18 +145,25 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
 // Invoke the agent with streaming enabled
-const stream = await aigne.invoke(agent, "hello", { streaming: true });
+const stream = await aigne.invoke(
+  agent,
+  { message: "hello" },
+  { streaming: true },
+);
 
 const chunks: string[] = [];
 
 // Read the stream using an async iterator
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.$message;
-  if (text) {
-    chunks.push(text);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) {
+      chunks.push(text);
+    }
   }
 }
 
@@ -175,7 +182,7 @@ Returns either streaming or regular response based on the streaming parameter in
 
 | Parameter  | Type                                                                              | Description                |
 | ---------- | --------------------------------------------------------------------------------- | -------------------------- |
-| `input`    | `string` \| `I`                                                                   | Input message to the agent |
+| `input`    | `I`                                                                               | Input message to the agent |
 | `options?` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> | Invocation options         |
 
 ###### Returns
@@ -186,7 +193,7 @@ Agent response (streaming or regular)
 
 ###### Param
 
-Input message to the agent, can be a string or structured object
+Input message to the agent
 
 ###### Param
 
@@ -212,12 +219,13 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
 // Invoke the agent
-const result = await aigne.invoke(agent, "hello");
+const result = await aigne.invoke(agent, { message: "hello" });
 
-console.log(result); // Output: { $message: "Hello, How can I assist you today?" }
+console.log(result); // Output: { message: "Hello, How can I assist you today?" }
 ```
 
 ###### Overrides
@@ -232,11 +240,11 @@ Publish a message to a topic, the aigne will invoke the listeners of the topic
 
 ###### Parameters
 
-| Parameter  | Type                                                                                 | Description                            |
-| ---------- | ------------------------------------------------------------------------------------ | -------------------------------------- |
-| `topic`    | `string` \| `string`[]                                                               | topic name, or an array of topic names |
-| `payload`  | `string` \| [`Message`](agent.md#message) \| `Omit`\<`MessagePayload`, `"context"`\> | message to publish                     |
-| `options?` | `InvokeOptions`\<`UserContext`\>                                                     | -                                      |
+| Parameter  | Type                                                                     | Description                            |
+| ---------- | ------------------------------------------------------------------------ | -------------------------------------- |
+| `topic`    | `string` \| `string`[]                                                   | topic name, or an array of topic names |
+| `payload`  | [`Message`](agent.md#message) \| `Omit`\<`MessagePayload`, `"context"`\> | message to publish                     |
+| `options?` | `InvokeOptions`\<`UserContext`\>                                         | -                                      |
 
 ###### Returns
 
@@ -463,12 +471,14 @@ class StreamResponseAgent extends Agent {
 }
 
 const agent = new StreamResponseAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 let fullText = "";
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+  }
 }
 
 console.log(fullText); // Output: "Hello, This is..."
@@ -497,15 +507,17 @@ class AsyncGeneratorAgent extends Agent {
 }
 
 const agent = new AsyncGeneratorAgent();
-const stream = await agent.invoke("Hello", { streaming: true });
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
 
 const message: string[] = [];
 let json: Message | undefined;
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.message;
-  if (text) message.push(text);
-  if (chunk.delta.json) json = chunk.delta.json;
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) message.push(text);
+    if (chunk.delta.json) json = chunk.delta.json;
+  }
 }
 
 console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
@@ -534,7 +546,7 @@ class MainAgent extends Agent {
 const aigne = new AIGNE({});
 const mainAgent = new MainAgent();
 
-const result = await aigne.invoke(mainAgent, "technical question");
+const result = await aigne.invoke(mainAgent, { message: "technical question" });
 console.log(result); // { response: "This is a specialist response", expertise: "technical" }
 ```
 

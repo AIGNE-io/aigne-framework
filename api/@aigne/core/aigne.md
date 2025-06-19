@@ -22,10 +22,11 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
-const result = await aigne.invoke(agent, "hello");
-console.log(result); // { $message: "Hello, How can I assist you today?" }
+const result = await aigne.invoke(agent, { message: "hello" });
+console.log(result); // { message: "Hello, How can I assist you today?" }
 ```
 
 Here's an example of how to use AIGNE with streaming response:
@@ -41,13 +42,20 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
 let text = "";
 
-const stream = await aigne.invoke(agent, "hello", { streaming: true });
+const stream = await aigne.invoke(
+  agent,
+  { message: "hello" },
+  { streaming: true },
+);
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message) {
+    text += chunk.delta.text.message;
+  }
 }
 
 console.log(text); // Output: Hello, How can I assist you today?
@@ -218,15 +226,16 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
 const userAgent = aigne.invoke(agent);
 
-const result1 = await userAgent.invoke("hello");
-console.log(result1); // { $message: "Hello, How can I assist you today?" }
+const result1 = await userAgent.invoke({ message: "hello" });
+console.log(result1); // { message: "Hello, How can I assist you today?" }
 
-const result2 = await userAgent.invoke("I'm Bob!");
-console.log(result2); // { $message: "Nice to meet you, Bob!" }
+const result2 = await userAgent.invoke({ message: "I'm Bob!" });
+console.log(result2); // { message: "Nice to meet you, Bob!" }
 ```
 
 ###### Call Signature
@@ -245,11 +254,11 @@ This overload is useful when you need to track which agent was ultimately respon
 
 ###### Parameters
 
-| Parameter | Type                                                                               | Description                                                                         |
-| --------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                       | Target agent to invoke                                                              |
-| `message` | `string` \| `I`                                                                    | Input message to send to the agent (can be a string or a structured message object) |
-| `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent`: `true`; `streaming?`: `false`; \} | -                                                                                   |
+| Parameter | Type                                                                               | Description                        |
+| --------- | ---------------------------------------------------------------------------------- | ---------------------------------- |
+| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                       | Target agent to invoke             |
+| `message` | `I`                                                                                | Input message to send to the agent |
+| `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent`: `true`; `streaming?`: `false`; \} | -                                  |
 
 ###### Returns
 
@@ -273,11 +282,11 @@ This overload is useful when you need streaming responses while also tracking wh
 
 ###### Parameters
 
-| Parameter | Type                                                                             | Description                                                                         |
-| --------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                     | Target agent to invoke                                                              |
-| `message` | `string` \| `I`                                                                  | Input message to send to the agent (can be a string or a structured message object) |
-| `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent`: `true`; `streaming`: `true`; \} | -                                                                                   |
+| Parameter | Type                                                                             | Description                        |
+| --------- | -------------------------------------------------------------------------------- | ---------------------------------- |
+| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                     | Target agent to invoke             |
+| `message` | `I`                                                                              | Input message to send to the agent |
+| `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent`: `true`; `streaming`: `true`; \} | -                                  |
 
 ###### Returns
 
@@ -301,11 +310,11 @@ This is the standard way to invoke an agent when you only need the response.
 
 ###### Parameters
 
-| Parameter  | Type                                                                                 | Description                                                                         |
-| ---------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `agent`    | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                         | Target agent to invoke                                                              |
-| `message`  | `string` \| `I`                                                                      | Input message to send to the agent (can be a string or a structured message object) |
-| `options?` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent?`: `false`; `streaming?`: `false`; \} | Optional configuration parameters for the invocation                                |
+| Parameter  | Type                                                                                 | Description                                          |
+| ---------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| `agent`    | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                         | Target agent to invoke                               |
+| `message`  | `I`                                                                                  | Input message to send to the agent                   |
+| `options?` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent?`: `false`; `streaming?`: `false`; \} | Optional configuration parameters for the invocation |
 
 ###### Returns
 
@@ -328,10 +337,11 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
-const result = await aigne.invoke(agent, "hello");
-console.log(result); // { $message: "Hello, How can I assist you today?" }
+const result = await aigne.invoke(agent, { message: "hello" });
+console.log(result); // { message: "Hello, How can I assist you today?" }
 ```
 
 ###### Call Signature
@@ -350,11 +360,11 @@ This allows processing the response incrementally as it's being generated.
 
 ###### Parameters
 
-| Parameter | Type                                                                               | Description                                                                         |
-| --------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                       | Target agent to invoke                                                              |
-| `message` | `string` \| `I`                                                                    | Input message to send to the agent (can be a string or a structured message object) |
-| `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent?`: `false`; `streaming`: `true`; \} | Configuration with streaming enabled to receive incremental response chunks         |
+| Parameter | Type                                                                               | Description                                                                 |
+| --------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                       | Target agent to invoke                                                      |
+| `message` | `I`                                                                                | Input message to send to the agent                                          |
+| `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent?`: `false`; `streaming`: `true`; \} | Configuration with streaming enabled to receive incremental response chunks |
 
 ###### Returns
 
@@ -377,13 +387,20 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
 let text = "";
 
-const stream = await aigne.invoke(agent, "hello", { streaming: true });
+const stream = await aigne.invoke(
+  agent,
+  { message: "hello" },
+  { streaming: true },
+);
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message) {
+    text += chunk.delta.text.message;
+  }
 }
 
 console.log(text); // Output: Hello, How can I assist you today?
@@ -408,7 +425,7 @@ This unified signature supports all the different invocation patterns defined by
 | Parameter  | Type                                         | Description                                          |
 | ---------- | -------------------------------------------- | ---------------------------------------------------- |
 | `agent`    | [`Agent`](agents/agent.md#agent)\<`I`, `O`\> | Target agent to invoke or wrap                       |
-| `message?` | `string` \| `I`                              | Optional input message to send to the agent          |
+| `message?` | `I`                                          | Optional input message to send to the agent          |
 | `options?` | `InvokeOptions`\<`U`\>                       | Optional configuration parameters for the invocation |
 
 ###### Returns
@@ -428,11 +445,11 @@ It creates a new context internally and delegates to the context's publish metho
 
 ###### Parameters
 
-| Parameter  | Type                                                                                        | Description                                                 |
-| ---------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `topic`    | `string` \| `string`[]                                                                      | The topic or array of topics to publish the message to      |
-| `payload`  | `string` \| [`Message`](agents/agent.md#message) \| `Omit`\<`MessagePayload`, `"context"`\> | The message payload to be delivered to subscribers          |
-| `options?` | `InvokeOptions`\<`U`\>                                                                      | Optional configuration parameters for the publish operation |
+| Parameter  | Type                                                                            | Description                                                 |
+| ---------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `topic`    | `string` \| `string`[]                                                          | The topic or array of topics to publish the message to      |
+| `payload`  | [`Message`](agents/agent.md#message) \| `Omit`\<`MessagePayload`, `"context"`\> | The message payload to be delivered to subscribers          |
+| `options?` | `InvokeOptions`\<`U`\>                                                          | Optional configuration parameters for the publish operation |
 
 ###### Returns
 
@@ -450,6 +467,7 @@ const agent = AIAgent.from({
   description: "A chat agent",
   subscribeTopic: "test_topic",
   publishTopic: "result_topic",
+  inputKey: "message",
 });
 
 // AIGNE: Main execution engine of AIGNE Framework.
@@ -461,11 +479,11 @@ const aigne = new AIGNE({
 
 const subscription = aigne.subscribe("result_topic");
 
-aigne.publish("test_topic", "hello");
+aigne.publish("test_topic", { message: "hello" });
 
 const { message } = await subscription;
 
-console.log(message); // { $message: "Hello, How can I assist you today?" }
+console.log(message); // { message: "Hello, How can I assist you today?" }
 ```
 
 ##### subscribe()
@@ -503,6 +521,7 @@ const agent = AIAgent.from({
   description: "A chat agent",
   subscribeTopic: "test_topic",
   publishTopic: "result_topic",
+  inputKey: "message",
 });
 
 // AIGNE: Main execution engine of AIGNE Framework.
@@ -514,11 +533,11 @@ const aigne = new AIGNE({
 
 const subscription = aigne.subscribe("result_topic");
 
-aigne.publish("test_topic", "hello");
+aigne.publish("test_topic", { message: "hello" });
 
 const { message } = await subscription;
 
-console.log(message); // { $message: "Hello, How can I assist you today?" }
+console.log(message); // { message: "Hello, How can I assist you today?" }
 ```
 
 ###### Call Signature
@@ -554,6 +573,7 @@ const agent = AIAgent.from({
   description: "A chat agent",
   subscribeTopic: "test_topic",
   publishTopic: "result_topic",
+  inputKey: "message",
 });
 
 // AIGNE: Main execution engine of AIGNE Framework.
@@ -564,12 +584,12 @@ const aigne = new AIGNE({
 });
 
 const unsubscribe = aigne.subscribe("result_topic", ({ message }) => {
-  console.log(message); // { $message: "Hello, How can I assist you today?" }
+  console.log(message); // { message: "Hello, How can I assist you today?" }
 
   unsubscribe();
 });
 
-aigne.publish("test_topic", "hello");
+aigne.publish("test_topic", { message: "hello" });
 ```
 
 ###### Call Signature
@@ -622,6 +642,7 @@ const agent = AIAgent.from({
   description: "A chat agent",
   subscribeTopic: "test_topic",
   publishTopic: "result_topic",
+  inputKey: "message",
 });
 
 // AIGNE: Main execution engine of AIGNE Framework.
@@ -632,12 +653,12 @@ const aigne = new AIGNE({
 });
 
 const unsubscribe = aigne.subscribe("result_topic", ({ message }) => {
-  console.log(message); // { $message: "Hello, How can I assist you today?" }
+  console.log(message); // { message: "Hello, How can I assist you today?" }
 
   unsubscribe();
 });
 
-aigne.publish("test_topic", "hello");
+aigne.publish("test_topic", { message: "hello" });
 ```
 
 ##### shutdown()
@@ -668,9 +689,10 @@ const aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
-await aigne.invoke(agent, "hello");
+await aigne.invoke(agent, { message: "hello" });
 
 await aigne.shutdown();
 ```
@@ -700,9 +722,10 @@ await using aigne = new AIGNE({
 const agent = AIAgent.from({
   name: "chat",
   description: "A chat agent",
+  inputKey: "message",
 });
 
-await aigne.invoke(agent, "hello");
+await aigne.invoke(agent, { message: "hello" });
 
 // aigne will be automatically shutdown when exiting the using block
 ```

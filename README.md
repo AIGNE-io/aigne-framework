@@ -65,26 +65,28 @@ const agentA = AIAgent.from({
   instructions: "You are a helpful agent.",
   outputKey: "A",
   skills: [transferToB],
+  inputKey: "message",
 });
 
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({ model });
 
 const userAgent = aigne.invoke(agentA);
 
-const result1 = await userAgent.invoke("transfer to agent b");
+const result1 = await userAgent.invoke({ message: "transfer to agent b" });
 console.log(result1);
 // Output:
 // {
 //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
 // }
 
-const result2 = await userAgent.invoke("It's a beautiful day");
+const result2 = await userAgent.invoke({ message: "It's a beautiful day" });
 console.log(result2);
 // Output:
 // {
@@ -99,14 +101,14 @@ console.log(result2);
 * [packages/agent-library](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/agent-library) - AIGNE agent library, providing a variety of specialized agents for different tasks.
 * [packages/cli](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/cli) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
 * models - AIGNE Framework's built-in models, including OpenAI, Gemini, Claude, and Nova.
-  * [packages/openai](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/openai) - OpenAI model implementation, supporting OpenAI's API and function calling.
-  * [packages/anthropic](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/anthropic) - Anthropic model implementation, supporting Anthropic's API and function calling.
-  * [packages/bedrock](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/bedrock) - Bedrock model implementation, supporting Bedrock's API and function calling.
-  * [packages/deepseek](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/deepseek) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
-  * [packages/gemini](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/gemini) - Gemini model implementation, supporting Gemini's API and function calling.
-  * [packages/ollama](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/ollama) - Ollama model implementation, supporting Ollama's API and function calling.
-  * [packages/open-router](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/open-router) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
-  * [packages/xai](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/xai) - XAI model implementation, supporting XAI's API and function calling.
+  * [models/openai](./models/openai) - OpenAI model implementation, supporting OpenAI's API and function calling.
+  * [models/anthropic](./models/anthropic) - Anthropic model implementation, supporting Anthropic's API and function calling.
+  * [models/bedrock](./models/bedrock) - Bedrock model implementation, supporting Bedrock's API and function calling.
+  * [models/deepseek](./models/deepseek) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
+  * [models/gemini](./models/gemini) - Gemini model implementation, supporting Gemini's API and function calling.
+  * [models/ollama](./models/ollama) - Ollama model implementation, supporting Ollama's API and function calling.
+  * [models/open-router](./models/open-router) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
+  * [models/xai](./models/xai) - XAI model implementation, supporting XAI's API and function calling.
 
 ## Documentation
 

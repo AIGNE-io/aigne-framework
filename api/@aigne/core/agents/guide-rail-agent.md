@@ -72,4 +72,4 @@ Use GuideRail agents when you need to:
 
 ### guideRailAgentOptions
 
-> `const` **guideRailAgentOptions**: [`AgentOptions`](agent.md#agentoptions)\<[`GuideRailAgentInput`](#guiderailagentinput), [`GuideRailAgentOutput`](#guiderailagentoutput)\>
+> `const` **guideRailAgentOptions**: [`AgentOptions`](agent.md#agentoptions)\<`any`, [`GuideRailAgentOutput`](#guiderailagentoutput)\>

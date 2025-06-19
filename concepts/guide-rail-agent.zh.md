@@ -45,6 +45,7 @@ import { AIAgent } from "@aigne/core";
 
 const agent = AIAgent.from({
   guideRails: [financial],
+  inputKey: "message",
 });
 ```
 
@@ -68,15 +69,14 @@ const aigne = new AIGNE({ model: new OpenAIChatModel() });
 现在，我们可以调用应用了 GuideRailAgent 的代理，并观察其行为：
 
 ```ts file="../../docs-examples/test/concepts/guide-rail-agent.test.ts" region="example-guide-rail-agent-basic-invoke"
-const result = await aigne.invoke(
-  agent,
-  "What will be the price of Bitcoin next month?",
-);
+const result = await aigne.invoke(agent, {
+  message: "What will be the price of Bitcoin next month?",
+});
 console.log(result);
 // Output:
 // {
 //   "$status": "GuideRailError",
-//   "$message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
+//   "message": "I cannot provide cryptocurrency price predictions as they are speculative and potentially misleading."
 // }
 ```
 

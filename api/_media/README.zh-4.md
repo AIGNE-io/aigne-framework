@@ -1,138 +1,162 @@
-# @aigne/cli
+# @aigne/transport
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
-[![NPM Version](https://img.shields.io/npm/v/@aigne/cli)](https://www.npmjs.com/package/@aigne/cli)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/cli)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@aigne/transport)](https://www.npmjs.com/package/@aigne/transport)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/transport)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
 [English](README.md) | **中文**
 
-[AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)的命令行工具，提供便捷的开发和管理功能。
+AIGNE Transport SDK，为 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework) 中的 AIGNE 组件之间的通信提供 HTTP 客户端和服务器实现。
 
 ## 简介
 
-`@aigne/cli` 是 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)的官方命令行工具，旨在简化 AIGNE 应用的开发、测试和部署流程。它提供了一系列实用命令，帮助开发者快速创建项目、运行代理、测试代码，以及部署应用等。
+`@aigne/transport` 为 AIGNE 组件提供了一个强大的通信层，使 AI 应用程序的不同部分之间能够无缝交互。该包提供了遵循一致协议的 HTTP 客户端和服务器实现，使用 AIGNE 框架构建分布式 AI 系统变得简单。
 
 ## 特性
 
-* **项目创建**：快速创建新的 AIGNE 项目，包含预设的文件结构和配置
-* **代理运行**：轻松运行和测试 AIGNE 代理
-* **测试支持**：内置测试命令，方便进行单元测试和集成测试
-* **MCP 服务**：支持将代理作为 MCP 服务器启动，与外部系统集成
-* **交互式界面**：美观的命令行界面，提供直观的使用体验
-* **多模型支持**：支持 OpenAI、Claude、XAI 等多种模型提供商
+* **HTTP 客户端实现**：易于使用的客户端，用于与 AIGNE 服务器通信
+* **HTTP 服务器实现**：灵活的服务器实现，可与流行的 Node.js 框架集成
+* **框架无关**：支持 Express、Hono 和其他 Node.js HTTP 框架
+* **流式响应支持**：对流式响应的一流支持
+* **类型安全**：为所有 API 提供全面的 TypeScript 类型定义
+* **错误处理**：健壮的错误处理机制，提供详细的错误信息
+* **中间件支持**：兼容常见的 HTTP 中间件，如压缩中间件
 
 ## 安装
 
 ### 使用 npm
 
 ```bash
-npm install -g @aigne/cli
+npm install @aigne/transport @aigne/core
 ```
 
 ### 使用 yarn
 
 ```bash
-yarn global add @aigne/cli
+yarn add @aigne/transport @aigne/core
 ```
 
 ### 使用 pnpm
 
 ```bash
-pnpm add -g @aigne/cli
+pnpm add @aigne/transport @aigne/core
 ```
 
-## 基本命令
+## 基本用法
 
-AIGNE CLI 提供了以下主要命令：
+### 服务端用法
 
-```bash
-# 显示帮助信息
-aigne --help
+AIGNE HTTP 服务器可用于 Express 或 Hono 框架。
 
-# 创建新项目
-aigne create [path]
+#### Express 示例
 
-# 运行代理
-aigne run [path]
+```typescript file="test/http-server/http-server.test.ts" region="example-aigne-server-express"
+import { AIAgent, AIGNE } from "@aigne/core";
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
+import express from "express";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
-# 运行测试
-aigne test [path]
+const model = new OpenAIChatModel();
 
-# 启动 MCP 服务器
-aigne serve [path] --mcp
+const chat = AIAgent.from({
+  name: "chat",
+});
+
+// AIGNE: Main execution engine of AIGNE Framework.
+const aigne = new AIGNE({ model, agents: [chat] });
+
+// Create an AIGNEServer instance
+const aigneServer = new AIGNEHTTPServer(aigne);
+
+// Setup the server to handle incoming requests
+const server = express();
+server.post("/aigne/invoke", async (req, res) => {
+  await aigneServer.invoke(req, res);
+});
+const httpServer = server.listen(port);
+
+// Create an AIGNEClient instance
+const client = new AIGNEHTTPClient({ url });
+
+// Invoke the agent by client
+const response = await client.invoke("chat", { $message: "hello" });
+
+console.log(response); // Output: {$message: "Hello world!"}
 ```
 
-## 创建命令 (create)
+#### Hono 示例
 
-创建一个带有代理配置文件的新 AIGNE 项目。
+```typescript file="test/http-server/http-server.test.ts" region="example-aigne-server-hono"
+import { AIAgent, AIGNE } from "@aigne/core";
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
+import { serve } from "bun";
+import { Hono } from "hono";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
-```bash
-# 在当前目录创建项目（会提示输入项目名称）
-aigne create
+const model = new OpenAIChatModel();
 
-# 在指定路径创建项目
-aigne create my-project
+const chat = AIAgent.from({
+  name: "chat",
+});
+
+// AIGNE: Main execution engine of AIGNE Framework.
+const aigne = new AIGNE({ model, agents: [chat] });
+
+// Create an AIGNEServer instance
+const aigneServer = new AIGNEHTTPServer(aigne);
+
+// Setup the server to handle incoming requests
+const honoApp = new Hono();
+honoApp.post("/aigne/invoke", async (c) => {
+  return aigneServer.invoke(c.req.raw);
+});
+const server = serve({ port, fetch: honoApp.fetch });
+
+// Create an AIGNEClient instance
+const client = new AIGNEHTTPClient({ url });
+
+// Invoke the agent by client
+const response = await client.invoke("chat", { $message: "hello" });
+console.log(response); // Output: {$message: "Hello world!"}
 ```
 
-交互式创建过程会询问：
+### HTTP 客户端
 
-* 项目名称
-* 项目模板（目前支持 default 模板）
+```typescript file="test/http-client/http-client.test.ts" region="example-aigne-client-simple"
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
 
-## 运行命令 (run)
+const client = new AIGNEHTTPClient({ url });
 
-启动与指定代理的聊天循环。
+const response = await client.invoke("chat", { $message: "hello" });
 
-```bash
-# 运行当前目录中的代理
-aigne run
-
-# 运行指定路径中的代理
-aigne run path/to/agents
-
-# 运行远程 URL 中的代理
-aigne run https://example.com/aigne-project
-
-# 指定特定代理运行
-aigne run --entry-agent myAgent
+console.log(response); // Output: {$message: "Hello world!"}
 ```
 
-可用选项：
+### 流式响应
 
-* `--entry-agent <代理>` - 指定要运行的代理名称（默认为找到的第一个代理）
-* `--cache-dir <目录>` - 指定下载包的目录（URL模式下使用）
-* `--model <提供商[:模型]>` - 指定AI模型，格式为'提供商\[:模型]'，其中模型是可选的（如'openai'或'openai:gpt-4o-mini'）
-* `--verbose` - 启用详细日志记录
+```typescript file="test/http-client/http-client.test.ts" region="example-aigne-client-streaming"
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
 
-## 测试命令 (test)
+const client = new AIGNEHTTPClient({ url });
 
-在指定的代理目录中运行测试。
+const stream = await client.invoke(
+  "chat",
+  { $message: "hello" },
+  { streaming: true },
+);
 
-```bash
-# 测试当前目录中的代理
-aigne test
+let text = "";
+for await (const chunk of stream) {
+  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+}
 
-# 测试指定路径中的代理
-aigne test path/to/agents
+console.log(text); // Output: "Hello world!"
 ```
 
-## 服务命令 (serve)
-
-将指定目录中的代理作为 MCP 服务器提供服务。
-
-```bash
-# 在默认端口 3000 启动 MCP 服务器
-aigne serve --mcp
-
-# 在指定端口启动 MCP 服务器
-aigne serve --mcp --port 3001
-
-# 为指定路径的代理启动 MCP 服务器
-aigne serve path/to/agents --mcp
-```
-
-## 协议
+## 许可证
 
 Elastic-2.0

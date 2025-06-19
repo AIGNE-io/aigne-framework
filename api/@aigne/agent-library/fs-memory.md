@@ -22,15 +22,17 @@ const agent = AIAgent.from({
   memory,
 });
 
-const result1 = await engine.invoke(agent, "I like blue color");
+const result1 = await engine.invoke(agent, { message: "I like blue color" });
 
 console.log(result1);
-// Output: { $message: 'Great! I will remember that you like blue color.' }
+// Output: { message: 'Great! I will remember that you like blue color.' }
 
-const result2 = await engine.invoke(agent, "What color do I like?");
+const result2 = await engine.invoke(agent, {
+  message: "What color do I like?",
+});
 
 console.log(result2);
-// Output: { $message: 'You like blue color.' }
+// Output: { message: 'You like blue color.' }
 ```
 
 #### Extends

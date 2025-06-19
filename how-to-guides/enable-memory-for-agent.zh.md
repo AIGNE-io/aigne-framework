@@ -26,6 +26,7 @@ const agent = AIAgent.from({
       url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
     },
   }),
+  inputKey: "message",
 });
 ```
 
@@ -38,12 +39,11 @@ const agent = AIAgent.from({
 ### 第一轮对话 - 提供个人信息
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-invoke-agent-1" exclude_imports
-const result1 = await aigne.invoke(
-  agent,
-  "My name is John Doe and I like to invest in Bitcoin.",
-);
+const result1 = await aigne.invoke(agent, {
+  message: "My name is John Doe and I like to invest in Bitcoin.",
+});
 console.log(result1);
-// Output: { $message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
+// Output: { message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
 ```
 
 **说明**：
@@ -57,12 +57,11 @@ console.log(result1);
 ### 第二轮对话 - 测试记忆能力
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-invoke-agent-2" exclude_imports
-const result2 = await aigne.invoke(
-  agent,
-  "What is my favorite cryptocurrency?",
-);
+const result2 = await aigne.invoke(agent, {
+  message: "What is my favorite cryptocurrency?",
+});
 console.log(result2);
-// Output: { $message: "Your favorite cryptocurrency is Bitcoin." }
+// Output: { message: "Your favorite cryptocurrency is Bitcoin." }
 ```
 
 **说明**：
@@ -76,9 +75,11 @@ console.log(result2);
 ### 第三轮对话 - 添加更多信息
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-invoke-agent-3" exclude_imports
-const result3 = await aigne.invoke(agent, "I've invested $5000 in Ethereum.");
+const result3 = await aigne.invoke(agent, {
+  message: "I've invested $5000 in Ethereum.",
+});
 console.log(result3);
-// Output: { $message: "Got it, you've invested $5000 in Ethereum! That's a good investment. If there's anything else you'd like to share about your crypto portfolio or have questions, feel free!" }
+// Output: { message: "Got it, you've invested $5000 in Ethereum! That's a good investment. If there's anything else you'd like to share about your crypto portfolio or have questions, feel free!" }
 ```
 
 **说明**：
@@ -92,12 +93,11 @@ console.log(result3);
 ### 第四轮对话 - 进一步测试记忆能力
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-invoke-agent-4" exclude_imports
-const result4 = await aigne.invoke(
-  agent,
-  "How much have I invested in Ethereum?",
-);
+const result4 = await aigne.invoke(agent, {
+  message: "How much have I invested in Ethereum?",
+});
 console.log(result4);
-// Output: { $message: "You've invested $5000 in Ethereum." }
+// Output: { message: "You've invested $5000 in Ethereum." }
 ```
 
 **说明**：
@@ -128,32 +128,32 @@ const agent = AIAgent.from({
       url: `file:${memoryStoragePath}`, // Path to store memory data, such as 'file:./memory.db'
     },
   }),
+  inputKey: "message",
 });
 
-const result1 = await aigne.invoke(
-  agent,
-  "My name is John Doe and I like to invest in Bitcoin.",
-);
+const result1 = await aigne.invoke(agent, {
+  message: "My name is John Doe and I like to invest in Bitcoin.",
+});
 console.log(result1);
-// Output: { $message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
+// Output: { message: "Nice to meet you, John Doe! Bitcoin is an interesting cryptocurrency to invest in. How long have you been investing in crypto? Do you have a diversified portfolio?" }
 
-const result2 = await aigne.invoke(
-  agent,
-  "What is my favorite cryptocurrency?",
-);
+const result2 = await aigne.invoke(agent, {
+  message: "What is my favorite cryptocurrency?",
+});
 console.log(result2);
-// Output: { $message: "Your favorite cryptocurrency is Bitcoin." }
+// Output: { message: "Your favorite cryptocurrency is Bitcoin." }
 
-const result3 = await aigne.invoke(agent, "I've invested $5000 in Ethereum.");
+const result3 = await aigne.invoke(agent, {
+  message: "I've invested $5000 in Ethereum.",
+});
 console.log(result3);
-// Output: { $message: "Got it, you've invested $5000 in Ethereum! That's a good investment. If there's anything else you'd like to share about your crypto portfolio or have questions, feel free!" }
+// Output: { message: "Got it, you've invested $5000 in Ethereum! That's a good investment. If there's anything else you'd like to share about your crypto portfolio or have questions, feel free!" }
 
-const result4 = await aigne.invoke(
-  agent,
-  "How much have I invested in Ethereum?",
-);
+const result4 = await aigne.invoke(agent, {
+  message: "How much have I invested in Ethereum?",
+});
 console.log(result4);
-// Output: { $message: "You've invested $5000 in Ethereum." }
+// Output: { message: "You've invested $5000 in Ethereum." }
 ```
 
 ## 记忆功能的工作原理

@@ -36,6 +36,7 @@ const ccxt = await MCPAgent.from({
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market cap",
   skills: [ccxt],
+  inputKey: "message",
 });
 ```
 
@@ -52,12 +53,11 @@ const agent = AIAgent.from({
 ### 调用带有技能的 Agent
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-add-skills-to-agent-invoke-agent" exclude_imports
-const result = await aigne.invoke(
-  agent,
-  "What is the crypto price of ABT/USD on coinbase?",
-);
+const result = await aigne.invoke(agent, {
+  message: "What is the crypto price of ABT/USD on coinbase?",
+});
 console.log(result);
-// Output: { $message:"The current price of ABT/USD on Coinbase is $0.9684." }
+// Output: { message:"The current price of ABT/USD on Coinbase is $0.9684." }
 ```
 
 **说明**：
@@ -90,14 +90,14 @@ const ccxt = await MCPAgent.from({
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market cap",
   skills: [ccxt],
+  inputKey: "message",
 });
 
-const result = await aigne.invoke(
-  agent,
-  "What is the crypto price of ABT/USD on coinbase?",
-);
+const result = await aigne.invoke(agent, {
+  message: "What is the crypto price of ABT/USD on coinbase?",
+});
 console.log(result);
-// Output: { $message:"The current price of ABT/USD on Coinbase is $0.9684." }
+// Output: { message:"The current price of ABT/USD on Coinbase is $0.9684." }
 ```
 
 ## 提示

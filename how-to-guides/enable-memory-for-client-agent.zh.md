@@ -86,6 +86,7 @@ import { OpenAIChatModel } from "@aigne/openai";
 const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({
@@ -140,11 +141,11 @@ const chatbot = await client.getAgent({
     },
   }),
 });
-const result = await chatbot.invoke(
-  "What is the crypto price of ABT/USD on coinbase?",
-);
+const result = await chatbot.invoke({
+  message: "What is the crypto price of ABT/USD on coinbase?",
+});
 console.log(result);
-// Output: { $message: "The current price of ABT/USD on Coinbase is $0.9684." }
+// Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
 ```
 
 **说明**：
@@ -157,9 +158,11 @@ console.log(result);
 ### 测试记忆能力
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-invoke-agent-1" exclude_imports
-const result1 = await chatbot.invoke("What question did I just ask?");
+const result1 = await chatbot.invoke({
+  message: "What question did I just ask?",
+});
 console.log(result1);
-// Output: { $message: "You just asked about the crypto price of ABT/USD on Coinbase." }
+// Output: { message: "You just asked about the crypto price of ABT/USD on Coinbase." }
 ```
 
 **说明**：Agent 能够记住之前的对话内容，证明记忆功能正常工作。重要的是，这些记忆数据完全存储在客户端本地。

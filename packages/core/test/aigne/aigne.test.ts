@@ -17,7 +17,7 @@ import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
-import { omit } from "@aigne/core/utils/type-utils.js";
+import { omit, omitDeep } from "@aigne/core/utils/type-utils.js";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 
@@ -567,14 +567,15 @@ test.each<[InvokeOptions]>([
 
   if (options.streaming) {
     assert(response instanceof ReadableStream);
-    expect(await readableStreamToArray(response, { catchError: true })).toMatchSnapshot();
+    expect(
+      omitDeep(await readableStreamToArray(response, { catchError: true }), "duration"),
+    ).toMatchSnapshot();
   } else {
-    expect(response).toMatchInlineSnapshot(`
+    expect(omitDeep(response, "duration")).toMatchInlineSnapshot(`
         {
           "$meta": {
             "usage": {
               "agentCalls": 4,
-              "duration": 3,
               "inputTokens": 13,
               "outputTokens": 24,
             },

@@ -11,6 +11,7 @@ import {
   isRecord,
   omit,
   omitBy,
+  omitDeep,
   orArrayToArray,
   remove,
   tryOrThrow,
@@ -90,6 +91,14 @@ test("type-utils.omit", async () => {
   expect(omit({ foo: 1, bar: 2 }, "foo")).toEqual({ bar: 2 });
 
   expect(omit({ foo: 1, bar: 2 }, ["foo"])).toEqual({ bar: 2 });
+});
+
+test("type-utils.omitDeep should omit nested properties", async () => {
+  expect(omitDeep({ foo: { bar: 1, baz: 2 }, qux: 3 }, "bar")).toEqual({ foo: { baz: 2 }, qux: 3 });
+  expect(omitDeep([{ foo: { bar: 1, baz: 2 } }, { qux: 3 }], "bar")).toEqual([
+    { foo: { baz: 2 } },
+    { qux: 3 },
+  ]);
 });
 
 test("type-utils.omitBy", async () => {

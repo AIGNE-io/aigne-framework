@@ -19,17 +19,20 @@ interface RunsResponse {
 
 const origin = process.env.NODE_ENV === "development" ? "http://localhost:7890" : ""
 
+const page = 0
+const pageSize = 20
+
 function App() {
   const {t} = useLocaleContext()
   const [runs, setRuns] = useState<RunData[]>([])
   const [loading, setLoading] = useState(true)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedRun, setSelectedRun] = useState<RunData | null>(null)
-  const [paginationModel, setPaginationModel] = useState({page: 0, pageSize: 10})
+  const [paginationModel, setPaginationModel] = useState({page, pageSize})
   const [total, setTotal] = useState(0)
 
   const fetchRuns = async ({page, pageSize}: {page: number; pageSize: number}) => {
-    fetch(withQuery(joinURL(origin, "/api/trace/tree"), {page: page, pageSize: pageSize}))
+    fetch(withQuery(joinURL(origin, "/api/trace/tree"), {page, pageSize}))
       .then(res => res.json() as Promise<RunsResponse>)
       .then(({data, total: totalCount}) => {
         const format = (run: RunData) => ({

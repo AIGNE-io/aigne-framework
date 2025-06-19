@@ -353,7 +353,7 @@ test("PromptBuilder from file", async () => {
   const path = join(import.meta.dirname, "test-prompt.txt");
   const content = await readFile(path, "utf-8");
 
-  const builder = await PromptBuilder.from({ path });
+  const builder = PromptBuilder.from({ path });
 
   const prompt = await builder.build({ input: { agentName: "Alice" }, context });
 

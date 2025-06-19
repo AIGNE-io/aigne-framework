@@ -37,15 +37,7 @@ export interface PromptBuildOptions extends Pick<AgentInvokeOptions, "context"> 
 }
 
 export class PromptBuilder {
-  static from(instructions: string): PromptBuilder;
-  static from(instructions: GetPromptResult): PromptBuilder;
-  static from(instructions: { path: string }): Promise<PromptBuilder>;
-  static from(
-    instructions: string | { path: string } | GetPromptResult,
-  ): PromptBuilder | Promise<PromptBuilder>;
-  static from(
-    instructions: string | { path: string } | GetPromptResult,
-  ): PromptBuilder | Promise<PromptBuilder> {
+  static from(instructions: string | { path: string } | GetPromptResult): PromptBuilder {
     if (typeof instructions === "string") return new PromptBuilder({ instructions });
 
     if (isFromPromptResult(instructions)) return PromptBuilder.fromMCPPromptResult(instructions);
@@ -55,8 +47,8 @@ export class PromptBuilder {
     throw new Error(`Invalid instructions ${instructions}`);
   }
 
-  private static async fromFile(path: string): Promise<PromptBuilder> {
-    const text = await nodejs.fs.readFile(path, "utf-8");
+  private static fromFile(path: string): PromptBuilder {
+    const text = nodejs.fsSync.readFileSync(path, "utf-8");
     return PromptBuilder.from(text);
   }
 

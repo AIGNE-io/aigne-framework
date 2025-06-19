@@ -1,3 +1,4 @@
+import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { inspect } from "node:util";
@@ -19,6 +20,10 @@ export const nodejs = {
 
   get fs(): typeof import("node:fs/promises") {
     return fs;
+  },
+
+  get fsSync(): typeof import("node:fs") {
+    return fsSync;
   },
 
   get path(): typeof import("node:path") {

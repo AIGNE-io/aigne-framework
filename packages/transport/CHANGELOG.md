@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.2](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.4.1...transport-v0.4.2) (2025-06-19)
+
+
+### Bug Fixes
+
+* use `inputKey` instead of implicit $message for AIAgent ([#165](https://github.com/AIGNE-io/aigne-framework/issues/165)) ([8b6e589](https://github.com/AIGNE-io/aigne-framework/commit/8b6e5896bba8209fd2eecb0f5b9263618bffdaf8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.3.2
+  * devDependencies
+    * @aigne/core bumped to 1.20.1
+    * @aigne/test-utils bumped to 0.4.2
+
 ## [0.4.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.4.0...transport-v0.4.1) (2025-06-17)
 
 

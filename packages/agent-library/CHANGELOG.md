@@ -5,6 +5,21 @@
 
 * add schema transform ([#35](https://github.com/AIGNE-io/aigne-framework/issues/35)) ([c7d9a2c](https://github.com/AIGNE-io/aigne-framework/commit/c7d9a2c9fcab8d384d4198db5ff6ba4603846cdf))
 
+## [1.13.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.13.1...agent-library-v1.13.2) (2025-06-19)
+
+
+### Bug Fixes
+
+* use `inputKey` instead of implicit $message for AIAgent ([#165](https://github.com/AIGNE-io/aigne-framework/issues/165)) ([8b6e589](https://github.com/AIGNE-io/aigne-framework/commit/8b6e5896bba8209fd2eecb0f5b9263618bffdaf8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.20.1
+    * @aigne/openai bumped to 0.3.2
+
 ## [1.13.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.13.0...agent-library-v1.13.1) (2025-06-17)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.1.1...platform-helpers-v0.1.2) (2025-06-19)
+
+
+### Bug Fixes
+
+* use `inputKey` instead of implicit $message for AIAgent ([#165](https://github.com/AIGNE-io/aigne-framework/issues/165)) ([8b6e589](https://github.com/AIGNE-io/aigne-framework/commit/8b6e5896bba8209fd2eecb0f5b9263618bffdaf8))
+
 ## [0.1.1](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.1.0...platform-helpers-v0.1.1) (2025-05-30)
 
 

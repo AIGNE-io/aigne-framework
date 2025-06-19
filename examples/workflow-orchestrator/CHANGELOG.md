@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.10.12](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.10.11...example-workflow-orchestrator-v1.10.12) (2025-06-19)
+
+
+### Bug Fixes
+
+* use `inputKey` instead of implicit $message for AIAgent ([#165](https://github.com/AIGNE-io/aigne-framework/issues/165)) ([8b6e589](https://github.com/AIGNE-io/aigne-framework/commit/8b6e5896bba8209fd2eecb0f5b9263618bffdaf8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.13.2
+    * @aigne/cli bumped to 1.11.9
+    * @aigne/core bumped to 1.20.1
+    * @aigne/openai bumped to 0.3.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.2
+
 ## [1.10.11](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.10.10...example-workflow-orchestrator-v1.10.11) (2025-06-17)
 
 

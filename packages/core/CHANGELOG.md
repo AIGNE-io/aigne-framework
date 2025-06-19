@@ -5,6 +5,20 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.20.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.20.0...core-v1.20.1) (2025-06-19)
+
+
+### Bug Fixes
+
+* use `inputKey` instead of implicit $message for AIAgent ([#165](https://github.com/AIGNE-io/aigne-framework/issues/165)) ([8b6e589](https://github.com/AIGNE-io/aigne-framework/commit/8b6e5896bba8209fd2eecb0f5b9263618bffdaf8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/platform-helpers bumped to 0.1.2
+
 ## [1.20.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.19.0...core-v1.20.0) (2025-06-17)
 
 

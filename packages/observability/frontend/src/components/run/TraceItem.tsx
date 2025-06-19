@@ -140,7 +140,7 @@ export function annotateTraceSteps({
   let current = start
 
   return steps.map((step, index) => {
-    const isSameStartTime =
+    const isSameStartTimeWithNextStep =
       steps[index + 1] &&
       steps[index + 1].startTime &&
       step.startTime &&
@@ -158,7 +158,7 @@ export function annotateTraceSteps({
       agentTag: step.attributes?.agentTag,
     }
 
-    if (!isSameStartTime) {
+    if (!isSameStartTimeWithNextStep) {
       current += annotated.duration
     }
 

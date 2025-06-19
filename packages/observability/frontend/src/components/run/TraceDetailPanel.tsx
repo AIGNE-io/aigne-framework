@@ -76,7 +76,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
             columnGap: "48px",
             rowGap: "4px",
           }}>
-          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={120} name="ID">
+          <InfoRowBox valueComponent="div" nameFormatter={v => v} nameWidth={80} name="ID">
             <Box sx={{textAlign: "right"}}>{run?.id}</Box>
           </InfoRowBox>
 
@@ -84,7 +84,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
             <InfoRowBox
               valueComponent="div"
               nameFormatter={v => v}
-              nameWidth={120}
+              nameWidth={80}
               name={t("agentTag")}>
               <Box sx={{textAlign: "right"}}>
                 <AgentTag agentTag={run?.attributes?.agentTag} />
@@ -96,7 +96,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
             <InfoRowBox
               valueComponent="div"
               nameFormatter={v => v}
-              nameWidth={120}
+              nameWidth={80}
               name={t("inputTokens")}>
               <Box sx={{textAlign: "right"}}>{inputTokens}</Box>
             </InfoRowBox>
@@ -106,7 +106,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
             <InfoRowBox
               valueComponent="div"
               nameFormatter={v => v}
-              nameWidth={120}
+              nameWidth={80}
               name={t("outputTokens")}>
               <Box sx={{textAlign: "right"}}>{outputTokens}</Box>
             </InfoRowBox>
@@ -116,7 +116,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
             <InfoRowBox
               valueComponent="div"
               nameFormatter={v => v}
-              nameWidth={120}
+              nameWidth={80}
               name={t("totalTokens")}>
               <Box sx={{textAlign: "right"}}>{outputTokens + inputTokens}</Box>
             </InfoRowBox>
@@ -125,7 +125,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
           <InfoRowBox
             valueComponent="div"
             nameFormatter={v => v}
-            nameWidth={120}
+            nameWidth={80}
             name={t("startTime")}>
             <Box sx={{textAlign: "right"}}>
               {run?.startTime && (
@@ -137,7 +137,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
           <InfoRowBox
             valueComponent="div"
             nameFormatter={v => v}
-            nameWidth={120}
+            nameWidth={80}
             name={t("duration")}>
             <Box sx={{textAlign: "right"}}>
               {run?.startTime && run?.endTime && `${parseDuration(run.startTime, run.endTime)}`}
@@ -148,7 +148,7 @@ export default function TraceDetailPanel({run}: {run?: RunData | null}) {
             <InfoRowBox
               valueComponent="div"
               nameFormatter={v => v}
-              nameWidth={120}
+              nameWidth={80}
               name={t("model")}>
               <Box sx={{textAlign: "right"}}>
                 <Tag>{run?.attributes?.output?.model}</Tag>

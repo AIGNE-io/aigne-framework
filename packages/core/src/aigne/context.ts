@@ -223,23 +223,22 @@ export class AIGNEContext implements Context {
     parent?: ConstructorParameters<typeof AIGNEContextShared>[0],
     { reset }: { reset?: boolean } = {},
   ) {
+    const tracer = parent?.observer?.tracer;
+
     if (parent instanceof AIGNEContext && !reset) {
       this.internal = parent.internal;
       this.parentId = parent.id;
       this.rootId = parent.rootId;
 
       if (parent.span) {
-        this.span = parent?.observer?.tracer.startSpan(
-          "childAIGNEContext",
-          undefined,
-          trace.setSpan(context.active(), parent.span),
-        );
+        const parentContext = trace.setSpan(context.active(), parent.span);
+        this.span = tracer?.startSpan("childAIGNEContext", undefined, parentContext);
       } else {
-        this.span = parent?.observer?.tracer.startSpan("AIGNEContext");
+        this.span = tracer?.startSpan("AIGNEContext");
       }
     } else {
       this.internal = new AIGNEContextShared(parent);
-      this.span = parent?.observer?.tracer.startSpan("AIGNEContext");
+      this.span = tracer?.startSpan("AIGNEContext");
 
       // 修改了 rootId 是否会之前的有影响？，之前为 this.id
       this.rootId = this.span?.spanContext().traceId ?? v7();

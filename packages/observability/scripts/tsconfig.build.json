@@ -2,11 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "../api/src",
+    "rootDir": "../api",
     "noEmit": false,
     "paths": {}
   },
-  "include": ["../api/src"],
+  "include": ["../api"],
   "references": [
     { "path": "./tsconfig.build.cjs.json" },
     { "path": "./tsconfig.build.esm.json" },

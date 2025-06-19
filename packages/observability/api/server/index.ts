@@ -4,44 +4,33 @@ import { initDatabase } from "@aigne/sqlite";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv-flow";
-import express, {
-  type ErrorRequestHandler,
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import SSE from "express-sse";
 
 import { ZodError } from "zod";
+import { isBlocklet } from "../core/util.js";
 import { migrate } from "./migrate.js";
 import traceRouter from "./routes/trace.js";
+
 export interface StartServerOptions {
-  port?: number;
-  dbUrl?: string;
-  distPath?: string;
+  port: number;
+  dbUrl: string;
+  distPath: string;
 }
 
 const sse = new SSE();
 
 dotenv.config();
 
-const isProduction =
-  process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
-
 export async function startServer({ port, distPath, dbUrl }: StartServerOptions): Promise<{
   app: express.Express;
   server: Server;
 }> {
-  const isBlocklet = !!process.env.BLOCKLET_APP_DIR;
-
-  const dbPath = process.env.BLOCKLET_DATA_DIR
-    ? path.join("file:", process.env.BLOCKLET_DATA_DIR, "observer.db")
-    : dbUrl;
-  if (!dbPath) {
+  if (!dbUrl) {
     throw new Error("server db path is required");
   }
 
-  const db = await initDatabase({ url: dbPath });
+  const db = await initDatabase({ url: dbUrl });
   await migrate(db);
 
   const app: express.Express = express();
@@ -56,20 +45,7 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
   app.get("/api/sse", sse.init);
   app.use("/api/trace", traceRouter(sse));
 
-  if (isBlocklet) {
-    const blockletAppDir = process.env.BLOCKLET_APP_DIR;
-    if (isProduction && blockletAppDir) {
-      const staticDir = path.resolve(blockletAppDir, "dist");
-      app.use(express.static(staticDir, { maxAge: "30d", index: false }));
-      app.get("/{*splat}", (_req, res) => {
-        res.sendFile(path.join(staticDir, "index.html"));
-      });
-
-      app.use(<ErrorRequestHandler>((_err, _req, res, _next) => {
-        res.status(500).send("Something broke!");
-      }));
-    }
-  } else {
+  if (!isBlocklet) {
     if (!distPath) {
       throw new Error("distPath is required in development");
     }
@@ -89,12 +65,11 @@ export async function startServer({ port, distPath, dbUrl }: StartServerOptions)
     }
   });
 
-  const serverPort = process.env.BLOCKLET_PORT || port;
-  if (!serverPort) {
+  if (!port) {
     throw new Error("server port is required");
   }
 
-  const server: Server = app.listen(Number(serverPort), () => {
+  const server: Server = app.listen(Number(port), () => {
     console.log(`Running observability server on http://localhost:${port}`);
   });
 

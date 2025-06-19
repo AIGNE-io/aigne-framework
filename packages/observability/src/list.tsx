@@ -1,3 +1,4 @@
+import Empty from "@arcblock/ux/lib/Empty"
 import Box from "@mui/material/Box"
 import Chip from "@mui/material/Chip"
 import {DataGrid} from "@mui/x-data-grid"
@@ -181,6 +182,20 @@ function App() {
           }}
           disableRowSelectionOnClick
           sx={{cursor: "pointer"}}
+          slots={{
+            noRowsOverlay: () => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                  minHeight: 500,
+                }}>
+                <Empty>{t("noData")}</Empty>
+              </Box>
+            ),
+          }}
         />
       </Box>
 

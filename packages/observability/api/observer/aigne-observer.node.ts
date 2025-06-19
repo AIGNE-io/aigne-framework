@@ -2,6 +2,7 @@ import type { Server } from "node:http";
 import path from "node:path";
 import { trace } from "@opentelemetry/api";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
+import { isBlocklet } from "../core/util.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
 import { startServer } from "../server/index.js";
 import detect from "../server/utils/detect-port.js";
@@ -40,6 +41,8 @@ export class AIGNEObserver {
     this.server.port = detected;
 
     initOpenTelemetry({ apiUrl: `http://localhost:${this.server.port}` });
+
+    if (isBlocklet) return;
 
     this.serverInstance = (
       await startServer({

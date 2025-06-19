@@ -1,7 +1,6 @@
 packages:
   - packages/*
   - models/*
-  - packages/observability/frontend
   - examples/*
   - tests/*
   - docs-examples

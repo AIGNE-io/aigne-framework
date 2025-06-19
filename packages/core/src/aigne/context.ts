@@ -477,53 +477,60 @@ class AIGNEContextShared {
     context: Context,
     options?: InvokeOptions,
   ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
-    let activeAgent: Agent = agent;
+    const startedAt = Date.now();
+    try {
+      let activeAgent: Agent = agent;
 
-    for (;;) {
-      const result: Message = {};
+      for (;;) {
+        const result: Message = {};
 
-      if (options?.sourceAgent && activeAgent !== options.sourceAgent) {
-        options.sourceAgent.hooks.onHandoff?.({
-          context,
-          source: options.sourceAgent,
-          target: activeAgent,
-          input,
-        });
-      }
+        if (options?.sourceAgent && activeAgent !== options.sourceAgent) {
+          options.sourceAgent.hooks.onHandoff?.({
+            context,
+            source: options.sourceAgent,
+            target: activeAgent,
+            input,
+          });
+        }
 
-      const stream = await activeAgent.invoke(input, { ...options, context, streaming: true });
-      for await (const value of stream) {
-        if (isAgentResponseDelta(value)) {
-          if (value.delta.json) {
-            value.delta.json = omitExistsProperties(result, value.delta.json);
-            Object.assign(result, value.delta.json);
+        const stream = await activeAgent.invoke(input, { ...options, context, streaming: true });
+        for await (const value of stream) {
+          if (isAgentResponseDelta(value)) {
+            if (value.delta.json) {
+              value.delta.json = omitExistsProperties(result, value.delta.json);
+              Object.assign(result, value.delta.json);
+            }
+
+            delete value.delta.json?.[transferAgentOutputKey];
           }
 
-          delete value.delta.json?.[transferAgentOutputKey];
+          if (isEmptyChunk(value)) continue;
+
+          yield value as AgentResponseChunk<O & { __activeAgent__: Agent }>;
         }
 
-        if (isEmptyChunk(value)) continue;
-
-        yield value as AgentResponseChunk<O & { __activeAgent__: Agent }>;
-      }
-
-      if (!options?.disableTransfer) {
-        const transferToAgent = isTransferAgentOutput(result)
-          ? result[transferAgentOutputKey].agent
-          : undefined;
-        if (transferToAgent) {
-          activeAgent = transferToAgent;
-          continue;
+        if (!options?.disableTransfer) {
+          const transferToAgent = isTransferAgentOutput(result)
+            ? result[transferAgentOutputKey].agent
+            : undefined;
+          if (transferToAgent) {
+            activeAgent = transferToAgent;
+            continue;
+          }
         }
+        break;
       }
-      break;
+
+      yield {
+        delta: {
+          json: { __activeAgent__: activeAgent } as Partial<O & { __activeAgent__: Agent }>,
+        },
+      };
+    } finally {
+      const endedAt = Date.now();
+      const duration = endedAt - startedAt;
+      this.usage.duration += duration;
     }
-
-    yield {
-      delta: {
-        json: { __activeAgent__: activeAgent } as Partial<O & { __activeAgent__: Agent }>,
-      },
-    };
   }
 }
 

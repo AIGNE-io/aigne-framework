@@ -257,6 +257,7 @@ exports[`AIGNE.invoke should respond $meta field with usage metrics with {
         "$meta": {
           "usage": {
             "agentCalls": 4,
+            "duration": 8,
             "inputTokens": 13,
             "outputTokens": 24,
           },

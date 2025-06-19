@@ -574,6 +574,7 @@ test.each<[InvokeOptions]>([
           "$meta": {
             "usage": {
               "agentCalls": 4,
+              "duration": 3,
               "inputTokens": 13,
               "outputTokens": 24,
             },

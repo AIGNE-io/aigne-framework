@@ -5,6 +5,7 @@ export interface ContextUsage {
   inputTokens: number;
   outputTokens: number;
   agentCalls: number;
+  duration: number;
 }
 
 /**
@@ -15,6 +16,7 @@ export function newEmptyContextUsage(): ContextUsage {
     inputTokens: 0,
     outputTokens: 0,
     agentCalls: 0,
+    duration: 0,
   };
 }
 

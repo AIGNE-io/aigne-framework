@@ -1,4 +1,5 @@
 import List from "@aigne/observability/list"
+import {translations} from "@aigne/observability/translations"
 import {ConfigProvider} from "@arcblock/ux/lib/Config"
 import {ToastProvider} from "@arcblock/ux/lib/Toast"
 import Dashboard from "@blocklet/ui-react/lib/Dashboard"
@@ -7,7 +8,6 @@ import {get} from "lodash"
 import {Suspense} from "react"
 import {Navigate, Route, BrowserRouter as Router, Routes} from "react-router-dom"
 import {SessionProvider} from "./contexts/session.tsx"
-import {translations} from "./locales/index.js"
 
 export default function BlockletApp() {
   const basename = window?.blocklet?.prefix || "/"

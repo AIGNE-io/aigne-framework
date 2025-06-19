@@ -1,13 +1,12 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { joinURL } from "ufo";
+import { origin } from "./index.js";
 
 export async function watchSSE({
   signal,
 }: {
   signal?: AbortSignal | null;
 }) {
-  const origin =
-    process.env.NODE_ENV === "development" ? "http://localhost:7890" : window.location.origin;
   const url = joinURL(origin, "/api/sse");
 
   return new ReadableStream<{ type: "event"; data: any } | { type: "error"; message: string }>({

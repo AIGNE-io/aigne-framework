@@ -26,7 +26,7 @@ export class AIGNEObserver {
   async serve(): Promise<void> {
     if (this.serverInstance) return;
 
-    const distPath = path.join(__dirname, "../../../frontend/dist");
+    const distPath = path.join(__dirname, "../../../dist");
     if (!this.server?.port || !this.storage?.url) {
       throw new Error("Server is not configured");
     }
@@ -41,11 +41,13 @@ export class AIGNEObserver {
 
     initOpenTelemetry({ apiUrl: `http://localhost:${this.server.port}` });
 
-    this.serverInstance = await startServer({
-      distPath,
-      port: this.server.port,
-      dbUrl: this.storage.url,
-    });
+    this.serverInstance = (
+      await startServer({
+        distPath,
+        port: this.server.port,
+        dbUrl: this.storage.url,
+      })
+    ).server;
   }
 
   async close(): Promise<void> {

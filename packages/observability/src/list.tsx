@@ -10,14 +10,13 @@ import RelativeTime from "@arcblock/ux/lib/RelativeTime"
 import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx"
 import type {RunData} from "./components/run/types.ts"
 import {watchSSE} from "./utils/event.ts"
+import {origin} from "./utils/index.js"
 import {parseDuration} from "./utils/latency.ts"
 
 interface RunsResponse {
   data: RunData[]
   total: number
 }
-
-const origin = process.env.NODE_ENV === "development" ? "http://localhost:7890" : ""
 
 const page = 0
 const pageSize = 20

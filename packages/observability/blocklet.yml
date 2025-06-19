@@ -1,0 +1,63 @@
+name: Observability
+description: Blocklet Observability for tracing and observability
+group: dapp
+main: api/dist/index.js
+author:
+  name: Arcblock
+  email: blocklet@arcblock.io
+specVersion: 1.2.8
+version: 1.0.0
+repository:
+  type: git
+  url: git+https://github.com/AIGNE-io/aigne-framework.git
+title: observability
+files:
+  - blocklet.md
+  - screenshots
+  - dist
+  - logo.png
+  - screenshots
+  - api/dist
+interfaces:
+  - type: web
+    name: publicUrl
+    path: /
+    prefix: "*"
+    port: BLOCKLET_PORT
+    protocol: http
+    proxyBehavior: service
+did: z2qa3mK6Ro6Ttr4mg21m6oB5Qjn4r2JJ4bq9d
+scripts:
+  dev: npm run start
+logo: logo.png
+community: ""
+documentation: ""
+homepage: ""
+license: ""
+payment:
+  price: []
+  share: []
+timeout:
+  start: 60
+requirements:
+  server: ">=1.7.0"
+  os: "*"
+  cpu: "*"
+  nodejs: "*"
+environments: []
+capabilities: {}
+screenshots: []
+components: []
+egress: true
+navigation:
+  - id: observability
+    title:
+      en: Tracing
+      zh: 数据监控
+    icon: mdi:vote-outline
+    link: /
+    section:
+      - dashboard
+    role:
+      - owner
+      - admin

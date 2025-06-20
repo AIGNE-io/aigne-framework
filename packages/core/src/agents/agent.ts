@@ -264,6 +264,8 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    */
   readonly memories: MemoryAgent[] = [];
 
+  tag?: string;
+
   /**
    * Maximum number of memory items to retrieve
    */
@@ -1211,6 +1213,8 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
   I,
   O
 > {
+  tag = "FunctionAgent";
+
   /**
    * Create a function agent from a function or options
    *

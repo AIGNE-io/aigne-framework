@@ -1,9 +1,9 @@
 packages:
   - packages/*
   - models/*
-  - packages/observability/frontend
   - examples/*
   - tests/*
+  - blocklets/*
   - docs-examples
 onlyBuiltDependencies:
   - "@biomejs/biome"

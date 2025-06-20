@@ -22,6 +22,8 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
   I,
   O
 > {
+  tag = "ClientAgent";
+
   constructor(
     public client: AIGNEHTTPClient,
     options: ClientAgentOptions<I, O>,

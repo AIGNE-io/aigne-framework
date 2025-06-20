@@ -34,6 +34,8 @@ export interface MemoryAgentOptions
  * instead provides memory management capabilities to the system.
  */
 export class MemoryAgent extends Agent {
+  tag = "MemoryAgent";
+
   /**
    * Creates a new MemoryAgent instance.
    */

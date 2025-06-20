@@ -114,6 +114,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     if (options?.skills?.length) this.skills.push(...options.skills);
     if (options?.agents?.length) this.addAgent(...options.agents);
 
+    this.observer?.serve();
     this.initProcessExitHandler();
   }
 
@@ -296,7 +297,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     message?: I & Message,
     options?: InvokeOptions<U>,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]> {
-    this.observer?.serve();
+    // this.observer?.serve();
     const context = new AIGNEContext(this);
     return context.invoke(agent, message, options);
   }
@@ -319,7 +320,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     payload: Omit<MessagePayload, "context"> | Message,
     options?: InvokeOptions<U>,
   ) {
-    this.observer?.serve();
+    // this.observer?.serve();
     return new AIGNEContext(this).publish(topic, payload, options);
   }
 

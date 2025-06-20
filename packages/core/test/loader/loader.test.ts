@@ -20,7 +20,7 @@ test("AIGNE.load should load agents correctly", async () => {
     }),
   );
 
-  expect(aigne.agents.length).toBe(1);
+  expect(aigne.agents.length).toBe(3);
 
   const chat = aigne.agents[0];
   expect(chat).toEqual(
@@ -70,6 +70,12 @@ test("loader should use override options", async () => {
   expect([...aigne.agents]).toEqual([
     expect.objectContaining({
       name: "chat",
+    }),
+    expect.objectContaining({
+      name: "chat-with-prompt",
+    }),
+    expect.objectContaining({
+      name: "test-team-agent",
     }),
     testAgent,
   ]);

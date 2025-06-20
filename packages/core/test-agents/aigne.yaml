@@ -5,5 +5,7 @@ chat_model:
   temperature: 0.8
 agents:
   - chat.yaml
+  - chat-with-prompt.yaml
+  - team.yaml
 tools:
   - sandbox.js

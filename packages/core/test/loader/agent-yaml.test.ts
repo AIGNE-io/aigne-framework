@@ -1,13 +1,14 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { AIAgent, FunctionAgent } from "@aigne/core";
+import { AIAgent, FunctionAgent, ProcessMode, TeamAgent } from "@aigne/core";
 import { loadAgentFromYamlFile } from "@aigne/core/loader/agent-yaml.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
 import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 
-test("loadAgentFromYaml should load agent correctly", async () => {
+test("loadAgentFromYaml should load AIAgent correctly", async () => {
   const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/chat.yaml"));
 
   expect(agent).toBeInstanceOf(AIAgent);
@@ -103,4 +104,34 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
     command: "npx",
     args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
   });
+});
+
+test("loadAgentFromYaml should load TeamAgent correctly", async () => {
+  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/team.yaml"));
+
+  expect(agent).toBeInstanceOf(TeamAgent);
+  assert(agent instanceof TeamAgent, "agent should be an instance of AIAgent");
+
+  expect(agent).toEqual(
+    expect.objectContaining({
+      name: "test-team-agent",
+      description: "Test team agent",
+      mode: ProcessMode.parallel,
+    }),
+  );
+
+  expect(agent.skills.length).toBe(2);
+});
+
+test("loadAgentFromYaml should load AIAgent with prompt file correctly", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/chat-with-prompt.yaml"),
+  );
+
+  expect(agent).toBeInstanceOf(AIAgent);
+  assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
+
+  expect(agent.instructions.instructions).toEqual(
+    await readFile(join(import.meta.dirname, "../../test-agents/chat-prompt.md"), "utf8"),
+  );
 });

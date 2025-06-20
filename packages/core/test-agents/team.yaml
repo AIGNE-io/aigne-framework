@@ -1,0 +1,7 @@
+type: team
+name: test-team-agent
+description: Test team agent
+skills:
+  - sandbox.js
+  - chat.yaml
+mode: parallel

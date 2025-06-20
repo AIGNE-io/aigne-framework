@@ -1,0 +1,8 @@
+name: chat-with-prompt
+description: Chat agent
+instructions:
+  url: chat-prompt.md
+input_key: message
+memory: true
+skills:
+  - sandbox.js

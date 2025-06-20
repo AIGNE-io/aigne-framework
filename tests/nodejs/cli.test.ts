@@ -7,6 +7,7 @@ test("AIGNE cli should work in Node.js", async () => {
   const agent = AIAgent.from({
     name: "memory_example",
     instructions: "You are a friendly chatbot",
+    inputKey: "message",
   });
 
   const aigne = new AIGNE({
@@ -20,7 +21,7 @@ test("AIGNE cli should work in Node.js", async () => {
 
   const result = await runAgentWithAIGNE(aigne, agent, {
     chat: false,
-    input: "Hello, What is your name?",
+    input: { message: "Hello, What is your name?" },
   });
 
   expect(result?.result).toEqual({

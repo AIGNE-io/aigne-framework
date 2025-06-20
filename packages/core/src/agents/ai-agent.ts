@@ -22,7 +22,7 @@ import {
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
 import { isTransferAgentOutput } from "./types.js";
 
-const DEFAULT_OUTPUT_KEY = "message";
+export const DEFAULT_OUTPUT_KEY = "message";
 
 /**
  * Configuration options for an AI Agent

@@ -8,6 +8,7 @@ import {
   type Context,
   type ContextEventMap,
   type ContextUsage,
+  DEFAULT_OUTPUT_KEY,
   type Message,
 } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
@@ -23,6 +24,7 @@ import { parseDuration } from "../utils/time.js";
 
 export interface TerminalTracerOptions {
   printRequest?: boolean;
+  outputKey?: string;
 }
 
 export class TerminalTracer {
@@ -184,7 +186,23 @@ export class TerminalTracer {
     return title;
   }
 
-  private marked = new Marked().use(markedTerminal({ forceHyperLink: false }));
+  private marked = new Marked().use(
+    {
+      // marked-terminal does not support code block meta, so we need to strip it
+      walkTokens: (token) => {
+        if (token.type === "code") {
+          if (typeof token.lang === "string") {
+            token.lang = token.lang.trim().split(/\s+/)[0];
+          }
+        }
+      },
+    },
+    markedTerminal({ forceHyperLink: false }),
+  );
+
+  get outputKey() {
+    return this.options.outputKey || DEFAULT_OUTPUT_KEY;
+  }
 
   formatRequest(agent: Agent, _context: Context, m: Message = {}) {
     if (!logger.enabled(LogLevel.INFO)) return;
@@ -205,6 +223,7 @@ export class TerminalTracer {
   }
 
   formatResult(agent: Agent, context: Context, m: Message = {}) {
+    const { isTTY } = process.stdout;
     const outputKey = agent instanceof AIAgent ? agent.outputKey : undefined;
 
     const prefix = logger.enabled(LogLevel.INFO)
@@ -215,12 +234,13 @@ export class TerminalTracer {
     const message = outputKey ? omit(m, outputKey) : m;
 
     const text =
-      msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;
-
-    const json =
-      Object.keys(message).length > 0
-        ? inspect(message, { colors: process.stdout.isTTY })
+      msg && typeof msg === "string"
+        ? isTTY
+          ? this.marked.parse(msg, { async: false }).trim()
+          : msg
         : undefined;
+
+    const json = Object.keys(message).length > 0 ? inspect(message, { colors: isTTY }) : undefined;
 
     return [prefix, text, json].filter(Boolean).join(EOL);
   }

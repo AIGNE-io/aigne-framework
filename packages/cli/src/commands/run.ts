@@ -14,11 +14,13 @@ import { downloadAndExtract } from "../utils/download.js";
 import {
   type RunAIGNECommandOptions,
   createRunAIGNECommand,
+  parseAgentInputByCommander,
   parseModelOption,
   runAgentWithAIGNE,
 } from "../utils/run-with-aigne.js";
 
 interface RunOptions extends RunAIGNECommandOptions {
+  path: string;
   entryAgent?: string;
   cacheDir?: string;
 }
@@ -26,7 +28,11 @@ interface RunOptions extends RunAIGNECommandOptions {
 export function createRunCommand(): Command {
   return createRunAIGNECommand()
     .description("Run AIGNE from the specified agent")
-    .argument("[path]", "Path to the agents directory or URL to aigne project", ".")
+    .option(
+      "--url, --path <path_or_url>",
+      "Path to the agents directory or URL to aigne project",
+      ".",
+    )
     .option(
       "--entry-agent <entry-agent>",
       "Name of the agent to run (defaults to the first agent found)",
@@ -35,7 +41,9 @@ export function createRunCommand(): Command {
       "--cache-dir <dir>",
       "Directory to download the package to (defaults to the ~/.aigne/xxx)",
     )
-    .action(async (path: string, options: RunOptions) => {
+    .action(async (options: RunOptions) => {
+      const { path } = options;
+
       if (options.logLevel) logger.level = options.logLevel;
 
       const { cacheDir, dir } = prepareDirs(path, options);
@@ -106,8 +114,10 @@ export function createRunCommand(): Command {
       assert(aigne);
       assert(agent);
 
+      const input = await parseAgentInputByCommander(agent, options);
+
       try {
-        await runAgentWithAIGNE(aigne, agent, { ...options });
+        await runAgentWithAIGNE(aigne, agent, { ...options, input });
       } finally {
         await aigne.shutdown();
       }

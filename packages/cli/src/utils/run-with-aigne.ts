@@ -1,14 +1,31 @@
+import assert from "node:assert";
 import { fstat } from "node:fs";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
-import { AIGNE, type Agent, type ChatModelOptions, UserAgent } from "@aigne/core";
+import { exists } from "@aigne/agent-library/utils/fs.js";
+import {
+  AIGNE,
+  type Agent,
+  type ChatModelOptions,
+  DEFAULT_OUTPUT_KEY,
+  type Message,
+  UserAgent,
+  readAllString,
+} from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { LogLevel, getLevelFromEnv, logger } from "@aigne/core/utils/logger.js";
-import { readAllString } from "@aigne/core/utils/stream-utils.js";
-import { type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import {
+  type PromiseOrValue,
+  isEmpty,
+  isNonNullable,
+  tryOrThrow,
+} from "@aigne/core/utils/type-utils.js";
 import { Command } from "commander";
 import PrettyError from "pretty-error";
-import { ZodError, z } from "zod";
+import { parse } from "yaml";
+import { ZodError, ZodObject, z } from "zod";
 import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
 import {
@@ -24,12 +41,17 @@ export interface RunAIGNECommandOptions {
   topP?: number;
   presencePenalty?: number;
   frequencyPenalty?: number;
-  input?: string;
+  input?: string[];
+  format?: "text" | "json" | "yaml";
+  output?: string;
   logLevel?: LogLevel;
+  force?: boolean;
 }
 
 export const createRunAIGNECommand = (name = "run") =>
   new Command(name)
+    .allowUnknownOption(true)
+    .allowExcessArguments(true)
     .description("Run agent with AIGNE in terminal")
     .option("--chat", "Run chat loop in terminal", false)
     .option(
@@ -56,13 +78,109 @@ export const createRunAIGNECommand = (name = "run") =>
       "Frequency penalty for the model (penalizes frequency of token usage). Range: -2.0 to 2.0",
       customZodError("--frequency-penalty", (s) => z.coerce.number().min(-2).max(2).parse(s)),
     )
-    .option("--input -i <input>", "Input to the agent")
+    .option("--input -i <input...>", "Input to the agent, use @<file> to read from a file")
+    .option(
+      "--format <format>",
+      "Input format for the agent (available: text, json, yaml default: text)",
+    )
+    .option("--output -o <output>", "Output file to save the result (default: stdout)")
+    .option(
+      "--output-key <output-key>",
+      "Key in the result to save to the output file",
+      DEFAULT_OUTPUT_KEY,
+    )
+    .option(
+      "--force",
+      "Truncate the output file if it exists, and create directory if the output path is not exists",
+      false,
+    )
     .option(
       "--log-level <level>",
       `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
       customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
       getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
     );
+
+export async function parseAgentInputByCommander(
+  agent: Agent,
+  options: RunAIGNECommandOptions & { inputKey?: string },
+): Promise<Message> {
+  const cmd = new Command()
+    .description(`Run agent ${agent.name} with AIGNE`)
+    .allowUnknownOption(true)
+    .allowExcessArguments(true);
+
+  const inputSchemaShape =
+    agent.inputSchema instanceof ZodObject ? Object.keys(agent.inputSchema.shape) : [];
+
+  for (const option of inputSchemaShape) {
+    cmd.option(`--input-${option} <${option}>`);
+  }
+
+  const input = await new Promise<Message>((resolve, reject) => {
+    cmd
+      .action(async (agentInputOptions) => {
+        try {
+          const input = Object.fromEntries(
+            (
+              await Promise.all(
+                Object.entries(agentInputOptions).map(async ([key, value]) => {
+                  let k = key.replace(/^input/, "");
+                  k = k.charAt(0).toLowerCase() + k.slice(1);
+                  if (!k) return null;
+
+                  if (typeof value === "string" && value.startsWith("@")) {
+                    value = await readFile(value.slice(1), "utf8");
+                  }
+
+                  return [k, value];
+                }),
+              )
+            ).filter(isNonNullable),
+          );
+
+          if (typeof agentInputOptions["input"] === "string") {
+            input[options.inputKey || DEFAULT_CHAT_INPUT_KEY] = agentInputOptions["input"];
+          }
+
+          resolve(input);
+        } catch (error) {
+          reject(error);
+        }
+      })
+      .parseAsync(process.argv)
+      .catch((error) => reject(error));
+  });
+
+  const rawInput =
+    options.input ||
+    (isatty(process.stdin.fd) || !(await stdinHasData())
+      ? null
+      : [await readAllString(process.stdin)]);
+
+  if (rawInput?.length) {
+    for (let raw of rawInput) {
+      if (raw.startsWith("@")) {
+        raw = await readFile(raw.slice(1), "utf8");
+      }
+
+      if (options.format === "json") {
+        Object.assign(input, JSON.parse(raw));
+      } else if (options.format === "yaml") {
+        Object.assign(input, parse(raw));
+      } else {
+        Object.assign(
+          input,
+          typeof options.inputKey === "string"
+            ? { [options.inputKey]: raw }
+            : { [DEFAULT_CHAT_INPUT_KEY]: raw },
+        );
+      }
+    }
+  }
+
+  return input;
+}
 
 export const parseModelOption = (model?: string) => {
   const { provider, name } = model?.match(/(?<provider>[^:]+)(:(?<name>(\S+)))?/)?.groups ?? {};
@@ -76,10 +194,12 @@ export async function runWithAIGNE(
     argv = process.argv,
     chatLoopOptions,
     modelOptions,
+    outputKey,
   }: {
     argv?: typeof process.argv;
     chatLoopOptions?: ChatLoopOptions;
     modelOptions?: ChatModelOptions;
+    outputKey?: string;
   } = {},
 ) {
   await createRunAIGNECommand()
@@ -107,7 +227,22 @@ export async function runWithAIGNE(
       try {
         const agent = typeof agentCreator === "function" ? await agentCreator(aigne) : agentCreator;
 
-        await runAgentWithAIGNE(aigne, agent, { ...options, chatLoopOptions, modelOptions });
+        const input = await parseAgentInputByCommander(agent, {
+          ...options,
+          inputKey: chatLoopOptions?.inputKey,
+        });
+
+        if (isEmpty(input)) {
+          Object.assign(input, chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion);
+        }
+
+        await runAgentWithAIGNE(aigne, agent, {
+          ...options,
+          outputKey,
+          chatLoopOptions,
+          modelOptions,
+          input,
+        });
       } finally {
         await aigne.shutdown();
       }
@@ -131,14 +266,33 @@ export async function runAgentWithAIGNE(
   aigne: AIGNE,
   agent: Agent,
   {
+    outputKey,
     chatLoopOptions,
     modelOptions,
     ...options
   }: {
+    outputKey?: string;
     chatLoopOptions?: ChatLoopOptions;
     modelOptions?: ChatModelOptions;
-  } & RunAIGNECommandOptions = {},
+    input?: Message;
+  } & Omit<RunAIGNECommandOptions, "input"> = {},
 ) {
+  if (options.output) {
+    const outputPath = isAbsolute(options.output)
+      ? options.output
+      : join(process.cwd(), options.output);
+    if (await exists(outputPath)) {
+      const s = await stat(outputPath);
+      if (!s.isFile()) throw new Error(`Output path ${outputPath} is not a file`);
+      if (s.size > 0 && !options.force) {
+        throw new Error(`Output file ${outputPath} already exists. Use --force to overwrite.`);
+      }
+    } else {
+      await mkdir(dirname(outputPath), { recursive: true });
+    }
+    await writeFile(outputPath, "", "utf8");
+  }
+
   if (options.chat) {
     if (!isatty(process.stdout.fd)) {
       throw new Error("--chat mode requires a TTY terminal");
@@ -153,25 +307,23 @@ export async function runAgentWithAIGNE(
     return;
   }
 
-  const input =
-    options.input ||
-    (isatty(process.stdin.fd) || !(await stdinHasData())
-      ? null
-      : await readAllString(process.stdin)) ||
-    chatLoopOptions?.initialCall ||
-    chatLoopOptions?.defaultQuestion ||
-    {};
-
   const tracer = new TerminalTracer(aigne.newContext(), {
     printRequest: logger.enabled(LogLevel.INFO),
+    outputKey,
   });
 
-  return await tracer.run(
-    agent,
-    typeof input === "string"
-      ? { [chatLoopOptions?.inputKey || DEFAULT_CHAT_INPUT_KEY]: input }
-      : input,
-  );
+  assert(options.input);
+  const { result } = await tracer.run(agent, options.input);
+
+  if (options.output) {
+    const message = result[outputKey || DEFAULT_OUTPUT_KEY];
+    const content = typeof message === "string" ? message : JSON.stringify(result, null, 2);
+    const path = isAbsolute(options.output) ? options.output : join(process.cwd(), options.output);
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, content, "utf8");
+  }
+
+  return { result };
 }
 
 async function stdinHasData(): Promise<boolean> {

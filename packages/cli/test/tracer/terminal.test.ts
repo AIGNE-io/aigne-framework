@@ -56,9 +56,52 @@ test("TerminalTracer should render output message with markdown highlight", asyn
 
   const tracer = new TerminalTracer(context);
 
+  const originalIsTTY = process.stdout.isTTY;
+  process.stdout.isTTY = true;
+
   expect(
     tracer.formatResult(new AIAgent({ inputKey: "message" }), context, {
       message: "## Hello\nI am from [**AIGNE**](https://www.aigne.io)",
     }),
+  ).toMatchSnapshot();
+
+  process.stdout.isTTY = originalIsTTY;
+});
+
+test("TerminalTracer should render output message without markdown highlight in non-tty", async () => {
+  const model = new OpenAIChatModel({});
+
+  const aigne = new AIGNE({ model });
+  const context = aigne.newContext();
+
+  const tracer = new TerminalTracer(context);
+
+  const originalIsTTY = process.stdout.isTTY;
+  process.stdout.isTTY = false;
+
+  expect(
+    tracer.formatResult(new AIAgent({ outputKey: "message" }), context, {
+      message: "## Hello\nI am from [**AIGNE**](https://www.aigne.io)",
+    }),
+  ).toMatchSnapshot();
+
+  process.stdout.isTTY = originalIsTTY;
+});
+
+test("TerminalTracer.marked should stripe code block meta", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const tracer = new TerminalTracer(context);
+
+  expect(
+    tracer["marked"].parse(`\
+hello
+
+${"```"}ts file="test.ts" region="test-region"
+function test() {
+}
+${"```"}
+`),
   ).toMatchSnapshot();
 });

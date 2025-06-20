@@ -30,7 +30,7 @@ export interface PromptBuilderOptions {
 }
 
 export interface PromptBuildOptions extends Pick<AgentInvokeOptions, "context"> {
-  agent?: AIAgent<any, any, any>;
+  agent?: AIAgent;
   input?: Message;
   model?: ChatModel;
   outputSchema?: Agent["outputSchema"];

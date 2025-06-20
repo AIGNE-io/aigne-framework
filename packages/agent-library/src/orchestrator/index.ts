@@ -133,7 +133,7 @@ export class OrchestratorAgent<
     this.tasksConcurrency = options.tasksConcurrency;
     this.inputKey = options.inputKey;
 
-    this.planner = new AIAgent<"objective", FullPlanInput, FullPlanOutput>({
+    this.planner = new AIAgent<FullPlanInput, FullPlanOutput>({
       name: "llm_orchestration_planner",
       instructions: FULL_PLAN_PROMPT_TEMPLATE,
       outputSchema: () => getFullPlanSchema(this.skills),
@@ -146,9 +146,9 @@ export class OrchestratorAgent<
     });
   }
 
-  private planner: AIAgent<"objective", FullPlanInput, FullPlanOutput>;
+  private planner: AIAgent<FullPlanInput, FullPlanOutput>;
 
-  private completer: AIAgent<"objective", FullPlanInput, O>;
+  private completer: AIAgent<FullPlanInput, O>;
 
   inputKey: string;
 
@@ -291,7 +291,7 @@ export class OrchestratorAgent<
 
     const result = getMessageOrJsonString(
       await context.invoke(
-        AIAgent.from<"objective", SynthesizeStepPromptInput, Message>({
+        AIAgent.from<SynthesizeStepPromptInput, Message>({
           name: "llm_orchestration_step_synthesizer",
           instructions: SYNTHESIZE_STEP_PROMPT_TEMPLATE,
         }),

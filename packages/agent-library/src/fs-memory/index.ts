@@ -81,7 +81,7 @@ export class FSMemory extends MemoryAgent {
 }
 
 interface FSMemoryRetrieverOptions
-  extends AIAgentOptions<any, FSMemoryRetrieverAgentInput, FSMemoryRetrieverAgentOutput> {
+  extends AIAgentOptions<FSMemoryRetrieverAgentInput, FSMemoryRetrieverAgentOutput> {
   memoryFileName: string;
 }
 
@@ -115,7 +115,7 @@ class FSMemoryRetriever extends MemoryRetriever {
     });
   }
 
-  agent: AIAgent<any, FSMemoryRetrieverAgentInput, FSMemoryRetrieverAgentOutput>;
+  agent: AIAgent<FSMemoryRetrieverAgentInput, FSMemoryRetrieverAgentOutput>;
 
   override async process(
     input: MemoryRetrieverInput,
@@ -136,7 +136,7 @@ class FSMemoryRetriever extends MemoryRetriever {
 }
 
 interface FSMemoryRecorderOptions
-  extends AIAgentOptions<any, FSMemoryRecorderAgentInput, FSMemoryRecorderAgentOutput> {
+  extends AIAgentOptions<FSMemoryRecorderAgentInput, FSMemoryRecorderAgentOutput> {
   memoryFileName: string;
 }
 
@@ -168,7 +168,7 @@ class FSMemoryRecorder extends MemoryRecorder {
     });
   }
 
-  agent: AIAgent<any, FSMemoryRecorderAgentInput, FSMemoryRecorderAgentOutput>;
+  agent: AIAgent<FSMemoryRecorderAgentInput, FSMemoryRecorderAgentOutput>;
 
   override async process(
     input: MemoryRecorderInput,

@@ -33,11 +33,8 @@ export const DEFAULT_OUTPUT_KEY = "message";
  * @template I The input message type the agent accepts
  * @template O The output message type the agent returns
  */
-export interface AIAgentOptions<
-  InputKey extends string = string,
-  I extends Message & InputMessage<InputKey> = Message & InputMessage<InputKey>,
-  O extends Message = Message,
-> extends AgentOptions<Omit<I, InputKey> & Partial<InputMessage<InputKey>>, O> {
+export interface AIAgentOptions<I extends Message = Message, O extends Message = Message>
+  extends AgentOptions<I, O> {
   /**
    * The language model to use for this agent
    *
@@ -56,7 +53,7 @@ export interface AIAgentOptions<
   /**
    * Pick a message from input to use as the user's message
    */
-  inputKey?: InputKey;
+  inputKey?: string;
 
   /**
    * Custom key to use for text output in the response
@@ -164,8 +161,6 @@ export const aiAgentOptionsSchema: ZodObject<{
   [key in keyof AIAgentOptions]: ZodType<AIAgentOptions[key]>;
 }>;
 
-type InputMessage<K> = K extends string ? { [key in K]: string } : Message;
-
 /**
  * AI-powered agent that leverages language models
  *
@@ -186,11 +181,7 @@ type InputMessage<K> = K extends string ? { [key in K]: string } : Message;
  * Basic AIAgent creation:
  * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-basic}
  */
-export class AIAgent<
-  InputKey extends string = string,
-  I extends Message & InputMessage<InputKey> = Message & InputMessage<InputKey>,
-  O extends Message = Message,
-> extends Agent<I, O> {
+export class AIAgent<I extends Message = Message, O extends Message = Message> extends Agent<I, O> {
   /**
    * Create an AIAgent with the specified options
    *
@@ -203,11 +194,7 @@ export class AIAgent<
    * AI agent with custom instructions:
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-instructions}
    */
-  static from<
-    InputKey extends string,
-    I extends Message & InputMessage<InputKey>,
-    O extends Message,
-  >(options: AIAgentOptions<InputKey, I, O>): AIAgent<InputKey, I, O> {
+  static from<I extends Message, O extends Message>(options: AIAgentOptions<I, O>): AIAgent<I, O> {
     return new AIAgent(options);
   }
 
@@ -216,8 +203,8 @@ export class AIAgent<
    *
    * @param options Configuration options for the AI agent
    */
-  constructor(options: AIAgentOptions<InputKey, I, O>) {
-    super({ ...options, inputSchema: options.inputSchema as ZodType<I> });
+  constructor(options: AIAgentOptions<I, O>) {
+    super(options);
     checkArguments("AIAgent", aiAgentOptionsSchema, options);
 
     this.model = options.model;
@@ -262,7 +249,7 @@ export class AIAgent<
   /**
    * Pick a message from input to use as the user's message
    */
-  inputKey?: InputKey;
+  inputKey?: string;
 
   /**
    * Custom key to use for text output in the response

@@ -2,10 +2,11 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { Camelize } from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
-import { type Agent, FunctionAgent } from "../agents/agent.js";
+import { Agent, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
+import { TeamAgent } from "../agents/team-agent.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
@@ -41,13 +42,25 @@ export async function load(options: LoadOptions) {
 }
 
 export async function loadAgent(path: string, options?: LoadOptions): Promise<Agent> {
-  if (nodejs.path.extname(path) === ".js") {
+  if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromJsFile(path);
+    if (agent instanceof Agent) return agent;
     return FunctionAgent.from(agent);
   }
 
-  if (nodejs.path.extname(path) === ".yaml" || nodejs.path.extname(path) === ".yml") {
+  if ([".yml", ".yaml"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromYamlFile(path);
+
+    const skills =
+      "skills" in agent
+        ? agent.skills &&
+          (await Promise.all(
+            agent.skills.map((filename) =>
+              loadAgent(nodejs.path.join(nodejs.path.dirname(path), filename), options),
+            ),
+          ))
+        : undefined;
+
     if (agent.type === "ai") {
       return AIAgent.from({
         ...agent,
@@ -59,13 +72,7 @@ export async function loadAgent(path: string, options?: LoadOptions): Promise<Ag
                 typeof agent.memory === "object" ? agent.memory.provider : undefined,
                 typeof agent.memory === "object" ? agent.memory : {},
               ),
-        skills:
-          agent.skills &&
-          (await Promise.all(
-            agent.skills.map((filename) =>
-              loadAgent(nodejs.path.join(nodejs.path.dirname(path), filename), options),
-            ),
-          )),
+        skills,
       });
     }
     if (agent.type === "mcp") {
@@ -81,6 +88,12 @@ export async function loadAgent(path: string, options?: LoadOptions): Promise<Ag
         });
       }
       throw new Error(`Missing url or command in mcp agent: ${path}`);
+    }
+    if (agent.type === "team") {
+      return TeamAgent.from({
+        ...agent,
+        skills,
+      });
     }
   }
 

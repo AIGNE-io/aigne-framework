@@ -72,6 +72,8 @@ export const memoryRetrieverOutputSchema = z.object({
  * implementations of the process method to handle the actual retrieval logic.
  */
 export abstract class MemoryRetriever extends Agent<MemoryRetrieverInput, MemoryRetrieverOutput> {
+  tag = "MemoryRetrieverAgent";
+
   /**
    * Creates a new MemoryRetriever instance with predefined input and output schemas.
    *

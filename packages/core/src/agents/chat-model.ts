@@ -26,6 +26,8 @@ import { Agent, type AgentInvokeOptions, type AgentProcessResult, type Message }
  * {@includeCode ../../test/agents/chat-model.test.ts#example-chat-model-tools}
  */
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
+  tag = "ChatModelAgent";
+
   constructor() {
     super({
       inputSchema: chatModelInputSchema,

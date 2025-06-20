@@ -33,7 +33,8 @@
         "noExplicitAny": "off"
       },
       "complexity": {
-        "noForEach": "off"
+        "noForEach": "off",
+        "useLiteralKeys": "off"
       }
     }
   },

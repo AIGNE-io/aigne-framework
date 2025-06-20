@@ -15,6 +15,7 @@ export interface DocNode {
   children?: DocNode[];
   slug?: string;
   i18n?: Record<string, { title?: string; content?: string }>;
+  labels?: string[];
 }
 
 export interface GeneratorOptions {
@@ -94,6 +95,7 @@ export class Generator {
       const info = await this.getInfoFromFile(filePath);
       if (info?.title) node.h1 = info.title;
       if (info?.content) node.content = JSON.stringify(info.content);
+      if (info?.labels) node.labels = info.labels;
 
       const i18n = await this.getI18nInfoFromFile(filePath);
       if (Object.keys(i18n).length > 0) node.i18n = i18n;

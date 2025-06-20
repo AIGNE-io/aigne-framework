@@ -7,7 +7,7 @@ import {Box, CssBaseline} from "@mui/material"
 import {get} from "lodash"
 import {Suspense} from "react"
 import {Navigate, Route, BrowserRouter as Router, Routes} from "react-router-dom"
-import {SessionProvider} from "./contexts/session.tsx"
+import {SessionProvider} from "./contexts/session.js"
 
 export default function BlockletApp() {
   const basename = window?.blocklet?.prefix || "/"

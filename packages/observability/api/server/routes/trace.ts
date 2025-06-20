@@ -60,8 +60,6 @@ export default (sse: SSE) => {
   });
 
   router.post("/tree", async (req: Request, res: Response) => {
-    console.log("req.body===============", req.body);
-
     if (!req.body || req.body.length === 0) {
       throw new Error("req.body is empty");
     }

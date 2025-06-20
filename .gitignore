@@ -62,4 +62,3 @@ lerna-debug.log*
 /docs/RELEASING.md
 /docs/RELEASING.zh.md
 **/*/observer.*
-blocklets/*

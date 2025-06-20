@@ -104,6 +104,7 @@ export function createMcpServer(aigne: AIGNE) {
 
     if (!(schema instanceof ZodObject)) throw new Error("Agent input schema must be a ZodObject");
 
+    //@ts-ignore
     server.tool(agent.name, agent.description || "", schema.shape as ZodRawShape, async (input) => {
       const result = await aigne.invoke(agent, input);
 

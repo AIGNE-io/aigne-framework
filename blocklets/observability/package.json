@@ -22,13 +22,15 @@
     "bundle:client": "vite build",
     "bundle:api": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release --external @aigne/sqlite",
     "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
-    "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json"
+    "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json",
+    "prepare": "npx simple-git-hooks",
+    "bump-version": "zx --quiet scripts/bump-version.mjs"
   },
   "dependencies": {
-    "@aigne/sqlite": "workspace:^",
+    "@aigne/core": "workspace:^",
     "@aigne/observability": "workspace:^",
     "@aigne/openai": "workspace:^",
-    "@aigne/core": "workspace:^",
+    "@aigne/sqlite": "workspace:^",
     "@aigne/transport": "workspace:^",
     "@arcblock/did-connect": "^2.13.70",
     "@arcblock/ux": "^2.13.70",
@@ -44,6 +46,7 @@
     "@opentelemetry/sdk-node": "^0.202.0",
     "@opentelemetry/sdk-trace-base": "^2.0.1",
     "@types/dotenv-flow": "^3.3.3",
+    "bumpp": "^10.2.0",
     "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

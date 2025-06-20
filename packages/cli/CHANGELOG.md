@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.12.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.11.9...cli-v1.12.0) (2025-06-20)
+
+
+### Features
+
+* **cli:** support pass named input to agent by --input-xxx ([#167](https://github.com/AIGNE-io/aigne-framework/issues/167)) ([cda5bb6](https://github.com/AIGNE-io/aigne-framework/commit/cda5bb6baab680787de1a042664fe34c17a84bb1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.14.0
+    * @aigne/anthropic bumped to 0.3.3
+    * @aigne/bedrock bumped to 0.3.3
+    * @aigne/core bumped to 1.21.0
+    * @aigne/deepseek bumped to 0.3.3
+    * @aigne/gemini bumped to 0.3.3
+    * @aigne/ollama bumped to 0.3.3
+    * @aigne/open-router bumped to 0.3.3
+    * @aigne/openai bumped to 0.3.3
+    * @aigne/xai bumped to 0.3.3
+
 ## [1.11.9](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.11.8...cli-v1.11.9) (2025-06-19)
 
 

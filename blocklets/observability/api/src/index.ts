@@ -3,7 +3,6 @@ import { startServer as startObservabilityServer } from "@aigne/observability/se
 import fallback from "@blocklet/sdk/lib/middlewares/fallback";
 import dotenv from "dotenv-flow";
 import express from "express";
-import chat from "./routes/chat.js";
 
 dotenv.config();
 
@@ -16,8 +15,6 @@ const startServer = async () => {
     dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
     distPath: "",
   });
-
-  app.use("/api", chat);
 
   const BLOCKLET_APP_DIR = process.env.BLOCKLET_APP_DIR;
   if (isProduction && BLOCKLET_APP_DIR) {

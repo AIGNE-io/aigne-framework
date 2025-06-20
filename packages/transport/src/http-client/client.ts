@@ -68,6 +68,8 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
 
   id = v7();
 
+  rootId = this.id;
+
   usage: ContextUsage = newEmptyContextUsage();
 
   userContext: U = {} as U;

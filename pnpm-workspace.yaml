@@ -3,8 +3,9 @@ packages:
   - models/*
   - examples/*
   - tests/*
+  - blocklets/*
   - docs-examples
 onlyBuiltDependencies:
-  - '@biomejs/biome'
+  - "@biomejs/biome"
   - esbuild
   - simple-git-hooks

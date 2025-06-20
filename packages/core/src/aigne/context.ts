@@ -1,3 +1,6 @@
+import type { AIGNEObserver } from "@aigne/observability";
+import type { Span } from "@opentelemetry/api";
+import { SpanStatusCode, context, trace } from "@opentelemetry/api";
 import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
@@ -23,6 +26,7 @@ import {
 import { UserAgent } from "../agents/user-agent.js";
 import type { Memory } from "../memory/memory.js";
 import { AgentResponseProgressStream } from "../utils/event-stream.js";
+import { logger } from "../utils/logger.js";
 import { promiseWithResolvers } from "../utils/promise.js";
 import {
   agentResponseStreamToObject,
@@ -72,7 +76,7 @@ export interface ContextEventMap {
 export type ContextEmitEventMap = {
   [K in keyof ContextEventMap]: OmitPropertiesFromArrayFirstElement<
     ContextEventMap[K],
-    "contextId" | "parentContextId" | "timestamp"
+    "internalId" | "contextId" | "parentContextId" | "timestamp"
   >;
 };
 
@@ -86,6 +90,14 @@ export interface InvokeOptions<U extends UserContext = UserContext>
   returnMetadata?: boolean;
   disableTransfer?: boolean;
   sourceAgent?: Agent;
+
+  /**
+   * Whether to create a new context for this invocation.
+   * If false, the invocation will use the current context.
+   *
+   * @default true
+   */
+  newContext?: boolean;
 }
 
 /**
@@ -106,11 +118,17 @@ export interface Context<U extends UserContext = UserContext>
 
   skills?: Agent[];
 
+  observer?: AIGNEObserver;
+
+  span?: Span;
+
   usage: ContextUsage;
 
   limits?: ContextLimits;
 
   status?: "normal" | "timeout";
+
+  rootId: string;
 
   userContext: U;
 
@@ -201,18 +219,41 @@ export interface Context<U extends UserContext = UserContext>
  * @hidden
  */
 export class AIGNEContext implements Context {
-  constructor(...[parent, ...args]: ConstructorParameters<typeof AIGNEContextShared>) {
-    if (parent instanceof AIGNEContext) {
-      this.parentId = parent.id;
+  constructor(
+    parent?: ConstructorParameters<typeof AIGNEContextShared>[0],
+    { reset }: { reset?: boolean } = {},
+  ) {
+    const tracer = parent?.observer?.tracer;
+
+    if (parent instanceof AIGNEContext && !reset) {
       this.internal = parent.internal;
+      this.parentId = parent.id;
+      this.rootId = parent.rootId;
+
+      if (parent.span) {
+        const parentContext = trace.setSpan(context.active(), parent.span);
+        this.span = tracer?.startSpan("childAIGNEContext", undefined, parentContext);
+      } else {
+        this.span = tracer?.startSpan("AIGNEContext");
+      }
     } else {
-      this.internal = new AIGNEContextShared(parent, ...args);
+      this.internal = new AIGNEContextShared(parent);
+      this.span = tracer?.startSpan("AIGNEContext");
+
+      // 修改了 rootId 是否会之前的有影响？，之前为 this.id
+      this.rootId = this.span?.spanContext().traceId ?? v7();
     }
+
+    this.id = this.span?.spanContext().spanId ?? v7();
   }
+
+  id: string;
 
   parentId?: string;
 
-  id = v7();
+  rootId: string;
+
+  span?: Span;
 
   readonly internal: AIGNEContextShared;
 
@@ -222,6 +263,10 @@ export class AIGNEContext implements Context {
 
   get skills() {
     return this.internal.skills;
+  }
+
+  get observer() {
+    return this.internal.observer;
   }
 
   get limits() {
@@ -251,8 +296,7 @@ export class AIGNEContext implements Context {
   }
 
   newContext({ reset }: { reset?: boolean } = {}) {
-    if (reset) return new AIGNEContext(this, { userContext: {} });
-    return new AIGNEContext(this);
+    return new AIGNEContext(this, { reset });
   }
 
   invoke = ((agent, message, options) => {
@@ -383,7 +427,66 @@ export class AIGNEContext implements Context {
 
     const newArgs = [b, ...args.slice(1)] as Args<K, ContextEventMap>;
 
+    this.trace(eventName, args, b);
     return this.internal.events.emit(eventName, ...newArgs);
+  }
+
+  private async trace<K extends keyof ContextEmitEventMap>(
+    eventName: K,
+    args: Args<K, ContextEmitEventMap>,
+    b: AgentEvent,
+  ): Promise<void> {
+    const span = this.span;
+    if (!span) return;
+
+    try {
+      switch (eventName) {
+        case "agentStarted": {
+          const { agent, input } = args[0] as ContextEventMap["agentStarted"][0];
+          span.updateName(agent.name);
+
+          span.setAttribute("custom.trace_id", this.rootId);
+          span.setAttribute("custom.span_id", this.id);
+
+          if (this.parentId) {
+            span.setAttribute("custom.parent_id", this.parentId);
+          }
+
+          span.setAttribute("custom.started_at", b.timestamp);
+          span.setAttribute("input", JSON.stringify(input));
+          span.setAttribute("agentTag", agent.tag ?? "UnknownAgent");
+
+          break;
+        }
+        case "agentSucceed": {
+          const { output } = args[0] as ContextEventMap["agentSucceed"][0];
+
+          try {
+            span.setAttribute("output", JSON.stringify(output));
+          } catch (_e) {
+            logger.error("parse output error", _e.message);
+            span.setAttribute("output", JSON.stringify({}));
+          }
+
+          span.setStatus({ code: SpanStatusCode.OK, message: "Agent succeed" });
+          span.end();
+
+          break;
+        }
+        case "agentFailed": {
+          const { error } = args[0] as ContextEventMap["agentFailed"][0];
+          span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+          span.end();
+
+          break;
+        }
+      }
+    } catch (err) {
+      console.error("AIGNEContext.trace observer error", {
+        eventName,
+        error: err,
+      });
+    }
   }
 
   on<K extends keyof ContextEventMap>(eventName: K, listener: Listener<K, ContextEventMap>): this {
@@ -406,15 +509,14 @@ export class AIGNEContext implements Context {
 }
 
 class AIGNEContextShared {
+  span?: Span;
+
   constructor(
-    private readonly parent?: Pick<Context, "model" | "skills" | "limits"> & {
+    private readonly parent?: Pick<Context, "model" | "skills" | "limits" | "observer"> & {
       messageQueue?: MessageQueue;
     },
-    overrides?: Partial<Context>,
   ) {
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
-    this.userContext = overrides?.userContext ?? {};
-    this.memories = overrides?.memories ?? [];
   }
 
   readonly messageQueue: MessageQueue;
@@ -429,15 +531,19 @@ class AIGNEContextShared {
     return this.parent?.skills;
   }
 
+  get observer() {
+    return this.parent?.observer;
+  }
+
   get limits() {
     return this.parent?.limits;
   }
 
   usage: ContextUsage = newEmptyContextUsage();
 
-  userContext: Context["userContext"];
+  userContext: Context["userContext"] = {};
 
-  memories: Context["memories"];
+  memories: Context["memories"] = [];
 
   private abortController = new AbortController();
 

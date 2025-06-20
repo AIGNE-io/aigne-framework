@@ -121,6 +121,8 @@ function getMCPServerString(options: MCPAgentOptions | MCPServerOptions): string
  * {@includeCode ../../test/agents/mcp-agent.test.ts#example-mcp-agent-from-sse}
  */
 export class MCPAgent extends Agent {
+  tag = "MCPAgent";
+
   /**
    * Create an MCPAgent from a connection to an SSE server.
    *
@@ -425,6 +427,8 @@ export interface MCPBaseOptions<I extends Message = Message, O extends Message =
 }
 
 export abstract class MCPBase<I extends Message, O extends Message> extends Agent<I, O> {
+  tag = "MCPBaseAgent";
+
   constructor(options: MCPBaseOptions<I, O>) {
     super(options);
     this.client = options.client;
@@ -434,6 +438,8 @@ export abstract class MCPBase<I extends Message, O extends Message> extends Agen
 }
 
 export class MCPTool extends MCPBase<Message, CallToolResult> {
+  tag = "MCPToolAgent";
+
   async process(input: Message): Promise<CallToolResult> {
     const result = await this.client.callTool({ name: this.name, arguments: input });
 
@@ -446,6 +452,8 @@ export interface MCPPromptInput extends Record<string, unknown> {
 }
 
 export class MCPPrompt extends MCPBase<MCPPromptInput, GetPromptResult> {
+  tag = "MCPPromptAgent";
+
   async process(input: MCPPromptInput): Promise<GetPromptResult> {
     const result = await this.client.getPrompt({ name: this.name, arguments: input });
 
@@ -458,6 +466,8 @@ export interface MCPResourceOptions extends MCPBaseOptions<MCPPromptInput, ReadR
 }
 
 export class MCPResource extends MCPBase<MCPPromptInput, ReadResourceResult> {
+  tag = "MCPResourceAgent";
+
   constructor(options: MCPResourceOptions) {
     super(options);
     this.uri = options.uri;

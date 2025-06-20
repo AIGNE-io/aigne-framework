@@ -36,7 +36,10 @@ export class AIGNEObserver {
     }
     this.server.port = detected;
 
-    initOpenTelemetry({ apiUrl: `http://localhost:${this.server.port}` });
+    initOpenTelemetry({
+      serverUrl: `http://localhost:${this.server.port}`,
+      dbPath: this.storage.url,
+    });
 
     if (isBlocklet) return;
 

@@ -1,16 +1,20 @@
+import { initDatabase } from "@aigne/sqlite";
 //@ts-ignore
 import { call } from "@blocklet/sdk/lib/component";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
 import { joinURL } from "ufo";
 import { isBlocklet } from "../../core/util.js";
+import { Trace } from "../../server/models/trace.js";
 import { formatSpans } from "./util.js";
 
 class HttpExporter implements SpanExporter {
-  private apiUrl: string;
+  private serverUrl: string;
+  private dbPath?: string;
 
-  constructor(apiUrl: string) {
-    this.apiUrl = apiUrl;
+  constructor({ serverUrl, dbPath }: { serverUrl: string; dbPath?: string }) {
+    this.serverUrl = serverUrl;
+    this.dbPath = dbPath;
   }
 
   async export(
@@ -28,14 +32,25 @@ class HttpExporter implements SpanExporter {
           data: validatedTraces,
         });
       } else {
-        const res = await fetch(joinURL(this.apiUrl, "/api/trace/tree"), {
+        const url = joinURL(this.serverUrl, "/api/trace/tree");
+        console.log("url ===============", url);
+
+        const res = await fetch(url, {
           method: "POST",
           body: JSON.stringify(validatedTraces),
           headers: {
             "Content-Type": "application/json",
           },
         });
-        console.log("res===============", res);
+
+        console.log("fetch result ===============", res.ok);
+
+        if (!res.ok) {
+          // fallback to local db save
+          const db = await initDatabase({ url: this.dbPath });
+          await db.insert(Trace).values(validatedTraces).returning({ id: Trace.id }).execute();
+          console.log("inserted into db");
+        }
       }
 
       resultCallback({ code: ExportResultCode.SUCCESS });

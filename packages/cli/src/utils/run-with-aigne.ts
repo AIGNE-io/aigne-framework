@@ -103,7 +103,7 @@ export const createRunAIGNECommand = (name = "run") =>
 
 export async function parseAgentInputByCommander(
   agent: Agent,
-  options: RunAIGNECommandOptions & { inputKey?: string },
+  options: RunAIGNECommandOptions & { inputKey?: string; argv?: string[] } = {},
 ): Promise<Message> {
   const cmd = new Command()
     .description(`Run agent ${agent.name} with AIGNE`)
@@ -139,16 +139,12 @@ export async function parseAgentInputByCommander(
             ).filter(isNonNullable),
           );
 
-          if (typeof agentInputOptions["input"] === "string") {
-            input[options.inputKey || DEFAULT_CHAT_INPUT_KEY] = agentInputOptions["input"];
-          }
-
           resolve(input);
         } catch (error) {
           reject(error);
         }
       })
-      .parseAsync(process.argv)
+      .parseAsync(options.argv ?? process.argv)
       .catch((error) => reject(error));
   });
 

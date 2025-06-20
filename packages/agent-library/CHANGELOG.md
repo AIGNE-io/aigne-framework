@@ -5,6 +5,21 @@
 
 * add schema transform ([#35](https://github.com/AIGNE-io/aigne-framework/issues/35)) ([c7d9a2c](https://github.com/AIGNE-io/aigne-framework/commit/c7d9a2c9fcab8d384d4198db5ff6ba4603846cdf))
 
+## [1.14.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.13.2...agent-library-v1.14.0) (2025-06-20)
+
+
+### Features
+
+* **cli:** support pass named input to agent by --input-xxx ([#167](https://github.com/AIGNE-io/aigne-framework/issues/167)) ([cda5bb6](https://github.com/AIGNE-io/aigne-framework/commit/cda5bb6baab680787de1a042664fe34c17a84bb1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.21.0
+    * @aigne/openai bumped to 0.3.3
+
 ## [1.13.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.13.1...agent-library-v1.13.2) (2025-06-19)
 
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.3.9...example-memory-v0.4.0) (2025-06-20)
+
+
+### Features
+
+* **cli:** support pass named input to agent by --input-xxx ([#167](https://github.com/AIGNE-io/aigne-framework/issues/167)) ([cda5bb6](https://github.com/AIGNE-io/aigne-framework/commit/cda5bb6baab680787de1a042664fe34c17a84bb1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.14.0
+    * @aigne/cli bumped to 1.12.0
+    * @aigne/core bumped to 1.21.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.3
+
 ## [0.3.9](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.3.8...example-memory-v0.3.9) (2025-06-19)
 
 

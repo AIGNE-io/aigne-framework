@@ -1,3 +1,5 @@
+//@ts-ignore
+import { call } from "@blocklet/sdk/lib/component";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
 import { joinURL } from "ufo";
@@ -5,9 +7,9 @@ import { isBlocklet } from "../../core/util.js";
 import { formatSpans } from "./util.js";
 
 class HttpExporter implements SpanExporter {
-  private apiUrl?: string;
+  private apiUrl: string;
 
-  constructor(apiUrl?: string) {
+  constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
   }
 
@@ -18,20 +20,22 @@ class HttpExporter implements SpanExporter {
     try {
       const validatedTraces = formatSpans(spans);
 
-      console.log("======================");
-
       if (isBlocklet) {
-        console.log("isBlocklet===============", validatedTraces);
+        await call({
+          name: "observability",
+          method: "POST",
+          path: "/api/trace/tree",
+          data: validatedTraces,
+        });
       } else {
-        if (this.apiUrl) {
-          await fetch(joinURL(this.apiUrl, "/api/trace/tree"), {
-            method: "POST",
-            body: JSON.stringify(validatedTraces),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        }
+        const res = await fetch(joinURL(this.apiUrl, "/api/trace/tree"), {
+          method: "POST",
+          body: JSON.stringify(validatedTraces),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log("res===============", res);
       }
 
       resultCallback({ code: ExportResultCode.SUCCESS });

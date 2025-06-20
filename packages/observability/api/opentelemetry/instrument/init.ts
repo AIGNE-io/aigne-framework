@@ -12,7 +12,7 @@ export async function initOpenTelemetry({ apiUrl }: { apiUrl?: string }) {
 
   await sdk.start();
 
-  console.log("Running observability OpenTelemetry started");
+  console.log("Observability OpenTelemetry SDK Started");
 
   return sdk;
 }

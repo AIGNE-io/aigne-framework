@@ -1,4 +1,4 @@
-import { desc, inArray, isNull, sql } from "drizzle-orm";
+import { desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import express, { type Request, type Response } from "express";
 import type SSE from "express-sse";
@@ -16,7 +16,7 @@ export default (sse: SSE) => {
     const count = await db
       .select({ count: sql`count(*)` })
       .from(Trace)
-      .where(isNull(Trace.parentId))
+      .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
       .execute();
 
     const total = Number((count[0] as { count: string }).count ?? 0);
@@ -24,7 +24,7 @@ export default (sse: SSE) => {
     const rootCalls = await db
       .select()
       .from(Trace)
-      .where(isNull(Trace.parentId))
+      .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
       .orderBy(desc(Trace.startTime))
       .limit(pageSize)
       .offset(offset)
@@ -60,6 +60,12 @@ export default (sse: SSE) => {
   });
 
   router.post("/tree", async (req: Request, res: Response) => {
+    console.log("req.body===============", req.body);
+
+    if (!req.body || req.body.length === 0) {
+      throw new Error("req.body is empty");
+    }
+
     const db = req.app.locals.db as LibSQLDatabase;
 
     await db.insert(Trace).values(req.body).returning({ id: Trace.id }).execute();

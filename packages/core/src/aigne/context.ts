@@ -132,12 +132,12 @@ export interface Context<U extends UserContext = UserContext>
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I,
+    message: I & Message,
     options: InvokeOptions & { returnActiveAgent: true; streaming?: false },
   ): Promise<[O, Agent]>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I,
+    message: I & Message,
     options: InvokeOptions & { returnActiveAgent: true; streaming: true },
   ): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
   /**
@@ -148,17 +148,17 @@ export interface Context<U extends UserContext = UserContext>
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I,
+    message: I & Message,
     options?: InvokeOptions & { streaming?: false },
   ): Promise<O>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I,
+    message: I & Message,
     options: InvokeOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message?: I,
+    message?: I & Message,
     options?: InvokeOptions,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]>;
 
@@ -460,7 +460,7 @@ class AIGNEContextShared {
 
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    input: I,
+    input: I & Message,
     context: Context,
     options?: InvokeOptions,
   ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
@@ -473,7 +473,7 @@ class AIGNEContextShared {
 
   private async *invokeAgent<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    input: I,
+    input: I & Message,
     context: Context,
     options?: InvokeOptions,
   ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {

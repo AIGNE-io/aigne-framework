@@ -427,7 +427,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
   async onMessage({ message, context }: MessagePayload) {
     try {
-      await context.invoke(this, message);
+      await context.invoke(this, message as I);
     } catch (error) {
       context.emit("agentFailed", { agent: this, error });
     }
@@ -518,7 +518,10 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * Here's an example of invoking an agent with regular mode:
    * {@includeCode ../../test/agents/agent.test.ts#example-invoke}
    */
-  async invoke(input: I, options?: Partial<AgentInvokeOptions> & { streaming?: false }): Promise<O>;
+  async invoke(
+    input: I & Message,
+    options?: Partial<AgentInvokeOptions> & { streaming?: false },
+  ): Promise<O>;
 
   /**
    * Invoke the agent with streaming response
@@ -536,7 +539,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * {@includeCode ../../test/agents/agent.test.ts#example-invoke-streaming}
    */
   async invoke(
-    input: I,
+    input: I & Message,
     options: Partial<AgentInvokeOptions> & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
@@ -549,9 +552,15 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
    * @param options Invocation options
    * @returns Agent response (streaming or regular)
    */
-  async invoke(input: I, options?: Partial<AgentInvokeOptions>): Promise<AgentResponse<O>>;
+  async invoke(
+    input: I & Message,
+    options?: Partial<AgentInvokeOptions>,
+  ): Promise<AgentResponse<O>>;
 
-  async invoke(input: I, options: Partial<AgentInvokeOptions> = {}): Promise<AgentResponse<O>> {
+  async invoke(
+    input: I & Message,
+    options: Partial<AgentInvokeOptions> = {},
+  ): Promise<AgentResponse<O>> {
     const opts: AgentInvokeOptions = {
       ...options,
       context: options.context ?? (await this.newDefaultContext()),
@@ -625,7 +634,7 @@ export abstract class Agent<I extends Message = Message, O extends Message = Mes
 
   protected async invokeSkill<I extends Message, O extends Message>(
     skill: Agent<I, O>,
-    input: I,
+    input: I & Message,
     options: AgentInvokeOptions,
   ): Promise<O> {
     const { context } = options;

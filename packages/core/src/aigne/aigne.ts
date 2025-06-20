@@ -197,7 +197,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I,
+    message: I & Message,
     options: InvokeOptions<U> & { returnActiveAgent: true; streaming?: false },
   ): Promise<[O, Agent]>;
 
@@ -213,7 +213,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I,
+    message: I & Message,
     options: InvokeOptions<U> & { returnActiveAgent: true; streaming: true },
   ): Promise<[AgentResponseStream<O>, Promise<Agent>]>;
 
@@ -232,7 +232,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I,
+    message: I & Message,
     options?: InvokeOptions<U> & { returnActiveAgent?: false; streaming?: false },
   ): Promise<O>;
 
@@ -251,7 +251,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message: I,
+    message: I & Message,
     options: InvokeOptions<U> & { returnActiveAgent?: false; streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
@@ -267,13 +267,13 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message?: I,
+    message?: I & Message,
     options?: InvokeOptions<U>,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]>;
 
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O>,
-    message?: I,
+    message?: I & Message,
     options?: InvokeOptions<U>,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]> {
     return new AIGNEContext(this).invoke(agent, message, options);

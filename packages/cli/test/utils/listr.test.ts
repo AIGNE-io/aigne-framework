@@ -70,7 +70,6 @@ test("AIGNEListrRenderer should work correctly", async () => {
   const clear = mock();
   Object.assign(updater, { clear });
 
-  // biome-ignore lint/complexity/useLiteralKeys: updater is a private member
   renderer["updater"] = updater;
 
   renderer.update();

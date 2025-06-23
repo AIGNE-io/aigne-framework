@@ -321,7 +321,7 @@ export class AIGNEContext implements Context {
       });
     }
 
-    const newContext = this.newContext();
+    const newContext = options?.newContext === false ? this : this.newContext();
 
     return Promise.resolve(newContext.internal.invoke(agent, message, newContext, options)).then(
       async (response) => {

@@ -299,7 +299,7 @@ export class AIGNE<U extends UserContext = UserContext> {
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]> {
     // this.observer?.serve();
     const context = new AIGNEContext(this);
-    return context.invoke(agent, message, options);
+    return context.invoke(agent, message, { ...options, newContext: false });
   }
 
   /**

@@ -471,6 +471,7 @@ export class AIGNEContext implements Context {
 
           span.setStatus({ code: SpanStatusCode.OK, message: "Agent succeed" });
           span.end();
+          this.observer?.traceExporter?.forceFlush?.();
 
           break;
         }
@@ -478,6 +479,7 @@ export class AIGNEContext implements Context {
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
           span.end();
+          this.observer?.traceExporter?.forceFlush?.();
 
           break;
         }

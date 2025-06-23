@@ -1,5 +1,4 @@
 import { initDatabase } from "@aigne/sqlite";
-//@ts-ignore
 import { call } from "@blocklet/sdk/lib/component";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";

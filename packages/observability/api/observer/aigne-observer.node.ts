@@ -1,19 +1,20 @@
 import type { Server } from "node:http";
 import path from "node:path";
 import { trace } from "@opentelemetry/api";
+import type { SpanExporter } from "@opentelemetry/sdk-trace-base";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import { isBlocklet } from "../core/util.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
 import { startServer } from "../server/index.js";
 import detect from "../server/utils/detect-port.js";
-
 export class AIGNEObserver {
   private server: AIGNEObserverOptions["server"];
   private storage: AIGNEObserverOptions["storage"];
   private serverInstance?: Server;
   private initPort?: number;
   public tracer = trace.getTracer("aigne-tracer");
-  public sdkStarted: Promise<void> | undefined;
+  public traceExporter: SpanExporter | undefined;
+  private sdkServerStarted: Promise<void> | undefined;
 
   constructor(options?: AIGNEObserverOptions) {
     const parsed = AIGNEObserverOptionsSchema.parse(options);
@@ -26,8 +27,8 @@ export class AIGNEObserver {
   }
 
   async serve(): Promise<void> {
-    this.sdkStarted ??= this._serve();
-    return this.sdkStarted;
+    this.sdkServerStarted ??= this._serve();
+    return this.sdkServerStarted;
   }
 
   async _serve(): Promise<void> {
@@ -42,7 +43,7 @@ export class AIGNEObserver {
     }
     this.server.port = detected;
 
-    await initOpenTelemetry({
+    this.traceExporter = await initOpenTelemetry({
       serverUrl: `http://localhost:${this.server.port}`,
       dbPath: this.storage.url,
     });

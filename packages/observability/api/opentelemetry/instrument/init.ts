@@ -18,5 +18,5 @@ export async function initOpenTelemetry({
 
   console.log("Observability OpenTelemetry SDK Started");
 
-  return sdk;
+  return traceExporter;
 }

@@ -20,7 +20,6 @@ function checkPortInUse(port: number, host = "0.0.0.0") {
 
 async function detect(startPort: number) {
   let port = startPort;
-  // eslint-disable-next-line no-await-in-loop
   while (await checkPortInUse(port)) port++;
   return port;
 }

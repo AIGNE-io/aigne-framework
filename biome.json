@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["lib/", "dist/", "package.json", ".oauth", ".blocklet"]
+    "ignore": ["lib/", "dist/", "package.json", ".oauth", ".blocklet", "packages/observability/lib"]
   },
   "formatter": {
     "enabled": true,

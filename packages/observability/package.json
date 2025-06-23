@@ -58,7 +58,7 @@
   },
   "scripts": {
     "clean": "node scripts/build-clean.mjs",
-    "lint": "tsc --noEmit && eslint .",
+    "lint": "tsc --noEmit",
     "build": "run-p build:client build:api",
     "build:client": "tsc -b && vite build",
     "build:api": "tsc --build scripts/tsconfig.build.json",

@@ -137,7 +137,7 @@ export class TerminalTracer {
     context.on("agentFailed", onAgentFailed);
 
     try {
-      const result = await listr.run(() => agent.invoke(input, { streaming: true }));
+      const result = await listr.run(() => agent.invoke(input, { context, streaming: true }));
 
       return { result, context };
     } finally {

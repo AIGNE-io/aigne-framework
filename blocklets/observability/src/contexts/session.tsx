@@ -1,12 +1,12 @@
-import {createAuthServiceSessionContext} from "@arcblock/did-connect/lib/Session"
-import {useContext} from "react"
+import { createAuthServiceSessionContext } from "@arcblock/did-connect/lib/Session";
+import { useContext } from "react";
 
-const {SessionProvider, SessionContext, SessionConsumer, withSession} =
-  createAuthServiceSessionContext()
+const { SessionProvider, SessionContext, SessionConsumer, withSession } =
+  createAuthServiceSessionContext();
 
 function useSessionContext() {
-  const info = useContext(SessionContext)
-  return info
+  const info = useContext(SessionContext);
+  return info;
 }
 
-export {SessionProvider, SessionContext, SessionConsumer, useSessionContext, withSession}
+export { SessionProvider, SessionContext, SessionConsumer, useSessionContext, withSession };

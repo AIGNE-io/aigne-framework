@@ -34,6 +34,7 @@ Work with the sandbox to execute your code.
 `,
   skills: [sandbox],
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 
 await runWithAIGNE(coder, {

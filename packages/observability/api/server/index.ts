@@ -4,7 +4,7 @@ import { initDatabase } from "@aigne/sqlite";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv-flow";
-import express, { type NextFunction, type Request, type Response } from "express";
+import express, { type Request, type Response } from "express";
 import SSE from "express-sse";
 
 import { z } from "zod";
@@ -57,7 +57,7 @@ export async function startServer(
     });
   }
 
-  app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  app.use((err: unknown, _req: Request, res: Response) => {
     if (err instanceof ZodError) {
       res.status(400).json({ success: false, error: err.errors });
     } else {

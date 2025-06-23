@@ -427,7 +427,7 @@ export interface MCPBaseOptions<I extends Message = Message, O extends Message =
 }
 
 export abstract class MCPBase<I extends Message, O extends Message> extends Agent<I, O> {
-  tag = "MCPBaseAgent";
+  tag = "MCPBase";
 
   constructor(options: MCPBaseOptions<I, O>) {
     super(options);
@@ -438,7 +438,7 @@ export abstract class MCPBase<I extends Message, O extends Message> extends Agen
 }
 
 export class MCPTool extends MCPBase<Message, CallToolResult> {
-  tag = "MCPToolAgent";
+  tag = "MCPTool";
 
   async process(input: Message): Promise<CallToolResult> {
     const result = await this.client.callTool({ name: this.name, arguments: input });
@@ -452,7 +452,7 @@ export interface MCPPromptInput extends Record<string, unknown> {
 }
 
 export class MCPPrompt extends MCPBase<MCPPromptInput, GetPromptResult> {
-  tag = "MCPPromptAgent";
+  tag = "MCPPrompt";
 
   async process(input: MCPPromptInput): Promise<GetPromptResult> {
     const result = await this.client.getPrompt({ name: this.name, arguments: input });
@@ -466,7 +466,7 @@ export interface MCPResourceOptions extends MCPBaseOptions<MCPPromptInput, ReadR
 }
 
 export class MCPResource extends MCPBase<MCPPromptInput, ReadResourceResult> {
-  tag = "MCPResourceAgent";
+  tag = "MCPResource";
 
   constructor(options: MCPResourceOptions) {
     super(options);

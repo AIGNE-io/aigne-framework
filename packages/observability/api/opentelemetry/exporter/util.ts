@@ -8,9 +8,9 @@ export const formatSpans = (spans: ReadableSpan[]) => {
     .map((span) => {
       const {
         "custom.started_at": startTime,
-        "custom.trace_id": traceId,
-        "custom.span_id": spanId,
-        "custom.parent_id": parentId,
+        "custom.trace_id": _traceId,
+        "custom.span_id": _spanId,
+        "custom.parent_id": _parentId,
         ...restAttributes
       } = span.attributes;
 
@@ -35,7 +35,7 @@ export const formatSpans = (spans: ReadableSpan[]) => {
         rootId: span.spanContext().traceId,
         parentId: span?.parentSpanContext?.spanId,
         name: span.name,
-        startTime: Math.floor(hrTimeToMilliseconds(span.startTime)),
+        startTime: Math.floor(hrTimeToMilliseconds((startTime as any) || span.startTime)),
         endTime: Math.floor(hrTimeToMilliseconds(span.endTime)),
         status: span.status,
         attributes: parsedAttributes,

@@ -108,7 +108,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     this.model = options?.model;
     this.limits = options?.limits;
     this.observer =
-      process.env.DISABLE_AIGNE_OBSERVABILITY === "true"
+      process.env.AIGNE_OBSERVABILITY_DISABLED === "true"
         ? undefined
         : (options?.observer ?? new AIGNEObserver());
     if (options?.skills?.length) this.skills.push(...options.skills);

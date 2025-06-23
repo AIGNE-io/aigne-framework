@@ -1,5 +1,5 @@
 name: Observability
-description: Blocklet Observability for tracing and observability
+description: General observability for recording and viewing traces
 group: dapp
 main: api/dist/index.js
 author:

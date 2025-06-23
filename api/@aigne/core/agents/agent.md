@@ -451,7 +451,7 @@ suitable for scenarios where a complete result is needed at once.
 
 | Parameter  | Type                                                                                                     | Description                                                    |
 | ---------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `input`    | `I`                                                                                                      | Input message to the agent                                     |
+| `input`    | `I` & [`Message`](#message)                                                                              | Input message to the agent                                     |
 | `options?` | `Partial`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming?`: `false`; \} | Invocation options, must set streaming to false or leave unset |
 
 ###### Returns
@@ -499,7 +499,7 @@ chat bot typing effects.
 
 | Parameter | Type                                                                                                   | Description                                                      |
 | --------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| `input`   | `I`                                                                                                    | Input message to the agent                                       |
+| `input`   | `I` & [`Message`](#message)                                                                            | Input message to the agent                                       |
 | `options` | `Partial`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming`: `true`; \} | Invocation options, must set streaming to true for this overload |
 
 ###### Returns
@@ -561,7 +561,7 @@ Returns either streaming or regular response based on the streaming parameter in
 
 | Parameter  | Type                                                                      | Description                |
 | ---------- | ------------------------------------------------------------------------- | -------------------------- |
-| `input`    | `I`                                                                       | Input message to the agent |
+| `input`    | `I` & [`Message`](#message)                                               | Input message to the agent |
 | `options?` | `Partial`\<[`AgentInvokeOptions`](#agentinvokeoptions)\<`UserContext`\>\> | Invocation options         |
 
 ###### Returns
@@ -586,7 +586,7 @@ Agent response (streaming or regular)
 | Parameter | Type                                        |
 | --------- | ------------------------------------------- |
 | `skill`   | [`Agent`](#agent)\<`I`, `O`\>               |
-| `input`   | `I`                                         |
+| `input`   | `I` & [`Message`](#message)                 |
 | `options` | [`AgentInvokeOptions`](#agentinvokeoptions) |
 
 ###### Returns

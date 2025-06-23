@@ -99,7 +99,7 @@ suitable for scenarios where a complete result is needed at once.
 
 | Parameter  | Type                                                                                                             |
 | ---------- | ---------------------------------------------------------------------------------------------------------------- |
-| `input`    | `I`                                                                                                              |
+| `input`    | `I` & [`Message`](agent.md#message)                                                                              |
 | `options?` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming?`: `false`; \} |
 
 ###### Returns
@@ -120,7 +120,7 @@ chat bot typing effects.
 
 | Parameter | Type                                                                                                           | Description                                                      |
 | --------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `input`   | `I`                                                                                                            | Input message to the agent                                       |
+| `input`   | `I` & [`Message`](agent.md#message)                                                                            | Input message to the agent                                       |
 | `options` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> & \{ `streaming`: `true`; \} | Invocation options, must set streaming to true for this overload |
 
 ###### Returns
@@ -182,7 +182,7 @@ Returns either streaming or regular response based on the streaming parameter in
 
 | Parameter  | Type                                                                              | Description                |
 | ---------- | --------------------------------------------------------------------------------- | -------------------------- |
-| `input`    | `I`                                                                               | Input message to the agent |
+| `input`    | `I` & [`Message`](agent.md#message)                                               | Input message to the agent |
 | `options?` | `Partial`\<[`AgentInvokeOptions`](agent.md#agentinvokeoptions)\<`UserContext`\>\> | Invocation options         |
 
 ###### Returns

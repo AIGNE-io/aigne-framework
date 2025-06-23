@@ -257,7 +257,7 @@ This overload is useful when you need to track which agent was ultimately respon
 | Parameter | Type                                                                               | Description                        |
 | --------- | ---------------------------------------------------------------------------------- | ---------------------------------- |
 | `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                       | Target agent to invoke             |
-| `message` | `I`                                                                                | Input message to send to the agent |
+| `message` | `I` & [`Message`](agents/agent.md#message)                                         | Input message to send to the agent |
 | `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent`: `true`; `streaming?`: `false`; \} | -                                  |
 
 ###### Returns
@@ -285,7 +285,7 @@ This overload is useful when you need streaming responses while also tracking wh
 | Parameter | Type                                                                             | Description                        |
 | --------- | -------------------------------------------------------------------------------- | ---------------------------------- |
 | `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                     | Target agent to invoke             |
-| `message` | `I`                                                                              | Input message to send to the agent |
+| `message` | `I` & [`Message`](agents/agent.md#message)                                       | Input message to send to the agent |
 | `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent`: `true`; `streaming`: `true`; \} | -                                  |
 
 ###### Returns
@@ -313,7 +313,7 @@ This is the standard way to invoke an agent when you only need the response.
 | Parameter  | Type                                                                                 | Description                                          |
 | ---------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------- |
 | `agent`    | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                         | Target agent to invoke                               |
-| `message`  | `I`                                                                                  | Input message to send to the agent                   |
+| `message`  | `I` & [`Message`](agents/agent.md#message)                                           | Input message to send to the agent                   |
 | `options?` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent?`: `false`; `streaming?`: `false`; \} | Optional configuration parameters for the invocation |
 
 ###### Returns
@@ -363,7 +363,7 @@ This allows processing the response incrementally as it's being generated.
 | Parameter | Type                                                                               | Description                                                                 |
 | --------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | `agent`   | [`Agent`](agents/agent.md#agent)\<`I`, `O`\>                                       | Target agent to invoke                                                      |
-| `message` | `I`                                                                                | Input message to send to the agent                                          |
+| `message` | `I` & [`Message`](agents/agent.md#message)                                         | Input message to send to the agent                                          |
 | `options` | `InvokeOptions`\<`U`\> & \{ `returnActiveAgent?`: `false`; `streaming`: `true`; \} | Configuration with streaming enabled to receive incremental response chunks |
 
 ###### Returns
@@ -425,7 +425,7 @@ This unified signature supports all the different invocation patterns defined by
 | Parameter  | Type                                         | Description                                          |
 | ---------- | -------------------------------------------- | ---------------------------------------------------- |
 | `agent`    | [`Agent`](agents/agent.md#agent)\<`I`, `O`\> | Target agent to invoke or wrap                       |
-| `message?` | `I`                                          | Optional input message to send to the agent          |
+| `message?` | `I` & [`Message`](agents/agent.md#message)   | Optional input message to send to the agent          |
 | `options?` | `InvokeOptions`\<`U`\>                       | Optional configuration parameters for the invocation |
 
 ###### Returns

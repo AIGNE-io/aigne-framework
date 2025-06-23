@@ -1,21 +1,21 @@
-import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
-import {Box, Card, LinearProgress, Tooltip, Typography} from "@mui/material"
-import type {ReactElement} from "react"
-import {parseDurationMs} from "../../utils/latency.ts"
-import {AgentTag} from "./AgentTag.tsx"
-import type {RunData} from "./types.ts"
+import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
+import { Box, Card, LinearProgress, Tooltip, Typography } from "@mui/material";
+import type { ReactElement } from "react";
+import { parseDurationMs } from "../../utils/latency.ts";
+import { AgentTag } from "./AgentTag.tsx";
+import type { RunData } from "./types.ts";
 
 type TraceItemProps = {
-  name: string
-  duration: number
-  start: number
-  totalDuration: number
-  selected?: boolean
-  depth?: number
-  onSelect?: () => void
-  status?: number
-  agentTag?: string
-}
+  name: string;
+  duration: number;
+  start: number;
+  totalDuration: number;
+  selected?: boolean;
+  depth?: number;
+  onSelect?: () => void;
+  status?: number;
+  agentTag?: string;
+};
 
 function TraceItem({
   name,
@@ -28,21 +28,21 @@ function TraceItem({
   status,
   agentTag,
 }: TraceItemProps) {
-  const widthPercent = (duration / totalDuration) * 100
-  const marginLeftPercent = (start / totalDuration) * 100
-  const {t} = useLocaleContext()
+  const widthPercent = (duration / totalDuration) * 100;
+  const marginLeftPercent = (start / totalDuration) * 100;
+  const { t } = useLocaleContext();
 
   const getBorderColor = () => {
     if (status === 1) {
       if (selected) {
-        return "primary.main"
+        return "primary.main";
       }
 
-      return "transparent"
+      return "transparent";
     }
 
-    return "error.main"
-  }
+    return "error.main";
+  };
 
   return (
     <Card
@@ -57,13 +57,15 @@ function TraceItem({
         border: "1px solid transparent",
         borderColor: getBorderColor(),
       }}
-      onClick={() => onSelect?.()}>
+      onClick={() => onSelect?.()}
+    >
       <Box
         display="flex"
         alignItems="center"
         flexWrap="nowrap"
         justifyContent="space-between"
-        gap={1}>
+        gap={1}
+      >
         <Typography
           sx={{
             flex: 1,
@@ -71,15 +73,16 @@ function TraceItem({
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
-          }}>
+          }}
+        >
           {name}
         </Typography>
 
-        <Box sx={{mr: 2}}>
+        <Box sx={{ mr: 2 }}>
           <AgentTag agentTag={agentTag} />
         </Box>
 
-        <Typography variant="caption" sx={{minWidth: 60, flexShrink: 0, ml: "auto", mr: 1}}>
+        <Typography variant="caption" sx={{ minWidth: 60, flexShrink: 0, ml: "auto", mr: 1 }}>
           {duration}s
         </Typography>
 
@@ -92,7 +95,8 @@ function TraceItem({
             height: 10,
             borderRadius: 5,
             overflow: "visible",
-          }}>
+          }}
+        >
           <Tooltip title={`${t("duration")}: ${duration}s`}>
             <Box
               sx={{
@@ -100,51 +104,52 @@ function TraceItem({
                 left: `${marginLeftPercent}%`,
                 width: `${widthPercent}%`,
                 height: "100%",
-              }}>
+              }}
+            >
               <LinearProgress
                 variant="determinate"
                 value={100}
-                sx={{height: "100%", borderRadius: 5}}
+                sx={{ height: "100%", borderRadius: 5 }}
               />
             </Box>
           </Tooltip>
         </Box>
       </Box>
     </Card>
-  )
+  );
 }
 
 type TraceStep = {
-  name: string
-  duration: number
-  selected?: boolean
-  children?: TraceStep[]
-  start?: number
-  run?: RunData
-  agentTag?: string
+  name: string;
+  duration: number;
+  selected?: boolean;
+  children?: TraceStep[];
+  start?: number;
+  run?: RunData;
+  agentTag?: string;
   status?: {
-    code: number
-    message: string
-  }
-}
+    code: number;
+    message: string;
+  };
+};
 
 export function annotateTraceSteps({
   steps,
   start = 0,
   selectedRun,
 }: {
-  steps: RunData[]
-  start: number
-  selectedRun?: RunData | null
+  steps: RunData[];
+  start: number;
+  selectedRun?: RunData | null;
 }): TraceStep[] {
-  let current = start
+  let current = start;
 
   return steps.map((step, index) => {
     const isSameStartTimeWithNextStep =
       steps[index + 1] &&
       steps[index + 1].startTime &&
       step.startTime &&
-      Math.abs(step.startTime - (steps[index + 1].startTime ?? 0)) <= 1
+      Math.abs(step.startTime - (steps[index + 1].startTime ?? 0)) <= 1;
 
     const annotated: TraceStep = {
       ...step,
@@ -152,18 +157,18 @@ export function annotateTraceSteps({
       start: current,
       duration: parseDurationMs(step.startTime, step.endTime),
       children: step.children
-        ? annotateTraceSteps({steps: step.children, start: current, selectedRun})
+        ? annotateTraceSteps({ steps: step.children, start: current, selectedRun })
         : undefined,
       run: step,
       agentTag: step.attributes?.agentTag,
-    }
+    };
 
     if (!isSameStartTimeWithNextStep) {
-      current += annotated.duration
+      current += annotated.duration;
     }
 
-    return annotated
-  })
+    return annotated;
+  });
 }
 
 export function renderTraceItems({
@@ -172,12 +177,12 @@ export function renderTraceItems({
   depth = 0,
   onSelect,
 }: {
-  items: TraceStep[]
-  totalDuration: number
-  depth?: number
-  onSelect?: (step?: RunData) => void
+  items: TraceStep[];
+  totalDuration: number;
+  depth?: number;
+  onSelect?: (step?: RunData) => void;
 }): ReactElement[] {
-  return items.flatMap(item => [
+  return items.flatMap((item) => [
     <TraceItem
       key={item.name + (item.start ?? 0)}
       name={item.name}
@@ -191,9 +196,9 @@ export function renderTraceItems({
       onSelect={() => onSelect?.(item.run)}
     />,
     ...(item.children
-      ? renderTraceItems({items: item.children, totalDuration, depth: depth + 1, onSelect})
+      ? renderTraceItems({ items: item.children, totalDuration, depth: depth + 1, onSelect })
       : []),
-  ])
+  ]);
 }
 
 export default function TraceItemList({
@@ -201,12 +206,12 @@ export default function TraceItemList({
   onSelect,
   selectedRun,
 }: {
-  steps: RunData[]
-  onSelect?: (step?: RunData) => void
-  selectedRun?: RunData | null
+  steps: RunData[];
+  onSelect?: (step?: RunData) => void;
+  selectedRun?: RunData | null;
 }) {
-  const annotatedSteps = annotateTraceSteps({steps, start: 0, selectedRun})
-  const {t} = useLocaleContext()
+  const annotatedSteps = annotateTraceSteps({ steps, start: 0, selectedRun });
+  const { t } = useLocaleContext();
 
   return (
     <Box>
@@ -219,7 +224,8 @@ export default function TraceItemList({
             overflow: "hidden",
             textOverflow: "ellipsis",
           }}
-          fontWeight={500}>
+          fontWeight={500}
+        >
           {t("agentName")}
         </Typography>
 
@@ -230,7 +236,8 @@ export default function TraceItemList({
             position: "relative",
             borderRadius: 5,
             fontWeight: 500,
-          }}>
+          }}
+        >
           {t("duration")}
         </Box>
       </Box>
@@ -242,5 +249,5 @@ export default function TraceItemList({
         onSelect,
       })}
     </Box>
-  )
+  );
 }

@@ -13,8 +13,8 @@
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
   "scripts": {
-    "lint": "tsc --noEmit && biome check && pnpm -r run lint",
-    "lint:fix": "biome check --write && pnpm -r run lint",
+    "lint": "tsc --noEmit && biome check",
+    "lint:fix": "biome check --write && pnpm run lint",
     "clean": "node scripts/build-clean.mjs",
     "dev": "blocklet dev",
     "start": "cross-env NODE_ENV=development nodemon --exec tsx api/dev.ts -w api",

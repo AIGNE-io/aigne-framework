@@ -1,17 +1,17 @@
-import {ConfigProvider} from "@arcblock/ux/lib/Config"
-import {ToastProvider} from "@arcblock/ux/lib/Toast"
-import {Box, CssBaseline} from "@mui/material"
-import {Suspense} from "react"
+import { ConfigProvider } from "@arcblock/ux/lib/Config";
+import { ToastProvider } from "@arcblock/ux/lib/Toast";
+import { Box, CssBaseline } from "@mui/material";
+import { Suspense } from "react";
 import {
   Route,
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
-} from "react-router-dom"
+} from "react-router-dom";
 
-import Layout from "./layout.js"
-import List from "./list.js"
-import {translations} from "./locales/index.js"
+import Layout from "./layout.js";
+import List from "./list.js";
+import { translations } from "./locales/index.js";
 
 export default function App() {
   return (
@@ -24,7 +24,7 @@ export default function App() {
         </ToastProvider>
       </CssBaseline>
     </ConfigProvider>
-  )
+  );
 }
 
 const router = createBrowserRouter(
@@ -36,11 +36,11 @@ const router = createBrowserRouter(
           <List />
         </Layout>
       }
-    />
+    />,
   ),
-  {basename: "/"}
-)
+  { basename: "/" },
+);
 
 function AppRoutes() {
-  return <RouterProvider router={router} />
+  return <RouterProvider router={router} />;
 }

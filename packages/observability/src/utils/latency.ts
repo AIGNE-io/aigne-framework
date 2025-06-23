@@ -3,7 +3,7 @@ function getDurationParts(
   endTime?: number,
 ): { minutes: number; seconds: number; ms: string; duration: number } | null {
   if (!startTime || !endTime) return null;
-  const duration = endTime - startTime;
+  const duration = Math.abs(endTime - startTime);
   const milliseconds = duration % 1000;
   const seconds = Math.floor(duration / 1000);
   const minutes = Math.floor(seconds / 60);

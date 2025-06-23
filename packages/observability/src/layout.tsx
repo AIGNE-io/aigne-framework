@@ -1,27 +1,27 @@
-import ThemeModeToggle from "@arcblock/ux/lib/Config/theme-mode-toggle"
-import Dashboard from "@arcblock/ux/lib/Layout/dashboard"
-import {useLocaleContext} from "@arcblock/ux/lib/Locale/context"
-import LocaleSelector from "@arcblock/ux/lib/Locale/selector"
-import ManageSearchIcon from "@mui/icons-material/ManageSearch"
-import {useMemo} from "react"
+import ThemeModeToggle from "@arcblock/ux/lib/Config/theme-mode-toggle";
+import Dashboard from "@arcblock/ux/lib/Layout/dashboard";
+import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
+import LocaleSelector from "@arcblock/ux/lib/Locale/selector";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+import { useMemo } from "react";
 
-export default function Layout({children}: {children: React.ReactNode}) {
-  const {t} = useLocaleContext()
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const { t } = useLocaleContext();
 
   const renderAddons = () => {
-    const addonsArray = []
+    const addonsArray = [];
 
     // 启用了多语言，且检测到了 locale context，且有多种语言可以切换
-    addonsArray.push(<LocaleSelector key="locale-selector" showText={false} />)
+    addonsArray.push(<LocaleSelector key="locale-selector" showText={false} />);
 
     // 切换明暗主题
-    addonsArray.push(<ThemeModeToggle key="theme-mode-toggle" />)
+    addonsArray.push(<ThemeModeToggle key="theme-mode-toggle" />);
 
-    return addonsArray
-  }
+    return addonsArray;
+  };
 
-  const renderedAddons = renderAddons()
-  const nodes = Array.isArray(renderedAddons) ? renderedAddons : [renderedAddons]
+  const renderedAddons = renderAddons();
+  const nodes = Array.isArray(renderedAddons) ? renderedAddons : [renderedAddons];
 
   const links = useMemo(() => {
     return [
@@ -32,8 +32,8 @@ export default function Layout({children}: {children: React.ReactNode}) {
         showBadge: false,
         icon: <ManageSearchIcon />,
       },
-    ]
-  }, [t])
+    ];
+  }, [t]);
 
   return (
     <Dashboard
@@ -46,8 +46,9 @@ export default function Layout({children}: {children: React.ReactNode}) {
         logo: <img src="https://www.aigne.io/.well-known/service/blocklet/logo" alt="Aigne" />,
       }}
       fullWidth
-      legacy={false}>
+      legacy={false}
+    >
       {children}
     </Dashboard>
-  )
+  );
 }

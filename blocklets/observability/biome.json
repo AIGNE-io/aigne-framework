@@ -7,8 +7,8 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["lib/", "dist/", "package.json", ".oauth", "**/*.d.ts"],
-    "include": ["src/**/*.{ts,tsx}", "api/**/*.ts"]
+    "include": ["src/**/*.ts", "src/**/*.tsx"],
+    "ignore": ["node_modules", "dist"]
   },
   "formatter": {
     "enabled": true,

@@ -1,5 +1,5 @@
-import {Chip, Tooltip} from "@mui/material"
-import tinycolor from "tinycolor2"
+import { Chip, Tooltip } from "@mui/material";
+import tinycolor from "tinycolor2";
 
 const agentTagColors = {
   OrchestratorAgent: {
@@ -58,21 +58,21 @@ const agentTagColors = {
     color: "#01579b", // 更深的浅蓝色
     backgroundColor: "#e1f5fe",
   },
-}
+};
 
-export const AgentTag = ({agentTag}: {agentTag?: string}) => {
-  if (!agentTag) return null
+export const AgentTag = ({ agentTag }: { agentTag?: string }) => {
+  if (!agentTag) return null;
 
   const agentColors = Object.entries(agentTagColors).reduce(
     (acc, [key, value]) => {
       acc[key] = {
         color: value.color,
         backgroundColor: tinycolor(value.color).lighten(70).toHexString(),
-      }
-      return acc
+      };
+      return acc;
     },
-    {} as Record<string, {color: string; backgroundColor: string}>
-  )
+    {} as Record<string, { color: string; backgroundColor: string }>,
+  );
 
   return (
     <Tooltip title={agentTag}>
@@ -90,5 +90,5 @@ export const AgentTag = ({agentTag}: {agentTag?: string}) => {
         }}
       />
     </Tooltip>
-  )
-}
+  );
+};

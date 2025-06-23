@@ -42,7 +42,7 @@ export class AIGNEObserver {
     }
     this.server.port = detected;
 
-    initOpenTelemetry({
+    await initOpenTelemetry({
       serverUrl: `http://localhost:${this.server.port}`,
       dbPath: this.storage.url,
     });

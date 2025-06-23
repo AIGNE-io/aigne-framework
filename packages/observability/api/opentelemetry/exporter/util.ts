@@ -35,7 +35,9 @@ export const formatSpans = (spans: ReadableSpan[]) => {
         rootId: span.spanContext().traceId,
         parentId: span?.parentSpanContext?.spanId,
         name: span.name,
-        startTime: Math.floor(hrTimeToMilliseconds((startTime as any) || span.startTime)),
+        startTime: Number.isNaN(Number(startTime))
+          ? Math.floor(hrTimeToMilliseconds(span.startTime))
+          : Number(startTime),
         endTime: Math.floor(hrTimeToMilliseconds(span.endTime)),
         status: span.status,
         attributes: parsedAttributes,

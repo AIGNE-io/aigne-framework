@@ -1,5 +1,5 @@
 import { NodeSDK } from "@opentelemetry/sdk-node";
-
+import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import HttpExporter from "../exporter/http-exporter.js";
 
 export async function initOpenTelemetry({
@@ -7,9 +7,10 @@ export async function initOpenTelemetry({
   dbPath,
 }: { serverUrl: string; dbPath?: string }) {
   const traceExporter = new HttpExporter({ serverUrl, dbPath });
+  const spanProcessor = new SimpleSpanProcessor(traceExporter);
 
   const sdk = new NodeSDK({
-    traceExporter,
+    spanProcessor,
     instrumentations: [],
   });
 

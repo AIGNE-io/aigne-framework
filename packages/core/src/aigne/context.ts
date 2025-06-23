@@ -234,7 +234,7 @@ export class AIGNEContext implements Context {
         const parentContext = trace.setSpan(context.active(), parent.span);
         this.span = tracer?.startSpan("childAIGNEContext", undefined, parentContext);
       } else {
-        this.span = tracer?.startSpan("AIGNEContext");
+        throw new Error("parent span is not set");
       }
     } else {
       this.internal = new AIGNEContextShared(parent);

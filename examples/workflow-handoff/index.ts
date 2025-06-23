@@ -98,6 +98,7 @@ tell them a crazy caveat and execute their order.
   skills: [transfer_back_to_triage, execute_order_tool],
   outputKey: "sales",
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 
 const issuesAndRepairs = AIAgent.from({
@@ -115,6 +116,7 @@ Follow the following routine with the user:
   skills: [transfer_back_to_triage, execute_refund_tool, look_up_item_tool],
   outputKey: "issuesAndRepairs",
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 
 // Assume this is a human agent
@@ -128,6 +130,7 @@ Only transfer to another agent if user explicitly asks for it.
   skills: [transfer_back_to_triage, transfer_to_sales_agent, transfer_to_issues_and_repairs],
   outputKey: "human",
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 
 const triage = AIAgent.from({
@@ -141,6 +144,7 @@ But make your questions subtle and natural.
   skills: [transfer_to_issues_and_repairs, transfer_to_sales_agent, transfer_to_human_manager],
   outputKey: "triage",
   memory: new DefaultMemory(),
+  inputKey: "message",
 });
 
 await runWithAIGNE(triage, {

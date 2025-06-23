@@ -24,6 +24,7 @@ await runWithAIGNE(
       instructions: PromptBuilder.from(prompt),
       skills: [sqlite],
       memory: new DefaultMemory(),
+      inputKey: "message",
     });
 
     return agent;

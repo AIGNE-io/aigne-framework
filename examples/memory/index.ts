@@ -17,6 +17,7 @@ const agent = AIAgent.from({
     }),
     new FSMemory({ rootDir: join(import.meta.dirname, "memories") }),
   ],
+  inputKey: "message",
 });
 
 await runWithAIGNE(agent, {

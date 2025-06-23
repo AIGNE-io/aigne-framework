@@ -229,7 +229,13 @@ export async function runWithAIGNE(
         });
 
         if (isEmpty(input)) {
-          Object.assign(input, chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion);
+          const defaultInput = chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion;
+          Object.assign(
+            input,
+            typeof defaultInput === "string"
+              ? { [chatLoopOptions?.inputKey || DEFAULT_CHAT_INPUT_KEY]: defaultInput }
+              : defaultInput,
+          );
         }
 
         await runAgentWithAIGNE(aigne, agent, {

@@ -34,6 +34,7 @@ await runWithAIGNE(
   `,
       skills: [github],
       memory: new DefaultMemory(),
+      inputKey: "message",
     });
 
     return agent;

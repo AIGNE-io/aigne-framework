@@ -21,6 +21,7 @@ await runWithAIGNE(
   `,
       skills: [puppeteer],
       memory: new DefaultMemory(),
+      inputKey: "message",
     });
 
     return agent;

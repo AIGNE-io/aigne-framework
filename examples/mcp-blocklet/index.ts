@@ -125,6 +125,7 @@ await runWithAIGNE(
       ),
       skills: [blocklet],
       memory: new DefaultMemory(),
+      inputKey: "message",
     });
 
     return agent;

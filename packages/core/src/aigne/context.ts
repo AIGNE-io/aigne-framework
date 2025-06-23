@@ -244,7 +244,7 @@ export class AIGNEContext implements Context {
       this.rootId = this.span?.spanContext().traceId ?? v7();
     }
 
-    this.id = this.span?.spanContext().spanId ?? v7();
+    this.id = this.span?.spanContext()?.spanId ?? v7();
   }
 
   id: string;
@@ -305,6 +305,7 @@ export class AIGNEContext implements Context {
       message,
       options,
     });
+
     if (options?.userContext) {
       Object.assign(this.userContext, options.userContext);
       options.userContext = undefined;

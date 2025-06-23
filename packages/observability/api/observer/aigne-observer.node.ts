@@ -13,6 +13,7 @@ export class AIGNEObserver {
   private serverInstance?: Server;
   private initPort?: number;
   public tracer = trace.getTracer("aigne-tracer");
+  public sdkStarted: Promise<void> | undefined;
 
   constructor(options?: AIGNEObserverOptions) {
     const parsed = AIGNEObserverOptionsSchema.parse(options);
@@ -25,6 +26,11 @@ export class AIGNEObserver {
   }
 
   async serve(): Promise<void> {
+    this.sdkStarted ??= this._serve();
+    return this.sdkStarted;
+  }
+
+  async _serve(): Promise<void> {
     if (!this.server?.port || !this.storage?.url) {
       throw new Error("Server is not configured");
     }

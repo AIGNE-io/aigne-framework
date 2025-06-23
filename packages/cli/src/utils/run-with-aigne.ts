@@ -22,7 +22,6 @@ import {
   isNonNullable,
   tryOrThrow,
 } from "@aigne/core/utils/type-utils.js";
-import { sleep } from "bun";
 import { Command } from "commander";
 import PrettyError from "pretty-error";
 import { parse } from "yaml";
@@ -34,6 +33,8 @@ import {
   DEFAULT_CHAT_INPUT_KEY,
   runChatLoopInTerminal,
 } from "./run-chat-loop.js";
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export interface RunAIGNECommandOptions {
   chat?: boolean;

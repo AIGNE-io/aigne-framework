@@ -7,6 +7,7 @@
   "packages/cli": "1.12.0",
   "packages/test-utils": "0.4.3",
   "packages/transport": "0.4.3",
+  "packages/observability": "0.0.1",
   "models/anthropic": "0.3.3",
   "models/bedrock": "0.3.3",
   "models/deepseek": "0.3.3",

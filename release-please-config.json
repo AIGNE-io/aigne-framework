@@ -10,6 +10,7 @@
     "packages/cli": {},
     "packages/test-utils": {},
     "packages/transport": {},
+    "packages/observability": {},
     "models/anthropic": {},
     "models/bedrock": {},
     "models/deepseek": {},

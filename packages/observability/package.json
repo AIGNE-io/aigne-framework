@@ -53,6 +53,9 @@
     "*": {
       "index.browser": [
         "./lib/esm/index.browser.d.ts"
+      ],
+      "list": [
+        "./lib/dts/list.d.ts"
       ]
     }
   },

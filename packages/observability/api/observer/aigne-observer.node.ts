@@ -1,4 +1,7 @@
+import { mkdirSync } from "node:fs";
 import type { Server } from "node:http";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { trace } from "@opentelemetry/api";
 import type { SpanExporter } from "@opentelemetry/sdk-trace-base";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
@@ -6,6 +9,10 @@ import { isBlocklet } from "../core/util.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
 import { startServer } from "../server/index.js";
 import detect from "../server/utils/detect-port.js";
+
+const homeDir = homedir();
+const AIGNE_OBSERVER_DIR = join(homeDir, ".aigne", "observability");
+
 export class AIGNEObserver {
   private server: AIGNEObserverOptions["server"];
   private storage: AIGNEObserverOptions["storage"];
@@ -16,7 +23,14 @@ export class AIGNEObserver {
   private sdkServerStarted: Promise<void> | undefined;
 
   constructor(options?: AIGNEObserverOptions) {
-    const parsed = AIGNEObserverOptionsSchema.parse(options);
+    const params = { ...(options ?? {}) };
+
+    if (!params?.storage?.url) {
+      mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
+      params.storage = { url: join("file:", AIGNE_OBSERVER_DIR, "observer.db") };
+    }
+
+    const parsed = AIGNEObserverOptionsSchema.parse(params);
     const host = parsed.server?.host ?? process.env.AIGNE_OBSERVER_HOST ?? "localhost";
     const initPort = parsed.server?.port ?? process.env.AIGNE_OBSERVER_PORT;
     this.initPort = initPort ? Number(initPort) : undefined;

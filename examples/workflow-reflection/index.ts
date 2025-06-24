@@ -32,6 +32,7 @@ User's question:
   outputSchema: z.object({
     code: z.string().describe("Your code"),
   }),
+  inputKey: "message",
 });
 
 const reviewer = AIAgent.from({

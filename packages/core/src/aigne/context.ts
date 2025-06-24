@@ -522,10 +522,6 @@ class AIGNEContextShared {
       messageQueue?: MessageQueue;
     },
   ) {
-    console.log(
-      "-------------------- create AIGNEContextShared -----------------",
-      !!this.parent?.messageQueue,
-    );
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
   }
 

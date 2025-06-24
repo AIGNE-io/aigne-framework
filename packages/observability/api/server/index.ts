@@ -64,7 +64,6 @@ export async function startServer(
   if (!isBlocklet) {
     // @ts-ignore
     const distPath = path.join(import.meta.dirname, "../../../dist");
-
     app.use(express.static(distPath));
     app.get("/{*splat}", (_req, res) => {
       res.sendFile(path.join(distPath, "index.html"));

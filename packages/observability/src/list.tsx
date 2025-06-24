@@ -49,11 +49,7 @@ const App = forwardRef<AppRef>((_props, ref) => {
         setLoading(false);
         setTotal(totalCount);
       })
-      .catch(() => {
-        setLoading(false);
-        setTotal(0);
-        setRuns([]);
-      });
+      .catch(() => setLoading(false));
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -61,6 +57,8 @@ const App = forwardRef<AppRef>((_props, ref) => {
     ref,
     () => ({
       refetch: () => {
+        setTotal(0);
+        setRuns([]);
         fetchRuns({ page: 0, pageSize: paginationModel.pageSize });
       },
     }),

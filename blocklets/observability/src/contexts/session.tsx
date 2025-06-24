@@ -5,9 +5,9 @@ const { SessionProvider, SessionContext, SessionConsumer, withSession } =
   createAuthServiceSessionContext();
 
 function useSessionContext() {
-  const info = useContext<{
-    session: { user: { role: string } };
-  }>(SessionContext);
+  const info = useContext<{ session: import("@blocklet/sdk/lib/util/login").SessionUser }>(
+    SessionContext,
+  );
   return info;
 }
 

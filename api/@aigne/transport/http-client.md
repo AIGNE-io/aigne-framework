@@ -85,6 +85,14 @@ Configuration options for connecting to the AIGNE server
 
 `Context.id`
 
+##### rootId
+
+> **rootId**: `string`
+
+###### Implementation of
+
+`Context.rootId`
+
 ##### usage
 
 > **usage**: `ContextUsage`

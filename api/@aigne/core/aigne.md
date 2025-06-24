@@ -125,6 +125,12 @@ Provides indexed access by skill name.
 Collection of primary agents managed by this AIGNE instance.
 Provides indexed access by agent name.
 
+##### observer?
+
+> `readonly` `optional` **observer**: `AIGNEObserver`
+
+Observer for the AIGNE instance.
+
 #### Methods
 
 ##### load()
@@ -173,9 +179,9 @@ Contexts isolate state for different flows or conversations.
 
 ###### Parameters
 
-| Parameter  | Type                                    |
-| ---------- | --------------------------------------- |
-| `options?` | `Partial`\<`Context`\<`UserContext`\>\> |
+| Parameter  | Type                                                                               |
+| ---------- | ---------------------------------------------------------------------------------- |
+| `options?` | `Partial`\<`Pick`\<`Context`\<`UserContext`\>, `"memories"` \| `"userContext"`\>\> |
 
 ###### Returns
 
@@ -746,3 +752,4 @@ Options for the AIGNE class.
 | <a id="skills"></a> `skills?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Skills to use for the AIGNE instance.                                             |
 | <a id="agents"></a> `agents?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Agents to use for the AIGNE instance.                                             |
 | <a id="limits"></a> `limits?`           | `ContextLimits`                                                                                                  | Limits for the AIGNE instance, such as timeout, max tokens, max invocations, etc. |
+| <a id="observer"></a> `observer?`       | `AIGNEObserver`                                                                                                  | Observer for the AIGNE instance.                                                  |

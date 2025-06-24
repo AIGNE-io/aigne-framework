@@ -48,6 +48,14 @@ Creates a new MemoryAgent instance.
 
 #### Properties
 
+##### tag
+
+> **tag**: `string` = `"MemoryAgent"`
+
+###### Overrides
+
+[`Agent`](agents/agent.md#agent).[`tag`](agents/agent.md#agent#tag)
+
 ##### autoUpdate?
 
 > `optional` **autoUpdate**: `boolean`
@@ -273,6 +281,16 @@ Creates a new MemoryRecorder instance with predefined input and output schemas.
 
 [`Agent`](agents/agent.md#agent).[`constructor`](agents/agent.md#agent#constructor)
 
+#### Properties
+
+##### tag
+
+> **tag**: `string` = `"MemoryRecorderAgent"`
+
+###### Overrides
+
+[`Agent`](agents/agent.md#agent).[`tag`](agents/agent.md#agent#tag)
+
 ---
 
 ### `abstract` MemoryRetriever
@@ -319,6 +337,16 @@ Creates a new MemoryRetriever instance with predefined input and output schemas.
 ###### Overrides
 
 [`Agent`](agents/agent.md#agent).[`constructor`](agents/agent.md#agent#constructor)
+
+#### Properties
+
+##### tag
+
+> **tag**: `string` = `"MemoryRetrieverAgent"`
+
+###### Overrides
+
+[`Agent`](agents/agent.md#agent).[`tag`](agents/agent.md#agent#tag)
 
 ## Interfaces
 

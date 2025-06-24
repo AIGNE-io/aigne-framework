@@ -97,6 +97,14 @@ console.log(mcpAgent.name); // Output: "example-server"
 
 #### Properties
 
+##### tag
+
+> **tag**: `string` = `"MCPAgent"`
+
+###### Overrides
+
+[`Agent`](agent.md#agent).[`tag`](agent.md#agent#tag)
+
 ##### client
 
 > **client**: `Client`
@@ -494,6 +502,14 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Properties
 
+##### tag
+
+> **tag**: `string` = `"MCPBase"`
+
+###### Overrides
+
+[`Agent`](agent.md#agent).[`tag`](agent.md#agent#tag)
+
 ##### client
 
 > `protected` **client**: `ClientWithReconnect`
@@ -546,6 +562,16 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 #### Indexable
 
 \[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
+#### Properties
+
+##### tag
+
+> **tag**: `string` = `"MCPTool"`
+
+###### Overrides
+
+[`MCPBase`](#mcpbase).[`tag`](#tag-1)
 
 #### Methods
 
@@ -749,6 +775,16 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 #### Indexable
 
 \[`key`: `symbol`\]: () => `string` \| () => `Promise`\<`void`\>
+
+#### Properties
+
+##### tag
+
+> **tag**: `string` = `"MCPPrompt"`
+
+###### Overrides
+
+[`MCPBase`](#mcpbase).[`tag`](#tag-1)
 
 #### Methods
 
@@ -974,6 +1010,14 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 [`MCPBase`](#mcpbase).[`constructor`](#constructor-1)
 
 #### Properties
+
+##### tag
+
+> **tag**: `string` = `"MCPResource"`
+
+###### Overrides
+
+[`MCPBase`](#mcpbase).[`tag`](#tag-1)
 
 ##### uri
 

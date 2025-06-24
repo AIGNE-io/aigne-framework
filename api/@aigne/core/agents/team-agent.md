@@ -107,6 +107,14 @@ Create a new TeamAgent instance.
 
 #### Properties
 
+##### tag
+
+> **tag**: `string` = `"TeamAgent"`
+
+###### Overrides
+
+[`Agent`](agent.md#agent).[`tag`](agent.md#agent#tag)
+
 ##### mode
 
 > **mode**: [`ProcessMode`](#processmode)

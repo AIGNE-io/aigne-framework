@@ -21,6 +21,11 @@
 
   * [memory](/api/@aigne/core/memory.md)
 
+* [@aigne/observability](/api/@aigne/observability/README.md)
+
+  * [list](/api/@aigne/observability/list.md)
+  * [translations](/api/@aigne/observability/translations.md)
+
 * [@aigne/platform-helpers](/api/@aigne/platform-helpers.md)
 
 * [@aigne/publish-docs](/api/@aigne/publish-docs.md)

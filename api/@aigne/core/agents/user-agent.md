@@ -78,6 +78,14 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Properties
 
+##### tag
+
+> **tag**: `string` = `"UserAgent"`
+
+###### Overrides
+
+[`Agent`](agent.md#agent).[`tag`](agent.md#agent#tag)
+
 ##### context
 
 > **context**: `Context`

@@ -59,6 +59,14 @@ Creates an OrchestratorAgent instance
 
 #### Properties
 
+##### tag
+
+> **tag**: `string` = `"OrchestratorAgent"`
+
+###### Overrides
+
+[`Agent`](../core/agents/agent.md#agent).[`tag`](../core/agents/agent.md#agent#tag)
+
 ##### inputKey
 
 > **inputKey**: `string`

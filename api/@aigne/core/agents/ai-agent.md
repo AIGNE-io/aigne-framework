@@ -92,6 +92,14 @@ Create an AIAgent instance
 
 #### Properties
 
+##### tag
+
+> **tag**: `string` = `"AIAgent"`
+
+###### Overrides
+
+[`Agent`](agent.md#agent).[`tag`](agent.md#agent#tag)
+
 ##### model?
 
 > `optional` **model**: `ChatModel`

@@ -89,6 +89,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 List of memories this agent can use
 
+##### tag?
+
+> `optional` **tag**: `string`
+
 ##### maxRetrieveMemoryCount?
 
 > `optional` **maxRetrieveMemoryCount**: `number`
@@ -995,6 +999,16 @@ Create a function agent instance
 ###### Overrides
 
 [`Agent`](#agent).[`constructor`](#constructor)
+
+#### Properties
+
+##### tag
+
+> **tag**: `string` = `"FunctionAgent"`
+
+###### Overrides
+
+[`Agent`](#agent).[`tag`](#tag)
 
 #### Methods
 

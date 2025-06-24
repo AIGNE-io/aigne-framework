@@ -1,6 +1,7 @@
 import type { Server } from "node:http";
 import path from "node:path";
 import { initDatabase } from "@aigne/sqlite";
+import middleware from "@blocklet/sdk/lib/middlewares";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv-flow";
@@ -26,6 +27,20 @@ const startServerOptionsSchema = z.object({
 
 export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
 
+const ADMIN_ROLES = ["owner", "admin"];
+
+function requireAdminRole(req: Request, res: Response, next: NextFunction) {
+  if (isBlocklet) {
+    if (req.user?.role && ADMIN_ROLES.includes(req.user?.role)) {
+      return next();
+    }
+
+    res.status(403).json({ error: "Permission denied" });
+    return;
+  }
+  return next();
+}
+
 export async function startServer(
   options: StartServerOptions,
 ): Promise<{ app: express.Express; server: Server }> {
@@ -44,7 +59,12 @@ export async function startServer(
   app.use(cors());
 
   app.get("/api/sse", sse.init);
-  app.use("/api/trace", traceRouter(sse));
+  app.use(
+    "/api/trace",
+    middleware.session({ accessKey: true }),
+    requireAdminRole,
+    traceRouter(sse),
+  );
 
   if (!isBlocklet) {
     if (!distPath) {

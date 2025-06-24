@@ -5,7 +5,9 @@ const { SessionProvider, SessionContext, SessionConsumer, withSession } =
   createAuthServiceSessionContext();
 
 function useSessionContext() {
-  const info = useContext(SessionContext);
+  const info = useContext<{
+    session: { user: { role: string } };
+  }>(SessionContext);
   return info;
 }
 

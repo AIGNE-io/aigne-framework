@@ -1,4 +1,3 @@
-import List from "@aigne/observability/list";
 import { translations } from "@aigne/observability/translations";
 import { ConfigProvider } from "@arcblock/ux/lib/Config";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
@@ -8,6 +7,7 @@ import { get } from "lodash";
 import { Suspense } from "react";
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { SessionProvider } from "./contexts/session.js";
+import ListPage from "./list.js";
 
 export default function BlockletApp() {
   const basename = window?.blocklet?.prefix || "/";
@@ -42,14 +42,7 @@ export default function BlockletApp() {
 function WrappedApp() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <Box sx={{ my: 3 }}>
-            <List />
-          </Box>
-        }
-      />
+      <Route path="/" element={<ListPage />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

@@ -3,8 +3,12 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import { DataGrid } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { joinURL, withQuery } from "ufo";
+
+interface AppRef {
+  refetch: () => void;
+}
 
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
@@ -22,7 +26,7 @@ interface RunsResponse {
 const page = 0;
 const pageSize = 20;
 
-function App() {
+const App = forwardRef<AppRef>((_props, ref) => {
   const { t } = useLocaleContext();
   const [runs, setRuns] = useState<RunData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,8 +49,23 @@ function App() {
         setLoading(false);
         setTotal(totalCount);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setLoading(false);
+        setTotal(0);
+        setRuns([]);
+      });
   };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useImperativeHandle(
+    ref,
+    () => ({
+      refetch: () => {
+        fetchRuns({ page: 0, pageSize: paginationModel.pageSize });
+      },
+    }),
+    [paginationModel.pageSize],
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -212,6 +231,6 @@ function App() {
       />
     </>
   );
-}
+});
 
 export default App;

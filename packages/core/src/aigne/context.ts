@@ -234,14 +234,16 @@ export class AIGNEContext implements Context {
         const parentContext = trace.setSpan(context.active(), parent.span);
         this.span = tracer?.startSpan("childAIGNEContext", undefined, parentContext);
       } else {
-        throw new Error("parent span is not set");
+        if (process.env.AIGNE_OBSERVABILITY_DISABLED !== "true") {
+          throw new Error("parent span is not set");
+        }
       }
     } else {
       this.internal = new AIGNEContextShared(parent);
       this.span = tracer?.startSpan("AIGNEContext");
 
       // 修改了 rootId 是否会之前的有影响？，之前为 this.id
-      this.rootId = this.span?.spanContext().traceId ?? v7();
+      this.rootId = this.span?.spanContext?.().traceId ?? v7();
     }
 
     this.id = this.span?.spanContext()?.spanId ?? v7();
@@ -471,7 +473,7 @@ export class AIGNEContext implements Context {
 
           span.setStatus({ code: SpanStatusCode.OK, message: "Agent succeed" });
           span.end();
-          this.observer?.traceExporter?.forceFlush?.();
+          await this.observer?.traceExporter?.forceFlush?.();
 
           break;
         }
@@ -479,7 +481,7 @@ export class AIGNEContext implements Context {
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
           span.end();
-          this.observer?.traceExporter?.forceFlush?.();
+          await this.observer?.traceExporter?.forceFlush?.();
 
           break;
         }

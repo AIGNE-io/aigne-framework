@@ -180,6 +180,7 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
             p: 2,
             borderRadius: 2,
             overflowX: "auto",
+            color: "common.white",
           }}
         >
           {value === undefined || value === null ? (

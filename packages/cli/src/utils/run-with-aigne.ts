@@ -34,8 +34,6 @@ import {
   runChatLoopInTerminal,
 } from "./run-chat-loop.js";
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export interface RunAIGNECommandOptions {
   chat?: boolean;
   model?: string;
@@ -326,8 +324,6 @@ export async function runAgentWithAIGNE(
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, content, "utf8");
   }
-
-  await sleep(3000);
 
   return { result };
 }

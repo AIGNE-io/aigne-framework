@@ -10,9 +10,6 @@ import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
 import { startServer } from "../server/index.js";
 import detect from "../server/utils/detect-port.js";
 
-const homeDir = homedir();
-const AIGNE_OBSERVER_DIR = join(homeDir, ".aigne", "observability");
-
 export class AIGNEObserver {
   private server: AIGNEObserverOptions["server"];
   private storage: AIGNEObserverOptions["storage"];
@@ -26,6 +23,7 @@ export class AIGNEObserver {
     const params = { ...(options ?? {}) };
 
     if (!params?.storage?.url) {
+      const AIGNE_OBSERVER_DIR = join(homedir(), ".aigne", "observability");
       mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
       params.storage = { url: join("file:", AIGNE_OBSERVER_DIR, "observer.db") };
     }

@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
@@ -35,9 +35,13 @@ export function createObservabilityCommand(): Command {
     .action(async (options: ServeMCPOptions) => {
       const port = options.port || DEFAULT_PORT();
 
-      const homeDir = homedir();
-      const AIGNE_OBSERVER_DIR = join(homeDir, ".aigne", "observability");
-      mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
+      const AIGNE_OBSERVER_DIR = join(homedir(), ".aigne", "observability");
+
+      if (!existsSync(AIGNE_OBSERVER_DIR)) {
+        mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
+      }
+
+      console.log("DB PATH:", join("file:", AIGNE_OBSERVER_DIR, "observer.db"));
 
       await startObservabilityServer({
         port: Number(port) || 3000,

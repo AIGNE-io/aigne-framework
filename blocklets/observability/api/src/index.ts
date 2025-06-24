@@ -25,7 +25,7 @@ const startServer = async () => {
   const { app, server } = await startObservabilityServer({
     port: Number(process.env.BLOCKLET_PORT) || 3000,
     dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
-    traceMiddleware: [middleware.session({ accessKey: true }), requireAdminRole],
+    traceTreeMiddleware: [middleware.session({ accessKey: true }), requireAdminRole],
   });
 
   const BLOCKLET_APP_DIR = process.env.BLOCKLET_APP_DIR;

@@ -26,7 +26,7 @@ const expressMiddlewareSchema = z
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
-  traceMiddleware: z.array(expressMiddlewareSchema).optional(),
+  traceTreeMiddleware: z.array(expressMiddlewareSchema).optional(),
 });
 
 export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
@@ -36,7 +36,7 @@ export async function startServer(
 ): Promise<{ app: express.Express; server: Server }> {
   const { port, dbUrl } = startServerOptionsSchema.parse(options);
 
-  const traceMiddleware = options.traceMiddleware ?? [
+  const traceTreeMiddleware = options.traceTreeMiddleware ?? [
     (_req: Request, _res: Response, next: NextFunction) => next(),
   ];
 
@@ -57,7 +57,7 @@ export async function startServer(
     "/api/trace",
     traceRouter({
       sse,
-      middleware: Array.isArray(traceMiddleware) ? traceMiddleware : [traceMiddleware],
+      middleware: Array.isArray(traceTreeMiddleware) ? traceTreeMiddleware : [traceTreeMiddleware],
     }),
   );
 

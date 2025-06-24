@@ -297,7 +297,6 @@ export class AIGNE<U extends UserContext = UserContext> {
     message?: I & Message,
     options?: InvokeOptions<U>,
   ): UserAgent<I, O> | Promise<AgentResponse<O> | [AgentResponse<O>, Agent]> {
-    // this.observer?.serve();
     const context = new AIGNEContext(this);
     return context.invoke(agent, message, { ...options, newContext: false });
   }
@@ -320,7 +319,6 @@ export class AIGNE<U extends UserContext = UserContext> {
     payload: Omit<MessagePayload, "context"> | Message,
     options?: InvokeOptions<U>,
   ) {
-    // this.observer?.serve();
     return new AIGNEContext(this).publish(topic, payload, options);
   }
 

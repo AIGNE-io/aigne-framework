@@ -154,7 +154,7 @@ test("AIGNE example invoke get an user agent ", async () => {
     inputKey: "message",
   });
 
-  const userAgent = await aigne.invoke(agent);
+  const userAgent = aigne.invoke(agent);
 
   const result1 = await userAgent.invoke({ message: "hello" });
   console.log(result1); // { message: "Hello, How can I assist you today?" }
@@ -256,7 +256,7 @@ test("AIGNE.invoke with reflection", async () => {
   });
 
   const aigne = new AIGNE({ agents: [plusOne, reviewer] });
-  await aigne.publish(UserInputTopic, { num: 1 });
+  aigne.publish(UserInputTopic, { num: 1 });
   const { message: result } = await aigne.subscribe(UserOutputTopic);
 
   expect(result).toEqual({ num: 11, approval: "approve" });

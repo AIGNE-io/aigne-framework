@@ -76,7 +76,7 @@ export interface ContextEventMap {
 export type ContextEmitEventMap = {
   [K in keyof ContextEventMap]: OmitPropertiesFromArrayFirstElement<
     ContextEventMap[K],
-    "internalId" | "contextId" | "parentContextId" | "timestamp"
+    "contextId" | "parentContextId" | "timestamp"
   >;
 };
 
@@ -114,6 +114,8 @@ export interface Context<U extends UserContext = UserContext>
 
   parentId?: string;
 
+  rootId: string;
+
   model?: ChatModel;
 
   skills?: Agent[];
@@ -127,8 +129,6 @@ export interface Context<U extends UserContext = UserContext>
   limits?: ContextLimits;
 
   status?: "normal" | "timeout";
-
-  rootId: string;
 
   userContext: U;
 
@@ -234,7 +234,7 @@ export class AIGNEContext implements Context {
         const parentContext = trace.setSpan(context.active(), parent.span);
         this.span = tracer?.startSpan("childAIGNEContext", undefined, parentContext);
       } else {
-        if (process.env.AIGNE_OBSERVABILITY_DISABLED !== "true") {
+        if (!process.env.AIGNE_OBSERVABILITY_DISABLED) {
           throw new Error("parent span is not set");
         }
       }
@@ -487,10 +487,7 @@ export class AIGNEContext implements Context {
         }
       }
     } catch (err) {
-      console.error("AIGNEContext.trace observer error", {
-        eventName,
-        error: err,
-      });
+      logger.error("AIGNEContext.trace observer error", { eventName, error: err });
     }
   }
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.12.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.11.10...example-mcp-blocklet-v1.12.0) (2025-06-24)
+
+
+### Features
+
+* support observability for cli and blocklet ([#155](https://github.com/AIGNE-io/aigne-framework/issues/155)) ([5baa705](https://github.com/AIGNE-io/aigne-framework/commit/5baa705a33cfdba1efc5ccbe18674c27513ca97d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.15.0
+    * @aigne/cli bumped to 1.13.0
+    * @aigne/core bumped to 1.22.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.4
+
 ## [1.11.10](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.11.9...example-mcp-blocklet-v1.11.10) (2025-06-20)
 
 

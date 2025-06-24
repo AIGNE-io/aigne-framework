@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.13.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.12.0...cli-v1.13.0) (2025-06-24)
+
+
+### Features
+
+* support observability for cli and blocklet ([#155](https://github.com/AIGNE-io/aigne-framework/issues/155)) ([5baa705](https://github.com/AIGNE-io/aigne-framework/commit/5baa705a33cfdba1efc5ccbe18674c27513ca97d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.15.0
+    * @aigne/anthropic bumped to 0.3.4
+    * @aigne/bedrock bumped to 0.3.4
+    * @aigne/core bumped to 1.22.0
+    * @aigne/deepseek bumped to 0.3.4
+    * @aigne/gemini bumped to 0.3.4
+    * @aigne/ollama bumped to 0.3.4
+    * @aigne/open-router bumped to 0.3.4
+    * @aigne/openai bumped to 0.3.4
+    * @aigne/xai bumped to 0.3.4
+
 ## [1.12.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.11.9...cli-v1.12.0) (2025-06-20)
 
 

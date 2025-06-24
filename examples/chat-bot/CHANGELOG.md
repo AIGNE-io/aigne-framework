@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.10.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.9.12...example-chat-bot-v1.10.0) (2025-06-24)
+
+
+### Features
+
+* support observability for cli and blocklet ([#155](https://github.com/AIGNE-io/aigne-framework/issues/155)) ([5baa705](https://github.com/AIGNE-io/aigne-framework/commit/5baa705a33cfdba1efc5ccbe18674c27513ca97d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.13.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.4
+
 ## [1.9.12](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.9.11...example-chat-bot-v1.9.12) (2025-06-20)
 
 

@@ -50,7 +50,8 @@ export class AIGNEObserver {
 
     if (isBlocklet) return;
 
-    const distPath = path.join(__dirname, "../../../dist");
+    // @ts-ignore
+    const distPath = path.join(import.meta.dirname, "../../../dist");
     this.serverInstance = (
       await startServer({ distPath, port: this.server.port, dbUrl: this.storage.url })
     ).server;

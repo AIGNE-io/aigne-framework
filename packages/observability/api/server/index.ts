@@ -1,7 +1,6 @@
 import type { Server } from "node:http";
 import path from "node:path";
 import { initDatabase } from "@aigne/sqlite";
-import middleware from "@blocklet/sdk/lib/middlewares";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv-flow";
@@ -19,32 +18,28 @@ const sse = new SSE();
 
 dotenv.config();
 
+const expressMiddlewareSchema = z
+  .function()
+  .args(z.custom<Request>(), z.custom<Response>(), z.custom<NextFunction>())
+  .returns(z.void());
+
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
   distPath: z.string(),
+  traceMiddleware: z.array(expressMiddlewareSchema).optional(),
 });
 
 export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
-
-const ADMIN_ROLES = ["owner", "admin"];
-
-function requireAdminRole(req: Request, res: Response, next: NextFunction) {
-  if (isBlocklet) {
-    if (req.user?.role && ADMIN_ROLES.includes(req.user?.role)) {
-      return next();
-    }
-
-    res.status(403).json({ error: "Permission denied" });
-    return;
-  }
-  return next();
-}
 
 export async function startServer(
   options: StartServerOptions,
 ): Promise<{ app: express.Express; server: Server }> {
   const { port, distPath, dbUrl } = startServerOptionsSchema.parse(options);
+
+  const traceMiddleware = options.traceMiddleware ?? [
+    (_req: Request, _res: Response, next: NextFunction) => next(),
+  ];
 
   const db = await initDatabase({ url: dbUrl });
   await migrate(db);
@@ -61,9 +56,10 @@ export async function startServer(
   app.get("/api/sse", sse.init);
   app.use(
     "/api/trace",
-    middleware.session({ accessKey: true }),
-    requireAdminRole,
-    traceRouter(sse),
+    traceRouter({
+      sse,
+      middleware: Array.isArray(traceMiddleware) ? traceMiddleware : [traceMiddleware],
+    }),
   );
 
   if (!isBlocklet) {

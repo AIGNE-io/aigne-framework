@@ -8,7 +8,7 @@ const getObservabilityDbPath = () => {
     mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
   }
   const dbFilePath = resolve(AIGNE_OBSERVER_DIR, "observer.db");
-  const dbUrl = process.platform === "win32" ? dbFilePath : join("file:", dbFilePath);
+  const dbUrl = process.platform === "win32" ? "file:observer.db" : join("file:", dbFilePath);
 
   return dbUrl;
 };

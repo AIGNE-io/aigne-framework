@@ -1,7 +1,5 @@
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
-// @ts-ignore
 import { getObservabilityDbPath } from "@aigne/observability/db-path";
-// @ts-ignore
 import { startServer as startObservabilityServer } from "@aigne/observability/server";
 import { Command, type OptionValues } from "commander";
 

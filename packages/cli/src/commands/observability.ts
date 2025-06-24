@@ -1,7 +1,6 @@
-import { existsSync, mkdirSync } from "node:fs";
-import { homedir } from "node:os";
-import { join, resolve } from "node:path";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
+// @ts-ignore
+import { getObservabilityDbPath } from "@aigne/observability/db-path";
 // @ts-ignore
 import { startServer as startObservabilityServer } from "@aigne/observability/server";
 import { Command, type OptionValues } from "commander";
@@ -34,13 +33,7 @@ export function createObservabilityCommand(): Command {
     .option("--port <port>", "Port to run the MCP server on", (s) => Number.parseInt(s))
     .action(async (options: ServeMCPOptions) => {
       const port = options.port || DEFAULT_PORT();
-
-      const AIGNE_OBSERVER_DIR = join(homedir(), ".aigne", "observability");
-      if (!existsSync(AIGNE_OBSERVER_DIR)) {
-        mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
-      }
-      const dbFilePath = resolve(AIGNE_OBSERVER_DIR, "observer.db");
-      const dbUrl = `file://${dbFilePath.replace(/\\/g, "/")}`;
+      const dbUrl = getObservabilityDbPath();
 
       console.log("DB PATH:", dbUrl);
 

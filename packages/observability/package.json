@@ -47,6 +47,14 @@
     },
     "./translations": {
       "default": "./src/locales/index.ts"
+    },
+    "./db-path": {
+      "browser": "./lib/esm/core/db-path.js",
+      "node": {
+        "require": "./lib/cjs/core/db-path.js",
+        "import": "./lib/esm/core/db-path.js"
+      },
+      "default": "./lib/esm/core/db-path.js"
     }
   },
   "typesVersions": {
@@ -56,6 +64,9 @@
       ],
       "list": [
         "./lib/dts/list.d.ts"
+      ],
+      "db-path": [
+        "./lib/dts/db-path.d.ts"
       ]
     }
   },

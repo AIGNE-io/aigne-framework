@@ -1,7 +1,7 @@
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import type { Server } from "node:http";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { trace } from "@opentelemetry/api";
 import type { SpanExporter } from "@opentelemetry/sdk-trace-base";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
@@ -24,8 +24,12 @@ export class AIGNEObserver {
 
     if (!params?.storage?.url) {
       const AIGNE_OBSERVER_DIR = join(homedir(), ".aigne", "observability");
-      mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
-      params.storage = { url: join("file:", AIGNE_OBSERVER_DIR, "observer.db") };
+      if (!existsSync(AIGNE_OBSERVER_DIR)) {
+        mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
+      }
+      const dbFilePath = resolve(AIGNE_OBSERVER_DIR, "observer.db");
+      const dbUrl = `file://${dbFilePath.replace(/\\/g, "/")}`;
+      params.storage = { url: dbUrl };
     }
 
     const parsed = AIGNEObserverOptionsSchema.parse(params);

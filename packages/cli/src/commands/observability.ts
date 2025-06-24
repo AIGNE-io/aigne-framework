@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
 // @ts-ignore
 import { startServer as startObservabilityServer } from "@aigne/observability/server";
@@ -36,17 +36,15 @@ export function createObservabilityCommand(): Command {
       const port = options.port || DEFAULT_PORT();
 
       const AIGNE_OBSERVER_DIR = join(homedir(), ".aigne", "observability");
-
       if (!existsSync(AIGNE_OBSERVER_DIR)) {
         mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
       }
+      const dbFilePath = resolve(AIGNE_OBSERVER_DIR, "observer.db");
+      const dbUrl = `file://${dbFilePath.replace(/\\/g, "/")}`;
 
-      console.log("DB PATH:", join("file:", AIGNE_OBSERVER_DIR, "observer.db"));
+      console.log("DB PATH:", dbUrl);
 
-      await startObservabilityServer({
-        port: Number(port) || 3000,
-        dbUrl: join("file:", AIGNE_OBSERVER_DIR, "observer.db"),
-      });
+      await startObservabilityServer({ port: Number(port) || 3000, dbUrl: dbUrl });
     })
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);

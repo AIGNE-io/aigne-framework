@@ -1,4 +1,4 @@
-name: Observability
+name: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
 description: General observability for recording and viewing traces
 group: dapp
 main: api/dist/index.js
@@ -22,7 +22,7 @@ interfaces:
   - type: web
     name: publicUrl
     path: /
-    prefix: '*'
+    prefix: "*"
     port: BLOCKLET_PORT
     protocol: http
     proxyBehavior: service
@@ -30,22 +30,23 @@ did: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
 scripts:
   dev: npm run start
 logo: logo.png
-community: ''
-documentation: ''
-homepage: ''
-license: ''
+community: ""
+documentation: ""
+homepage: ""
+license: ""
 payment:
   price: []
   share: []
 timeout:
   start: 60
 requirements:
-  server: '>=1.7.0'
-  os: '*'
-  cpu: '*'
-  nodejs: '*'
+  server: ">=1.7.0"
+  os: "*"
+  cpu: "*"
+  nodejs: "*"
 environments: []
-capabilities: {}
+capabilities:
+  navigation: true
 screenshots:
   - 5621f112b2493f73592e2c43c9700233.png
   - d8a9b45108c4ec0d77af9c173279ead6.png

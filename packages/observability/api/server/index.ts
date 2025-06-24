@@ -26,7 +26,6 @@ const expressMiddlewareSchema = z
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
-  distPath: z.string(),
   traceMiddleware: z.array(expressMiddlewareSchema).optional(),
 });
 
@@ -35,7 +34,7 @@ export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
 export async function startServer(
   options: StartServerOptions,
 ): Promise<{ app: express.Express; server: Server }> {
-  const { port, distPath, dbUrl } = startServerOptionsSchema.parse(options);
+  const { port, dbUrl } = startServerOptionsSchema.parse(options);
 
   const traceMiddleware = options.traceMiddleware ?? [
     (_req: Request, _res: Response, next: NextFunction) => next(),
@@ -63,9 +62,8 @@ export async function startServer(
   );
 
   if (!isBlocklet) {
-    if (!distPath) {
-      throw new Error("distPath is required in development");
-    }
+    // @ts-ignore
+    const distPath = path.join(import.meta.dirname, "../../../dist");
 
     app.use(express.static(distPath));
     app.get("/{*splat}", (_req, res) => {

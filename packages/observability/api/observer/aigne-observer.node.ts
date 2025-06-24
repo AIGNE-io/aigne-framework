@@ -1,5 +1,4 @@
 import type { Server } from "node:http";
-import path from "node:path";
 import { trace } from "@opentelemetry/api";
 import type { SpanExporter } from "@opentelemetry/sdk-trace-base";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
@@ -50,10 +49,8 @@ export class AIGNEObserver {
 
     if (isBlocklet) return;
 
-    // @ts-ignore
-    const distPath = path.join(import.meta.dirname, "../../../dist");
     this.serverInstance = (
-      await startServer({ distPath, port: this.server.port, dbUrl: this.storage.url })
+      await startServer({ port: this.server.port, dbUrl: this.storage.url })
     ).server;
   }
 

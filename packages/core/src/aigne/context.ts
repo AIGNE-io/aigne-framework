@@ -259,6 +259,10 @@ export class AIGNEContext implements Context {
 
   readonly internal: AIGNEContextShared;
 
+  get messageQueue() {
+    return this.internal.messageQueue;
+  }
+
   get model() {
     return this.internal.model;
   }
@@ -518,6 +522,10 @@ class AIGNEContextShared {
       messageQueue?: MessageQueue;
     },
   ) {
+    console.log(
+      "-------------------- create AIGNEContextShared -----------------",
+      !!this.parent?.messageQueue,
+    );
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
   }
 

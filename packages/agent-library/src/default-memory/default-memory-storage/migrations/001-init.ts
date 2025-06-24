@@ -10,5 +10,11 @@ CREATE TABLE "Memories" (
   "content" JSON NOT NULL
 )
 `,
+    `\
+CREATE VIRTUAL TABLE "Memories_fts" USING fts5(
+  id UNINDEXED,
+  content
+)
+`,
   ],
 };

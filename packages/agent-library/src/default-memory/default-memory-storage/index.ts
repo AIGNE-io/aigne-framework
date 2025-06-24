@@ -1,8 +1,10 @@
 import type { AgentInvokeOptions, Context, Memory } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { initDatabase } from "@aigne/sqlite";
-import { type InferSelectModel, desc, eq, isNull } from "drizzle-orm";
+import { type InferSelectModel, desc, eq, isNull, sql } from "drizzle-orm";
 import type { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
+import { v7 } from "uuid";
+import { stringify } from "yaml";
 import { MemoryStorage } from "../storage.js";
 import { migrate } from "./migrate.js";
 import { Memories } from "./models/memory.js";
@@ -12,6 +14,7 @@ const DEFAULT_MAX_MEMORY_COUNT = 10;
 export interface DefaultMemoryStorageOptions {
   url?: string;
   getSessionId?: (context: Context) => PromiseOrValue<string>;
+  enableFTS?: boolean;
 }
 
 export class DefaultMemoryStorage extends MemoryStorage {
@@ -45,7 +48,7 @@ export class DefaultMemoryStorage extends MemoryStorage {
   }
 
   async search(
-    query: { limit?: number },
+    query: { search?: string; limit?: number },
     { context }: AgentInvokeOptions,
   ): Promise<{ result: Memory[] }> {
     const { limit = DEFAULT_MAX_MEMORY_COUNT } = query;
@@ -54,13 +57,29 @@ export class DefaultMemoryStorage extends MemoryStorage {
 
     const db = await this.db;
 
-    const memories = await db
-      .select()
-      .from(Memories)
-      .where(sessionId ? eq(Memories.sessionId, sessionId) : isNull(Memories.sessionId))
-      .orderBy(desc(Memories.id))
-      .limit(limit)
-      .execute();
+    const memories =
+      this.options?.enableFTS && query.search
+        ? await db
+            .select({
+              id: Memories.id,
+              sessionId: Memories.sessionId,
+              content: Memories.content,
+              createdAt: Memories.createdAt,
+              updatedAt: Memories.updatedAt,
+            })
+            .from(Memories)
+            .innerJoin(sql`Memories_fts`, sql`Memories_fts.id = ${Memories.id}`)
+            .where(sql`Memories_fts MATCH ${query.search}`)
+            .orderBy(sql`bm25(Memories_fts)`)
+            .limit(limit)
+            .execute()
+        : await db
+            .select()
+            .from(Memories)
+            .where(sessionId ? eq(Memories.sessionId, sessionId) : isNull(Memories.sessionId))
+            .orderBy(desc(Memories.id))
+            .limit(limit)
+            .execute();
 
     return {
       result: memories.reverse().map(this.convertMemory),
@@ -75,17 +94,35 @@ export class DefaultMemoryStorage extends MemoryStorage {
 
     const db = await this.db;
 
-    const [result] = await db
-      .insert(Memories)
-      .values({
-        ...memory,
-        sessionId,
-      })
-      .returning()
-      .execute();
+    const id = v7();
+
+    const [[result]] = await Promise.all([
+      db
+        .insert(Memories)
+        .values({
+          ...memory,
+          id,
+          content: memory.content as string,
+          sessionId,
+        })
+        .returning()
+        .execute(),
+      this.options?.enableFTS &&
+        db.run(
+          sql`\
+          insert into Memories_fts (id, content)
+          values (${id}, ${this.segment(stringify(memory.content)).join(" ")})`,
+        ),
+    ]);
 
     if (!result) throw new Error("Failed to create memory");
 
     return { result: this.convertMemory(result) };
+  }
+
+  protected segment(str: string): string[] {
+    return Array.from(new Intl.Segmenter(undefined, { granularity: "word" }).segment(str)).map(
+      (i) => i.segment,
+    );
   }
 }

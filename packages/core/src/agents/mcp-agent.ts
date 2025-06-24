@@ -421,7 +421,7 @@ class ClientWithReconnect extends Client {
   }
 }
 
-export interface MCPBaseOptions<I extends Message = Message, O extends Message = Message>
+export interface MCPBaseOptions<I extends Message = any, O extends Message = any>
   extends AgentOptions<I, O> {
   client: ClientWithReconnect;
 }

@@ -62,21 +62,20 @@ export class FSMemory extends MemoryAgent {
 
     super({
       ...options,
+      recorder:
+        options.recorder ??
+        new FSMemoryRecorder({
+          memoryFileName,
+          ...options.recorderOptions,
+        }),
+      retriever:
+        options.retriever ??
+        new FSMemoryRetriever({
+          memoryFileName,
+          ...options.retrieverOptions,
+        }),
       autoUpdate: options.autoUpdate ?? true,
     });
-
-    this.recorder =
-      options.recorder ??
-      new FSMemoryRecorder({
-        memoryFileName,
-        ...options.recorderOptions,
-      });
-    this.retriever =
-      options.retriever ??
-      new FSMemoryRetriever({
-        memoryFileName,
-        ...options.retrieverOptions,
-      });
   }
 }
 

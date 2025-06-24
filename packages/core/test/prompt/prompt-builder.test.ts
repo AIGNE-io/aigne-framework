@@ -24,7 +24,7 @@ test("PromptBuilder should build messages correctly", async () => {
   await memory.record(
     {
       role: "agent",
-      content: [{ message: "Hello, How can I help you?" }],
+      content: [{ role: "agent", content: { message: "Hello, How can I help you?" } }],
       source: "TestAgent",
     },
 

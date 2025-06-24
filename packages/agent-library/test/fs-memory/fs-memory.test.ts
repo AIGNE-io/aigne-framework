@@ -138,7 +138,7 @@ test("FSMemory retrieve should write all memory into memory file", async () => {
 
     const result = await memory.record(
       {
-        content: [{ role: "user", content: "I like blue color." }],
+        content: [{ role: "user", content: { message: "I like blue color." } }],
       },
       engine.newContext(),
     );

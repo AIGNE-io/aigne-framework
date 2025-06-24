@@ -9,8 +9,18 @@ import {
 import type { Context } from "../aigne/context.js";
 import type { MessagePayload } from "../aigne/message-queue.js";
 import { checkArguments, remove } from "../utils/type-utils.js";
-import type { MemoryRecorder, MemoryRecorderInput, MemoryRecorderOutput } from "./recorder.js";
-import type { MemoryRetriever, MemoryRetrieverInput, MemoryRetrieverOutput } from "./retriever.js";
+import {
+  MemoryRecorder,
+  type MemoryRecorderInput,
+  type MemoryRecorderOptions,
+  type MemoryRecorderOutput,
+} from "./recorder.js";
+import {
+  MemoryRetriever,
+  type MemoryRetrieverInput,
+  type MemoryRetrieverOptions,
+  type MemoryRetrieverOutput,
+} from "./retriever.js";
 
 export interface Memory {
   id: string;
@@ -22,8 +32,11 @@ export interface Memory {
 export const newMemoryId = () => v7();
 
 export interface MemoryAgentOptions
-  extends Partial<Pick<MemoryAgent, "recorder" | "retriever" | "autoUpdate">>,
-    Pick<AgentOptions, "subscribeTopic" | "skills"> {}
+  extends Partial<Pick<MemoryAgent, "autoUpdate">>,
+    Pick<AgentOptions, "subscribeTopic" | "skills"> {
+  recorder?: MemoryRecorder | MemoryRecorderOptions["process"] | MemoryRecorderOptions;
+  retriever?: MemoryRetriever | MemoryRetrieverOptions["process"] | MemoryRetrieverOptions;
+}
 
 /**
  * A specialized agent responsible for managing, storing, and retrieving memories within the agent system.
@@ -46,8 +59,24 @@ export class MemoryAgent extends Agent {
       skills: options.skills,
     });
 
-    this.recorder = options.recorder;
-    this.retriever = options.retriever;
+    this.recorder =
+      options.recorder instanceof MemoryRecorder
+        ? options.recorder
+        : options.recorder &&
+          new MemoryRecorder(
+            typeof options.recorder === "function"
+              ? { process: options.recorder }
+              : options.recorder,
+          );
+    this.retriever =
+      options.retriever instanceof MemoryRetriever
+        ? options.retriever
+        : options.retriever &&
+          new MemoryRetriever(
+            typeof options.retriever === "function"
+              ? { process: options.retriever }
+              : options.retriever,
+          );
     this.autoUpdate = options.autoUpdate;
   }
 

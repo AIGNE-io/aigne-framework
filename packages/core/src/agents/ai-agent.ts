@@ -181,7 +181,7 @@ export const aiAgentOptionsSchema: ZodObject<{
  * Basic AIAgent creation:
  * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-basic}
  */
-export class AIAgent<I extends Message = Message, O extends Message = Message> extends Agent<I, O> {
+export class AIAgent<I extends Message = any, O extends Message = any> extends Agent<I, O> {
   tag = "AIAgent";
 
   /**

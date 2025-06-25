@@ -973,6 +973,9 @@ importers:
       '@aigne/marked-terminal':
         specifier: ^7.3.1
         version: 7.3.1(marked@15.0.12)
+      '@aigne/observability':
+        specifier: workspace:^
+        version: link:../observability
       '@aigne/ollama':
         specifier: workspace:^
         version: link:../../models/ollama

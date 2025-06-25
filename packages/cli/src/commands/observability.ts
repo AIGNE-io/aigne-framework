@@ -1,0 +1,42 @@
+import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import { getObservabilityDbPath } from "@aigne/observability/db-path";
+import { startServer as startObservabilityServer } from "@aigne/observability/server";
+import { Command, type OptionValues } from "commander";
+
+interface ServeMCPOptions extends OptionValues {
+  host: string;
+  port?: number;
+}
+
+const DEFAULT_PORT = () =>
+  tryOrThrow(
+    () => {
+      const { PORT } = process.env;
+      if (!PORT) return 7890;
+      const port = Number.parseInt(PORT);
+      if (!port || !Number.isInteger(port)) throw new Error(`Invalid PORT: ${PORT}`);
+      return port;
+    },
+    (error) => new Error(`parse PORT error ${error.message}`),
+  );
+
+export function createObservabilityCommand(): Command {
+  return new Command("observability")
+    .description("Start the observability server")
+    .option(
+      "--host <host>",
+      "Host to run the MCP server on, use 0.0.0.0 to publicly expose the server",
+      "localhost",
+    )
+    .option("--port <port>", "Port to run the MCP server on", (s) => Number.parseInt(s))
+    .action(async (options: ServeMCPOptions) => {
+      const port = options.port || DEFAULT_PORT();
+      const dbUrl = getObservabilityDbPath();
+
+      console.log("DB PATH:", dbUrl);
+
+      await startObservabilityServer({ port: Number(port) || 3000, dbUrl: dbUrl });
+    })
+    .showHelpAfterError(true)
+    .showSuggestionAfterError(true);
+}

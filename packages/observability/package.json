@@ -40,19 +40,35 @@
         "require": "./lib/cjs/server/index.js",
         "import": "./lib/esm/server/index.js"
       },
-      "default": "./lib/esm/server/index.js"
+      "default": "./lib/esm/server/index.js",
+      "types": "./lib/dts/server/index.d.ts"
     },
     "./list": {
       "default": "./src/list.tsx"
     },
     "./translations": {
       "default": "./src/locales/index.ts"
+    },
+    "./db-path": {
+      "browser": "./lib/esm/core/db-path.js",
+      "node": {
+        "require": "./lib/cjs/core/db-path.js",
+        "import": "./lib/esm/core/db-path.js"
+      },
+      "default": "./lib/esm/core/db-path.js",
+      "types": "./lib/dts/core/db-path.d.ts"
     }
   },
   "typesVersions": {
     "*": {
       "index.browser": [
         "./lib/esm/index.browser.d.ts"
+      ],
+      "server": [
+        "./lib/dts/server/index.d.ts"
+      ],
+      "db-path": [
+        "./lib/dts/core/db-path.d.ts"
       ]
     }
   },

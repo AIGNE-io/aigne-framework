@@ -1,4 +1,4 @@
-import { Chip, Tooltip } from "@mui/material";
+import { Chip } from "@mui/material";
 import tinycolor from "tinycolor2";
 
 const agentTagColors = {
@@ -67,7 +67,10 @@ export const AgentTag = ({ agentTag }: { agentTag?: string }) => {
     (acc, [key, value]) => {
       acc[key] = {
         color: value.color,
-        backgroundColor: tinycolor(value.color).lighten(70).toHexString(),
+        backgroundColor:
+          tinycolor(value.color).lighten(70).toHexString() === "#ffffff"
+            ? value.backgroundColor
+            : tinycolor(value.color).lighten(70).toHexString(),
       };
       return acc;
     },
@@ -75,20 +78,18 @@ export const AgentTag = ({ agentTag }: { agentTag?: string }) => {
   );
 
   return (
-    <Tooltip title={agentTag}>
-      <Chip
-        label={agentTag}
-        size="small"
-        variant="outlined"
-        sx={{
-          height: 21,
-          width: "150px",
-          backgroundColor: `${agentColors[agentTag as keyof typeof agentColors]?.backgroundColor} !important`,
-          color: `${agentColors[agentTag as keyof typeof agentColors]?.color} !important`,
-          border: 0,
-          fontSize: 10,
-        }}
-      />
-    </Tooltip>
+    <Chip
+      label={agentTag}
+      size="small"
+      variant="outlined"
+      sx={{
+        height: 21,
+        width: "150px",
+        backgroundColor: `${agentColors[agentTag as keyof typeof agentColors]?.backgroundColor} !important`,
+        color: `${agentColors[agentTag as keyof typeof agentColors]?.color} !important`,
+        border: 0,
+        fontSize: 10,
+      }}
+    />
   );
 };

@@ -6,8 +6,8 @@ import { Trace } from "../models/trace.js";
 
 const router = express.Router();
 
-export default (sse: SSE) => {
-  router.get("/tree", async (req: Request, res: Response) => {
+export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHandler[] }) => {
+  router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
     const page = Number(req.query.page) || 0;
     const pageSize = Number(req.query.pageSize) || 10;

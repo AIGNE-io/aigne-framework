@@ -18,10 +18,15 @@ const sse = new SSE();
 
 dotenv.config();
 
+const expressMiddlewareSchema = z
+  .function()
+  .args(z.custom<Request>(), z.custom<Response>(), z.custom<NextFunction>())
+  .returns(z.void());
+
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
-  distPath: z.string(),
+  traceTreeMiddleware: z.array(expressMiddlewareSchema).optional(),
 });
 
 export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
@@ -29,7 +34,11 @@ export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
 export async function startServer(
   options: StartServerOptions,
 ): Promise<{ app: express.Express; server: Server }> {
-  const { port, distPath, dbUrl } = startServerOptionsSchema.parse(options);
+  const { port, dbUrl } = startServerOptionsSchema.parse(options);
+
+  const traceTreeMiddleware = options.traceTreeMiddleware ?? [
+    (_req: Request, _res: Response, next: NextFunction) => next(),
+  ];
 
   const db = await initDatabase({ url: dbUrl });
   await migrate(db);
@@ -44,13 +53,17 @@ export async function startServer(
   app.use(cors());
 
   app.get("/api/sse", sse.init);
-  app.use("/api/trace", traceRouter(sse));
+  app.use(
+    "/api/trace",
+    traceRouter({
+      sse,
+      middleware: Array.isArray(traceTreeMiddleware) ? traceTreeMiddleware : [traceTreeMiddleware],
+    }),
+  );
 
   if (!isBlocklet) {
-    if (!distPath) {
-      throw new Error("distPath is required in development");
-    }
-
+    // @ts-ignore
+    const distPath = path.join(import.meta.dirname, "../../../dist");
     app.use(express.static(distPath));
     app.get("/{*splat}", (_req, res) => {
       res.sendFile(path.join(distPath, "index.html"));

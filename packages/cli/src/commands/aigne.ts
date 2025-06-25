@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { AIGNE_CLI_VERSION } from "../constants.js";
 import { asciiLogo } from "../utils/ascii-logo.js";
 import { createCreateCommand } from "./create.js";
+import { createObservabilityCommand } from "./observability.js";
 import { createRunCommand } from "./run.js";
 import { createServeCommand } from "./serve.js";
 import { createTestCommand } from "./test.js";
@@ -17,6 +18,7 @@ export function createAIGNECommand(): Command {
     .addCommand(createTestCommand())
     .addCommand(createCreateCommand())
     .addCommand(createServeCommand())
+    .addCommand(createObservabilityCommand())
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);
 }

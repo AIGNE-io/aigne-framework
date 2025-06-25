@@ -56,10 +56,10 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 
 #### Type Parameters
 
-| Type Parameter                      | Default type          | Description                               |
-| ----------------------------------- | --------------------- | ----------------------------------------- |
-| `I` _extends_ [`Message`](#message) | [`Message`](#message) | The input message type the agent accepts  |
-| `O` _extends_ [`Message`](#message) | [`Message`](#message) | The output message type the agent returns |
+| Type Parameter                      | Default type | Description                               |
+| ----------------------------------- | ------------ | ----------------------------------------- |
+| `I` _extends_ [`Message`](#message) | `any`        | The input message type the agent accepts  |
+| `O` _extends_ [`Message`](#message) | `any`        | The output message type the agent returns |
 
 #### Indexable
 
@@ -101,7 +101,7 @@ Maximum number of memory items to retrieve
 
 ##### hooks
 
-> `readonly` **hooks**: [`AgentHooks`](#agenthooks-1)
+> `readonly` **hooks**: [`AgentHooks`](#agenthooks-1)\<`I`, `O`\>
 
 Lifecycle hooks for agent processing.
 
@@ -265,7 +265,7 @@ topics based on the output
 
 ##### skills
 
-> `readonly` **skills**: [`Agent`](#agent)\<[`Message`](#message), [`Message`](#message)\>[] & \{[`key`: `string`]: [`Agent`](#agent)\<[`Message`](#message), [`Message`](#message)\>; \}
+> `readonly` **skills**: [`Agent`](#agent)\<`any`, `any`\>[] & \{[`key`: `string`]: [`Agent`](#agent)\<`any`, `any`\>; \}
 
 Collection of skills (other agents) this agent can use
 
@@ -402,9 +402,9 @@ building more complex behaviors.
 
 ###### Parameters
 
-| Parameter   | Type                                                                                                                           | Description                                                |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| ...`skills` | ([`Agent`](#agent)\<[`Message`](#message), [`Message`](#message)\> \| [`FunctionAgentFn`](#functionagentfn)\<`any`, `any`\>)[] | List of skills to add, can be Agent instances or functions |
+| Parameter   | Type                                                                                           | Description                                                |
+| ----------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| ...`skills` | ([`Agent`](#agent)\<`any`, `any`\> \| [`FunctionAgentFn`](#functionagentfn)\<`any`, `any`\>)[] | List of skills to add, can be Agent instances or functions |
 
 ###### Returns
 
@@ -1164,7 +1164,7 @@ Configuration options for an agent
 
 #### Extends
 
-- `Partial`\<`Pick`\<[`Agent`](#agent), `"guideRails"` \| `"hooks"`\>\>
+- `Partial`\<`Pick`\<[`Agent`](#agent), `"guideRails"`\>\>
 
 #### Extended by
 
@@ -1175,6 +1175,8 @@ Configuration options for an agent
 - [`TeamAgentOptions`](team-agent.md#teamagentoptions)
 - [`UserAgentOptions`](user-agent.md#useragentoptions)
 - [`OrchestratorAgentOptions`](../../agent-library/orchestrator.md#orchestratoragentoptions)
+- [`DefaultMemoryRetrieverOptions`](../../agent-library/default-memory.md#defaultmemoryretrieveroptions)
+- [`DefaultMemoryRecorderOptions`](../../agent-library/default-memory.md#defaultmemoryrecorderoptions)
 
 #### Type Parameters
 
@@ -1185,19 +1187,20 @@ Configuration options for an agent
 
 #### Properties
 
-| Property                                                      | Type                                                                                                                           | Description                                                                                                                                  |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="subscribetopic-1"></a> `subscribeTopic?`               | [`SubscribeTopic`](#subscribetopic)                                                                                            | Topics the agent should subscribe to These topics determine which messages the agent will receive from the system                            |
-| <a id="publishtopic-1"></a> `publishTopic?`                   | [`PublishTopic`](#publishtopic)\<`O`\>                                                                                         | Topics the agent should publish to These topics determine where the agent's output messages will be sent in the system                       |
-| <a id="name"></a> `name?`                                     | `string`                                                                                                                       | Name of the agent Used for identification and logging. Defaults to the constructor name if not specified                                     |
-| <a id="description"></a> `description?`                       | `string`                                                                                                                       | Description of the agent A human-readable description of what the agent does, useful for documentation and debugging                         |
-| <a id="inputschema"></a> `inputSchema?`                       | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`I`\>                                                                     | Zod schema defining the input message structure Used to validate that input messages conform to the expected format                          |
-| <a id="outputschema"></a> `outputSchema?`                     | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`O`\>                                                                     | Zod schema defining the output message structure Used to validate that output messages conform to the expected format                        |
-| <a id="includeinputinoutput"></a> `includeInputInOutput?`     | `boolean`                                                                                                                      | Whether to include input in the output When true, the agent will merge input fields into the output object                                   |
-| <a id="skills"></a> `skills?`                                 | ([`Agent`](#agent)\<[`Message`](#message), [`Message`](#message)\> \| [`FunctionAgentFn`](#functionagentfn)\<`any`, `any`\>)[] | List of skills (other agents or functions) this agent has These skills can be used by the agent to delegate tasks or extend its capabilities |
-| <a id="disableevents"></a> `disableEvents?`                   | `boolean`                                                                                                                      | Whether to disable emitting events for agent actions When true, the agent won't emit events like agentStarted, agentSucceed, or agentFailed  |
-| <a id="memory"></a> `memory?`                                 | [`MemoryAgent`](../memory.md#memoryagent) \| [`MemoryAgent`](../memory.md#memoryagent)[]                                       | One or more memory agents this agent can use                                                                                                 |
-| <a id="maxretrievememorycount"></a> `maxRetrieveMemoryCount?` | `number`                                                                                                                       | Maximum number of memory items to retrieve                                                                                                   |
+| Property                                                      | Type                                                                                           | Description                                                                                                                                  |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="subscribetopic-1"></a> `subscribeTopic?`               | [`SubscribeTopic`](#subscribetopic)                                                            | Topics the agent should subscribe to These topics determine which messages the agent will receive from the system                            |
+| <a id="publishtopic-1"></a> `publishTopic?`                   | [`PublishTopic`](#publishtopic)\<`O`\>                                                         | Topics the agent should publish to These topics determine where the agent's output messages will be sent in the system                       |
+| <a id="name"></a> `name?`                                     | `string`                                                                                       | Name of the agent Used for identification and logging. Defaults to the constructor name if not specified                                     |
+| <a id="description"></a> `description?`                       | `string`                                                                                       | Description of the agent A human-readable description of what the agent does, useful for documentation and debugging                         |
+| <a id="inputschema"></a> `inputSchema?`                       | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`I`\>                                     | Zod schema defining the input message structure Used to validate that input messages conform to the expected format                          |
+| <a id="outputschema"></a> `outputSchema?`                     | [`AgentInputOutputSchema`](#agentinputoutputschema)\<`O`\>                                     | Zod schema defining the output message structure Used to validate that output messages conform to the expected format                        |
+| <a id="includeinputinoutput"></a> `includeInputInOutput?`     | `boolean`                                                                                      | Whether to include input in the output When true, the agent will merge input fields into the output object                                   |
+| <a id="skills"></a> `skills?`                                 | ([`Agent`](#agent)\<`any`, `any`\> \| [`FunctionAgentFn`](#functionagentfn)\<`any`, `any`\>)[] | List of skills (other agents or functions) this agent has These skills can be used by the agent to delegate tasks or extend its capabilities |
+| <a id="disableevents"></a> `disableEvents?`                   | `boolean`                                                                                      | Whether to disable emitting events for agent actions When true, the agent won't emit events like agentStarted, agentSucceed, or agentFailed  |
+| <a id="memory"></a> `memory?`                                 | [`MemoryAgent`](../memory.md#memoryagent) \| [`MemoryAgent`](../memory.md#memoryagent)[]       | One or more memory agents this agent can use                                                                                                 |
+| <a id="maxretrievememorycount"></a> `maxRetrieveMemoryCount?` | `number`                                                                                       | Maximum number of memory items to retrieve                                                                                                   |
+| <a id="hooks"></a> `hooks?`                                   | [`AgentHooks`](#agenthooks-1)\<`I`, `O`\>                                                      | -                                                                                                                                            |
 
 ---
 
@@ -1237,13 +1240,13 @@ tracing, error handling, and more.
 
 #### Properties
 
-| Property                                  | Type                                    | Description                                                                                                                                                                                                                                       |
-| ----------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="onstart"></a> `onStart?`           | (`event`) => `PromiseOrValue`\<`void`\> | Called when agent processing begins This hook runs before the agent processes input, allowing for setup operations, logging, or input transformations.                                                                                            |
-| <a id="onend"></a> `onEnd?`               | (`event`) => `PromiseOrValue`\<`void`\> | Called when agent processing completes or fails This hook runs after processing finishes, receiving either the output or an error if processing failed. Useful for cleanup operations, logging results, or error handling.                        |
-| <a id="onskillstart"></a> `onSkillStart?` | (`event`) => `PromiseOrValue`\<`void`\> | Called before a skill (sub-agent) is invoked This hook runs when the agent delegates work to a skill, allowing for tracking skill usage or transforming input to the skill.                                                                       |
-| <a id="onskillend"></a> `onSkillEnd?`     | (`event`) => `PromiseOrValue`\<`void`\> | Called after a skill (sub-agent) completes or fails This hook runs when a skill finishes execution, receiving either the output or an error if the skill failed. Useful for monitoring skill performance or handling skill-specific errors.       |
-| <a id="onhandoff"></a> `onHandoff?`       | (`event`) => `PromiseOrValue`\<`void`\> | Called when an agent hands off processing to another agent This hook runs when a source agent transfers control to a target agent, allowing for tracking of handoffs between agents and monitoring the flow of processing in multi-agent systems. |
+| Property                                  | Type                                                             | Description                                                                                                                                                                                                                                       |
+| ----------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="onstart"></a> `onStart?`           | (`event`) => `PromiseOrValue`\<`void` \| \{ `input?`: `I`; \}\>  | Called when agent processing begins This hook runs before the agent processes input, allowing for setup operations, logging, or input transformations.                                                                                            |
+| <a id="onend"></a> `onEnd?`               | (`event`) => `PromiseOrValue`\<`void` \| \{ `output?`: `O`; \}\> | Called when agent processing completes or fails This hook runs after processing finishes, receiving either the output or an error if processing failed. Useful for cleanup operations, logging results, or error handling.                        |
+| <a id="onskillstart"></a> `onSkillStart?` | (`event`) => `PromiseOrValue`\<`void`\>                          | Called before a skill (sub-agent) is invoked This hook runs when the agent delegates work to a skill, allowing for tracking skill usage or transforming input to the skill.                                                                       |
+| <a id="onskillend"></a> `onSkillEnd?`     | (`event`) => `PromiseOrValue`\<`void`\>                          | Called after a skill (sub-agent) completes or fails This hook runs when a skill finishes execution, receiving either the output or an error if the skill failed. Useful for monitoring skill performance or handling skill-specific errors.       |
+| <a id="onhandoff"></a> `onHandoff?`       | (`event`) => `PromiseOrValue`\<`void`\>                          | Called when an agent hands off processing to another agent This hook runs when a source agent transfers control to a target agent, allowing for tracking of handoffs between agents and monitoring the flow of processing in multi-agent systems. |
 
 ---
 

@@ -59,10 +59,10 @@ console.log(result); // Expected output: { message: "Hello, How can I help you?"
 
 #### Type Parameters
 
-| Type Parameter                              | Default type                  | Description                               |
-| ------------------------------------------- | ----------------------------- | ----------------------------------------- |
-| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The input message type the agent accepts  |
-| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The output message type the agent returns |
+| Type Parameter                              | Default type | Description                               |
+| ------------------------------------------- | ------------ | ----------------------------------------- |
+| `I` _extends_ [`Message`](agent.md#message) | `any`        | The input message type the agent accepts  |
+| `O` _extends_ [`Message`](agent.md#message) | `any`        | The output message type the agent returns |
 
 #### Indexable
 
@@ -184,7 +184,7 @@ console.log(result); // Expected output: { greeting: "Hello, How can I help you?
 
 ##### toolChoice?
 
-> `optional` **toolChoice**: [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> \| [`AIAgentToolChoice`](#aiagenttoolchoice)
+> `optional` **toolChoice**: [`Agent`](agent.md#agent)\<`any`, `any`\> \| [`AIAgentToolChoice`](#aiagenttoolchoice)
 
 Controls how the agent uses tools during execution
 
@@ -471,13 +471,13 @@ which tool to use, then routes the request directly to that tool
 
 ###### Parameters
 
-| Parameter    | Type                                                                                                         |
-| ------------ | ------------------------------------------------------------------------------------------------------------ |
-| `input`      | `I`                                                                                                          |
-| `model`      | `ChatModel`                                                                                                  |
-| `modelInput` | `ChatModelInput`                                                                                             |
-| `options`    | [`AgentInvokeOptions`](agent.md#agentinvokeoptions)                                                          |
-| `toolsMap`   | `Map`\<`string`, [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\>\> |
+| Parameter    | Type                                                         |
+| ------------ | ------------------------------------------------------------ |
+| `input`      | `I`                                                          |
+| `model`      | `ChatModel`                                                  |
+| `modelInput` | `ChatModelInput`                                             |
+| `options`    | [`AgentInvokeOptions`](agent.md#agentinvokeoptions)          |
+| `toolsMap`   | `Map`\<`string`, [`Agent`](agent.md#agent)\<`any`, `any`\>\> |
 
 ###### Returns
 
@@ -505,16 +505,16 @@ like model configuration, prompt instructions, and tool choice.
 
 #### Properties
 
-| Property                                                  | Type                                                                                                                                   | Description                                                                                                                                                                                                                                                                                   |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="model"></a> `model?`                               | `ChatModel`                                                                                                                            | The language model to use for this agent If not provided, the agent will use the model from the context                                                                                                                                                                                       |
-| <a id="instructions"></a> `instructions?`                 | `string` \| `PromptBuilder`                                                                                                            | Instructions to guide the AI model's behavior Can be a simple string or a full PromptBuilder instance for more complex prompt templates                                                                                                                                                       |
-| <a id="inputkey"></a> `inputKey?`                         | `string`                                                                                                                               | Pick a message from input to use as the user's message                                                                                                                                                                                                                                        |
-| <a id="outputkey"></a> `outputKey?`                       | `string`                                                                                                                               | Custom key to use for text output in the response Defaults to `message` if not specified                                                                                                                                                                                                      |
-| <a id="toolchoice"></a> `toolChoice?`                     | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> \| [`AIAgentToolChoice`](#aiagenttoolchoice) | Controls how the agent uses tools during execution **Default** `AIAgentToolChoice.auto`                                                                                                                                                                                                       |
-| <a id="catchtoolserror"></a> `catchToolsError?`           | `boolean`                                                                                                                              | Whether to catch errors from tool execution and continue processing. If set to false, the agent will throw an error if a tool fails. **Default** `true`                                                                                                                                       |
-| <a id="memoryagentsastools"></a> `memoryAgentsAsTools?`   | `boolean`                                                                                                                              | Whether to include memory agents as tools for the AI model When set to true, memory agents will be made available as tools that the model can call directly to retrieve or store information. This enables the agent to explicitly interact with its memories. **Default** `false`            |
-| <a id="memoryprompttemplate"></a> `memoryPromptTemplate?` | `string`                                                                                                                               | Custom prompt template for formatting memory content Allows customization of how memories are presented to the AI model. If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used. The template receives a {{memories}} variable containing serialized memory content. |
+| Property                                                  | Type                                                                                   | Description                                                                                                                                                                                                                                                                                   |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="model"></a> `model?`                               | `ChatModel`                                                                            | The language model to use for this agent If not provided, the agent will use the model from the context                                                                                                                                                                                       |
+| <a id="instructions"></a> `instructions?`                 | `string` \| `PromptBuilder`                                                            | Instructions to guide the AI model's behavior Can be a simple string or a full PromptBuilder instance for more complex prompt templates                                                                                                                                                       |
+| <a id="inputkey"></a> `inputKey?`                         | `string`                                                                               | Pick a message from input to use as the user's message                                                                                                                                                                                                                                        |
+| <a id="outputkey"></a> `outputKey?`                       | `string`                                                                               | Custom key to use for text output in the response Defaults to `message` if not specified                                                                                                                                                                                                      |
+| <a id="toolchoice"></a> `toolChoice?`                     | [`Agent`](agent.md#agent)\<`any`, `any`\> \| [`AIAgentToolChoice`](#aiagenttoolchoice) | Controls how the agent uses tools during execution **Default** `AIAgentToolChoice.auto`                                                                                                                                                                                                       |
+| <a id="catchtoolserror"></a> `catchToolsError?`           | `boolean`                                                                              | Whether to catch errors from tool execution and continue processing. If set to false, the agent will throw an error if a tool fails. **Default** `true`                                                                                                                                       |
+| <a id="memoryagentsastools"></a> `memoryAgentsAsTools?`   | `boolean`                                                                              | Whether to include memory agents as tools for the AI model When set to true, memory agents will be made available as tools that the model can call directly to retrieve or store information. This enables the agent to explicitly interact with its memories. **Default** `false`            |
+| <a id="memoryprompttemplate"></a> `memoryPromptTemplate?` | `string`                                                                               | Custom prompt template for formatting memory content Allows customization of how memories are presented to the AI model. If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used. The template receives a {{memories}} variable containing serialized memory content. |
 
 ## Variables
 

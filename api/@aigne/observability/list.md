@@ -1,11 +1,7 @@
 # list
 
-## Functions
+## Variables
 
-### default()
+### default
 
-> **default**(): `Element`
-
-#### Returns
-
-`Element`
+> `const` **default**: `ForwardRefExoticComponent`\<`RefAttributes`\<`AppRef`\>\>

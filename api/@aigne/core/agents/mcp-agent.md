@@ -1224,10 +1224,10 @@ Configuration options for an agent
 
 #### Type Parameters
 
-| Type Parameter                              | Default type                  | Description                   |
-| ------------------------------------------- | ----------------------------- | ----------------------------- |
-| `I` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent input message type  |
-| `O` _extends_ [`Message`](agent.md#message) | [`Message`](agent.md#message) | The agent output message type |
+| Type Parameter                              | Default type | Description                   |
+| ------------------------------------------- | ------------ | ----------------------------- |
+| `I` _extends_ [`Message`](agent.md#message) | `any`        | The agent input message type  |
+| `O` _extends_ [`Message`](agent.md#message) | `any`        | The agent output message type |
 
 #### Properties
 

@@ -236,7 +236,7 @@ Error - If no recorder has been initialized
 
 ---
 
-### `abstract` MemoryRecorder
+### MemoryRecorder
 
 Abstract base class for agents that record and store memories.
 
@@ -269,9 +269,9 @@ Creates a new MemoryRecorder instance with predefined input and output schemas.
 
 ###### Parameters
 
-| Parameter | Type                                                                                                                                                                                            | Description                                         |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `options` | `Omit`\<[`AgentOptions`](agents/agent.md#agentoptions)\<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)\>, `"inputSchema"` \| `"outputSchema"`\> | Configuration options for the memory recorder agent |
+| Parameter | Type                                              | Description                                         |
+| --------- | ------------------------------------------------- | --------------------------------------------------- |
+| `options` | [`MemoryRecorderOptions`](#memoryrecorderoptions) | Configuration options for the memory recorder agent |
 
 ###### Returns
 
@@ -291,9 +291,164 @@ Creates a new MemoryRecorder instance with predefined input and output schemas.
 
 [`Agent`](agents/agent.md#agent).[`tag`](agents/agent.md#agent#tag)
 
+#### Methods
+
+##### process()
+
+> **process**(`input`, `options`): `PromiseOrValue`\<[`AgentProcessResult`](agents/agent.md#agentprocessresult)\<[`MemoryRecorderOutput`](#memoryrecorderoutput)\>\>
+
+Core processing method of the agent, must be implemented in subclasses
+
+This is the main functionality implementation of the agent, processing input and
+generating output. Can return various types of results:
+
+- Regular object response
+- Streaming response
+- Async generator
+- Another agent instance (transfer agent)
+
+###### Parameters
+
+| Parameter | Type                                                       | Description                  |
+| --------- | ---------------------------------------------------------- | ---------------------------- |
+| `input`   | [`MemoryRecorderInput`](#memoryrecorderinput)              | Input message                |
+| `options` | [`AgentInvokeOptions`](agents/agent.md#agentinvokeoptions) | Options for agent invocation |
+
+###### Returns
+
+`PromiseOrValue`\<[`AgentProcessResult`](agents/agent.md#agentprocessresult)\<[`MemoryRecorderOutput`](#memoryrecorderoutput)\>\>
+
+Processing result
+
+###### Examples
+
+Example of returning a direct object:
+
+```ts
+class DirectResponseAgent extends Agent {
+  process(input: Message): Message {
+    // Process input and return a direct object response
+    return {
+      text: `Hello, I received your message: ${JSON.stringify(input)}`,
+      confidence: 0.95,
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+const agent = new DirectResponseAgent();
+
+const result = await agent.invoke({ message: "Hello" });
+
+console.log(result); // { text: "Hello, I received your message: { message: 'Hello' }", confidence: 0.95, timestamp: "2023-10-01T12:00:00Z" }
+```
+
+Example of returning a streaming response:
+
+```ts
+class StreamResponseAgent extends Agent {
+  process(_input: Message): AgentResponseStream<Message> {
+    // Return a ReadableStream as a streaming response
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(textDelta({ text: "Hello" }));
+        controller.enqueue(textDelta({ text: ", " }));
+        controller.enqueue(textDelta({ text: "This" }));
+        controller.enqueue(textDelta({ text: " is" }));
+        controller.enqueue(textDelta({ text: "..." }));
+        controller.close();
+      },
+    });
+  }
+}
+
+const agent = new StreamResponseAgent();
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
+
+let fullText = "";
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+  }
+}
+
+console.log(fullText); // Output: "Hello, This is..."
+```
+
+Example of using an async generator:
+
+```ts
+class AsyncGeneratorAgent extends Agent {
+  async *process(
+    _input: Message,
+    _options: AgentInvokeOptions,
+  ): AgentProcessAsyncGenerator<Message> {
+    // Use async generator to produce streaming results
+    yield textDelta({ message: "This" });
+    yield textDelta({ message: "," });
+    yield textDelta({ message: " " });
+    yield textDelta({ message: "This" });
+    yield textDelta({ message: " " });
+    yield textDelta({ message: "is" });
+    yield textDelta({ message: "..." });
+
+    // Optional return a JSON object at the end
+    return { time: new Date().toISOString() };
+  }
+}
+
+const agent = new AsyncGeneratorAgent();
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
+
+const message: string[] = [];
+let json: Message | undefined;
+
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) message.push(text);
+    if (chunk.delta.json) json = chunk.delta.json;
+  }
+}
+
+console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
+console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
+```
+
+Example of transfer to another agent:
+
+```ts
+class SpecialistAgent extends Agent {
+  process(_input: Message): Message {
+    return {
+      response: "This is a specialist response",
+      expertise: "technical",
+    };
+  }
+}
+
+class MainAgent extends Agent {
+  process(_input: Message): Agent {
+    // Create a specialized agent for handling technical issues
+    return new SpecialistAgent();
+  }
+}
+
+const aigne = new AIGNE({});
+const mainAgent = new MainAgent();
+
+const result = await aigne.invoke(mainAgent, { message: "technical question" });
+console.log(result); // { response: "This is a specialist response", expertise: "technical" }
+```
+
+###### Overrides
+
+[`Agent`](agents/agent.md#agent).[`process`](agents/agent.md#agent#process)
+
 ---
 
-### `abstract` MemoryRetriever
+### MemoryRetriever
 
 Abstract base class for agents that retrieve memories from storage.
 
@@ -326,9 +481,9 @@ Creates a new MemoryRetriever instance with predefined input and output schemas.
 
 ###### Parameters
 
-| Parameter | Type                                                                                                                                                                                                | Description                                          |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `options` | `Omit`\<[`AgentOptions`](agents/agent.md#agentoptions)\<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)\>, `"inputSchema"` \| `"outputSchema"`\> | Configuration options for the memory retriever agent |
+| Parameter | Type                                                | Description                                          |
+| --------- | --------------------------------------------------- | ---------------------------------------------------- |
+| `options` | [`MemoryRetrieverOptions`](#memoryretrieveroptions) | Configuration options for the memory retriever agent |
 
 ###### Returns
 
@@ -347,6 +502,161 @@ Creates a new MemoryRetriever instance with predefined input and output schemas.
 ###### Overrides
 
 [`Agent`](agents/agent.md#agent).[`tag`](agents/agent.md#agent#tag)
+
+#### Methods
+
+##### process()
+
+> **process**(`input`, `options`): `PromiseOrValue`\<[`AgentProcessResult`](agents/agent.md#agentprocessresult)\<[`MemoryRetrieverOutput`](#memoryretrieveroutput)\>\>
+
+Core processing method of the agent, must be implemented in subclasses
+
+This is the main functionality implementation of the agent, processing input and
+generating output. Can return various types of results:
+
+- Regular object response
+- Streaming response
+- Async generator
+- Another agent instance (transfer agent)
+
+###### Parameters
+
+| Parameter | Type                                                       | Description                  |
+| --------- | ---------------------------------------------------------- | ---------------------------- |
+| `input`   | [`MemoryRetrieverInput`](#memoryretrieverinput)            | Input message                |
+| `options` | [`AgentInvokeOptions`](agents/agent.md#agentinvokeoptions) | Options for agent invocation |
+
+###### Returns
+
+`PromiseOrValue`\<[`AgentProcessResult`](agents/agent.md#agentprocessresult)\<[`MemoryRetrieverOutput`](#memoryretrieveroutput)\>\>
+
+Processing result
+
+###### Examples
+
+Example of returning a direct object:
+
+```ts
+class DirectResponseAgent extends Agent {
+  process(input: Message): Message {
+    // Process input and return a direct object response
+    return {
+      text: `Hello, I received your message: ${JSON.stringify(input)}`,
+      confidence: 0.95,
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+const agent = new DirectResponseAgent();
+
+const result = await agent.invoke({ message: "Hello" });
+
+console.log(result); // { text: "Hello, I received your message: { message: 'Hello' }", confidence: 0.95, timestamp: "2023-10-01T12:00:00Z" }
+```
+
+Example of returning a streaming response:
+
+```ts
+class StreamResponseAgent extends Agent {
+  process(_input: Message): AgentResponseStream<Message> {
+    // Return a ReadableStream as a streaming response
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(textDelta({ text: "Hello" }));
+        controller.enqueue(textDelta({ text: ", " }));
+        controller.enqueue(textDelta({ text: "This" }));
+        controller.enqueue(textDelta({ text: " is" }));
+        controller.enqueue(textDelta({ text: "..." }));
+        controller.close();
+      },
+    });
+  }
+}
+
+const agent = new StreamResponseAgent();
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
+
+let fullText = "";
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+  }
+}
+
+console.log(fullText); // Output: "Hello, This is..."
+```
+
+Example of using an async generator:
+
+```ts
+class AsyncGeneratorAgent extends Agent {
+  async *process(
+    _input: Message,
+    _options: AgentInvokeOptions,
+  ): AgentProcessAsyncGenerator<Message> {
+    // Use async generator to produce streaming results
+    yield textDelta({ message: "This" });
+    yield textDelta({ message: "," });
+    yield textDelta({ message: " " });
+    yield textDelta({ message: "This" });
+    yield textDelta({ message: " " });
+    yield textDelta({ message: "is" });
+    yield textDelta({ message: "..." });
+
+    // Optional return a JSON object at the end
+    return { time: new Date().toISOString() };
+  }
+}
+
+const agent = new AsyncGeneratorAgent();
+const stream = await agent.invoke({ message: "Hello" }, { streaming: true });
+
+const message: string[] = [];
+let json: Message | undefined;
+
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.message;
+    if (text) message.push(text);
+    if (chunk.delta.json) json = chunk.delta.json;
+  }
+}
+
+console.log(message); // Output: ["This", ",", " ", "This", " ", "is", "..."]
+console.log(json); // Output: { time: "2023-10-01T12:00:00Z" }
+```
+
+Example of transfer to another agent:
+
+```ts
+class SpecialistAgent extends Agent {
+  process(_input: Message): Message {
+    return {
+      response: "This is a specialist response",
+      expertise: "technical",
+    };
+  }
+}
+
+class MainAgent extends Agent {
+  process(_input: Message): Agent {
+    // Create a specialized agent for handling technical issues
+    return new SpecialistAgent();
+  }
+}
+
+const aigne = new AIGNE({});
+const mainAgent = new MainAgent();
+
+const result = await aigne.invoke(mainAgent, { message: "technical question" });
+console.log(result); // { response: "This is a specialist response", expertise: "technical" }
+```
+
+###### Overrides
+
+[`Agent`](agents/agent.md#agent).[`process`](agents/agent.md#agent#process)
 
 ## Interfaces
 
@@ -367,7 +677,14 @@ Creates a new MemoryRetriever instance with predefined input and output schemas.
 
 #### Extends
 
-- `Partial`\<`Pick`\<[`MemoryAgent`](#memoryagent), `"recorder"` \| `"retriever"` \| `"autoUpdate"`\>\>.`Pick`\<[`AgentOptions`](agents/agent.md#agentoptions), `"subscribeTopic"` \| `"skills"`\>
+- `Partial`\<`Pick`\<[`MemoryAgent`](#memoryagent), `"autoUpdate"`\>\>.`Pick`\<[`AgentOptions`](agents/agent.md#agentoptions), `"subscribeTopic"` \| `"skills"`\>
+
+#### Properties
+
+| Property                            | Type                                                                                                                                                                                                                                                       |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="recorder"></a> `recorder?`   | [`MemoryRecorderOptions`](#memoryrecorderoptions) \| [`FunctionAgentFn`](agents/agent.md#functionagentfn)\<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)\> \| [`MemoryRecorder`](#memoryrecorder)         |
+| <a id="retriever"></a> `retriever?` | [`MemoryRetrieverOptions`](#memoryretrieveroptions) \| [`FunctionAgentFn`](agents/agent.md#functionagentfn)\<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)\> \| [`MemoryRetriever`](#memoryretriever) |
 
 ---
 
@@ -389,9 +706,9 @@ should be stored as memories.
 
 #### Properties
 
-| Property                         | Type        | Description                                                                                                                     |
-| -------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="content-1"></a> `content` | `unknown`[] | Array of content items to record as memories. Each item in this array will typically be converted into a separate memory entry. |
+| Property                         | Type                                                                                                                          |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| <a id="content-1"></a> `content` | \{ `input?`: [`Message`](agents/agent.md#message); `output?`: [`Message`](agents/agent.md#message); `source?`: `string`; \}[] |
 
 ---
 
@@ -418,6 +735,20 @@ including the newly created memory objects with their IDs and timestamps.
 
 ---
 
+### MemoryRecorderOptions
+
+#### Extends
+
+- `Omit`\<[`AgentOptions`](agents/agent.md#agentoptions)\<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)\>, `"inputSchema"` \| `"outputSchema"`\>
+
+#### Properties
+
+| Property                          | Type                                                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <a id="process-2"></a> `process?` | [`FunctionAgentFn`](agents/agent.md#functionagentfn)\<[`MemoryRecorderInput`](#memoryrecorderinput), [`MemoryRecorderOutput`](#memoryrecorderoutput)\> |
+
+---
+
 ### MemoryRetrieverInput
 
 Input for memory retrieval operations.
@@ -435,10 +766,10 @@ memories when retrieving them from storage.
 
 #### Properties
 
-| Property                      | Type     | Description                                                                                                        |
-| ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
-| <a id="limit"></a> `limit?`   | `number` | Maximum number of memories to retrieve. Used for pagination or limiting result set size.                           |
-| <a id="search"></a> `search?` | `string` | Search term to filter memories by. How the search is implemented depends on the specific retriever implementation. |
+| Property                      | Type                                             | Description                                                                                                        |
+| ----------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| <a id="limit"></a> `limit?`   | `number`                                         | Maximum number of memories to retrieve. Used for pagination or limiting result set size.                           |
+| <a id="search"></a> `search?` | `string` \| [`Message`](agents/agent.md#message) | Search term to filter memories by. How the search is implemented depends on the specific retriever implementation. |
 
 ---
 
@@ -462,6 +793,20 @@ containing an array of memory objects that match the query criteria.
 | Property                           | Type                  | Description                                                                                      |
 | ---------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------ |
 | <a id="memories-1"></a> `memories` | [`Memory`](#memory)[] | Array of retrieved memory objects. Each memory includes its ID, content, and creation timestamp. |
+
+---
+
+### MemoryRetrieverOptions
+
+#### Extends
+
+- `Omit`\<[`AgentOptions`](agents/agent.md#agentoptions)\<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)\>, `"inputSchema"` \| `"outputSchema"`\>
+
+#### Properties
+
+| Property                          | Type                                                                                                                                                       |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="process-5"></a> `process?` | [`FunctionAgentFn`](agents/agent.md#functionagentfn)\<[`MemoryRetrieverInput`](#memoryretrieverinput), [`MemoryRetrieverOutput`](#memoryretrieveroutput)\> |
 
 ## Functions
 

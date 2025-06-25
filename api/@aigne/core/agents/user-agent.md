@@ -608,8 +608,8 @@ Configuration options for an agent
 
 #### Properties
 
-| Property                                | Type                                                                                      |
-| --------------------------------------- | ----------------------------------------------------------------------------------------- |
-| <a id="context"></a> `context`          | `Context`                                                                                 |
-| <a id="process"></a> `process?`         | [`FunctionAgentFn`](agent.md#functionagentfn)\<`I`, `O`\>                                 |
-| <a id="activeagent"></a> `activeAgent?` | [`Agent`](agent.md#agent)\<[`Message`](agent.md#message), [`Message`](agent.md#message)\> |
+| Property                                | Type                                                      |
+| --------------------------------------- | --------------------------------------------------------- |
+| <a id="context"></a> `context`          | `Context`                                                 |
+| <a id="process"></a> `process?`         | [`FunctionAgentFn`](agent.md#functionagentfn)\<`I`, `O`\> |
+| <a id="activeagent"></a> `activeAgent?` | [`Agent`](agent.md#agent)\<`any`, `any`\>                 |

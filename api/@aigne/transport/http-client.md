@@ -152,7 +152,7 @@ User agent
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](../core/agents/agent.md#agent)\<[`Message`](../core/agents/agent.md#message), [`Message`](../core/agents/agent.md#message)\>\]\>
+> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](../core/agents/agent.md#agent)\<`any`, `any`\>\]\>
 
 Invoke an agent with a message and return the output and the active agent
 
@@ -173,7 +173,7 @@ Invoke an agent with a message and return the output and the active agent
 
 ###### Returns
 
-`Promise`\<\[`O`, [`Agent`](../core/agents/agent.md#agent)\<[`Message`](../core/agents/agent.md#message), [`Message`](../core/agents/agent.md#message)\>\]\>
+`Promise`\<\[`O`, [`Agent`](../core/agents/agent.md#agent)\<`any`, `any`\>\]\>
 
 the output of the agent and the final active agent
 
@@ -183,7 +183,7 @@ the output of the agent and the final active agent
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](../core/agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](../core/agents/agent.md#agent)\<[`Message`](../core/agents/agent.md#message), [`Message`](../core/agents/agent.md#message)\>\>\]\>
+> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](../core/agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](../core/agents/agent.md#agent)\<`any`, `any`\>\>\]\>
 
 ###### Type Parameters
 
@@ -202,7 +202,7 @@ the output of the agent and the final active agent
 
 ###### Returns
 
-`Promise`\<\[[`AgentResponseStream`](../core/agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](../core/agents/agent.md#agent)\<[`Message`](../core/agents/agent.md#message), [`Message`](../core/agents/agent.md#message)\>\>\]\>
+`Promise`\<\[[`AgentResponseStream`](../core/agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](../core/agents/agent.md#agent)\<`any`, `any`\>\>\]\>
 
 ###### Implementation of
 
@@ -295,7 +295,7 @@ the output of the agent
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](../core/agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\>, [`Agent`](../core/agents/agent.md#agent)\<[`Message`](../core/agents/agent.md#message), [`Message`](../core/agents/agent.md#message)\>\]\>
+> **invoke**\<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](../core/agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\>, [`Agent`](../core/agents/agent.md#agent)\<`any`, `any`\>\]\>
 
 ###### Type Parameters
 
@@ -314,7 +314,7 @@ the output of the agent
 
 ###### Returns
 
-[`UserAgent`](../core/agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\>, [`Agent`](../core/agents/agent.md#agent)\<[`Message`](../core/agents/agent.md#message), [`Message`](../core/agents/agent.md#message)\>\]\>
+[`UserAgent`](../core/agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](../core/agents/agent.md#agentresponse)\<`O`\>, [`Agent`](../core/agents/agent.md#agent)\<`any`, `any`\>\]\>
 
 ###### Implementation of
 

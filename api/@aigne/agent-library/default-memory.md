@@ -55,6 +55,47 @@ instead provides memory management capabilities to the system.
 
 #### Properties
 
-| Property                        | Type                                             |
-| ------------------------------- | ------------------------------------------------ |
-| <a id="storage"></a> `storage?` | `MemoryStorage` \| `DefaultMemoryStorageOptions` |
+| Property                                          | Type                                                                                     |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| <a id="storage"></a> `storage?`                   | `MemoryStorage` \| `DefaultMemoryStorageOptions`                                         |
+| <a id="recorderoptions"></a> `recorderOptions?`   | `Omit`\<[`DefaultMemoryRecorderOptions`](#defaultmemoryrecorderoptions), `"storage"`\>   |
+| <a id="retrieveroptions"></a> `retrieverOptions?` | `Omit`\<[`DefaultMemoryRetrieverOptions`](#defaultmemoryretrieveroptions), `"storage"`\> |
+| <a id="messagekey"></a> `messageKey?`             | `string` \| `string`[]                                                                   |
+
+---
+
+### DefaultMemoryRetrieverOptions
+
+Configuration options for an agent
+
+#### Extends
+
+- [`AgentOptions`](../core/agents/agent.md#agentoptions)\<[`MemoryRetrieverInput`](../core/memory.md#memoryretrieverinput), [`MemoryRetrieverOutput`](../core/memory.md#memoryretrieveroutput)\>
+
+#### Properties
+
+| Property                                                              | Type                                  |
+| --------------------------------------------------------------------- | ------------------------------------- |
+| <a id="storage-2"></a> `storage`                                      | `MemoryStorage`                       |
+| <a id="defaultretrievememorycount"></a> `defaultRetrieveMemoryCount?` | `number`                              |
+| <a id="retrievefrommessagekey"></a> `retrieveFromMessageKey?`         | `string` \| `string`[]                |
+| <a id="getsearchpattern"></a> `getSearchPattern?`                     | (`search`) => `undefined` \| `string` |
+| <a id="formatmessage"></a> `formatMessage?`                           | (`content`) => `unknown`              |
+| <a id="formatmemory"></a> `formatMemory?`                             | (`content`) => `unknown`              |
+
+---
+
+### DefaultMemoryRecorderOptions
+
+Configuration options for an agent
+
+#### Extends
+
+- [`AgentOptions`](../core/agents/agent.md#agentoptions)\<[`MemoryRecorderInput`](../core/memory.md#memoryrecorderinput), [`MemoryRecorderOutput`](../core/memory.md#memoryrecorderoutput)\>
+
+#### Properties
+
+| Property                                                      | Type                   |
+| ------------------------------------------------------------- | ---------------------- |
+| <a id="storage-3"></a> `storage`                              | `MemoryStorage`        |
+| <a id="rememberfrommessagekey"></a> `rememberFromMessageKey?` | `string` \| `string`[] |

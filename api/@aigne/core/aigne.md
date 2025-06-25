@@ -113,14 +113,14 @@ Usage limits applied to this AIGNE instance's execution.
 
 ##### skills
 
-> `readonly` **skills**: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>; \}
+> `readonly` **skills**: [`Agent`](agents/agent.md#agent)\<`any`, `any`\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<`any`, `any`\>; \}
 
 Collection of skill agents available to this AIGNE instance.
 Provides indexed access by skill name.
 
 ##### agents
 
-> `readonly` **agents**: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>; \}
+> `readonly` **agents**: [`Agent`](agents/agent.md#agent)\<`any`, `any`\>[] & \{[`key`: `string`]: [`Agent`](agents/agent.md#agent)\<`any`, `any`\>; \}
 
 Collection of primary agents managed by this AIGNE instance.
 Provides indexed access by agent name.
@@ -162,9 +162,9 @@ Each agent is attached to this AIGNE instance, allowing it to access the AIGNE's
 
 ###### Parameters
 
-| Parameter   | Type                                                                                                             | Description                                       |
-| ----------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| ...`agents` | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | One or more Agent instances to add to this AIGNE. |
+| Parameter   | Type                                               | Description                                       |
+| ----------- | -------------------------------------------------- | ------------------------------------------------- |
+| ...`agents` | [`Agent`](agents/agent.md#agent)\<`any`, `any`\>[] | One or more Agent instances to add to this AIGNE. |
 
 ###### Returns
 
@@ -246,7 +246,7 @@ console.log(result2); // { message: "Nice to meet you, Bob!" }
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
+> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<`any`, `any`\>\]\>
 
 Invokes an agent with a message and returns both the output and the active agent.
 This overload is useful when you need to track which agent was ultimately responsible for generating the response.
@@ -268,13 +268,13 @@ This overload is useful when you need to track which agent was ultimately respon
 
 ###### Returns
 
-`Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
+`Promise`\<\[`O`, [`Agent`](agents/agent.md#agent)\<`any`, `any`\>\]\>
 
 A promise resolving to a tuple containing the agent's response and the final active agent
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\>\]\>
+> **invoke**\<`I`, `O`\>(`agent`, `message`, `options`): `Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<`any`, `any`\>\>\]\>
 
 Invokes an agent with a message and returns both a stream of the response and the active agent.
 This overload is useful when you need streaming responses while also tracking which agent provided them.
@@ -296,7 +296,7 @@ This overload is useful when you need streaming responses while also tracking wh
 
 ###### Returns
 
-`Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\>\]\>
+`Promise`\<\[[`AgentResponseStream`](agents/agent.md#agentresponsestream)\<`O`\>, `Promise`\<[`Agent`](agents/agent.md#agent)\<`any`, `any`\>\>\]\>
 
 A promise resolving to a tuple containing the agent's response stream and a promise for the final agent
 
@@ -414,7 +414,7 @@ console.log(text); // Output: Hello, How can I assist you today?
 
 ###### Call Signature
 
-> **invoke**\<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
+> **invoke**\<`I`, `O`\>(`agent`, `message?`, `options?`): [`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<`any`, `any`\>\]\>
 
 General implementation signature that handles all overload cases.
 This unified signature supports all the different invocation patterns defined by the overloads.
@@ -436,7 +436,7 @@ This unified signature supports all the different invocation patterns defined by
 
 ###### Returns
 
-[`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>\]\>
+[`UserAgent`](agents/user-agent.md#useragent)\<`I`, `O`\> \| `Promise`\<[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\> \| \[[`AgentResponse`](agents/agent.md#agentresponse)\<`O`\>, [`Agent`](agents/agent.md#agent)\<`any`, `any`\>\]\>
 
 Either a UserAgent (when no message provided) or a promise resolving to the agent's response
 with optional active agent information based on the provided options
@@ -744,12 +744,12 @@ Options for the AIGNE class.
 
 #### Properties
 
-| Property                                | Type                                                                                                             | Description                                                                       |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| <a id="name"></a> `name?`               | `string`                                                                                                         | The name of the AIGNE instance.                                                   |
-| <a id="description"></a> `description?` | `string`                                                                                                         | The description of the AIGNE instance.                                            |
-| <a id="model"></a> `model?`             | `ChatModel`                                                                                                      | Global model to use for all agents not specifying a model.                        |
-| <a id="skills"></a> `skills?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Skills to use for the AIGNE instance.                                             |
-| <a id="agents"></a> `agents?`           | [`Agent`](agents/agent.md#agent)\<[`Message`](agents/agent.md#message), [`Message`](agents/agent.md#message)\>[] | Agents to use for the AIGNE instance.                                             |
-| <a id="limits"></a> `limits?`           | `ContextLimits`                                                                                                  | Limits for the AIGNE instance, such as timeout, max tokens, max invocations, etc. |
-| <a id="observer"></a> `observer?`       | `AIGNEObserver`                                                                                                  | Observer for the AIGNE instance.                                                  |
+| Property                                | Type                                               | Description                                                                       |
+| --------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------- |
+| <a id="name"></a> `name?`               | `string`                                           | The name of the AIGNE instance.                                                   |
+| <a id="description"></a> `description?` | `string`                                           | The description of the AIGNE instance.                                            |
+| <a id="model"></a> `model?`             | `ChatModel`                                        | Global model to use for all agents not specifying a model.                        |
+| <a id="skills"></a> `skills?`           | [`Agent`](agents/agent.md#agent)\<`any`, `any`\>[] | Skills to use for the AIGNE instance.                                             |
+| <a id="agents"></a> `agents?`           | [`Agent`](agents/agent.md#agent)\<`any`, `any`\>[] | Agents to use for the AIGNE instance.                                             |
+| <a id="limits"></a> `limits?`           | `ContextLimits`                                    | Limits for the AIGNE instance, such as timeout, max tokens, max invocations, etc. |
+| <a id="observer"></a> `observer?`       | `AIGNEObserver`                                    | Observer for the AIGNE instance.                                                  |

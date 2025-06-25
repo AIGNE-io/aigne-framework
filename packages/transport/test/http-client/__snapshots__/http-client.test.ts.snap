@@ -1389,3 +1389,15 @@ exports[`AIGNEClient should return error with options {
   [Error: test llm model error],
 ]
 `;
+
+exports[`AIGNEClient should support custom memory for client agent 1`] = `
+[
+  {
+    "content": "{"input":{"message":"Hello, I'm Bob!"},"output":{"message":"Hello Bob, How can I help you?"},"source":"chat"}",
+    "createdAt": Any<String>,
+    "id": Any<String>,
+    "sessionId": null,
+    "updatedAt": Any<String>,
+  },
+]
+`;

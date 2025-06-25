@@ -1,5 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
+import { DefaultMemoryStorage } from "@aigne/agent-library/default-memory/default-memory-storage/index.js";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import {
   AIAgent,
   AIGNE,
@@ -23,7 +25,6 @@ import compression from "compression";
 import { detect } from "detect-port";
 import express from "express";
 import { Hono } from "hono";
-import { MockMemory } from "../_mocks_/mock-memory.js";
 import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
 test("AIGNEClient example simple", async () => {
@@ -265,33 +266,28 @@ test("AIGNEClient should support custom memory for client agent", async () => {
 
     const clientAgent = await client.getAgent({
       name: "chat",
-      memory: new MockMemory(),
+      memory: new DefaultMemory(),
     });
 
     expect(clientAgent.memories.length).toBe(1);
     const memory = clientAgent.memories[0];
-    expect(memory).toBeInstanceOf(MockMemory);
-    assert(memory instanceof MockMemory);
+    expect(memory).toBeInstanceOf(DefaultMemory);
+    assert(memory instanceof DefaultMemory);
 
     const { storage } = memory;
+    assert(storage instanceof DefaultMemoryStorage);
 
     const response = await clientAgent.invoke({ message: "Hello, I'm Bob!" });
     expect(response).toEqual({ message: "Hello Bob, How can I help you?" });
 
-    expect(storage).toEqual([
-      expect.objectContaining({
-        content: expect.objectContaining({
-          role: "user",
-          content: { message: "Hello, I'm Bob!" },
-        }),
-      }),
-      expect.objectContaining({
-        content: expect.objectContaining({
-          role: "agent",
-          content: { message: "Hello Bob, How can I help you?" },
-        }),
-      }),
-    ]);
+    const memories = await (await storage.db).all("SELECT * FROM Memories");
+    expect(memories).toMatchSnapshot(
+      memories.map(() => ({
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      })),
+    );
 
     spyOn(aigne.model, "process").mockReturnValueOnce(
       stringToAgentResponseStream("Your name is Bob."),

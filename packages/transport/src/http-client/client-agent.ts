@@ -79,10 +79,7 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
   override async postprocess(input: I, output: O, options: AgentInvokeOptions): Promise<void> {
     await this.recordMemories(
       {
-        content: [
-          { role: "user", content: input },
-          { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
-        ],
+        content: [{ input, output: replaceTransferAgentToName(output), source: this.name }],
       },
       options,
     );

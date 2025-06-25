@@ -51,6 +51,7 @@
     "@aigne/openai": "workspace:^"
   },
   "devDependencies": {
+    "@aigne/agent-library": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/test-utils": "workspace:^",
     "@types/bun": "^1.2.12",

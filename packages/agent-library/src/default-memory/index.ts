@@ -10,8 +10,8 @@ import {
   MemoryRetriever,
   type MemoryRetrieverInput,
   type MemoryRetrieverOutput,
-  type Message,
 } from "@aigne/core";
+import { isRecord, pick } from "@aigne/core/utils/type-utils.js";
 import {
   DefaultMemoryStorage,
   type DefaultMemoryStorageOptions,
@@ -24,6 +24,7 @@ export interface DefaultMemoryOptions extends Partial<MemoryAgentOptions> {
   storage?: MemoryStorage | DefaultMemoryStorageOptions;
   recorderOptions?: Omit<DefaultMemoryRecorderOptions, "storage">;
   retrieverOptions?: Omit<DefaultMemoryRetrieverOptions, "storage">;
+  messageKey?: string | string[];
 }
 
 export class DefaultMemory extends MemoryAgent {
@@ -39,12 +40,16 @@ export class DefaultMemory extends MemoryAgent {
         options.recorder ??
         new DefaultMemoryRecorder({
           ...options.recorderOptions,
+          rememberFromMessageKey:
+            options.recorderOptions?.rememberFromMessageKey ?? options.messageKey,
           storage,
         }),
       retriever:
         options.retriever ??
         new DefaultMemoryRetriever({
           ...options.retrieverOptions,
+          retrieveFromMessageKey:
+            options.retrieverOptions?.retrieveFromMessageKey ?? options.messageKey,
           storage,
         }),
       autoUpdate: options.autoUpdate ?? true,
@@ -60,6 +65,10 @@ export interface DefaultMemoryRetrieverOptions
   extends AgentOptions<MemoryRetrieverInput, MemoryRetrieverOutput> {
   storage: MemoryStorage;
   defaultRetrieveMemoryCount?: number;
+  retrieveFromMessageKey?: string | string[];
+  getSearchPattern?: DefaultMemoryRetriever["getSearchPattern"];
+  formatMessage?: DefaultMemoryRetriever["formatMessage"];
+  formatMemory?: DefaultMemoryRetriever["formatMemory"];
 }
 
 class DefaultMemoryRetriever extends MemoryRetriever {
@@ -67,11 +76,48 @@ class DefaultMemoryRetriever extends MemoryRetriever {
     super(options);
     this.storage = options.storage;
     this.defaultRetrieveMemoryCount = options.defaultRetrieveMemoryCount;
+    this.retrieveFromMessageKey = options.retrieveFromMessageKey;
+    if (options.getSearchPattern) this.getSearchPattern = options.getSearchPattern;
+    if (options.formatMessage) this.formatMessage = options.formatMessage;
+    if (options.formatMemory) this.formatMemory = options.formatMemory;
   }
 
   private storage: MemoryStorage;
 
   private defaultRetrieveMemoryCount?: number;
+
+  private retrieveFromMessageKey?: string | string[];
+
+  private getSearchPattern = (search: MemoryRetrieverInput["search"]): string | undefined => {
+    if (!search || typeof search === "string") return search;
+
+    const obj =
+      search && this.retrieveFromMessageKey ? pick(search, this.retrieveFromMessageKey) : search;
+
+    return Object.values(obj)
+      .map((v) => (typeof v === "string" ? v : undefined))
+      .join("\n");
+  };
+
+  private formatMessage = (content: unknown): unknown => {
+    if (!this.retrieveFromMessageKey || !isRecord(content)) return content;
+
+    const obj = pick(content, this.retrieveFromMessageKey);
+
+    return Object.values(obj)
+      .map((v) => (typeof v === "string" ? v : undefined))
+      .join("\n");
+  };
+
+  private formatMemory = (content: unknown): unknown => {
+    if (!isRecord(content)) return content;
+    if ("input" in content || "output" in content) {
+      return {
+        user: this.formatMessage(content.input),
+        agent: this.formatMessage(content.output),
+      };
+    }
+  };
 
   async process(
     input: MemoryRetrieverInput,
@@ -80,11 +126,12 @@ class DefaultMemoryRetriever extends MemoryRetriever {
     const { result } = await this.storage.search(
       {
         ...input,
+        search: this.getSearchPattern(input.search),
         limit: input.limit ?? this.defaultRetrieveMemoryCount ?? DEFAULT_RETRIEVE_MEMORY_COUNT,
       },
       options,
     );
-    return { memories: result };
+    return { memories: result.map((i) => ({ ...i, content: this.formatMemory(i.content) })) };
   }
 }
 
@@ -115,8 +162,15 @@ class DefaultMemoryRecorder extends MemoryRecorder {
       const { result } = await this.storage.create(
         {
           content: {
-            ...item,
-            content: this.processMemoryInput(item.content),
+            input:
+              item.input && this.rememberFromMessageKey
+                ? pick(item.input, this.rememberFromMessageKey)
+                : item.input,
+            output:
+              item.output && this.rememberFromMessageKey
+                ? pick(item.output, this.rememberFromMessageKey)
+                : item.output,
+            source: item.source,
           },
         },
         options,
@@ -127,19 +181,5 @@ class DefaultMemoryRecorder extends MemoryRecorder {
     return {
       memories: newMemories,
     };
-  }
-
-  private processMemoryInput(content: Message) {
-    const keys = Array.isArray(this.rememberFromMessageKey)
-      ? this.rememberFromMessageKey
-      : this.rememberFromMessageKey
-        ? [this.rememberFromMessageKey]
-        : [];
-    if (!keys.length) return content;
-
-    return Object.entries(content)
-      .filter(([key]) => keys.includes(key))
-      .map(([_, value]) => (typeof value === "string" ? value : JSON.stringify(value)))
-      .join("\n");
   }
 }

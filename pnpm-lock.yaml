@@ -1545,6 +1545,9 @@ importers:
         specifier: workspace:^
         version: link:../../models/openai
     devDependencies:
+      '@aigne/agent-library':
+        specifier: workspace:^
+        version: link:../agent-library
       '@aigne/core':
         specifier: workspace:^
         version: link:../core

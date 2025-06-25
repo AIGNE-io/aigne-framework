@@ -60,19 +60,14 @@ export class DefaultMemoryStorage extends MemoryStorage {
     const memories =
       this.options?.enableFTS && query.search
         ? await db
-            .select({
-              id: Memories.id,
-              sessionId: Memories.sessionId,
-              content: Memories.content,
-              createdAt: Memories.createdAt,
-              updatedAt: Memories.updatedAt,
-            })
+            .select()
             .from(Memories)
             .innerJoin(sql`Memories_fts`, sql`Memories_fts.id = ${Memories.id}`)
-            .where(sql`Memories_fts MATCH ${query.search}`)
+            .where(sql`Memories_fts MATCH ${sql.param(this.segment(query.search).join(" OR "))}`)
             .orderBy(sql`bm25(Memories_fts)`)
             .limit(limit)
             .execute()
+            .then((rows) => rows.map((row) => row.Memories))
         : await db
             .select()
             .from(Memories)
@@ -102,7 +97,7 @@ export class DefaultMemoryStorage extends MemoryStorage {
         .values({
           ...memory,
           id,
-          content: memory.content as string,
+          content: memory.content,
           sessionId,
         })
         .returning()
@@ -111,7 +106,7 @@ export class DefaultMemoryStorage extends MemoryStorage {
         db.run(
           sql`\
           insert into Memories_fts (id, content)
-          values (${id}, ${this.segment(stringify(memory.content)).join(" ")})`,
+          values (${sql.param(id)}, ${sql.param(this.segment(stringify(memory.content)).join(" "))})`,
         ),
     ]);
 
@@ -121,8 +116,12 @@ export class DefaultMemoryStorage extends MemoryStorage {
   }
 
   protected segment(str: string): string[] {
-    return Array.from(new Intl.Segmenter(undefined, { granularity: "word" }).segment(str)).map(
-      (i) => i.segment,
+    return (
+      Array.from(new Intl.Segmenter(undefined, { granularity: "word" }).segment(str))
+        .map((i) => i.segment)
+        // Remove non-alphanumeric characters and trim whitespace
+        .map((i) => i.replace(/[^\p{L}\p{N}\s]/gu, "").trim())
+        .filter(Boolean)
     );
   }
 }

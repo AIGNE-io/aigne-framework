@@ -13,6 +13,7 @@ import {
   omitBy,
   omitDeep,
   orArrayToArray,
+  pick,
   remove,
   tryOrThrow,
   unique,
@@ -85,6 +86,14 @@ test("type-utils.unique", async () => {
     { id: 1 },
     { id: 2 },
   ]);
+});
+
+test("type-utils.pick", async () => {
+  expect(pick({ foo: 1, bar: 2, baz: "3" }, "foo")).toEqual({ foo: 1 });
+
+  expect(pick({ foo: 1, bar: 2, baz: "3" }, ["foo", "bar"])).toEqual({ foo: 1, bar: 2 });
+
+  expect(pick({ foo: 1, bar: 2, baz: "3" }, ["nonexistent", "foo"])).toEqual({ foo: 1 });
 });
 
 test("type-utils.omit", async () => {

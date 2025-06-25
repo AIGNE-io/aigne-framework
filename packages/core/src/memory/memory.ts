@@ -177,7 +177,10 @@ export class MemoryAgent extends Agent {
   }
 
   override async onMessage({ role, source, message, context }: MessagePayload): Promise<void> {
-    this.record({ content: [{ role, source, content: message }] }, context);
+    this.record(
+      { content: [role === "user" ? { input: message } : { output: message, source }] },
+      context,
+    );
   }
 }
 

@@ -18,11 +18,11 @@ import type { Memory } from "./memory.js";
  * should be stored as memories.
  */
 export interface MemoryRecorderInput extends Message {
-  /**
-   * Array of content items to record as memories.
-   * Each item in this array will typically be converted into a separate memory entry.
-   */
-  content: { role: "user" | "agent"; content: Message; source?: string }[];
+  content: {
+    input?: Message;
+    output?: Message;
+    source?: string;
+  }[];
 }
 
 /**
@@ -31,8 +31,8 @@ export interface MemoryRecorderInput extends Message {
 export const memoryRecorderInputSchema: ZodType<MemoryRecorderInput> = z.object({
   content: z.array(
     z.object({
-      role: z.union([z.literal("user"), z.literal("agent")]),
-      content: z.record(z.string(), z.unknown()),
+      input: z.record(z.string(), z.unknown()).optional(),
+      output: z.record(z.string(), z.unknown()).optional(),
       source: z.string().optional(),
     }),
   ),

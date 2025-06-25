@@ -23,9 +23,7 @@ test("PromptBuilder should build messages correctly", async () => {
   const memory = new MockMemory({});
   await memory.record(
     {
-      role: "agent",
-      content: [{ role: "agent", content: { message: "Hello, How can I help you?" } }],
-      source: "TestAgent",
+      content: [{ input: { message: "Hello, How can I help you?" }, source: "TestAgent" }],
     },
 
     context,

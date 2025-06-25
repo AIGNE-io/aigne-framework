@@ -488,7 +488,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
         await memory.retrieve(
           {
             ...input,
-            search: typeof input.search === "string" ? input.search : JSON.stringify(input.search),
             limit: input.limit ?? this.maxRetrieveMemoryCount,
           },
           options.context,
@@ -823,12 +822,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     this.publishToTopics(output, options);
 
     await this.recordMemories(
-      {
-        content: [
-          { role: "user", content: input },
-          { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
-        ],
-      },
+      { content: [{ input, output: replaceTransferAgentToName(output), source: this.name }] },
       options,
     );
   }

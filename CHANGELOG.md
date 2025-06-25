@@ -4,6 +4,21 @@
 
 * add user context support ([#131](https://github.com/AIGNE-io/aigne-framework/issues/131)) ([4dd9d20](https://github.com/AIGNE-io/aigne-framework/commit/4dd9d20953f6ac33933723db56efd9b44bafeb02))
 
+## [1.25.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.24.0...aigne-framework-v1.25.0) (2025-06-25)
+
+
+### Features
+
+* support remember custom fields from message ([#174](https://github.com/AIGNE-io/aigne-framework/issues/174)) ([664069d](https://github.com/AIGNE-io/aigne-framework/commit/664069d343137f69d0c103b2b5eff545ab0051fb))
+
+
+### Bug Fixes
+
+* **blocklet:** ensure only admins can access traces ([#173](https://github.com/AIGNE-io/aigne-framework/issues/173)) ([9c5cc06](https://github.com/AIGNE-io/aigne-framework/commit/9c5cc06c5841b9684d16c5c60af764d8c98c9c3e))
+* **ci:** blocklet release workflow config and naming ([c92146e](https://github.com/AIGNE-io/aigne-framework/commit/c92146ee51fdd11a02b6b88d82b8281c26d2c4c9))
+* **ci:** tune observability blocklet title ([261a80e](https://github.com/AIGNE-io/aigne-framework/commit/261a80e6a69750625e7c70bd2b96b2e02f98ee06))
+* publish blocklet ci ([#171](https://github.com/AIGNE-io/aigne-framework/issues/171)) ([65f1701](https://github.com/AIGNE-io/aigne-framework/commit/65f1701b1e94fb6fe79f6723919ffba4c652673a))
+
 ## [1.24.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.23.0...aigne-framework-v1.24.0) (2025-06-24)
 
 

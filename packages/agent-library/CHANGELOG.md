@@ -13,6 +13,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.15.0...agent-library-v1.16.0) (2025-06-25)
+
+
+### Features
+
+* support remember custom fields from message ([#174](https://github.com/AIGNE-io/aigne-framework/issues/174)) ([664069d](https://github.com/AIGNE-io/aigne-framework/commit/664069d343137f69d0c103b2b5eff545ab0051fb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.23.0
+    * @aigne/openai bumped to 0.3.5
+
 ## [1.14.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.13.2...agent-library-v1.14.0) (2025-06-20)
 
 

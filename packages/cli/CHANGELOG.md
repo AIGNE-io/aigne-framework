@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.13.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.13.0...cli-v1.13.1) (2025-06-25)
+
+
+### Bug Fixes
+
+* **blocklet:** ensure only admins can access traces ([#173](https://github.com/AIGNE-io/aigne-framework/issues/173)) ([9c5cc06](https://github.com/AIGNE-io/aigne-framework/commit/9c5cc06c5841b9684d16c5c60af764d8c98c9c3e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.16.0
+    * @aigne/anthropic bumped to 0.3.5
+    * @aigne/bedrock bumped to 0.3.5
+    * @aigne/core bumped to 1.23.0
+    * @aigne/deepseek bumped to 0.3.5
+    * @aigne/gemini bumped to 0.3.5
+    * @aigne/observability bumped to 0.1.1
+    * @aigne/ollama bumped to 0.3.5
+    * @aigne/open-router bumped to 0.3.5
+    * @aigne/openai bumped to 0.3.5
+    * @aigne/xai bumped to 0.3.5
+
 ## [1.13.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.12.0...cli-v1.13.0) (2025-06-24)
 
 

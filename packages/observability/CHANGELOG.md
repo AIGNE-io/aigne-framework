@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-v0.1.0...observability-v0.1.1) (2025-06-25)
+
+
+### Bug Fixes
+
+* **blocklet:** ensure only admins can access traces ([#173](https://github.com/AIGNE-io/aigne-framework/issues/173)) ([9c5cc06](https://github.com/AIGNE-io/aigne-framework/commit/9c5cc06c5841b9684d16c5c60af764d8c98c9c3e))
+
 ## [0.1.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-v0.0.1...observability-v0.1.0) (2025-06-24)
 
 

@@ -12,6 +12,25 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.23.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.22.0...core-v1.23.0) (2025-06-25)
+
+
+### Features
+
+* support remember custom fields from message ([#174](https://github.com/AIGNE-io/aigne-framework/issues/174)) ([664069d](https://github.com/AIGNE-io/aigne-framework/commit/664069d343137f69d0c103b2b5eff545ab0051fb))
+
+
+### Bug Fixes
+
+* **blocklet:** ensure only admins can access traces ([#173](https://github.com/AIGNE-io/aigne-framework/issues/173)) ([9c5cc06](https://github.com/AIGNE-io/aigne-framework/commit/9c5cc06c5841b9684d16c5c60af764d8c98c9c3e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability bumped to 0.1.1
+
 ## [1.21.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.20.1...core-v1.21.0) (2025-06-20)
 
 

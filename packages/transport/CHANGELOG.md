@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.5.0...transport-v0.5.1) (2025-06-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.3.5
+  * devDependencies
+    * @aigne/core bumped to 1.23.0
+    * @aigne/test-utils bumped to 0.4.5
+
 ## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.4.3...transport-v0.5.0) (2025-06-24)
 
 

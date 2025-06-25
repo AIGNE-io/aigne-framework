@@ -1,5 +1,4 @@
 import type { Server } from "node:http";
-import path from "node:path";
 import { initDatabase } from "@aigne/sqlite";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -10,8 +9,8 @@ import SSE from "express-sse";
 import { z } from "zod";
 
 import { ZodError } from "zod";
-import { isBlocklet } from "../core/util.js";
 import { migrate } from "./migrate.js";
+import settingsRouter from "./routes/settings.js";
 import traceRouter from "./routes/trace.js";
 
 const sse = new SSE();
@@ -36,7 +35,7 @@ export async function startServer(
 ): Promise<{ app: express.Express; server: Server }> {
   const { port, dbUrl } = startServerOptionsSchema.parse(options);
 
-  const traceTreeMiddleware = options.traceTreeMiddleware ?? [
+  const middleware = options.traceTreeMiddleware ?? [
     (_req: Request, _res: Response, next: NextFunction) => next(),
   ];
 
@@ -57,18 +56,15 @@ export async function startServer(
     "/api/trace",
     traceRouter({
       sse,
-      middleware: Array.isArray(traceTreeMiddleware) ? traceTreeMiddleware : [traceTreeMiddleware],
+      middleware: Array.isArray(middleware) ? middleware : [middleware],
     }),
   );
-
-  if (!isBlocklet) {
-    // @ts-ignore
-    const distPath = path.join(import.meta.dirname, "../../../dist");
-    app.use(express.static(distPath));
-    app.get("/{*splat}", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
+  app.use(
+    "/api/settings",
+    settingsRouter({
+      middleware: Array.isArray(middleware) ? middleware : [middleware],
+    }),
+  );
 
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof ZodError) {

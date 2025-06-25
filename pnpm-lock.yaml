@@ -1266,6 +1266,9 @@ importers:
       vite-plugin-blocklet:
         specifier: ^0.9.33
         version: 0.9.33(rollup@4.41.1)(vite@6.3.5(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0))
+      yaml:
+        specifier: ^2.7.1
+        version: 2.8.0
       zod:
         specifier: ^3.25.23
         version: 3.25.23
@@ -19732,7 +19735,7 @@ snapshots:
       markdown-it: 14.1.0
       minimatch: 9.0.5
       typescript: 5.8.3
-      yaml: 2.7.1
+      yaml: 2.8.0
 
   typescript-eslint@8.34.1(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3):
     dependencies:
@@ -19813,7 +19816,7 @@ snapshots:
       vfile-message: 4.0.2
       vfile-reporter: 8.1.1
       vfile-statistics: 3.0.0
-      yaml: 2.7.1
+      yaml: 2.8.0
     transitivePeerDependencies:
       - bluebird
       - supports-color

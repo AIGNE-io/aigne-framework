@@ -43,6 +43,15 @@
       "default": "./lib/esm/server/index.js",
       "types": "./lib/dts/server/index.d.ts"
     },
+    "./cli": {
+      "browser": "./lib/esm/server/cli.js",
+      "node": {
+        "require": "./lib/cjs/server/cli.js",
+        "import": "./lib/esm/server/cli.js"
+      },
+      "default": "./lib/esm/server/cli.js",
+      "types": "./lib/dts/server/cli.d.ts"
+    },
     "./list": {
       "default": "./src/list.tsx"
     },
@@ -69,6 +78,9 @@
       ],
       "db-path": [
         "./lib/dts/core/db-path.d.ts"
+      ],
+      "cli": [
+        "./lib/dts/server/cli.d.ts"
       ]
     }
   },
@@ -115,6 +127,7 @@
     "tinycolor2": "^1.6.0",
     "uuid": "^11.1.0",
     "vite-plugin-blocklet": "^0.9.33",
+    "yaml": "^2.7.1",
     "zod": "^3.25.23"
   },
   "devDependencies": {

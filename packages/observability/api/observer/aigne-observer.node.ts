@@ -4,7 +4,6 @@ import type { SpanExporter } from "@opentelemetry/sdk-trace-base";
 import { getObservabilityDbPath } from "../core/db-path.js";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
-import detect from "../server/utils/detect-port.js";
 
 export class AIGNEObserver {
   private server: AIGNEObserverOptions["server"];
@@ -37,21 +36,11 @@ export class AIGNEObserver {
   }
 
   async _serve(): Promise<void> {
-    if (!this.server?.port || !this.storage?.url) {
-      throw new Error("Server is not configured");
+    if (!this.storage?.url) {
+      throw new Error("Server storage url is not configured");
     }
 
-    const port = this.server.port;
-    const detected = await detect(port);
-    if (this.initPort && detected !== port) {
-      throw new Error(`Port ${port} is already in use`);
-    }
-    this.server.port = detected;
-
-    this.traceExporter = await initOpenTelemetry({
-      serverUrl: `http://localhost:${this.server.port}`,
-      dbPath: this.storage.url,
-    });
+    this.traceExporter = await initOpenTelemetry({ dbPath: this.storage.url });
   }
 
   async close(): Promise<void> {

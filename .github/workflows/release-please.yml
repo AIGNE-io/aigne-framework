@@ -1,7 +1,7 @@
-name: Release Please
+name: Release Packages And Blocklet
 
 env:
-  NODE_OPTIONS: '--max_old_space_size=6144'
+  NODE_OPTIONS: "--max_old_space_size=6144"
 
 on:
   push:

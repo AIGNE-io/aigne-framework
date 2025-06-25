@@ -505,7 +505,7 @@ const mcpAgentOptionsSchema: ZodType<
     opts: z.object({}).optional(),
     timeout: z.number().optional(),
     maxReconnects: z.number().optional(),
-    shouldReconnect: z.function().args(z.instanceof(Error)).returns(z.boolean()).optional(),
+    shouldReconnect: z.custom<SSEServerParameters["shouldReconnect"]>().optional(),
   }),
   z.object({
     command: z.string(),

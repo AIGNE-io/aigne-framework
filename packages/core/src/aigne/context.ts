@@ -4,9 +4,9 @@ import { SpanStatusCode, context, trace } from "@opentelemetry/api";
 import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
-import { type ZodType, z } from "zod";
+import { z } from "zod";
 import {
-  Agent,
+  type Agent,
   type AgentInvokeOptions,
   type AgentProcessAsyncGenerator,
   type AgentResponse,
@@ -234,7 +234,7 @@ export class AIGNEContext implements Context {
         const parentContext = trace.setSpan(context.active(), parent.span);
         this.span = tracer?.startSpan("childAIGNEContext", undefined, parentContext);
       } else {
-        if (!process.env.AIGNE_OBSERVABILITY_DISABLED) {
+        if (parent.observer && !process.env.AIGNE_OBSERVABILITY_DISABLED) {
           throw new Error("parent span is not set");
         }
       }
@@ -680,7 +680,7 @@ async function* withAbortSignal<T extends Message>(
 }
 
 const aigneContextInvokeArgsSchema = z.object({
-  agent: z.union([z.function() as ZodType<FunctionAgentFn>, z.instanceof(Agent)]),
+  agent: z.union([z.custom<FunctionAgentFn>(), z.custom<Agent>()]),
   message: z.union([z.record(z.unknown()), z.string()]).optional(),
   options: z.object({ returnActiveAgent: z.boolean().optional() }).optional(),
 });

@@ -1,10 +1,10 @@
 import type { Server } from "node:http";
 import path from "node:path";
-import express, {} from "express";
+import express from "express";
 
 import { type StartServerOptions, startServer } from "./index.js";
 
-export async function startObservabilityCliServer(
+export async function startObservabilityCLIServer(
   options: StartServerOptions,
 ): Promise<{ app: express.Express; server: Server }> {
   const { app, server } = await startServer(options);

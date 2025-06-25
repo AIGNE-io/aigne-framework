@@ -1,8 +1,9 @@
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
-import { startObservabilityCliServer } from "@aigne/observability/cli";
+import { startObservabilityCLIServer } from "@aigne/observability/cli";
 import { getObservabilityDbPath } from "@aigne/observability/db-path";
 import { Command, type OptionValues } from "commander";
 import detectPort from "detect-port";
+
 interface ServeMCPOptions extends OptionValues {
   host: string;
   port?: number;
@@ -30,11 +31,11 @@ export function createObservabilityCommand(): Command {
     )
     .option("--port <port>", "Port to run the MCP server on", (s) => Number.parseInt(s))
     .action(async (options: ServeMCPOptions) => {
-      const port = await detectPort(Number(options.port) || DEFAULT_PORT());
+      const port = await detectPort(options.port || DEFAULT_PORT());
       const dbUrl = getObservabilityDbPath();
 
       console.log("DB PATH:", dbUrl);
-      await startObservabilityCliServer({ port, dbUrl });
+      await startObservabilityCLIServer({ port, dbUrl });
     })
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);

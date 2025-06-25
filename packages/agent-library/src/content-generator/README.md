@@ -31,7 +31,7 @@ npm install -g @aigne/cli
 export GEMINI_API_KEY=xxx
 
 # 运行生成 & 评估 Agent
-aigne run --entry-agent "content-generator" --input "@mock-inputs/input.yaml" --format yaml
+aigne run --entry-agent "content-generator" --input "@mock-inputs/input.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml
 ```
 
 `input.yaml` 中各输入的含义：
@@ -44,7 +44,7 @@ aigne run --entry-agent "content-generator" --input "@mock-inputs/input.yaml" --
 可以在 `aigne.yaml` 中修改使用的模型，或者在命令行中指定模型：
 
 ```bash
-aigne run --entry-agent "content-generator" --input "@mock-inputs/input.yaml" --format yaml --model openai:gpt-4o
+aigne run --entry-agent "content-generator" --input "@mock-inputs/input.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --model openai:gpt-4o
 ```
 
 ### 使用 observability 查看执行记录

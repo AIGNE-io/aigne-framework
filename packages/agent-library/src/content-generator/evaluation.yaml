@@ -39,15 +39,5 @@ output_schema:
   type: object
   properties:
     evaluationResult:
-      type: object
+      type: string
       description: 评估结果
-      properties:
-        score:
-          type: number
-          description: 每项评估的得分加起来的平均分
-        summary:
-          type: string
-          description: 评估结果的总结，需要列出每项评估内容，通过 markdown 的表格格式输出，表格的列标题为：评估维度、得分、修改建议、修改理由
-        passed:
-          type: boolean
-          describe: 是否通过评估

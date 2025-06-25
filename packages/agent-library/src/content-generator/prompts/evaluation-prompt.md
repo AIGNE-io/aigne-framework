@@ -39,6 +39,10 @@
 1. 你需要根据用户原始的要求（<target_user_rules>）和评估维度（<evaluation_dimensions>），识别不同的评估维度和用户的要求，必须完成所有评估维度
 2. 你需要识别待评估内容（<evaluation_target>），并结合待评估内容的上下文信息（<evaluation_target_datasources>），进行评估维度评估量化
 
+3. 每个评估维度可能包含多个子维度，如果存在子维度，要确保每个维度也进行了仔细的评估
+
+4. 如果评估维度中存在数量、分数等明确的检查，确保你在数字上的检查是正确的
+
 </evaluation_rules>
 
 统一评分标准：
@@ -81,12 +85,30 @@
 2. **维度应用**：正确使用<evaluation_dimensions>等语义化标签选择评估维度
 3. **评分一致性**：严格遵循<scoring_scale>标准，确保评分的一致性和可比性
 4. **具体建议**：改进建议必须具体可执行，避免空泛的建议
-5. **结构化输出**：必须按照规定的JSON格式输出评估结果
-6. **对比分析**：当存在<previous_evaluation>时，必须应用<comparison_analysis_rules>进行对比
-7. **中文输出**：所有输出内容使用中文
+5. **中文输出**：所有输出内容使用中文
 </important_requirements>
 
 <output_schema>
-1. 以 markdown 表格的形式输出评估结果
-2. 需要包含每个评估维度、得分、打分原因、具体问题、修改建议
+1. 以 markdown 的格式输出评估结果，包含总体打分(score)、打分总结，参考下面的格式：
+
+<output_sample>
+## 打分总结
+xxx
+
+*** 总体打分：x **
+
+##  打分总结
+
+### 评估维度：xxx
+
+** 得分：x **
+
+**打分原因：** xxx
+
+**具体问题：** xxx
+
+**修改建议：** xxx
+
+
+</output_sample>
 </output_schema>

@@ -1,7 +1,7 @@
 rules: |
   请帮助我生成一个跟 ArcBlock 内容相关的站点
   ## 站点受众
-  这个站点的受众是普通用户，需要确保结构清晰，易于理解，符合普通用户的认知习惯。
+  这个站点的受众是开发者，帮助用户简化应用开发流程，需要确保结构清晰，易于理解，符合普通用户的认知习惯。
 
   ## 结构规划
   对于结构规划需要生成完整的站点结构，用于开发团队编写页面代码，另外在设计结构时，需要考虑 SEO 优化要求，确保每个页面能在 google 搜索结果中排名靠前。
@@ -11,7 +11,7 @@ rules: |
   2. 需要确保每个页面都有 SEO 关键词，且能够满足 SEO 优化要求。
   3. 需要确保每个页面都有唯一的 URL。
   4. 页面结构可以尽可能复杂，因为会涉及不同页面层级
-  5. 页面数量不能超过五个
+  5. 页面不能超过五个
 
 locale: zh
 
@@ -40,3 +40,45 @@ datasources: |
   平台注重提升用户综合体验，通过模块化设计和最佳实践指导，帮助开发者将非链上逻辑合理转移，提升整体性能和响应速度。同时提供丰富的SDK、文档和社区支持，降低开发门槛。
 
   总结来说，ArcBlock 是一个集开放协议、模块化组件、去中心化通信、身份与代币服务、定制区块链框架及云原生生态于一体的区块链应用开发平台，旨在简化开发流程，提升性能和用户体验，推动区块链技术的广泛应用。
+
+structurePlan:
+  - title: "首页"
+    description: "ArcBlock 官网的首页展示，介绍 ArcBlock 最近与 Google 的合作。"
+    path: "/"
+    parentId: null
+  - title: "ArcBlock 简介"
+    description: "详细介绍 ArcBlock 的愿景, AWS 公司发布的新产品。"
+    path: "/about"
+    parentId: "/"
+  - title: "开放链访问协议（OCAP）"
+    description: "介绍ArcBlock开放的链访问协议及其多链互操作功能。详细介绍 OCAP 的原理、技术细节"
+    path: "/ocap"
+    parentId: "/about"
+  - title: "基石程序（Blocklet）"
+    description: "展示ArcBlock的模块化微服务组件及其应用。"
+    path: "/blocklet"
+    parentId: "/about"
+  - title: " 使用 Blocklet 开发应用 "
+    description: "详细介绍如何使用 Blocklet 作为基石，通过组装的方式快速开发应用"
+    path: "/create-app"
+    parentId: "/about"
+  - title: "去中心化订阅网关"
+    description: "介绍去中心化订阅网关的功能及网络协议支持。介绍 ArcBlock 的订阅网关的原理、技术细节"
+    path: "/gateway"
+    parentId: "/about"
+  - title: "代币与身份服务组件"
+    description: "详解代币服务及用户身份管理等功能组件。"
+    path: "/token-identity"
+    parentId: "/about"
+  - title: "Forge Framework"
+    description: "详细介绍ArcBlock的Forge区块链框架。"
+    path: "/forge"
+    parentId: "/about"
+  - title: "云原生架构与生态系统"
+    description: "探讨ArcBlock的云原生架构及生态系统作用。"
+    path: "/cloud-native"
+    parentId: "/about"
+  - title: "用户体验与开发者支持"
+    description: "展示ArcBlock对用户和开发者的支持、提升应用体验。"
+    path: "/support"
+    parentId: "/about" 

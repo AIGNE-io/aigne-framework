@@ -1,7 +1,7 @@
 rules: |
   请帮助我生成一个跟 ArcBlock 内容相关的站点
   ## 站点受众
-  这个站点的受众是普通用户，需要确保结构清晰，易于理解，符合普通用户的认知习惯。
+  这个站点的受众是开发者，帮助用户简化应用开发流程，需要确保结构清晰，易于理解，符合普通用户的认知习惯。
 
   ## 结构规划
   对于结构规划需要生成完整的站点结构，用于开发团队编写页面代码，另外在设计结构时，需要考虑 SEO 优化要求，确保每个页面能在 google 搜索结果中排名靠前。
@@ -11,7 +11,7 @@ rules: |
   2. 需要确保每个页面都有 SEO 关键词，且能够满足 SEO 优化要求。
   3. 需要确保每个页面都有唯一的 URL。
   4. 页面结构可以尽可能复杂，因为会涉及不同页面层级
-  5. 页面数量不能超过五个
+  5. 页面不能超过五个
 
 locale: zh
 
@@ -40,3 +40,25 @@ datasources: |
   平台注重提升用户综合体验，通过模块化设计和最佳实践指导，帮助开发者将非链上逻辑合理转移，提升整体性能和响应速度。同时提供丰富的SDK、文档和社区支持，降低开发门槛。
 
   总结来说，ArcBlock 是一个集开放协议、模块化组件、去中心化通信、身份与代币服务、定制区块链框架及云原生生态于一体的区块链应用开发平台，旨在简化开发流程，提升性能和用户体验，推动区块链技术的广泛应用。
+
+structurePlan:
+  - title: "首页"
+    description: "ArcBlock 平台概览与核心功能介绍，帮助用户快速了解平台的主要优势和功能。"
+    path: "/"
+    parentId: null
+  - title: "使用 Blocklet 开发应用"
+    description: "介绍如何使用 Blocklet 作为基石，通过组装的方式快速开发应用"
+    path: "/create-app"
+    parentId: "/"
+  - title: "核心功能"
+    description: "详细介绍 ArcBlock 的主要功能，包括开放链访问协议(OCAP)、模块化组件(Blocklet)、身份服务组件、Forge 框架"
+    path: "/core-functions"
+    parentId: "/"
+  - title: "开发者支持"
+    description: "介绍 ArcBlock 的开发者支持资源，包括 SDK、文档和社区，帮助降低开发门槛。介绍云原生架构和生态系统，帮助开发者快速上手。"
+    path: "/developer-support"
+    parentId: "/"
+  - title: "关于 ArcBlock"
+    description: "介绍 ArcBlock 的愿景、使命及其在区块链行业的定位。"
+    path: "/about"
+    parentId: "/" 

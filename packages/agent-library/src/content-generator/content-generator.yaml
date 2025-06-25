@@ -1,0 +1,26 @@
+type: team
+name: content-generator
+description: 结构规划和结果评估
+skills:
+  - structure-planning.yaml
+  - evaluation.yaml
+input_schema:
+  type: object
+  properties:
+    rules:
+      type: string
+      description: 用户的结构规划的要求和规则
+    locale:
+      type: string
+      description: 用户语言，如 zh、en
+    datasources:
+      type: string
+      description: 结构规划的上下文，用于辅助结构规划
+    evaluationDimensions:
+      type: string
+      description: 评估维度
+  required:
+    - rules
+    - datasources
+    - evaluationDimensions
+mode: sequential

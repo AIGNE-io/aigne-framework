@@ -1,0 +1,42 @@
+name: structure-planning
+description: 通用结构规划生成器，支持网站、文档、书籍、演示文稿等多种场景
+instructions:
+  url: ./prompts/structure-planning.md
+input_schema:
+  type: object
+  properties:
+    rules:
+      type: string
+      description: 用户的结构规划的要求
+    locale:
+      type: string
+      description: 用户语言，如 zh、en
+    datasources:
+      type: string
+      description: 结构规划的上下文，用于辅助结构规划
+  required:
+    - rules
+    - datasources
+output_schema:
+  type: object
+  properties:
+    structurePlan:
+      type: array
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+          description:
+            type: string
+          path:
+            type: string
+          parentId:
+            type:
+              - string
+              - 'null'
+        required:
+          - title
+          - description
+          - path
+output_key: structure_plan

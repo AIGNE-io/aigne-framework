@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.5.2](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.5.1...transport-v0.5.2) (2025-06-25)
+
+
+### Bug Fixes
+
+* **core:** pass input/output to MemoryAgent directily ([#178](https://github.com/AIGNE-io/aigne-framework/issues/178)) ([3b20e33](https://github.com/AIGNE-io/aigne-framework/commit/3b20e33f1eefc81ac1e009b1afff14fca46644b1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.3.6
+  * devDependencies
+    * @aigne/agent-library bumped to 1.16.1
+    * @aigne/core bumped to 1.23.1
+    * @aigne/test-utils bumped to 0.4.6
+
 ## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.5.0...transport-v0.5.1) (2025-06-25)
 
 

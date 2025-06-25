@@ -12,6 +12,13 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.23.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.23.0...core-v1.23.1) (2025-06-25)
+
+
+### Bug Fixes
+
+* **core:** pass input/output to MemoryAgent directily ([#178](https://github.com/AIGNE-io/aigne-framework/issues/178)) ([3b20e33](https://github.com/AIGNE-io/aigne-framework/commit/3b20e33f1eefc81ac1e009b1afff14fca46644b1))
+
 ## [1.23.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.22.0...core-v1.23.0) (2025-06-25)
 
 

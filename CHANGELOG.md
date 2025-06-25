@@ -6,6 +6,13 @@
 * **blocklet:** remove h3 from changelog for blocklet bundle ([3d31114](https://github.com/AIGNE-io/aigne-framework/commit/3d31114109abc6780ffc7aaf54f00f37f2644e16))
 
 
+## [1.25.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.25.1...aigne-framework-v1.25.2) (2025-06-25)
+
+
+### Bug Fixes
+
+* **core:** pass input/output to MemoryAgent directily ([#178](https://github.com/AIGNE-io/aigne-framework/issues/178)) ([3b20e33](https://github.com/AIGNE-io/aigne-framework/commit/3b20e33f1eefc81ac1e009b1afff14fca46644b1))
+
 ## [1.25.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.24.0...aigne-framework-v1.25.0) (2025-06-25)
 
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-v1.2.0...observability-v1.2.1) (2025-06-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.23.1
+    * @aigne/openai bumped to 0.3.6
+    * @aigne/transport bumped to 0.5.2
+
 ## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-v1.1.1...observability-v1.2.0) (2025-06-25)
 
 

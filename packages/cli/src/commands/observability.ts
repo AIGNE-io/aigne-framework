@@ -1,6 +1,6 @@
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { startObservabilityCLIServer } from "@aigne/observability/cli";
-import { getObservabilityDbPath } from "@aigne/observability/db-path";
+import getObservabilityDbPath from "@aigne/observability/db-path";
 import { Command, type OptionValues } from "commander";
 import detectPort from "detect-port";
 

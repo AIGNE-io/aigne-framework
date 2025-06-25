@@ -17,10 +17,11 @@ import {
   newEmptyContextUsage,
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
-import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import type { Args, Listener } from "@aigne/core/utils/typed-event-emtter.js";
 import { v7 } from "uuid";
 import { ClientAgent, type ClientAgentOptions } from "./client-agent.js";
+import { ClientChatModel } from "./client-chat-model.js";
 
 /**
  * Configuration options for the AIGNEHTTPClient.
@@ -76,6 +77,8 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
 
   memories: Context["memories"] = [];
 
+  model = new ClientChatModel(this);
+
   invoke<I extends Message, O extends Message>(agent: Agent<I, O> | string): UserAgent<I, O>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,
@@ -118,7 +121,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
     const a =
       typeof agent === "string" ? this.getAgent<I, O>({ name: agent }) : Promise.resolve(agent);
 
-    return a.then((agent) => agent.invoke(message, options));
+    return a.then((agent) => agent.invoke(message, { ...options, context: this }));
   }
 
   publish(
@@ -126,7 +129,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
     _payload: Omit<MessagePayload, "context"> | Message | string,
     _options?: InvokeOptions,
   ): void {
-    throw new Error("Method not implemented.");
+    console.error("Method not implemented.");
   }
 
   subscribe(topic: string | string[], listener?: undefined): Promise<MessagePayload>;
@@ -147,7 +150,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
   }
 
   unsubscribe(_topic: string | string[], _listener: MessageQueueListener): void {
-    throw new Error("Method not implemented.");
+    console.error("Method not implemented.");
   }
 
   newContext(_options?: { reset?: boolean }): Context {
@@ -158,28 +161,32 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
     _eventName: K,
     ..._args: Args<K, ContextEmitEventMap>
   ): boolean {
-    throw new Error("Method not implemented.");
+    console.error("Method not implemented.");
+    return false;
   }
 
   on<K extends keyof ContextEventMap>(
     _eventName: K,
     _listener: Listener<K, ContextEventMap>,
   ): this {
-    throw new Error("Method not implemented.");
+    console.error("Method not implemented.");
+    return this;
   }
 
   once<K extends keyof ContextEventMap>(
     _eventName: K,
     _listener: Listener<K, ContextEventMap>,
   ): this {
-    throw new Error("Method not implemented.");
+    console.error("Method not implemented.");
+    return this;
   }
 
   off<K extends keyof ContextEventMap>(
     _eventName: K,
     _listener: Listener<K, ContextEventMap>,
   ): this {
-    throw new Error("Method not implemented.");
+    console.error("Method not implemented.");
+    return this;
   }
 
   /**
@@ -244,7 +251,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
         "Content-Type": "application/json",
         ...options?.fetchOptions?.headers,
       },
-      body: JSON.stringify({ agent, input, options }),
+      body: JSON.stringify({ agent, input, options: options && omit(options, "context") }),
     });
 
     // For non-streaming responses, simply parse the JSON response and return it

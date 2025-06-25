@@ -5,6 +5,7 @@ import { checkArguments, isRecord, tryOrThrow } from "@aigne/core/utils/type-uti
 import contentType from "content-type";
 import getRawBody from "raw-body";
 import { z } from "zod";
+import { ChatModelName } from "../constants.js";
 import { ServerError } from "./error.js";
 
 /**
@@ -182,7 +183,7 @@ export class AIGNEHTTPServer {
         (error) => new ServerError(400, error.message),
       );
 
-      const agent = aigne.agents[agentName];
+      const agent = agentName === ChatModelName ? aigne.model : aigne.agents[agentName];
       if (!agent) throw new ServerError(404, `Agent ${agentName} not found`);
 
       const mergedOptions: InvokeOptions = {

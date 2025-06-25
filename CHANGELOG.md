@@ -13,6 +13,13 @@
 * **ci:** tune observability blocklet title ([261a80e](https://github.com/AIGNE-io/aigne-framework/commit/261a80e6a69750625e7c70bd2b96b2e02f98ee06))
 * publish blocklet ci ([#171](https://github.com/AIGNE-io/aigne-framework/issues/171)) ([65f1701](https://github.com/AIGNE-io/aigne-framework/commit/65f1701b1e94fb6fe79f6723919ffba4c652673a))
 
+## [1.25.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.25.0...aigne-framework-v1.25.1) (2025-06-25)
+
+
+### Bug Fixes
+
+* **blocklet:** remove h3 from changelog for blocklet bundle ([3d31114](https://github.com/AIGNE-io/aigne-framework/commit/3d31114109abc6780ffc7aaf54f00f37f2644e16))
+
 ## [1.24.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.23.0...aigne-framework-v1.24.0) (2025-06-24)
 
 

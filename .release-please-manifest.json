@@ -1,5 +1,5 @@
 {
-  ".": "1.25.0",
+  ".": "1.25.1",
   "packages/platform-helpers": "0.1.2",
   "packages/sqlite": "0.1.1",
   "packages/agent-library": "1.16.0",
@@ -16,7 +16,7 @@
   "models/open-router": "0.3.5",
   "models/openai": "0.3.5",
   "models/xai": "0.3.5",
-  "blocklets/observability": "1.0.1",
+  "blocklets/observability": "1.1.0",
   "examples/mcp-github": "1.12.1",
   "examples/mcp-puppeteer": "1.14.1",
   "examples/mcp-sqlite": "1.14.1",

@@ -110,7 +110,7 @@ export class OrchestratorAgent<
   I extends Message = Message,
   O extends Message = Message,
 > extends Agent<I, O> {
-  tag = "OrchestratorAgent";
+  override tag = "OrchestratorAgent";
 
   /**
    * Factory method to create an OrchestratorAgent instance

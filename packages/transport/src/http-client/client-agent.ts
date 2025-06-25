@@ -22,7 +22,7 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
   I,
   O
 > {
-  tag = "ClientAgent";
+  override tag = "ClientAgent";
 
   constructor(
     public client: AIGNEHTTPClient,

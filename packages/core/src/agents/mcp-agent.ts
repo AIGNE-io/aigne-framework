@@ -121,7 +121,7 @@ function getMCPServerString(options: MCPAgentOptions | MCPServerOptions): string
  * {@includeCode ../../test/agents/mcp-agent.test.ts#example-mcp-agent-from-sse}
  */
 export class MCPAgent extends Agent {
-  tag = "MCPAgent";
+  override tag = "MCPAgent";
 
   /**
    * Create an MCPAgent from a connection to an SSE server.
@@ -316,7 +316,7 @@ export class MCPAgent extends Agent {
    * MCPAgent itself is not directly invokable as it acts as a container
    * for tools, prompts, and resources. Always returns false.
    */
-  get isInvokable(): boolean {
+  override get isInvokable(): boolean {
     return false;
   }
 
@@ -427,7 +427,7 @@ export interface MCPBaseOptions<I extends Message = any, O extends Message = any
 }
 
 export abstract class MCPBase<I extends Message, O extends Message> extends Agent<I, O> {
-  tag = "MCPBase";
+  override tag = "MCPBase";
 
   constructor(options: MCPBaseOptions<I, O>) {
     super(options);
@@ -438,7 +438,7 @@ export abstract class MCPBase<I extends Message, O extends Message> extends Agen
 }
 
 export class MCPTool extends MCPBase<Message, CallToolResult> {
-  tag = "MCPTool";
+  override tag = "MCPTool";
 
   async process(input: Message): Promise<CallToolResult> {
     const result = await this.client.callTool({ name: this.name, arguments: input });
@@ -452,7 +452,7 @@ export interface MCPPromptInput extends Record<string, unknown> {
 }
 
 export class MCPPrompt extends MCPBase<MCPPromptInput, GetPromptResult> {
-  tag = "MCPPrompt";
+  override tag = "MCPPrompt";
 
   async process(input: MCPPromptInput): Promise<GetPromptResult> {
     const result = await this.client.getPrompt({ name: this.name, arguments: input });
@@ -466,7 +466,7 @@ export interface MCPResourceOptions extends MCPBaseOptions<MCPPromptInput, ReadR
 }
 
 export class MCPResource extends MCPBase<MCPPromptInput, ReadResourceResult> {
-  tag = "MCPResource";
+  override tag = "MCPResource";
 
   constructor(options: MCPResourceOptions) {
     super(options);

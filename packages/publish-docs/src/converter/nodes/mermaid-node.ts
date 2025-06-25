@@ -51,20 +51,20 @@ export class MermaidNode extends DecoratorNode<JSX.Element> {
   __theme?: string;
   __mode?: string;
 
-  static getType(): string {
+  static override getType(): string {
     return "mermaid";
   }
 
-  static clone(node: MermaidNode): MermaidNode {
+  static override clone(node: MermaidNode): MermaidNode {
     return new MermaidNode(node.__code, node.__theme, node.__mode, node.__key);
   }
 
-  static importJSON(serializedNode: SerializedMermaidNode): MermaidNode {
+  static override importJSON(serializedNode: SerializedMermaidNode): MermaidNode {
     const { code, theme, mode } = serializedNode;
     return $createMermaidNode({ code, theme, mode });
   }
 
-  exportJSON(): SerializedMermaidNode {
+  override exportJSON(): SerializedMermaidNode {
     return {
       code: this.__code,
       theme: this.__theme,
@@ -74,7 +74,7 @@ export class MermaidNode extends DecoratorNode<JSX.Element> {
     };
   }
 
-  static importDOM(): DOMConversionMap | null {
+  static override importDOM(): DOMConversionMap | null {
     return {
       pre: (domNode: Node) => {
         if ((domNode as HTMLElement).classList?.contains("mermaid")) {
@@ -85,7 +85,7 @@ export class MermaidNode extends DecoratorNode<JSX.Element> {
     };
   }
 
-  exportDOM(): DOMExportOutput {
+  override exportDOM(): DOMExportOutput {
     const element = document.createElement("pre");
     element.className = "mermaid";
     element.textContent = this.__code;
@@ -126,17 +126,17 @@ export class MermaidNode extends DecoratorNode<JSX.Element> {
     writable.__mode = mode;
   }
 
-  createDOM(): HTMLElement {
+  override createDOM(): HTMLElement {
     const pre = document.createElement("pre");
     pre.className = "mermaid";
     return pre;
   }
 
-  updateDOM(): false {
+  override updateDOM(): false {
     return false;
   }
 
-  decorate(): JSX.Element {
+  override decorate(): JSX.Element {
     return {
       type: "pre",
       props: {

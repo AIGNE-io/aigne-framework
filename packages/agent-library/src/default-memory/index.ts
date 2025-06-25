@@ -119,7 +119,7 @@ class DefaultMemoryRetriever extends MemoryRetriever {
     }
   };
 
-  async process(
+  override async process(
     input: MemoryRetrieverInput,
     options: AgentInvokeOptions,
   ): Promise<MemoryRetrieverOutput> {
@@ -152,7 +152,7 @@ class DefaultMemoryRecorder extends MemoryRecorder {
 
   private rememberFromMessageKey?: string | string[];
 
-  async process(
+  override async process(
     input: MemoryRecorderInput,
     options: AgentInvokeOptions,
   ): Promise<MemoryRecorderOutput> {

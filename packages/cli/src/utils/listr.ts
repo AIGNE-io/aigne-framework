@@ -131,7 +131,7 @@ export interface AIGNEListrRendererOptions extends ListrDefaultRendererOptions {
 }
 
 export class AIGNEListrRenderer extends DefaultRenderer {
-  public static rendererOptions: AIGNEListrRendererOptions = {
+  public static override rendererOptions: AIGNEListrRendererOptions = {
     ...DefaultRenderer.rendererOptions,
   };
 
@@ -194,7 +194,7 @@ export interface AIGNEListrFallbackRendererOptions
     Pick<AIGNEListrRendererOptions, "aigne"> {}
 
 export class AIGNEListrFallbackRenderer extends SimpleRenderer {
-  static rendererOptions: AIGNEListrFallbackRendererOptions = {
+  static override rendererOptions: AIGNEListrFallbackRendererOptions = {
     ...SimpleRenderer.rendererOptions,
   };
 

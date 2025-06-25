@@ -88,7 +88,7 @@ export interface MemoryRecorderOptions
  * implementations of the process method to handle the actual storage logic.
  */
 export class MemoryRecorder extends Agent<MemoryRecorderInput, MemoryRecorderOutput> {
-  tag = "MemoryRecorderAgent";
+  override tag = "MemoryRecorderAgent";
 
   /**
    * Creates a new MemoryRecorder instance with predefined input and output schemas.

@@ -26,7 +26,7 @@ import { Agent, type AgentInvokeOptions, type AgentProcessResult, type Message }
  * {@includeCode ../../test/agents/chat-model.test.ts#example-chat-model-tools}
  */
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
-  tag = "ChatModelAgent";
+  override tag = "ChatModelAgent";
 
   constructor() {
     super({
@@ -180,7 +180,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
    * @param options - The options for invoking the agent, including context and limits
    * @returns A promise or direct value containing the model's response
    */
-  abstract process(
+  abstract override process(
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>>;

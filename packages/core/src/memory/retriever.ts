@@ -88,7 +88,7 @@ export interface MemoryRetrieverOptions
  * implementations of the process method to handle the actual retrieval logic.
  */
 export class MemoryRetriever extends Agent<MemoryRetrieverInput, MemoryRetrieverOutput> {
-  tag = "MemoryRetrieverAgent";
+  override tag = "MemoryRetrieverAgent";
 
   /**
    * Creates a new MemoryRetriever instance with predefined input and output schemas.

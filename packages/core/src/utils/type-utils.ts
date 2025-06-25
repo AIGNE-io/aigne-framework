@@ -82,19 +82,19 @@ export function unique<T>(arr: T[], key: (item: T) => unknown = (item: T) => ite
   });
 }
 
-export function pick<T extends object, K extends keyof T, F extends string>(
+export function pick<T extends object, K extends keyof T>(
   obj: T,
-  ...keys: (K | F | (K | F)[])[]
-): Pick<T, Extract<K, keyof T>> & Partial<Record<Exclude<K, keyof T>, unknown>> {
+  ...keys: (K | K[])[]
+): Pick<T, K> {
   const flattenedKeys = new Set(keys.flat());
   return Object.fromEntries(
     Object.entries(obj).filter(([key]) => flattenedKeys.has(key as K)),
   ) as Pick<T, K>;
 }
 
-export function omit<T extends object, K extends keyof T, F extends string>(
+export function omit<T extends object, K extends keyof T>(
   obj: T,
-  ...keys: (K | F | (K | F)[])[]
+  ...keys: (K | K[])[]
 ): Omit<T, K> {
   const flattenedKeys = new Set(keys.flat());
   return Object.fromEntries(

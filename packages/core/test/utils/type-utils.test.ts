@@ -91,9 +91,7 @@ test("type-utils.unique", async () => {
 test("type-utils.pick", async () => {
   expect(pick({ foo: 1, bar: 2, baz: "3" }, "foo")).toEqual({ foo: 1 });
 
-  expect(pick({ foo: 1, bar: 2, baz: "3" }, ["foo", "bar"])).toEqual({ foo: 1, bar: 2 });
-
-  expect(pick({ foo: 1, bar: 2, baz: "3" }, ["nonexistent", "foo"])).toEqual({ foo: 1 });
+  expect(pick({ foo: 1, bar: 2, baz: "3" }, "foo", "bar")).toEqual({ foo: 1, bar: 2 });
 });
 
 test("type-utils.omit", async () => {

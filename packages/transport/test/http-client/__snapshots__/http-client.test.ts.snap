@@ -1401,3 +1401,15 @@ exports[`AIGNEClient should support custom memory for client agent 1`] = `
   },
 ]
 `;
+
+exports[`AIGNEClient should support invoke chat model on the server side 1`] = `
+[
+  {
+    "content": "{"input":{"message":"Hello, I'm Bob!"},"output":{"message":"Hello Bob, How can I help you?"},"source":"chat"}",
+    "createdAt": Any<String>,
+    "id": Any<String>,
+    "sessionId": null,
+    "updatedAt": Any<String>,
+  },
+]
+`;

@@ -146,7 +146,8 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
     _topic: string | string[],
     _listener?: MessageQueueListener,
   ): Unsubscribe | Promise<MessagePayload> {
-    throw new Error("Method not implemented.");
+    console.error("Method not implemented.");
+    return () => {};
   }
 
   unsubscribe(_topic: string | string[], _listener: MessageQueueListener): void {
@@ -251,7 +252,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
         "Content-Type": "application/json",
         ...options?.fetchOptions?.headers,
       },
-      body: JSON.stringify({ agent, input, options: options && omit(options, "context") }),
+      body: JSON.stringify({ agent, input, options: options && omit(options, "context" as any) }),
     });
 
     // For non-streaming responses, simply parse the JSON response and return it

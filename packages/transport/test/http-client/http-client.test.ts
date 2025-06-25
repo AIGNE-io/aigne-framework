@@ -239,20 +239,59 @@ test("AIGNEClient example simple", async () => {
 
   const client = new AIGNEHTTPClient({ url });
 
-  expect(() => client.publish("chat", "Hello world!")).toThrowError("Method not implemented.");
-  expect(() => client.subscribe("chat")).toThrowError("Method not implemented.");
-  expect(() => client.unsubscribe("chat", () => {})).toThrowError("Method not implemented.");
-  expect(() => client.emit("agentFailed", {} as ContextEventMap["agentFailed"][0])).toThrowError(
-    "Method not implemented.",
-  );
-  expect(() => client.on("agentFailed", () => {})).toThrowError("Method not implemented.");
-  expect(() => client.once("agentFailed", () => {})).toThrowError("Method not implemented.");
-  expect(() => client.off("agentFailed", () => {})).toThrowError("Method not implemented.");
+  const error = spyOn(console, "error").mockImplementation(() => {});
+
+  client.publish("chat", "Hello world!");
+  client.subscribe("chat");
+  client.unsubscribe("chat", () => {});
+  client.emit("agentFailed", {} as ContextEventMap["agentFailed"][0]);
+  client.on("agentFailed", () => {});
+  client.once("agentFailed", () => {});
+  client.off("agentFailed", () => {});
+
+  expect(error).toHaveBeenCalledTimes(7);
 
   await close();
+
+  error.mockRestore();
 });
 
 test("AIGNEClient should support custom memory for client agent", async () => {
+  const { url, close, aigne } = await createExpressServer();
+
+  try {
+    assert(aigne.model instanceof ChatModel);
+
+    const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce(
+      stringToAgentResponseStream("Hello Bob, How can I help you?"),
+    );
+
+    const client = new AIGNEHTTPClient({ url });
+
+    const response = await client.model.invoke({
+      messages: [{ role: "user", content: "Hello, I'm Bob!" }],
+    });
+    expect(response).toMatchInlineSnapshot(`
+      {
+        "text": "Hello Bob, How can I help you?",
+      }
+    `);
+    expect(modelProcess.mock.lastCall?.[0]).toMatchInlineSnapshot(`
+      {
+        "messages": [
+          {
+            "content": "Hello, I'm Bob!",
+            "role": "user",
+          },
+        ],
+      }
+    `);
+  } finally {
+    close();
+  }
+});
+
+test("AIGNEClient should support invoke chat model on the server side", async () => {
   const { url, close, aigne } = await createExpressServer();
 
   try {

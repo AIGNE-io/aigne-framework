@@ -40,8 +40,8 @@
         "require": "./lib/cjs/server/index.js",
         "import": "./lib/esm/server/index.js"
       },
-      "default": "./lib/esm/server/index.js",
-      "types": "./lib/dts/server/index.d.ts"
+      "types": "./lib/dts/server/index.d.ts",
+      "default": "./lib/esm/server/index.js"
     },
     "./cli": {
       "browser": "./lib/esm/server/cli.js",
@@ -49,8 +49,8 @@
         "require": "./lib/cjs/server/cli.js",
         "import": "./lib/esm/server/cli.js"
       },
-      "default": "./lib/esm/server/cli.js",
-      "types": "./lib/dts/server/cli.d.ts"
+      "types": "./lib/dts/server/cli.d.ts",
+      "default": "./lib/esm/server/cli.js"
     },
     "./list": {
       "default": "./src/list.tsx"
@@ -64,8 +64,8 @@
         "require": "./lib/cjs/core/db-path.js",
         "import": "./lib/esm/core/db-path.js"
       },
-      "default": "./lib/esm/core/db-path.js",
-      "types": "./lib/dts/core/db-path.d.ts"
+      "types": "./lib/dts/core/db-path.d.ts",
+      "default": "./lib/esm/core/db-path.js"
     }
   },
   "typesVersions": {

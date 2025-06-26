@@ -111,6 +111,7 @@
     "@opentelemetry/sdk-node": "^0.202.0",
     "@opentelemetry/sdk-trace-base": "^2.0.1",
     "@types/dotenv-flow": "^3.3.3",
+    "ahooks": "^3.8.5",
     "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

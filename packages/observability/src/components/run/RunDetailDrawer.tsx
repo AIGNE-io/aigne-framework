@@ -11,6 +11,7 @@ import RunStatsHeader from "./RunStatsHeader.tsx";
 import TraceDetailPanel from "./TraceDetailPanel.tsx";
 import TraceItemList from "./TraceItem.tsx";
 import type { TraceData } from "./types.ts";
+
 interface RunDetailDrawerProps {
   traceId: string | null;
   open: boolean;

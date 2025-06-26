@@ -1,98 +1,112 @@
+import { CopyButton } from "@arcblock/ux/lib/ClickToCopy";
+import Datatable, { getDurableData } from "@arcblock/ux/lib/Datatable";
 import Empty from "@arcblock/ux/lib/Empty";
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import { DataGrid } from "@mui/x-data-grid";
-import type { GridColDef } from "@mui/x-data-grid";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { joinURL, withQuery } from "ufo";
-
-interface AppRef {
-  refetch: () => void;
-}
-
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
+import { ToastProvider } from "@arcblock/ux/lib/Toast";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import dayjs from "dayjs";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { joinURL, withQuery } from "ufo";
+import CustomDateRangePicker from "./components/date-picker.tsx";
 import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx";
-import type { RunData } from "./components/run/types.ts";
+import type { TraceData } from "./components/run/types.ts";
+import SwitchComponent from "./components/switch.tsx";
 import { watchSSE } from "./utils/event.ts";
-import { origin } from "./utils/index.js";
+import { origin } from "./utils/index.ts";
 import { parseDuration } from "./utils/latency.ts";
 
-interface RunsResponse {
-  data: RunData[];
+const durableKey = "traces-list";
+
+interface TracesResponse {
+  data: TraceData[];
   total: number;
 }
 
-const page = 0;
-const pageSize = 20;
+interface SearchState {
+  page: number;
+  pageSize: number;
+  searchText: string;
+  dateRange: [Date, Date];
+}
 
-const App = forwardRef<AppRef>((_props, ref) => {
+export default function App() {
   const { t } = useLocaleContext();
-  const [runs, setRuns] = useState<RunData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedRun, setSelectedRun] = useState<RunData | null>(null);
-  const [paginationModel, setPaginationModel] = useState({ page, pageSize });
-  const [total, setTotal] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const fetchRuns = async ({ page, pageSize }: { page: number; pageSize: number }) => {
-    fetch(withQuery(joinURL(origin, "/api/trace/tree"), { page, pageSize }))
-      .then((res) => res.json() as Promise<RunsResponse>)
-      .then(({ data, total: totalCount }) => {
-        const format = (run: RunData) => ({
-          ...run,
-          startTime: Number(run.startTime),
-          endTime: Number(run.endTime),
-        });
-        const formatted = data.map(format);
-        setRuns(formatted);
-        setLoading(false);
-        setTotal(totalCount);
-      })
-      .catch(() => setLoading(false));
+  const tableDurableData = getDurableData(durableKey) as {
+    searchText?: string;
+    rowsPerPage?: number;
+    dateRange?: [Date, Date];
+  };
+  const [search, setSearch] = useState<SearchState>({
+    page: 1,
+    pageSize: tableDurableData.rowsPerPage || 20,
+    searchText: tableDurableData.searchText || "",
+    dateRange: tableDurableData.dateRange || [
+      dayjs().subtract(1, "month").startOf("day").toDate(),
+      dayjs().endOf("day").toDate(),
+    ],
+  });
+
+  const [traces, setTraces] = useState<TraceData[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedTrace, setSelectedTrace] = useState<TraceData | null>(null);
+
+  const fetchTraces = async ({
+    page,
+    pageSize,
+    searchText = "",
+    dateRange,
+  }: { page: number; pageSize: number; searchText?: string; dateRange?: [Date, Date] }) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        withQuery(joinURL(origin, "/api/trace/tree"), {
+          page,
+          pageSize,
+          searchText,
+          startDate: dateRange?.[0]?.toISOString() ?? "",
+          endDate: dateRange?.[1]?.toISOString() ?? "",
+        }),
+      ).then((r) => r.json() as Promise<TracesResponse>);
+      const formatted: TraceData[] = res.data.map((trace) => ({
+        ...trace,
+        startTime: Number(trace.startTime),
+        endTime: Number(trace.endTime),
+      }));
+      setTraces(formatted);
+      setTotal(res.total);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useImperativeHandle(
-    ref,
-    () => ({
-      refetch: () => {
-        setTotal(0);
-        setRuns([]);
-        fetchRuns({ page: 0, pageSize: paginationModel.pageSize });
-      },
-    }),
-    [paginationModel.pageSize],
-  );
+  useEffect(() => {
+    fetchTraces({
+      page: search.page - 1,
+      pageSize: search.pageSize,
+      searchText: search.searchText,
+      dateRange: search.dateRange,
+    });
+  }, [search.page, search.pageSize, search.searchText, search.dateRange]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const abortController = new AbortController();
     (async () => {
-      const res = await watchSSE({
-        signal: abortController.signal,
-      });
+      const res = await watchSSE({ signal: abortController.signal });
       const reader = res.getReader();
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-
-        if (value) {
-          switch (value.type) {
-            case "event": {
-              fetchRuns({ page: 0, pageSize: paginationModel.pageSize });
-              break;
-            }
-            case "error": {
-              console.log("error", value);
-              break;
-            }
-            default:
-              console.warn("Unsupported event", value);
-          }
+        if (done) break;
+        if (value?.type === "event") {
+          fetchTraces({ page: 0, pageSize: search.pageSize });
         }
       }
     })();
@@ -100,135 +114,204 @@ const App = forwardRef<AppRef>((_props, ref) => {
     return () => {
       abortController.abort();
     };
-  }, [paginationModel.pageSize]);
+  }, [search.pageSize]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    setLoading(true);
-
-    fetchRuns({ page: paginationModel.page, pageSize: paginationModel.pageSize });
-  }, [paginationModel.page, paginationModel.pageSize]);
-
-  const columns: GridColDef<RunData>[] = [
-    { field: "id", headerName: "ID", width: 160 },
-    { field: "name", headerName: t("agentName"), minWidth: 150 },
-    {
-      field: "input",
-      headerName: t("input"),
-      flex: 1,
-      minWidth: 120,
-      valueGetter: (_, row) => JSON.stringify(row.attributes?.input),
-    },
-    {
-      field: "output",
-      headerName: t("output"),
-      flex: 1,
-      minWidth: 120,
-      valueGetter: (_, row) => JSON.stringify(row.attributes?.output),
-    },
-    {
-      field: "latency",
-      headerName: t("latency"),
-      minWidth: 100,
-      valueGetter: (_, row) => parseDuration(row.startTime, row.endTime),
-    },
-    {
-      field: "status",
-      headerName: t("status"),
-      minWidth: 100,
-      renderCell: ({ row }) => (
-        <Chip
-          label={row.status?.code === 1 ? t("success") : t("failed")}
-          size="small"
-          color={row.status?.code === 1 ? "success" : "error"}
-          variant="outlined"
-          sx={{ height: 21 }}
-        />
-      ),
-    },
-    {
-      field: "startTime",
-      headerName: t("startedAt"),
-      minWidth: 160,
-      renderCell: ({ row }) =>
-        row.startTime ? (
-          <RelativeTime value={row.startTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
-        ) : (
-          "-"
-        ),
-    },
-    {
-      field: "endTime",
-      headerName: t("endedAt"),
-      minWidth: 160,
-      renderCell: ({ row }) =>
-        row.endTime ? (
-          <RelativeTime value={row.endTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
-        ) : (
-          "-"
-        ),
-    },
-  ];
-
-  return (
-    <>
-      <Box
-        sx={{
-          ".striped-row": {
-            backgroundColor: "action.hover",
+  const columns = useMemo(
+    () => [
+      {
+        label: "ID",
+        name: "id",
+        width: 100,
+        options: {
+          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+            const row = traces[rowIndex];
+            return (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                {row.id}
+                <CopyButton content={row.id} style={{ color: "#666" }} />
+              </Box>
+            );
           },
-        }}
-      >
-        <DataGrid
-          rows={runs}
-          columns={columns}
-          loading={loading}
-          pageSizeOptions={[10, 20, 50]}
-          pagination
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          rowCount={total}
-          rowHeight={40}
-          getRowClassName={(params) =>
-            params.indexRelativeToCurrentPage % 2 === 0 ? "" : "striped-row"
-          }
-          paginationMode="server"
-          onRowClick={({ row }) => {
-            setSelectedRun(row);
-            setDrawerOpen(true);
-          }}
-          disableRowSelectionOnClick
-          sx={{
-            cursor: "pointer",
-            minHeight: 500,
-          }}
-          slots={{
-            noRowsOverlay: () => (
+        },
+      },
+      { label: t("agentName"), name: "name" },
+      {
+        label: t("input"),
+        name: "input",
+        options: {
+          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+            const row = traces[rowIndex];
+            return (
               <Box
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
+                  maxWidth: 500,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                 }}
               >
-                <Empty>{t("noData")}</Empty>
+                {JSON.stringify(row.attributes.input)}
               </Box>
-            ),
-          }}
-        />
-      </Box>
+            );
+          },
+        },
+      },
+      {
+        label: t("output"),
+        name: "output",
+        options: {
+          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+            const row = traces[rowIndex];
+            return (
+              <Box
+                sx={{
+                  maxWidth: 500,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {JSON.stringify(row.attributes.output)}
+              </Box>
+            );
+          },
+        },
+      },
+      {
+        label: t("latency"),
+        name: "latency",
+        width: 100,
+        options: {
+          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+            const row = traces[rowIndex];
+            return parseDuration(row.startTime, row.endTime);
+          },
+        },
+      },
+      {
+        label: t("status"),
+        name: "status",
+        width: 100,
+        options: {
+          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+            const row = traces[rowIndex];
+            return (
+              <Chip
+                label={row.status?.code === 1 ? t("success") : t("failed")}
+                color={row.status?.code === 1 ? "success" : "error"}
+                size="small"
+                variant="outlined"
+              />
+            );
+          },
+        },
+      },
+      {
+        label: t("startedAt"),
+        name: "startTime",
+        width: 160,
+        options: {
+          align: "right",
+          headerAlign: "right",
+          customBodyRender: (val: number) =>
+            val ? <RelativeTime value={val} type="absolute" format="YYYY-MM-DD HH:mm:ss" /> : "-",
+        },
+      },
+      {
+        label: t("endedAt"),
+        name: "endTime",
+        width: 160,
+        options: {
+          align: "right",
+          headerAlign: "right",
+          customBodyRender: (val: number) =>
+            val ? <RelativeTime value={val} type="absolute" format="YYYY-MM-DD HH:mm:ss" /> : "-",
+        },
+      },
+    ],
+    [traces, t],
+  );
+
+  const onTableChange = ({
+    page,
+    rowsPerPage,
+    searchText,
+  }: { page: number; rowsPerPage: number; searchText: string }) => {
+    if (search.pageSize !== rowsPerPage) {
+      setSearch((x) => ({ ...x, searchText: "", pageSize: rowsPerPage, page: 1 }));
+    } else if (search.page !== page + 1) {
+      setSearch((x) => ({ ...x, searchText: "", page: page + 1 }));
+    } else if (search.searchText !== searchText) {
+      setSearch((x) => ({ ...x, searchText, page: 1 }));
+    }
+  };
+
+  const onDateRangeChange = (value: [Date, Date]) => {
+    setSearch((x) => ({ ...x, dateRange: value, page: 1 }));
+  };
+
+  return (
+    <ToastProvider>
+      <Datatable
+        durable={durableKey}
+        data={traces}
+        columns={columns}
+        options={{
+          sort: false,
+          download: false,
+          filter: false,
+          print: false,
+          viewColumns: false,
+          page: search.page - 1,
+          rowsPerPage: search.pageSize,
+          count: total,
+          searchDebounceTime: 600,
+          onRowClick: (_: unknown, { dataIndex }: { dataIndex: number }) => {
+            const trace = traces[dataIndex];
+            setSelectedTrace(trace);
+            setSearchParams((prev) => {
+              prev.set("traceId", trace.id);
+              return prev;
+            });
+          },
+        }}
+        loading={loading}
+        emptyNode={<Empty>{t("noData")}</Empty>}
+        onChange={(state: any) => {
+          onTableChange({
+            page: state.page,
+            rowsPerPage: state.rowsPerPage,
+            searchText: state.searchText || "",
+          });
+        }}
+        customButtons={[
+          // @ts-ignore
+          window.blocklet?.prefix && (
+            <Box sx={{ display: "flex" }}>
+              <SwitchComponent />
+            </Box>
+          ),
+        ]}
+        customPreButtons={[
+          // @ts-ignore
+          <Box key="date-picker" sx={{ mx: 1 }}>
+            <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
+          </Box>,
+        ]}
+      />
 
       <RunDetailDrawer
-        open={drawerOpen}
+        open={!!searchParams.get("traceId")}
+        traceId={searchParams.get("traceId")}
+        trace={selectedTrace}
         onClose={() => {
-          setDrawerOpen(false);
-          setSelectedRun(null);
+          setSelectedTrace(null);
+          setSearchParams((prev) => {
+            prev.delete("traceId");
+            return prev;
+          });
         }}
-        run={selectedRun}
       />
-    </>
+    </ToastProvider>
   );
-});
-
-export default App;
+}

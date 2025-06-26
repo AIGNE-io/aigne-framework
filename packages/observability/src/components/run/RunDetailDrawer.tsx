@@ -1,31 +1,60 @@
+import { Backdrop, CircularProgress } from "@mui/material";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import { useEffect, useState } from "react";
+import { joinURL } from "ufo";
+import { origin } from "../../utils/index.js";
 import { parseDuration } from "../../utils/latency.ts";
 import RunStatsHeader from "./RunStatsHeader.tsx";
 import TraceDetailPanel from "./TraceDetailPanel.tsx";
 import TraceItemList from "./TraceItem.tsx";
-import type { RunData } from "./types.ts";
-
+import type { TraceData } from "./types.ts";
 interface RunDetailDrawerProps {
+  traceId: string | null;
   open: boolean;
   onClose: () => void;
-  run: RunData | null;
+  trace: TraceData | null;
 }
 
-export default function RunDetailDrawer({ open, onClose, run }: RunDetailDrawerProps) {
-  const [selectedRun, setSelectedRun] = useState(run);
+export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDetailDrawerProps) {
+  const [selectedTrace, setSelectedTrace] = useState(trace);
+  const [traceInfo, setTraces] = useState(trace);
+  const [loading, setLoading] = useState(false);
 
+  const init = async () => {
+    setLoading(true);
+
+    fetch(joinURL(origin, `/api/trace/tree/${traceId}`))
+      .then((res) => res.json() as Promise<{ data: TraceData }>)
+      .then(({ data }) => {
+        const format = {
+          ...data,
+          startTime: Number(data.startTime),
+          endTime: Number(data.endTime),
+        };
+
+        setTraces(format);
+        setSelectedTrace(format);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    setSelectedRun(run);
-  }, [run]);
+    if (traceId) {
+      init();
+    }
 
-  const getRunStats = (run: RunData | null) => {
+    setSelectedTrace(trace);
+  }, [trace, traceId]);
+
+  const getRunStats = (run: TraceData | null) => {
     let count = 0;
     let inputTokens = 0;
     let outputTokens = 0;
 
-    function traverse(node: RunData | null) {
+    function traverse(node: TraceData | null) {
       if (!node) return;
       count += 1;
       if (node.attributes.output?.usage) {
@@ -39,14 +68,15 @@ export default function RunDetailDrawer({ open, onClose, run }: RunDetailDrawerP
   };
 
   const renderContent = () => {
-    if (!run) return null;
-    const stats = getRunStats(run);
+    if (!traceInfo) return null;
+
+    const stats = getRunStats(traceInfo);
     const totalTokens = stats.inputTokens + stats.outputTokens;
-    const latency = parseDuration(run.startTime, run.endTime);
-    const timestamp = new Date(run.startTime || Date.now()).toLocaleString();
+    const latency = parseDuration(traceInfo.startTime, traceInfo.endTime);
+    const timestamp = new Date(traceInfo.startTime || Date.now()).toLocaleString();
 
     return (
-      <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
         <RunStatsHeader
           inputTokens={stats.inputTokens}
           outputTokens={stats.outputTokens}
@@ -57,7 +87,7 @@ export default function RunDetailDrawer({ open, onClose, run }: RunDetailDrawerP
           onClose={onClose}
         />
 
-        <Box sx={{ flex: 1, display: "flex" }}>
+        <Box sx={{ flex: 1, display: "flex", height: 0, overflow: "hidden" }}>
           <Box
             sx={{
               flex: 1,
@@ -68,16 +98,30 @@ export default function RunDetailDrawer({ open, onClose, run }: RunDetailDrawerP
             }}
           >
             <TraceItemList
-              steps={[run]}
-              onSelect={(run) => setSelectedRun(run ?? null)}
-              selectedRun={selectedRun}
+              steps={[traceInfo]}
+              onSelect={(trace) => setSelectedTrace(trace ?? null)}
+              selectedTrace={selectedTrace}
             />
           </Box>
 
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <TraceDetailPanel run={selectedRun} />
+          <Box sx={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
+            <TraceDetailPanel trace={selectedTrace} />
           </Box>
         </Box>
+
+        {loading && (
+          <Backdrop
+            sx={{
+              color: "common.white",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+              position: "absolute",
+              inset: 0,
+            }}
+            open
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+        )}
       </Box>
     );
   };

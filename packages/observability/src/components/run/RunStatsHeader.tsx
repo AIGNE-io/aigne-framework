@@ -1,6 +1,8 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
+import Toast from "@arcblock/ux/lib/Toast";
 import CloseIcon from "@mui/icons-material/Close";
+import ShareIcon from "@mui/icons-material/Share";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
@@ -64,7 +66,19 @@ export default function RunStatsHeader({
         gap: 1,
       }}
     >
-      <IconButton onClick={onClose}>
+      <IconButton
+        onClick={onClose}
+        sx={{
+          transition: "transform 0.3s",
+          "&:hover svg": {
+            transform: "rotate(90deg)",
+            transition: "transform 0.3s",
+          },
+          "& svg": {
+            transition: "transform 0.3s",
+          },
+        }}
+      >
         <CloseIcon />
       </IconButton>
 
@@ -84,6 +98,17 @@ export default function RunStatsHeader({
       <Typography variant="body2" sx={{ pl: 2 }}>
         <RelativeTime value={timestamp} type="all" disableTimezone useShortTimezone />
       </Typography>
+
+      <Box>
+        <IconButton
+          onClick={() => {
+            navigator.clipboard.writeText(window.location.href);
+            Toast.success(t("copied"));
+          }}
+        >
+          <ShareIcon fontSize="small" />
+        </IconButton>
+      </Box>
     </Box>
   );
 }

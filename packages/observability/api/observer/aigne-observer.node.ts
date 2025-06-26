@@ -1,7 +1,7 @@
 import type { Server } from "node:http";
 import { trace } from "@opentelemetry/api";
 import type { SpanExporter } from "@opentelemetry/sdk-trace-base";
-import { getObservabilityDbPath } from "../core/db-path.js";
+import getObservabilityDbPath from "../core/db-path.js";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
 

@@ -6,6 +6,7 @@ import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -35,6 +36,7 @@ interface SearchState {
 export default function App() {
   const { t } = useLocaleContext();
   const [searchParams, setSearchParams] = useSearchParams();
+  const documentVisibility = useDocumentVisibility();
 
   const tableDurableData = getDurableData(durableKey) as {
     searchText?: string;
@@ -87,13 +89,15 @@ export default function App() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    fetchTraces({
-      page: search.page - 1,
-      pageSize: search.pageSize,
-      searchText: search.searchText,
-      dateRange: search.dateRange,
-    });
-  }, [search.page, search.pageSize, search.searchText, search.dateRange]);
+    if (documentVisibility === "visible") {
+      fetchTraces({
+        page: search.page - 1,
+        pageSize: search.pageSize,
+        searchText: search.searchText,
+        dateRange: search.dateRange,
+      });
+    }
+  }, [search.page, search.pageSize, search.searchText, search.dateRange, documentVisibility]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -121,7 +125,7 @@ export default function App() {
       {
         label: "ID",
         name: "id",
-        width: 100,
+        width: 200,
         options: {
           customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
             const row = traces[rowIndex];
@@ -134,7 +138,7 @@ export default function App() {
           },
         },
       },
-      { label: t("agentName"), name: "name" },
+      { label: t("agentName"), name: "name", width: 150 },
       {
         label: t("input"),
         name: "input",
@@ -144,7 +148,6 @@ export default function App() {
             return (
               <Box
                 sx={{
-                  maxWidth: 500,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
@@ -165,7 +168,6 @@ export default function App() {
             return (
               <Box
                 sx={{
-                  maxWidth: 500,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
@@ -181,6 +183,7 @@ export default function App() {
         label: t("latency"),
         name: "latency",
         width: 100,
+        align: "right",
         options: {
           customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
             const row = traces[rowIndex];
@@ -192,6 +195,7 @@ export default function App() {
         label: t("status"),
         name: "status",
         width: 100,
+        align: "center",
         options: {
           customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
             const row = traces[rowIndex];
@@ -210,9 +214,8 @@ export default function App() {
         label: t("startedAt"),
         name: "startTime",
         width: 160,
+        align: "right",
         options: {
-          align: "right",
-          headerAlign: "right",
           customBodyRender: (val: number) =>
             val ? <RelativeTime value={val} type="absolute" format="YYYY-MM-DD HH:mm:ss" /> : "-",
         },
@@ -221,9 +224,8 @@ export default function App() {
         label: t("endedAt"),
         name: "endTime",
         width: 160,
+        align: "right",
         options: {
-          align: "right",
-          headerAlign: "right",
           customBodyRender: (val: number) =>
             val ? <RelativeTime value={val} type="absolute" format="YYYY-MM-DD HH:mm:ss" /> : "-",
         },
@@ -252,53 +254,70 @@ export default function App() {
 
   return (
     <ToastProvider>
-      <Datatable
-        durable={durableKey}
-        data={traces}
-        columns={columns}
-        options={{
-          sort: false,
-          download: false,
-          filter: false,
-          print: false,
-          viewColumns: false,
-          page: search.page - 1,
-          rowsPerPage: search.pageSize,
-          count: total,
-          searchDebounceTime: 600,
-          onRowClick: (_: unknown, { dataIndex }: { dataIndex: number }) => {
-            const trace = traces[dataIndex];
-            setSelectedTrace(trace);
-            setSearchParams((prev) => {
-              prev.set("traceId", trace.id);
-              return prev;
-            });
+      <Box
+        sx={{
+          ".MuiTable-root": {
+            tableLayout: "fixed",
+          },
+          ".MuiTableCell-root": {
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          },
+          ".MuiTableRow-root": {
+            cursor: "pointer",
           },
         }}
-        loading={loading}
-        emptyNode={<Empty>{t("noData")}</Empty>}
-        onChange={(state: any) => {
-          onTableChange({
-            page: state.page,
-            rowsPerPage: state.rowsPerPage,
-            searchText: state.searchText || "",
-          });
-        }}
-        customButtons={[
+      >
+        <Datatable
+          durable={durableKey}
+          data={traces}
           // @ts-ignore
-          window.blocklet?.prefix && (
-            <Box sx={{ display: "flex" }}>
-              <SwitchComponent />
-            </Box>
-          ),
-        ]}
-        customPreButtons={[
-          // @ts-ignore
-          <Box key="date-picker" sx={{ mx: 1 }}>
-            <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
-          </Box>,
-        ]}
-      />
+          columns={columns}
+          options={{
+            sort: false,
+            download: false,
+            filter: false,
+            print: false,
+            viewColumns: false,
+            page: search.page - 1,
+            rowsPerPage: search.pageSize,
+            count: total,
+            searchDebounceTime: 600,
+            onRowClick: (_: unknown, { dataIndex }: { dataIndex: number }) => {
+              const trace = traces[dataIndex];
+              setSelectedTrace(trace);
+              setSearchParams((prev) => {
+                prev.set("traceId", trace.id);
+                return prev;
+              });
+            },
+          }}
+          loading={loading}
+          emptyNode={<Empty>{t("noData")}</Empty>}
+          onChange={(state: any) => {
+            onTableChange({
+              page: state.page,
+              rowsPerPage: state.rowsPerPage,
+              searchText: state.searchText || "",
+            });
+          }}
+          customButtons={[
+            // @ts-ignore
+            window.blocklet?.prefix && (
+              <Box sx={{ display: "flex" }}>
+                <SwitchComponent />
+              </Box>
+            ),
+          ]}
+          customPreButtons={[
+            // @ts-ignore
+            <Box key="date-picker" sx={{ mx: 1 }}>
+              <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
+            </Box>,
+          ]}
+        />
+      </Box>
 
       <RunDetailDrawer
         open={!!searchParams.get("traceId")}

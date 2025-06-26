@@ -38,7 +38,10 @@ function StatsItem({ label, value }: StatsItemProps) {
 interface RunStatsHeaderProps {
   inputTokens: number;
   outputTokens: number;
-  tokens: number;
+  totalTokens: number;
+  inputCost: string | null;
+  outputCost: string | null;
+  totalCost: string | null;
   count: number;
   latency: string;
   timestamp: string;
@@ -48,8 +51,11 @@ interface RunStatsHeaderProps {
 export default function RunStatsHeader({
   inputTokens,
   outputTokens,
+  totalTokens,
+  inputCost,
+  outputCost,
+  totalCost,
   count,
-  tokens,
   latency,
   timestamp,
   onClose,
@@ -84,11 +90,11 @@ export default function RunStatsHeader({
 
       <Divider orientation="vertical" flexItem />
 
-      <StatsItem label={t("inputTokens")} value={inputTokens} />
+      <StatsItem label={t("inputTokens")} value={`${inputTokens} ${inputCost}`} />
       <Typography>+</Typography>
-      <StatsItem label={t("outputTokens")} value={outputTokens} />
+      <StatsItem label={t("outputTokens")} value={`${outputTokens} ${outputCost}`} />
       <Typography>=</Typography>
-      <StatsItem label={t("tokens")} value={tokens} />
+      <StatsItem label={t("tokens")} value={`${totalTokens} ${totalCost}`} />
       <Box sx={{ flex: 1 }} />
       <StatsItem label={t("count")} value={count} />
       <StatsItem label={t("latency")} value={latency} />

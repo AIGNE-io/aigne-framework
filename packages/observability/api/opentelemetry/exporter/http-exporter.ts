@@ -29,7 +29,7 @@ class HttpExporter implements SpanExporter {
       const validatedData = validateTraceSpans(spans);
 
       if (isBlocklet) {
-        const { call } = await import("@blocklet/sdk/lib/component");
+        const { call } = await import("@blocklet/sdk/lib/component/index.js");
         await call({
           name: "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh",
           method: "POST",

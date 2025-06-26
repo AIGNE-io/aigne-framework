@@ -20,5 +20,7 @@ export interface TraceData {
       [key: string]: unknown;
     };
     agentTag?: string;
+    userContext?: Record<string, unknown>;
+    memories?: Record<string, unknown>[];
   };
 }

@@ -463,6 +463,20 @@ export class AIGNEContext implements Context {
           span.setAttribute("input", JSON.stringify(input));
           span.setAttribute("agentTag", agent.tag ?? "UnknownAgent");
 
+          try {
+            span.setAttribute("userContext", JSON.stringify(this.userContext));
+          } catch (_e) {
+            logger.error("parse userContext error", _e.message);
+            span.setAttribute("userContext", JSON.stringify({}));
+          }
+
+          try {
+            span.setAttribute("memories", JSON.stringify(this.memories));
+          } catch (_e) {
+            logger.error("parse memories error", _e.message);
+            span.setAttribute("memories", JSON.stringify([]));
+          }
+
           break;
         }
         case "agentSucceed": {

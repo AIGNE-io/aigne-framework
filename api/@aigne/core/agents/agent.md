@@ -1354,6 +1354,30 @@ Topics the agent publishes to, can be:
 
 ---
 
+### AgentInput\<T\>
+
+> **AgentInput**\<`T`\> = `T` _extends_ [`Agent`](#agent)\<infer I, `any`\> ? `I` : `never`
+
+#### Type Parameters
+
+| Type Parameter                  |
+| ------------------------------- |
+| `T` _extends_ [`Agent`](#agent) |
+
+---
+
+### AgentOutput\<T\>
+
+> **AgentOutput**\<`T`\> = `T` _extends_ [`Agent`](#agent)\<`any`, infer O\> ? `O` : `never`
+
+#### Type Parameters
+
+| Type Parameter                  |
+| ------------------------------- |
+| `T` _extends_ [`Agent`](#agent) |
+
+---
+
 ### AgentResponse\<T\>
 
 > **AgentResponse**\<`T`\> = `T` \| [`AgentResponseStream`](#agentresponsestream)\<`T`\> \| [`TransferAgentOutput`](#transferagentoutput) \| [`GuideRailAgentOutput`](guide-rail-agent.md#guiderailagentoutput)

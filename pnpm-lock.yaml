@@ -997,6 +997,9 @@ importers:
       commander:
         specifier: ^13.1.0
         version: 13.1.0
+      detect-port:
+        specifier: ^2.1.0
+        version: 2.1.0
       express:
         specifier: ^5.1.0
         version: 5.1.0
@@ -1052,9 +1055,6 @@ importers:
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
-      detect-port:
-        specifier: ^2.1.0
-        version: 2.1.0
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5

@@ -5,7 +5,9 @@ import {
   AIAgentToolChoice,
   AIGNE,
   Agent,
+  type AgentInput,
   type AgentInvokeOptions,
+  type AgentOutput,
   type AgentProcessAsyncGenerator,
   type AgentResponseChunk,
   type AgentResponseStream,
@@ -18,6 +20,7 @@ import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
+import { expectType } from "../_utils/expect.js";
 import { createToolCallResponse } from "../_utils/openai-like-utils.js";
 
 test("Custom agent", async () => {
@@ -706,4 +709,20 @@ test("Agent hook onHandoff should work correctly", async () => {
   );
 
   expect(result).toEqual({ message: "Hello, I am feedback agent." });
+});
+
+test("AgentInput/AgentOutput should infer correct types", async () => {
+  const agent = AIAgent.from({
+    inputSchema: z.object({
+      name: z.string(),
+      age: z.number(),
+    }),
+    outputSchema: z.object({
+      greeting: z.string(),
+      ageInMonths: z.number(),
+    }),
+  });
+
+  expectType<AgentInput<typeof agent>>().is<{ name: string; age: number }>();
+  expectType<AgentOutput<typeof agent>>().is<{ greeting: string; ageInMonths: number }>();
 });

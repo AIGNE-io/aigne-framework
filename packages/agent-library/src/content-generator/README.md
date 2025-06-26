@@ -53,8 +53,14 @@ aigne run --entry-agent "content-generator" --input "@mock-inputs/input.yaml" --
 # arcshpere
 aigne run --entry-agent "content-generator" --input "@mock-inputs/input-arcsphere.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml
 
+# lban
 aigne run --entry-agent "content-generator" --input "@mock-inputs/input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml
 
+# detail
+aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-input.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --input-datasources "@mock-inputs/arcblock-datasources.md" --input-structurePlan "@mock-inputs/structure-plan-output.yaml" --format yaml --output "./output-tmp/home.txt" --force
+
+# detail lban
+aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md"  --input-structurePlan "@mock-inputs/structure-plan-output-lban.yaml" --format yaml --output "./output-tmp/lban-home.txt" --force
 ```
 
 

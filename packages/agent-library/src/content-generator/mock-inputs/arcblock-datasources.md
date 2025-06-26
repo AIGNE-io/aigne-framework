@@ -11,6 +11,18 @@ ArcBlock 为应用而生的。ArcBlock 让去中心化应用具有和传统应�
 NFT 创造者的瑞士军刀
 NFT Studio 是一个为NFT创造者量身打造的套件。 NFT Studio 包含了启动一个 NFT 项目所需要的全部工具，从创作、发行、Mint、销售到市场，一应俱全。 NFT Studio 还能结合 AIGC 等实现高效率的 AI辅助创作。
 
+相关套件：
+- NFT Maker：deploy NFTs on-chain
+- NFT Blender: NFT 设计工具，可以使用 AIGC 设计 NFT
+- NFT Store：帮助用户创建自己的 NFT 合集
+- NFT Marketplace: 去中心化的 NFT 交易市场，用户可运行自己的市场
+
+Multiple Blockchains
+You can easily extend support NFT for any blockchain, including ArcBlock, Ether and its compatible sidechains, Layer2, Solana, and more. Cross-chain deployment using the ERC721-DID standard for a variety of scenarios.
+
+Easy Integration SDK
+NFT Studio created NFT projects can easily integrate with your project programmatically.
+
 ### AIGNE Studio
 AIGNE: AI 应用引擎  
 AIGNE让 AI 为开发应用赋能。 AIGNE 让使用大语言模型 （LLM）和 生成式AI（AIGC）变得唾手可及，而且完全采用无代码的方式，能让任何人利用 AI 来构建完整的应用。
@@ -62,6 +74,16 @@ Blocklet 服务是一个标准化的基础部件，是运行 Blocklet 的容器�
 DID 存储空间协议  
 DID:Spaces 是一种采用 DID 为基础的去中心化的存储空间协议。 DID：Spaces 能和传统的云存储服务协议（如 S3）和去中心化存储服务（如IPFS等）结合, 为用户和应用创造前所未有的用户自主数据的使用体验。
 
+体验真正的去中心化；即使服务器离线，您的数据仍可访问，确保您对重要信息的不间断访问。
+
+享受顶级数据安全带来的安心，采用零知识加密，保护您的私人信息免受窥探。
+
+无需编码即可增强您的空间功能。通过 blocklets 的模块化扩展，您可以自由自定义和扩展您的能力。
+
+消除中间商和隐藏费用，全面拥有数据所有权。
+
+所有应用和文件汇聚一处，轻松访问。
+
 ## 区块链
 
 ### 开放链访问
@@ -104,6 +126,49 @@ DID:Names 使用了 DID 来实现服务命名、服务发现和服务分配。DI
 
 一个面向未来的 AI 应用开发框架，专为构建模块化、多智能体协作的应用场景而设计。
 无论你是初学者还是资深开发者，AIGNE 都能帮助你更高效地组织、组合与部署 AI 能力。
+
+核心特性:
+  - TypeScript 支持
+  - Blocklet 生态系统支持
+  - 支持多种工作流模式
+  - AIGNE CLI 从命令行运行和测试您的 AIGNE 代理
+  - MCP 集成
+
+框架架构:
+  Chat Model:
+    - 大语言模型抽象的类类
+    - 快速支持多种大语言模型
+  
+  Agent:
+    - 每个 Agent 执行提供特定的能力
+    - 指定的输入输出结构
+    - 工作流的基础
+    子类型:
+      AI Agent: 与大语言模型交互的 Agent
+      Function Agent: 封装代码逻辑为 Agent
+      MCP Agent: 通过 CMP 协议连接外部服务
+  
+  Workflow:
+    - 顺序工作流
+    - 独立工作流
+    - 交接工作流
+    - 反思工作流
+    - 代码执行工作流
+    - 编辑工作流
+  
+  Execution Engine:
+    - 调度 Agent
+
+MCP 外部集成示例:
+  - Puppeteer
+  - SQLite
+  - GitHub
+
+AIGNE CLI:
+  - run 运行 Agent
+  - serve 运行 MCP Server
+  - create 从模板创建 Agent
+  - test 测试 Agent
 
 # 开发者支持
 

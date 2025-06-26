@@ -15,6 +15,7 @@ models/*/lib
 
 # testing
 coverage
+packages/agent-library/src/content-generator/output-tmp
 
 # production
 build

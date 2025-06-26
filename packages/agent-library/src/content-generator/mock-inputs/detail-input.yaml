@@ -1,0 +1,18 @@
+rules: |
+  请帮助我生成一个跟 ArcBlock 内容相关的站点
+
+  ## 结构规划
+  对于结构规划需要生成完整的站点结构，用于开发团队编写页面代码，另外在设计结构时，需要考虑 SEO 优化要求，确保每个页面能在 google 搜索结果中排名靠前。
+
+  ## 页面详情规则
+
+  - 页面详情内容
+
+targetAudience: 软件开发爱好者
+nodeName: 页面
+locale: zh
+currentNode:
+  title: "开发者社区"
+  description: "加入 ArcBlock 活跃的开发者社区，与其他开发者交流，获取帮助，并分享你的开发经验。"
+  path: "/developers/community/"
+  parentId: "/developers/"

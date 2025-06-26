@@ -6,3 +6,4 @@ agents:
   - content-generator.yaml
   - structure-planning.yaml
   - evaluation.yaml
+  - content-detail-generator.yaml

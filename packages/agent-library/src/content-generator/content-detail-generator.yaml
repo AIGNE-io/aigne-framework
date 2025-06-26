@@ -1,0 +1,39 @@
+name: content-detail-generator
+description: 通用内容详情生成器，支持网站、文档、书籍、演示文稿等多种场景
+instructions:
+  url: ./prompts/content-detail-generator.md
+input_schema:
+  type: object
+  properties:
+    rules:
+      type: string
+      description: 用户的结构规划的要求
+    locale:
+      type: string
+      description: 用户语言，如 zh、en
+    datasources:
+      type: string
+      description: 结构规划的上下文，用于辅助结构规划
+    targetAudience:
+      type: string
+      description: 结构规划的目标受众
+    nodeName:
+      type: string
+      description: 结构规划的节点名称
+    structurePlan:
+      type: string
+      description: 待评估内容
+    currentNode:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        path:
+          type: string
+  required:
+    - rules
+    - datasources
+    - structurePlan
+    - currentNode

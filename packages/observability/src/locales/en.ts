@@ -25,6 +25,7 @@ export default flatten({
   traces: "Traces",
   metadata: "Metadata",
   startTime: "Start Time",
+  endTime: "End Time",
   model: "Model",
   agentTag: "Agent Type",
   liveUpdatesOn: "Live updates on",
@@ -37,4 +38,6 @@ export default flatten({
   lastMonth: "Last Month",
   thisYear: "This Year",
   lastYear: "Last Year",
+  userContext: "User Context",
+  memories: "Memories",
 });

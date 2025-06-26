@@ -25,6 +25,7 @@ export default flatten({
   traces: "Trace 列表",
   metadata: "Metadata",
   startTime: "开始时间",
+  endTime: "结束时间",
   model: "模型",
   agentTag: "Agent 类型",
   liveUpdatesOn: "实时更新开启",
@@ -37,4 +38,6 @@ export default flatten({
   lastMonth: "上个月",
   thisYear: "今年",
   lastYear: "去年",
+  userContext: "用户信息",
+  memories: "记忆",
 });

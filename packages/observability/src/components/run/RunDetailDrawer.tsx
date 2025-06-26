@@ -1,14 +1,17 @@
 import { Backdrop, CircularProgress } from "@mui/material";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
+import Decimal from "decimal.js";
 import { useEffect, useState } from "react";
 import { joinURL } from "ufo";
+import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import { origin } from "../../utils/index.js";
 import { parseDuration } from "../../utils/latency.ts";
 import RunStatsHeader from "./RunStatsHeader.tsx";
 import TraceDetailPanel from "./TraceDetailPanel.tsx";
 import TraceItemList from "./TraceItem.tsx";
 import type { TraceData } from "./types.ts";
+
 interface RunDetailDrawerProps {
   traceId: string | null;
   open: boolean;
@@ -20,6 +23,7 @@ export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDe
   const [selectedTrace, setSelectedTrace] = useState(trace);
   const [traceInfo, setTraces] = useState(trace);
   const [loading, setLoading] = useState(false);
+  const getPrices = useGetTokenPrice();
 
   const init = async () => {
     setLoading(true);
@@ -53,6 +57,8 @@ export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDe
     let count = 0;
     let inputTokens = 0;
     let outputTokens = 0;
+    let inputCost = new Decimal(0);
+    let outputCost = new Decimal(0);
 
     function traverse(node: TraceData | null) {
       if (!node) return;
@@ -60,18 +66,42 @@ export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDe
       if (node.attributes.output?.usage) {
         inputTokens += node.attributes.output?.usage?.inputTokens || 0;
         outputTokens += node.attributes.output?.usage?.outputTokens || 0;
+        inputCost = inputCost.add(
+          getPrices({
+            model: node.attributes.output?.model,
+            inputTokens: node.attributes.output?.usage?.inputTokens || 0,
+            outputTokens: node.attributes.output?.usage?.outputTokens || 0,
+          }).inputCost,
+        );
+        outputCost = outputCost.add(
+          getPrices({
+            model: node.attributes.output?.model,
+            inputTokens: node.attributes.output?.usage?.inputTokens || 0,
+            outputTokens: node.attributes.output?.usage?.outputTokens || 0,
+          }).outputCost,
+        );
       }
       if (node.children) node.children.forEach(traverse);
     }
     traverse(run);
-    return { count, inputTokens, outputTokens };
+
+    return {
+      count,
+      inputTokens,
+      outputTokens,
+      totalTokens: inputTokens + outputTokens,
+      inputCost: inputCost.gt(new Decimal(0)) ? `($${inputCost.toString()})` : null,
+      outputCost: outputCost.gt(new Decimal(0)) ? `($${outputCost.toString()})` : null,
+      totalCost: inputCost.add(outputCost).gt(new Decimal(0))
+        ? `($${inputCost.add(outputCost).toString()})`
+        : null,
+    };
   };
 
   const renderContent = () => {
     if (!traceInfo) return null;
 
     const stats = getRunStats(traceInfo);
-    const totalTokens = stats.inputTokens + stats.outputTokens;
     const latency = parseDuration(traceInfo.startTime, traceInfo.endTime);
     const timestamp = new Date(traceInfo.startTime || Date.now()).toLocaleString();
 
@@ -79,8 +109,11 @@ export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDe
       <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
         <RunStatsHeader
           inputTokens={stats.inputTokens}
+          inputCost={stats.inputCost}
           outputTokens={stats.outputTokens}
-          tokens={totalTokens}
+          outputCost={stats.outputCost}
+          totalTokens={stats.totalTokens}
+          totalCost={stats.totalCost}
           count={stats.count}
           latency={latency}
           timestamp={timestamp}

@@ -117,6 +117,7 @@
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "decimal.js": "^10.5.0",
     "dotenv-flow": "^4.1.0",
     "drizzle-orm": "^0.43.1",
     "express": "^5.1.0",

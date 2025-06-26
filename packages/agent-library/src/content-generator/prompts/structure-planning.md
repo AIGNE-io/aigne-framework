@@ -74,7 +74,15 @@ DataSources 使用规则：
 1. 必须以 json 格式输出数据，确保格式正确
 2. 使用参考 json 格式输出，每个{{nodeName}}必须包含：title、description、outline、parentId、path，你可以扩充你觉得有需要的字段
 3. parentId 指向父{{nodeName}}的 path
-4. path 以 RUL 的格式返回，不带语言信息，示例: 
-  - 首页 -> / 
-  - about 页面 -> /about
+4. path 以 RUL 的格式返回，不能为空, 比如以 / 开头
+  好的示例: 
+    - 首页 -> / 
+    - about 页面 -> /about
+    - 产品详情页 -> /products/xxx
+  错误的示例：
+    - 首页 -> ‘’
+    - 首页 -> ‘/zh’
+    - 首页 -> ‘index’
+    - about 页面 -> 'about'
+
 </output_schema>

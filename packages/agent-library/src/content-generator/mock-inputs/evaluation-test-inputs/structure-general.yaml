@@ -13,6 +13,8 @@ rules: |
   4. 页面结构可以尽可能复杂，因为会涉及不同页面层级
   5. 页面不能超过五个
 
+targetAudience: 开发者
+nodeName: 页面
 locale: zh
 
 datasources: |

@@ -18,6 +18,8 @@ rules: |
   5. 页面不能超过五个
   6. 必须包含价格页面，引导用户订阅高级功能
 
+targetAudience: 普通用户
+nodeName: 页面
 locale: zh
 
 datasources: |

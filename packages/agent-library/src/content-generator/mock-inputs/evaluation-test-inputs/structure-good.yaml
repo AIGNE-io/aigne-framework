@@ -13,6 +13,8 @@ rules: |
   4. 页面结构可以尽可能复杂，因为会涉及不同页面层级
 
 locale: zh
+targetAudience: 开发者
+nodeName: 页面
 
 datasources: |
   ArcBlock 作为区块链3.0平台，其核心功能可以细化为以下几个方面，便于用于站点内容生成：

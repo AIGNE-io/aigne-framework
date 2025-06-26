@@ -1,5 +1,6 @@
+import assert from "node:assert";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
-import { type PromiseOrValue, isEmpty } from "../utils/type-utils.js";
+import { type PromiseOrValue, isEmpty, isNil, isRecord, omit } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
@@ -7,6 +8,7 @@ import {
   type AgentProcessResult,
   type AgentResponseChunk,
   type Message,
+  agentProcessResultToObject,
   isAgentResponseDelta,
 } from "./agent.js";
 
@@ -45,6 +47,8 @@ export interface TeamAgentOptions<I extends Message, O extends Message> extends 
    * @default {ProcessMode.sequential}
    */
   mode?: ProcessMode;
+
+  iterateInputKey?: keyof I;
 }
 
 /**
@@ -93,6 +97,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
   constructor(options: TeamAgentOptions<I, O>) {
     super(options);
     this.mode = options.mode ?? ProcessMode.sequential;
+    this.iterateInputKey = options.iterateInputKey;
   }
 
   /**
@@ -101,6 +106,8 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * This can be either sequential (one after another) or parallel (all at once).
    */
   mode: ProcessMode;
+
+  iterateInputKey?: keyof I;
 
   /**
    * Process an input message by routing it through the team's agents.
@@ -115,6 +122,40 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * @returns A stream of message chunks that collectively form the response
    */
   process(input: I, options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>> {
+    if (this.iterateInputKey) {
+      return this._processIterator(this.iterateInputKey, input, options);
+    }
+
+    return this._process(input, options);
+  }
+
+  private async *_processIterator(
+    key: keyof I,
+    input: I,
+    options: AgentInvokeOptions,
+  ): AsyncGenerator<AgentResponseChunk<O>> {
+    assert(this.iterateInputKey, "iterateInputKey must be defined for iterator processing");
+    let arr = input[this.iterateInputKey] as unknown[];
+    arr = Array.isArray(arr) ? arr : isNil(arr) ? [arr] : [];
+
+    const result: Message[] = [];
+
+    for (const i of arr) {
+      if (!isRecord(i))
+        throw new TypeError(`Expected ${String(key)} to be an object, got ${typeof i}`);
+
+      const item = await agentProcessResultToObject(
+        await this._process({ ...input, [key]: result, ...i }, { ...options, streaming: false }),
+      );
+      result.push(omit(item, key as any) as Message);
+      yield { delta: { json: { [key]: result } } } as AgentResponseChunk<O>;
+    }
+  }
+
+  private _process(
+    input: Message,
+    options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<O>> {
     switch (this.mode) {
       case ProcessMode.sequential:
         return this._processSequential(input, options);
@@ -139,7 +180,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * @private
    */
   async *_processSequential(
-    input: I,
+    input: Message,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<O>> {
     const output: Message = {};
@@ -181,7 +222,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * @private
    */
   async *_processParallel(
-    input: I,
+    input: Message,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<O>> {
     const result = await Promise.all(

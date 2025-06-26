@@ -620,15 +620,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
       return await this.checkResponseByGuideRails(
         input,
-        this.processAgentOutput(
-          parsedInput,
-          response instanceof ReadableStream
-            ? await agentResponseStreamToObject(response)
-            : isAsyncGenerator(response)
-              ? await agentResponseStreamToObject(response)
-              : response,
-          opts,
-        ),
+        this.processAgentOutput(parsedInput, await agentProcessResultToObject(response), opts),
         opts,
       );
     } catch (error) {
@@ -1150,6 +1142,16 @@ export type AgentProcessResult<O extends Message> =
   | AgentResponse<O>
   | AgentProcessAsyncGenerator<O>
   | Agent;
+
+export async function agentProcessResultToObject<O extends Message>(
+  response: AgentProcessResult<O>,
+): Promise<O> {
+  return response instanceof ReadableStream
+    ? await agentResponseStreamToObject(response)
+    : isAsyncGenerator(response)
+      ? await agentResponseStreamToObject(response)
+      : (response as O);
+}
 
 /**
  * Schema definition type for agent input/output

@@ -6,6 +6,7 @@ import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
+import { z } from "zod";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 test("TeamAgent.from with sequential mode", async () => {
@@ -185,4 +186,29 @@ test("TeamAgent with sequential mode should yield output chunks correctly", asyn
 
   const stream = await aigne.invoke(teamAgent, { question: "What is AIGNE?" }, { streaming: true });
   expect(await readableStreamToArray(stream)).toMatchSnapshot();
+});
+
+test("TeamAgent with iteratorInputKey should process array input correctly", async () => {
+  const teamAgent = TeamAgent.from({
+    mode: ProcessMode.sequential,
+    inputSchema: z.object({
+      sections: z.array(z.object({ title: z.string() })),
+    }),
+    iterateInputKey: "sections",
+    skills: [
+      FunctionAgent.from((input: { title: string }) => {
+        return {
+          ...input,
+          description: `Description for ${input.title}`,
+        };
+      }),
+    ],
+  });
+
+  const aigne = new AIGNE({});
+
+  const response = await aigne.invoke(teamAgent, {
+    sections: new Array(5).fill(0).map((_, index) => ({ title: `Test title ${index}` })),
+  });
+  expect(response).toMatchSnapshot();
 });

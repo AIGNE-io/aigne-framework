@@ -62,6 +62,9 @@ aigne test [path]
 
 # Start MCP server
 aigne serve [path] --mcp
+
+# Start observability server
+aigne observability [option]
 ```
 
 ## Create Command
@@ -131,6 +134,18 @@ aigne serve --mcp --port 3001
 
 # Start MCP server for agents at specified path
 aigne serve path/to/agents --mcp
+```
+
+## Serve Command (observability)
+
+Start the service for monitoring data
+
+```bash
+# Start observability server on default port 7890
+aigne observability
+
+# Start observability server on specified port
+aigne observability --port 3001
 ```
 
 ## License

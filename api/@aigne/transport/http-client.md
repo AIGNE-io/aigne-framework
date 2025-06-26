@@ -117,6 +117,14 @@ Configuration options for connecting to the AIGNE server
 
 `Context.memories`
 
+##### model
+
+> **model**: `ClientChatModel`
+
+###### Implementation of
+
+`Context.model`
+
 #### Methods
 
 ##### invoke()

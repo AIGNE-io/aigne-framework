@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-v0.1.2...observability-v0.1.3) (2025-06-26)
+
+
+### Bug Fixes
+
+* agine cli not found package ([#185](https://github.com/AIGNE-io/aigne-framework/issues/185)) ([5d98b61](https://github.com/AIGNE-io/aigne-framework/commit/5d98b6158f1e43e049a3a51a69bab88092bf1c92))
+
 ## [0.1.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-v0.1.1...observability-v0.1.2) (2025-06-26)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-chat-bot",
-  "version": "1.10.3",
+  "version": "1.10.4",
   "description": "A demonstration of using AIGNE Framework to build a chat bot",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/chat-bot",

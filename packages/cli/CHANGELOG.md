@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.14.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.14.0...cli-v1.14.1) (2025-06-26)
+
+
+### Bug Fixes
+
+* agine cli not found package ([#185](https://github.com/AIGNE-io/aigne-framework/issues/185)) ([5d98b61](https://github.com/AIGNE-io/aigne-framework/commit/5d98b6158f1e43e049a3a51a69bab88092bf1c92))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.1
+    * @aigne/anthropic bumped to 0.3.8
+    * @aigne/bedrock bumped to 0.3.8
+    * @aigne/core bumped to 1.24.1
+    * @aigne/deepseek bumped to 0.3.8
+    * @aigne/gemini bumped to 0.3.8
+    * @aigne/observability bumped to 0.1.3
+    * @aigne/ollama bumped to 0.3.8
+    * @aigne/open-router bumped to 0.3.8
+    * @aigne/openai bumped to 0.4.1
+    * @aigne/xai bumped to 0.3.8
+
 ## [1.14.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.13.2...cli-v1.14.0) (2025-06-26)
 
 

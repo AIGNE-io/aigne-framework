@@ -10,9 +10,12 @@ import { styled } from "@mui/material/styles";
 import Decimal from "decimal.js";
 import { isUndefined, omitBy } from "lodash";
 import { useMemo, useState } from "react";
-import ReactJson from "react-json-view";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
+import useSwitchView from "../../hooks/switch-view.tsx";
 import { parseDuration } from "../../utils/latency.ts";
+import JsonView from "../json-view.tsx";
+import RenderView from "../render-view.tsx";
+import YamlView from "../yaml-view.tsx";
 import { AgentTag } from "./AgentTag.tsx";
 import type { TraceData } from "./types.ts";
 
@@ -20,6 +23,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
   const [tab, setTab] = useState("input");
   const { t } = useLocaleContext();
   const getPrices = useGetTokenPrice();
+  const { view, renderView } = useSwitchView();
 
   const hasError = trace?.status?.code === 2;
   const hasUserContext =
@@ -95,6 +99,14 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
 
   const inputTokens = trace.attributes.output?.usage?.inputTokens || 0;
   const outputTokens = trace.attributes.output?.usage?.outputTokens || 0;
+
+  const mapViews = {
+    json: JsonView,
+    yaml: YamlView,
+    rendered: RenderView,
+  };
+
+  const ComponentView = mapViews[view as keyof typeof mapViews] || JsonView;
 
   return (
     <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column" }}>
@@ -224,44 +236,42 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
         </Box>
       </Box>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} textColor="inherit" indicatorColor="primary">
-        {tabs.map((t) => (
-          <Tab key={t.value} label={t.label} value={t.value} />
-        ))}
-      </Tabs>
-
-      <Box mt={2} sx={{ flex: 1, height: 0, overflow: "auto" }}>
-        <Box
-          sx={{
-            backgroundColor: "#1e1e1e",
-            p: 2,
-            borderRadius: 2,
-            overflowX: "auto",
-            color: "common.white",
-
-            "& .string-value": {
-              whiteSpace: "pre-line",
-              wordBreak: "break-word",
-            },
-          }}
+      <Box sx={{ position: "relative" }}>
+        <Tabs
+          value={tab}
+          onChange={(_, v) => setTab(v)}
+          textColor="inherit"
+          indicatorColor="primary"
         >
+          {tabs.map((t) => (
+            <Tab key={t.value} label={t.label} value={t.value} />
+          ))}
+        </Tabs>
+      </Box>
+
+      <Box
+        mt={2}
+        sx={{
+          flex: 1,
+          height: 0,
+          overflow: "auto",
+          position: "relative",
+          backgroundColor: "#1e1e1e",
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ position: "absolute", top: 15, right: 15, zIndex: 1000 }}>{renderView()}</Box>
+
+        <Box sx={{ overflowX: "auto", color: "common.white" }}>
           {value === undefined || value === null ? (
             <Typography color="grey.500" sx={{ fontSize: 14 }}>
               {t("noData")}
             </Typography>
           ) : typeof value === "object" ? (
-            <ReactJson
-              src={value}
-              name={false}
-              collapsed={3}
-              enableClipboard={false}
-              displayDataTypes={false}
-              style={{ background: "none", color: "inherit", fontSize: 14 }}
-              theme="monokai"
-            />
+            <ComponentView value={value} />
           ) : (
-            <Typography sx={{ whiteSpace: "pre-wrap" }} component="pre">
-              {String(value)}
+            <Typography sx={{ whiteSpace: "break-spaces" }} component="pre">
+              {JSON.stringify(value, null, 2)}
             </Typography>
           )}
         </Box>

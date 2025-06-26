@@ -920,6 +920,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
   }
 }
 
+export type AgentInput<T extends Agent> = T extends Agent<infer I, any> ? I : never;
+
+export type AgentOutput<T extends Agent> = T extends Agent<any, infer O> ? O : never;
+
 /**
  * Lifecycle hooks for agent execution
  *

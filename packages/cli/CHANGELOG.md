@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.14.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.13.2...cli-v1.14.0) (2025-06-26)
+
+
+### Features
+
+* **transport:** support invoke server side chat model ([#182](https://github.com/AIGNE-io/aigne-framework/issues/182)) ([f81a1bf](https://github.com/AIGNE-io/aigne-framework/commit/f81a1bf883abda1845ccee09b270e5f583e287ab))
+
+
+### Bug Fixes
+
+* blocklet start failed ([#180](https://github.com/AIGNE-io/aigne-framework/issues/180)) ([296a481](https://github.com/AIGNE-io/aigne-framework/commit/296a481be69d9b9b279dc4e50b0d21c993d1d841))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.0
+    * @aigne/anthropic bumped to 0.3.7
+    * @aigne/bedrock bumped to 0.3.7
+    * @aigne/core bumped to 1.24.0
+    * @aigne/deepseek bumped to 0.3.7
+    * @aigne/gemini bumped to 0.3.7
+    * @aigne/observability bumped to 0.1.2
+    * @aigne/ollama bumped to 0.3.7
+    * @aigne/open-router bumped to 0.3.7
+    * @aigne/openai bumped to 0.4.0
+    * @aigne/xai bumped to 0.3.7
+
 ## [1.13.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.13.1...cli-v1.13.2) (2025-06-25)
 
 

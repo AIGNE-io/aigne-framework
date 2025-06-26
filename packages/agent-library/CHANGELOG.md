@@ -13,6 +13,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.17.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.16.1...agent-library-v1.17.0) (2025-06-26)
+
+
+### Features
+
+* **transport:** support invoke server side chat model ([#182](https://github.com/AIGNE-io/aigne-framework/issues/182)) ([f81a1bf](https://github.com/AIGNE-io/aigne-framework/commit/f81a1bf883abda1845ccee09b270e5f583e287ab))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.24.0
+    * @aigne/openai bumped to 0.4.0
+
 ## [1.16.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.16.0...agent-library-v1.16.1) (2025-06-25)
 
 

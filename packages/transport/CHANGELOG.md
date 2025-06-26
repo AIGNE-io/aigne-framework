@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.5.2...transport-v0.6.0) (2025-06-26)
+
+
+### Features
+
+* **transport:** support invoke server side chat model ([#182](https://github.com/AIGNE-io/aigne-framework/issues/182)) ([f81a1bf](https://github.com/AIGNE-io/aigne-framework/commit/f81a1bf883abda1845ccee09b270e5f583e287ab))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.4.0
+  * devDependencies
+    * @aigne/agent-library bumped to 1.17.0
+    * @aigne/core bumped to 1.24.0
+    * @aigne/test-utils bumped to 0.4.7
+
 ## [0.5.2](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.5.1...transport-v0.5.2) (2025-06-25)
 
 

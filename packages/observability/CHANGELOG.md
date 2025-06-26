@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-v0.1.1...observability-v0.1.2) (2025-06-26)
+
+
+### Bug Fixes
+
+* blocklet start failed ([#180](https://github.com/AIGNE-io/aigne-framework/issues/180)) ([296a481](https://github.com/AIGNE-io/aigne-framework/commit/296a481be69d9b9b279dc4e50b0d21c993d1d841))
+
 ## [0.1.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-v0.1.0...observability-v0.1.1) (2025-06-25)
 
 

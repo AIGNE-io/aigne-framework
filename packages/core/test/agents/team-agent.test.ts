@@ -194,7 +194,7 @@ test("TeamAgent with iteratorInputKey should process array input correctly", asy
     inputSchema: z.object({
       sections: z.array(z.object({ title: z.string() })),
     }),
-    iterateInputKey: "sections",
+    iterateOn: "sections",
     skills: [
       FunctionAgent.from((input: { title: string }) => {
         return {

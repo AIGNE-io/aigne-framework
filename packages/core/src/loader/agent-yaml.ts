@@ -97,6 +97,10 @@ const agentFileSchema = z.discriminatedUnion("type", [
       .nativeEnum(ProcessMode)
       .nullish()
       .transform((v) => v ?? undefined),
+    iterate_on: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? undefined),
   }),
 ]);
 

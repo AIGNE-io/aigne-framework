@@ -121,6 +121,7 @@ test("loadAgentFromYaml should load TeamAgent correctly", async () => {
   );
 
   expect(agent.skills.length).toBe(2);
+  expect(agent.iterateOn).toBe("sections");
 });
 
 test("loadAgentFromYaml should load AIAgent with prompt file correctly", async () => {

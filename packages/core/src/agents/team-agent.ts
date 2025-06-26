@@ -48,7 +48,23 @@ export interface TeamAgentOptions<I extends Message, O extends Message> extends 
    */
   mode?: ProcessMode;
 
-  iterateInputKey?: keyof I;
+  /**
+   * Specifies which input field should be treated as an array for iterative processing.
+   *
+   * When this property is set, the TeamAgent will iterate over the array values in the
+   * specified input field, processing each element individually through the team's agents.
+   * The results from each iteration are accumulated and returned as a streaming response.
+   *
+   * This is particularly useful for batch processing scenarios where you need to apply
+   * the same agent workflow to multiple similar data items.
+   *
+   * @remarks
+   * - The specified field must contain an array or array-like value
+   * - Each array element should be an object that can be merged with the base input
+   * - Non-array values will be treated as single-element arrays
+   * - The processing results are streamed incrementally as each iteration completes
+   */
+  iterateOn?: keyof I;
 }
 
 /**
@@ -97,7 +113,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
   constructor(options: TeamAgentOptions<I, O>) {
     super(options);
     this.mode = options.mode ?? ProcessMode.sequential;
-    this.iterateInputKey = options.iterateInputKey;
+    this.iterateOn = options.iterateOn;
   }
 
   /**
@@ -107,7 +123,16 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    */
   mode: ProcessMode;
 
-  iterateInputKey?: keyof I;
+  /**
+   * The input field key to iterate over when processing array inputs.
+   *
+   * When set, this property enables the TeamAgent to process array values iteratively,
+   * where each array element is processed individually through the team's agent workflow.
+   * The accumulated results are returned via streaming response chunks.
+   *
+   * @see TeamAgentOptions.iterateOn for detailed documentation
+   */
+  iterateOn?: keyof I;
 
   /**
    * Process an input message by routing it through the team's agents.
@@ -122,8 +147,8 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * @returns A stream of message chunks that collectively form the response
    */
   process(input: I, options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>> {
-    if (this.iterateInputKey) {
-      return this._processIterator(this.iterateInputKey, input, options);
+    if (this.iterateOn) {
+      return this._processIterator(this.iterateOn, input, options);
     }
 
     return this._process(input, options);
@@ -134,8 +159,8 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     input: I,
     options: AgentInvokeOptions,
   ): AsyncGenerator<AgentResponseChunk<O>> {
-    assert(this.iterateInputKey, "iterateInputKey must be defined for iterator processing");
-    let arr = input[this.iterateInputKey] as unknown[];
+    assert(this.iterateOn, "iterateInputKey must be defined for iterator processing");
+    let arr = input[this.iterateOn] as unknown[];
     arr = Array.isArray(arr) ? arr : isNil(arr) ? [arr] : [];
 
     const result: Message[] = [];

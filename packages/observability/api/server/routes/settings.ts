@@ -8,9 +8,7 @@ import { getGlobalSettingPath } from "../utils/index.js";
 const router = express.Router();
 
 const AIGNEObserverSettingsSchema = z
-  .object({
-    live: z.boolean().optional().default(false),
-  })
+  .object({ live: z.boolean().optional().default(false) })
   .optional()
   .default({});
 

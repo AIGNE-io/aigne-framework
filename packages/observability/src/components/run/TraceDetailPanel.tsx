@@ -12,39 +12,38 @@ import { useMemo, useState } from "react";
 import ReactJson from "react-json-view";
 import { parseDuration } from "../../utils/latency.ts";
 import { AgentTag } from "./AgentTag.tsx";
-import type { RunData } from "./types.ts";
-
-export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
+import type { TraceData } from "./types.ts";
+export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }) {
   const [tab, setTab] = useState(0);
   const { t } = useLocaleContext();
 
-  const hasError = run?.status?.code === 2;
+  const hasError = trace?.status?.code === 2;
   const value = useMemo(() => {
     if (tab === 0) {
-      return run?.attributes?.input;
+      return trace?.attributes?.input;
     }
 
     if (tab === 1) {
-      return run?.attributes?.output;
+      const { model, usage, ...rest } = trace?.attributes?.output || {};
+      return rest;
     }
 
     if (tab === 2) {
       return omitBy(
         {
-          model: run?.attributes?.output?.model,
-          inputTokens: run?.attributes?.output?.usage?.inputTokens,
-          outputTokens: run?.attributes?.output?.usage?.outputTokens,
+          model: trace?.attributes?.output?.model,
+          usage: trace?.attributes?.output?.usage,
         },
         isUndefined,
       );
     }
 
     if (tab === 3) {
-      return run?.status?.message;
+      return trace?.status?.message;
     }
 
     return null;
-  }, [tab, run?.attributes?.input, run?.attributes?.output, run?.status?.message]);
+  }, [tab, trace?.attributes?.input, trace?.attributes?.output, trace?.status?.message]);
 
   const tabs = [
     { label: t("input"), value: 0 },
@@ -53,18 +52,18 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
     ...(hasError ? [{ label: t("errorMessage"), value: 2 }] : []),
   ];
 
-  if (!run) {
+  if (!trace) {
     return null;
   }
 
-  const inputTokens = run.attributes.output?.usage?.inputTokens || 0;
-  const outputTokens = run.attributes.output?.usage?.outputTokens || 0;
+  const inputTokens = trace.attributes.output?.usage?.inputTokens || 0;
+  const outputTokens = trace.attributes.output?.usage?.outputTokens || 0;
 
   return (
-    <Box sx={{ p: 2, height: "100%", overflowY: "auto" }}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+    <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "space-between" }}>
         <Typography fontSize={20} color="text.primary">
-          {`${run?.name}`}
+          {`${trace?.name}`}
         </Typography>
       </Box>
 
@@ -78,10 +77,10 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
           }}
         >
           <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={80} name="ID">
-            <Box sx={{ textAlign: "right" }}>{run?.id}</Box>
+            <Box sx={{ textAlign: "right" }}>{trace?.id}</Box>
           </InfoRowBox>
 
-          {!!run?.attributes?.agentTag && (
+          {!!trace?.attributes?.agentTag && (
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
@@ -89,7 +88,7 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
               name={t("agentTag")}
             >
               <Box sx={{ textAlign: "right" }}>
-                <AgentTag agentTag={run?.attributes?.agentTag} />
+                <AgentTag agentTag={trace?.attributes?.agentTag} />
               </Box>
             </InfoRowBox>
           )}
@@ -134,8 +133,12 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
             name={t("startTime")}
           >
             <Box sx={{ textAlign: "right" }}>
-              {run?.startTime && (
-                <RelativeTime value={run?.startTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
+              {trace?.startTime && (
+                <RelativeTime
+                  value={trace?.startTime}
+                  type="absolute"
+                  format="YYYY-MM-DD HH:mm:ss"
+                />
               )}
             </Box>
           </InfoRowBox>
@@ -147,11 +150,13 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
             name={t("duration")}
           >
             <Box sx={{ textAlign: "right" }}>
-              {run?.startTime && run?.endTime && `${parseDuration(run.startTime, run.endTime)}`}
+              {trace?.startTime &&
+                trace?.endTime &&
+                `${parseDuration(trace.startTime, trace.endTime)}`}
             </Box>
           </InfoRowBox>
 
-          {!!run?.attributes?.output?.model && (
+          {!!trace?.attributes?.output?.model && (
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
@@ -159,7 +164,7 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
               name={t("model")}
             >
               <Box sx={{ textAlign: "right" }}>
-                <Tag>{run?.attributes?.output?.model}</Tag>
+                <Tag>{trace?.attributes?.output?.model}</Tag>
               </Box>
             </InfoRowBox>
           )}
@@ -172,15 +177,19 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
         ))}
       </Tabs>
 
-      <Box mt={2}>
+      <Box mt={2} sx={{ flex: 1, height: 0, overflow: "auto" }}>
         <Box
-          component="pre"
           sx={{
             backgroundColor: "#1e1e1e",
             p: 2,
             borderRadius: 2,
             overflowX: "auto",
             color: "common.white",
+
+            "& .string-value": {
+              // whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            },
           }}
         >
           {value === undefined || value === null ? (
@@ -190,13 +199,15 @@ export default function TraceDetailPanel({ run }: { run?: RunData | null }) {
               src={value}
               name={false}
               collapsed={3}
-              enableClipboard={true}
+              enableClipboard={false}
               displayDataTypes={false}
               style={{ background: "none", color: "inherit", fontSize: 14 }}
               theme="monokai"
             />
           ) : (
-            <Typography sx={{ whiteSpace: "pre-wrap" }}>{String(value)}</Typography>
+            <Typography sx={{ whiteSpace: "pre-wrap" }} component="pre">
+              {String(value)}
+            </Typography>
           )}
         </Box>
       </Box>

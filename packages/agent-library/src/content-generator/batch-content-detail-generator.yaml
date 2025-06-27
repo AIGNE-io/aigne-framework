@@ -6,6 +6,9 @@ skills:
 input_schema:
   type: object
   properties:
+    datasources:
+      type: string
+      description: 结构规划的上下文，用于辅助结构规划
     structurePlan:
       type: array
       items:
@@ -44,4 +47,4 @@ output_schema:
           content:
             type: string
 iterate_on: structurePlan
-mode: parallel
+mode: sequential

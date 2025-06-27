@@ -3,7 +3,11 @@ name: content-generator
 description: 结构规划和结果评估
 skills:
   - structure-planning.yaml
+  - type: transform
+    jsonata: |
+      $merge([$, {"originalStructurePlan": structurePlan}])
   - evaluation.yaml
+  - batch-content-detail-generator.yaml
 input_schema:
   type: object
   properties:
@@ -22,5 +26,4 @@ input_schema:
   required:
     - rules
     - datasources
-    - evaluationDimensions
 mode: sequential

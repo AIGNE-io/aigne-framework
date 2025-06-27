@@ -13,7 +13,7 @@
 </datasources>
 
 <structure_plan>
-{{ structurePlan }}
+{{ originalStructurePlan }}
 </structure_plan>
 
 <current>

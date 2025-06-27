@@ -9,7 +9,7 @@ import { tryOrThrow } from "../utils/type-utils.js";
 import { inputOutputSchema, optionalize } from "./schema.js";
 
 interface BaseAgentSchema {
-  name: string;
+  name?: string;
   description?: string;
   inputSchema?: ZodType<Record<string, ZodType>>;
   outputSchema?: ZodType<Record<string, ZodType>>;
@@ -53,7 +53,7 @@ type AgentSchema = AIAgentSchema | MCPAgentSchema | TeamAgentSchema | TransformA
 export async function loadAgentFromYamlFile(path: string) {
   const agentSchema: ZodType<AgentSchema> = z.lazy(() => {
     const baseAgentSchema = z.object({
-      name: z.string(),
+      name: optionalize(z.string()),
       description: optionalize(z.string()),
       inputSchema: optionalize(inputOutputSchema).transform<BaseAgentSchema["inputSchema"]>((v) =>
         v ? jsonSchemaToZod(v) : undefined,
@@ -61,7 +61,7 @@ export async function loadAgentFromYamlFile(path: string) {
       outputSchema: optionalize(inputOutputSchema).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["outputSchema"]>,
-      skills: optionalize(z.array(z.union([z.string(), z.lazy(() => agentSchema)]))),
+      skills: optionalize(z.array(z.union([z.string(), agentSchema]))),
       memory: optionalize(
         z.union([
           z.boolean(),

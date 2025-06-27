@@ -188,7 +188,7 @@ test("TeamAgent with sequential mode should yield output chunks correctly", asyn
   expect(await readableStreamToArray(stream)).toMatchSnapshot();
 });
 
-test("TeamAgent with iteratorInputKey should process array input correctly", async () => {
+test("TeamAgent with iterateOn should process array input correctly", async () => {
   const teamAgent = TeamAgent.from({
     mode: ProcessMode.sequential,
     inputSchema: z.object({

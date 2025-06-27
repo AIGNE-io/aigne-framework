@@ -129,6 +129,19 @@ const List = forwardRef<ListRef>((_props, ref) => {
     [page.pageSize],
   );
 
+  useRafInterval(() => {
+    if (!live) return;
+    if (window.blocklet?.prefix) return;
+
+    fetch(joinURL(origin, "/api/trace/tree/stats"))
+      .then((res) => res.json() as Promise<{ data: { total: number } }>)
+      .then(({ data }) => {
+        if (data?.total && data.total !== total) {
+          fetchTraces({ page: 0, pageSize: search.pageSize });
+        }
+      });
+  }, 3000);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const abortController = new AbortController();

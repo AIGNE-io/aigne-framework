@@ -21,6 +21,7 @@
     "noFallthroughCasesInSwitch": true,
 
     "useUnknownInCatchVariables": false,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true
   }
 }

@@ -77,7 +77,7 @@ export class AgentMessageTemplate extends ChatMessageTemplate {
     super("agent", content, name);
   }
 
-  format(variables?: Record<string, unknown>) {
+  override format(variables?: Record<string, unknown>) {
     return {
       ...super.format(variables),
       toolCalls: this.toolCalls,
@@ -106,7 +106,7 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
     );
   }
 
-  format(variables?: Record<string, unknown>) {
+  override format(variables?: Record<string, unknown>) {
     return {
       ...super.format(variables),
       toolCallId: this.toolCallId,

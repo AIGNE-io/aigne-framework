@@ -22,7 +22,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
   I,
   O
 > {
-  tag = "UserAgent";
+  override tag = "UserAgent";
 
   static from<I extends Message, O extends Message>(
     options: UserAgentOptions<I, O>,

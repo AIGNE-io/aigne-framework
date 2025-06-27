@@ -1,12 +1,7 @@
 import { AIGNEObserver } from "@aigne/observability";
 import { z } from "zod";
-import {
-  Agent,
-  type AgentResponse,
-  type AgentResponseStream,
-  type Message,
-} from "../agents/agent.js";
-import { ChatModel } from "../agents/chat-model.js";
+import type { Agent, AgentResponse, AgentResponseStream, Message } from "../agents/agent.js";
+import type { ChatModel } from "../agents/chat-model.js";
 import type { UserAgent } from "../agents/user-agent.js";
 import { type LoadOptions, load } from "../loader/index.js";
 import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
@@ -430,10 +425,10 @@ export class AIGNE<U extends UserContext = UserContext> {
 }
 
 const aigneOptionsSchema = z.object({
-  model: z.instanceof(ChatModel).optional(),
-  skills: z.array(z.instanceof(Agent)).optional(),
-  agents: z.array(z.instanceof(Agent)).optional(),
-  observer: z.instanceof(AIGNEObserver).optional(),
+  model: z.custom<ChatModel>().optional(),
+  skills: z.array(z.custom<Agent>()).optional(),
+  agents: z.array(z.custom<Agent>()).optional(),
+  observer: z.custom<AIGNEObserver>().optional(),
 });
 
-const aigneAddAgentArgsSchema = z.array(z.instanceof(Agent));
+const aigneAddAgentArgsSchema = z.array(z.custom<Agent>());

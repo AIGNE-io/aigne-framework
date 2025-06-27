@@ -33,7 +33,7 @@ class DefaultMemoryRetriever extends MemoryRetriever {
     super({});
   }
 
-  async process(input: MemoryRetrieverInput): Promise<MemoryRetrieverOutput> {
+  override async process(input: MemoryRetrieverInput): Promise<MemoryRetrieverOutput> {
     const memories = this.memory.storage.slice(-(input.limit || this.memory.storage.length));
     return { memories };
   }
@@ -44,7 +44,7 @@ class DefaultMemoryRecorder extends MemoryRecorder {
     super({});
   }
 
-  async process(input: MemoryRecorderInput): Promise<MemoryRecorderOutput> {
+  override async process(input: MemoryRecorderInput): Promise<MemoryRecorderOutput> {
     const newMemories: Memory[] = [];
 
     for (const content of input.content) {

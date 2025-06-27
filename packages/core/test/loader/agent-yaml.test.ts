@@ -2,11 +2,13 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { AIAgent, FunctionAgent, ProcessMode, TeamAgent } from "@aigne/core";
+import { AIAgent, type Agent, FunctionAgent, ProcessMode, TeamAgent } from "@aigne/core";
 import { loadAgentFromYamlFile } from "@aigne/core/loader/agent-yaml.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
 import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+import { ZodType } from "zod";
+import zodToJsonSchema from "zod-to-json-schema";
 
 test("loadAgentFromYaml should load AIAgent correctly", async () => {
   const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/chat.yaml"));
@@ -121,6 +123,7 @@ test("loadAgentFromYaml should load TeamAgent correctly", async () => {
   );
 
   expect(agent.skills.length).toBe(2);
+  expect(agent.iterateOn).toBe("sections");
 });
 
 test("loadAgentFromYaml should load AIAgent with prompt file correctly", async () => {
@@ -134,4 +137,30 @@ test("loadAgentFromYaml should load AIAgent with prompt file correctly", async (
   expect(agent.instructions.instructions).toEqual(
     await readFile(join(import.meta.dirname, "../../test-agents/chat-prompt.md"), "utf8"),
   );
+});
+
+test("loadAgentFromYaml should load nested agent correctly", async () => {
+  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/nested-agent.yaml"));
+
+  expect(agent).toBeInstanceOf(TeamAgent);
+  expect(agent.name).toMatchInlineSnapshot(`"test-nested-agent"`);
+  expect(agent.description).toMatchInlineSnapshot(`"Test nested agent"`);
+
+  const flatten = (agent: Agent): unknown => {
+    return {
+      name: agent.name,
+      instructions: agent instanceof AIAgent ? agent.instructions?.instructions : undefined,
+      inputSchema:
+        agent["_inputSchema"] instanceof ZodType
+          ? zodToJsonSchema(agent["_inputSchema"])
+          : undefined,
+      outputSchema:
+        agent["_outputSchema"] instanceof ZodType
+          ? zodToJsonSchema(agent["_outputSchema"])
+          : undefined,
+      skills: agent.skills.map((i) => flatten(i)),
+    };
+  };
+
+  expect(flatten(agent)).toMatchSnapshot();
 });

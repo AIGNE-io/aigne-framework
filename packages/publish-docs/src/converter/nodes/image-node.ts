@@ -94,11 +94,11 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   // Captions cannot yet be used within editor cells
   __captionsEnabled: boolean;
 
-  static getType(): string {
+  static override getType(): string {
     return "image";
   }
 
-  static clone(node: ImageNode): ImageNode {
+  static override clone(node: ImageNode): ImageNode {
     return new ImageNode(
       node.__src,
       node.__altText,
@@ -116,7 +116,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     );
   }
 
-  static importJSON(serializedNode: SerializedImageNode): ImageNode {
+  static override importJSON(serializedNode: SerializedImageNode): ImageNode {
     const {
       altText,
       height,
@@ -148,14 +148,14 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return node;
   }
 
-  exportDOM(): DOMExportOutput {
+  override exportDOM(): DOMExportOutput {
     const element = document.createElement("img");
     element.setAttribute("src", this.__src || "");
     element.setAttribute("alt", this.__altText);
     return { element };
   }
 
-  static importDOM(): DOMConversionMap | null {
+  static override importDOM(): DOMConversionMap | null {
     return {
       img: () => ({ conversion: convertImageElement, priority: 0 }),
     };
@@ -192,7 +192,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     this.__sizeMode = sizeMode || "original";
   }
 
-  exportJSON(): SerializedImageNode {
+  override exportJSON(): SerializedImageNode {
     return {
       altText: this.getAltText(),
       caption: this.__caption.toJSON(),
@@ -237,7 +237,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   // View
 
-  createDOM(config: EditorConfig): HTMLElement {
+  override createDOM(config: EditorConfig): HTMLElement {
     const span = document.createElement("span");
     const { theme } = config;
     const className = theme.image;
@@ -247,7 +247,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return span;
   }
 
-  updateDOM(): false {
+  override updateDOM(): false {
     return false;
   }
 
@@ -265,7 +265,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   // For headless editor, we don't need to render React components
-  decorate(): JSX.Element {
+  override decorate(): JSX.Element {
     // Return a simple div as placeholder for the headless editor
     // Using a string-based approach instead of JSX for headless environment
     return {

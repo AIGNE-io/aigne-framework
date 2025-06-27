@@ -1,6 +1,6 @@
 {
   "name": "@aigne/observability",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -40,8 +40,17 @@
         "require": "./lib/cjs/server/index.js",
         "import": "./lib/esm/server/index.js"
       },
-      "default": "./lib/esm/server/index.js",
-      "types": "./lib/dts/server/index.d.ts"
+      "types": "./lib/dts/server/index.d.ts",
+      "default": "./lib/esm/server/index.js"
+    },
+    "./cli": {
+      "browser": "./lib/esm/server/cli.js",
+      "node": {
+        "require": "./lib/cjs/server/cli.js",
+        "import": "./lib/esm/server/cli.js"
+      },
+      "types": "./lib/dts/server/cli.d.ts",
+      "default": "./lib/esm/server/cli.js"
     },
     "./list": {
       "default": "./src/list.tsx"
@@ -55,8 +64,8 @@
         "require": "./lib/cjs/core/db-path.js",
         "import": "./lib/esm/core/db-path.js"
       },
-      "default": "./lib/esm/core/db-path.js",
-      "types": "./lib/dts/core/db-path.d.ts"
+      "types": "./lib/dts/core/db-path.d.ts",
+      "default": "./lib/esm/core/db-path.js"
     }
   },
   "typesVersions": {
@@ -69,6 +78,9 @@
       ],
       "db-path": [
         "./lib/dts/core/db-path.d.ts"
+      ],
+      "cli": [
+        "./lib/dts/server/cli.d.ts"
       ]
     }
   },
@@ -115,6 +127,7 @@
     "tinycolor2": "^1.6.0",
     "uuid": "^11.1.0",
     "vite-plugin-blocklet": "^0.9.33",
+    "yaml": "^2.7.1",
     "zod": "^3.25.23"
   },
   "devDependencies": {

@@ -12,6 +12,36 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.24.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.24.0...core-v1.24.1) (2025-06-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability bumped to 0.1.3
+
+## [1.24.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.23.1...core-v1.24.0) (2025-06-26)
+
+
+### Features
+
+* **transport:** support invoke server side chat model ([#182](https://github.com/AIGNE-io/aigne-framework/issues/182)) ([f81a1bf](https://github.com/AIGNE-io/aigne-framework/commit/f81a1bf883abda1845ccee09b270e5f583e287ab))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability bumped to 0.1.2
+
+## [1.23.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.23.0...core-v1.23.1) (2025-06-25)
+
+
+### Bug Fixes
+
+* **core:** pass input/output to MemoryAgent directily ([#178](https://github.com/AIGNE-io/aigne-framework/issues/178)) ([3b20e33](https://github.com/AIGNE-io/aigne-framework/commit/3b20e33f1eefc81ac1e009b1afff14fca46644b1))
+
 ## [1.23.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.22.0...core-v1.23.0) (2025-06-25)
 
 

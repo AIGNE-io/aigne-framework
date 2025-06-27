@@ -23,7 +23,7 @@
       "extra-files": [
         {
           "type": "yaml",
-          "path": "blocklets/observability/blocklet.yml",
+          "path": "blocklet.yml",
           "jsonpath": "$.version"
         }
       ]

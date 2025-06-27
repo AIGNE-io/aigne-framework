@@ -134,7 +134,7 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsNativeStructuredOutputs = true;
   protected supportsEndWithSystemMessage = true;
   protected supportsToolsUseWithJsonSchema = true;
-  protected supportsParallelToolCalls = true;
+  protected override supportsParallelToolCalls = true;
   protected supportsToolsEmptyParameters = true;
   protected supportsToolStreaming = true;
   protected supportsTemperature = true;

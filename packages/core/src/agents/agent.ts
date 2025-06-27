@@ -488,7 +488,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
         await memory.retrieve(
           {
             ...input,
-            search: typeof input.search === "string" ? input.search : JSON.stringify(input.search),
             limit: input.limit ?? this.maxRetrieveMemoryCount,
           },
           options.context,
@@ -621,15 +620,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
       return await this.checkResponseByGuideRails(
         input,
-        this.processAgentOutput(
-          parsedInput,
-          response instanceof ReadableStream
-            ? await agentResponseStreamToObject(response)
-            : isAsyncGenerator(response)
-              ? await agentResponseStreamToObject(response)
-              : response,
-          opts,
-        ),
+        this.processAgentOutput(parsedInput, await agentProcessResultToObject(response), opts),
         opts,
       );
     } catch (error) {
@@ -823,12 +814,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     this.publishToTopics(output, options);
 
     await this.recordMemories(
-      {
-        content: [
-          { role: "user", content: input },
-          { role: "agent", content: replaceTransferAgentToName(output), source: this.name },
-        ],
-      },
+      { content: [{ input, output: replaceTransferAgentToName(output), source: this.name }] },
       options,
     );
   }
@@ -925,6 +911,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     await this.shutdown();
   }
 }
+
+export type AgentInput<T extends Agent> = T extends Agent<infer I, any> ? I : never;
+
+export type AgentOutput<T extends Agent> = T extends Agent<any, infer O> ? O : never;
 
 /**
  * Lifecycle hooks for agent execution
@@ -1153,6 +1143,16 @@ export type AgentProcessResult<O extends Message> =
   | AgentProcessAsyncGenerator<O>
   | Agent;
 
+export async function agentProcessResultToObject<O extends Message>(
+  response: AgentProcessResult<O>,
+): Promise<O> {
+  return response instanceof ReadableStream
+    ? await agentResponseStreamToObject(response)
+    : isAsyncGenerator(response)
+      ? await agentResponseStreamToObject(response)
+      : (response as O);
+}
+
 /**
  * Schema definition type for agent input/output
  *
@@ -1221,7 +1221,7 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
   I,
   O
 > {
-  tag = "FunctionAgent";
+  override tag = "FunctionAgent";
 
   /**
    * Create a function agent from a function or options

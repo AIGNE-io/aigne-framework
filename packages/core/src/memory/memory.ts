@@ -47,7 +47,7 @@ export interface MemoryAgentOptions
  * instead provides memory management capabilities to the system.
  */
 export class MemoryAgent extends Agent {
-  tag = "MemoryAgent";
+  override tag = "MemoryAgent";
 
   /**
    * Creates a new MemoryAgent instance.
@@ -177,7 +177,10 @@ export class MemoryAgent extends Agent {
   }
 
   override async onMessage({ role, source, message, context }: MessagePayload): Promise<void> {
-    this.record({ content: [{ role, source, content: message }] }, context);
+    this.record(
+      { content: [role === "user" ? { input: message } : { output: message, source }] },
+      context,
+    );
   }
 }
 

@@ -3,7 +3,7 @@ import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";
 
 import { recordTraceBatchSchema } from "../../core/schema.js";
 
-export const formatSpans = (spans: ReadableSpan[]) => {
+export const validateTraceSpans = (spans: ReadableSpan[]) => {
   const payload = spans
     .map((span) => {
       const {

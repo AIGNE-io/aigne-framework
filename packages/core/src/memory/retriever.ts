@@ -27,7 +27,7 @@ export interface MemoryRetrieverInput extends Message {
    * Search term to filter memories by.
    * How the search is implemented depends on the specific retriever implementation.
    */
-  search?: string;
+  search?: string | Message;
 }
 
 /**
@@ -49,7 +49,7 @@ export interface MemoryRetrieverOutput extends Message {
  */
 export const memoryRetrieverInputSchema = z.object({
   limit: z.number().optional(),
-  search: z.string().optional(),
+  search: z.union([z.string(), z.record(z.string(), z.unknown())]).optional(),
 });
 
 /**
@@ -88,7 +88,7 @@ export interface MemoryRetrieverOptions
  * implementations of the process method to handle the actual retrieval logic.
  */
 export class MemoryRetriever extends Agent<MemoryRetrieverInput, MemoryRetrieverOutput> {
-  tag = "MemoryRetrieverAgent";
+  override tag = "MemoryRetrieverAgent";
 
   /**
    * Creates a new MemoryRetriever instance with predefined input and output schemas.

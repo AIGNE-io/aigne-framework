@@ -51,31 +51,47 @@ export async function loadAgent(path: string, options?: LoadOptions): Promise<Ag
   if ([".yml", ".yaml"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromYamlFile(path);
 
-    const skills =
-      "skills" in agent
-        ? agent.skills &&
-          (await Promise.all(
-            agent.skills.map((filename) =>
-              loadAgent(nodejs.path.join(nodejs.path.dirname(path), filename), options),
-            ),
-          ))
-        : undefined;
+    return parseAgent(path, agent, options);
+  }
 
-    if (agent.type === "ai") {
+  throw new Error(`Unsupported agent file type: ${path}`);
+}
+
+async function parseAgent(
+  path: string,
+  agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
+  options?: LoadOptions,
+): Promise<Agent> {
+  const skills =
+    "skills" in agent
+      ? agent.skills &&
+        (await Promise.all(
+          agent.skills.map((skill) =>
+            typeof skill === "string"
+              ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), skill), options)
+              : parseAgent(path, skill, options),
+          ),
+        ))
+      : undefined;
+
+  const memory =
+    "memory" in agent && options?.memories?.length
+      ? await loadMemory(
+          options.memories,
+          typeof agent.memory === "object" ? agent.memory.provider : undefined,
+          typeof agent.memory === "object" ? agent.memory : {},
+        )
+      : undefined;
+
+  switch (agent.type) {
+    case "ai": {
       return AIAgent.from({
         ...agent,
-        memory:
-          !options?.memories?.length || !agent.memory
-            ? undefined
-            : await loadMemory(
-                options.memories,
-                typeof agent.memory === "object" ? agent.memory.provider : undefined,
-                typeof agent.memory === "object" ? agent.memory : {},
-              ),
+        memory,
         skills,
       });
     }
-    if (agent.type === "mcp") {
+    case "mcp": {
       if (agent.url) {
         return MCPAgent.from({
           url: agent.url,
@@ -89,15 +105,14 @@ export async function loadAgent(path: string, options?: LoadOptions): Promise<Ag
       }
       throw new Error(`Missing url or command in mcp agent: ${path}`);
     }
-    if (agent.type === "team") {
+    case "team": {
       return TeamAgent.from({
         ...agent,
+        memory,
         skills,
       });
     }
   }
-
-  throw new Error(`Unsupported agent file type: ${path}`);
 }
 
 async function loadMemory(

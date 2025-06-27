@@ -1,7 +1,7 @@
-name: Release Please
+name: Release Packages And Blocklet
 
 env:
-  NODE_OPTIONS: '--max_old_space_size=6144'
+  NODE_OPTIONS: "--max_old_space_size=6144"
 
 on:
   push:
@@ -81,10 +81,18 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Remove h3 from blocklets/observability/CHANGELOG.md
+        if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
+        run: |
+          if [ -f blocklets/observability/CHANGELOG.md ]; then
+            sed -E -i "s/^### (.*)$/**\1**/" blocklets/observability/CHANGELOG.md
+            sed -E -i "/^# Changelog$/d" blocklets/observability/CHANGELOG.md
+          fi
+
       - name: Blocklet workflow
         if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
         env:
-          COMPONENT_STORE_URL: ${{ secrets.STORE_ENDPOINT_TEST }}
+          COMPONENT_STORE_URL: ${{ secrets.STORE_ENDPOINT_PROD }}
         uses: blocklet/action-workflow@v1
         with:
           deps-server-version: beta
@@ -94,13 +102,9 @@ jobs:
           skip-release: true
           working-directory: blocklets/observability
           bundle-command: pnpm bundle
-          store-endpoint: ${{ secrets.STORE_ENDPOINT_TEST }}
-          store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_TEST }}
-          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+          store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
+          store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          abtnode-endpoint: ${{ secrets.STAGING_NODE_ENDPOINT }}
-          access-key: ${{ secrets.STAGING_NODE_ACCESS_KEY }}
-          access-secret: ${{ secrets.STAGING_NODE_ACCESS_SECRET }}
 
       - name: Publish Docs
         if: ${{ steps.release.outputs.release_created }}

@@ -18,8 +18,7 @@ test("should add a new memory if it is not the same as the last one", async () =
   assert(storage instanceof DefaultMemoryStorage);
 
   const memory: MemoryRecorderInput["content"][number] = {
-    role: "user",
-    content: { text: "Hello" },
+    input: { text: "Hello" },
   };
 
   await memoryAgent.record({ content: [memory] }, context);
@@ -42,12 +41,10 @@ test("should add multiple different memories", async () => {
   assert(storage instanceof DefaultMemoryStorage);
 
   const memory1: MemoryRecorderInput["content"][number] = {
-    role: "user",
-    content: { text: "Hello" },
+    input: { text: "Hello" },
   };
   const memory2: MemoryRecorderInput["content"][number] = {
-    role: "agent",
-    content: { text: "Hi there" },
+    output: { text: "Hi there" },
   };
 
   await memoryAgent.record({ content: [memory1] }, context);
@@ -70,8 +67,7 @@ test("DefaultMemory should add memory with correct sessionId", async () => {
   assert(storage instanceof DefaultMemoryStorage);
 
   const memory: MemoryRecorderInput["content"][number] = {
-    role: "user",
-    content: { text: "Hello" },
+    input: { text: "Hello" },
   };
 
   await memoryAgent.record({ content: [memory] }, context);
@@ -99,8 +95,7 @@ test("DefaultMemory should persist memories if path options is provided", async 
     assert(storage instanceof DefaultMemoryStorage);
 
     const memory: MemoryRecorderInput["content"][number] = {
-      role: "user",
-      content: { text: "Hello" },
+      input: { text: "Hello" },
     };
 
     await memoryAgent.record({ content: [memory] }, context);
@@ -115,12 +110,11 @@ test("DefaultMemory should remember memories for AIAgent correctly", async () =>
   const model = new OpenAIChatModel();
 
   const memory = new DefaultMemory({
-    recorderOptions: {
-      rememberFromMessageKey: "message",
-    },
+    messageKey: "message",
   });
 
   const agent = AIAgent.from({
+    name: "TestAgent",
     memory: [memory],
     inputSchema: z.object({
       language: z.string(),

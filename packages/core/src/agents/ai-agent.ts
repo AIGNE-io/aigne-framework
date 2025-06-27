@@ -12,12 +12,12 @@ import {
   agentOptionsSchema,
   isAgentResponseDelta,
 } from "./agent.js";
-import {
+import type {
   ChatModel,
-  type ChatModelInput,
-  type ChatModelInputMessage,
-  type ChatModelOutput,
-  type ChatModelOutputToolCall,
+  ChatModelInput,
+  ChatModelInputMessage,
+  ChatModelOutput,
+  ChatModelOutputToolCall,
 } from "./chat-model.js";
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
 import { isTransferAgentOutput } from "./types.js";
@@ -134,7 +134,7 @@ export enum AIAgentToolChoice {
  * @hidden
  */
 export const aiAgentToolChoiceSchema = z.union(
-  [z.nativeEnum(AIAgentToolChoice), z.instanceof(Agent)],
+  [z.nativeEnum(AIAgentToolChoice), z.custom<Agent>()],
   {
     message: `aiAgentToolChoice must be ${Object.values(AIAgentToolChoice).join(", ")}, or an Agent`,
   },
@@ -150,8 +150,8 @@ export const aiAgentToolChoiceSchema = z.union(
 export const aiAgentOptionsSchema: ZodObject<{
   [key in keyof AIAgentOptions]: ZodType<AIAgentOptions[key]>;
 }> = agentOptionsSchema.extend({
-  model: z.instanceof(ChatModel).optional(),
-  instructions: z.union([z.string(), z.instanceof(PromptBuilder)]).optional(),
+  model: z.custom<ChatModel>().optional(),
+  instructions: z.union([z.string(), z.custom<PromptBuilder>()]).optional(),
   inputKey: z.string().optional(),
   outputKey: z.string().optional(),
   toolChoice: aiAgentToolChoiceSchema.optional(),
@@ -182,7 +182,7 @@ export const aiAgentOptionsSchema: ZodObject<{
  * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-basic}
  */
 export class AIAgent<I extends Message = any, O extends Message = any> extends Agent<I, O> {
-  tag = "AIAgent";
+  override tag = "AIAgent";
 
   /**
    * Create an AIAgent with the specified options

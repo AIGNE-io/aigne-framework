@@ -1,5 +1,47 @@
 # Changelog
 
+## [1.14.4](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.14.3...example-mcp-puppeteer-v1.14.4) (2025-06-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.1
+    * @aigne/cli bumped to 1.14.1
+    * @aigne/core bumped to 1.24.1
+    * @aigne/openai bumped to 0.4.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.8
+
+## [1.14.3](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.14.2...example-mcp-puppeteer-v1.14.3) (2025-06-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.0
+    * @aigne/cli bumped to 1.14.0
+    * @aigne/core bumped to 1.24.0
+    * @aigne/openai bumped to 0.4.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.7
+
+## [1.14.2](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.14.1...example-mcp-puppeteer-v1.14.2) (2025-06-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.16.1
+    * @aigne/cli bumped to 1.13.2
+    * @aigne/core bumped to 1.23.1
+    * @aigne/openai bumped to 0.3.6
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.6
+
 ## [1.14.1](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.14.0...example-mcp-puppeteer-v1.14.1) (2025-06-25)
 
 

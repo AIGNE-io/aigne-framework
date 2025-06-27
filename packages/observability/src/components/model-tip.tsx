@@ -39,11 +39,12 @@ export default function ModelInfoTip({ modelInfo }: { modelInfo: any }) {
   return (
     <>
       <Box component={Stack} gap={1.5} sx={{ p: 1 }}>
-        <Box display="flex" alignItems="center" gap={1} mb={1}>
+        <Box display="flex" alignItems="center" gap={1}>
           <MemoryIcon color="primary" />
           <Typography variant="h6">{t("models.details")}</Typography>
         </Box>
-        <Divider sx={{ mb: 1 }} />
+
+        <Divider />
         <Typography variant="body2">
           • {t("models.mode")}: {modelInfo.model}
         </Typography>
@@ -64,12 +65,11 @@ export default function ModelInfoTip({ modelInfo }: { modelInfo: any }) {
         <Typography variant="body2">
           • {t("models.provider")}: {modelInfo.litellm_provider}
         </Typography>
-        <Box>
-          <Typography variant="body2" mb={0.5}>
-            • {t("models.supports")}:
-          </Typography>
+
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, alignItems: "center" }}>
+          <Typography variant="body2">• {t("models.supports")}:</Typography>
           {supports.filter(Boolean).map((item) => (
-            <Chip key={item} label={item} size="small" sx={{ mr: 1, mb: 0.5, fontSize: 12 }} />
+            <Chip key={item} label={item} size="small" sx={{ fontSize: 12 }} />
           ))}
         </Box>
       </Box>

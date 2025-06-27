@@ -2,9 +2,11 @@ import InfoRow from "@arcblock/ux/lib/InfoRow";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import Tag from "@arcblock/ux/lib/Tag";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import Decimal from "decimal.js";
@@ -13,7 +15,9 @@ import { useMemo, useState } from "react";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import useSwitchView from "../../hooks/switch-view.tsx";
 import { parseDuration } from "../../utils/latency.ts";
+import modelPricesAndContextWindow from "../../utils/modelPricesAndContextWindow.json";
 import JsonView from "../json-view.tsx";
+import ModelInfoTip from "../model-tip.tsx";
 import RenderView from "../render-view.tsx";
 import YamlView from "../yaml-view.tsx";
 import { AgentTag } from "./AgentTag.tsx";
@@ -227,8 +231,35 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
                 nameWidth={80}
                 name={t("model")}
               >
-                <Box sx={{ textAlign: "right" }}>
+                <Box
+                  sx={{
+                    textAlign: "right",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    justifyContent: "flex-end",
+                  }}
+                >
                   <Tag>{model}</Tag>
+
+                  {modelPricesAndContextWindow[
+                    model as keyof typeof modelPricesAndContextWindow
+                  ] && (
+                    <Tooltip
+                      title={
+                        <ModelInfoTip
+                          modelInfo={{
+                            ...modelPricesAndContextWindow[
+                              model as keyof typeof modelPricesAndContextWindow
+                            ],
+                            model,
+                          }}
+                        />
+                      }
+                    >
+                      <InfoIcon sx={{ color: "text.secondary", fontSize: 18 }} />
+                    </Tooltip>
+                  )}
                 </Box>
               </InfoRowBox>
             )}
@@ -281,18 +312,18 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
 }
 
 const InfoRowBox = styled(InfoRow)`
-  margin-bottom: 0;
+  margin-bottom: 8px;
   max-width: 400px;
   width: 100%;
 
   .info-row__name {
-    font-size: 11px;
-    color: ${({ theme }) => theme.palette.text.secondary};
+    font-size: 13px;
+    color: ${({ theme }) => theme.palette.text.primary};
   }
 
   .info-row__value {
     font-size: 13px;
-    color: ${({ theme }) => theme.palette.text.primary};
     font-weight: 400;
+    color: ${({ theme }) => theme.palette.text.secondary};
   }
 `;

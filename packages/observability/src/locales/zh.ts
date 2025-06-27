@@ -40,4 +40,17 @@ export default flatten({
   lastYear: "去年",
   userContext: "用户信息",
   memories: "记忆",
+  models: {
+    details: "模型详情",
+    mode: "模式",
+    maxInputTokens: "最大输入 Tokens",
+    maxOutputTokens: "最大输出 Tokens",
+    maxTokens: "最大 Tokens",
+    inputCostPerToken: "输入每个 Token 成本",
+    outputCostPerToken: "输出每个 Token 成本",
+    provider: "提供商",
+    supports: "支持",
+    functionCalling: "Function Calling",
+    toolChoice: "Tool Choice",
+  },
 });

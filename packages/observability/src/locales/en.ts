@@ -40,4 +40,17 @@ export default flatten({
   lastYear: "Last Year",
   userContext: "User Context",
   memories: "Memories",
+  models: {
+    details: "Model Details",
+    mode: "Mode",
+    maxInputTokens: "Max Input Tokens",
+    maxOutputTokens: "Max Output Tokens",
+    maxTokens: "Max Tokens",
+    inputCostPerToken: "Input Cost Per Token",
+    outputCostPerToken: "Output Cost Per Token",
+    provider: "Provider",
+    supports: "Supports",
+    functionCalling: "Function Calling",
+    toolChoice: "Tool Choice",
+  },
 });

@@ -1,23 +1,20 @@
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
-import { type ZodFunction, type ZodObject, type ZodTuple, type ZodType, z } from "zod";
-import { Agent, type Message } from "../agents/agent.js";
-import { customCamelize } from "../utils/camelize.js";
+import camelize from "camelize-ts";
+import { type ZodObject, type ZodType, z } from "zod";
+import { Agent, type FunctionAgentFn } from "../agents/agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
-import { inputOutputSchema } from "./schema.js";
+import { inputOutputSchema, optionalize } from "./schema.js";
 
 const agentJsFileSchema = z.object({
   name: z.string(),
-  description: z
-    .string()
-    .nullish()
-    .transform((v) => v ?? undefined),
-  input_schema: inputOutputSchema
-    .nullish()
-    .transform((v) => (v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined)),
-  output_schema: inputOutputSchema
-    .nullish()
-    .transform((v) => (v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined)),
-  process: z.function() as unknown as ZodFunction<ZodTuple<[ZodType<Message>]>, ZodType<Message>>,
+  description: optionalize(z.string()),
+  inputSchema: optionalize(inputOutputSchema).transform((v) =>
+    v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined,
+  ),
+  outputSchema: optionalize(inputOutputSchema).transform((v) =>
+    v ? jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(v) : undefined,
+  ),
+  process: z.custom<FunctionAgentFn>(),
 });
 
 export async function loadAgentFromJsFile(path: string) {
@@ -34,13 +31,12 @@ export async function loadAgentFromJsFile(path: string) {
 
   return tryOrThrow(
     () =>
-      customCamelize(
-        agentJsFileSchema.parse({
+      agentJsFileSchema.parse(
+        camelize({
           ...agent,
-          name: agent.agent_name || agent.name,
+          name: agent.agent_name || agent.agentName || agent.name,
           process: agent,
         }),
-        { shallowKeys: ["input_schema", "output_schema"] },
       ),
     (error) => new Error(`Failed to parse agent from ${path}: ${error.message}`),
   );

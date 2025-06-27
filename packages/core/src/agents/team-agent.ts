@@ -161,18 +161,25 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
   ): AsyncGenerator<AgentResponseChunk<O>> {
     assert(this.iterateOn, "iterateInputKey must be defined for iterator processing");
     let arr = input[this.iterateOn] as unknown[];
-    arr = Array.isArray(arr) ? arr : isNil(arr) ? [arr] : [];
+    arr = Array.isArray(arr) ? [...arr] : isNil(arr) ? [arr] : [];
 
     const result: Message[] = [];
 
-    for (const i of arr) {
-      if (!isRecord(i))
-        throw new TypeError(`Expected ${String(key)} to be an object, got ${typeof i}`);
+    for (let i = 0; i < arr.length; i++) {
+      const item = arr[i];
 
-      const item = await agentProcessResultToObject(
-        await this._process({ ...input, [key]: result, ...i }, { ...options, streaming: false }),
+      if (!isRecord(item))
+        throw new TypeError(`Expected ${String(key)} to be an object, got ${typeof item}`);
+
+      const res = await agentProcessResultToObject(
+        await this._process({ ...input, [key]: arr, ...item }, { ...options, streaming: false }),
       );
-      result.push(omit(item, key as any) as Message);
+
+      // Merge the item result with the original item used for next iteration
+      arr[i] = { ...item, ...res };
+
+      result.push(omit(res, key as any) as Message);
+
       yield { delta: { json: { [key]: result } } } as AgentResponseChunk<O>;
     }
   }

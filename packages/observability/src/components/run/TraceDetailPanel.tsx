@@ -132,14 +132,14 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={80} name="ID">
+            <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={120} name="ID">
               <Box sx={{ textAlign: "right" }}>{trace?.id}</Box>
             </InfoRowBox>
 
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={80}
+              nameWidth={120}
               name={t("startTime")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -156,7 +156,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={80}
+              nameWidth={120}
               name={t("endTime")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -173,7 +173,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={80}
+              nameWidth={120}
               name={t("duration")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -189,7 +189,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={80}
+                nameWidth={120}
                 name={t("inputTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -202,7 +202,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={80}
+                nameWidth={120}
                 name={t("outputTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -215,7 +215,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={80}
+                nameWidth={120}
                 name={t("totalTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -228,7 +228,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={80}
+                nameWidth={120}
                 name={t("model")}
               >
                 <Box

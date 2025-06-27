@@ -43,7 +43,12 @@ interface TeamAgentSchema extends BaseAgentSchema {
   iterateOn?: string;
 }
 
-type AgentSchema = AIAgentSchema | MCPAgentSchema | TeamAgentSchema;
+interface TransformAgentSchema extends BaseAgentSchema {
+  type: "transform";
+  jsonata: string;
+}
+
+type AgentSchema = AIAgentSchema | MCPAgentSchema | TeamAgentSchema | TransformAgentSchema;
 
 export async function loadAgentFromYamlFile(path: string) {
   const agentSchema: ZodType<AgentSchema> = z.lazy(() => {
@@ -100,6 +105,12 @@ export async function loadAgentFromYamlFile(path: string) {
           type: z.literal("team"),
           mode: optionalize(z.nativeEnum(ProcessMode)),
           iterateOn: optionalize(z.string()),
+        })
+        .extend(baseAgentSchema.shape),
+      z
+        .object({
+          type: z.literal("transform"),
+          jsonata: z.string(),
         })
         .extend(baseAgentSchema.shape),
     ]);

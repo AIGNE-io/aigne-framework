@@ -2,7 +2,14 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { AIAgent, type Agent, FunctionAgent, ProcessMode, TeamAgent } from "@aigne/core";
+import {
+  AIAgent,
+  type Agent,
+  FunctionAgent,
+  ProcessMode,
+  TeamAgent,
+  TransformAgent,
+} from "@aigne/core";
 import { loadAgentFromYamlFile } from "@aigne/core/loader/agent-yaml.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
 import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
@@ -163,4 +170,24 @@ test("loadAgentFromYaml should load nested agent correctly", async () => {
   };
 
   expect(flatten(agent)).toMatchSnapshot();
+});
+
+test("loadAgentFromYaml should load transform agent correctly", async () => {
+  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/transform.yaml"));
+
+  expect(agent).toBeInstanceOf(TransformAgent);
+  assert(agent instanceof TransformAgent);
+  expect(agent.name).toMatchInlineSnapshot(`"transform-agent"`);
+  expect(agent.description).toMatchInlineSnapshot(`
+    "A Transform Agent that processes input data using JSONata expressions.
+    "
+  `);
+  expect(agent["jsonata"]).toMatchInlineSnapshot(`
+    "{
+      userId: user_id,
+      userName: user_name,
+      createdAt: created_at
+    }
+    "
+  `);
 });

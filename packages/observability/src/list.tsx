@@ -60,7 +60,6 @@ export default function List() {
     searchText = "",
     dateRange,
   }: { page: number; pageSize: number; searchText?: string; dateRange?: [Date, Date] }) => {
-    setLoading(true);
     try {
       const res = await fetch(
         withQuery(joinURL(origin, "/api/trace/tree"), {
@@ -86,6 +85,7 @@ export default function List() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (documentVisibility === "visible") {
+      setLoading(true);
       fetchTraces({
         page: search.page - 1,
         pageSize: search.pageSize,
@@ -100,9 +100,9 @@ export default function List() {
     if (window.blocklet?.prefix) return;
 
     fetch(joinURL(origin, "/api/trace/tree/stats"))
-      .then((res) => res.json() as Promise<{ data: { total: number } }>)
+      .then((res) => res.json() as Promise<{ data: { lastTraceChanged: boolean } }>)
       .then(({ data }) => {
-        if (data?.total && data.total !== total) {
+        if (data?.lastTraceChanged) {
           fetchTraces({ page: 0, pageSize: search.pageSize });
         }
       });
@@ -160,15 +160,35 @@ export default function List() {
       minWidth: 100,
       align: "center",
       headerAlign: "center",
-      renderCell: ({ row }) => (
-        <Chip
-          label={row.status?.code === 1 ? t("success") : t("failed")}
-          size="small"
-          color={row.status?.code === 1 ? "success" : "error"}
-          variant="outlined"
-          sx={{ height: 21, ml: 1 }}
-        />
-      ),
+      renderCell: ({ row }) => {
+        const map: Record<
+          number,
+          { color: "default" | "error" | "warning" | "success"; label: string }
+        > = {
+          0: {
+            color: "warning",
+            label: t("pending"),
+          },
+          1: {
+            color: "success",
+            label: t("success"),
+          },
+          2: {
+            color: "error",
+            label: t("failed"),
+          },
+        };
+
+        return (
+          <Chip
+            label={map[row.status?.code as keyof typeof map]?.label ?? t("unknown")}
+            size="small"
+            color={map[row.status?.code as keyof typeof map]?.color ?? "default"}
+            variant="outlined"
+            sx={{ height: 21, ml: 1 }}
+          />
+        );
+      },
     },
     {
       field: "startTime",

@@ -19,7 +19,12 @@ interface RunDetailDrawerProps {
   trace: TraceData | null;
 }
 
-export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDetailDrawerProps) {
+export default function RunDetailDrawer({
+  traceId,
+  open,
+  onClose: onCloseDrawer,
+  trace,
+}: RunDetailDrawerProps) {
   const [selectedTrace, setSelectedTrace] = useState(trace);
   const [traceInfo, setTraces] = useState(trace);
   const [loading, setLoading] = useState(false);
@@ -52,6 +57,12 @@ export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDe
 
     setSelectedTrace(trace);
   }, [trace, traceId]);
+
+  const onClose = () => {
+    setTraces(null);
+    setSelectedTrace(null);
+    onCloseDrawer();
+  };
 
   const getRunStats = (run: TraceData | null) => {
     let count = 0;
@@ -90,11 +101,11 @@ export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDe
       inputTokens,
       outputTokens,
       totalTokens: inputTokens + outputTokens,
-      inputCost: inputCost.gt(new Decimal(0)) ? `($${inputCost.toString()})` : null,
-      outputCost: outputCost.gt(new Decimal(0)) ? `($${outputCost.toString()})` : null,
+      inputCost: inputCost.gt(new Decimal(0)) ? `($${inputCost.toString()})` : "",
+      outputCost: outputCost.gt(new Decimal(0)) ? `($${outputCost.toString()})` : "",
       totalCost: inputCost.add(outputCost).gt(new Decimal(0))
         ? `($${inputCost.add(outputCost).toString()})`
-        : null,
+        : "",
     };
   };
 
@@ -131,6 +142,7 @@ export default function RunDetailDrawer({ traceId, open, onClose, trace }: RunDe
             }}
           >
             <TraceItemList
+              traceId={traceId ?? ""}
               steps={[traceInfo]}
               onSelect={(trace) => setSelectedTrace(trace ?? null)}
               selectedTrace={selectedTrace}

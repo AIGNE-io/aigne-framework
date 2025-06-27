@@ -54,4 +54,5 @@ export default flatten({
     toolChoice: "Tool Choice",
   },
   search: "Search",
+  pending: "Pending",
 });

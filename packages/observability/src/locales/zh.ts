@@ -54,4 +54,5 @@ export default flatten({
     toolChoice: "Tool Choice",
   },
   search: "搜索",
+  pending: "进行中",
 });

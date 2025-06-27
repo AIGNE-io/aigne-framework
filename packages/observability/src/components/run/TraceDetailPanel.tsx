@@ -300,13 +300,13 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
 
         <Box sx={{ overflowX: "auto", color: "common.white" }}>
           {value === undefined || value === null ? (
-            <Typography color="grey.500" sx={{ fontSize: 14 }}>
+            <Typography color="grey.500" sx={{ fontSize: 14, p: 2 }}>
               {t("noData")}
             </Typography>
           ) : typeof value === "object" ? (
             <ComponentView value={value} />
           ) : (
-            <Typography sx={{ whiteSpace: "break-spaces" }} component="pre">
+            <Typography sx={{ whiteSpace: "break-spaces", p: 2 }} component="pre">
               {JSON.stringify(value, null, 2)}
             </Typography>
           )}

@@ -1,10 +1,10 @@
 import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { and, between, desc, eq, inArray, isNull, like, or, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import express, { type Request, type Response } from "express";
 import type SSE from "express-sse";
-import { parse } from "yaml";
+import { parse, stringify } from "yaml";
 
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
@@ -71,14 +71,47 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
   router.get("/tree/stats", async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
 
-    const count = await db
-      .select({ count: sql`count(*)` })
-      .from(Trace)
-      .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
-      .execute();
-    const total = Number((count[0] as { count: string }).count ?? 0);
+    const [latestRoot] =
+      (await db
+        .select()
+        .from(Trace)
+        .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
+        .orderBy(desc(Trace.startTime))
+        .limit(1)
+        .execute()) || [];
 
-    res.json({ code: 0, data: { total } });
+    const settingPath = getGlobalSettingPath();
+    let settings: { lastTrace: { id: string; endTime: number } } = {
+      lastTrace: { id: "", endTime: 0 },
+    };
+
+    if (!existsSync(settingPath)) {
+      await writeFile(settingPath, stringify(settings));
+    } else {
+      settings = parse(await readFile(settingPath, "utf8"));
+    }
+
+    const lastTraceChanged =
+      latestRoot &&
+      (settings.lastTrace?.id !== latestRoot.id ||
+        settings.lastTrace?.endTime !== latestRoot.endTime);
+
+    if (lastTraceChanged) {
+      await writeFile(
+        settingPath,
+        stringify({
+          ...settings,
+          lastTrace: {
+            id: latestRoot.id,
+            rootId: latestRoot.rootId,
+            startTime: latestRoot.startTime,
+            endTime: latestRoot.endTime,
+          },
+        }),
+      );
+    }
+
+    res.json({ code: 0, data: { lastTraceChanged } });
   });
 
   router.get("/tree/:id", async (req: Request, res: Response) => {
@@ -128,7 +161,27 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
 
     const db = req.app.locals.db as LibSQLDatabase;
 
-    await db.insert(Trace).values(req.body).returning({ id: Trace.id }).execute();
+    for (const trace of req.body) {
+      const whereClause = and(
+        eq(Trace.id, trace.id),
+        eq(Trace.rootId, trace.rootId),
+        !trace.parentId
+          ? or(isNull(Trace.parentId), eq(Trace.parentId, ""))
+          : eq(Trace.parentId, trace.parentId),
+      );
+
+      try {
+        const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();
+
+        if (existing.length > 0) {
+          await db.update(Trace).set(trace).where(whereClause).execute();
+        } else {
+          await db.insert(Trace).values(trace).execute();
+        }
+      } catch (err) {
+        console.error(`upsert spans failed for trace ${trace.id}:`, err);
+      }
+    }
 
     if (live) {
       sse.send({ type: "event", data: {} });

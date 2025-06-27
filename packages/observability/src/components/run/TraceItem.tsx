@@ -37,6 +37,10 @@ function TraceItem({
       return "primary.main";
     }
 
+    if (status === 0) {
+      return "warning.main";
+    }
+
     if (status === 1) {
       return "transparent";
     }
@@ -172,11 +176,13 @@ export function annotateTraceSteps({
 }
 
 export function renderTraceItems({
+  traceId,
   items,
   totalDuration,
   depth = 0,
   onSelect,
 }: {
+  traceId: string;
   items: TraceStep[];
   totalDuration: number;
   depth?: number;
@@ -184,7 +190,7 @@ export function renderTraceItems({
 }): ReactElement[] {
   return items.flatMap((item) => [
     <TraceItem
-      key={item.name + (item.start ?? 0) + item.agentTag}
+      key={`${item.name}-${item.duration}-${item.agentTag}-${traceId}`}
       name={item.name}
       duration={item.duration}
       start={item.start ?? 0}
@@ -196,16 +202,24 @@ export function renderTraceItems({
       onSelect={() => onSelect?.(item.run)}
     />,
     ...(item.children
-      ? renderTraceItems({ items: item.children, totalDuration, depth: depth + 1, onSelect })
+      ? renderTraceItems({
+          traceId,
+          items: item.children,
+          totalDuration,
+          depth: depth + 1,
+          onSelect,
+        })
       : []),
   ]);
 }
 
 export default function TraceItemList({
+  traceId,
   steps,
   onSelect,
   selectedTrace,
 }: {
+  traceId: string;
   steps: TraceData[];
   onSelect?: (step?: TraceData) => void;
   selectedTrace?: TraceData | null;
@@ -243,6 +257,7 @@ export default function TraceItemList({
       </Box>
 
       {renderTraceItems({
+        traceId,
         items: annotatedSteps,
         totalDuration: annotatedSteps[0].duration,
         depth: 0,

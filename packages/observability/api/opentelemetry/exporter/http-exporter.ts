@@ -1,12 +1,26 @@
 import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
+import { and, eq, isNull, or } from "drizzle-orm";
+import type { InferInsertModel } from "drizzle-orm";
 import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
 import { Trace } from "../../server/models/trace.js";
 import { validateTraceSpans } from "./util.js";
+type TraceInsertOrUpdateData = InferInsertModel<typeof Trace>;
 
-class HttpExporter implements SpanExporter {
+export interface HttpExporterInterface extends SpanExporter {
+  export(
+    spans: ReadableSpan[],
+    resultCallback: (result: { code: ExportResultCode }) => void,
+  ): Promise<void>;
+
+  shutdown(): Promise<void>;
+
+  insertInitialSpan(span: ReadableSpan): Promise<void>;
+}
+
+class HttpExporter implements HttpExporterInterface {
   private dbPath?: string;
   private _db?: any;
 
@@ -21,6 +35,44 @@ class HttpExporter implements SpanExporter {
     this._db ??= this.getDb();
   }
 
+  async _upsertSpans(spans: ReadableSpan[]) {
+    const validatedData = validateTraceSpans(spans);
+
+    const db = await this._db;
+
+    for (const trace of validatedData) {
+      const whereClause = and(
+        eq(Trace.id, trace.id),
+        eq(Trace.rootId, trace.rootId),
+        !trace.parentId
+          ? or(isNull(Trace.parentId), eq(Trace.parentId, ""))
+          : eq(Trace.parentId, trace.parentId),
+      );
+
+      try {
+        const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();
+
+        if (existing.length > 0) {
+          await db.update(Trace).set(trace).where(whereClause).execute();
+        } else {
+          await db.insert(Trace).values(trace).execute();
+        }
+      } catch (err) {
+        console.error(`upsert spans failed for trace ${trace.id}:`, err);
+      }
+    }
+  }
+
+  async _upsertCallBlocklet(validatedData: TraceInsertOrUpdateData[]) {
+    const { call } = await import("@blocklet/sdk/lib/component/index.js");
+    await call({
+      name: "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh",
+      method: "POST",
+      path: "/api/trace/tree",
+      data: validatedData,
+    });
+  }
+
   async export(
     spans: ReadableSpan[],
     resultCallback: (result: { code: ExportResultCode }) => void,
@@ -29,16 +81,9 @@ class HttpExporter implements SpanExporter {
       const validatedData = validateTraceSpans(spans);
 
       if (isBlocklet) {
-        const { call } = await import("@blocklet/sdk/lib/component/index.js");
-        await call({
-          name: "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh",
-          method: "POST",
-          path: "/api/trace/tree",
-          data: validatedData,
-        });
+        await this._upsertCallBlocklet(validatedData);
       } else {
-        const db = await this._db;
-        await db.insert(Trace).values(validatedData).returning({ id: Trace.id }).execute();
+        await this._upsertSpans(spans);
       }
 
       resultCallback({ code: ExportResultCode.SUCCESS });
@@ -50,6 +95,15 @@ class HttpExporter implements SpanExporter {
 
   shutdown() {
     return Promise.resolve();
+  }
+
+  async insertInitialSpan(span: ReadableSpan) {
+    if (isBlocklet) {
+      const validatedData = validateTraceSpans([span]);
+      await this._upsertCallBlocklet(validatedData);
+    } else {
+      await this._upsertSpans([span]);
+    }
   }
 }
 

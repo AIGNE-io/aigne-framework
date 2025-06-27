@@ -1,8 +1,8 @@
 import { trace } from "@opentelemetry/api";
-import type { SpanExporter } from "@opentelemetry/sdk-trace-base";
 import getObservabilityDbPath from "../core/db-path.js";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import { isBlocklet } from "../core/util.js";
+import type { HttpExporterInterface } from "../opentelemetry/exporter/http-exporter.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
 
 export class AIGNEObserver {
@@ -10,7 +10,7 @@ export class AIGNEObserver {
   private storage: AIGNEObserverOptions["storage"];
   private initPort?: number;
   public tracer = trace.getTracer("aigne-tracer");
-  public traceExporter: SpanExporter | undefined;
+  public traceExporter: HttpExporterInterface | undefined;
   private sdkServerStarted: Promise<void> | undefined;
 
   constructor(options?: AIGNEObserverOptions) {

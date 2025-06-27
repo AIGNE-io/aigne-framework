@@ -1,6 +1,7 @@
 import type { AIGNEObserver } from "@aigne/observability";
-import type { Span } from "@opentelemetry/api";
 import { SpanStatusCode, context, trace } from "@opentelemetry/api";
+import type { Span } from "@opentelemetry/api";
+import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";
 import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
@@ -478,6 +479,8 @@ export class AIGNEContext implements Context {
             logger.error("parse memories error", _e.message);
             span.setAttribute("memories", JSON.stringify([]));
           }
+
+          await this.observer?.traceExporter?.insertInitialSpan?.(span as unknown as ReadableSpan);
 
           break;
         }

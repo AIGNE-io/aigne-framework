@@ -134,9 +134,9 @@ const List = forwardRef<ListRef>((_props, ref) => {
     if (window.blocklet?.prefix) return;
 
     fetch(joinURL(origin, "/api/trace/tree/stats"))
-      .then((res) => res.json() as Promise<{ data: { total: number } }>)
+      .then((res) => res.json() as Promise<{ data: { lastTraceChanged: boolean } }>)
       .then(({ data }) => {
-        if (data?.total && data.total !== total) {
+        if (data?.lastTraceChanged) {
           fetchTraces({ page: 0, pageSize: search.pageSize });
         }
       });

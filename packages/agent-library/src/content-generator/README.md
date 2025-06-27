@@ -56,6 +56,12 @@ aigne run --entry-agent "content-generator" --input "@mock-inputs/input-arcspher
 # lban
 aigne run --entry-agent "content-generator" --input "@mock-inputs/input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml
 
+# lban locale run
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/lban-all.txt" --force
+
+# arcblock locale run 
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input.yaml"  --input-datasources "@mock-inputs/arcblock-datasources.md" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/arcblock-all.txt" --force
+
 # detail
 aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-input.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --input-datasources "@mock-inputs/arcblock-datasources.md" --input-structurePlan "@mock-inputs/structure-plan-output.yaml" --format yaml --output "./output-tmp/home.txt" --force
 
@@ -64,7 +70,16 @@ aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-
 
 npx aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md"  --input-structurePlan "@mock-inputs/structure-plan-output-lban.yaml" --format yaml --output "./output-tmp/lban-home.txt" --force
 
-npx aigne run --entry-agent "batch-content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/lban-all.txt" --force
+# lban batch detail
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "batch-content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/lban-all.txt" --force
+
+# arcblock batch detail
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "batch-content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --format yaml --output "./output-tmp/lban-all.txt" --force
+
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "batch-content-detail-generator" --input "@mock-inputs/detail-input.yaml"  --input-datasources "@mock-inputs/arcblock-datasources.md" --format yaml --output "./output-tmp/arcblock-all.txt" --force
+
+# lban
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml
 ```
 
 

@@ -32,6 +32,7 @@ export default function CustomDateRangePicker({ value, onChange }: CustomDateRan
         Toast.error("Please select a date range");
         return;
       }
+
       if (
         dayjs(range.startDate).isAfter(range.endDate) ||
         !dayjs(range.startDate).isValid() ||

@@ -68,6 +68,19 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     res.json({ total, page, pageSize, data: rootCalls.filter((r) => r.rootId) });
   });
 
+  router.get("/tree/stats", async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+
+    const count = await db
+      .select({ count: sql`count(*)` })
+      .from(Trace)
+      .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
+      .execute();
+    const total = Number((count[0] as { count: string }).count ?? 0);
+
+    res.json({ code: 0, data: { total } });
+  });
+
   router.get("/tree/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
     if (!id) {

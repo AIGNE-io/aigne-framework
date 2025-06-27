@@ -1,14 +1,16 @@
-import { CopyButton } from "@arcblock/ux/lib/ClickToCopy";
-import Datatable, { getDurableData } from "@arcblock/ux/lib/Datatable";
+import TableSearch from "@arcblock/ux/lib/Datatable/TableSearch";
 import Empty from "@arcblock/ux/lib/Empty";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import { DataGrid } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
+import { useRafInterval } from "ahooks";
 import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
 import CustomDateRangePicker from "./components/date-picker.tsx";
@@ -18,8 +20,6 @@ import SwitchComponent from "./components/switch.tsx";
 import { watchSSE } from "./utils/event.ts";
 import { origin } from "./utils/index.ts";
 import { parseDuration } from "./utils/latency.ts";
-
-const durableKey = "traces-list";
 
 interface TracesResponse {
   data: TraceData[];
@@ -33,21 +33,17 @@ interface SearchState {
   dateRange: [Date, Date];
 }
 
-export default function App() {
+export default function List() {
   const { t } = useLocaleContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const documentVisibility = useDocumentVisibility();
+  const [live, setLive] = useState(false);
 
-  const tableDurableData = getDurableData(durableKey) as {
-    searchText?: string;
-    rowsPerPage?: number;
-    dateRange?: [Date, Date];
-  };
   const [search, setSearch] = useState<SearchState>({
     page: 1,
-    pageSize: tableDurableData.rowsPerPage || 20,
-    searchText: tableDurableData.searchText || "",
-    dateRange: tableDurableData.dateRange || [
+    pageSize: 20,
+    searchText: "",
+    dateRange: [
       dayjs().subtract(1, "month").startOf("day").toDate(),
       dayjs().endOf("day").toDate(),
     ],
@@ -99,6 +95,19 @@ export default function App() {
     }
   }, [search.page, search.pageSize, search.searchText, search.dateRange, documentVisibility]);
 
+  useRafInterval(() => {
+    if (!live) return;
+    if (window.blocklet?.prefix) return;
+
+    fetch(joinURL(origin, "/api/trace/tree/stats"))
+      .then((res) => res.json() as Promise<{ data: { total: number } }>)
+      .then(({ data }) => {
+        if (data?.total && data.total !== total) {
+          fetchTraces({ page: 0, pageSize: search.pageSize });
+        }
+      });
+  }, 3000);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const abortController = new AbortController();
@@ -120,133 +129,74 @@ export default function App() {
     };
   }, [search.pageSize]);
 
-  const columns = useMemo(
-    () => [
-      {
-        label: "ID",
-        name: "id",
-        width: 200,
-        options: {
-          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
-            const row = traces[rowIndex];
-            return (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                {row.id}
-                <CopyButton content={row.id} style={{ color: "#666" }} />
-              </Box>
-            );
-          },
-        },
-      },
-      { label: t("agentName"), name: "name", width: 150 },
-      {
-        label: t("input"),
-        name: "input",
-        options: {
-          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
-            const row = traces[rowIndex];
-            return (
-              <Box
-                sx={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {JSON.stringify(row.attributes.input)}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        label: t("output"),
-        name: "output",
-        options: {
-          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
-            const row = traces[rowIndex];
-            return (
-              <Box
-                sx={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {JSON.stringify(row.attributes.output)}
-              </Box>
-            );
-          },
-        },
-      },
-      {
-        label: t("latency"),
-        name: "latency",
-        width: 100,
-        align: "right",
-        options: {
-          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
-            const row = traces[rowIndex];
-            return parseDuration(row.startTime, row.endTime);
-          },
-        },
-      },
-      {
-        label: t("status"),
-        name: "status",
-        width: 100,
-        align: "center",
-        options: {
-          customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
-            const row = traces[rowIndex];
-            return (
-              <Chip
-                label={row.status?.code === 1 ? t("success") : t("failed")}
-                color={row.status?.code === 1 ? "success" : "error"}
-                size="small"
-                variant="outlined"
-              />
-            );
-          },
-        },
-      },
-      {
-        label: t("startedAt"),
-        name: "startTime",
-        width: 160,
-        align: "right",
-        options: {
-          customBodyRender: (val: number) =>
-            val ? <RelativeTime value={val} type="absolute" format="YYYY-MM-DD HH:mm:ss" /> : "-",
-        },
-      },
-      {
-        label: t("endedAt"),
-        name: "endTime",
-        width: 160,
-        align: "right",
-        options: {
-          customBodyRender: (val: number) =>
-            val ? <RelativeTime value={val} type="absolute" format="YYYY-MM-DD HH:mm:ss" /> : "-",
-        },
-      },
-    ],
-    [traces, t],
-  );
-
-  const onTableChange = ({
-    page,
-    rowsPerPage,
-    searchText,
-  }: { page: number; rowsPerPage: number; searchText: string }) => {
-    if (search.pageSize !== rowsPerPage) {
-      setSearch((x) => ({ ...x, searchText: "", pageSize: rowsPerPage, page: 1 }));
-    } else if (search.page !== page + 1) {
-      setSearch((x) => ({ ...x, searchText: "", page: page + 1 }));
-    } else if (search.searchText !== searchText) {
-      setSearch((x) => ({ ...x, searchText, page: 1 }));
-    }
-  };
+  const columns: GridColDef<TraceData>[] = [
+    { field: "id", headerName: "ID", width: 160 },
+    { field: "name", headerName: t("agentName"), minWidth: 150 },
+    {
+      field: "input",
+      headerName: t("input"),
+      flex: 1,
+      minWidth: 120,
+      valueGetter: (_, row) => JSON.stringify(row.attributes?.input),
+    },
+    {
+      field: "output",
+      headerName: t("output"),
+      flex: 1,
+      minWidth: 120,
+      valueGetter: (_, row) => JSON.stringify(row.attributes?.output),
+    },
+    {
+      field: "latency",
+      headerName: t("latency"),
+      minWidth: 100,
+      align: "right",
+      headerAlign: "right",
+      valueGetter: (_, row) => parseDuration(row.startTime, row.endTime),
+    },
+    {
+      field: "status",
+      headerName: t("status"),
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ row }) => (
+        <Chip
+          label={row.status?.code === 1 ? t("success") : t("failed")}
+          size="small"
+          color={row.status?.code === 1 ? "success" : "error"}
+          variant="outlined"
+          sx={{ height: 21, ml: 1 }}
+        />
+      ),
+    },
+    {
+      field: "startTime",
+      headerName: t("startedAt"),
+      minWidth: 160,
+      align: "right",
+      headerAlign: "right",
+      renderCell: ({ row }) =>
+        row.startTime ? (
+          <RelativeTime value={row.startTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
+        ) : (
+          "-"
+        ),
+    },
+    {
+      field: "endTime",
+      headerName: t("endedAt"),
+      minWidth: 160,
+      align: "right",
+      headerAlign: "right",
+      renderCell: ({ row }) =>
+        row.endTime ? (
+          <RelativeTime value={row.endTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
+        ) : (
+          "-"
+        ),
+    },
+  ];
 
   const onDateRangeChange = (value: [Date, Date]) => {
     setSearch((x) => ({ ...x, dateRange: value, page: 1 }));
@@ -256,66 +206,87 @@ export default function App() {
     <ToastProvider>
       <Box
         sx={{
-          ".MuiTable-root": {
-            tableLayout: "fixed",
-          },
-          ".MuiTableCell-root": {
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          },
-          ".MuiTableRow-root": {
-            cursor: "pointer",
+          ".striped-row": {
+            backgroundColor: "action.hover",
           },
         }}
       >
-        <Datatable
-          durable={durableKey}
-          data={traces}
-          // @ts-ignore
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 1 }}>
+          <TableSearch
+            options={{
+              searchPlaceholder: t("search"),
+              searchDebounceTime: 600,
+            }}
+            search={search.searchText}
+            searchText={search.searchText}
+            searchTextUpdate={(text) => setSearch((x) => ({ ...x, searchText: text }))}
+            searchClose={() => setSearch((x) => ({ ...x, searchText: "" }))}
+            onSearchOpen={() => {}}
+          />
+
+          <Box key="date-picker" sx={{ mx: 1 }}>
+            <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
+          </Box>
+
+          <Box sx={{ display: "flex" }}>
+            <SwitchComponent live={live} setLive={setLive} />
+          </Box>
+        </Box>
+
+        <DataGrid
+          rows={traces}
           columns={columns}
-          options={{
-            sort: false,
-            download: false,
-            filter: false,
-            print: false,
-            viewColumns: false,
-            page: search.page - 1,
-            rowsPerPage: search.pageSize,
-            count: total,
-            searchDebounceTime: 600,
-            onRowClick: (_: unknown, { dataIndex }: { dataIndex: number }) => {
-              const trace = traces[dataIndex];
-              setSelectedTrace(trace);
-              setSearchParams((prev) => {
-                prev.set("traceId", trace.id);
-                return prev;
-              });
-            },
-          }}
           loading={loading}
-          emptyNode={<Empty>{t("noData")}</Empty>}
-          onChange={(state: any) => {
-            onTableChange({
-              page: state.page,
-              rowsPerPage: state.rowsPerPage,
-              searchText: state.searchText || "",
+          pageSizeOptions={[10, 20, 50]}
+          pagination
+          paginationModel={{ page: search.page - 1, pageSize: search.pageSize }}
+          onPaginationModelChange={(model) => {
+            setSearch((x) => ({ ...x, page: model.page + 1, pageSize: model.pageSize }));
+          }}
+          rowCount={total}
+          rowHeight={40}
+          getRowClassName={(params) =>
+            params.indexRelativeToCurrentPage % 2 === 0 ? "" : "striped-row"
+          }
+          paginationMode="server"
+          onRowClick={({ row }) => {
+            setSelectedTrace(row);
+            setSearchParams((prev) => {
+              prev.set("traceId", row.id);
+              return prev;
             });
           }}
-          customButtons={[
-            // @ts-ignore
-            window.blocklet?.prefix && (
-              <Box sx={{ display: "flex" }}>
-                <SwitchComponent />
+          disableRowSelectionOnClick
+          sx={{
+            cursor: "pointer",
+            minHeight: 500,
+          }}
+          slots={{
+            noRowsOverlay: () => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                }}
+              >
+                <Empty>{t("noData")}</Empty>
               </Box>
             ),
-          ]}
-          customPreButtons={[
-            // @ts-ignore
-            <Box key="date-picker" sx={{ mx: 1 }}>
-              <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
-            </Box>,
-          ]}
+            noResultsOverlay: () => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                }}
+              >
+                <Empty>{t("noData")}</Empty>
+              </Box>
+            ),
+          }}
         />
       </Box>
 

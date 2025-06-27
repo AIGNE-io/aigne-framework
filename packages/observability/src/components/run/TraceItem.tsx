@@ -184,7 +184,7 @@ export function renderTraceItems({
 }): ReactElement[] {
   return items.flatMap((item) => [
     <TraceItem
-      key={item.name + (item.start ?? 0)}
+      key={item.name + (item.start ?? 0) + item.agentTag}
       name={item.name}
       duration={item.duration}
       start={item.start ?? 0}

@@ -53,4 +53,5 @@ export default flatten({
     functionCalling: "Function Calling",
     toolChoice: "Tool Choice",
   },
+  search: "Search",
 });

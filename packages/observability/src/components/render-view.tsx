@@ -8,7 +8,10 @@ function MessageCards({ messages }: { messages: { content: string; role: string 
         <Fragment key={msg.content}>
           <Card variant="outlined" sx={{ backgroundColor: "#1e1e1e", border: "none" }}>
             <CardContent sx={{ paddingY: 1.5, paddingX: 2 }}>
-              <Typography variant="h1" sx={{ color: "common.white", fontWeight: 500, mb: 2 }}>
+              <Typography
+                variant="h1"
+                sx={{ color: "common.white", fontWeight: 500, fontSize: 30, mb: 2 }}
+              >
                 {msg.role}
               </Typography>
 

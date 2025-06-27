@@ -1,0 +1,37 @@
+rules: |
+  请帮助我生成一个跟 半庄的思考 相关的站点
+
+  ## 结构规划
+  对于结构规划需要生成完整的站点结构，用于开发团队编写页面代码，另外在设计结构时，需要考虑 SEO 优化要求，确保每个页面能在 google 搜索结果中排名靠前。
+
+  ## 页面详情规则
+
+  - 页面详情内容
+
+targetAudience: 软件开发爱好者
+nodeName: 页面
+locale: zh
+
+datasources: |
+  半庄的思考，用于记录半庄的思考、项目、博客等。
+  
+  主要用于更新博客，记录学习和思考，关注领域：AI 应用开发、内容创作、独立开发。
+
+  独立开发项目： NoteSync，是一个浏览器插件，提供在多个社交平台发布笔记的同步功能。
+structurePlan:
+  - title: "首页"
+    description: "欢迎来到半庄的个人空间，这里汇集了他的学习思考、独立项目和最新博客文章。"
+    path: "/index"
+    parentId: null
+  - title: "博客与思考"
+    description: "在这里，你可以找到半庄关于AI应用开发、内容创作和独立开发等领域的最新思考、学习笔记和技术分享。"
+    path: "/blog"
+    parentId: "/index"
+  - title: "独立项目"
+    description: "了解半庄正在进行或已经完成的独立开发项目，特别是NoteSync浏览器插件，它能帮你同步社交平台的笔记。"
+    path: "/projects"
+    parentId: "/index"
+  - title: "关于我"
+    description: "关于半庄的个人介绍，了解他的背景、兴趣和联系方式。"
+    path: "/about"
+    parentId: "/index"

@@ -61,6 +61,10 @@ aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-
 
 # detail lban
 aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md"  --input-structurePlan "@mock-inputs/structure-plan-output-lban.yaml" --format yaml --output "./output-tmp/lban-home.txt" --force
+
+npx aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md"  --input-structurePlan "@mock-inputs/structure-plan-output-lban.yaml" --format yaml --output "./output-tmp/lban-home.txt" --force
+
+npx aigne run --entry-agent "batch-content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/lban-all.txt" --force
 ```
 
 

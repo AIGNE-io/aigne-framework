@@ -21,19 +21,55 @@ input_schema:
       type: string
       description: 结构规划的节点名称
     structurePlan:
+      type: array
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+          description:
+            type: string
+          path:
+            type: string
+            description: 路径，以 RUL 的格式返回，不能为空, 必须以 / 开头，不需要包含语言层级，比如 /zh/about 直接返回 /about
+          parentId:
+            type:
+              - string
+              - 'null'
+        required:
+          - title
+          - description
+          - path
+    title:
       type: string
-      description: 待评估内容
-    currentNode:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-        path:
-          type: string
+    description:
+      type: string
+    path:
+      type: string
+    parentId:
+      type:
+        - string
+        - 'null'
   required:
     - rules
     - datasources
     - structurePlan
-    - currentNode
+output_schema:
+  type: object
+  properties:
+    content:
+      type: string
+    title:
+      type: string
+      description: 当前页面的标题
+    description:
+      type: string
+      description: 当前页面的描述
+    path:
+      type: string
+      description: 当前页面的路径
+  required:
+    - content
+    - title
+    - description
+    - path

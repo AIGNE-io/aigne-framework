@@ -7,3 +7,4 @@ agents:
   - structure-planning.yaml
   - evaluation.yaml
   - content-detail-generator.yaml
+  - batch-content-detail-generator.yaml

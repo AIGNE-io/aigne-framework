@@ -16,9 +16,15 @@
 {{ structurePlan }}
 </structure_plan>
 
-<current_node>
+<current>
+当前{{nodeName}}信息：
+title: {{title}}
+description: {{description}}
+path: {{path}}
+parentId: {{parentId}}
+
 {{ currentNode }}
-</current_node>
+</current>
 
 <rules>
 <user_rules>

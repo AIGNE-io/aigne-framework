@@ -7,6 +7,7 @@ import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
 import { TeamAgent } from "../agents/team-agent.js";
+import { TransformAgent } from "../agents/transform-agent.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
@@ -107,6 +108,13 @@ async function parseAgent(
     }
     case "team": {
       return TeamAgent.from({
+        ...agent,
+        memory,
+        skills,
+      });
+    }
+    case "transform": {
+      return TransformAgent.from({
         ...agent,
         memory,
         skills,

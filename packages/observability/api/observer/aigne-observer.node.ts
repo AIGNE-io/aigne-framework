@@ -1,14 +1,13 @@
-import type { Server } from "node:http";
 import { trace } from "@opentelemetry/api";
 import type { SpanExporter } from "@opentelemetry/sdk-trace-base";
 import getObservabilityDbPath from "../core/db-path.js";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
+import { isBlocklet } from "../core/util.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
 
 export class AIGNEObserver {
   private server: AIGNEObserverOptions["server"];
   private storage: AIGNEObserverOptions["storage"];
-  private serverInstance?: Server;
   private initPort?: number;
   public tracer = trace.getTracer("aigne-tracer");
   public traceExporter: SpanExporter | undefined;
@@ -17,7 +16,7 @@ export class AIGNEObserver {
   constructor(options?: AIGNEObserverOptions) {
     const params = { ...(options ?? {}) };
 
-    if (!params?.storage?.url) {
+    if (!params?.storage?.url && !isBlocklet) {
       params.storage = { url: getObservabilityDbPath() };
     }
 
@@ -43,18 +42,5 @@ export class AIGNEObserver {
     this.traceExporter = await initOpenTelemetry({ dbPath: this.storage.url });
   }
 
-  async close(): Promise<void> {
-    if (typeof window !== "undefined") return;
-    if (!this.serverInstance) return;
-
-    const server = this.serverInstance;
-    await new Promise<void>((resolve, reject) => {
-      server.close((err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-
-    this.serverInstance = undefined;
-  }
+  async close(): Promise<void> {}
 }

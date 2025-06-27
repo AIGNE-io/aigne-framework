@@ -246,6 +246,11 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
                     model as keyof typeof modelPricesAndContextWindow
                   ] && (
                     <Tooltip
+                      slotProps={{
+                        tooltip: {
+                          sx: { bgcolor: "common.white", color: "common.black", boxShadow: 4 },
+                        },
+                      }}
                       title={
                         <ModelInfoTip
                           modelInfo={{
@@ -257,7 +262,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
                         />
                       }
                     >
-                      <InfoIcon sx={{ color: "text.secondary", fontSize: 18 }} />
+                      <InfoIcon sx={{ color: "text.secondary", fontSize: 18, cursor: "pointer" }} />
                     </Tooltip>
                   )}
                 </Box>

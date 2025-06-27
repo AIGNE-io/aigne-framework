@@ -13,7 +13,6 @@ interface CustomDateRangePickerProps {
 
 export default function CustomDateRangePicker({ value, onChange }: CustomDateRangePickerProps) {
   const { locale, t } = useLocaleContext();
-  const maxDate = dayjs().toDate();
   const ref = useRef<HTMLDivElement>(null);
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -33,6 +32,7 @@ export default function CustomDateRangePicker({ value, onChange }: CustomDateRan
         Toast.error("Please select a date range");
         return;
       }
+
       if (
         dayjs(range.startDate).isAfter(range.endDate) ||
         !dayjs(range.startDate).isValid() ||
@@ -64,13 +64,12 @@ export default function CustomDateRangePicker({ value, onChange }: CustomDateRan
       >
         <DateRangePicker
           open
-          maxDate={maxDate}
           initialDateRange={{
             startDate: value[0],
             endDate: value[1],
           }}
           toggle={onTriggerClick}
-          definedRanges={getDefaultRanges(maxDate, locale, t)}
+          definedRanges={getDefaultRanges(dayjs().toDate(), locale, t)}
           onChange={onDateChange}
         />
       </Popover>

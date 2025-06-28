@@ -35,7 +35,7 @@ class HttpExporter implements HttpExporterInterface {
     this._db ??= this.getDb();
   }
 
-  async _upsertSpans(spans: ReadableSpan[]) {
+  async _upsertWithSQLite(spans: ReadableSpan[]) {
     const validatedData = validateTraceSpans(spans);
 
     const db = await this._db;
@@ -63,7 +63,7 @@ class HttpExporter implements HttpExporterInterface {
     }
   }
 
-  async _upsertCallBlocklet(validatedData: TraceInsertOrUpdateData[]) {
+  async _upsertWithBlocklet(validatedData: TraceInsertOrUpdateData[]) {
     const { call } = await import("@blocklet/sdk/lib/component/index.js");
     await call({
       name: "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh",
@@ -81,9 +81,9 @@ class HttpExporter implements HttpExporterInterface {
       const validatedData = validateTraceSpans(spans);
 
       if (isBlocklet) {
-        await this._upsertCallBlocklet(validatedData);
+        await this._upsertWithBlocklet(validatedData);
       } else {
-        await this._upsertSpans(spans);
+        await this._upsertWithSQLite(spans);
       }
 
       resultCallback({ code: ExportResultCode.SUCCESS });
@@ -100,9 +100,9 @@ class HttpExporter implements HttpExporterInterface {
   async insertInitialSpan(span: ReadableSpan) {
     if (isBlocklet) {
       const validatedData = validateTraceSpans([span]);
-      await this._upsertCallBlocklet(validatedData);
+      await this._upsertWithBlocklet(validatedData);
     } else {
-      await this._upsertSpans([span]);
+      await this._upsertWithSQLite([span]);
     }
   }
 }

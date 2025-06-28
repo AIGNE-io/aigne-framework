@@ -1,4 +1,5 @@
 declare module "vite-plugin-blocklet";
+declare module "@abtnode/util/*";
 
 declare namespace Express {
   interface Request {

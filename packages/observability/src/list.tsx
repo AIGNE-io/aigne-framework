@@ -1,3 +1,4 @@
+import dayjs from "@abtnode/util/lib/dayjs";
 import TableSearch from "@arcblock/ux/lib/Datatable/TableSearch";
 import Empty from "@arcblock/ux/lib/Empty";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
@@ -9,8 +10,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
 import { useRafInterval } from "ahooks";
 import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
-import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
 import CustomDateRangePicker from "./components/date-picker.tsx";
@@ -20,6 +20,10 @@ import SwitchComponent from "./components/switch.tsx";
 import { watchSSE } from "./utils/event.ts";
 import { origin } from "./utils/index.ts";
 import { parseDuration } from "./utils/latency.ts";
+
+interface ListRef {
+  refetch: () => void;
+}
 
 interface TracesResponse {
   data: TraceData[];
@@ -33,7 +37,7 @@ interface SearchState {
   dateRange: [Date, Date];
 }
 
-export default function List() {
+const List = forwardRef<ListRef>((_props, ref) => {
   const { t } = useLocaleContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const documentVisibility = useDocumentVisibility();
@@ -107,6 +111,19 @@ export default function List() {
         }
       });
   }, 3000);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useImperativeHandle(
+    ref,
+    () => ({
+      refetch: () => {
+        setTotal(0);
+        setTraces([]);
+        fetchTraces({ page: 0, pageSize: search.pageSize });
+      },
+    }),
+    [search.pageSize],
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -324,4 +341,5 @@ export default function List() {
       />
     </ToastProvider>
   );
-}
+});
+export default List;

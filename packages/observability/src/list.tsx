@@ -8,8 +8,9 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import { DataGrid } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
-import { useRafInterval } from "ahooks";
 import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
+import useLocalStorageState from "ahooks/lib/useLocalStorageState";
+import useRafInterval from "ahooks/lib/useRafInterval";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
@@ -31,8 +32,6 @@ interface TracesResponse {
 }
 
 interface SearchState {
-  page: number;
-  pageSize: number;
   searchText: string;
   dateRange: [Date, Date];
 }
@@ -43,9 +42,14 @@ const List = forwardRef<ListRef>((_props, ref) => {
   const documentVisibility = useDocumentVisibility();
   const [live, setLive] = useState(false);
 
+  const [page, setPage] = useLocalStorageState("observability-page", {
+    defaultValue: {
+      page: 1,
+      pageSize: 20,
+    },
+  });
+
   const [search, setSearch] = useState<SearchState>({
-    page: 1,
-    pageSize: 20,
     searchText: "",
     dateRange: [
       dayjs().subtract(1, "month").startOf("day").toDate(),
@@ -91,13 +95,13 @@ const List = forwardRef<ListRef>((_props, ref) => {
     if (documentVisibility === "visible") {
       setLoading(true);
       fetchTraces({
-        page: search.page - 1,
-        pageSize: search.pageSize,
+        page: page.page - 1,
+        pageSize: page.pageSize,
         searchText: search.searchText,
         dateRange: search.dateRange,
       });
     }
-  }, [search.page, search.pageSize, search.searchText, search.dateRange, documentVisibility]);
+  }, [page.page, page.pageSize, search.searchText, search.dateRange, documentVisibility]);
 
   useRafInterval(() => {
     if (!live) return;
@@ -107,7 +111,7 @@ const List = forwardRef<ListRef>((_props, ref) => {
       .then((res) => res.json() as Promise<{ data: { lastTraceChanged: boolean } }>)
       .then(({ data }) => {
         if (data?.lastTraceChanged) {
-          fetchTraces({ page: 0, pageSize: search.pageSize });
+          fetchTraces({ page: 0, pageSize: page.pageSize });
         }
       });
   }, 3000);
@@ -119,10 +123,10 @@ const List = forwardRef<ListRef>((_props, ref) => {
       refetch: () => {
         setTotal(0);
         setTraces([]);
-        fetchTraces({ page: 0, pageSize: search.pageSize });
+        fetchTraces({ page: 0, pageSize: page.pageSize });
       },
     }),
-    [search.pageSize],
+    [page.pageSize],
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -136,7 +140,7 @@ const List = forwardRef<ListRef>((_props, ref) => {
         const { done, value } = await reader.read();
         if (done) break;
         if (value?.type === "event") {
-          fetchTraces({ page: 0, pageSize: search.pageSize });
+          fetchTraces({ page: 0, pageSize: page.pageSize });
         }
       }
     })();
@@ -144,7 +148,7 @@ const List = forwardRef<ListRef>((_props, ref) => {
     return () => {
       abortController.abort();
     };
-  }, [search.pageSize]);
+  }, [page.pageSize]);
 
   const columns: GridColDef<TraceData>[] = [
     { field: "id", headerName: "ID", width: 160 },
@@ -274,11 +278,11 @@ const List = forwardRef<ListRef>((_props, ref) => {
           rows={traces}
           columns={columns}
           loading={loading}
-          pageSizeOptions={[10, 20, 50]}
+          pageSizeOptions={[10, 20, 50, 100]}
           pagination
-          paginationModel={{ page: search.page - 1, pageSize: search.pageSize }}
+          paginationModel={{ page: page.page - 1, pageSize: page.pageSize }}
           onPaginationModelChange={(model) => {
-            setSearch((x) => ({ ...x, page: model.page + 1, pageSize: model.pageSize }));
+            setPage((x) => ({ ...x, page: model.page + 1, pageSize: model.pageSize }));
           }}
           rowCount={total}
           rowHeight={40}

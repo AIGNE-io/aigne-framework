@@ -96,6 +96,7 @@
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {
+    "@abtnode/util": "^1.16.44",
     "@aigne/sqlite": "workspace:^",
     "@arcblock/did-connect": "^2.13.70",
     "@arcblock/ux": "^2.13.70",
@@ -116,7 +117,6 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
-    "dayjs": "^1.11.13",
     "decimal.js": "^10.5.0",
     "dotenv-flow": "^4.1.0",
     "drizzle-orm": "^0.43.1",

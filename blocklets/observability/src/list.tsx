@@ -10,6 +10,10 @@ export default function ListPage() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     appRef.current?.refetch?.();
+
+    if (!session?.user) {
+      session.login();
+    }
   }, [session?.user]);
 
   return (

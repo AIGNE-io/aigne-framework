@@ -1,3 +1,4 @@
+import dayjs from "@abtnode/util/lib/dayjs";
 import {
   addMonths,
   addWeeks,
@@ -9,7 +10,6 @@ import {
   startOfWeek,
   startOfYear,
 } from "date-fns";
-import dayjs from "dayjs";
 
 export const origin =
   window.blocklet?.prefix ??

@@ -407,9 +407,11 @@ export class AIGNEContext implements Context {
       options.memories = undefined;
     }
 
+    const newContext = options?.newContext === false ? this : this.newContext();
+
     return this.internal.messageQueue.publish(topic, {
       ...toMessagePayload(payload),
-      context: this,
+      context: newContext,
     });
   }) as Context["publish"];
 

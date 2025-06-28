@@ -431,7 +431,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
   async onMessage({ message, context }: MessagePayload) {
     try {
-      await context.invoke(this, message as I);
+      await context.invoke(this, message as I, { newContext: false });
     } catch (error) {
       context.emit("agentFailed", { agent: this, error });
     }
@@ -831,12 +831,21 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     const publishTopics =
       typeof this.publishTopic === "function" ? await this.publishTopic(output) : this.publishTopic;
 
+    const role = this.constructor.name === "UserAgent" ? "user" : "agent";
+
     if (publishTopics?.length) {
-      options.context.publish(publishTopics, {
-        role: this.constructor.name === "UserAgent" ? "user" : "agent",
-        source: this.name,
-        message: output,
-      });
+      const ctx = role === "user" ? options.context.newContext({ reset: true }) : options.context;
+      ctx.publish(
+        publishTopics,
+        {
+          role,
+          source: this.name,
+          message: output,
+        },
+        {
+          newContext: role !== "user",
+        },
+      );
     }
   }
 

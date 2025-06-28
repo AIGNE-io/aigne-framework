@@ -1,6 +1,5 @@
 import Decimal from "decimal.js";
 import { useCallback } from "react";
-import modelPricesAndContextWindow from "../utils/modelPricesAndContextWindow.json";
 
 export default function useGetTokenPrice() {
   const getPrices = useCallback(
@@ -20,7 +19,7 @@ export default function useGetTokenPrice() {
         };
       }
 
-      const price = modelPricesAndContextWindow[model as keyof typeof modelPricesAndContextWindow];
+      const price = (window as any)._modelPricesAndContextWindow?.[model];
       if (!price) {
         return {
           inputCost: new Decimal(0),

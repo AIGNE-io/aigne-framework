@@ -15,7 +15,6 @@ import { useMemo, useState } from "react";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import useSwitchView from "../../hooks/switch-view.tsx";
 import { parseDuration } from "../../utils/latency.ts";
-import modelPricesAndContextWindow from "../../utils/modelPricesAndContextWindow.json";
 import JsonView from "../json-view.tsx";
 import ModelInfoTip from "../model-tip.tsx";
 import RenderView from "../render-view.tsx";
@@ -242,9 +241,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
                 >
                   <Tag>{model}</Tag>
 
-                  {modelPricesAndContextWindow[
-                    model as keyof typeof modelPricesAndContextWindow
-                  ] && (
+                  {(window as any)._modelPricesAndContextWindow?.[model] && (
                     <Tooltip
                       slotProps={{
                         tooltip: {
@@ -254,9 +251,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
                       title={
                         <ModelInfoTip
                           modelInfo={{
-                            ...modelPricesAndContextWindow[
-                              model as keyof typeof modelPricesAndContextWindow
-                            ],
+                            ...(window as any)._modelPricesAndContextWindow?.[model],
                             model,
                           }}
                         />

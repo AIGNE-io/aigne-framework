@@ -1236,9 +1236,6 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
-      dayjs:
-        specifier: ^1.11.13
-        version: 1.11.13
       decimal.js:
         specifier: ^10.5.0
         version: 10.5.0
@@ -1290,6 +1287,9 @@ importers:
       vite-plugin-blocklet:
         specifier: ^0.9.33
         version: 0.9.33(rollup@4.41.1)(vite@6.3.5(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0))
+      vite-plugin-static-copy:
+        specifier: ^3.1.0
+        version: 3.1.0(vite@6.3.5(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0))
       yaml:
         specifier: ^2.7.1
         version: 2.8.0
@@ -7657,6 +7657,10 @@ packages:
     resolution: {integrity: sha512-T8BatKGY+k5rU+Q/GTYgrEf2r4xRMevAN5mtXc2aPc4rS1j3s+vWTaO2Wag94neXuCAUAs8cxBL9EeB5EA6diw==}
     engines: {node: '>=16'}
 
+  p-map@7.0.3:
+    resolution: {integrity: sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA==}
+    engines: {node: '>=18'}
+
   p-queue@6.6.2:
     resolution: {integrity: sha512-RwFpb72c/BhQLEXIZ5K2e+AhgNVmIejGlTgiB9MzZ0e93GRvqZ7uSi0dvRF7/XIXDeNkra2fNHBxTyPDGySpjQ==}
     engines: {node: '>=8'}
@@ -9627,6 +9631,12 @@ packages:
     resolution: {integrity: sha512-F+G3LjiGbG8QpbH9bZ//GSBr9i1InSTkaulfUHFa9jkLqVGORFBoqc2A/Yu5Mmh1kNAbiAeKeK+6aaQUf3x0JA==}
     peerDependencies:
       vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
+
+  vite-plugin-static-copy@3.1.0:
+    resolution: {integrity: sha512-ONFBaYoN1qIiCxMCfeHI96lqLza7ujx/QClIXp4kEULUbyH2qLgYoaL8JHhk3FWjSB4TpzoaN3iMCyCFldyXzw==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    peerDependencies:
+      vite: ^5.0.0 || ^6.0.0 || ^7.0.0
 
   vite@6.3.5:
     resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==}
@@ -17826,6 +17836,8 @@ snapshots:
 
   p-map@6.0.0: {}
 
+  p-map@7.0.3: {}
+
   p-queue@6.6.2:
     dependencies:
       eventemitter3: 4.0.7
@@ -20365,6 +20377,15 @@ snapshots:
       vite: 6.3.5(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0)
     transitivePeerDependencies:
       - rollup
+
+  vite-plugin-static-copy@3.1.0(vite@6.3.5(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0)):
+    dependencies:
+      chokidar: 3.6.0
+      fs-extra: 11.3.0
+      p-map: 7.0.3
+      picocolors: 1.1.1
+      tinyglobby: 0.2.14
+      vite: 6.3.5(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0)
 
   vite@6.3.5(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0):
     dependencies:

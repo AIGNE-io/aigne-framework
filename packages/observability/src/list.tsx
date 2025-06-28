@@ -137,10 +137,23 @@ const List = forwardRef<ListRef>((_props, ref) => {
       .then((res) => res.json() as Promise<{ data: { lastTraceChanged: boolean } }>)
       .then(({ data }) => {
         if (data?.lastTraceChanged) {
-          fetchTraces({ page: 0, pageSize: search.pageSize });
+          fetchTraces({ page: 0, pageSize: page.pageSize });
         }
       });
   }, 3000);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useImperativeHandle(
+    ref,
+    () => ({
+      refetch: () => {
+        setTotal(0);
+        setTraces([]);
+        fetchTraces({ page: 0, pageSize: page.pageSize });
+      },
+    }),
+    [page.pageSize],
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {

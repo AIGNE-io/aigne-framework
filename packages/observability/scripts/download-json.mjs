@@ -1,6 +1,4 @@
-import fs from "node:fs";
-import { writeFile } from "node:fs/promises";
-import https from "node:https";
+import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -9,40 +7,45 @@ const __dirname = path.dirname(__filename);
 
 const srcDir = path.resolve(__dirname, "../api");
 const outDirs = [path.resolve(__dirname, "../lib/cjs"), path.resolve(__dirname, "../lib/esm")];
+const jsonUrl =
+  "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
+const destFile = path.resolve(__dirname, "../api/server/utils/modelPricesAndContextWindow.json");
 
-function copyJsonFiles(src, rel = "") {
+async function copyJsonFiles(src, rel = "") {
   const fullSrc = path.join(src, rel);
-  const entries = fs.readdirSync(fullSrc, { withFileTypes: true });
+  const entries = await fs.readdir(fullSrc, { withFileTypes: true });
 
   for (const entry of entries) {
     const relPath = path.join(rel, entry.name);
     const srcPath = path.join(src, relPath);
 
     if (entry.isDirectory()) {
-      copyJsonFiles(src, relPath);
+      await copyJsonFiles(src, relPath);
     } else if (entry.isFile() && entry.name.endsWith(".json")) {
       for (const outDir of outDirs) {
         const destPath = path.join(outDir, relPath);
-        fs.mkdirSync(path.dirname(destPath), { recursive: true });
-        fs.copyFileSync(srcPath, destPath);
+        await fs.mkdir(path.dirname(destPath), { recursive: true });
+        await fs.copyFile(srcPath, destPath);
         console.log(`Copied: ${srcPath} -> ${destPath}`);
       }
     }
   }
 }
 
-const url =
-  "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
-const dest = path.resolve(__dirname, "../api/server/utils/modelPricesAndContextWindow.json");
+async function downloadJson(url, destPath) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Download failed: ${res.statusText}`);
+  const data = await res.text();
+  await fs.writeFile(destPath, data, "utf8");
+  console.log("Downloaded to", destPath);
+}
 
-https.get(url, (res) => {
-  let data = "";
-  res.on("data", (chunk) => {
-    data += chunk;
-  });
-  res.on("end", async () => {
-    await writeFile(dest, data, "utf8");
-    console.log("Downloaded to", dest);
-    copyJsonFiles(srcDir);
-  });
+async function main() {
+  await downloadJson(jsonUrl, destFile);
+  await copyJsonFiles(srcDir);
+}
+
+main().catch((err) => {
+  console.error("Script failed:", err);
+  process.exit(1);
 });

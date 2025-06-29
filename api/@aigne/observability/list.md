@@ -4,4 +4,4 @@
 
 ### default
 
-> `const` **default**: `ForwardRefExoticComponent`\<`RefAttributes`\<`AppRef`\>\>
+> `const` **default**: `ForwardRefExoticComponent`\<`RefAttributes`\<`ListRef`\>\>

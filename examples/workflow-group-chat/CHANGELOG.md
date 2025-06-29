@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.11.16](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.11.15...example-workflow-group-chat-v1.11.16) (2025-06-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.2
+    * @aigne/cli bumped to 1.15.0
+    * @aigne/core bumped to 1.25.0
+    * @aigne/openai bumped to 0.4.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.9
+
 ## [1.11.15](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.11.14...example-workflow-group-chat-v1.11.15) (2025-06-26)
 
 

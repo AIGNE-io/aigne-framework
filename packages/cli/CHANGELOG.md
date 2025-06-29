@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.14.1...cli-v1.15.0) (2025-06-29)
+
+
+### Features
+
+* **observability:** tune trace ux and supoort incremental exporting ([#184](https://github.com/AIGNE-io/aigne-framework/issues/184)) ([d174188](https://github.com/AIGNE-io/aigne-framework/commit/d174188459c77acb09b5ca040972f83abb067587))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.2
+    * @aigne/anthropic bumped to 0.3.9
+    * @aigne/bedrock bumped to 0.3.9
+    * @aigne/core bumped to 1.25.0
+    * @aigne/deepseek bumped to 0.3.9
+    * @aigne/gemini bumped to 0.3.9
+    * @aigne/observability bumped to 0.2.0
+    * @aigne/ollama bumped to 0.3.9
+    * @aigne/open-router bumped to 0.3.9
+    * @aigne/openai bumped to 0.4.2
+    * @aigne/xai bumped to 0.3.9
+
 ## [1.14.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.14.0...cli-v1.14.1) (2025-06-26)
 
 

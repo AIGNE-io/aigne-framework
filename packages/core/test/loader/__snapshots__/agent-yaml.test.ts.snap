@@ -1,0 +1,148 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadAgentFromYaml should load nested agent correctly 1`] = `
+{
+  "inputSchema": undefined,
+  "instructions": undefined,
+  "name": "test-nested-agent",
+  "outputSchema": undefined,
+  "skills": [
+    {
+      "inputSchema": undefined,
+      "instructions": 
+"You are a helpful assistant that can answer questions and provide information on a wide range of topics.
+Your goal is to assist users in finding the information they need and to engage in friendly conversation.
+"
+,
+      "name": "chat",
+      "outputSchema": undefined,
+      "skills": [
+        {
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "description": "JavaScript code to evaluate",
+                "type": "string",
+              },
+            },
+            "required": [
+              "code",
+            ],
+            "type": "object",
+          },
+          "instructions": undefined,
+          "name": "evaluateJs",
+          "outputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "result": {
+                "description": "Result of the evaluated code",
+              },
+            },
+            "type": "object",
+          },
+          "skills": [],
+        },
+      ],
+    },
+    {
+      "inputSchema": undefined,
+      "instructions": 
+"You are a helper agent to answer everything about chat prompt in AIGNE.
+"
+,
+      "name": "child",
+      "outputSchema": undefined,
+      "skills": [],
+    },
+    {
+      "inputSchema": undefined,
+      "instructions": undefined,
+      "name": "nested-team",
+      "outputSchema": undefined,
+      "skills": [
+        {
+          "inputSchema": undefined,
+          "instructions": 
+"You are a helpful assistant that can answer questions and provide information on a wide range of topics.
+Your goal is to assist users in finding the information they need and to engage in friendly conversation.
+"
+,
+          "name": "chat",
+          "outputSchema": undefined,
+          "skills": [
+            {
+              "inputSchema": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "description": "JavaScript code to evaluate",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "code",
+                ],
+                "type": "object",
+              },
+              "instructions": undefined,
+              "name": "evaluateJs",
+              "outputSchema": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "additionalProperties": false,
+                "properties": {
+                  "result": {
+                    "description": "Result of the evaluated code",
+                  },
+                },
+                "type": "object",
+              },
+              "skills": [],
+            },
+          ],
+        },
+        {
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "message": {
+                "description": "Message to process",
+                "type": "string",
+              },
+            },
+            "required": [
+              "message",
+            ],
+            "type": "object",
+          },
+          "instructions": 
+"You are a helper agent to answer everything about chat prompt in AIGNE.
+"
+,
+          "name": "nested-child",
+          "outputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "response": {
+                "description": "Response from nested child agent",
+                "type": "string",
+              },
+            },
+            "required": [
+              "response",
+            ],
+            "type": "object",
+          },
+          "skills": [],
+        },
+      ],
+    },
+  ],
+}
+`;

@@ -72,8 +72,8 @@
   },
   "dependencies": {
     "@aigne/json-schema-to-zod": "^1.3.3",
-    "@aigne/platform-helpers": "workspace:^",
     "@aigne/observability": "workspace:^",
+    "@aigne/platform-helpers": "workspace:^",
     "@modelcontextprotocol/sdk": "^1.11.0",
     "@types/debug": "^4.1.12",
     "camelize-ts": "^3.0.0",
@@ -82,6 +82,7 @@
     "eventsource-parser": "^3.0.1",
     "fast-deep-equal": "^3.1.3",
     "immer": "^10.1.1",
+    "jsonata": "^2.0.6",
     "mustache": "^4.2.0",
     "nanoid": "^5.1.5",
     "p-retry": "^6.2.1",

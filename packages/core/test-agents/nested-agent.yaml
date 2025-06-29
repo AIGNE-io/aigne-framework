@@ -1,0 +1,36 @@
+type: team
+name: test-nested-agent
+description: Test nested agent
+skills:
+  - chat.yaml
+  - type: ai
+    name: child
+    description: Child agent for testing
+    instructions:
+      url: ./chat-prompt.md
+  - type: team
+    name: nested-team
+    description: Nested team agent for testing
+    skills:
+      - chat.yaml
+      - type: ai
+        name: nested-child
+        description: Nested child agent for testing
+        input_schema:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Message to process
+          required:
+            - message
+        output_schema:
+          type: object
+          properties:
+            response:
+              type: string
+              description: Response from nested child agent
+          required:
+            - response
+        instructions:
+          url: chat-prompt.md

@@ -5,3 +5,30 @@ skills:
   - sandbox.js
   - chat.yaml
 mode: parallel
+input_schema:
+  type: object
+  properties:
+    sections:
+      type: array
+      description: Sections to iterate over
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+          description:
+            type: string
+output_schema:
+  type: object
+  properties:
+    sections:
+      type: array
+      description: Results from each section
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+          description:
+            type: string
+iterate_on: sections

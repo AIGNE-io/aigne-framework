@@ -1,6 +1,6 @@
-***
-
-## labels: \["Get Started"]
+---
+labels: ["Get Started"]
+---
 
 # 入门指南
 

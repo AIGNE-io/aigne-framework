@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="../../_media/logo.svg" alt="AIGNE Logo" width="400"/>
+  <img src="../../logo.svg" alt="AIGNE Logo" width="400"/>
 </p>
 
 <p align="center">
-  🇬🇧 <a href="../../_media/README-1.md">English</a> | 🇨🇳 <a href="../../_media/README.zh-4.md">中文</a>
+  🇬🇧 <a href="./README.md">English</a> | 🇨🇳 <a href="./README.zh.md">中文</a>
 </p>
 
 # AIGNE Observability
 
 A visual tool for monitoring Agent data flow, built on OpenTelemetry. Supports collection of both Trace and Log data. Can be used as a standalone service or integrated into the AIGNE runtime (AIGNE has this module integrated by default).
 
-![](../../_media/list.png)
-![](../../_media/detail.png)
+![](./screenshots/list.png)
+![](./screenshots/detail.png)
 
 ---
 
@@ -52,13 +52,8 @@ npx -y @aigne/example-chat-bot
 npx -y @aigne/example-chat-bot --chat
 ```
 
-View [more examples](../../_media/README-2.md)
+View [more examples](../../examples/README.md)
 
 ### Using as a Blocklet
 
 After installing the [AIGNE Observability Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh), you can use AIGNE Observability directly in the Blocklet environment. All Blocklets using the AIGNE Framework will automatically integrate the observability functionality.
-
-## Modules
-
-- [list](list.md)
-- [translations](translations.md)

@@ -1,6 +1,10 @@
-![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner\&title=AIGNE%20Framework\&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize\&w=160\&h=160\&v=0.4.227)
+<p align="center">
+  <img src="./logo.svg" alt="AIGNE Logo" width="400"/>
+</p>
 
-[English](./README.md) | [中文](./README.zh.md)
+<p align="center">
+  🇬🇧 <a href="./README.md">English</a> | 🇨🇳 <a href="./README.zh.md">中文</a>
+</p>
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
@@ -11,6 +15,10 @@
 ## What is AIGNE Framework
 
 AIGNE Framework is a functional AI application development framework designed to simplify and accelerate the process of building modern applications. It combines functional programming features, powerful artificial intelligence capabilities, and modular design principles to help developers easily create scalable solutions. AIGNE Framework is also deeply integrated with the Blocklet ecosystem, providing developers with a wealth of tools and resources.
+
+## Architecture diagram
+
+![AIGNE Arch](./aigne-arch.png)
 
 ## Key Features
 
@@ -65,26 +73,28 @@ const agentA = AIAgent.from({
   instructions: "You are a helpful agent.",
   outputKey: "A",
   skills: [transferToB],
+  inputKey: "message",
 });
 
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({ model });
 
 const userAgent = aigne.invoke(agentA);
 
-const result1 = await userAgent.invoke("transfer to agent b");
+const result1 = await userAgent.invoke({ message: "transfer to agent b" });
 console.log(result1);
 // Output:
 // {
 //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
 // }
 
-const result2 = await userAgent.invoke("It's a beautiful day");
+const result2 = await userAgent.invoke({ message: "It's a beautiful day" });
 console.log(result2);
 // Output:
 // {

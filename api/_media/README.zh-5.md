@@ -6,51 +6,51 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/transport)](https://www.npmjs.com/package/@aigne/transport)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/transport)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-**English** | [中文](../../_media/README.zh-5.md)
+[English](README.md) | **中文**
 
-AIGNE Transport SDK providing HTTP client and server implementations for communication between AIGNE components within the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework).
+AIGNE Transport SDK，为 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework) 中的 AIGNE 组件之间的通信提供 HTTP 客户端和服务器实现。
 
-## Introduction
+## 简介
 
-`@aigne/transport` provides a robust communication layer for AIGNE components, enabling seamless interaction between different parts of your AI applications. This package offers both HTTP client and server implementations that adhere to a consistent protocol, making it easy to build distributed AI systems with the AIGNE Framework.
+`@aigne/transport` 为 AIGNE 组件提供了一个强大的通信层，使 AI 应用程序的不同部分之间能够无缝交互。该包提供了遵循一致协议的 HTTP 客户端和服务器实现，使用 AIGNE 框架构建分布式 AI 系统变得简单。
 
-## Features
+## 特性
 
-- **HTTP Client Implementation**: Easy-to-use client for communicating with AIGNE servers
-- **HTTP Server Implementation**: Flexible server implementation that integrates with popular Node.js frameworks
-- **Framework Agnostic**: Supports Express, Hono, and other Node.js HTTP frameworks
-- **Streaming Support**: First-class support for streaming responses
-- **Type Safety**: Comprehensive TypeScript typings for all APIs
-- **Error Handling**: Robust error handling with detailed error messages
-- **Middleware Support**: Compatible with common HTTP middleware like compression
+* **HTTP 客户端实现**：易于使用的客户端，用于与 AIGNE 服务器通信
+* **HTTP 服务器实现**：灵活的服务器实现，可与流行的 Node.js 框架集成
+* **框架无关**：支持 Express、Hono 和其他 Node.js HTTP 框架
+* **流式响应支持**：对流式响应的一流支持
+* **类型安全**：为所有 API 提供全面的 TypeScript 类型定义
+* **错误处理**：健壮的错误处理机制，提供详细的错误信息
+* **中间件支持**：兼容常见的 HTTP 中间件，如压缩中间件
 
-## Installation
+## 安装
 
-### Using npm
+### 使用 npm
 
 ```bash
 npm install @aigne/transport @aigne/core
 ```
 
-### Using yarn
+### 使用 yarn
 
 ```bash
 yarn add @aigne/transport @aigne/core
 ```
 
-### Using pnpm
+### 使用 pnpm
 
 ```bash
 pnpm add @aigne/transport @aigne/core
 ```
 
-## Basic Usage
+## 基本用法
 
-### Server Usage
+### 服务端用法
 
-You can use the AIGNE HTTP server with either Express or Hono frameworks.
+AIGNE HTTP 服务器可用于 Express 或 Hono 框架。
 
-#### Express Example
+#### Express 示例
 
 ```typescript file="test/http-server/http-server.test.ts" region="example-aigne-server-express"
 import { AIAgent, AIGNE } from "@aigne/core";
@@ -87,7 +87,7 @@ const response = await client.invoke("chat", { $message: "hello" });
 console.log(response); // Output: {$message: "Hello world!"}
 ```
 
-#### Hono Example
+#### Hono 示例
 
 ```typescript file="test/http-server/http-server.test.ts" region="example-aigne-server-hono"
 import { AIAgent, AIGNE } from "@aigne/core";
@@ -124,7 +124,7 @@ const response = await client.invoke("chat", { $message: "hello" });
 console.log(response); // Output: {$message: "Hello world!"}
 ```
 
-### HTTP Client
+### HTTP 客户端
 
 ```typescript file="test/http-client/http-client.test.ts" region="example-aigne-client-simple"
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
@@ -136,7 +136,7 @@ const response = await client.invoke("chat", { $message: "hello" });
 console.log(response); // Output: {$message: "Hello world!"}
 ```
 
-### Streaming Responses
+### 流式响应
 
 ```typescript file="test/http-client/http-client.test.ts" region="example-aigne-client-streaming"
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
@@ -157,11 +157,6 @@ for await (const chunk of stream) {
 console.log(text); // Output: "Hello world!"
 ```
 
-## License
+## 许可证
 
 Elastic-2.0
-
-## Modules
-
-- [http-server](http-server.md)
-- [http-client](http-client.md)

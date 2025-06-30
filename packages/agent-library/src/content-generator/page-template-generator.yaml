@@ -55,35 +55,6 @@ input_schema:
       description: 当前页面需要展示的信息
     componentList:
       type: string
-    allComponents:
-      type: object
-      properties:
-        basicComponents:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-              name:
-                type: string
-              component:
-                type: string
-              description:
-                type: string
-        customComponents:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-              name:
-                type: string
-              component:
-                type: string
-              description:
-                type: string
   required:
     - rules
     - datasources

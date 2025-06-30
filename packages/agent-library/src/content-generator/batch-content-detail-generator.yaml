@@ -3,6 +3,8 @@ name: batch-content-detail-generator
 description: 批量生成内容详情
 skills:
   - content-detail-generator.yaml
+  - page-template-generator.yaml
+  - upload-template.mjs
 input_schema:
   type: object
   properties:

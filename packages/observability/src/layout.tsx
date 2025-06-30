@@ -50,7 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         description: t("dashboardDescription"),
         addons: nodes,
         logo: (
-          <Box component="img" src={theme.palette.mode === "dark" ? LogoWhite : Logo} alt="Aigne" />
+          <Box component="img" src={theme.palette.mode === "dark" ? LogoWhite : Logo} alt="AIGNE" />
         ),
       }}
       fullWidth

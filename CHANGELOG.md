@@ -17,7 +17,7 @@
 
 ### Bug Fixes
 
-* agine cli not found package ([#185](https://github.com/AIGNE-io/aigne-framework/issues/185)) ([5d98b61](https://github.com/AIGNE-io/aigne-framework/commit/5d98b6158f1e43e049a3a51a69bab88092bf1c92))
+* aigne cli not found package ([#185](https://github.com/AIGNE-io/aigne-framework/issues/185)) ([5d98b61](https://github.com/AIGNE-io/aigne-framework/commit/5d98b6158f1e43e049a3a51a69bab88092bf1c92))
 
 ## [1.26.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.25.2...aigne-framework-v1.26.0) (2025-06-26)
 

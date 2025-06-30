@@ -50,12 +50,17 @@ export default function CustomDateRangePicker({ value, onChange }: CustomDateRan
 
   return (
     <>
-      <Typography ref={ref} component="div" color="text.secondary" mb={0}>
+      <Typography
+        ref={ref}
+        component="div"
+        sx={{
+          color: "text.secondary",
+          mb: 0
+        }}>
         <Button onClick={onTriggerClick} variant="outlined" size="small" color="inherit">
           {formatToDate(value[0], locale)} - {formatToDate(value[1], locale)}
         </Button>
       </Typography>
-
       <Popover
         open={open}
         anchorEl={anchorEl}

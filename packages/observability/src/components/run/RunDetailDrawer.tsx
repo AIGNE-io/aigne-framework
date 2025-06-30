@@ -139,6 +139,7 @@ export default function RunDetailDrawer({
               px: 2,
               borderRight: (theme) => `1px solid ${theme.palette.divider}`,
               minWidth: 300,
+              overflow: "auto",
             }}
           >
             <TraceItemList
@@ -176,7 +177,9 @@ export default function RunDetailDrawer({
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { width: "85vw", p: 0, boxSizing: "border-box" } }}
+      slotProps={{
+        paper: { sx: { width: "85vw", p: 0, boxSizing: "border-box" } },
+      }}
     >
       {renderContent()}
     </Drawer>

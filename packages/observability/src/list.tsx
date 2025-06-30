@@ -11,7 +11,7 @@ import type { GridColDef } from "@mui/x-data-grid";
 import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
 import useLocalStorageState from "ahooks/lib/useLocalStorageState";
 import useRafInterval from "ahooks/lib/useRafInterval";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
 import CustomDateRangePicker from "./components/date-picker.tsx";
@@ -36,7 +36,7 @@ interface SearchState {
   dateRange: [Date, Date];
 }
 
-const List = forwardRef<ListRef>((_props, ref) => {
+const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const { t } = useLocaleContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const documentVisibility = useDocumentVisibility();
@@ -371,5 +371,5 @@ const List = forwardRef<ListRef>((_props, ref) => {
       />
     </ToastProvider>
   );
-});
+};
 export default List;

@@ -64,12 +64,13 @@ function TraceItem({
       onClick={() => onSelect?.()}
     >
       <Box
-        display="flex"
-        alignItems="center"
-        flexWrap="nowrap"
-        justifyContent="space-between"
-        gap={1}
-      >
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "nowrap",
+          justifyContent: "space-between",
+          gap: 1
+        }}>
         <Typography
           sx={{
             flex: 1,
@@ -131,13 +132,14 @@ type TraceStep = {
   start?: number;
   run?: TraceData;
   agentTag?: string;
+  totalDuration?: number;
   status?: {
     code: number;
     message: string;
   };
 };
 
-export function annotateTraceSteps({
+export function formatTraceStepsAndTotalDuration({
   steps,
   start = 0,
   selectedTrace,
@@ -155,16 +157,29 @@ export function annotateTraceSteps({
       step.startTime &&
       Math.abs(step.startTime - (steps[index + 1].startTime ?? 0)) <= 1;
 
-    const annotated: TraceStep = {
+    let children: TraceStep[] | undefined;
+    let childrenTotal = 0;
+
+    if (step.children?.length) {
+      children = formatTraceStepsAndTotalDuration({
+        steps: step.children,
+        start: current,
+        selectedTrace,
+      });
+      childrenTotal = children.reduce((sum, c) => sum + (c.totalDuration ?? 0), 0);
+    }
+
+    const duration = parseDurationMs(step.startTime, step.endTime);
+    const totalDuration = children ? childrenTotal : duration;
+    const annotated = {
       ...step,
       selected: step.id === selectedTrace?.id,
       start: current,
-      duration: parseDurationMs(step.startTime, step.endTime),
-      children: step.children
-        ? annotateTraceSteps({ steps: step.children, start: current, selectedTrace })
-        : undefined,
+      duration,
+      children,
       run: step,
       agentTag: step.attributes?.agentTag,
+      totalDuration,
     };
 
     if (!isSameStartTimeWithNextStep) {
@@ -187,7 +202,7 @@ export function renderTraceItems({
   totalDuration: number;
   depth?: number;
   onSelect?: (step?: TraceData) => void;
-}): ReactElement[] {
+}): ReactElement<any>[] {
   return items.flatMap((item) => [
     <TraceItem
       key={`${item.name}-${item.duration}-${item.agentTag}-${traceId}`}
@@ -224,22 +239,28 @@ export default function TraceItemList({
   onSelect?: (step?: TraceData) => void;
   selectedTrace?: TraceData | null;
 }) {
-  const annotatedSteps = annotateTraceSteps({ steps, start: 0, selectedTrace });
+  const traceSteps = formatTraceStepsAndTotalDuration({ steps, start: 0, selectedTrace });
   const { t } = useLocaleContext();
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={2}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 1,
+          mb: 2
+        }}>
         <Typography
           sx={{
+            fontWeight: 500,
             flex: 1,
             minWidth: 0,
             whiteSpace: "nowrap",
             overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-          fontWeight={500}
-        >
+            textOverflow: "ellipsis"
+          }}>
           {t("agentName")}
         </Typography>
 
@@ -255,11 +276,10 @@ export default function TraceItemList({
           {t("duration")}
         </Box>
       </Box>
-
       {renderTraceItems({
         traceId,
-        items: annotatedSteps,
-        totalDuration: annotatedSteps[0].duration,
+        items: traceSteps,
+        totalDuration: traceSteps[0]?.totalDuration ?? 0,
         depth: 0,
         onSelect,
       })}

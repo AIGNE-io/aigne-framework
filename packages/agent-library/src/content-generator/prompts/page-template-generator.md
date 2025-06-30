@@ -137,36 +137,29 @@ gridSettings:
 
 </layout_block>
 
-<text_block>
-用于显示文本信息的组件，如标题、副标题、描述等信息都可以使用 text-block 组件显示。
-通过设置样式，来达到不同的展示效果。
-</text_block>
-
-<image_block>
-用于展示图片的组件，比如图片、icon，提供类似 HTML Img 标签的功能。
-可以通过设置 layout-block 组件中的 config.backgroundSectionId 为图片组件的 id ，来实现设置背景图片的功能。
-</image_block>
-
-<button_block>
-按钮组件，可以通过属性配置显示主按钮、次按钮。
-提供类似 HTML 中 button 标签的功能，对 MUI 组件库中 Button 组件的封装。
-</button_block>
 </components>
+
+<user_page_rules>
+{{pageRules}}
+</user_page_rules>
 
 <rules>
 目标受众：{{targetAudience}}
 
-- 必须完整、合理地展示当前页面需要展示的所有信息,，不能遗漏。
+- 必须完整、合理地展示当前页面需要展示的所有信息,不能遗漏。
 - 可以参考 <data_sources> 中的信息做内容规划，但是不要展示不属于当前页面的信息，避免和其他页面展示重复的内容
 - 只能使用提供的组件，不能创造不存在的组件。
-- 页面主结构优先用 layout-block 组件搭建，其他组件嵌套其中。
 - 结构要有层级，分区清晰，内容分布合理。
 - 输出必须严格遵循 pages-kit YAML 格式，所有字段（如 id、name、component、config、sections 等）必须为英文。
 - 每个 section/component 必须有唯一 id 和有意义的英文 name。
 - layout 和 gridSettings 要合理分配，体现网页设计最佳实践。
+- 只有当两个组件并列显示、将组件设置为背景等需要组合组件的场景下使用 layout-block 组件
+- 组件普通的上下布局，直接添加多为多个 section 即可
 - 思考用 HTML 设计页面时合理的布局，以此为参考，使用提供的组件进行实现。
 - 只输出 YAML，不要输出其他内容或注释。
 - 网页中展示的文案要精简有吸引，避免出现大段的描述
+- 网页展示的内容要丰富，你可以基于当前页面计划展示的内容去扩写出打动用户的内容，但不能凭空创造虚假的内容。
+- 输出使用用户语言 {{locale}}
 </rules>
 
 <output_schema>
@@ -176,9 +169,11 @@ gridSettings:
 id: string # 必需 - 页面唯一标识符，16位随机字符串，不需要语意化，需要乱序字母和数字
 createdAt: string # 必需 - 模板创建时间戳，可以使用当前时间
 updatedAt: string # 必需 - 模板最后更新时间戳，可以使用当前时间
+slug: string # 必须 - 当前页面 path
 isPublic: boolean # 必需 - 是否公开访问
 meta?: PageMeta # 可选 - 页面元信息
 sections: Section[] # 必需 - 组件定义结构
+dataSource: object # 所有 section 展示数据，拉平存储，key 为 section 的 id
 ```
 页面元信息 (PageMeta)
 
@@ -199,10 +194,70 @@ meta?:
 sections:
   - id: string # 必需 - 组件实例唯一标识符，16位随机字符串，不需要语意化，需要乱序字母和数字
     name: string # 必需 - 组件显示名称（用于编辑器）, 请不要使用中文
-    component: ComponentType # 必需 - 组件类型标识符
-    config?: ComponentConfig # 可选 - 组件特定配置对象，对于 layout-block 和 custom-component 组件，config 字段是必须的
-    sections: Section[] # 可选 - 嵌套子组件（仅 layout-block 可用）
+    component: ComponentType # 必需 - 组件类型标识符，如果是基础组件，component=基础组件名称，如：layout-block 。如果组件自定义组件，component=custom-component
+    config?: ComponentConfig 
+    # 可选 - 组件特定配置对象,不存储组件展示的数据，对于 layout-block 和 custom-component 组件，config 字段是必须的
+    # layout-block 时，config 中需要存储 gridSettings 信息
+    # custom-component 时，config 中需要存储自定义组件的 id、name ，{ componentId: id, componentName: name }
+    sections: Section[] # 可选 - 嵌套子组件（仅 layout-block 可用）,嵌套 section 的 id ,和外层 id 要求相同
 ```
+
+组件展示数据 （dataSource）
+参考格式：
+```yaml
+dataSource:
+  kcj4afxayxk15xn9:  # 对象的 key 是 section 的 id
+    properties: # properties 中的属性对应自定义组件支持的 properties
+      gs1rn5jmxfvpxptx: # properties 第一级的属性为自定义组件 property 的 id
+        value: AIGNE Framework # value 是这个属性展示的值
+      9ajrz12ik7esfk1z:
+        value: AIGNE Framework 是一个功能型 AI 应用开发框架
+      600vmg720dw3eyfw:
+        value: []
+      n44a1rovulmx6nee:
+        value: feature
+      tquwqv8t7svabmwk:
+        value: # 当属性存在 subProperties 的时候，比如属性是对象或数组，value 的值也是对象或数据，结构参考自定义组件支持的属性
+          - title: 模块化设计
+            description: description
+            image:
+              url: https://bbqa5koxxgfrmnxthvqcjsidwh3xv2qiip4el34s44q.did.abtnet.io/image-bin/uploads/317d48d990bc14bcd3aa4529ea82f587.png
+          - title: TypeScript 支持
+            description: description
+            image:
+              url: https://bbqa5koxxgfrmnxthvqcjsidwh3xv2qiip4el34s44q.did.abtnet.io/image-bin/uploads/317d48d990bc14bcd3aa4529ea82f587.png
+          - title: Blocklet 生态系统集成
+            description: description
+            image:
+              url: https://bbqa5koxxgfrmnxthvqcjsidwh3xv2qiip4el34s44q.did.abtnet.io/image-bin/uploads/317d48d990bc14bcd3aa4529ea82f587.png
+      0hyqs3rin5nq97ab:
+        value: light
+  qzwe3mult4o1oqqd:
+    properties:
+      600vmg720dw3eyfw:
+        value: []
+      0hyqs3rin5nq97ab:
+        value: dark
+      n44a1rovulmx6nee:
+        value: feature
+      gs1rn5jmxfvpxptx:
+        value: 功能特性
+      tquwqv8t7svabmwk:
+        value:
+          - title: Small & fast
+            description: Spawn 1000s of Agents without breaking a sweat.
+            image:
+              url: https://source.unsplash.com/random/800x600?tech
+          - title: Model agnostic
+            description: Any model, any provider. No lock-in
+            image:
+              url: https://source.unsplash.com/random/800x600?business
+          - title: Technology agnostic
+            description: Bring your own infrastructure. Build future-proof agents.
+            image:
+              url: https://source.unsplash.com/random/800x600?digital
+```
+
 
 参考输出格式：
 

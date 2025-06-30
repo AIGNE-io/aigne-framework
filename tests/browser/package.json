@@ -1,5 +1,5 @@
 {
-  "name": "@aigne/example-browser",
+  "name": "@aigne/test-browser",
   "version": "0.0.1",
   "description": "A demonstration of using AIGNE Framework in the browser",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",

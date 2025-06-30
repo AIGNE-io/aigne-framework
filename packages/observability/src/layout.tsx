@@ -7,8 +7,8 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { useMemo } from "react";
 
-import LogoWhite from "./icons/logo-white.svg";
-import Logo from "./icons/logo.svg";
+import LogoWhite from "./icons/logo-white.svg?url";
+import Logo from "./icons/logo.svg?url";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useLocaleContext();

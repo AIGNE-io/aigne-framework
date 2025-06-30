@@ -29,7 +29,7 @@ function TraceItem({
   status,
   agentTag,
 }: TraceItemProps) {
-  const widthPercent = (duration / totalDuration) * 100;
+  const widthPercent = Math.min((duration / totalDuration) * 100 || 0, 100);
   const marginLeftPercent = (start / totalDuration) * 100;
   const { t } = useLocaleContext();
 

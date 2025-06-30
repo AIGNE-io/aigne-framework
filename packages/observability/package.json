@@ -20,7 +20,8 @@
     "lib/esm",
     "LICENSE",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "screenshots"
   ],
   "type": "module",
   "main": "./lib/cjs/index.js",

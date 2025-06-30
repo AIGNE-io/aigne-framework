@@ -1,6 +1,6 @@
 # Chatbot Example
 
-This example demonstrates how to create and run an agent-based chatbot using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/docs/cli.md). The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
+This example demonstrates how to create and run an agent-based chatbot using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ## Prerequisites
 

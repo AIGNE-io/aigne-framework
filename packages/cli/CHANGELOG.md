@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.15.0...cli-v1.16.0) (2025-06-30)
+
+
+### Features
+
+* **cli:** auto-load dotenv files for AIGNE CLI ([#192](https://github.com/AIGNE-io/aigne-framework/issues/192)) ([56d5632](https://github.com/AIGNE-io/aigne-framework/commit/56d5632ba427a1cf39235bcd1c30df3bc60643f6))
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.3
+    * @aigne/anthropic bumped to 0.3.10
+    * @aigne/bedrock bumped to 0.3.10
+    * @aigne/core bumped to 1.26.0
+    * @aigne/deepseek bumped to 0.3.10
+    * @aigne/gemini bumped to 0.3.10
+    * @aigne/observability bumped to 0.3.0
+    * @aigne/ollama bumped to 0.3.10
+    * @aigne/open-router bumped to 0.3.10
+    * @aigne/openai bumped to 0.4.3
+    * @aigne/xai bumped to 0.3.10
+
 ## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.14.1...cli-v1.15.0) (2025-06-29)
 
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.28.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.27.0...aigne-framework-v1.28.0) (2025-06-30)
+
+
+### Features
+
+* **cli:** auto-load dotenv files for AIGNE CLI ([#192](https://github.com/AIGNE-io/aigne-framework/issues/192)) ([56d5632](https://github.com/AIGNE-io/aigne-framework/commit/56d5632ba427a1cf39235bcd1c30df3bc60643f6))
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
 ## [1.27.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.26.1...aigne-framework-v1.27.0) (2025-06-29)
 
 

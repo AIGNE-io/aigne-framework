@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.11.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.10.5...example-chat-bot-v1.11.0) (2025-06-30)
+
+
+### Features
+
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.16.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.10
+
 ## [1.10.5](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.10.4...example-chat-bot-v1.10.5) (2025-06-29)
 
 

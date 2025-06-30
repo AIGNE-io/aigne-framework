@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-v0.2.0...observability-v0.3.0) (2025-06-30)
+
+
+### Features
+
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
 ## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-v0.1.3...observability-v0.2.0) (2025-06-29)
 
 

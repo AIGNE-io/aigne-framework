@@ -12,6 +12,20 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.26.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.25.0...core-v1.26.0) (2025-06-30)
+
+
+### Features
+
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability bumped to 0.3.0
+
 ## [1.25.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.24.1...core-v1.25.0) (2025-06-29)
 
 

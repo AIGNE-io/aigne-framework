@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.5.5...example-memory-v0.6.0) (2025-06-30)
+
+
+### Features
+
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.3
+    * @aigne/cli bumped to 1.16.0
+    * @aigne/core bumped to 1.26.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.10
+
 ## [0.5.5](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.5.4...example-memory-v0.5.5) (2025-06-29)
 
 

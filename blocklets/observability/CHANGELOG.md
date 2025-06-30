@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.4.0...blocklet-observability-v1.5.0) (2025-06-30)
+
+
+### Features
+
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.26.0
+    * @aigne/observability bumped to 0.3.0
+    * @aigne/openai bumped to 0.4.3
+    * @aigne/transport bumped to 0.6.3
+
 ## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.3.0...blocklet-observability-v1.4.0) (2025-06-29)
 
 

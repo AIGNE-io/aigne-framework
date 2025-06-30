@@ -64,7 +64,7 @@ aigne test [path]
 aigne serve [path] --mcp
 
 # 启动 observability 服务器
-aigne observability [option]
+aigne observe [option]
 ```
 
 ## 创建命令 (create)
@@ -142,10 +142,10 @@ aigne serve path/to/agents --mcp
 
 ```bash
 # 在默认端口 7890 启动 Observability 服务器
-aigne observability
+aigne observe
 
 # 在指定端口启动 Observability 服务器
-aigne observability --port 3001
+aigne observe --port 3001
 ```
 
 ## 协议

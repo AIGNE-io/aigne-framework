@@ -17,6 +17,7 @@ import { joinURL, withQuery } from "ufo";
 import CustomDateRangePicker from "./components/date-picker.tsx";
 import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx";
 import type { TraceData } from "./components/run/types.ts";
+import Status from "./components/status.tsx";
 import SwitchComponent from "./components/switch.tsx";
 import { watchSSE } from "./utils/event.ts";
 import { origin } from "./utils/index.ts";
@@ -177,14 +178,15 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   }, [page.pageSize]);
 
   const columns: GridColDef<TraceData>[] = [
-    { field: "id", headerName: "ID", width: 160 },
-    { field: "name", headerName: t("agentName"), minWidth: 150 },
+    { field: "id", headerName: "ID", width: 160, sortable: false },
+    { field: "name", headerName: t("agentName"), minWidth: 150, sortable: false },
     {
       field: "input",
       headerName: t("input"),
       flex: 1,
       minWidth: 120,
       valueGetter: (_, row) => JSON.stringify(row.attributes?.input),
+      sortable: false,
     },
     {
       field: "output",
@@ -192,6 +194,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       flex: 1,
       minWidth: 120,
       valueGetter: (_, row) => JSON.stringify(row.attributes?.output),
+      sortable: false,
     },
     {
       field: "latency",
@@ -200,13 +203,15 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       align: "right",
       headerAlign: "right",
       valueGetter: (_, row) => parseDuration(row.startTime, row.endTime),
+      sortable: false,
     },
     {
       field: "status",
       headerName: t("status"),
-      minWidth: 100,
+      minWidth: 150,
       align: "center",
       headerAlign: "center",
+      sortable: false,
       renderCell: ({ row }) => {
         const map: Record<
           number,
@@ -227,13 +232,29 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
         };
 
         return (
-          <Chip
-            label={map[row.status?.code as keyof typeof map]?.label ?? t("unknown")}
-            size="small"
-            color={map[row.status?.code as keyof typeof map]?.color ?? "default"}
-            variant="outlined"
-            sx={{ height: 21, ml: 1 }}
-          />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
+              height: 40,
+            }}
+          >
+            {row.status?.code === 0 ? (
+              <Status />
+            ) : (
+              <Box sx={{ width: 6, height: 6, borderRadius: "50%" }} />
+            )}
+
+            <Chip
+              label={map[row.status?.code as keyof typeof map]?.label ?? t("unknown")}
+              size="small"
+              color={map[row.status?.code as keyof typeof map]?.color ?? "default"}
+              variant="outlined"
+              sx={{ height: 21 }}
+            />
+          </Box>
         );
       },
     },
@@ -324,6 +345,9 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             });
           }}
           disableRowSelectionOnClick
+          disableColumnFilter
+          disableColumnMenu
+          disableColumnResize
           sx={{
             cursor: "pointer",
             minHeight: 500,

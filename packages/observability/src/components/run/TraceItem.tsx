@@ -2,6 +2,7 @@ import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { Box, Card, LinearProgress, Tooltip, Typography } from "@mui/material";
 import type { ReactElement } from "react";
 import { parseDurationMs } from "../../utils/latency.ts";
+import Status from "../status.tsx";
 import { AgentTag } from "./AgentTag.tsx";
 import type { TraceData } from "./types.ts";
 
@@ -38,7 +39,7 @@ function TraceItem({
     }
 
     if (status === 0) {
-      return "warning.main";
+      return "warning.light";
     }
 
     if (status === 1) {
@@ -69,19 +70,16 @@ function TraceItem({
           alignItems: "center",
           flexWrap: "nowrap",
           justifyContent: "space-between",
-          gap: 1
-        }}>
-        <Typography
-          sx={{
-            flex: 1,
-            minWidth: 0,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {name}
-        </Typography>
+          gap: 1,
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1, minWidth: 0 }}>
+          <Typography sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {name}
+          </Typography>
+
+          {status === 0 && <Status />}
+        </Box>
 
         <Box sx={{ mr: 2 }}>
           <AgentTag agentTag={agentTag} />
@@ -250,8 +248,9 @@ export default function TraceItemList({
           alignItems: "center",
           justifyContent: "space-between",
           gap: 1,
-          mb: 2
-        }}>
+          mb: 2,
+        }}
+      >
         <Typography
           sx={{
             fontWeight: 500,
@@ -259,8 +258,9 @@ export default function TraceItemList({
             minWidth: 0,
             whiteSpace: "nowrap",
             overflow: "hidden",
-            textOverflow: "ellipsis"
-          }}>
+            textOverflow: "ellipsis",
+          }}
+        >
           {t("agentName")}
         </Typography>
 

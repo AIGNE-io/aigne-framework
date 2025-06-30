@@ -54,9 +54,10 @@ const SwitchComponent = ({ ...props }: { live: boolean; setLive: (live: boolean)
             sx={{
               mr: 1,
               fontSize: 14,
-              color: "text.hint",
-              fontWeight: 400
-            }}>
+              color: live ? "text.primary" : "text.hint",
+              fontWeight: 400,
+            }}
+          >
             {live ? t("liveUpdatesOn") : t("liveUpdatesOff")}
           </Box>
         ),

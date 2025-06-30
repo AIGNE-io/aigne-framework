@@ -15,7 +15,7 @@ import traceRouter from "./routes/trace.js";
 
 const sse = new SSE();
 
-dotenv.config();
+dotenv.config({ silent: true });
 
 const expressMiddlewareSchema = z
   .function()

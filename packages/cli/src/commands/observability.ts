@@ -22,14 +22,14 @@ const DEFAULT_PORT = () =>
   );
 
 export function createObservabilityCommand(): Command {
-  return new Command("observability")
+  return new Command("observe")
     .description("Start the observability server")
     .option(
       "--host <host>",
-      "Host to run the MCP server on, use 0.0.0.0 to publicly expose the server",
+      "Host to run the observability server on, use 0.0.0.0 to publicly expose the server",
       "localhost",
     )
-    .option("--port <port>", "Port to run the MCP server on", (s) => Number.parseInt(s))
+    .option("--port <port>", "Port to run the observability server on", (s) => Number.parseInt(s))
     .action(async (options: ServeMCPOptions) => {
       const port = await detectPort(options.port || DEFAULT_PORT());
       const dbUrl = getObservabilityDbPath();

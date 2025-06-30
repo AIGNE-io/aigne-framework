@@ -319,13 +319,13 @@ const getRunMessages = ({
           role: "assistant",
           content: msg.toolCalls.map(
             (i) =>
-              ({
+              (({
                 toolUse: {
                   toolUseId: i.id,
                   name: i.function.name,
                   input: i.function.arguments,
-                },
-              }) as ContentBlock.ToolUseMember,
+                }
+              }) as ContentBlock.ToolUseMember),
           ),
         });
       } else if (msg.content) {

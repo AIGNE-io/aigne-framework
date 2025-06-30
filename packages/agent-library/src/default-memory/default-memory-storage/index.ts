@@ -116,12 +116,10 @@ export class DefaultMemoryStorage extends MemoryStorage {
   }
 
   protected segment(str: string): string[] {
-    return (
-      Array.from(new Intl.Segmenter(undefined, { granularity: "word" }).segment(str))
-        .map((i) => i.segment)
-        // Remove non-alphanumeric characters and trim whitespace
-        .map((i) => i.replace(/[^\p{L}\p{N}\s]/gu, "").trim())
-        .filter(Boolean)
-    );
+    return (Array.from(new Intl.Segmenter(undefined, { granularity: "word" }).segment(str))
+      .map((i) => i.segment)
+      // Remove non-alphanumeric characters and trim whitespace
+      .map((i) => i.replace(/[^\p{L}\p{N}\s]/gu, "").trim())
+      .filter(Boolean));
   }
 }

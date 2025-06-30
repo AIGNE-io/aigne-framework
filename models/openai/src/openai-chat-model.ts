@@ -421,8 +421,9 @@ export async function contentsFromInputMessages(
 ): Promise<ChatCompletionMessageParam[]> {
   return messages.map(
     (i) =>
-      ({
+      (({
         role: ROLE_MAP[i.role],
+
         content:
           typeof i.content === "string"
             ? i.content
@@ -439,6 +440,7 @@ export async function contentsFromInputMessages(
                   }
                 })
                 .filter(isNonNullable),
+
         tool_calls: i.toolCalls?.map((i) => ({
           ...i,
           function: {
@@ -446,9 +448,10 @@ export async function contentsFromInputMessages(
             arguments: JSON.stringify(i.function.arguments),
           },
         })),
+
         tool_call_id: i.toolCallId,
-        name: i.name,
-      }) as ChatCompletionMessageParam,
+        name: i.name
+      }) as ChatCompletionMessageParam),
   );
 }
 

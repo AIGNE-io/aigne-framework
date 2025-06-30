@@ -3,10 +3,15 @@ import Dashboard from "@arcblock/ux/lib/Layout/dashboard";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import LocaleSelector from "@arcblock/ux/lib/Locale/selector";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 import { useMemo } from "react";
+import logoWhiteIcon from "./icons/logo-white.svg?url";
+import logoIcon from "./icons/logo.svg?url";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useLocaleContext();
+  const theme = useTheme();
 
   const renderAddons = () => {
     const addonsArray = [];
@@ -43,7 +48,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         brand: t("dashboardTitle"),
         description: t("dashboardDescription"),
         addons: nodes,
-        logo: <img src="https://www.aigne.io/.well-known/service/blocklet/logo" alt="Aigne" />,
+        logo: (
+          <Box
+            component="img"
+            src={theme.palette.mode === "dark" ? logoWhiteIcon : logoIcon}
+            alt="Aigne"
+          />
+        ),
       }}
       fullWidth
       legacy={false}

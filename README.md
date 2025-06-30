@@ -17,6 +17,7 @@
 AIGNE Framework is a functional AI application development framework designed to simplify and accelerate the process of building modern applications. It combines functional programming features, powerful artificial intelligence capabilities, and modular design principles to help developers easily create scalable solutions. AIGNE Framework is also deeply integrated with the Blocklet ecosystem, providing developers with a wealth of tools and resources.
 
 ## Architecture diagram
+
 ![AIGNE Arch](./aigne-arch.png)
 
 ## Key Features
@@ -72,26 +73,28 @@ const agentA = AIAgent.from({
   instructions: "You are a helpful agent.",
   outputKey: "A",
   skills: [transferToB],
+  inputKey: "message",
 });
 
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({ model });
 
 const userAgent = aigne.invoke(agentA);
 
-const result1 = await userAgent.invoke("transfer to agent b");
+const result1 = await userAgent.invoke({ message: "transfer to agent b" });
 console.log(result1);
 // Output:
 // {
 //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
 // }
 
-const result2 = await userAgent.invoke("It's a beautiful day");
+const result2 = await userAgent.invoke({ message: "It's a beautiful day" });
 console.log(result2);
 // Output:
 // {

@@ -14,9 +14,9 @@ aigne observe [options]
 
 ### Options
 
-- host <host>: Host address to run the observability server on (defaults to "localhost"); use "0.0.0.0" to expose the server publicly
-- port <port>: Port to run the observability server on (uses the PORT environment variable if set, otherwise defaults to 7890)
-- help: Show command help
+* host <host>: Host address to run the observability server on (defaults to "localhost"); use "0.0.0.0" to expose the server publicly
+* port <port>: Port to run the observability server on (uses the PORT environment variable if set, otherwise defaults to 7890)
+* help: Show command help
 
 ### Basic Usage Examples
 

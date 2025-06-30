@@ -41,7 +41,7 @@ npm install -g @aigne/cli
 aigne run xxx
 
 # Launch the observability dashboard
-aigne observer
+aigne observe
 ```
 
 ### ⚙️ Development Mode

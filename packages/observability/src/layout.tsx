@@ -6,8 +6,9 @@ import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { useMemo } from "react";
-import logoWhiteIcon from "./icons/logo-white.svg?url";
-import logoIcon from "./icons/logo.svg?url";
+
+import LogoWhite from "./icons/logo-white.svg";
+import Logo from "./icons/logo.svg";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useLocaleContext();
@@ -49,11 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         description: t("dashboardDescription"),
         addons: nodes,
         logo: (
-          <Box
-            component="img"
-            src={theme.palette.mode === "dark" ? logoWhiteIcon : logoIcon}
-            alt="Aigne"
-          />
+          <Box component="img" src={theme.palette.mode === "dark" ? LogoWhite : Logo} alt="Aigne" />
         ),
       }}
       fullWidth

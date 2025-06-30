@@ -55,8 +55,9 @@ export default function CustomDateRangePicker({ value, onChange }: CustomDateRan
         component="div"
         sx={{
           color: "text.secondary",
-          mb: 0
-        }}>
+          mb: 0,
+        }}
+      >
         <Button onClick={onTriggerClick} variant="outlined" size="small" color="inherit">
           {formatToDate(value[0], locale)} - {formatToDate(value[1], locale)}
         </Button>

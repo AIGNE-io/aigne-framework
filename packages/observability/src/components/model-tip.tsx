@@ -42,14 +42,16 @@ export default function ModelInfoTip({ modelInfo }: { modelInfo: any }) {
         component={Stack}
         sx={{
           gap: 1.5,
-          p: 1
-        }}>
+          p: 1,
+        }}
+      >
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 1
-          }}>
+            gap: 1,
+          }}
+        >
           <MemoryIcon color="primary" />
           <Typography variant="h6">{t("models.details")}</Typography>
         </Box>

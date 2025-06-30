@@ -118,8 +118,9 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
         <Typography
           sx={{
             fontSize: 20,
-            color: "text.primary"
-          }}>
+            color: "text.primary",
+          }}
+        >
           {`${trace?.name}`}
         </Typography>
 
@@ -294,8 +295,9 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
           overflow: "auto",
           position: "relative",
           backgroundColor: "#1e1e1e",
-          borderRadius: 2
-        }}>
+          borderRadius: 2,
+        }}
+      >
         <Box sx={{ position: "absolute", top: 15, right: 15, zIndex: 1000 }}>{renderView()}</Box>
 
         <Box sx={{ overflowX: "auto", color: "common.white" }}>
@@ -304,8 +306,9 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
               sx={{
                 color: "grey.500",
                 fontSize: 14,
-                p: 2
-              }}>
+                p: 2,
+              }}
+            >
               {t("noData")}
             </Typography>
           ) : typeof value === "object" ? (

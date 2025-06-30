@@ -14,7 +14,7 @@ export async function initOpenTelemetry({ dbPath }: { dbPath?: string }) {
   await sdk.start();
 
   console.log(
-    "Observability OpenTelemetry SDK Started, You can run `npx aigne observe` to start the observability server",
+    "Observability OpenTelemetry SDK Started, You can run `npx aigne observe` to start the observability server.",
   );
 
   return traceExporter;

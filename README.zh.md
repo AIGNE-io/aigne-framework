@@ -1,6 +1,10 @@
-![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner\&title=AIGNE%20Framework\&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize\&w=160\&h=160\&v=0.4.227)
+<p align="center">
+  <img src="./logo.svg" alt="AIGNE Logo" width="400"/>
+</p>
 
-[English](./README.md) | [中文](./README.zh.md)
+<p align="center">
+  🇬🇧 <a href="./README.md">English</a> | 🇨🇳 <a href="./README.zh.md">中文</a>
+</p>
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
@@ -11,6 +15,10 @@
 ## AIGNE Framework 简介
 
 AIGNE Framework 是一个功能型 AI 应用开发框架，旨在简化和加速现代应用程序的构建过程。它结合了函数式编程特性、强大的人工智能能力和模块化设计原则，帮助开发者轻松创建可扩展的解决方案。AIGNE Framework 还深度集成了 Blocklet 生态系统，为开发者提供丰富的工具和资源。
+
+## 架构
+![AIGNE 架构图](./aigne-arch.png)
+
 
 ## 核心特性
 

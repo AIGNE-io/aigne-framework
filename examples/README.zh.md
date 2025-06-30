@@ -12,26 +12,66 @@
 
 #### 示例列表
 
-- [chat-bot：基础聊天机器人](./chat-bot/README.md)
-- [memory：带记忆的聊天机器人](./memory/README.md)
-- [mcp-blocklet：与 Blocklet 平台集成](./mcp-blocklet/README.md)
-- [mcp-github：与 GitHub 集成](./mcp-github/README.md)
-- [mcp-puppeteer：网页内容提取](./mcp-puppeteer/README.md)
-- [mcp-sqlite：数据库智能交互](./mcp-sqlite/README.md)
-- [workflow-code-execution：AI 代码生成与执行](./workflow-code-execution/README.md)
-- [workflow-concurrency：并发分析](./workflow-concurrency/README.md)
-- [workflow-group-chat：多 agent 群聊](./workflow-group-chat/README.md)
-- [workflow-handoff：多 agent 任务交接](./workflow-handoff/README.md)
-- [workflow-orchestrator：多 agent 编排](./workflow-orchestrator/README.md)
-- [workflow-reflection：AI 代码 review/reflection](./workflow-reflection/README.md)
-- [workflow-router：多 agent 问题分流](./workflow-router/README.md)
-- [workflow-sequential：顺序处理链](./workflow-sequential/README.md)
+- [@aigne/example-chat-bot：基础聊天机器人](./chat-bot/README.md)
+- [@aigne/example-memory：带记忆的聊天机器人](./memory/README.md)
+- [@aigne/example-mcp-blocklet：与 Blocklet 平台集成](./mcp-blocklet/README.md)
+- [@aigne/example-mcp-github：与 GitHub 集成](./mcp-github/README.md)
+- [@aigne/example-mcp-puppeteer：网页内容提取](./mcp-puppeteer/README.md)
+- [@aigne/example-mcp-sqlite：数据库智能交互](./mcp-sqlite/README.md)
+- [@aigne/example-workflow-code-execution：代码执行](./workflow-code-execution/README.md)
+- [@aigne/example-workflow-concurrency：并发](./workflow-concurrency/README.md)
+- [@aigne/example-workflow-sequential：管道](./workflow-sequential/README.md)
+- [@aigne/example-workflow-group-chat：群聊](./workflow-group-chat/README.md)
+- [@aigne/example-workflow-handoff：任务交接](./workflow-handoff/README.md)
+- [@aigne/example-workflow-orchestrator：智能编排](./workflow-orchestrator/README.md)
+- [@aigne/example-workflow-reflection：反思](./workflow-reflection/README.md)
+- [@aigne/example-workflow-router：路由](./workflow-router/README.md)
 
-#### 通用用法
+## 快速体验（无需安装）
 
-1. 配置环境变量（如 `OPENAI_API_KEY`）
-2. 进入对应目录，安装依赖：`pnpm install`
-3. 运行示例：`pnpm start` 或 `npx -y @aigne/example-xxx`
-4. 更多参数和用法详见各子目录 README
+1. 确保你已安装 Node.js 和 npm
+2. 设置必要的环境变量，如 OpenAI API 密钥等
+3. 通过 `npx` 运行示例
 
-所有示例均支持 one-shot、交互式、管道输入等多种模式，便于快速体验和二次开发。
+```bash
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # 设置你的 OpenAI API 密钥
+
+# One-shot 模式运行
+npx -y @aigne/example-chat-bot
+
+# 或者加入 `--chat` 参数进入交互式聊天模式
+npx -y @aigne/example-chat-bot --chat
+```
+
+### 使用不同的大语言模型
+
+使用 OpenAI 模型
+
+```bash
+export MODEL=openai:gpt-4.1 # 设置模型为 OpenAI 的 gpt-4.1
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # 设置你的 OpenAI API 密钥
+```
+
+使用 Anthropic claude 模型
+
+```bash
+export MODEL=anthropic:claude-3-7-sonnet-latest # 设置模型为 Anthropic 的最新版本
+export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY # 设置你的 Anthropic API 密钥
+```
+
+使用 Bedrock nova 模型
+
+```bash
+export MODEL=bedrock:us.amazon.nova-premier-v1:0 # 设置模型为 AWS Bedrock 的 Nova Premier
+export AWS_ACCESS_KEY_ID="" # 设置 AWS 访问密钥 ID
+export AWS_SECRET_ACCESS_KEY="" # 设置 AWS 凭证
+export AWS_REGION="" # 设置 AWS 区域，如 us-west-2
+```
+
+### 输出调试日志
+
+通过设置 `DEBUG` 环境变量，可以输出调试日志，帮助你了解模型的调用和响应细节。
+
+```bash
+DEBUG=* npx -y @aigne/example-chat-bot --chat
+```

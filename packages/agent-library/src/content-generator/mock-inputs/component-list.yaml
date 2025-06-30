@@ -1,0 +1,22 @@
+basic-component-list:
+  - id: layout-block
+    name: Section Layout
+    component: layout-block
+    description: 布局容器组件，提供灵活的页面结构化布局，可嵌套其他组件
+  - id: text-block
+    name: Text Block
+    component: text-block
+    description: 文本块组件
+  - id: image-block
+    name: Image Block
+    component: image-block
+    description: 图片组件
+  - id: button-block
+    name: Button Block
+    component: button-block
+    description: 按钮组件
+custom-component-list:
+  - id: discuss-kit-blog-list
+    name: Discuss Kit Blog List
+    component: discuss-kit-blog-list
+    description: 讨论区博客列表组件

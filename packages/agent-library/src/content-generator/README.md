@@ -62,6 +62,9 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 # arcblock locale run 
 bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input.yaml"  --input-datasources "@mock-inputs/arcblock-datasources.md" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/arcblock-all.txt" --force
 
+# arcshpere local run
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input-arcsphere.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/arcsphere-all.txt" --force
+
 # detail
 aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-input.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --input-datasources "@mock-inputs/arcblock-datasources.md" --input-structurePlan "@mock-inputs/structure-plan-output.yaml" --format yaml --output "./output-tmp/home.txt" --force
 
@@ -80,6 +83,13 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 
 # lban
 bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml
+```
+
+测试页面模板生成的命令
+```bash
+# arcshpere home
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "page-template-generator" --input "@mock-inputs/template-input-arcsphere-home.yaml" --format yaml --output "./output-tmp/arcsphere-home-template.txt" --force
+
 ```
 
 

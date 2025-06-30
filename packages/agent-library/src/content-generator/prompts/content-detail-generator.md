@@ -22,8 +22,6 @@ title: {{title}}
 description: {{description}}
 path: {{path}}
 parentId: {{parentId}}
-
-{{ currentNode }}
 </current>
 
 <rules>

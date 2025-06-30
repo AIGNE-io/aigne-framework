@@ -57,6 +57,7 @@ export const createRunAIGNECommand = (name = "run") =>
     .option(
       "--model <provider[:model]>",
       `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels.map((i) => i.name.toLowerCase().replace(/ChatModel$/i, "")).join(", ")} (default: openai)`,
+      process.env.MODEL,
     )
     .option(
       "--temperature <temperature>",

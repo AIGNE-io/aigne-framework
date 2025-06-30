@@ -6,6 +6,7 @@ import { availableMemories, availableModels } from "../constants.js";
 import { serveMCPServer } from "../utils/serve-mcp.js";
 
 interface ServeMCPOptions extends OptionValues {
+  path: string;
   host: string;
   port?: number;
   mcp?: boolean;
@@ -27,7 +28,11 @@ const DEFAULT_PORT = () =>
 export function createServeCommand(): Command {
   return new Command("serve")
     .description("Serve the agents in the specified directory as a MCP server")
-    .argument("[path]", "Path to the agents directory", ".")
+    .option(
+      "--url, --path <path_or_url>",
+      "Path to the agents directory or URL to aigne project",
+      ".",
+    )
     .option("--mcp", "Serve the agents as a MCP server")
     .option(
       "--host <host>",
@@ -36,12 +41,13 @@ export function createServeCommand(): Command {
     )
     .option("--port <port>", "Port to run the MCP server on", (s) => Number.parseInt(s))
     .option("--pathname <pathname>", "Pathname to the service", "/mcp")
-    .action(async (path: string, options: ServeMCPOptions) => {
+    .action(async (options: ServeMCPOptions) => {
+      const { path } = options;
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
       const port = options.port || DEFAULT_PORT();
 
       const aigne = await AIGNE.load(absolutePath, {
-        models: availableModels,
+        models: availableModels(),
         memories: availableMemories,
       });
 

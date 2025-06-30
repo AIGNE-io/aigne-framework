@@ -14,8 +14,17 @@ import { loadAgentFromYamlFile } from "./agent-yaml.js";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
+interface LoadableModelClass {
+  new (parameters: { model?: string; modelOptions?: ChatModelOptions }): ChatModel;
+}
+
+export interface LoadableModel {
+  name: string;
+  create: (options: { model?: string; modelOptions?: ChatModelOptions }) => ChatModel;
+}
+
 export interface LoadOptions {
-  models: { new (parameters: { model?: string; modelOptions?: ChatModelOptions }): ChatModel }[];
+  models: (LoadableModel | LoadableModelClass)[];
   memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
   path: string;
 }
@@ -35,7 +44,17 @@ export async function load(options: LoadOptions) {
 
   return {
     ...aigne,
-    model: await loadModel(options.models, aigne.chat_model),
+    model: await loadModel(
+      options.models.map((i) =>
+        typeof i === "function"
+          ? {
+              name: i.name,
+              create: (options) => new i(options),
+            }
+          : i,
+      ),
+      aigne.chat_model,
+    ),
     agents,
     skills,
   };
@@ -117,7 +136,7 @@ const { MODEL_PROVIDER, MODEL_NAME } = nodejs.env;
 const DEFAULT_MODEL_PROVIDER = "openai";
 
 export async function loadModel(
-  models: LoadOptions["models"],
+  models: LoadableModel[],
   model?: Camelize<z.infer<typeof aigneFileSchema>["chat_model"]>,
   modelOptions?: ChatModelOptions,
 ): Promise<ChatModel | undefined> {
@@ -129,13 +148,16 @@ export async function loadModel(
     presencePenalty: model?.presencePenalty ?? undefined,
   };
 
-  const M = models.find((m) =>
+  const m = models.find((m) =>
     m.name
       .toLowerCase()
       .includes((MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER).toLowerCase()),
   );
-  if (!M) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
-  return new M({ model: params.model, modelOptions: { ...params, ...modelOptions } });
+  if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
+  return m.create({
+    model: params.model,
+    modelOptions: { ...params, ...modelOptions },
+  });
 }
 
 const aigneFileSchema = z.object({

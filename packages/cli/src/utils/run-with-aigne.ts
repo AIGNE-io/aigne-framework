@@ -56,8 +56,9 @@ export const createRunAIGNECommand = (name = "run") =>
     .option("--chat", "Run chat loop in terminal", false)
     .option(
       "--model <provider[:model]>",
-      `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels.map((i) => i.name.toLowerCase().replace(/ChatModel$/i, "")).join(", ")} (default: openai)`,
-      process.env.MODEL,
+      `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
+        .map((i) => i.name.toLowerCase().replace(/ChatModel$/i, ""))
+        .join(", ")} (default: openai)`,
     )
     .option(
       "--temperature <temperature>",
@@ -180,7 +181,8 @@ export async function parseAgentInputByCommander(
 }
 
 export const parseModelOption = (model?: string) => {
-  const { provider, name } = model?.match(/(?<provider>[^:]+)(:(?<name>(\S+)))?/)?.groups ?? {};
+  const { provider, name } =
+    (model || process.env.MODEL)?.match(/(?<provider>[^:]+)(:(?<name>(\S+)))?/)?.groups ?? {};
 
   return { provider, name };
 };
@@ -208,7 +210,7 @@ export async function runWithAIGNE(
       }
 
       const model = await loadModel(
-        availableModels,
+        availableModels(),
         {
           ...parseModelOption(options.model),
           temperature: options.temperature,

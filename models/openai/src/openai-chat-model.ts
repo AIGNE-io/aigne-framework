@@ -20,7 +20,7 @@ import {
   isNonNullable,
 } from "@aigne/core/utils/type-utils.js";
 import { nanoid } from "nanoid";
-import OpenAI from "openai";
+import OpenAI, { type ClientOptions } from "openai";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
@@ -75,6 +75,11 @@ export interface OpenAIChatModelOptions {
    * Additional model options to control behavior
    */
   modelOptions?: ChatModelOptions;
+
+  /**
+   * Client options for OpenAI API
+   */
+  clientOptions?: Partial<ClientOptions>;
 }
 
 /**
@@ -146,6 +151,7 @@ export class OpenAIChatModel extends ChatModel {
     this._client ??= new OpenAI({
       baseURL: this.options?.baseURL,
       apiKey,
+      ...this.options?.clientOptions,
     });
     return this._client;
   }

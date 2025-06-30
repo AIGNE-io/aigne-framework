@@ -5,7 +5,7 @@ import fallback from "@blocklet/sdk/lib/middlewares/fallback";
 import dotenv from "dotenv-flow";
 import express, { type Request, type Response, type NextFunction } from "express";
 
-dotenv.config();
+dotenv.config({ silent: true });
 
 const ADMIN_ROLES = ["owner", "admin"];
 

@@ -19,7 +19,7 @@ import {
   isEmpty,
   isNonNullable,
 } from "@aigne/core/utils/type-utils.js";
-import Anthropic from "@anthropic-ai/sdk";
+import Anthropic, { type ClientOptions } from "@anthropic-ai/sdk";
 import type { MessageStream } from "@anthropic-ai/sdk/lib/MessageStream.js";
 import type {
   ContentBlockParam,
@@ -55,6 +55,11 @@ export interface AnthropicChatModelOptions {
    * Additional model options to control behavior
    */
   modelOptions?: ChatModelOptions;
+
+  /**
+   * Optional client options for the Anthropic SDK
+   */
+  clientOptions?: Partial<ClientOptions>;
 }
 
 /**
@@ -109,7 +114,10 @@ export class AnthropicChatModel extends ChatModel {
       this.options?.apiKey || process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
     if (!apiKey) throw new Error("Api Key is required for AnthropicChatModel");
 
-    this._client ??= new Anthropic({ apiKey });
+    this._client ??= new Anthropic({
+      apiKey,
+      ...this.options?.clientOptions,
+    });
     return this._client;
   }
 

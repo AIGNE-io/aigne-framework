@@ -42,7 +42,7 @@ import {
   isNil,
   omit,
 } from "../utils/type-utils.js";
-import type { Args, Listener, TypedEventEmitter } from "../utils/typed-event-emtter.js";
+import type { Args, Listener, TypedEventEmitter } from "../utils/typed-event-emitter.js";
 import {
   type MessagePayload,
   MessageQueue,

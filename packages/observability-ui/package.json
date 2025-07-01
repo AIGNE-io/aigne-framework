@@ -18,7 +18,8 @@
     "LICENSE",
     "README.md",
     "CHANGELOG.md",
-    "screenshots"
+    "screenshots",
+    "logo.svg"
   ],
   "type": "module",
   "main": "./src/list.tsx",

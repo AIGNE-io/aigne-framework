@@ -157,7 +157,7 @@ meta:  # 可选 - 页面元信息
   description: string # 页面描述
 sections: # 必需 - 组件定义结构
   - name: string # 必需 - 组件显示名称（用于编辑器）, 请不要使用中文
-    component: ComponentType # 必需 - 组件类型标识符，如果是基础组件，component=基础组件名称，如：layout-block 。如果组件自定义组件，component=custom-component
+    component: ComponentType # 必需 - 组件类型标识符，如果是基础组件，component=基础组件名称，如：layout-block 。如果组件自定义组件，component 属性的值固定为：custom-component
     config?: ComponentConfig 
     # 可选 - 组件特定配置对象,不存储组件展示的数据，对于 layout-block 和 custom-component 组件，config 字段是必须的
     # layout-block 时，config 中需要存储 gridSettings 信息

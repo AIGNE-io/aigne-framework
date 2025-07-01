@@ -23,6 +23,9 @@ input_schema:
     evaluationDimensions:
       type: string
       description: 评估维度
+    componentList:
+      type: string
+      description: 组件列表
   required:
     - rules
     - datasources

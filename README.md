@@ -32,6 +32,10 @@ AIGNE Framework is a functional AI application development framework designed to
 
 ## Quick Start
 
+### Environment Requirements
+
+* Node.js version 20.0 or higher
+
 ### Installation
 
 #### Using npm
@@ -281,6 +285,7 @@ class sandbox processing
 
 ### MCP Server Integration
 
+* [MCP Server](https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-server) - Build a MCP server using AIGNE CLI to provide MCP services.
 * [Puppeteer MCP Server](https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-puppeteer) - Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.
 * [SQLite MCP Server](https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-sqlite) - Explore database operations by connecting to SQLite through the Model Context Protocol.
 * [Github](https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-github) - Interact with GitHub repositories using the GitHub MCP Server.

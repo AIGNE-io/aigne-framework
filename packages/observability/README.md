@@ -13,15 +13,15 @@ A visual tool for monitoring Agent data flow, built on OpenTelemetry. Supports c
 ![](./screenshots/list.png)
 ![](./screenshots/detail.png)
 
----
+***
 
 ## ✨ Features
 
-- 📊 Real-time visualization of trace data and call chains
-- 🔍 Accurately pinpoint AIGNE internal workflows
-- ☁️ Supports both local [AIGNE CLI](https://www.npmjs.com/package/@aigne/cli) and [Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) deployment
+* 📊 Real-time visualization of trace data and call chains
+* 🔍 Accurately pinpoint AIGNE internal workflows
+* ☁️ Supports both local [AIGNE CLI](https://www.npmjs.com/package/@aigne/cli) and [Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) deployment
 
----
+***
 
 ## 🛠 Installation & Usage
 

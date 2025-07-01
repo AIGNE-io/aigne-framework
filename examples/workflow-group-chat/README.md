@@ -32,11 +32,11 @@ class illustrator processing
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org) and npm installed on your machine
-- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
-- Optional dependencies (if running the example from source code):
-  - [Bun](https://bun.sh) for running unit tests & examples
-  - [Pnpm](https://pnpm.io) for package management
+* [Node.js](https://nodejs.org) and npm installed on your machine
+* An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+* Optional dependencies (if running the example from source code):
+  * [Bun](https://bun.sh) for running unit tests & examples
+  * [Pnpm](https://pnpm.io) for package management
 
 ## Quick Start (No Installation Required)
 
@@ -77,6 +77,21 @@ Setup your OpenAI API key in the `.env.local` file:
 OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
+#### Using Different Models
+
+You can use different AI models by setting the `MODEL` environment variable along with the corresponding API key. The framework supports multiple providers:
+
+* **OpenAI**: `MODEL="openai:gpt-4.1"` with `OPENAI_API_KEY`
+* **Anthropic**: `MODEL="anthropic:claude-3-7-sonnet-latest"` with `ANTHROPIC_API_KEY`
+* **Google Gemini**: `MODEL="gemini:gemini-2.0-flash"` with `GEMINI_API_KEY`
+* **AWS Bedrock**: `MODEL="bedrock:us.amazon.nova-premier-v1:0"` with AWS credentials
+* **DeepSeek**: `MODEL="deepseek:deepseek-chat"` with `DEEPSEEK_API_KEY`
+* **OpenRouter**: `MODEL="openrouter:openai/gpt-4o"` with `OPEN_ROUTER_API_KEY`
+* **xAI**: `MODEL="xai:grok-2-latest"` with `XAI_API_KEY`
+* **Ollama**: `MODEL="ollama:llama3.2"` with `OLLAMA_DEFAULT_BASE_URL`
+
+For detailed configuration examples, please refer to the `.env.local.example` file in this directory.
+
 ### Run the Example
 
 ```bash
@@ -96,7 +111,7 @@ The example supports the following command-line parameters:
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
-| `--model <provider[:model]>` | AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
+| `--model <provider[:model]>` | AI model to use in format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | Temperature for model generation | Provider default |
 | `--top-p <value>` | Top-p sampling value | Provider default |
 | `--presence-penalty <value>` | Presence penalty value | Provider default |

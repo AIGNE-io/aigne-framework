@@ -13,15 +13,15 @@
 ![](./screenshots/list.png)
 ![](./screenshots/detail.png)
 
----
+***
 
 ## ✨ 特性
 
-- 📊 实时可视化追踪数据和调用链
-- 🔍 精确定位 AIGNE 内部工作流程
-- ☁️ 支持本地 [AIGNE CLI](https://www.npmjs.com/package/@aigne/cli) 和 [Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) 部署
+* 📊 实时可视化追踪数据和调用链
+* 🔍 精确定位 AIGNE 内部工作流程
+* ☁️ 支持本地 [AIGNE CLI](https://www.npmjs.com/package/@aigne/cli) 和 [Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) 部署
 
----
+***
 
 ## 🛠 安装与使用
 

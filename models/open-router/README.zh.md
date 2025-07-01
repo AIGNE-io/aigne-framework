@@ -100,6 +100,7 @@ const fallbackResult = await modelWithFallbacks.invoke({
 ## 流式响应
 
 ```typescript file="test/open-router-chat-model.test.ts" region="example-openrouter-chat-model-streaming"
+import { isAgentResponseDelta } from "@aigne/core";
 import { OpenRouterChatModel } from "@aigne/open-router";
 
 const model = new OpenRouterChatModel({
@@ -111,7 +112,6 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Which model are you using?" }],
   },
-  undefined,
   { streaming: true },
 );
 
@@ -119,9 +119,11 @@ let fullText = "";
 const json = {};
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 
 console.log(fullText); // Output: "I'm powered by OpenRouter, using the Claude 3 Opus model from Anthropic."

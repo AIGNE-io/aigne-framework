@@ -1,6 +1,6 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { joinURL } from "ufo";
-import { origin } from "./index.js";
+import { origin } from "./index.ts";
 
 export async function watchSSE({
   signal,

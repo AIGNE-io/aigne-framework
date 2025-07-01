@@ -3,7 +3,7 @@ import Switch from "@arcblock/ux/lib/Switch";
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { joinURL } from "ufo";
-import { origin } from "../utils/index.js";
+import { origin } from "../utils/index.ts";
 
 const SwitchComponent = ({ ...props }: { live: boolean; setLive: (live: boolean) => void }) => {
   const { t } = useLocaleContext();

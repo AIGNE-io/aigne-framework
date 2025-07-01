@@ -14,14 +14,14 @@ import useRafInterval from "ahooks/lib/useRafInterval";
 import { useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
-import CustomDateRangePicker from "./components/date-picker.js";
-import RunDetailDrawer from "./components/run/RunDetailDrawer.js";
-import type { TraceData } from "./components/run/types.js";
-import Status from "./components/status.js";
-import SwitchComponent from "./components/switch.js";
-import { watchSSE } from "./utils/event.js";
-import { origin } from "./utils/index.js";
-import { parseDuration } from "./utils/latency.js";
+import CustomDateRangePicker from "./components/date-picker.tsx";
+import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx";
+import type { TraceData } from "./components/run/types.ts";
+import Status from "./components/status.tsx";
+import SwitchComponent from "./components/switch.tsx";
+import { watchSSE } from "./utils/event.ts";
+import { origin } from "./utils/index.ts";
+import { parseDuration } from "./utils/latency.ts";
 
 interface ListRef {
   refetch: () => void;

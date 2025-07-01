@@ -9,9 +9,9 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 
-import Layout from "./layout.js";
-import List from "./list.js";
-import { translations } from "./locales/index.js";
+import Layout from "./layout.tsx";
+import List from "./list.tsx";
+import { translations } from "./locales/index.ts";
 
 export default function App() {
   return (

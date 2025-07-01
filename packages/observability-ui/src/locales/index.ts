@@ -1,4 +1,4 @@
-import en from "./en.js";
-import zh from "./zh.js";
+import en from "./en.ts";
+import zh from "./zh.ts";
 
 export const translations = { en, zh };

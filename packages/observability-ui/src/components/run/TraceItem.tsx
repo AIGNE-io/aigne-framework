@@ -1,10 +1,10 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { Box, Card, LinearProgress, Tooltip, Typography } from "@mui/material";
 import type { ReactElement } from "react";
-import { parseDurationMs } from "../../utils/latency.js";
-import Status from "../status.js";
-import { AgentTag } from "./AgentTag.js";
-import type { TraceData } from "./types.js";
+import { parseDurationMs } from "../../utils/latency.ts";
+import Status from "../status.tsx";
+import { AgentTag } from "./AgentTag.tsx";
+import type { TraceData } from "./types.ts";
 
 type TraceItemProps = {
   name: string;

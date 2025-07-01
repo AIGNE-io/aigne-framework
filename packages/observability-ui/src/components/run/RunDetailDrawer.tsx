@@ -4,13 +4,13 @@ import Drawer from "@mui/material/Drawer";
 import Decimal from "decimal.js";
 import { useEffect, useState } from "react";
 import { joinURL } from "ufo";
-import useGetTokenPrice from "../../hooks/get-token-price.js";
-import { origin } from "../../utils/index.js";
-import { parseDuration } from "../../utils/latency.js";
-import RunStatsHeader from "./RunStatsHeader.js";
-import TraceDetailPanel from "./TraceDetailPanel.js";
-import TraceItemList from "./TraceItem.js";
-import type { TraceData } from "./types.js";
+import useGetTokenPrice from "../../hooks/get-token-price.ts";
+import { origin } from "../../utils/index.ts";
+import { parseDuration } from "../../utils/latency.ts";
+import RunStatsHeader from "./RunStatsHeader.tsx";
+import TraceDetailPanel from "./TraceDetailPanel.tsx";
+import TraceItemList from "./TraceItem.tsx";
+import type { TraceData } from "./types.ts";
 
 interface RunDetailDrawerProps {
   traceId: string | null;

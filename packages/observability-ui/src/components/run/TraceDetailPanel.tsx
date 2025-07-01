@@ -12,16 +12,16 @@ import { styled } from "@mui/material/styles";
 import Decimal from "decimal.js";
 import { isUndefined, omitBy } from "lodash";
 import { useMemo, useState } from "react";
-import useGetTokenPrice from "../../hooks/get-token-price.js";
-import useSwitchView from "../../hooks/switch-view.js";
-import { parseDuration } from "../../utils/latency.js";
+import useGetTokenPrice from "../../hooks/get-token-price.ts";
+import useSwitchView from "../../hooks/switch-view.tsx";
+import { parseDuration } from "../../utils/latency.ts";
 import modelPricesAndContextWindow from "../../utils/modelPricesAndContextWindow.json";
-import JsonView from "../json-view.js";
-import ModelInfoTip from "../model-tip.js";
-import RenderView from "../render-view.js";
-import YamlView from "../yaml-view.js";
-import { AgentTag } from "./AgentTag.js";
-import type { TraceData } from "./types.js";
+import JsonView from "../json-view.tsx";
+import ModelInfoTip from "../model-tip.tsx";
+import RenderView from "../render-view.tsx";
+import YamlView from "../yaml-view.tsx";
+import { AgentTag } from "./AgentTag.tsx";
+import type { TraceData } from "./types.ts";
 
 export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }) {
   const [tab, setTab] = useState("input");

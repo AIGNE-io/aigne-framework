@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.11.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.10.21...example-workflow-orchestrator-v1.11.0) (2025-07-01)
+
+
+### Features
+
+* **example:** use AIGNE cli to run chat-bot example ([#198](https://github.com/AIGNE-io/aigne-framework/issues/198)) ([7085541](https://github.com/AIGNE-io/aigne-framework/commit/708554100692f2a557f7329ea78e46c3c870ce10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.5
+    * @aigne/cli bumped to 1.18.0
+    * @aigne/core bumped to 1.28.0
+    * @aigne/openai bumped to 0.6.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.12
+
 ## [1.10.21](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.10.20...example-workflow-orchestrator-v1.10.21) (2025-07-01)
 
 

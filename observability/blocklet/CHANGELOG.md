@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.6.1](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.6.0...blocklet-observability-v1.6.1) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.28.0
+    * @aigne/openai bumped to 0.6.0
+    * @aigne/transport bumped to 0.7.0
+
 ## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.5.0...blocklet-observability-v1.6.0) (2025-07-01)
 
 

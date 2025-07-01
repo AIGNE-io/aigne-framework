@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.13.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.12.0...example-chat-bot-v1.13.0) (2025-07-01)
+
+
+### Features
+
+* **example:** use AIGNE cli to run chat-bot example ([#198](https://github.com/AIGNE-io/aigne-framework/issues/198)) ([7085541](https://github.com/AIGNE-io/aigne-framework/commit/708554100692f2a557f7329ea78e46c3c870ce10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.18.0
+
 ## [1.12.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.11.0...example-chat-bot-v1.12.0) (2025-07-01)
 
 

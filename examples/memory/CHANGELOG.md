@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.6.1...example-memory-v0.7.0) (2025-07-01)
+
+
+### Features
+
+* **example:** use AIGNE cli to run chat-bot example ([#198](https://github.com/AIGNE-io/aigne-framework/issues/198)) ([7085541](https://github.com/AIGNE-io/aigne-framework/commit/708554100692f2a557f7329ea78e46c3c870ce10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.5
+    * @aigne/cli bumped to 1.18.0
+    * @aigne/core bumped to 1.28.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.12
+
 ## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.6.0...example-memory-v0.6.1) (2025-07-01)
 
 

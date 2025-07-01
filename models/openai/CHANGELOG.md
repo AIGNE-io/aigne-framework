@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.5.0...openai-v0.6.0) (2025-07-01)
+
+
+### Features
+
+* **example:** use AIGNE cli to run chat-bot example ([#198](https://github.com/AIGNE-io/aigne-framework/issues/198)) ([7085541](https://github.com/AIGNE-io/aigne-framework/commit/708554100692f2a557f7329ea78e46c3c870ce10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.28.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.12
+
 ## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.4.3...openai-v0.5.0) (2025-07-01)
 
 

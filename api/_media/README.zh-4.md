@@ -1,59 +1,165 @@
-<p align="center">
-  <img src="../../logo.svg" alt="AIGNE Logo" width="400"/>
-</p>
+# @aigne/transport
 
-<p align="center">
-  🇬🇧 <a href="./README.md">English</a> | 🇨🇳 <a href="./README.zh.md">中文</a>
-</p>
+[![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
+[![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
+[![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
+[![NPM Version](https://img.shields.io/npm/v/@aigne/transport)](https://www.npmjs.com/package/@aigne/transport)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/transport)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-# AIGNE 监视器
+[English](README.md) | **中文**
 
-基于 OpenTelemetry 构建的 Agent 数据流监控可视化工具。支持收集 Trace 和 Log 数据。可作为独立服务使用，也可集成到 AIGNE 运行时中（AIGNE 默认已集成该模块）。
+AIGNE Transport SDK，为 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework) 中的 AIGNE 组件之间的通信提供 HTTP 客户端和服务器实现。
 
-![](./screenshots/list.png)
-![](./screenshots/detail.png)
+## 简介
 
----
+`@aigne/transport` 为 AIGNE 组件提供了一个强大的通信层，使 AI 应用程序的不同部分之间能够无缝交互。该包提供了遵循一致协议的 HTTP 客户端和服务器实现，使用 AIGNE 框架构建分布式 AI 系统变得简单。
 
-## ✨ 特性
+## 特性
 
-- 📊 实时可视化追踪数据和调用链
-- 🔍 精确定位 AIGNE 内部工作流程
-- ☁️ 支持本地 [AIGNE CLI](https://www.npmjs.com/package/@aigne/cli) 和 [Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) 部署
+* **HTTP 客户端实现**：易于使用的客户端，用于与 AIGNE 服务器通信
+* **HTTP 服务器实现**：灵活的服务器实现，可与流行的 Node.js 框架集成
+* **框架无关**：支持 Express、Hono 和其他 Node.js HTTP 框架
+* **流式响应支持**：对流式响应的一流支持
+* **类型安全**：为所有 API 提供全面的 TypeScript 类型定义
+* **错误处理**：健壮的错误处理机制，提供详细的错误信息
+* **中间件支持**：兼容常见的 HTTP 中间件，如压缩中间件
 
----
+## 安装
 
-## 🛠 安装与使用
-
-您可以通过两种方式使用 AIGNE 监视器：**AIGNE CLI** 或 **Blocklet**。
-
-### 通过 AIGNE CLI 使用
-
-```bash
-npm install -g @aigne/cli
-
-# 启动监视器
-aigne observe
-```
-
-启动后，您可以在浏览器中访问 `http://localhost:7890` 查看监视器界面。
-
-### 运行示例
-
-运行示例 AIGNE 应用时，可以在 AIGNE 监视器中事实查看 Agents 的数据流和调用链。如下运行 chat-bot 示例：
+### 使用 npm
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # 设置你的 OpenAI API 密钥
-
-# One-shot 模式运行
-npx -y @aigne/example-chat-bot
-
-# 或者加入 `--chat` 参数进入交互式聊天模式
-npx -y @aigne/example-chat-bot --chat
+npm install @aigne/transport @aigne/core
 ```
 
-查看[更多示例](../../examples/README.zh.md)
+### 使用 yarn
 
-### 作为 Blocklet 使用
+```bash
+yarn add @aigne/transport @aigne/core
+```
 
-安装 [AIGNE Observability Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) 后，您可以直接在 Blocklet 环境中使用 AIGNE 监视器。所有使用 AIGNE Framework 的 Blocklet 都会自动集成监视器功能。
+### 使用 pnpm
+
+```bash
+pnpm add @aigne/transport @aigne/core
+```
+
+## 基本用法
+
+### 服务端用法
+
+AIGNE HTTP 服务器可用于 Express 或 Hono 框架。
+
+#### Express 示例
+
+```typescript file="test/http-server/http-server.test.ts" region="example-aigne-server-express"
+import { AIAgent, AIGNE } from "@aigne/core";
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
+import express from "express";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
+
+const model = new OpenAIChatModel();
+
+const chat = AIAgent.from({
+  name: "chat",
+});
+
+// AIGNE: Main execution engine of AIGNE Framework.
+const aigne = new AIGNE({ model, agents: [chat] });
+
+// Create an AIGNEServer instance
+const aigneServer = new AIGNEHTTPServer(aigne);
+
+// Setup the server to handle incoming requests
+const server = express();
+server.post("/aigne/invoke", async (req, res) => {
+  await aigneServer.invoke(req, res);
+});
+const httpServer = server.listen(port);
+
+// Create an AIGNEClient instance
+const client = new AIGNEHTTPClient({ url });
+
+// Invoke the agent by client
+const response = await client.invoke("chat", { message: "hello" });
+
+console.log(response); // Output: {message: "Hello world!"}
+```
+
+#### Hono 示例
+
+```typescript file="test/http-server/http-server.test.ts" region="example-aigne-server-hono"
+import { AIAgent, AIGNE } from "@aigne/core";
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
+import { serve } from "bun";
+import { Hono } from "hono";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
+
+const model = new OpenAIChatModel();
+
+const chat = AIAgent.from({
+  name: "chat",
+});
+
+// AIGNE: Main execution engine of AIGNE Framework.
+const aigne = new AIGNE({ model, agents: [chat] });
+
+// Create an AIGNEServer instance
+const aigneServer = new AIGNEHTTPServer(aigne);
+
+// Setup the server to handle incoming requests
+const honoApp = new Hono();
+honoApp.post("/aigne/invoke", async (c) => {
+  return aigneServer.invoke(c.req.raw);
+});
+const server = serve({ port, fetch: honoApp.fetch });
+
+// Create an AIGNEClient instance
+const client = new AIGNEHTTPClient({ url });
+
+// Invoke the agent by client
+const response = await client.invoke("chat", { message: "hello" });
+console.log(response); // Output: {message: "Hello world!"}
+```
+
+### HTTP 客户端
+
+```typescript file="test/http-client/http-client.test.ts" region="example-aigne-client-simple"
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+
+const client = new AIGNEHTTPClient({ url });
+
+const response = await client.invoke("chat", { message: "hello" });
+
+console.log(response); // Output: {message: "Hello world!"}
+```
+
+### 流式响应
+
+```typescript file="test/http-client/http-client.test.ts" region="example-aigne-client-streaming"
+import { isAgentResponseDelta } from "@aigne/core";
+import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+
+const client = new AIGNEHTTPClient({ url });
+
+const stream = await client.invoke(
+  "chat",
+  { message: "hello" },
+  { streaming: true },
+);
+
+let text = "";
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.message) text += chunk.delta.text.message;
+  }
+}
+
+console.log(text); // Output: "Hello world!"
+```
+
+## 许可证
+
+Elastic-2.0

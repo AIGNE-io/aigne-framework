@@ -3,6 +3,28 @@
   * [What is AIGNE](/getting-started/what-is-aigne.md)
   * [Quick Start](/getting-started/quick-start.md)
 
+* [AIGNE CLI](/cli/index.md)
+
+  * [Create Project](/cli/create.md)
+
+  * [Run Agent](/cli/run.md)
+
+  * [Serve Agent](/cli/serve.md)
+
+  * [Test Agent](/cli/test.md)
+
+  * [Observe Agent](/cli/observe.md)
+
+  * [Agent Definitions](/cli/definitions/index.md)
+
+    * [AI Agent](/cli/definitions/agent.md)
+    * [MCP Agent](/cli/definitions/mcp.md)
+    * [Function Agent](/cli/definitions/function.md)
+
+* [AIGNE Observability](/observability/index.md)
+
+  * [Observe Agent](/observability/observe.md)
+
 * How to guides
 
   * [Build Your First Agent](/how-to-guides/build-your-first-agent.md)
@@ -25,22 +47,6 @@
   * [Guide Rail Agent](/concepts/guide-rail-agent.md)
   * [Chat Model](/concepts/chat-model.md)
   * [HTTP Transport](/concepts/http-transport.md)
-
-* [AIGNE CLI](/cli/index.md)
-
-  * [Create Project](/cli/create.md)
-
-  * [Run Agent](/cli/run.md)
-
-  * [Serve Agent](/cli/serve.md)
-
-  * [Test Agent](/cli/test.md)
-
-  * [Agent Definitions](/cli/definitions/index.md)
-
-    * [AI Agent](/cli/definitions/agent.md)
-    * [MCP Agent](/cli/definitions/mcp.md)
-    * [Function Agent](/cli/definitions/function.md)
 
 * API Reference
 
@@ -66,11 +72,6 @@
       * [user-agent](/api/@aigne/core/agents/user-agent.md)
 
     * [memory](/api/@aigne/core/memory.md)
-
-  * [@aigne/observability](/api/@aigne/observability/README.md)
-
-    * [list](/api/@aigne/observability/list.md)
-    * [translations](/api/@aigne/observability/translations.md)
 
   * [@aigne/platform-helpers](/api/@aigne/platform-helpers.md)
 

@@ -318,7 +318,6 @@ AIGNE Framework has a vibrant developer community offering various support chann
 - [@aigne/agent-library](@aigne/agent-library/README.md)
 - [@aigne/cli](@aigne/cli.md)
 - [@aigne/core](@aigne/core/README.md)
-- [@aigne/observability](@aigne/observability/README.md)
 - [@aigne/platform-helpers](@aigne/platform-helpers.md)
 - [@aigne/publish-docs](@aigne/publish-docs.md)
 - [@aigne/sqlite](@aigne/sqlite.md)

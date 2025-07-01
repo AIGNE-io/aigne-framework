@@ -21,6 +21,7 @@ await runWithAIGNE(
     if (!prompt) throw new Error("Prompt mcp-demo not found");
 
     const agent = AIAgent.from({
+      name: "example_sqlite",
       instructions: PromptBuilder.from(prompt),
       skills: [sqlite],
       memory: new DefaultMemory(),

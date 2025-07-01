@@ -22,6 +22,7 @@ Product description:
 });
 
 const agent = TeamAgent.from({
+  name: "example_concurrency",
   skills: [featureExtractor, audienceAnalyzer],
   mode: ProcessMode.parallel,
 });

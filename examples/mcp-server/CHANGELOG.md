@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.1.0...example-mcp-server-v0.2.0) (2025-07-01)
+
+
+### Features
+
+* rename command serve to serve-mcp ([#206](https://github.com/AIGNE-io/aigne-framework/issues/206)) ([f3dfc93](https://github.com/AIGNE-io/aigne-framework/commit/f3dfc932b4eeb8ff956bf2d4b1b71b36bd05056e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.19.0
+
 ## [0.1.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.0.1...example-mcp-server-v0.1.0) (2025-07-01)
 
 

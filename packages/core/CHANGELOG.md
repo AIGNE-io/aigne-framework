@@ -12,6 +12,20 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.28.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.28.1...core-v1.28.2) (2025-07-01)
+
+
+### Bug Fixes
+
+* fix: compatible with node 20.0 & polish example defintions ([#209](https://github.com/AIGNE-io/aigne-framework/issues/209)) ([9752b96](https://github.com/AIGNE-io/aigne-framework/commit/9752b96dc54a44c6f710f056fe9205c0f2b0a73e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.3.2
+
 ## [1.28.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.28.0...core-v1.28.1) (2025-07-01)
 
 

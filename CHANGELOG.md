@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.32.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.31.0...aigne-framework-v1.32.0) (2025-07-01)
+
+
+### Features
+
+* rename command serve to serve-mcp ([#206](https://github.com/AIGNE-io/aigne-framework/issues/206)) ([f3dfc93](https://github.com/AIGNE-io/aigne-framework/commit/f3dfc932b4eeb8ff956bf2d4b1b71b36bd05056e))
+
+
+### Bug Fixes
+
+* fix: compatible with node 20.0 & polish example defintions ([#209](https://github.com/AIGNE-io/aigne-framework/issues/209)) ([9752b96](https://github.com/AIGNE-io/aigne-framework/commit/9752b96dc54a44c6f710f056fe9205c0f2b0a73e))
+
 ## [1.31.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.30.1...aigne-framework-v1.31.0) (2025-07-01)
 
 

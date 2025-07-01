@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.30.0...aigne-framework-v1.30.1) (2025-07-01)
+
+
+### Bug Fixes
+
+* remove useless package ([#202](https://github.com/AIGNE-io/aigne-framework/issues/202)) ([6189433](https://github.com/AIGNE-io/aigne-framework/commit/6189433aa439813304b6b5ff36b3cbd6d552c53d))
+
 ## [1.30.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.29.0...aigne-framework-v1.30.0) (2025-07-01)
 
 

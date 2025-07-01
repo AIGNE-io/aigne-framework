@@ -1,6 +1,6 @@
 {
   "name": "@aigne/observability-ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
     "access": "public"

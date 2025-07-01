@@ -7,9 +7,6 @@
 
 * The following workspace dependencies were updated
   * dependencies
-    * @aigne/core bumped to 1.28.0
-    * @aigne/openai bumped to 0.6.0
-    * @aigne/transport bumped to 0.7.0
 
 ## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.5.0...blocklet-observability-v1.6.0) (2025-07-01)
 
@@ -23,9 +20,6 @@
 
 * The following workspace dependencies were updated
   * dependencies
-    * @aigne/core bumped to 1.27.0
-    * @aigne/openai bumped to 0.5.0
-    * @aigne/transport bumped to 0.6.4
 
 ## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.4.0...blocklet-observability-v1.5.0) (2025-06-30)
 
@@ -39,10 +33,7 @@
 
 * The following workspace dependencies were updated
   * dependencies
-    * @aigne/core bumped to 1.26.0
     * @aigne/observability bumped to 0.3.0
-    * @aigne/openai bumped to 0.4.3
-    * @aigne/transport bumped to 0.6.3
 
 ## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.3.0...blocklet-observability-v1.4.0) (2025-06-29)
 
@@ -64,10 +55,7 @@
 
 * The following workspace dependencies were updated
   * dependencies
-    * @aigne/core bumped to 1.25.0
     * @aigne/observability bumped to 0.2.0
-    * @aigne/openai bumped to 0.4.2
-    * @aigne/transport bumped to 0.6.2
 
 ## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-v1.2.2...observability-v1.3.0) (2025-06-26)
 
@@ -88,10 +76,7 @@
 
 * The following workspace dependencies were updated
   * dependencies
-    * @aigne/core bumped to 1.24.1
     * @aigne/observability bumped to 0.1.3
-    * @aigne/openai bumped to 0.4.1
-    * @aigne/transport bumped to 0.6.1
 
 ## [1.2.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-v1.2.1...observability-v1.2.2) (2025-06-26)
 
@@ -100,10 +85,7 @@
 
 * The following workspace dependencies were updated
   * dependencies
-    * @aigne/core bumped to 1.24.0
     * @aigne/observability bumped to 0.1.2
-    * @aigne/openai bumped to 0.4.0
-    * @aigne/transport bumped to 0.6.0
 
 ## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-v1.2.0...observability-v1.2.1) (2025-06-25)
 
@@ -112,9 +94,6 @@
 
 * The following workspace dependencies were updated
   * dependencies
-    * @aigne/core bumped to 1.23.1
-    * @aigne/openai bumped to 0.3.6
-    * @aigne/transport bumped to 0.5.2
 
 ## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-v1.1.1...observability-v1.2.0) (2025-06-25)
 
@@ -162,7 +141,4 @@
 
 * The following workspace dependencies were updated
   * dependencies
-    * @aigne/core bumped to 1.23.0
     * @aigne/observability bumped to 0.1.1
-    * @aigne/openai bumped to 0.3.5
-    * @aigne/transport bumped to 0.5.1

@@ -13,7 +13,7 @@ export async function startObservabilityCLIServer(
   const distPath = path.join(import.meta.dirname, "../../../dist");
   app.use(express.static(distPath));
   app.get("/{*splat}", (_req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
+    res.sendFile("index.html", { root: distPath });
   });
 
   return { app, server };

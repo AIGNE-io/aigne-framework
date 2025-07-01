@@ -281,7 +281,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             }}
             search={search.searchText}
             searchText={search.searchText}
-            searchTextUpdate={(text:string) => setSearch((x) => ({ ...x, searchText: text }))}
+            searchTextUpdate={(text: string) => setSearch((x) => ({ ...x, searchText: text }))}
             searchClose={() => setSearch((x) => ({ ...x, searchText: "" }))}
             onSearchOpen={() => {}}
           />

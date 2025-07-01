@@ -1,6 +1,6 @@
-# 服务部署
+# 监控 Agent
 
-[English](observability.md) | **中文**
+[English](observe.md) | **中文**
 
 使用 AIGNE CLI 启动数据监控服务。
 

@@ -2,7 +2,7 @@ import InfoRow from "@arcblock/ux/lib/InfoRow";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import Tag from "@arcblock/ux/lib/Tag";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
+import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -28,6 +28,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
   const { t } = useLocaleContext();
   const getPrices = useGetTokenPrice();
   const { view, renderView } = useSwitchView();
+  const isMobile = useMediaQuery("(max-width: 1440px)");
 
   const hasError = trace?.status?.code === 2;
   const hasUserContext =
@@ -129,21 +130,20 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
       <Box sx={{ my: 1 }}>
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            columnGap: "48px",
-            rowGap: "4px",
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 0 : 6,
           }}
         >
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={120} name="ID">
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", flex: 1 }}>
+            <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={90} name="ID">
               <Box sx={{ textAlign: "right" }}>{trace?.id}</Box>
             </InfoRowBox>
 
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={120}
+              nameWidth={90}
               name={t("startTime")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -160,7 +160,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={120}
+              nameWidth={90}
               name={t("endTime")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -177,7 +177,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={120}
+              nameWidth={90}
               name={t("duration")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -188,12 +188,12 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
             </InfoRowBox>
           </Box>
 
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flex: 1 }}>
             {!!inputTokens && (
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={120}
+                nameWidth={90}
                 name={t("inputTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -206,7 +206,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={120}
+                nameWidth={90}
                 name={t("outputTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -219,7 +219,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={120}
+                nameWidth={90}
                 name={t("totalTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -232,7 +232,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={120}
+                nameWidth={90}
                 name={t("model")}
               >
                 <Box
@@ -244,8 +244,6 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
                     justifyContent: "flex-end",
                   }}
                 >
-                  <Tag>{model}</Tag>
-
                   {modelPricesAndContextWindow[
                     model as keyof typeof modelPricesAndContextWindow
                   ] && (
@@ -266,7 +264,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
                         />
                       }
                     >
-                      <InfoIcon sx={{ color: "text.secondary", fontSize: 18, cursor: "pointer" }} />
+                      <Tag sx={{ cursor: "pointer" }}>{model}</Tag>
                     </Tooltip>
                   )}
                 </Box>
@@ -326,7 +324,6 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
 
 const InfoRowBox = styled(InfoRow)`
   margin-bottom: 8px;
-  max-width: 400px;
   width: 100%;
 
   .info-row__name {

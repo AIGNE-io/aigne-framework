@@ -21,6 +21,7 @@ const Status = () => {
         height: 6,
         borderRadius: "50%",
         backgroundColor: "warning.light",
+        flexShrink: 0,
         ...breathingStyle,
       }}
     />

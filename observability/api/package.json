@@ -97,6 +97,7 @@
     "@opentelemetry/core": "^2.0.1",
     "@opentelemetry/sdk-node": "^0.202.0",
     "@opentelemetry/sdk-trace-base": "^2.0.1",
+    "chalk": "^5.4.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv-flow": "^4.1.0",
@@ -108,10 +109,10 @@
     "zod": "^3.25.23"
   },
   "devDependencies": {
-    "@types/dotenv-flow": "^3.3.3",
     "@eslint/js": "^9.25.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
+    "@types/dotenv-flow": "^3.3.3",
     "@types/express": "^5.0.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.25.0",

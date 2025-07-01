@@ -1,5 +1,6 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { Box, Card, LinearProgress, Tooltip, Typography } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import type { ReactElement } from "react";
 import { parseDurationMs } from "../../utils/latency.ts";
 import Status from "../status.tsx";
@@ -32,6 +33,7 @@ function TraceItem({
   const widthPercent = Math.min((duration / totalDuration) * 100 || 0, 100);
   const marginLeftPercent = (start / totalDuration) * 100;
   const { t } = useLocaleContext();
+  const isMobile = useMediaQuery("(max-width: 1440px)");
 
   const getBorderColor = () => {
     if (selected) {
@@ -81,9 +83,11 @@ function TraceItem({
           {status === 0 && <Status />}
         </Box>
 
-        <Box sx={{ mr: 2 }}>
-          <AgentTag agentTag={agentTag} />
-        </Box>
+        {!isMobile && (
+          <Box sx={{ mr: 2 }}>
+            <AgentTag agentTag={agentTag} />
+          </Box>
+        )}
 
         <Typography variant="caption" sx={{ minWidth: 60, flexShrink: 0, ml: "auto", mr: 1 }}>
           {duration}s

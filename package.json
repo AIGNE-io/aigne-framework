@@ -23,7 +23,7 @@
     "test:coverage": "pnpm -r run test:coverage",
     "postinstall": "npx simple-git-hooks",
     "publish:docs": "pnpm build:docs && bun scripts/publish-docs.ts",
-    "build:markdown": "remark ./*.md docs/ -o --silently-ignore"
+    "build:markdown": "remark ./*.md docs/ examples/**/*.md packages/**/*.md models/**/*.md blocklets/**/*.md -o --silently-ignore"
   },
   "devDependencies": {
     "@aigne/publish-docs": "workspace:^",

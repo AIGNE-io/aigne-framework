@@ -80,6 +80,7 @@ console.log(result);
 ## Streaming Responses
 
 ```typescript file="test/deepseek-chat-model.test.ts" region="example-deepseek-chat-model-streaming"
+import { isAgentResponseDelta } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 
 const model = new DeepSeekChatModel({
@@ -91,7 +92,6 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Introduce yourself" }],
   },
-  undefined,
   { streaming: true },
 );
 
@@ -99,9 +99,11 @@ let fullText = "";
 const json = {};
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 
 console.log(fullText); // Output: "Hello! I'm an AI assistant powered by DeepSeek's language model."

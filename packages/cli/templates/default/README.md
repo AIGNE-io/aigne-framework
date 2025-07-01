@@ -17,6 +17,16 @@ This is the default project template for the AIGNE framework, providing a basic 
 npm install -g aigne
 ```
 
+### Setup Environment Variables
+
+Copy the `.env.local.example` file to `.env.local` and set your OpenAI API key:
+
+```shell
+# OpenAI
+MODEL="openai:gpt-4.1"
+OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
 ### Start the Project
 
 ```bash

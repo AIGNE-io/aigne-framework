@@ -44,6 +44,7 @@ export interface RunAIGNECommandOptions {
   input?: string[];
   format?: "text" | "json" | "yaml";
   output?: string;
+  outputKey?: string;
   logLevel?: LogLevel;
   force?: boolean;
 }
@@ -243,7 +244,7 @@ export async function runWithAIGNE(
 
         await runAgentWithAIGNE(aigne, agent, {
           ...options,
-          outputKey,
+          outputKey: outputKey || options.outputKey,
           chatLoopOptions,
           modelOptions,
           input,
@@ -307,6 +308,7 @@ export async function runAgentWithAIGNE(
 
     await runChatLoopInTerminal(userAgent, {
       ...chatLoopOptions,
+      outputKey,
     });
 
     return;

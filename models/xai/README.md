@@ -80,6 +80,7 @@ console.log(result);
 ## Streaming Responses
 
 ```typescript file="test/xai-chat-model.test.ts" region="example-xai-chat-model-streaming"
+import { isAgentResponseDelta } from "@aigne/core";
 import { XAIChatModel } from "@aigne/xai";
 
 const model = new XAIChatModel({
@@ -91,7 +92,6 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Tell me about yourself" }],
   },
-  undefined,
   { streaming: true },
 );
 
@@ -99,9 +99,11 @@ let fullText = "";
 const json = {};
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 
 console.log(fullText); // Output: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!"

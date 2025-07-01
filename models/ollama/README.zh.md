@@ -80,6 +80,7 @@ console.log(result);
 ## 流式响应
 
 ```typescript file="test/ollama-chat-model.test.ts" region="example-ollama-chat-model-streaming"
+import { isAgentResponseDelta } from "@aigne/core";
 import { OllamaChatModel } from "@aigne/ollama";
 
 const model = new OllamaChatModel({
@@ -91,7 +92,6 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Tell me what model you're using" }],
   },
-  undefined,
   { streaming: true },
 );
 
@@ -99,9 +99,11 @@ let fullText = "";
 const json = {};
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 
 console.log(fullText); // Output: "I'm an AI assistant running on Ollama with the llama3 model."

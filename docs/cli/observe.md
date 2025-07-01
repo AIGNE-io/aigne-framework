@@ -1,6 +1,6 @@
-# Service Deployment
+# Observe Agent
 
-**English** | [中文](observability.zh.md)
+**English** | [中文](observe.zh.md)
 
 Use the AIGNE CLI to start the observability service.
 

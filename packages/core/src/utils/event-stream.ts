@@ -10,7 +10,7 @@ import {
 } from "../agents/agent.js";
 import type { Context, ContextEventMap } from "../aigne/context.js";
 import { tryOrThrow } from "./type-utils.js";
-import type { Listener } from "./typed-event-emtter.js";
+import type { Listener } from "./typed-event-emitter.js";
 
 export class EventStreamParser<T> extends TransformStream<string, T | Error> {
   constructor() {

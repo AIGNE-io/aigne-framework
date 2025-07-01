@@ -82,6 +82,7 @@ console.log(result);
 
 ```typescript file="test/anthropic-chat-model.test.ts" region="example-anthropic-chat-model-streaming-async-generator"
 import { AnthropicChatModel } from "@aigne/anthropic";
+import { isAgentResponseDelta } from "@aigne/core";
 
 const model = new AnthropicChatModel({
   apiKey: "your-api-key",
@@ -92,7 +93,6 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Tell me about yourself" }],
   },
-  undefined,
   { streaming: true },
 );
 
@@ -100,9 +100,11 @@ let fullText = "";
 const json = {};
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 
 console.log(fullText); // Output: "I'm Claude, an AI assistant created by Anthropic. How can I help you today?"

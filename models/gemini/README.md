@@ -77,6 +77,7 @@ console.log(result);
 ## Streaming Responses
 
 ```typescript file="test/gemini-chat-model.test.ts" region="example-gemini-chat-model-streaming"
+import { isAgentResponseDelta } from "@aigne/core";
 import { GeminiChatModel } from "@aigne/gemini";
 
 const model = new GeminiChatModel({
@@ -88,7 +89,6 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Hi there, introduce yourself" }],
   },
-  undefined,
   { streaming: true },
 );
 
@@ -96,9 +96,11 @@ let fullText = "";
 const json = {};
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 
 console.log(fullText); // Output: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?"

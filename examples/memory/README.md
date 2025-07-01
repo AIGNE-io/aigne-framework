@@ -4,11 +4,11 @@ This example demonstrates how to create a chatbot with memory capabilities using
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org) and npm installed on your machine
-- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
-- Optional dependencies (if running the example from source code):
-  - [Pnpm](https://pnpm.io) for package management
-  - [Bun](https://bun.sh) for running unit tests & examples
+* [Node.js](https://nodejs.org) and npm installed on your machine
+* An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+* Optional dependencies (if running the example from source code):
+  * [Pnpm](https://pnpm.io) for package management
+  * [Bun](https://bun.sh) for running unit tests & examples
 
 ## Quick Start (No Installation Required)
 
@@ -43,6 +43,21 @@ Setup your OpenAI API key in the `.env.local` file:
 OPENAI_API_KEY="" # Set your OpenAI API key here
 ```
 
+#### Using Different Models
+
+You can use different AI models by setting the `MODEL` environment variable along with the corresponding API key. The framework supports multiple providers:
+
+* **OpenAI**: `MODEL="openai:gpt-4.1"` with `OPENAI_API_KEY`
+* **Anthropic**: `MODEL="anthropic:claude-3-7-sonnet-latest"` with `ANTHROPIC_API_KEY`
+* **Google Gemini**: `MODEL="gemini:gemini-2.0-flash"` with `GEMINI_API_KEY`
+* **AWS Bedrock**: `MODEL="bedrock:us.amazon.nova-premier-v1:0"` with AWS credentials
+* **DeepSeek**: `MODEL="deepseek:deepseek-chat"` with `DEEPSEEK_API_KEY`
+* **OpenRouter**: `MODEL="openrouter:openai/gpt-4o"` with `OPEN_ROUTER_API_KEY`
+* **xAI**: `MODEL="xai:grok-2-latest"` with `XAI_API_KEY`
+* **Ollama**: `MODEL="ollama:llama3.2"` with `OLLAMA_DEFAULT_BASE_URL`
+
+For detailed configuration examples, please refer to the `.env.local.example` file in this directory.
+
 ### Run the Example
 
 ```bash
@@ -55,9 +70,9 @@ This example uses the `FSMemory` plugin from `@aigne/agent-library` to persist c
 
 Key features of the memory implementation:
 
-- Conversations are stored in a file system for persistence
-- The chatbot can recall previous interactions even after restarting
-- You can test this by chatting with the bot, closing the session, and starting a new one
+* Conversations are stored in a file system for persistence
+* The chatbot can recall previous interactions even after restarting
+* You can test this by chatting with the bot, closing the session, and starting a new one
 
 ## Example Usage
 

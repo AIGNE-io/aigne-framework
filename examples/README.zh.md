@@ -45,27 +45,62 @@ npx -y @aigne/example-chat-bot --chat
 
 ### 使用不同的大语言模型
 
-使用 OpenAI 模型
+OpenAI
 
 ```bash
 export MODEL=openai:gpt-4.1 # 设置模型为 OpenAI 的 gpt-4.1
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # 设置你的 OpenAI API 密钥
 ```
 
-使用 Anthropic claude 模型
+Anthropic claude
 
 ```bash
-export MODEL=anthropic:claude-3-7-sonnet-latest # 设置模型为 Anthropic 的最新版本
+export MODEL=anthropic:claude-3-7-sonnet-latest # 设置模型为 Claude
 export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY # 设置你的 Anthropic API 密钥
 ```
 
-使用 Bedrock nova 模型
+Gemini
+
+```bash
+export MODEL=gemini:gemini-2.0-flash # 设置模型为 Gemini
+export GEMINI_API_KEY="" # 设置你的 Gemini API 密钥
+```
+
+Bedrock nova
 
 ```bash
 export MODEL=bedrock:us.amazon.nova-premier-v1:0 # 设置模型为 AWS Bedrock 的 Nova Premier
 export AWS_ACCESS_KEY_ID="" # 设置 AWS 访问密钥 ID
 export AWS_SECRET_ACCESS_KEY="" # 设置 AWS 凭证
 export AWS_REGION="" # 设置 AWS 区域，如 us-west-2
+```
+
+DeepSeek
+
+```bash
+export MODEL=deepseek:deepseek-chat # 设置模型为 DeepSeek 的 DeepSeek Chat
+export DEEPSEEK_API_KEY="" # 设置你的 DeepSeek API 密钥
+```
+
+OpenRouter
+
+```bash
+export MODEL=openrouter:openai/gpt-4o # 设置模型为 OpenRouter 的 GPT-4o
+export OPEN_ROUTER_API_KEY="" # 设置你的 OpenRouter API 密钥
+```
+
+xAI
+
+```bash
+export MODEL=xai:grok-2-latest # 设置模型为 xAI 的 Grok 2
+export XAI_API_KEY="" # 设置你的 xAI API 密钥
+```
+
+Ollama
+
+```bash
+export MODEL=ollama:llama3.2 # 设置模型为 Ollama 的 Llama 3.2
+export OLLAMA_DEFAULT_BASE_URL="http://localhost:11434/v1"; # 设置 Ollama 的默认 API 地址
 ```
 
 ### 输出调试日志

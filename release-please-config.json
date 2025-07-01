@@ -10,8 +10,6 @@
     "packages/cli": {},
     "packages/test-utils": {},
     "packages/transport": {},
-    "observability/api": {},
-    "observability/ui": {},
     "models/anthropic": {},
     "models/bedrock": {},
     "models/deepseek": {},
@@ -30,6 +28,8 @@
         }
       ]
     },
+    "observability/api": {},
+    "observability/ui": {},
     "examples/mcp-github": {},
     "examples/mcp-puppeteer": {},
     "examples/mcp-sqlite": {},

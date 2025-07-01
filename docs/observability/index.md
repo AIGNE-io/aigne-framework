@@ -1,8 +1,8 @@
-# AIGNE Monitor
+# AIGNE Observability
 
 **English** | [中文](index.zh.md)
 
-AIGNE Monitor is a powerful visualization tool built on OpenTelemetry, specifically designed for monitoring and analyzing AI Agent data flows. With AIGNE Monitor, you can:
+AIGNE Observability is a powerful visualization tool built on OpenTelemetry, specifically designed for monitoring and analyzing AI Agent data flows. With AIGNE Observability, you can:
 
 * **📊 Real-time Monitoring** - Visualize trace data and call chains, understand Agent runtime status in real-time
 * **🔍 Precise Positioning** - Accurately identify AIGNE internal workflows, quickly locate issues
@@ -10,11 +10,11 @@ AIGNE Monitor is a powerful visualization tool built on OpenTelemetry, specifica
 * **📈 Comprehensive Observability** - Collect Trace and Log data, providing complete observability
 * **🔧 Seamless Integration** - Can be used as a standalone service or integrated into AIGNE runtime
 
-AIGNE Monitor makes AI Agent runtime status transparent and visible. Whether you're developing and debugging or monitoring production, you can gain deep insights and analytical capabilities.
+AIGNE Observability makes AI Agent runtime status transparent and visible. Whether you're developing and debugging or monitoring production, you can gain deep insights and analytical capabilities.
 
-## Installing AIGNE Monitor
+## Installing AIGNE Observability
 
-AIGNE Monitor is included in the `@aigne/cli` package and can also be used as a standalone Blocklet.
+AIGNE Observability is included in the `@aigne/cli` package and can also be used as a standalone Blocklet.
 
 ### Install via CLI
 
@@ -22,7 +22,7 @@ AIGNE Monitor is included in the `@aigne/cli` package and can also be used as a 
 npm install -g @aigne/cli
 ```
 
-After installation, you can start the monitor with the following command:
+After installation, you can start the observability with the following command:
 
 ```bash
 aigne observe
@@ -30,31 +30,31 @@ aigne observe
 
 ### Install via Blocklet
 
-You can also directly install the [AIGNE Observability Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) to use the monitor functionality in a Blocklet environment.
+You can also directly install the [AIGNE Observability Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) to use the observability functionality in a Blocklet environment.
 
 ## Quick Start
 
 ### Basic Operations
 
-* [**📊 Using the Monitor**](observe.md) - Start and use the monitor service
-* [**🔧 Running Examples**](observe.md#running-example-applications) - Run example applications to see monitoring effects
+* [**📊 Using the Observability**](observe.md) - Start and use the observability service
+* [**🔧 Running Examples**](observe.md#running-example-applications) - Run example applications to see observability effects
 
-### Starting the Monitor
+### Starting the Observability
 
-Use the following command to quickly start AIGNE Monitor:
+Use the following command to quickly start AIGNE Observability:
 
 ```bash
 aigne observe
 ```
 
-After successful startup, visit `http://localhost:7890` in your browser to view the monitor interface.
+After successful startup, visit `http://localhost:7890` in your browser to view the observability interface.
 
 ## Key Features
 
-### Real-time Trace Monitoring
+### Real-time Trace
 
 * **Call Chain Visualization** - Clearly display call relationships and data flow between Agents
-* **Performance Metrics** - Monitor key performance indicators like response time and throughput
+* **Performance Metrics** - Observability key performance indicators like response time and throughput
 * **Error Tracking** - Quickly identify and locate runtime errors
 
 ### Data Collection and Analysis
@@ -73,7 +73,7 @@ After successful startup, visit `http://localhost:7890` in your browser to view 
 
 ### Development and Debugging
 
-When developing AI Agents, use the monitor to:
+When developing AI Agents, use the observability to:
 
 * View Agent execution flow in real-time
 * Quickly locate code issues and performance bottlenecks

@@ -1,12 +1,12 @@
-# Using the Monitor
+# Using the Observability
 
 **English** | [中文](observe.zh.md)
 
-Use AIGNE CLI to start the data monitoring service, monitor and analyze AI Agent runtime status in real-time.
+Use AIGNE CLI to start the observability service, monitor and analyze AI Agent runtime status in real-time.
 
 ## `aigne observe` Command
 
-AIGNE Monitor provides a powerful visualization interface to help you monitor Agent data flow.
+AIGNE Observability provides a powerful visualization interface to help you monitor Agent data flow.
 
 ```bash
 aigne observe [options]
@@ -14,13 +14,13 @@ aigne observe [options]
 
 ### Options
 
-* `--host <host>`: Host address to run the monitor service (default is "localhost"), use "0.0.0.0" to publicly expose the server
-* `--port <port>`: Port to run the monitor service (uses PORT environment variable if set, otherwise defaults to 7890)
+* `--host <host>`: Host address to run the observability service (default is "localhost"), use "0.0.0.0" to publicly expose the server
+* `--port <port>`: Port to run the observability service (uses PORT environment variable if set, otherwise defaults to 7890)
 * `--help`: Display command help
 
 ### Basic Usage Examples
 
-Start the monitor service:
+Start the observability service:
 
 ```bash
 aigne observe
@@ -32,7 +32,7 @@ After successful startup, the command will display the server running address:
 Running observability server on http://localhost:7890
 ```
 
-Visit this address in your browser to view the monitor interface.
+Visit this address in your browser to view the observability interface.
 
 #### Using Custom Port
 
@@ -61,7 +61,7 @@ PORT=8080 aigne observe
 
 ## Running Example Applications
 
-When running example AIGNE applications, you can view Agent data flow and call chains in real-time in the monitor.
+When running example AIGNE applications, you can view Agent data flow and call chains in real-time in the observability.
 
 ```bash
 # Set OpenAI API key

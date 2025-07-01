@@ -6,9 +6,6 @@ This example demonstrates how to create and run an agent-based chatbot using the
 
 - [Node.js](https://nodejs.org) and npm installed on your machine
 - An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
-- Optional dependencies (if running the example from source code):
-  - [Pnpm](https://pnpm.io) for package management
-  - [Bun](https://bun.sh) for running unit tests & examples
 
 ## Quick Start (No Installation Required)
 
@@ -27,23 +24,23 @@ echo "Tell me about AIGNE Framework" | npx -y @aigne/example-chat-bot
 
 ## Installation
 
+### Install AIGNE CLI
+
+```bash
+npm install -g @aigne/cli
+```
+
 ### Clone the Repository
 
 ```bash
 git clone https://github.com/AIGNE-io/aigne-framework
-```
 
-### Install Dependencies
-
-```bash
 cd aigne-framework/examples/chat-bot
-
-pnpm install
 ```
 
 ### Setup Environment Variables
 
-Setup your OpenAI API key in the `.env.local` file:
+Setup your OpenAI API key in the `.env.local` file (you can rename `.env.local.example` to `.env.local`):
 
 ```bash
 OPENAI_API_KEY="" # Set your OpenAI API key here
@@ -52,13 +49,13 @@ OPENAI_API_KEY="" # Set your OpenAI API key here
 ### Run the Example
 
 ```bash
-pnpm start # Run in one-shot mode (default)
+aigne run # Run in one-shot mode (default)
 
 # Run in interactive chat mode
-pnpm start -- --chat
+aigne run --chat
 
 # Use pipeline input
-echo "Tell me about AIGNE Framework" | pnpm start
+echo "Tell me about AIGNE Framework" | aigne run
 ```
 
 ### Run Options
@@ -75,16 +72,3 @@ The example supports the following command-line parameters:
 | `--frequency-penalty <value>` | Frequency penalty value | Provider default |
 | `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
 | `--input`, `-i <input>` | Specify input directly | None |
-
-#### Examples
-
-```bash
-# Run in chat mode (interactive)
-pnpm start -- --chat
-
-# Set logging level
-pnpm start -- --log-level DEBUG
-
-# Use pipeline input
-echo "Tell me about AIGNE Framework" | pnpm start
-```

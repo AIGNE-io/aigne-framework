@@ -10,23 +10,12 @@
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
   "type": "module",
-  "bin": "index.ts",
-  "files": [
-    "agents",
-    ".env.local.example",
-    "*.ts",
-    "README.md"
-  ],
+  "bin": "index.js",
   "scripts": {
-    "start": "bun run index.ts",
-    "lint": "tsc --noEmit",
-    "test:llm": "bun test index.test.ts"
+    "test": "aigne test",
+    "test:llm": "aigne run"
   },
   "dependencies": {
     "@aigne/cli": "workspace:^"
-  },
-  "devDependencies": {
-    "@aigne/test-utils": "workspace:^",
-    "@types/bun": "^1.2.9"
   }
 }

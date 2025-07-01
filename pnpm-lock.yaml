@@ -304,13 +304,6 @@ importers:
       '@aigne/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
-      '@types/bun':
-        specifier: ^1.2.9
-        version: 1.2.12
 
   examples/mcp-blocklet:
     dependencies:

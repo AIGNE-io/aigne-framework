@@ -72,22 +72,22 @@ jobs:
           npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
           pnpm -F "@aigne/*" publish --access public --no-git-checks
 
-      - name: Check if blocklets/observability version changed
+      - name: Check if observability/blocklet version changed
         if: ${{ steps.release.outputs.release_created }}
         id: blocklets-observability-version-check
         run: |
-          if git diff HEAD~1 HEAD -- blocklets/observability/package.json | grep '"version"'; then
+          if git diff HEAD~1 HEAD -- observability/blocklet/package.json | grep '"version"'; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Remove h3 from blocklets/observability/CHANGELOG.md
+      - name: Remove h3 from observability/blocklet/CHANGELOG.md
         if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
         run: |
-          if [ -f blocklets/observability/CHANGELOG.md ]; then
-            sed -E -i "s/^### (.*)$/**\1**/" blocklets/observability/CHANGELOG.md
-            sed -E -i "/^# Changelog$/d" blocklets/observability/CHANGELOG.md
+          if [ -f observability/blocklet/CHANGELOG.md ]; then
+            sed -E -i "s/^### (.*)$/**\1**/" observability/blocklet/CHANGELOG.md
+            sed -E -i "/^# Changelog$/d" observability/blocklet/CHANGELOG.md
           fi
 
       - name: Blocklet workflow
@@ -101,7 +101,7 @@ jobs:
           skip-upload: false
           skip-deploy: true
           skip-release: true
-          working-directory: blocklets/observability
+          working-directory: observability/blocklet
           bundle-command: pnpm bundle
           store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
           store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}

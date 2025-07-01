@@ -63,187 +63,6 @@ importers:
         specifier: ^8.5.4
         version: 8.5.4
 
-  blocklets/observability:
-    dependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@aigne/observability-api':
-        specifier: workspace:^
-        version: link:../../packages/observability-api
-      '@aigne/observability-ui':
-        specifier: workspace:^
-        version: link:../../packages/observability-ui
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../../models/openai
-      '@aigne/sqlite':
-        specifier: workspace:^
-        version: link:../../packages/sqlite
-      '@aigne/transport':
-        specifier: workspace:^
-        version: link:../../packages/transport
-      '@arcblock/did-connect':
-        specifier: ^3.0.9
-        version: 3.0.9(b72dcae9636637f1ac038b78fb0a3555)
-      '@arcblock/ux':
-        specifier: ^3.0.9
-        version: 3.0.9(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.1.2(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mui/utils@7.1.1(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(immer@10.1.1)(prop-types@15.8.1)(react-dom@19.1.0(react@19.1.0))(react-router-dom@7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
-      '@biomejs/biome':
-        specifier: ^1.9.4
-        version: 1.9.4
-      '@biomejs/js-api':
-        specifier: ^0.7.1
-        version: 0.7.1(@biomejs/wasm-nodejs@1.9.4)
-      '@biomejs/wasm-nodejs':
-        specifier: ^1.9.4
-        version: 1.9.4
-      '@blocklet/sdk':
-        specifier: ^1.16.44
-        version: 1.16.44(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.1.2(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
-      '@blocklet/ui-react':
-        specifier: ^3.0.9
-        version: 3.0.9(eccc9fc6c1b717f4b81f45fe12d21e12)
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.1.8)(react@19.1.0)
-      '@emotion/styled':
-        specifier: ^11.14.1
-        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
-      '@microsoft/fetch-event-source':
-        specifier: ^2.0.1
-        version: 2.0.1
-      '@mui/material':
-        specifier: ^7.1.2
-        version: 7.1.2(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@mui/x-data-grid':
-        specifier: ^8.6.0
-        version: 8.6.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.1.2(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mui/system@7.1.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@opentelemetry/api':
-        specifier: ^1.9.0
-        version: 1.9.0
-      '@opentelemetry/core':
-        specifier: ^2.0.1
-        version: 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-node':
-        specifier: ^0.202.0
-        version: 0.202.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-base':
-        specifier: ^2.0.1
-        version: 2.0.1(@opentelemetry/api@1.9.0)
-      '@types/dotenv-flow':
-        specifier: ^3.3.3
-        version: 3.3.3
-      bumpp:
-        specifier: ^10.2.0
-        version: 10.2.0
-      compression:
-        specifier: ^1.8.0
-        version: 1.8.0
-      cookie-parser:
-        specifier: ^1.4.7
-        version: 1.4.7
-      cors:
-        specifier: ^2.8.5
-        version: 2.8.5
-      dotenv-flow:
-        specifier: ^4.1.0
-        version: 4.1.0
-      drizzle-orm:
-        specifier: ^0.43.1
-        version: 0.43.1(@libsql/client@0.15.7)(@opentelemetry/api@1.9.0)(bun-types@1.2.17)(sqlite3@5.1.7)
-      express:
-        specifier: ^5.1.0
-        version: 5.1.0
-      express-sse:
-        specifier: ^1.0.0
-        version: 1.0.0
-      flat:
-        specifier: ^6.0.1
-        version: 6.0.1
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      nodemon:
-        specifier: ^3.1.10
-        version: 3.1.10
-      react:
-        specifier: ^19.1.0
-        version: 19.1.0
-      react-dom:
-        specifier: ^19.1.0
-        version: 19.1.0(react@19.1.0)
-      react-json-view:
-        specifier: ^1.21.3
-        version: 1.21.3(@types/react@19.1.8)(encoding@0.1.13)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      tinycolor2:
-        specifier: ^1.6.0
-        version: 1.6.0
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      vite-plugin-blocklet:
-        specifier: ^0.10.0
-        version: 0.10.0(rollup@4.41.1)(vite@7.0.0(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0))
-      zod:
-        specifier: ^3.25.23
-        version: 3.25.23
-    devDependencies:
-      '@eslint/js':
-        specifier: ^9.25.0
-        version: 9.29.0
-      '@types/cookie-parser':
-        specifier: ^1.4.9
-        version: 1.4.9(@types/express@5.0.1)
-      '@types/cors':
-        specifier: ^2.8.19
-        version: 2.8.19
-      '@types/lodash':
-        specifier: ^4.17.17
-        version: 4.17.18
-      '@types/react':
-        specifier: ^19.1.8
-        version: 19.1.8
-      '@types/react-dom':
-        specifier: ^19.1.6
-        version: 19.1.6(@types/react@19.1.8)
-      '@vitejs/plugin-react':
-        specifier: ^4.6.0
-        version: 4.6.0(vite@7.0.0(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0))
-      cross-env:
-        specifier: ^7.0.3
-        version: 7.0.3
-      eslint:
-        specifier: ^9.25.0
-        version: 9.29.0(jiti@2.4.2)
-      eslint-plugin-react-hooks:
-        specifier: ^5.2.0
-        version: 5.2.0(eslint@9.29.0(jiti@2.4.2))
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.19
-        version: 0.4.20(eslint@9.29.0(jiti@2.4.2))
-      globals:
-        specifier: ^16.0.0
-        version: 16.2.0
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      typescript-eslint:
-        specifier: ^8.30.1
-        version: 8.34.1(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
-      vite:
-        specifier: ^7.0.0
-        version: 7.0.0(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0)
-      zx:
-        specifier: ^8.5.4
-        version: 8.5.4
-
   docs-examples:
     dependencies:
       '@aigne/agent-library':
@@ -858,299 +677,14 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/agent-library:
-    dependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../../models/openai
-      '@aigne/sqlite':
-        specifier: workspace:^
-        version: link:../sqlite
-      drizzle-orm:
-        specifier: ^0.43.1
-        version: 0.43.1(@libsql/client@0.15.7)(@opentelemetry/api@1.9.0)(bun-types@1.2.17)(sqlite3@5.1.7)
-      fastq:
-        specifier: ^1.19.1
-        version: 1.19.1
-      jsonata:
-        specifier: ^2.0.6
-        version: 2.0.6
-      jsonschema:
-        specifier: ^1.5.0
-        version: 1.5.0
-      to-json-schema:
-        specifier: ^0.2.5
-        version: 0.2.5
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      yaml:
-        specifier: ^2.7.1
-        version: 2.8.0
-      zod:
-        specifier: ^3.24.4
-        version: 3.25.23
-    devDependencies:
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/to-json-schema':
-        specifier: ^0.2.4
-        version: 0.2.4
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/cli:
-    dependencies:
-      '@aigne/agent-library':
-        specifier: workspace:^
-        version: link:../agent-library
-      '@aigne/anthropic':
-        specifier: workspace:^
-        version: link:../../models/anthropic
-      '@aigne/bedrock':
-        specifier: workspace:^
-        version: link:../../models/bedrock
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
-      '@aigne/deepseek':
-        specifier: workspace:^
-        version: link:../../models/deepseek
-      '@aigne/gemini':
-        specifier: workspace:^
-        version: link:../../models/gemini
-      '@aigne/listr2':
-        specifier: ^1.0.10
-        version: 1.0.10
-      '@aigne/marked-terminal':
-        specifier: ^7.3.1
-        version: 7.3.1(marked@15.0.12)
-      '@aigne/observability-api':
-        specifier: workspace:^
-        version: link:../observability-api
-      '@aigne/ollama':
-        specifier: workspace:^
-        version: link:../../models/ollama
-      '@aigne/open-router':
-        specifier: workspace:^
-        version: link:../../models/open-router
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../../models/openai
-      '@aigne/xai':
-        specifier: workspace:^
-        version: link:../../models/xai
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.11.0
-        version: 1.11.0
-      '@smithy/node-http-handler':
-        specifier: ^4.0.6
-        version: 4.0.6
-      chalk:
-        specifier: ^5.4.1
-        version: 5.4.1
-      commander:
-        specifier: ^13.1.0
-        version: 13.1.0
-      detect-port:
-        specifier: ^2.1.0
-        version: 2.1.0
-      dotenv-flow:
-        specifier: ^4.1.0
-        version: 4.1.0
-      express:
-        specifier: ^5.1.0
-        version: 5.1.0
-      glob:
-        specifier: ^11.0.2
-        version: 11.0.2
-      gradient-string:
-        specifier: ^3.0.0
-        version: 3.0.0
-      https-proxy-agent:
-        specifier: ^7.0.6
-        version: 7.0.6
-      inquirer:
-        specifier: ^12.6.0
-        version: 12.6.0(@types/node@22.15.15)
-      marked:
-        specifier: ^15.0.11
-        version: 15.0.12
-      prettier:
-        specifier: ^3.5.3
-        version: 3.5.3
-      pretty-error:
-        specifier: ^4.0.0
-        version: 4.0.0
-      tar:
-        specifier: ^7.4.3
-        version: 7.4.3
-      wrap-ansi:
-        specifier: ^9.0.0
-        version: 9.0.0
-      yaml:
-        specifier: ^2.7.1
-        version: 2.8.0
-      zod:
-        specifier: ^3.24.4
-        version: 3.25.23
-    devDependencies:
-      '@types/archiver':
-        specifier: ^6.0.3
-        version: 6.0.3
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/express':
-        specifier: ^5.0.1
-        version: 5.0.1
-      '@types/glob':
-        specifier: ^8.1.0
-        version: 8.1.0
-      '@types/gradient-string':
-        specifier: ^1.1.6
-        version: 1.1.6
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      archiver:
-        specifier: ^7.0.1
-        version: 7.0.1
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      ufo:
-        specifier: ^1.6.1
-        version: 1.6.1
-
-  packages/core:
-    dependencies:
-      '@aigne/json-schema-to-zod':
-        specifier: ^1.3.3
-        version: 1.3.3(zod@3.25.23)
-      '@aigne/observability-api':
-        specifier: workspace:^
-        version: link:../observability-api
-      '@aigne/platform-helpers':
-        specifier: workspace:^
-        version: link:../platform-helpers
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.11.0
-        version: 1.11.0
-      '@types/debug':
-        specifier: ^4.1.12
-        version: 4.1.12
-      camelize-ts:
-        specifier: ^3.0.0
-        version: 3.0.0
-      content-type:
-        specifier: ^1.0.5
-        version: 1.0.5
-      debug:
-        specifier: ^4.4.0
-        version: 4.4.1(supports-color@5.5.0)
-      eventsource-parser:
-        specifier: ^3.0.1
-        version: 3.0.1
-      fast-deep-equal:
-        specifier: ^3.1.3
-        version: 3.1.3
-      immer:
-        specifier: ^10.1.1
-        version: 10.1.1
-      mustache:
-        specifier: ^4.2.0
-        version: 4.2.0
-      nanoid:
-        specifier: ^5.1.5
-        version: 5.1.5
-      p-retry:
-        specifier: ^6.2.1
-        version: 6.2.1
-      raw-body:
-        specifier: ^3.0.0
-        version: 3.0.0
-      strict-event-emitter:
-        specifier: ^0.5.1
-        version: 0.5.1
-      ufo:
-        specifier: ^1.6.1
-        version: 1.6.1
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      yaml:
-        specifier: ^2.7.1
-        version: 2.8.0
-      zod:
-        specifier: ^3.24.4
-        version: 3.25.23
-      zod-to-json-schema:
-        specifier: ^3.24.5
-        version: 3.24.5(zod@3.25.23)
-    devDependencies:
-      '@types/bun':
-        specifier: ^1.2.12
-        version: 1.2.12
-      '@types/compression':
-        specifier: ^1.7.5
-        version: 1.7.5
-      '@types/content-type':
-        specifier: ^1.1.8
-        version: 1.1.8
-      '@types/express':
-        specifier: ^5.0.1
-        version: 5.0.1
-      '@types/mustache':
-        specifier: ^4.2.6
-        version: 4.2.6
-      '@types/node':
-        specifier: ^22.15.15
-        version: 22.15.15
-      compression:
-        specifier: ^1.8.0
-        version: 1.8.0
-      detect-port:
-        specifier: ^2.1.0
-        version: 2.1.0
-      express:
-        specifier: ^5.1.0
-        version: 5.1.0
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/observability-api:
+  observability/api:
     dependencies:
       '@abtnode/util':
         specifier: ^1.16.44
         version: 1.16.44
       '@aigne/sqlite':
         specifier: workspace:^
-        version: link:../sqlite
+        version: link:../../packages/sqlite
       '@arcblock/did-connect':
         specifier: ^3.0.9
         version: 3.0.9(b72dcae9636637f1ac038b78fb0a3555)
@@ -1351,14 +885,195 @@ importers:
         specifier: ^8.5.4
         version: 8.5.4
 
-  packages/observability-ui:
+  observability/blocklet:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/observability-api':
+        specifier: workspace:^
+        version: link:../api
+      '@aigne/observability-ui':
+        specifier: workspace:^
+        version: link:../ui
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../../models/openai
+      '@aigne/sqlite':
+        specifier: workspace:^
+        version: link:../../packages/sqlite
+      '@aigne/transport':
+        specifier: workspace:^
+        version: link:../../packages/transport
+      '@arcblock/did-connect':
+        specifier: ^3.0.9
+        version: 3.0.9(b72dcae9636637f1ac038b78fb0a3555)
+      '@arcblock/ux':
+        specifier: ^3.0.9
+        version: 3.0.9(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.1.2(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mui/utils@7.1.1(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(immer@10.1.1)(prop-types@15.8.1)(react-dom@19.1.0(react@19.1.0))(react-router-dom@7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
+      '@biomejs/biome':
+        specifier: ^1.9.4
+        version: 1.9.4
+      '@biomejs/js-api':
+        specifier: ^0.7.1
+        version: 0.7.1(@biomejs/wasm-nodejs@1.9.4)
+      '@biomejs/wasm-nodejs':
+        specifier: ^1.9.4
+        version: 1.9.4
+      '@blocklet/sdk':
+        specifier: ^1.16.44
+        version: 1.16.44(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.1.2(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
+      '@blocklet/ui-react':
+        specifier: ^3.0.9
+        version: 3.0.9(eccc9fc6c1b717f4b81f45fe12d21e12)
+      '@emotion/react':
+        specifier: ^11.14.0
+        version: 11.14.0(@types/react@19.1.8)(react@19.1.0)
+      '@emotion/styled':
+        specifier: ^11.14.1
+        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
+      '@microsoft/fetch-event-source':
+        specifier: ^2.0.1
+        version: 2.0.1
+      '@mui/material':
+        specifier: ^7.1.2
+        version: 7.1.2(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@mui/x-data-grid':
+        specifier: ^8.6.0
+        version: 8.6.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.1.2(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mui/system@7.1.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@opentelemetry/api':
+        specifier: ^1.9.0
+        version: 1.9.0
+      '@opentelemetry/core':
+        specifier: ^2.0.1
+        version: 2.0.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/sdk-node':
+        specifier: ^0.202.0
+        version: 0.202.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/sdk-trace-base':
+        specifier: ^2.0.1
+        version: 2.0.1(@opentelemetry/api@1.9.0)
+      '@types/dotenv-flow':
+        specifier: ^3.3.3
+        version: 3.3.3
+      bumpp:
+        specifier: ^10.2.0
+        version: 10.2.0
+      compression:
+        specifier: ^1.8.0
+        version: 1.8.0
+      cookie-parser:
+        specifier: ^1.4.7
+        version: 1.4.7
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      dotenv-flow:
+        specifier: ^4.1.0
+        version: 4.1.0
+      drizzle-orm:
+        specifier: ^0.43.1
+        version: 0.43.1(@libsql/client@0.15.7)(@opentelemetry/api@1.9.0)(bun-types@1.2.17)(sqlite3@5.1.7)
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
+      express-sse:
+        specifier: ^1.0.0
+        version: 1.0.0
+      flat:
+        specifier: ^6.0.1
+        version: 6.0.1
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      nodemon:
+        specifier: ^3.1.10
+        version: 3.1.10
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.1.0(react@19.1.0)
+      react-json-view:
+        specifier: ^1.21.3
+        version: 1.21.3(@types/react@19.1.8)(encoding@0.1.13)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      tinycolor2:
+        specifier: ^1.6.0
+        version: 1.6.0
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+      vite-plugin-blocklet:
+        specifier: ^0.10.0
+        version: 0.10.0(rollup@4.41.1)(vite@7.0.0(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0))
+      zod:
+        specifier: ^3.25.23
+        version: 3.25.67
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.25.0
+        version: 9.29.0
+      '@types/cookie-parser':
+        specifier: ^1.4.9
+        version: 1.4.9(@types/express@5.0.1)
+      '@types/cors':
+        specifier: ^2.8.19
+        version: 2.8.19
+      '@types/lodash':
+        specifier: ^4.17.17
+        version: 4.17.18
+      '@types/react':
+        specifier: ^19.1.8
+        version: 19.1.8
+      '@types/react-dom':
+        specifier: ^19.1.6
+        version: 19.1.6(@types/react@19.1.8)
+      '@vitejs/plugin-react':
+        specifier: ^4.6.0
+        version: 4.6.0(vite@7.0.0(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0))
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      eslint:
+        specifier: ^9.25.0
+        version: 9.29.0(jiti@2.4.2)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.29.0(jiti@2.4.2))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.19
+        version: 0.4.20(eslint@9.29.0(jiti@2.4.2))
+      globals:
+        specifier: ^16.0.0
+        version: 16.2.0
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      typescript-eslint:
+        specifier: ^8.30.1
+        version: 8.34.1(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
+      vite:
+        specifier: ^7.0.0
+        version: 7.0.0(@types/node@22.15.15)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0)
+      zx:
+        specifier: ^8.5.4
+        version: 8.5.4
+
+  observability/ui:
     dependencies:
       '@abtnode/util':
         specifier: ^1.16.44
         version: 1.16.44
       '@aigne/sqlite':
         specifier: workspace:^
-        version: link:../sqlite
+        version: link:../../packages/sqlite
       '@arcblock/did-connect':
         specifier: ^3.0.9
         version: 3.0.9(b72dcae9636637f1ac038b78fb0a3555)
@@ -1555,6 +1270,291 @@ importers:
       zx:
         specifier: ^8.5.4
         version: 8.5.4
+
+  packages/agent-library:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../core
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../../models/openai
+      '@aigne/sqlite':
+        specifier: workspace:^
+        version: link:../sqlite
+      drizzle-orm:
+        specifier: ^0.43.1
+        version: 0.43.1(@libsql/client@0.15.7)(@opentelemetry/api@1.9.0)(bun-types@1.2.17)(sqlite3@5.1.7)
+      fastq:
+        specifier: ^1.19.1
+        version: 1.19.1
+      jsonata:
+        specifier: ^2.0.6
+        version: 2.0.6
+      jsonschema:
+        specifier: ^1.5.0
+        version: 1.5.0
+      to-json-schema:
+        specifier: ^0.2.5
+        version: 0.2.5
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+      yaml:
+        specifier: ^2.7.1
+        version: 2.8.0
+      zod:
+        specifier: ^3.24.4
+        version: 3.25.23
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/to-json-schema':
+        specifier: ^0.2.4
+        version: 0.2.4
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cli:
+    dependencies:
+      '@aigne/agent-library':
+        specifier: workspace:^
+        version: link:../agent-library
+      '@aigne/anthropic':
+        specifier: workspace:^
+        version: link:../../models/anthropic
+      '@aigne/bedrock':
+        specifier: workspace:^
+        version: link:../../models/bedrock
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../core
+      '@aigne/deepseek':
+        specifier: workspace:^
+        version: link:../../models/deepseek
+      '@aigne/gemini':
+        specifier: workspace:^
+        version: link:../../models/gemini
+      '@aigne/listr2':
+        specifier: ^1.0.10
+        version: 1.0.10
+      '@aigne/marked-terminal':
+        specifier: ^7.3.1
+        version: 7.3.1(marked@15.0.12)
+      '@aigne/observability-api':
+        specifier: workspace:^
+        version: link:../../observability/api
+      '@aigne/ollama':
+        specifier: workspace:^
+        version: link:../../models/ollama
+      '@aigne/open-router':
+        specifier: workspace:^
+        version: link:../../models/open-router
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../../models/openai
+      '@aigne/xai':
+        specifier: workspace:^
+        version: link:../../models/xai
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.11.0
+        version: 1.11.0
+      '@smithy/node-http-handler':
+        specifier: ^4.0.6
+        version: 4.0.6
+      chalk:
+        specifier: ^5.4.1
+        version: 5.4.1
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
+      detect-port:
+        specifier: ^2.1.0
+        version: 2.1.0
+      dotenv-flow:
+        specifier: ^4.1.0
+        version: 4.1.0
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
+      glob:
+        specifier: ^11.0.2
+        version: 11.0.2
+      gradient-string:
+        specifier: ^3.0.0
+        version: 3.0.0
+      https-proxy-agent:
+        specifier: ^7.0.6
+        version: 7.0.6
+      inquirer:
+        specifier: ^12.6.0
+        version: 12.6.0(@types/node@22.15.15)
+      marked:
+        specifier: ^15.0.11
+        version: 15.0.12
+      prettier:
+        specifier: ^3.5.3
+        version: 3.5.3
+      pretty-error:
+        specifier: ^4.0.0
+        version: 4.0.0
+      tar:
+        specifier: ^7.4.3
+        version: 7.4.3
+      wrap-ansi:
+        specifier: ^9.0.0
+        version: 9.0.0
+      yaml:
+        specifier: ^2.7.1
+        version: 2.8.0
+      zod:
+        specifier: ^3.24.4
+        version: 3.25.23
+    devDependencies:
+      '@types/archiver':
+        specifier: ^6.0.3
+        version: 6.0.3
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.1
+      '@types/glob':
+        specifier: ^8.1.0
+        version: 8.1.0
+      '@types/gradient-string':
+        specifier: ^1.1.6
+        version: 1.1.6
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      archiver:
+        specifier: ^7.0.1
+        version: 7.0.1
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      ufo:
+        specifier: ^1.6.1
+        version: 1.6.1
+
+  packages/core:
+    dependencies:
+      '@aigne/json-schema-to-zod':
+        specifier: ^1.3.3
+        version: 1.3.3(zod@3.25.23)
+      '@aigne/observability-api':
+        specifier: workspace:^
+        version: link:../../observability/api
+      '@aigne/platform-helpers':
+        specifier: workspace:^
+        version: link:../platform-helpers
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.11.0
+        version: 1.11.0
+      '@types/debug':
+        specifier: ^4.1.12
+        version: 4.1.12
+      camelize-ts:
+        specifier: ^3.0.0
+        version: 3.0.0
+      content-type:
+        specifier: ^1.0.5
+        version: 1.0.5
+      debug:
+        specifier: ^4.4.0
+        version: 4.4.1(supports-color@5.5.0)
+      eventsource-parser:
+        specifier: ^3.0.1
+        version: 3.0.1
+      fast-deep-equal:
+        specifier: ^3.1.3
+        version: 3.1.3
+      immer:
+        specifier: ^10.1.1
+        version: 10.1.1
+      mustache:
+        specifier: ^4.2.0
+        version: 4.2.0
+      nanoid:
+        specifier: ^5.1.5
+        version: 5.1.5
+      p-retry:
+        specifier: ^6.2.1
+        version: 6.2.1
+      raw-body:
+        specifier: ^3.0.0
+        version: 3.0.0
+      strict-event-emitter:
+        specifier: ^0.5.1
+        version: 0.5.1
+      ufo:
+        specifier: ^1.6.1
+        version: 1.6.1
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+      yaml:
+        specifier: ^2.7.1
+        version: 2.8.0
+      zod:
+        specifier: ^3.24.4
+        version: 3.25.23
+      zod-to-json-schema:
+        specifier: ^3.24.5
+        version: 3.24.5(zod@3.25.23)
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.12
+        version: 1.2.12
+      '@types/compression':
+        specifier: ^1.7.5
+        version: 1.7.5
+      '@types/content-type':
+        specifier: ^1.1.8
+        version: 1.1.8
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.1
+      '@types/mustache':
+        specifier: ^4.2.6
+        version: 4.2.6
+      '@types/node':
+        specifier: ^22.15.15
+        version: 22.15.15
+      compression:
+        specifier: ^1.8.0
+        version: 1.8.0
+      detect-port:
+        specifier: ^2.1.0
+        version: 2.1.0
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
 
   packages/platform-helpers:
     dependencies:

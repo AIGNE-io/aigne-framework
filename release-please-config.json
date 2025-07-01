@@ -10,8 +10,8 @@
     "packages/cli": {},
     "packages/test-utils": {},
     "packages/transport": {},
-    "packages/observability-api": {},
-    "packages/observability-ui": {},
+    "observability/api": {},
+    "observability/ui": {},
     "models/anthropic": {},
     "models/bedrock": {},
     "models/deepseek": {},
@@ -20,7 +20,7 @@
     "models/open-router": {},
     "models/openai": {},
     "models/xai": {},
-    "blocklets/observability": {
+    "observability/blocklet": {
       "package-name": "blocklet-observability",
       "extra-files": [
         {

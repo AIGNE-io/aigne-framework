@@ -1,6 +1,6 @@
 # MCP Blocklet Demo
 
-This demo demonstrates how to use [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and MCP to interact with apps hosted on the [Blocklet platform](https://github.com/blocklet). The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
+This demo demonstrates how to use [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and MCP to interact with apps hosted on the [Blocklet platform](https://www.blocklet.io). The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ## Prerequisites
 
@@ -14,6 +14,7 @@ This demo demonstrates how to use [AIGNE Framework](https://github.com/AIGNE-io/
 
 ```bash
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
+export BLOCKLET_APP_URL="https://xxx.xxxx.xxx" # Your Blocklet app URL
 
 # Run in one-shot mode (default)
 npx -y @aigne/example-mcp-blocklet

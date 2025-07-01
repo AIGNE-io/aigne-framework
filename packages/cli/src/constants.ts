@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
@@ -10,9 +11,10 @@ import { OpenAIChatModel } from "@aigne/openai";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
 import { HttpsProxyAgent } from "https-proxy-agent";
-import pkg from "../package.json" with { type: "json" };
 
-export const AIGNE_CLI_VERSION = pkg.version;
+const require = createRequire(import.meta.url);
+
+export const AIGNE_CLI_VERSION = require("../package.json").version;
 
 export function availableModels(): LoadableModel[] {
   const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]

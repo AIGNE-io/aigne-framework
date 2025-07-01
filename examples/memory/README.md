@@ -16,7 +16,11 @@ This example demonstrates how to create a chatbot with memory capabilities using
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
 # Run the chatbot with memory
-npx -y @aigne/example-memory
+npx -y @aigne/example-memory --input 'I like blue color'
+npx -y @aigne/example-memory --input 'What is my favorite color?'
+
+# Run in interactive chat mode
+npx -y @aigne/example-memory --chat
 ```
 
 ## Installation

@@ -1,5 +1,5 @@
 import type { Server } from "node:http";
-import path from "node:path";
+import path, { dirname } from "node:path";
 import express from "express";
 
 import { type StartServerOptions, startServer } from "./index.js";
@@ -10,7 +10,8 @@ export async function startObservabilityCLIServer(
   const { app, server } = await startServer(options);
 
   // @ts-ignore
-  const distPath = path.join(import.meta.dirname, "../../../dist");
+  const dir = dirname(new URL(import.meta.url).pathname);
+  const distPath = path.join(dir, "../../../dist");
   app.use(express.static(distPath));
   app.get("/{*splat}", (_req, res) => {
     res.sendFile("index.html", { root: distPath });

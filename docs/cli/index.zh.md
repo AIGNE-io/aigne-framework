@@ -42,4 +42,4 @@ aigne --help
 ### 开发和部署
 
 * [**🧪 测试**](test.zh.md) - 运行代理测试
-* [**🌐 服务部署**](serve.zh.md) - 将代理部署为 MCP 服务器
+* [**🌐 服务部署**](serve-mcp.zh.md) - 将代理部署为 MCP 服务器

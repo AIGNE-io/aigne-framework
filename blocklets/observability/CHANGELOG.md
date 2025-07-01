@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.5.0...blocklet-observability-v1.6.0) (2025-07-01)
+
+
+### Features
+
+* **cli:** support HTTPS_PROXY and named path param ([#196](https://github.com/AIGNE-io/aigne-framework/issues/196)) ([04e684e](https://github.com/AIGNE-io/aigne-framework/commit/04e684ee26bc2d79924b0e3cb541cd07a7191804))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.27.0
+    * @aigne/openai bumped to 0.5.0
+    * @aigne/transport bumped to 0.6.4
+
 ## [1.5.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.4.0...blocklet-observability-v1.5.0) (2025-06-30)
 
 

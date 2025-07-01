@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.12.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.11.0...example-chat-bot-v1.12.0) (2025-07-01)
+
+
+### Features
+
+* **cli:** support HTTPS_PROXY and named path param ([#196](https://github.com/AIGNE-io/aigne-framework/issues/196)) ([04e684e](https://github.com/AIGNE-io/aigne-framework/commit/04e684ee26bc2d79924b0e3cb541cd07a7191804))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.17.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.11
+
 ## [1.11.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.10.5...example-chat-bot-v1.11.0) (2025-06-30)
 
 

@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.17.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.16.0...cli-v1.17.0) (2025-07-01)
+
+
+### Features
+
+* **cli:** support HTTPS_PROXY and named path param ([#196](https://github.com/AIGNE-io/aigne-framework/issues/196)) ([04e684e](https://github.com/AIGNE-io/aigne-framework/commit/04e684ee26bc2d79924b0e3cb541cd07a7191804))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.4
+    * @aigne/anthropic bumped to 0.4.0
+    * @aigne/bedrock bumped to 0.4.0
+    * @aigne/core bumped to 1.27.0
+    * @aigne/deepseek bumped to 0.3.11
+    * @aigne/gemini bumped to 0.3.11
+    * @aigne/ollama bumped to 0.3.11
+    * @aigne/open-router bumped to 0.3.11
+    * @aigne/openai bumped to 0.5.0
+    * @aigne/xai bumped to 0.3.11
+
 ## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.15.0...cli-v1.16.0) (2025-06-30)
 
 

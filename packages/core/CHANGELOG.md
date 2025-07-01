@@ -12,6 +12,13 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.27.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.26.0...core-v1.27.0) (2025-07-01)
+
+
+### Features
+
+* **cli:** support HTTPS_PROXY and named path param ([#196](https://github.com/AIGNE-io/aigne-framework/issues/196)) ([04e684e](https://github.com/AIGNE-io/aigne-framework/commit/04e684ee26bc2d79924b0e3cb541cd07a7191804))
+
 ## [1.26.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.25.0...core-v1.26.0) (2025-06-30)
 
 

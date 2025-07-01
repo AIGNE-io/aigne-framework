@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.28.0...aigne-framework-v1.29.0) (2025-07-01)
+
+
+### Features
+
+* **cli:** support HTTPS_PROXY and named path param ([#196](https://github.com/AIGNE-io/aigne-framework/issues/196)) ([04e684e](https://github.com/AIGNE-io/aigne-framework/commit/04e684ee26bc2d79924b0e3cb541cd07a7191804))
+
 ## [1.28.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.27.0...aigne-framework-v1.28.0) (2025-06-30)
 
 

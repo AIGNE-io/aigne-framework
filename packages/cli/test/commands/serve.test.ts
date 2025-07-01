@@ -45,6 +45,7 @@ test("serve-mcp command should work with custom options", async () => {
     port.toString(),
     "--host",
     "0.0.0.0",
+    "--path",
     testAgentsPath,
   ]);
 
@@ -60,12 +61,12 @@ test("serve-mcp command should use process.env.PORT", async () => {
 
   process.env.PORT = port.toString();
 
-  await command.parseAsync(["", "serve", "--mcp", testAgentsPath]);
+  await command.parseAsync(["", "serve", "--mcp", "--path", testAgentsPath]);
 
   expect(listen).toHaveBeenLastCalledWith(port, "localhost", expect.any(Function));
 
   process.env.PORT = "INVALID_PORT";
-  expect(command.parseAsync(["", "serve", "--mcp", testAgentsPath])).rejects.toThrow(
+  expect(command.parseAsync(["", "serve", "--mcp", "--path", testAgentsPath])).rejects.toThrow(
     "parse PORT error",
   );
 });

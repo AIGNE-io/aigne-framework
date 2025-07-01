@@ -296,6 +296,7 @@ Coder ->> User: 10!（10的阶乘）的值是 3,628,800。
 
 ### MCP 服务器集成
 
+* [MCP Server](./examples/mcp-server) - 使用 AIGNE CLI 构建 MCP 服务器，对外提供 MCP 服务。
 * [Puppeteer MCP Server](./examples/mcp-puppeteer) - 学习如何通过 AIGNE Framework 利用 Puppeteer 进行自动化网页抓取。
 * [SQLite MCP Server](./examples/mcp-sqlite) - 探索通过模型上下文协议连接 SQLite 进行数据库操作。
 * [Github](./examples/mcp-github) - 了解如何使用 AIGNE Framework 和 GitHub MCP 服务器与 GitHub 仓库进行交互。

@@ -1,6 +1,6 @@
+import List from "@aigne/observability-ui/list";
 import { Box } from "@mui/material";
 import { useEffect, useRef } from "react";
-import List from "../../ui/src/list.js";
 import { useSessionContext } from "./contexts/session.js";
 
 export default function ListPage() {

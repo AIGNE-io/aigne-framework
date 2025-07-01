@@ -32,6 +32,10 @@ AIGNE Framework is a functional AI application development framework designed to
 
 ## Quick Start
 
+### Environment Requirements
+
+* Node.js version 20.0 or higher
+
 ### Installation
 
 #### Using npm

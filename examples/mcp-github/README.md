@@ -64,7 +64,7 @@ AI ->> User: Here's the README content: ...
 
 ## Prerequisites
 
-* [Node.js](https://nodejs.org) and npm installed on your machine
+* [Node.js](https://nodejs.org) (>=20.0) and npm installed on your machine
 * An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
 * [GitHub Personal Access Token](https://github.com/settings/tokens) with appropriate permissions
 * Optional dependencies (if running the example from source code):

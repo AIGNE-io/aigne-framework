@@ -4,7 +4,7 @@ This demo demonstrates how to use [AIGNE Framework](https://github.com/AIGNE-io/
 
 ## Prerequisites
 
-* [Node.js](https://nodejs.org) and npm installed on your machine
+* [Node.js](https://nodejs.org) (>=20.0) and npm installed on your machine
 * An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
 * Optional dependencies (if running the example from source code):
   * [Bun](https://bun.sh) for running unit tests & examples

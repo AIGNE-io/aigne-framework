@@ -59,7 +59,7 @@ AI ->> User: There are 10 products in the database.
 
 ## Prerequisites
 
-* [Node.js](https://nodejs.org) and npm installed on your machine
+* [Node.js](https://nodejs.org) (>=20.0) and npm installed on your machine
 * An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
 * [uv](https://github.com/astral-sh/uv) python environment for running [MCP Server SQlite](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite)
 * Optional dependencies (if running the example from source code):

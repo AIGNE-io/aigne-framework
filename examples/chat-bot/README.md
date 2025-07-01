@@ -4,7 +4,7 @@ This example demonstrates how to create and run an agent-based chatbot using the
 
 ## Prerequisites
 
-* [Node.js](https://nodejs.org) and npm installed on your machine
+* [Node.js](https://nodejs.org) (>=20.0) and npm installed on your machine
 * An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
 
 ## Quick Start (No Installation Required)

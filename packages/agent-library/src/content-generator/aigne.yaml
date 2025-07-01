@@ -9,3 +9,6 @@ agents:
   - content-detail-generator.yaml
   - batch-content-detail-generator.yaml
   - page-template-generator.yaml
+  - docs-generator.yaml
+  - batch-docs-detail-generator.yaml
+  - load-sources.mjs

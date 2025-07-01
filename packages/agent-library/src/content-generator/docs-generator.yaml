@@ -1,0 +1,29 @@
+type: team
+name: docs-generator
+description: 文档生成
+skills:
+  - load-sources.mjs
+  - structure-planning.yaml
+  - type: transform
+    jsonata: |
+      $merge([$, {"originalStructurePlan": structurePlan}])
+  - batch-docs-detail-generator.yaml
+  
+input_schema:
+  type: object
+  properties:
+    rules:
+      type: string
+      description: 用户的结构规划的要求和规则
+    locale:
+      type: string
+      description: 用户语言，如 zh、en
+    sources:
+      type: array
+      items:
+        type: string
+      description: 用户生成文档的源码文件
+  required:
+    - rules
+    - sources
+mode: sequential

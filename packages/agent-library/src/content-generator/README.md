@@ -62,8 +62,8 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 # arcblock locale run 
 bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input.yaml"  --input-datasources "@mock-inputs/arcblock-datasources.md" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/arcblock-all.txt" --force
 
-# arcshpere local run
-bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input-arcsphere.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml --output "./output-tmp/arcsphere-all.txt" --force
+# arcsphere local run
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "content-generator" --input "@mock-inputs/input-arcsphere.yaml" --input-datasources "@mock-inputs/arcsphere-datasources.md" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --input-componentList "@mock-inputs/component-list.md" --format yaml --output "./output-tmp/arcsphere-all.txt" --force --model openai:o3
 
 # detail
 aigne run --entry-agent "content-detail-generator" --input "@mock-inputs/detail-input.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --input-datasources "@mock-inputs/arcblock-datasources.md" --input-structurePlan "@mock-inputs/structure-plan-output.yaml" --format yaml --output "./output-tmp/home.txt" --force
@@ -95,6 +95,12 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 
 ```
 
+
+测试文档生成的命令
+```bash
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --format yaml --output "./output-tmp/aigne-cli-docs.md" --force
+
+```
 
 ### 使用 observability 查看执行记录
 

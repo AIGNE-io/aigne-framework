@@ -228,7 +228,7 @@ export class TerminalTracer {
 
   formatResult(agent: Agent, context: Context, m: Message = {}) {
     const { isTTY } = process.stdout;
-    const outputKey = agent instanceof AIAgent ? agent.outputKey : undefined;
+    const outputKey = this.outputKey || (agent instanceof AIAgent ? agent.outputKey : undefined);
 
     const prefix = logger.enabled(LogLevel.INFO)
       ? `${chalk.grey(figures.tick)} 🤖 ${this.formatTokenUsage(context.usage)}`

@@ -40,9 +40,9 @@ startObservabilityBlockletServer({
 });
 ```
 
-### 2. CLI/本地开发模式
+### 2. CLI Mode
 
-适用于本地开发、调试或通过 CLI 启动的场景。
+It is suitable for local development, debugging or scenarios launched through CLI.
 
 ```js
 import { startObservabilityCLIServer } from "@aigne/observability-api/cli";

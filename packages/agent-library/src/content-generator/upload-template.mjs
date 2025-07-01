@@ -1,7 +1,5 @@
 // Agent 函数：上传 pageTemplate 到 Pages Kit
-export default async function Agent({ pageTemplate, locale }) {
-  // 固定的 projectId
-  const projectId = "5ad33a79-0003-444a-b2ce-92d2cac83119";
+export default async function Agent({ pageTemplate, locale, projectId }) {
   // 构建请求头
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");

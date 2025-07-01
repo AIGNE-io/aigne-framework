@@ -79,6 +79,9 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 # arcblock batch detail
 bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "batch-content-detail-generator" --input "@mock-inputs/detail-input-lban.yaml" --format yaml --output "./output-tmp/lban-all.txt" --force
 
+# arcshpere batch detail
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "batch-content-detail-generator" --input "@mock-inputs/detail-input-arcsphere.yaml" --format yaml --output "./output-tmp/arcsphere-detail-all.txt" --force
+
 bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "batch-content-detail-generator" --input "@mock-inputs/detail-input.yaml"  --input-datasources "@mock-inputs/arcblock-datasources.md" --format yaml --output "./output-tmp/arcblock-all.txt" --force
 
 # lban

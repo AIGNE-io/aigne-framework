@@ -2,9 +2,6 @@ name: page-template-generator
 description: 网页结构生成器，支持根据用户输入的结构规划生成网页结构
 instructions:
   url: ./prompts/page-template-generator.md
-skills:
-  - get-current-time.mjs
-  - get-next-id.mjs
 input_schema:
   type: object
   properties:
@@ -55,6 +52,12 @@ input_schema:
       description: 当前页面需要展示的信息
     componentList:
       type: string
+    projectId:
+      type: string
+      description: 项目 ID
+    pagesKitPoint:
+      type: string
+      description: Pages Kit 挂载点
   required:
     - rules
     - datasources
@@ -64,5 +67,6 @@ output_schema:
   properties:
     pageTemplate:
       type: string
+      description: 页面结构规划，使用 YAML 格式返回
   required:
     - pageTemplate

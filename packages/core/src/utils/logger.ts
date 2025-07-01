@@ -11,7 +11,7 @@ export enum LogLevel {
 const levels = Object.values(LogLevel);
 
 export function getLevelFromEnv(ns: string): LogLevel | undefined {
-  for (const level of levels.toReversed()) {
+  for (const level of [...levels].reverse()) {
     if (debug.enabled(`${ns}:${level}`)) {
       return level;
     }

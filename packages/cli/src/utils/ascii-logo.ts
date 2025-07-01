@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import gradient from "gradient-string";
-import pkg from "../../package.json" with { type: "json" };
+import { AIGNE_CLI_VERSION } from "../constants.js";
 
 const modernGradient = gradient(["#4facfe", "#7367f0", "#f86aad"]);
 
@@ -12,7 +12,7 @@ const logo = `
  /_/   \\_\\___\\____|_| \\_|_____|
 `;
 
-const frameworkInfo = `v${pkg.version}`;
+const frameworkInfo = `v${AIGNE_CLI_VERSION}`;
 
 const logoLines = logo.split("\n");
 const maxLength = Math.max(...logoLines.filter((line) => line.trim()).map((line) => line.length));

@@ -4,7 +4,7 @@ import { asciiLogo } from "../utils/ascii-logo.js";
 import { createCreateCommand } from "./create.js";
 import { createObservabilityCommand } from "./observe.js";
 import { createRunCommand } from "./run.js";
-import { createServeCommand } from "./serve.js";
+import { createServeMCPCommand } from "./serve-mcp.js";
 import { createTestCommand } from "./test.js";
 
 export function createAIGNECommand(): Command {
@@ -17,7 +17,7 @@ export function createAIGNECommand(): Command {
     .addCommand(createRunCommand())
     .addCommand(createTestCommand())
     .addCommand(createCreateCommand())
-    .addCommand(createServeCommand())
+    .addCommand(createServeMCPCommand())
     .addCommand(createObservabilityCommand())
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);

@@ -9,7 +9,6 @@ interface ServeMCPOptions extends OptionValues {
   path: string;
   host: string;
   port?: number;
-  mcp?: boolean;
   pathname: string;
 }
 
@@ -25,15 +24,14 @@ const DEFAULT_PORT = () =>
     (error) => new Error(`parse PORT error ${error.message}`),
   );
 
-export function createServeCommand(): Command {
-  return new Command("serve")
-    .description("Serve the agents in the specified directory as a MCP server")
+export function createServeMCPCommand(): Command {
+  return new Command("serve-mcp")
+    .description("Serve the agents in the specified directory as a MCP server (streamable http)")
     .option(
       "--url, --path <path_or_url>",
       "Path to the agents directory or URL to aigne project",
       ".",
     )
-    .option("--mcp", "Serve the agents as a MCP server")
     .option(
       "--host <host>",
       "Host to run the MCP server on, use 0.0.0.0 to publicly expose the server",
@@ -51,14 +49,12 @@ export function createServeCommand(): Command {
         memories: availableMemories,
       });
 
-      if (options.mcp)
-        await serveMCPServer({
-          aigne,
-          host: options.host,
-          port,
-          pathname: options.pathname,
-        });
-      else throw new Error("Default server is not supported yet. Please use --mcp option");
+      await serveMCPServer({
+        aigne,
+        host: options.host,
+        port,
+        pathname: options.pathname,
+      });
 
       console.log(`MCP server is running on http://${options.host}:${port}${options.pathname}`);
     })

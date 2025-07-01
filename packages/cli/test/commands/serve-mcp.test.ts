@@ -1,7 +1,7 @@
 import { type Mock, afterEach, beforeEach, expect, spyOn, test } from "bun:test";
 import { Server } from "node:http";
 import { join } from "node:path";
-import { createServeCommand } from "@aigne/cli/commands/serve.js";
+import { createServeMCPCommand } from "@aigne/cli/commands/serve-mcp.js";
 import { detect } from "detect-port";
 import { application } from "express";
 
@@ -19,13 +19,13 @@ afterEach(() => {
 });
 
 test("serve-mcp command should work with default options", async () => {
-  const command = createServeCommand();
+  const command = createServeMCPCommand();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
   const cwd = process.cwd();
   process.chdir(testAgentsPath);
-  await command.parseAsync(["", "serve", "--mcp"]);
+  await command.parseAsync(["", "serve-mcp"]);
   expect(listen).toHaveBeenCalledWith(3000, "localhost", expect.any(Function));
   process.chdir(cwd);
 });
@@ -33,14 +33,13 @@ test("serve-mcp command should work with default options", async () => {
 test("serve-mcp command should work with custom options", async () => {
   const port = await detect();
 
-  const command = createServeCommand();
+  const command = createServeMCPCommand();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
   await command.parseAsync([
     "",
-    "serve",
-    "--mcp",
+    "serve-mcp",
     "--port",
     port.toString(),
     "--host",
@@ -55,18 +54,18 @@ test("serve-mcp command should work with custom options", async () => {
 test("serve-mcp command should use process.env.PORT", async () => {
   const port = await detect();
 
-  const command = createServeCommand();
+  const command = createServeMCPCommand();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
   process.env.PORT = port.toString();
 
-  await command.parseAsync(["", "serve", "--mcp", "--path", testAgentsPath]);
+  await command.parseAsync(["", "serve-mcp", "--path", testAgentsPath]);
 
   expect(listen).toHaveBeenLastCalledWith(port, "localhost", expect.any(Function));
 
   process.env.PORT = "INVALID_PORT";
-  expect(command.parseAsync(["", "serve", "--mcp", "--path", testAgentsPath])).rejects.toThrow(
+  expect(command.parseAsync(["", "serve-mcp", "--path", testAgentsPath])).rejects.toThrow(
     "parse PORT error",
   );
 });

@@ -17,7 +17,7 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) is an open s
 OPENAI_API_KEY="" # Set your OpenAI API key here
 
 # Start the MCP server
-npx -y @aigne/example-mcp-server serve --mcp --port 3456
+npx -y @aigne/example-mcp-server serve-mcp --port 3456
 
 # Output
 # Observability OpenTelemetry SDK Started, You can run `npx aigne observe` to start the observability server.

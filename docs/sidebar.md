@@ -9,7 +9,7 @@
 
   * [Run Agent](/cli/run.md)
 
-  * [Serve Agent](/cli/serve.md)
+  * [Serve Agent](/cli/serve-mcp.md)
 
   * [Test Agent](/cli/test.md)
 

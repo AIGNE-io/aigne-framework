@@ -42,4 +42,4 @@ aigne --help
 ### Development and Deployment
 
 * [**🧪 Testing**](test.md) - Run agent tests
-* [**🌐 Service Deployment**](serve.md) - Deploy agents as MCP servers
+* [**🌐 Service Deployment**](serve-mcp.md) - Deploy agents as MCP servers

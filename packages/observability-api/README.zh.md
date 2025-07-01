@@ -15,45 +15,37 @@
 
 ---
 
-## ✨ 特性
+## 🧩 API 用法
 
-- 📊 实时可视化追踪数据和调用链
-- 🔍 精确定位 AIGNE 内部工作流程
-- ☁️ 支持本地 [AIGNE CLI](https://www.npmjs.com/package/@aigne/cli) 和 [Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) 部署
+AIGNE 监视器支持以代码方式集成到你的 Node.js 应用中，暴露了两种 server 启动方式：
 
----
+### 1. Blocklet/服务端模式
 
-## 🛠 安装与使用
+适用于 Blocklet 部署或需要以服务方式运行的场景。
 
-您可以通过两种方式使用 AIGNE 监视器：**AIGNE CLI** 或 **Blocklet**。
+```js
+import { startServer as startObservabilityBlockletServer } from "@aigne/observability-api/server";
 
-### 通过 AIGNE CLI 使用
-
-```bash
-npm install -g @aigne/cli
-
-# 启动监视器
-aigne observe
+startObservabilityBlockletServer({
+  port: Number(process.env.BLOCKLET_PORT) || 3000,
+  dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
+});
 ```
 
-启动后，您可以在浏览器中访问 `http://localhost:7890` 查看监视器界面。
+### 2. CLI/本地开发模式
 
-### 运行示例
+适用于本地开发、调试或通过 CLI 启动的场景。
 
-运行示例 AIGNE 应用时，可以在 AIGNE 监视器中事实查看 Agents 的数据流和调用链。如下运行 chat-bot 示例：
+```js
+import { startObservabilityCLIServer } from "@aigne/observability-api/cli";
 
-```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # 设置你的 OpenAI API 密钥
-
-# One-shot 模式运行
-npx -y @aigne/example-chat-bot
-
-# 或者加入 `--chat` 参数进入交互式聊天模式
-npx -y @aigne/example-chat-bot --chat
+startObservabilityCLIServer({
+  port: 7890,
+  dbUrl: "file:observer.db",
+});
 ```
 
-查看[更多示例](../../examples/README.zh.md)
+- Blocklet/服务端模式更适合生产环境和平台集成，支持更丰富的配置和认证。
+- CLI/本地开发模式更轻量，适合开发者本地体验和调试。
 
-### 作为 Blocklet 使用
-
-安装 [AIGNE Observability Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) 后，您可以直接在 Blocklet 环境中使用 AIGNE 监视器。所有使用 AIGNE Framework 的 Blocklet 都会自动集成监视器功能。
+如需详细参数和高级用法，请参考源码或 TS 类型定义。

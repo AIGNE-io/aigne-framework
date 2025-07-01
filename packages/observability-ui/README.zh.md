@@ -57,3 +57,10 @@ npx -y @aigne/example-chat-bot --chat
 ### 作为 Blocklet 使用
 
 安装 [AIGNE Observability Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh) 后，您可以直接在 Blocklet 环境中使用 AIGNE 监视器。所有使用 AIGNE Framework 的 Blocklet 都会自动集成监视器功能。
+
+## UI 的使用方式
+```jsx
+import List from "@aigne/observability-ui/list";
+
+<List/>
+```

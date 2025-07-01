@@ -23,37 +23,37 @@ A visual tool for monitoring Agent data flow, built on OpenTelemetry. Supports c
 
 ---
 
-## 🛠 Installation & Usage
+## 🧩 API Usage
 
-You can use AIGNE Observability in two ways: **AIGNE CLI** or **Blocklet**.
+AIGNE Observability can be integrated into your Node.js application programmatically, exposing two server start methods:
 
-### Using AIGNE CLI
+### 1. Blocklet/Server Mode
 
-```bash
-npm install -g @aigne/cli
+For Blocklet deployment or running as a standalone service.
 
-# Start the observability dashboard
-aigne observe
+```js
+import { startServer as startObservabilityBlockletServer } from "@aigne/observability-api/server";
+
+startObservabilityBlockletServer({
+  port: Number(process.env.BLOCKLET_PORT) || 3000,
+  dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
+});
 ```
 
-After starting, you can access the observability interface at `http://localhost:7890` in your browser.
+### 2. CLI/本地开发模式
 
-### Running Examples
+适用于本地开发、调试或通过 CLI 启动的场景。
 
-When running example AIGNE applications, you can view the Agents' data flow and call chains in real-time in the AIGNE Observability dashboard. Run the chat-bot example as follows:
+```js
+import { startObservabilityCLIServer } from "@aigne/observability-api/cli";
 
-```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
-
-# Run in one-shot mode
-npx -y @aigne/example-chat-bot
-
-# Or add the `--chat` parameter to enter interactive chat mode
-npx -y @aigne/example-chat-bot --chat
+startObservabilityCLIServer({
+  port: 7890,
+  dbUrl: "file:observer.db",
+});
 ```
 
-View [more examples](../../examples/README.md)
+- Blocklet/Server mode is recommended for production and platform integration, supporting richer configuration and authentication.
+- CLI/Local mode is lightweight and ideal for developer local experience and debugging.
 
-### Using as a Blocklet
-
-After installing the [AIGNE Observability Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh), you can use AIGNE Observability directly in the Blocklet environment. All Blocklets using the AIGNE Framework will automatically integrate the observability functionality.
+For detailed parameters and advanced usage, please refer to the source code or TypeScript type definitions.

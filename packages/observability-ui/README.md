@@ -57,3 +57,10 @@ View [more examples](../../examples/README.md)
 ### Using as a Blocklet
 
 After installing the [AIGNE Observability Blocklet](https://store.blocklet.dev/blocklets/z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh), you can use AIGNE Observability directly in the Blocklet environment. All Blocklets using the AIGNE Framework will automatically integrate the observability functionality.
+
+## Observability UI
+```jsx
+import List from "@aigne/observability-ui/list";
+
+<List/>
+```

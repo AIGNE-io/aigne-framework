@@ -1,7 +1,7 @@
 {
-  "name": "@blocklet/observability",
-  "version": "1.6.0",
-  "description": "Blocklet Observability for tracing and observability",
+  "name": "@aigne/observability-ui",
+  "version": "0.3.0",
+  "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
   },
@@ -12,31 +12,42 @@
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "screenshots"
+  ],
+  "type": "module",
+  "main": "./src/list.tsx",
+  "module": "./src/list.tsx",
+  "exports": {
+    "./list": {
+      "default": "./src/list.tsx"
+    },
+    "./translations": {
+      "default": "./src/locales/index.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {}
+  },
   "scripts": {
-    "lint": "tsc --noEmit && biome check",
-    "lint:fix": "biome check --write && pnpm run lint",
     "clean": "node scripts/build-clean.mjs",
-    "dev": "blocklet dev",
-    "start": "cross-env NODE_ENV=development nodemon --exec tsx api/dev.ts -w api",
-    "bundle": "tsc --noEmit && npm run bundle:client && npm run bundle:api",
-    "bundle:client": "vite build",
-    "bundle:api": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release --external @aigne/sqlite",
-    "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
-    "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json",
-    "bump-version": "zx --quiet scripts/bump-version.mjs"
+    "lint": "tsc --noEmit",
+    "build": "run-p build:client",
+    "build:client": "tsc -b && vite build",
+    "prepublishOnly": "run-s clean build",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
-    "@aigne/core": "workspace:^",
-    "@aigne/observability-api": "workspace:^",
-    "@aigne/observability-ui": "workspace:^",
-    "@aigne/openai": "workspace:^",
+    "@abtnode/util": "^1.16.44",
     "@aigne/sqlite": "workspace:^",
-    "@aigne/transport": "workspace:^",
     "@arcblock/did-connect": "^3.0.9",
     "@arcblock/ux": "^3.0.9",
-    "@biomejs/biome": "^1.9.4",
-    "@biomejs/js-api": "^0.7.1",
-    "@biomejs/wasm-nodejs": "^1.9.4",
     "@blocklet/sdk": "^1.16.44",
     "@blocklet/ui-react": "^3.0.9",
     "@emotion/react": "^11.14.0",
@@ -49,43 +60,58 @@
     "@opentelemetry/sdk-node": "^0.202.0",
     "@opentelemetry/sdk-trace-base": "^2.0.1",
     "@types/dotenv-flow": "^3.3.3",
-    "bumpp": "^10.2.0",
+    "ahooks": "^3.8.5",
     "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "decimal.js": "^10.5.0",
     "dotenv-flow": "^4.1.0",
     "drizzle-orm": "^0.43.1",
     "express": "^5.1.0",
     "express-sse": "^1.0.0",
     "flat": "^6.0.1",
+    "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
+    "mui-daterange-picker": "^1.0.5",
     "nodemon": "^3.1.10",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-json-view": "^1.21.3",
+    "react-router-dom": "^7.6.3",
+    "react-syntax-highlighter": "^15.6.1",
     "tinycolor2": "^1.6.0",
+    "ufo": "^1.6.1",
     "uuid": "^11.1.0",
     "vite-plugin-blocklet": "^0.10.0",
+    "yaml": "^2.7.1",
     "zod": "^3.25.23"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.1",
+    "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.17",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^4.6.0",
     "cross-env": "^7.0.3",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "i": "^0.3.7",
+    "npm": "^11.4.2",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^7.0.0",
+    "vite-plugin-svgr": "^4.3.0",
     "zx": "^8.5.4"
   }
 }

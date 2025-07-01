@@ -1,6 +1,6 @@
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
-import { startObservabilityCLIServer } from "@aigne/observability/cli";
-import getObservabilityDbPath from "@aigne/observability/db-path";
+import { startObservabilityCLIServer } from "@aigne/observability-api/cli";
+import getObservabilityDbPath from "@aigne/observability-api/db-path";
 import { Command, type OptionValues } from "commander";
 import detectPort from "detect-port";
 
@@ -34,7 +34,7 @@ export function createObservabilityCommand(): Command {
       const port = await detectPort(options.port || DEFAULT_PORT());
       const dbUrl = getObservabilityDbPath();
 
-      console.log("DB PATH:", dbUrl);
+      console.log("Observability database path:", dbUrl);
       await startObservabilityCLIServer({ port, dbUrl });
     })
     .showHelpAfterError(true)

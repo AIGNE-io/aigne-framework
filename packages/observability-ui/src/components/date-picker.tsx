@@ -4,7 +4,7 @@ import Toast from "@arcblock/ux/lib/Toast";
 import { Button, Popover, Typography } from "@mui/material";
 import { type DateRange, DateRangePicker } from "mui-daterange-picker";
 import { useCallback, useRef, useState } from "react";
-import { formatToDate, getDefaultRanges } from "../utils/index.ts";
+import { formatToDate, getDefaultRanges } from "../utils/index.js";
 
 interface CustomDateRangePickerProps {
   value: [Date, Date];

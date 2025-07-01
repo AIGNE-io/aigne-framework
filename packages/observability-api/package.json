@@ -1,5 +1,5 @@
 {
-  "name": "@aigne/observability",
+  "name": "@aigne/observability-api",
   "version": "0.3.0",
   "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
@@ -14,7 +14,6 @@
   },
   "files": [
     "dist",
-    "src",
     "lib/cjs",
     "lib/dts",
     "lib/esm",
@@ -53,12 +52,6 @@
       "types": "./lib/dts/server/cli.d.ts",
       "default": "./lib/esm/server/cli.js"
     },
-    "./list": {
-      "default": "./src/list.tsx"
-    },
-    "./translations": {
-      "default": "./src/locales/index.ts"
-    },
     "./db-path": {
       "browser": "./lib/esm/core/db-path.js",
       "node": {
@@ -88,8 +81,8 @@
   "scripts": {
     "clean": "node scripts/build-clean.mjs",
     "lint": "tsc --noEmit",
-    "build": "run-p build:client build:api",
-    "build:client": "tsc -b && vite build",
+    "build": "run-p build:ui build:api",
+    "build:ui": "node scripts/build-ui.mjs",
     "build:api": "tsc --build scripts/tsconfig.build.json",
     "prepublishOnly": "run-s clean build",
     "test": "bun test",

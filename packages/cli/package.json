@@ -55,7 +55,7 @@
     "@aigne/gemini": "workspace:^",
     "@aigne/listr2": "^1.0.10",
     "@aigne/marked-terminal": "^7.3.1",
-    "@aigne/observability": "workspace:^",
+    "@aigne/observability-api": "workspace:^",
     "@aigne/ollama": "workspace:^",
     "@aigne/open-router": "workspace:^",
     "@aigne/openai": "workspace:^",

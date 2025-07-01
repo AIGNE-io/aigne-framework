@@ -1,4 +1,4 @@
-import List from "@aigne/observability/list";
+import List from "@aigne/observability-ui/list";
 import { Box } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useSessionContext } from "./contexts/session.js";

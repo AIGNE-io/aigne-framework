@@ -1,4 +1,4 @@
-import type { AIGNEObserver } from "@aigne/observability";
+import type { AIGNEObserver } from "@aigne/observability-api";
 import { SpanStatusCode, context, trace } from "@opentelemetry/api";
 import type { Span } from "@opentelemetry/api";
 import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";

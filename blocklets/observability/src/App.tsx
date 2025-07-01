@@ -1,4 +1,4 @@
-import { translations } from "@aigne/observability/translations";
+import { translations } from "@aigne/observability-ui/translations";
 import { ConfigProvider } from "@arcblock/ux/lib/Config";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
 import Dashboard from "@blocklet/ui-react/lib/Dashboard";
@@ -19,15 +19,7 @@ export default function BlockletApp() {
           <CssBaseline>
             <ToastProvider>
               <Suspense fallback={<Box>Loading...</Box>}>
-                <Dashboard
-                  meta={{}}
-                  fallbackUrl="/"
-                  invalidPathFallback="/"
-                  headerAddons={null}
-                  sessionManagerProps={{}}
-                  links={[]}
-                  showDomainWarningDialog={false}
-                >
+                <Dashboard meta={{}} fallbackUrl="/" links={[]} showDomainWarningDialog={false}>
                   <WrappedApp />
                 </Dashboard>
               </Suspense>

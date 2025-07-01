@@ -1,4 +1,4 @@
-import { AIGNEObserver } from "@aigne/observability";
+import { AIGNEObserver } from "@aigne/observability-api";
 import { z } from "zod";
 import type { Agent, AgentResponse, AgentResponseStream, Message } from "../agents/agent.js";
 import type { ChatModel } from "../agents/chat-model.js";

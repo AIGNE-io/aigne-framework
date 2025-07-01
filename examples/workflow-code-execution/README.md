@@ -59,7 +59,7 @@ npx -y @aigne/example-workflow-code-execution
 npx -y @aigne/example-workflow-code-execution --chat
 
 # Use pipeline input
-echo "Calculate 15!" | npx -y @aigne/example-workflow-code-execution
+echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
 ```
 
 ## Installation

@@ -11,6 +11,7 @@ writer(Writer)
 editor(Editor)
 illustrator(Illustrator)
 
+user --1 publish instruction--> manager
 manager ==2 request to speak==> writer
 manager --4 request to speak--> illustrator
 

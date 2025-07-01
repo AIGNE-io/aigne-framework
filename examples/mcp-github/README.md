@@ -1,6 +1,6 @@
 # GitHub MCP Server Integration
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [GitHub MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/github) to interact with GitHub repositories. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [GitHub MCP Server](https://github.com/modelcontextprotocol/servers-archived/tree/main/src/github) to interact with GitHub repositories. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR

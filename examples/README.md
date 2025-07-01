@@ -13,6 +13,7 @@ This directory contains typical application examples of the AIGNE Framework, cov
 #### Example List
 
 - [@aigne/example-chat-bot: Basic chatbot](./chat-bot/README.md)
+- [@aigne/example-mcp-server: AIGNE CLI serve MCP service](./mcp-server/README.md)
 - [@aigne/example-memory: Chatbot with memory](./memory/README.md)
 - [@aigne/example-mcp-blocklet: Integration with Blocklet platform](./mcp-blocklet/README.md)
 - [@aigne/example-mcp-github: Integration with GitHub](./mcp-github/README.md)

@@ -30,6 +30,7 @@
     },
     "observability/api": {},
     "observability/ui": {},
+    "examples/mcp-server": {},
     "examples/mcp-github": {},
     "examples/mcp-puppeteer": {},
     "examples/mcp-sqlite": {},

@@ -18,6 +18,7 @@
   "observability/blocklet": "1.6.2",
   "observability/api": "0.3.1",
   "observability/ui": "0.3.1",
+  "examples/mcp-server": "0.0.1",
   "examples/mcp-github": "1.13.1",
   "examples/mcp-puppeteer": "1.15.1",
   "examples/mcp-sqlite": "1.15.1",

@@ -13,6 +13,7 @@
 #### 示例列表
 
 - [@aigne/example-chat-bot：基础聊天机器人](./chat-bot/README.md)
+- [@aigne/example-mcp-server：AIGNE CLI 提供 MCP 服务](./mcp-server/README.md)
 - [@aigne/example-memory：带记忆的聊天机器人](./memory/README.md)
 - [@aigne/example-mcp-blocklet：与 Blocklet 平台集成](./mcp-blocklet/README.md)
 - [@aigne/example-mcp-github：与 GitHub 集成](./mcp-github/README.md)

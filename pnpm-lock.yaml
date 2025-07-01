@@ -202,6 +202,12 @@ importers:
         specifier: ^1.2.9
         version: 1.2.12
 
+  examples/mcp-server:
+    dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
+
   examples/mcp-sqlite:
     dependencies:
       '@aigne/agent-library':

@@ -9,15 +9,12 @@ Use AIGNE CLI to deploy agents as services.
 Serve agents in the specified directory as a Model Context Protocol (MCP) server.
 
 ```bash
-aigne serve [path] [options]
+aigne serve [options]
 ```
-
-### Parameters
-
-* `path`: Path to the agent directory (defaults to current directory `.`)
 
 ### Options
 
+* `--path <path>`: Path to the agent directory (defaults to current directory `.`)
 * `--mcp`: Serve agents as an MCP server (currently required option)
 * `--host <host>`: Host address to run the MCP server on (defaults to "localhost"), use "0.0.0.0" to expose the server publicly
 * `--port <port>`: Port to run the MCP server on (uses PORT environment variable if set, otherwise defaults to 3000)
@@ -41,13 +38,13 @@ MCP server is running on http://localhost:3000/mcp
 #### Serve in specific directory
 
 ```bash
-aigne serve ./my-agents --mcp
+aigne serve --path ./my-agents --mcp
 ```
 
 #### Use custom port
 
 ```bash
-aigne serve ./my-agents --mcp --port 8080
+aigne serve --path ./my-agents --mcp --port 8080
 ```
 
 #### Expose server publicly
@@ -67,7 +64,7 @@ aigne serve --mcp --pathname /api/agents
 #### Complete custom configuration
 
 ```bash
-aigne serve ./my-agents --mcp --host 0.0.0.0 --port 8080 --pathname /api/agents
+aigne serve --path ./my-agents --mcp --host 0.0.0.0 --port 8080 --pathname /api/agents
 ```
 
 This will serve the MCP service at `http://0.0.0.0:8080/api/agents`.

@@ -9,15 +9,12 @@
 将指定目录中的代理作为模型上下文协议（MCP）服务器提供。
 
 ```bash
-aigne serve [路径] [选项]
+aigne serve [选项]
 ```
-
-### 参数
-
-* `路径`：代理目录的路径（默认为当前目录 `.`）
 
 ### 选项
 
+* `--path <路径>`：代理目录的路径（默认为当前目录 `.`）
 * `--mcp`：将代理作为 MCP 服务器提供（目前为必需选项）
 * `--host <主机>`：运行 MCP 服务器的主机地址（默认为"localhost"），使用"0.0.0.0"可以公开暴露服务器
 * `--port <端口>`：运行 MCP 服务器的端口（如果设置了环境变量PORT则使用其值，否则默认为3000）
@@ -41,13 +38,13 @@ MCP server is running on http://localhost:3000/mcp
 #### 在特定目录中提供服务
 
 ```bash
-aigne serve ./my-agents --mcp
+aigne serve --path ./my-agents --mcp
 ```
 
 #### 使用自定义端口
 
 ```bash
-aigne serve ./my-agents --mcp --port 8080
+aigne serve --path ./my-agents --mcp --port 8080
 ```
 
 #### 公开暴露服务器
@@ -67,7 +64,7 @@ aigne serve --mcp --pathname /api/agents
 #### 完整的自定义配置
 
 ```bash
-aigne serve ./my-agents --mcp --host 0.0.0.0 --port 8080 --pathname /api/agents
+aigne serve --path ./my-agents --mcp --host 0.0.0.0 --port 8080 --pathname /api/agents
 ```
 
 这将在 `http://0.0.0.0:8080/api/agents` 上提供 MCP 服务。

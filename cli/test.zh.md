@@ -9,15 +9,12 @@
 在指定的代理目录中运行测试。
 
 ```bash
-aigne test [路径]
+aigne test [选项]
 ```
-
-### 参数
-
-* `路径`：代理目录的路径（默认为当前目录 `.`）
 
 ### 选项
 
+* `--path <路径>`：代理目录的路径（默认为当前目录 `.`）
 * `--help`：显示命令帮助
 
 ### 示例
@@ -31,7 +28,7 @@ aigne test
 #### 在特定目录中运行测试
 
 ```bash
-aigne test ./my-agents
+aigne test --path ./my-agents
 ```
 
 ### 测试文件结构

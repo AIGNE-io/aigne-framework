@@ -55,13 +55,13 @@ aigne --help
 aigne create [path]
 
 # Run an agent
-aigne run [path]
+aigne run --path xxx
 
 # Run tests
-aigne test [path]
+aigne test --path xxx
 
 # Start MCP server
-aigne serve [path] --mcp
+aigne serve --path xxx --mcp
 
 # Start observability server
 aigne observe [option]
@@ -133,7 +133,7 @@ aigne serve --mcp
 aigne serve --mcp --port 3001
 
 # Start MCP server for agents at specified path
-aigne serve path/to/agents --mcp
+aigne serve --path path/to/agents --mcp
 ```
 
 ## Serve Command (observability)

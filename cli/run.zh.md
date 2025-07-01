@@ -9,15 +9,12 @@
 运行当前目录或者指定目录中的代理。
 
 ```bash
-aigne run [路径] [选项]
+aigne run [选项]
 ```
-
-### 参数
-
-* `路径`：代理目录的路径（默认为当前目录 `.`）或指向 AIGNE Studio 中项目的 URL
 
 ### 选项
 
+* `--path <路径>`：代理目录的路径（默认为当前目录 `.`）或指向 AIGNE Studio 中项目的 URL
 * `--entry-agent <代理>`：要运行的代理名称（默认为找到的第一个代理）
 * `--cache-dir <目录>`：下载包的目录（使用URL时），默认为 `~/.aigne/xxx`
 * `--chat`：在终端中运行聊天循环（默认为false，即 one-shot 模式）

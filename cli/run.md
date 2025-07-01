@@ -9,15 +9,12 @@ Use AIGNE CLI to run your agents.
 Run an agent in the current directory or a specified directory.
 
 ```bash
-aigne run [path] [options]
+aigne run [options]
 ```
-
-### Parameters
-
-* `path`: Path to the agent directory (defaults to current directory `.`) or URL pointing to a project in AIGNE Studio
 
 ### Options
 
+* `--path <path>`: Path to the agent directory (defaults to current directory `.`) or URL pointing to a project in AIGNE Studio
 * `--entry-agent <agent>`: Name of the agent to run (defaults to the first agent found)
 * `--cache-dir <directory>`: Directory for downloaded packages (when using URL), defaults to `~/.aigne/xxx`
 * `--chat`: Run chat loop in terminal (defaults to false, i.e., one-shot mode)

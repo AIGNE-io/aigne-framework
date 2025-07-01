@@ -6,8 +6,8 @@ import dotenv from "dotenv-flow";
 import express, { type NextFunction, type Request, type Response } from "express";
 import SSE from "express-sse";
 
+import chalk from "chalk";
 import { z } from "zod";
-
 import { ZodError } from "zod";
 import { migrate } from "./migrate.js";
 import settingsRouter from "./routes/settings.js";
@@ -76,7 +76,7 @@ export async function startServer(
   });
 
   const server: Server = app.listen(Number(port), () => {
-    console.log(`Running observability server on http://localhost:${port}`);
+    console.log(`Running observability server on ${chalk.greenBright(`http://localhost:${port}`)}`);
   });
 
   return { app, server };

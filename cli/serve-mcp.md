@@ -1,21 +1,20 @@
-# Service Deployment
+# Serve as MCP Server
 
-**English** | [中文](serve.zh.md)
+**English** | [中文](serve-mcp.zh.md)
 
 Use AIGNE CLI to deploy agents as services.
 
-## `aigne serve` Command
+## `aigne serve-mcp` Command
 
 Serve agents in the specified directory as a Model Context Protocol (MCP) server.
 
 ```bash
-aigne serve [options]
+aigne serve-mcp [options]
 ```
 
 ### Options
 
 * `--path <path>`: Path to the agent directory (defaults to current directory `.`)
-* `--mcp`: Serve agents as an MCP server (currently required option)
 * `--host <host>`: Host address to run the MCP server on (defaults to "localhost"), use "0.0.0.0" to expose the server publicly
 * `--port <port>`: Port to run the MCP server on (uses PORT environment variable if set, otherwise defaults to 3000)
 * `--pathname <pathname>`: URL path for the MCP server endpoint (defaults to "/mcp")
@@ -26,7 +25,7 @@ aigne serve [options]
 #### Serve MCP service on default port
 
 ```bash
-aigne serve --mcp
+aigne serve-mcp
 ```
 
 After successful startup, the command will display the server running address:
@@ -38,25 +37,25 @@ MCP server is running on http://localhost:3000/mcp
 #### Serve in specific directory
 
 ```bash
-aigne serve --path ./my-agents --mcp
+aigne serve-mcp --path ./my-agents
 ```
 
 #### Use custom port
 
 ```bash
-aigne serve --path ./my-agents --mcp --port 8080
+aigne serve-mcp --path ./my-agents --port 8080
 ```
 
 #### Expose server publicly
 
 ```bash
-aigne serve --mcp --host 0.0.0.0
+aigne serve-mcp --host 0.0.0.0
 ```
 
 #### Use custom endpoint path
 
 ```bash
-aigne serve --mcp --pathname /api/agents
+aigne serve-mcp --pathname /api/agents
 ```
 
 ### Advanced Configuration Examples
@@ -64,7 +63,7 @@ aigne serve --mcp --pathname /api/agents
 #### Complete custom configuration
 
 ```bash
-aigne serve --path ./my-agents --mcp --host 0.0.0.0 --port 8080 --pathname /api/agents
+aigne serve-mcp --path ./my-agents --host 0.0.0.0 --port 8080 --pathname /api/agents
 ```
 
 This will serve the MCP service at `http://0.0.0.0:8080/api/agents`.
@@ -76,10 +75,10 @@ You can use environment variables to configure the server:
 ```bash
 # Set port
 export PORT=8080
-aigne serve --mcp
+aigne serve-mcp
 
 # Or set directly in command line
-PORT=8080 aigne serve --mcp
+PORT=8080 aigne serve-mcp
 ```
 
 ### MCP Server

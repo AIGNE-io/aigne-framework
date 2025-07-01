@@ -9,7 +9,7 @@
 
   * [Run Agent](/cli/run.md)
 
-  * [Serve Agent](/cli/serve.md)
+  * [Serve Agent](/cli/serve-mcp.md)
 
   * [Test Agent](/cli/test.md)
 
@@ -35,6 +35,7 @@
   * [Serve Agent as API](/how-to-guides/serve-agent-as-api.md)
   * [Enable Memory for Client Agent](/how-to-guides/enable-memory-for-client-agent.md)
   * [Available Chat Models](/how-to-guides/available-chat-models.md)
+  * [Complete CLI Workflow](/how-to-guides/complete-cli-workflow.md)
 
 * Concepts
 

@@ -61,7 +61,7 @@ aigne run --path xxx
 aigne test --path xxx
 
 # 启动 MCP 服务器
-aigne serve --path xxx --mcp
+aigne serve-mcp --path xxx
 
 # 启动 observability 服务器
 aigne observe [option]
@@ -121,19 +121,19 @@ aigne test
 aigne test path/to/agents
 ```
 
-## 服务命令 (serve)
+## 服务命令 (serve-mcp)
 
 将指定目录中的代理作为 MCP 服务器提供服务。
 
 ```bash
 # 在默认端口 3000 启动 MCP 服务器
-aigne serve --mcp
+aigne serve-mcp
 
 # 在指定端口启动 MCP 服务器
-aigne serve --mcp --port 3001
+aigne serve-mcp --port 3001
 
 # 为指定路径的代理启动 MCP 服务器
-aigne serve -- path path/to/agents --mcp
+aigne serve-mcp --path path/to/agents
 ```
 
 ## 服务命令 (observability)

@@ -34,6 +34,8 @@ Running observability server on http://localhost:7890
 
 Visit this address in your browser to view the observability interface.
 
+![AIGNE Monitor Screenshot](https://www.arcblock.io/image-bin/uploads/bb39338e593abc6f544c12636d1db739.png)
+
 #### Using Custom Port
 
 ```bash

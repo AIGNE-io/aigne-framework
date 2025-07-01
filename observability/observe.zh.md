@@ -34,6 +34,8 @@ Running observability server on http://localhost:7890
 
 在浏览器中访问该地址即可查看监视器界面。
 
+![AIGNE Monitor Screenshot](https://www.arcblock.io/image-bin/uploads/bb39338e593abc6f544c12636d1db739.png)
+
 #### 使用自定义端口
 
 ```bash

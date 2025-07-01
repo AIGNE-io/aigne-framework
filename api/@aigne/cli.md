@@ -61,7 +61,7 @@ aigne run --path xxx
 aigne test --path xxx
 
 # Start MCP server
-aigne serve --path xxx --mcp
+aigne serve-mcp --path xxx
 
 # Start observability server
 aigne observe [option]
@@ -121,19 +121,19 @@ aigne test
 aigne test path/to/agents
 ```
 
-## Serve Command
+## Serve MCP Command
 
 Serve the agents in the specified directory as a MCP server.
 
 ```bash
 # Start MCP server on default port 3000
-aigne serve --mcp
+aigne serve-mcp
 
 # Start MCP server on specified port
-aigne serve --mcp --port 3001
+aigne serve-mcp --port 3001
 
 # Start MCP server for agents at specified path
-aigne serve --path path/to/agents --mcp
+aigne serve-mcp --path path/to/agents
 ```
 
 ## Serve Command (observability)

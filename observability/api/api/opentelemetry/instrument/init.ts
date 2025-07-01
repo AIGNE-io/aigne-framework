@@ -15,7 +15,7 @@ export async function initOpenTelemetry({ dbPath }: { dbPath?: string }) {
   await sdk.start();
 
   console.log(
-    `Install the CLI first with: ${chalk.grey("npm install -g @aigne/cli")}, then run ${chalk.grey(
+    `Install the CLI first with: ${chalk.greenBright("npm install -g @aigne/cli")}, then run ${chalk.greenBright(
       "aigne observe",
     )} to start the observability server.`,
   );

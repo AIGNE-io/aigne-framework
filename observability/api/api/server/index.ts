@@ -76,7 +76,7 @@ export async function startServer(
   });
 
   const server: Server = app.listen(Number(port), () => {
-    console.log(`Running observability server on ${chalk.grey(`http://localhost:${port}`)}`);
+    console.log(`Running observability server on ${chalk.greenBright(`http://localhost:${port}`)}`);
   });
 
   return { app, server };

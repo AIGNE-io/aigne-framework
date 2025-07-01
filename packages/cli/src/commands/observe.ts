@@ -35,7 +35,7 @@ export function createObservabilityCommand(): Command {
       const port = await detectPort(options.port || DEFAULT_PORT());
       const dbUrl = getObservabilityDbPath();
 
-      console.log("Observability database path:", chalk.grey(dbUrl));
+      console.log("Observability database path:", chalk.greenBright(dbUrl));
       await startObservabilityCLIServer({ port, dbUrl });
     })
     .showHelpAfterError(true)

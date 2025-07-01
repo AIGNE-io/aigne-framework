@@ -1,3 +1,4 @@
+import { translations } from "@aigne/observability-ui/translations";
 import { ConfigProvider } from "@arcblock/ux/lib/Config";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
 import Dashboard from "@blocklet/ui-react/lib/Dashboard";
@@ -5,7 +6,6 @@ import { Box, CssBaseline } from "@mui/material";
 import { get } from "lodash";
 import { Suspense } from "react";
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { translations } from "../../ui/src/locales/index.js";
 import { SessionProvider } from "./contexts/session.js";
 import ListPage from "./list.js";
 

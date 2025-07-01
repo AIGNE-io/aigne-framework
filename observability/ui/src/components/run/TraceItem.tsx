@@ -168,7 +168,12 @@ export function formatTraceStepsAndTotalDuration({
     }
 
     const duration = parseDurationMs(step.startTime, step.endTime);
-    const totalDuration = children ? childrenTotal : duration;
+    const isParallel = (children || []).every((c) => c.start === current);
+    const maxDuration = Math.max(
+      ...(children || []).map((c) => c.totalDuration ?? c.duration),
+      duration,
+    );
+    const totalDuration = isParallel ? maxDuration : children ? childrenTotal : duration;
     const annotated = {
       ...step,
       selected: step.id === selectedTrace?.id,

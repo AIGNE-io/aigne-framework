@@ -480,7 +480,11 @@ export class AIGNEContext implements Context {
             span.setAttribute("memories", JSON.stringify([]));
           }
 
-          await this.observer?.traceExporter?.insertInitialSpan?.(span as unknown as ReadableSpan);
+          await this.observer?.traceExporter
+            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
+            .catch((err) => {
+              logger.error("upsertInitialSpan error", err?.message || err);
+            });
 
           break;
         }
@@ -494,17 +498,29 @@ export class AIGNEContext implements Context {
             span.setAttribute("output", JSON.stringify({}));
           }
 
-          span.setStatus({ code: SpanStatusCode.OK, message: "Agent succeed" });
+          span.setStatus({ code: SpanStatusCode.OK });
+
+          await this.observer?.traceExporter
+            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
+            .catch((err) => {
+              logger.error("upsertInitialSpan error", err?.message || err);
+            });
+
           span.end();
-          await this.observer?.traceExporter?.forceFlush?.();
 
           break;
         }
         case "agentFailed": {
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+
+          await this.observer?.traceExporter
+            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
+            .catch((err) => {
+              logger.error("upsertInitialSpan error", err?.message || err);
+            });
+
           span.end();
-          await this.observer?.traceExporter?.forceFlush?.();
 
           break;
         }

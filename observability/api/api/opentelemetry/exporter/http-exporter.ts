@@ -7,6 +7,7 @@ import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
 import { Trace } from "../../server/models/trace.js";
 import { validateTraceSpans } from "./util.js";
+
 type TraceInsertOrUpdateData = InferInsertModel<typeof Trace>;
 
 export interface HttpExporterInterface extends SpanExporter {
@@ -17,7 +18,7 @@ export interface HttpExporterInterface extends SpanExporter {
 
   shutdown(): Promise<void>;
 
-  insertInitialSpan(span: ReadableSpan): Promise<void>;
+  upsertInitialSpan(span: ReadableSpan): Promise<void>;
 }
 
 class HttpExporter implements HttpExporterInterface {
@@ -97,7 +98,7 @@ class HttpExporter implements HttpExporterInterface {
     return Promise.resolve();
   }
 
-  async insertInitialSpan(span: ReadableSpan) {
+  async upsertInitialSpan(span: ReadableSpan) {
     if (isBlocklet) {
       const validatedData = validateTraceSpans([span]);
       await this._upsertWithBlocklet(validatedData);

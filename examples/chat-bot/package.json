@@ -10,7 +10,7 @@
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
   "type": "module",
-  "bin": "index.js",
+  "bin": "aigne.yaml",
   "scripts": {
     "test": "aigne test",
     "test:llm": "aigne run"

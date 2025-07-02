@@ -1,3 +1,5 @@
+#!/usr/bin/env aigne
+
 chat_model:
   name: gpt-4.1
   temperature: 0.8

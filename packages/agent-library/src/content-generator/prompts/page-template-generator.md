@@ -53,6 +53,8 @@ parentId: {{parentId}}
 - 思考用 HTML 设计页面时合理的布局，以此为参考，使用提供的组件进行实现。
 - 网页中展示的文案要精简有吸引，避免出现大段的描述
 - 网页展示的内容要丰富，你可以基于当前页面计划展示的内容去扩写出打动用户的内容，但不能凭空创造虚假的内容。
+- 一个页面中如何重复使用同一个组件，如果组件支持不同布局，可以切换布局方式 ，或者间隔其他组件后使用，避免连续使用同一个组件导致视觉疲劳
+- 每个 CTA section 中最多显示两个按钮
 - 输出使用用户语言 {{locale}}
 </rules>
 
@@ -187,5 +189,5 @@ dataSource:
 - 输出必须为有效 YAML
 - component 必须选自提供的组件列表
 - dataSource 必须包含自定义组件所有属性的值，如果某个属性不需要，可以根据属性类型设置一个空值
-- 自定义组件中如果要使用结构规划中其他页面的 path ，需要添加 Pages Kit 路径前缀：{{pagesKitPoint}}，示例：/index 需要使用  {{pagesKitPoint}}/index
+- 自定义组件中如果要使用结构规划中其他页面的 path ，需要添加 Pages Kit 路径前缀：{{pagesKitPoint}}/{{projectId}}，示例：/index 需要使用  {{pagesKitPoint}}/{{projectId}}/index
 </output_schema>

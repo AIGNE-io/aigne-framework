@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.20.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.19.0...cli-v1.20.0) (2025-07-02)
+
+
+### Features
+
+* **cli:** support executing aigne.yaml via shebang (#!/usr/bin/env aigne) ([#211](https://github.com/AIGNE-io/aigne-framework/issues/211)) ([2a82c27](https://github.com/AIGNE-io/aigne-framework/commit/2a82c2754b5eab5c3d6e45a5cbe7f0c76d927967))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.8
+    * @aigne/anthropic bumped to 0.5.3
+    * @aigne/bedrock bumped to 0.5.3
+    * @aigne/core bumped to 1.29.0
+    * @aigne/deepseek bumped to 0.4.3
+    * @aigne/gemini bumped to 0.4.3
+    * @aigne/ollama bumped to 0.4.3
+    * @aigne/open-router bumped to 0.4.3
+    * @aigne/openai bumped to 0.6.3
+    * @aigne/xai bumped to 0.4.3
+
 ## [1.19.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.18.1...cli-v1.19.0) (2025-07-01)
 
 

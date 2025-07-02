@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.2.0...example-mcp-server-v0.3.0) (2025-07-02)
+
+
+### Features
+
+* **cli:** support executing aigne.yaml via shebang (#!/usr/bin/env aigne) ([#211](https://github.com/AIGNE-io/aigne-framework/issues/211)) ([2a82c27](https://github.com/AIGNE-io/aigne-framework/commit/2a82c2754b5eab5c3d6e45a5cbe7f0c76d927967))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.20.0
+
 ## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.1.0...example-mcp-server-v0.2.0) (2025-07-01)
 
 

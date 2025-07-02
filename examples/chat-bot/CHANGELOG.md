@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.14.1...example-chat-bot-v1.15.0) (2025-07-02)
+
+
+### Features
+
+* **cli:** support executing aigne.yaml via shebang (#!/usr/bin/env aigne) ([#211](https://github.com/AIGNE-io/aigne-framework/issues/211)) ([2a82c27](https://github.com/AIGNE-io/aigne-framework/commit/2a82c2754b5eab5c3d6e45a5cbe7f0c76d927967))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.20.0
+
 ## [1.14.1](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.14.0...example-chat-bot-v1.14.1) (2025-07-01)
 
 

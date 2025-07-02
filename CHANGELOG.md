@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.33.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.32.0...aigne-framework-v1.33.0) (2025-07-02)
+
+
+### Features
+
+* **cli:** support executing aigne.yaml via shebang (#!/usr/bin/env aigne) ([#211](https://github.com/AIGNE-io/aigne-framework/issues/211)) ([2a82c27](https://github.com/AIGNE-io/aigne-framework/commit/2a82c2754b5eab5c3d6e45a5cbe7f0c76d927967))
+* support iterate special input call skills for TeamAgent ([#188](https://github.com/AIGNE-io/aigne-framework/issues/188)) ([8cf06d3](https://github.com/AIGNE-io/aigne-framework/commit/8cf06d39172ed59ca93f34d893486f2bb7bd2e5a))
+
 ## [1.32.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.31.0...aigne-framework-v1.32.0) (2025-07-01)
 
 

@@ -60,11 +60,6 @@ class HttpExporter implements HttpExporterInterface {
     }
 
     for (const trace of validatedData) {
-      if (!trace.id || !trace.rootId) {
-        console.warn("Skipping trace with missing id or rootId:", trace);
-        continue;
-      }
-
       const whereClause = and(
         eq(Trace.id, trace.id),
         eq(Trace.rootId, trace.rootId),

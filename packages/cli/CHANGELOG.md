@@ -1,11 +1,154 @@
 # Changelog
 
+## [1.19.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.18.1...cli-v1.19.0) (2025-07-01)
+
+
+### Features
+
+* rename command serve to serve-mcp ([#206](https://github.com/AIGNE-io/aigne-framework/issues/206)) ([f3dfc93](https://github.com/AIGNE-io/aigne-framework/commit/f3dfc932b4eeb8ff956bf2d4b1b71b36bd05056e))
+
+
+### Bug Fixes
+
+* fix: compatible with node 20.0 & polish example defintions ([#209](https://github.com/AIGNE-io/aigne-framework/issues/209)) ([9752b96](https://github.com/AIGNE-io/aigne-framework/commit/9752b96dc54a44c6f710f056fe9205c0f2b0a73e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.7
+    * @aigne/anthropic bumped to 0.5.2
+    * @aigne/bedrock bumped to 0.5.2
+    * @aigne/core bumped to 1.28.2
+    * @aigne/deepseek bumped to 0.4.2
+    * @aigne/gemini bumped to 0.4.2
+    * @aigne/observability-api bumped to 0.3.2
+    * @aigne/ollama bumped to 0.4.2
+    * @aigne/open-router bumped to 0.4.2
+    * @aigne/openai bumped to 0.6.2
+    * @aigne/xai bumped to 0.4.2
+
+## [1.18.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.18.0...cli-v1.18.1) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.6
+    * @aigne/anthropic bumped to 0.5.1
+    * @aigne/bedrock bumped to 0.5.1
+    * @aigne/core bumped to 1.28.1
+    * @aigne/deepseek bumped to 0.4.1
+    * @aigne/gemini bumped to 0.4.1
+    * @aigne/observability-api bumped to 0.3.1
+    * @aigne/ollama bumped to 0.4.1
+    * @aigne/open-router bumped to 0.4.1
+    * @aigne/openai bumped to 0.6.1
+    * @aigne/xai bumped to 0.4.1
+
+## [1.18.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.17.0...cli-v1.18.0) (2025-07-01)
+
+
+### Features
+
+* **example:** use AIGNE cli to run chat-bot example ([#198](https://github.com/AIGNE-io/aigne-framework/issues/198)) ([7085541](https://github.com/AIGNE-io/aigne-framework/commit/708554100692f2a557f7329ea78e46c3c870ce10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.5
+    * @aigne/anthropic bumped to 0.5.0
+    * @aigne/bedrock bumped to 0.5.0
+    * @aigne/core bumped to 1.28.0
+    * @aigne/deepseek bumped to 0.4.0
+    * @aigne/gemini bumped to 0.4.0
+    * @aigne/ollama bumped to 0.4.0
+    * @aigne/open-router bumped to 0.4.0
+    * @aigne/openai bumped to 0.6.0
+    * @aigne/xai bumped to 0.4.0
+
+## [1.17.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.16.0...cli-v1.17.0) (2025-07-01)
+
+
+### Features
+
+* **cli:** support HTTPS_PROXY and named path param ([#196](https://github.com/AIGNE-io/aigne-framework/issues/196)) ([04e684e](https://github.com/AIGNE-io/aigne-framework/commit/04e684ee26bc2d79924b0e3cb541cd07a7191804))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.4
+    * @aigne/anthropic bumped to 0.4.0
+    * @aigne/bedrock bumped to 0.4.0
+    * @aigne/core bumped to 1.27.0
+    * @aigne/deepseek bumped to 0.3.11
+    * @aigne/gemini bumped to 0.3.11
+    * @aigne/ollama bumped to 0.3.11
+    * @aigne/open-router bumped to 0.3.11
+    * @aigne/openai bumped to 0.5.0
+    * @aigne/xai bumped to 0.3.11
+
+## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.15.0...cli-v1.16.0) (2025-06-30)
+
+
+### Features
+
+* **cli:** auto-load dotenv files for AIGNE CLI ([#192](https://github.com/AIGNE-io/aigne-framework/issues/192)) ([56d5632](https://github.com/AIGNE-io/aigne-framework/commit/56d5632ba427a1cf39235bcd1c30df3bc60643f6))
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.3
+    * @aigne/anthropic bumped to 0.3.10
+    * @aigne/bedrock bumped to 0.3.10
+    * @aigne/core bumped to 1.26.0
+    * @aigne/deepseek bumped to 0.3.10
+    * @aigne/gemini bumped to 0.3.10
+    * @aigne/observability bumped to 0.3.0
+    * @aigne/ollama bumped to 0.3.10
+    * @aigne/open-router bumped to 0.3.10
+    * @aigne/openai bumped to 0.4.3
+    * @aigne/xai bumped to 0.3.10
+
+## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.14.1...cli-v1.15.0) (2025-06-29)
+
+
+### Features
+
+* **observability:** tune trace ux and supoort incremental exporting ([#184](https://github.com/AIGNE-io/aigne-framework/issues/184)) ([d174188](https://github.com/AIGNE-io/aigne-framework/commit/d174188459c77acb09b5ca040972f83abb067587))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.2
+    * @aigne/anthropic bumped to 0.3.9
+    * @aigne/bedrock bumped to 0.3.9
+    * @aigne/core bumped to 1.25.0
+    * @aigne/deepseek bumped to 0.3.9
+    * @aigne/gemini bumped to 0.3.9
+    * @aigne/observability bumped to 0.2.0
+    * @aigne/ollama bumped to 0.3.9
+    * @aigne/open-router bumped to 0.3.9
+    * @aigne/openai bumped to 0.4.2
+    * @aigne/xai bumped to 0.3.9
+
 ## [1.14.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.14.0...cli-v1.14.1) (2025-06-26)
 
 
 ### Bug Fixes
 
-* agine cli not found package ([#185](https://github.com/AIGNE-io/aigne-framework/issues/185)) ([5d98b61](https://github.com/AIGNE-io/aigne-framework/commit/5d98b6158f1e43e049a3a51a69bab88092bf1c92))
+* aigne cli not found package ([#185](https://github.com/AIGNE-io/aigne-framework/issues/185)) ([5d98b61](https://github.com/AIGNE-io/aigne-framework/commit/5d98b6158f1e43e049a3a51a69bab88092bf1c92))
 
 
 ### Dependencies

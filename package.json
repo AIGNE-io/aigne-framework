@@ -1,6 +1,6 @@
 {
   "name": "aigne-framework",
-  "version": "1.26.1",
+  "version": "1.32.0",
   "description": "AIGNE framework is a collection of libraries and tools for building AI-powered applications",
   "private": true,
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
@@ -23,16 +23,17 @@
     "test:coverage": "pnpm -r run test:coverage",
     "postinstall": "npx simple-git-hooks",
     "publish:docs": "pnpm build:docs && bun scripts/publish-docs.ts",
-    "build:markdown": "remark ./*.md docs/ -o --silently-ignore"
+    "build:markdown": "remark ./*.md docs/ examples/**/*.md packages/**/*.md models/**/*.md blocklets/**/*.md -o --silently-ignore"
   },
   "devDependencies": {
+    "@aigne/publish-docs": "workspace:^",
     "@biomejs/biome": "^1.9.4",
     "@biomejs/js-api": "^0.7.1",
     "@biomejs/wasm-nodejs": "^1.9.4",
-    "@aigne/publish-docs": "workspace:^",
     "fenceparser": "^2.2.0",
     "mdast": "^3.0.0",
     "remark-cli": "^12.0.1",
+    "remark-frontmatter": "^5.0.0",
     "remark-preset-lint-consistent": "^6.0.1",
     "remark-preset-lint-recommended": "^7.0.1",
     "simple-git-hooks": "^2.13.0",
@@ -61,6 +62,7 @@
   },
   "remarkConfig": {
     "plugins": [
+      "remark-frontmatter",
       "remark-preset-lint-consistent",
       "remark-preset-lint-recommended",
       "./scripts/remark-plugin-clean-code.ts"

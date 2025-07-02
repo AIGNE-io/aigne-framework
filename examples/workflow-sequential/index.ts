@@ -46,6 +46,7 @@ Draft copy:
 });
 
 const agent = TeamAgent.from({
+  name: "example_sequential",
   skills: [conceptExtractor, writer, formatProof],
   mode: ProcessMode.sequential,
 });

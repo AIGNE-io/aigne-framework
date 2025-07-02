@@ -14,7 +14,7 @@ test("serveMCPServer should work", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { models: availableModels });
+  const aigne = await AIGNE.load(testAgentsPath, { models: availableModels() });
 
   assert(aigne.model, "aigne.model should be defined");
   spyOn(aigne.model, "process")
@@ -61,7 +61,7 @@ test("serveMCPServer should respond error from not supported methods", async () 
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { models: availableModels });
+  const aigne = await AIGNE.load(testAgentsPath, { models: availableModels() });
   const server = await serveMCPServer({ aigne, port });
 
   spyOn(console, "error").mockReturnValueOnce(undefined);
@@ -93,7 +93,7 @@ test("serveMCPServer should respond error from agent processing", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { models: availableModels });
+  const aigne = await AIGNE.load(testAgentsPath, { models: availableModels() });
 
   assert(aigne.model, "engine.model should be defined");
   spyOn(aigne.model, "process").mockReturnValueOnce(
@@ -130,7 +130,7 @@ test("serveMCPServer should respond 500 error", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { models: availableModels });
+  const aigne = await AIGNE.load(testAgentsPath, { models: availableModels() });
 
   await using _ = await mockModule("@aigne/cli/utils/serve-mcp.ts", () => ({
     createMcpServer: () => {

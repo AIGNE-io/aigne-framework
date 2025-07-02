@@ -72,7 +72,7 @@ export function createCreateCommand(): Command {
         await cp(source, destination, { recursive: true, force: true });
       }
 
-      console.log("\n✅ Aigne project created successfully!");
+      console.log("\n✅ AIGNE project created successfully!");
       console.log(
         `\nTo use your new agent, run:\n  cd ${relative(process.cwd(), path)} && aigne run`,
       );

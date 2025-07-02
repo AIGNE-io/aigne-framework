@@ -79,6 +79,7 @@ console.log(result);
 ## 流式响应
 
 ```typescript file="test/openai-chat-model.test.ts" region="example-openai-chat-model-stream"
+import { isAgentResponseDelta } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
 const model = new OpenAIChatModel({
@@ -90,7 +91,6 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Hello, who are you?" }],
   },
-  undefined,
   { streaming: true },
 );
 
@@ -98,9 +98,11 @@ let fullText = "";
 const json = {};
 
 for await (const chunk of stream) {
-  const text = chunk.delta.text?.text;
-  if (text) fullText += text;
-  if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) fullText += text;
+    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+  }
 }
 
 console.log(fullText); // Output: "Hello! How can I assist you today?"

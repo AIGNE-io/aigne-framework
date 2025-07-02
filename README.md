@@ -1,6 +1,10 @@
-![](https://www.arcblock.io/.well-known/service/blocklet/og.png?template=banner\&title=AIGNE%20Framework\&logo=https://store.blocklet.dev/assets/z2qaBP9SahqU2L2YA3ip7NecwKACMByTFuiJ2/screenshots/0453ca48c18784b78a0354c9369ad377.png?imageFilter=resize\&w=160\&h=160\&v=0.4.227)
+<p align="center">
+  <img src="./logo.svg" alt="AIGNE Logo" width="400"/>
+</p>
 
-[English](./README.md) | [中文](./README.zh.md)
+<p align="center">
+  <a href="./README.md">English</a> | <a href="./README.zh.md">中文</a>
+</p>
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
@@ -12,6 +16,10 @@
 
 AIGNE Framework is a functional AI application development framework designed to simplify and accelerate the process of building modern applications. It combines functional programming features, powerful artificial intelligence capabilities, and modular design principles to help developers easily create scalable solutions. AIGNE Framework is also deeply integrated with the Blocklet ecosystem, providing developers with a wealth of tools and resources.
 
+## Architecture diagram
+
+![AIGNE Arch](./aigne-arch.png)
+
 ## Key Features
 
 * **Modular Design**: With a clear modular structure, developers can easily organize code, improve development efficiency, and simplify maintenance.
@@ -20,9 +28,13 @@ AIGNE Framework is a functional AI application development framework designed to
 * **Flexible Workflow Patterns**: Support for sequential, concurrent, routing, handoff and other workflow patterns to meet various complex application requirements.
 * **MCP Protocol Integration**: Seamless integration with external systems and services through the Model Context Protocol.
 * **Code Execution Capabilities**: Support for executing dynamically generated code in a secure sandbox, enabling more powerful automation capabilities.
-* **Blocklet Ecosystem Integration**: Closely integrated with the Blocklet ecosystem, providing developers with a one-stop solution for development and deployment.
+* **Blocklet Ecosystem Integration**: Closely integrated with ArcBlock's Blocklet ecosystem, providing developers with a one-stop solution for development and deployment.
 
 ## Quick Start
+
+### Environment Requirements
+
+* Node.js version 20.0 or higher
 
 ### Installation
 
@@ -65,26 +77,28 @@ const agentA = AIAgent.from({
   instructions: "You are a helpful agent.",
   outputKey: "A",
   skills: [transferToB],
+  inputKey: "message",
 });
 
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
+  inputKey: "message",
 });
 
 const aigne = new AIGNE({ model });
 
 const userAgent = aigne.invoke(agentA);
 
-const result1 = await userAgent.invoke("transfer to agent b");
+const result1 = await userAgent.invoke({ message: "transfer to agent b" });
 console.log(result1);
 // Output:
 // {
 //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
 // }
 
-const result2 = await userAgent.invoke("It's a beautiful day");
+const result2 = await userAgent.invoke({ message: "It's a beautiful day" });
 console.log(result2);
 // Output:
 // {
@@ -92,31 +106,23 @@ console.log(result2);
 // }
 ```
 
-## Packages
+## Simplifying Agentic Workflows
 
-* [examples](./examples) - Example project demonstrating how to use different agents to handle various tasks.
-* [packages/core](./packages/core) - Core package providing the foundation for building AIGNE applications.
-* [packages/agent-library](./packages/agent-library) - AIGNE agent library, providing a variety of specialized agents for different tasks.
-* [packages/cli](./packages/cli) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
-* models - AIGNE Framework's built-in models, including OpenAI, Gemini, Claude, and Nova.
-  * [models/openai](./models/openai) - OpenAI model implementation, supporting OpenAI's API and function calling.
-  * [models/anthropic](./models/anthropic) - Anthropic model implementation, supporting Anthropic's API and function calling.
-  * [models/bedrock](./models/bedrock) - Bedrock model implementation, supporting Bedrock's API and function calling.
-  * [models/deepseek](./models/deepseek) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
-  * [models/gemini](./models/gemini) - Gemini model implementation, supporting Gemini's API and function calling.
-  * [models/ollama](./models/ollama) - Ollama model implementation, supporting Ollama's API and function calling.
-  * [models/open-router](./models/open-router) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
-  * [models/xai](./models/xai) - XAI model implementation, supporting XAI's API and function calling.
+The AIGNE Framework offers multiple workflow patterns, each tailored to address distinct application scenarios efficiently.
 
-## Documentation
+### Workflow Patterns
 
-[AIGNE Framework Documentation](https://www.arcblock.io/docs/aigne-framework) provides comprehensive guides and API references to help developers quickly get started and master the framework.
+* [Workflow Router](./examples/workflow-router) - Implement intelligent routing logic to direct requests to appropriate handlers based on content.
+* [Workflow Sequential](./examples/workflow-sequential) - Build step-by-step processing pipelines with guaranteed execution order.
+* [Workflow Concurrency](./examples/workflow-concurrency) - Optimize performance by processing multiple tasks simultaneously with parallel execution.
+* [Workflow Handoff](./examples/workflow-handoff) - Create seamless transitions between specialized agents to solve complex problems.
+* [Workflow Reflection](./examples/workflow-reflection) - Enable self-improvement through output evaluation and refinement capabilities.
+* [Workflow Orchestration](./examples/workflow-orchestration) - Coordinate multiple agents working together in sophisticated processing pipelines.
+* [Workflow Code Execution](./examples/workflow-code-execution) - Safely execute dynamically generated code within AI-driven workflows.
+* [Workflow Group Chat](./examples/workflow-group-chat) - Share messages and interact with multiple agents in a group chat environment.
 
-## Architecture
 
-AIGNE Framework supports various workflow patterns to address different AI application needs. Each workflow pattern is optimized for specific use cases:
-
-### Sequential Workflow
+### Sequential 
 
 **Use Cases**: Processing multi-step tasks that require a specific execution order, such as content generation pipelines, multi-stage data processing, etc.
 
@@ -140,7 +146,9 @@ class writer processing
 class formatProof processing
 ```
 
-### Concurrency Workflow
+**Example**: [@aigne/example-workflow-sequential: Pipeline](./examples/workflow-sequential/README.md) 
+
+### Concurrency 
 
 **Use Cases**: Scenarios requiring simultaneous processing of multiple independent tasks to improve efficiency, such as parallel data analysis, multi-dimensional content evaluation, etc.
 
@@ -166,7 +174,9 @@ class audienceAnalyzer processing
 class aggregator processing
 ```
 
-### Router Workflow
+**Example**: [@aigne/example-workflow-concurrency: Concurrency](./examples/workflow-concurrency/README.md)
+
+### Router 
 
 **Use Cases**: Scenarios where requests need to be routed to different specialized processors based on input content type, such as intelligent customer service systems, multi-functional assistants, etc.
 
@@ -195,7 +205,10 @@ class feedback processing
 class other processing
 ```
 
-### Handoff Workflow
+**Example**: [@aigne/example-workflow-router: Router](./examples/workflow-router/README.md)
+
+
+### Handoff 
 
 **Use Cases**: Scenarios requiring control transfer between different specialized agents to solve complex problems, such as expert collaboration systems, etc.
 
@@ -218,7 +231,10 @@ class agentA processing
 class agentB processing
 ```
 
-### Reflection Workflow
+**Example**: [@aigne/example-workflow-handoff: Task handoff](./examples/workflow-handoff/README.md)
+
+
+### Reflection 
 
 **Use Cases**: Scenarios requiring self-assessment and iterative improvement of output quality, such as code reviews, content quality control, etc.
 
@@ -241,7 +257,10 @@ class coder processing
 class reviewer processing
 ```
 
-### Code Execution Workflow
+**Example**: [@aigne/example-workflow-reflection: Reflection](./examples/workflow-reflection/README.md)
+
+
+### Code Execution 
 
 **Use Cases**: Scenarios requiring dynamically generated code execution to solve problems, such as automated data analysis, algorithmic problem solving, etc.
 
@@ -267,24 +286,41 @@ class coder processing
 class sandbox processing
 ```
 
-## Examples
+**Example**: [@aigne/example-workflow-code-execution: Code execution](./examples/workflow-code-execution/README.md)
 
-### MCP Server Integration
+## Built-in MCP Support
+
+Built-in MCP support allows the AIGNE framework to effortlessly run its own MCP server or seamlessly integrate with external MCP servers.
+
+### Implement MCP Server
+
+* [MCP Server](./examples/mcp-server) - Build a MCP server using AIGNE CLI to provide MCP services.
+
+### Use MCP Servers
 
 * [Puppeteer MCP Server](./examples/mcp-puppeteer) - Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.
 * [SQLite MCP Server](./examples/mcp-sqlite) - Explore database operations by connecting to SQLite through the Model Context Protocol.
 * [Github](./examples/mcp-github) - Interact with GitHub repositories using the GitHub MCP Server.
 
-### Workflow Patterns
+## Packages
 
-* [Workflow Router](./examples/workflow-router) - Implement intelligent routing logic to direct requests to appropriate handlers based on content.
-* [Workflow Sequential](./examples/workflow-sequential) - Build step-by-step processing pipelines with guaranteed execution order.
-* [Workflow Concurrency](./examples/workflow-concurrency) - Optimize performance by processing multiple tasks simultaneously with parallel execution.
-* [Workflow Handoff](./examples/workflow-handoff) - Create seamless transitions between specialized agents to solve complex problems.
-* [Workflow Reflection](./examples/workflow-reflection) - Enable self-improvement through output evaluation and refinement capabilities.
-* [Workflow Orchestration](./examples/workflow-orchestration) - Coordinate multiple agents working together in sophisticated processing pipelines.
-* [Workflow Code Execution](./examples/workflow-code-execution) - Safely execute dynamically generated code within AI-driven workflows.
-* [Workflow Group Chat](./examples/workflow-group-chat) - Share messages and interact with multiple agents in a group chat environment.
+* [examples](./examples) - Example project demonstrating how to use different agents to handle various tasks.
+* [packages/core](./packages/core) - Core package providing the foundation for building AIGNE applications.
+* [packages/agent-library](./packages/agent-library) - AIGNE agent library, providing a variety of specialized agents for different tasks.
+* [packages/cli](./packages/cli) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
+* models - AIGNE Framework's built-in models, including OpenAI, Gemini, Claude, and Nova.
+  * [models/openai](./models/openai) - OpenAI model implementation, supporting OpenAI's API and function calling.
+  * [models/anthropic](./models/anthropic) - Anthropic model implementation, supporting Anthropic's API and function calling.
+  * [models/bedrock](./models/bedrock) - Bedrock model implementation, supporting Bedrock's API and function calling.
+  * [models/deepseek](./models/deepseek) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
+  * [models/gemini](./models/gemini) - Gemini model implementation, supporting Gemini's API and function calling.
+  * [models/ollama](./models/ollama) - Ollama model implementation, supporting Ollama's API and function calling.
+  * [models/open-router](./models/open-router) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
+  * [models/xai](./models/xai) - XAI model implementation, supporting XAI's API and function calling.
+
+## Documentation
+
+[AIGNE Framework Documentation](https://www.arcblock.io/docs/aigne-framework) provides comprehensive guides and API references to help developers quickly get started and master the framework.
 
 ## Contributing and Releasing
 

@@ -1,5 +1,81 @@
 # Changelog
 
+## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.6.1...openai-v0.6.2) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.28.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.14
+
+## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.6.0...openai-v0.6.1) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.28.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.13
+
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.5.0...openai-v0.6.0) (2025-07-01)
+
+
+### Features
+
+* **example:** use AIGNE cli to run chat-bot example ([#198](https://github.com/AIGNE-io/aigne-framework/issues/198)) ([7085541](https://github.com/AIGNE-io/aigne-framework/commit/708554100692f2a557f7329ea78e46c3c870ce10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.28.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.12
+
+## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.4.3...openai-v0.5.0) (2025-07-01)
+
+
+### Features
+
+* **cli:** support HTTPS_PROXY and named path param ([#196](https://github.com/AIGNE-io/aigne-framework/issues/196)) ([04e684e](https://github.com/AIGNE-io/aigne-framework/commit/04e684ee26bc2d79924b0e3cb541cd07a7191804))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.27.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.11
+
+## [0.4.3](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.4.2...openai-v0.4.3) (2025-06-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.26.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.10
+
+## [0.4.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.4.1...openai-v0.4.2) (2025-06-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.25.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.9
+
 ## [0.4.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.4.0...openai-v0.4.1) (2025-06-26)
 
 

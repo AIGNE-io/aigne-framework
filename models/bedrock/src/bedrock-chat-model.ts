@@ -20,6 +20,7 @@ import {
 } from "@aigne/core/utils/type-utils.js";
 import {
   BedrockRuntimeClient,
+  type BedrockRuntimeClientConfig,
   type ContentBlock,
   ConverseCommand,
   ConverseStreamCommand,
@@ -50,6 +51,7 @@ export interface BedrockChatModelOptions {
   region?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
+  clientOptions?: Partial<BedrockRuntimeClientConfig>;
 }
 
 /**
@@ -92,6 +94,7 @@ export class BedrockChatModel extends ChatModel {
     this._client ??= new BedrockRuntimeClient({
       region: this.options?.region,
       credentials,
+      ...this.options?.clientOptions,
     });
     return this._client;
   }

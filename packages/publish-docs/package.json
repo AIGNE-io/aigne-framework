@@ -55,10 +55,12 @@
     "lexical": "^0.31.2",
     "marked": "^15.0.12",
     "open": "^10.1.2",
-    "ufo": "^1.6.1"
+    "ufo": "^1.6.1",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
+    "@types/jsonwebtoken": "^9.0.9",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"

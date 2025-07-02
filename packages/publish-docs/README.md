@@ -17,13 +17,13 @@ await publishDocs({
 
 ## Parameters
 
-- `sidebarPath`: string (**required**) - Path to the docsify sidebar file.
-- `boardId`: string (optional)
-- `appUrl`: string (optional)
-- `accessToken`: string (optional, takes precedence over OAuth)
-- `scope`: string (optional, required if `accessToken` is not provided)
-- `clientId`: string (optional, required if `accessToken` is not provided)
-- `clientSecret`: string (optional, required if `accessToken` is not provided)
-- `redirectUri`: string (optional, required if `accessToken` is not provided)
+* `sidebarPath`: string (**required**) - Path to the docsify sidebar file.
+* `boardId`: string (optional)
+* `appUrl`: string (optional)
+* `accessToken`: string (optional, takes precedence over OAuth)
+* `scope`: string (optional, required if `accessToken` is not provided)
+* `clientId`: string (optional, required if `accessToken` is not provided)
+* `clientSecret`: string (optional, required if `accessToken` is not provided)
+* `redirectUri`: string (optional, required if `accessToken` is not provided)
 
 > If a parameter is not provided, it will be read from the corresponding environment variable if available. `accessToken` takes precedence over OAuth parameters.

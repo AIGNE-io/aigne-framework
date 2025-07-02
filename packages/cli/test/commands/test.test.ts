@@ -24,7 +24,7 @@ test("test command should spawn node --test process with correct arguments", asy
   );
 
   // run test in specified directory
-  await command.parseAsync(["", "test", "test/path"]);
+  await command.parseAsync(["", "test", "--path", "test/path"]);
 
   expect(spawnSyncMock).toHaveBeenNthCalledWith(
     2,
@@ -37,7 +37,7 @@ test("test command should spawn node --test process with correct arguments", asy
   );
 
   // run test in specified directory of absolute path
-  await command.parseAsync(["", "test", "/tmp"]);
+  await command.parseAsync(["", "test", "--path", "/tmp"]);
 
   expect(spawnSyncMock).toHaveBeenNthCalledWith(
     3,

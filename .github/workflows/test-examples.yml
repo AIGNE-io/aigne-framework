@@ -124,6 +124,10 @@ jobs:
           for MODEL in $MODELS; do
             SLEEP_SECONDS=${PROVIDER_SLEEP_SECONDS[${{ matrix.provider }}]:-$DEFAULT_SLEEP_SECONDS}
             for dir in examples/*; do
+              if [ ! -d "$dir" ]; then
+                continue
+              fi
+
               echo "=========================================="
               if echo "$dir" | grep -E -q "$DEFAULT_EXCLUDE_PATTERN"; then
                 echo "Skipping $dir (default exclude)"

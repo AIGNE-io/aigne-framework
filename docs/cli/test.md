@@ -9,15 +9,12 @@ Use AIGNE CLI to run agent tests.
 Run tests in the specified agent directory.
 
 ```bash
-aigne test [path]
+aigne test [options]
 ```
-
-### Parameters
-
-* `path`: Path to the agent directory (defaults to current directory `.`)
 
 ### Options
 
+* `--path <path>`: Path to the agent directory (defaults to current directory `.`)
 * `--help`: Show command help
 
 ### Examples
@@ -31,7 +28,7 @@ aigne test
 #### Run tests in specific directory
 
 ```bash
-aigne test ./my-agents
+aigne test --path ./my-agents
 ```
 
 ### Test File Structure

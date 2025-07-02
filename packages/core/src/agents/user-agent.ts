@@ -80,7 +80,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
       typeof this.publishTopic === "function" ? await this.publishTopic(input) : this.publishTopic;
 
     if (publicTopic?.length) {
-      options.context.publish(publicTopic, input);
+      options.context.publish(publicTopic, input, { newContext: false });
 
       if (this.subscribeTopic) {
         return this.subscribe(this.subscribeTopic).then((res) => res.message as O);

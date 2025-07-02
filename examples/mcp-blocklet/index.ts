@@ -120,6 +120,7 @@ await runWithAIGNE(
     });
 
     const agent = AIAgent.from({
+      name: "example_blocklet",
       instructions: PromptBuilder.from(
         "You are a helpful assistant that can help users query and analyze data from the blocklet. You can perform various database queries on the blocklet database, before performing any queries, please try to understand the user's request and generate a query base on the database schema.",
       ),

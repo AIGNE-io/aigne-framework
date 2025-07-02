@@ -53,7 +53,7 @@ app.use(
 * `worker.format` 设置为 `es` 以支持现代浏览器的模块化
 * `optimizeDeps.exclude` 用于排除 `sqlocal` 依赖的优化
 
-```ts file="../../examples/browser/vite.config.ts"
+```ts file="../../tests/browser/vite.config.ts"
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 

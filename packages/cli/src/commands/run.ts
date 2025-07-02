@@ -8,6 +8,7 @@ import { logger } from "@aigne/core/utils/logger.js";
 import { isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import type { Command } from "commander";
+import { config } from "dotenv-flow";
 import { availableMemories, availableModels } from "../constants.js";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
@@ -25,7 +26,7 @@ interface RunOptions extends RunAIGNECommandOptions {
   cacheDir?: string;
 }
 
-export function createRunCommand(): Command {
+export function createRunCommand({ aigneFilePath }: { aigneFilePath?: string } = {}): Command {
   return createRunAIGNECommand()
     .description("Run AIGNE from the specified agent")
     .option(
@@ -42,7 +43,7 @@ export function createRunCommand(): Command {
       "Directory to download the package to (defaults to the ~/.aigne/xxx)",
     )
     .action(async (options: RunOptions) => {
-      const { path } = options;
+      const path = aigneFilePath || options.path;
 
       if (options.logLevel) logger.level = options.logLevel;
 
@@ -73,7 +74,13 @@ export function createRunCommand(): Command {
           {
             title: "Initialize AIGNE",
             task: async (ctx) => {
-              const aigne = await loadAIGNE(dir, options);
+              // Load env files in the aigne directory
+              config({ path: dir, silent: true });
+
+              const aigne = await loadAIGNE(dir, {
+                ...options,
+                model: options.model || process.env.MODEL,
+              });
               ctx.aigne = aigne;
             },
           },
@@ -127,11 +134,13 @@ export function createRunCommand(): Command {
 }
 
 async function loadAIGNE(path: string, options: RunOptions) {
+  const models = availableModels();
+
   const model = options.model
-    ? await loadModel(availableModels, parseModelOption(options.model))
+    ? await loadModel(models, parseModelOption(options.model))
     : undefined;
 
-  return await AIGNE.load(path, { models: availableModels, memories: availableMemories, model });
+  return await AIGNE.load(path, { models, memories: availableMemories, model });
 }
 
 async function downloadPackage(url: string, cacheDir: string) {

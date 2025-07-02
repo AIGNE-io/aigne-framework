@@ -3,7 +3,7 @@ packages:
   - models/*
   - examples/*
   - tests/*
-  - blocklets/*
+  - observability/*
   - docs-examples
 onlyBuiltDependencies:
   - "@biomejs/biome"

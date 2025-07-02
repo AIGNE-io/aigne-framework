@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.16.3](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.16.2...example-mcp-sqlite-v1.16.3) (2025-07-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.9
+    * @aigne/cli bumped to 1.20.1
+    * @aigne/core bumped to 1.29.1
+    * @aigne/openai bumped to 0.6.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.16
+
 ## [1.16.2](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.16.1...example-mcp-sqlite-v1.16.2) (2025-07-02)
 
 

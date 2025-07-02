@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.3.1...observability-ui-v0.3.2) (2025-07-02)
+
+
+### Bug Fixes
+
+* remove useless code ([#214](https://github.com/AIGNE-io/aigne-framework/issues/214)) ([59f4965](https://github.com/AIGNE-io/aigne-framework/commit/59f49657233772b5243a8b5b9059970cbc0f0bb1))
+
 ## [0.3.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.3.0...observability-ui-v0.3.1) (2025-07-01)
 
 

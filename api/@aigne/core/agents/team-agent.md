@@ -123,6 +123,37 @@ The processing mode that determines how agents in the team are executed.
 
 This can be either sequential (one after another) or parallel (all at once).
 
+##### iterateOn?
+
+> `optional` **iterateOn**: keyof `I`
+
+The input field key to iterate over when processing array inputs.
+
+When set, this property enables the TeamAgent to process array values iteratively,
+where each array element is processed individually through the team's agent workflow.
+The accumulated results are returned via streaming response chunks.
+
+###### See
+
+TeamAgentOptions.iterateOn for detailed documentation
+
+##### iterateWithPreviousOutput?
+
+> `optional` **iterateWithPreviousOutput**: `boolean`
+
+Controls whether to merge the output from each iteration back into the array items
+for subsequent iterations when using `iterateOn`.
+
+###### See
+
+TeamAgentOptions.iterateWithPreviousOutput for detailed documentation
+
+###### Default
+
+```ts
+false;
+```
+
 #### Methods
 
 ##### from()
@@ -267,6 +298,8 @@ These options extend the base AgentOptions and add team-specific settings.
 
 #### Properties
 
-| Property                  | Type                          | Description                                                                          |
-| ------------------------- | ----------------------------- | ------------------------------------------------------------------------------------ |
-| <a id="mode"></a> `mode?` | [`ProcessMode`](#processmode) | The method to process the agents in the team. **Default** `{ProcessMode.sequential}` |
+| Property                                                            | Type                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <a id="mode"></a> `mode?`                                           | [`ProcessMode`](#processmode) | The method to process the agents in the team. **Default** `{ProcessMode.sequential}`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| <a id="iterateon"></a> `iterateOn?`                                 | keyof `I`                     | Specifies which input field should be treated as an array for iterative processing. When this property is set, the TeamAgent will iterate over the array values in the specified input field, processing each element individually through the team's agents. The results from each iteration are accumulated and returned as a streaming response. This is particularly useful for batch processing scenarios where you need to apply the same agent workflow to multiple similar data items. **Remarks** - The specified field must contain an array or array-like value - Each array element should be an object that can be merged with the base input - Non-array values will be treated as single-element arrays - The processing results are streamed incrementally as each iteration completes |
+| <a id="iteratewithpreviousoutput"></a> `iterateWithPreviousOutput?` | `boolean`                     | Controls whether to merge the output from each iteration back into the array items for subsequent iterations when using `iterateOn`. When set to `true`, the output from processing each array element is merged back into that element, making it available for the next iteration. This creates a cumulative effect where each iteration builds upon the results of previous ones. When set to `false` or undefined, each array element is processed independently without any cross-iteration data sharing. This is particularly useful for scenarios where: - You need to progressively enrich data across iterations - Later iterations depend on the results of earlier ones - You want to build a chain of transformations on array data **Default** `false`                                    |

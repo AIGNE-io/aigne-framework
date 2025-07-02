@@ -86,5 +86,6 @@ Elastic-2.0
 - [agents/guide-rail-agent](agents/guide-rail-agent.md)
 - [agents/mcp-agent](agents/mcp-agent.md)
 - [agents/team-agent](agents/team-agent.md)
+- [agents/transform-agent](agents/transform-agent.md)
 - [agents/user-agent](agents/user-agent.md)
 - [memory](memory.md)

@@ -48,6 +48,7 @@ console.log(result); // { text: "Hello, How can I assist you today?" }
 - [`MCPAgent`](mcp-agent.md#mcpagent)
 - [`MCPBase`](mcp-agent.md#mcpbase)
 - [`TeamAgent`](team-agent.md#teamagent)
+- [`TransformAgent`](transform-agent.md#transformagent)
 - [`UserAgent`](user-agent.md#useragent)
 - [`MemoryAgent`](../memory.md#memoryagent)
 - [`MemoryRecorder`](../memory.md#memoryrecorder)
@@ -1173,6 +1174,7 @@ Configuration options for an agent
 - [`MCPAgentOptions`](mcp-agent.md#mcpagentoptions)
 - [`MCPBaseOptions`](mcp-agent.md#mcpbaseoptions)
 - [`TeamAgentOptions`](team-agent.md#teamagentoptions)
+- [`TransformAgentOptions`](transform-agent.md#transformagentoptions)
 - [`UserAgentOptions`](user-agent.md#useragentoptions)
 - [`OrchestratorAgentOptions`](../../agent-library/orchestrator.md#orchestratoragentoptions)
 - [`DefaultMemoryRetrieverOptions`](../../agent-library/default-memory.md#defaultmemoryretrieveroptions)
@@ -1641,6 +1643,28 @@ useful for incrementally building structured data responses in streaming mode.
 [`AgentResponseDelta`](#agentresponsedelta)\<`T`\>
 
 An AgentResponseDelta with the JSON delta wrapped in the expected structure
+
+---
+
+### agentProcessResultToObject()
+
+> **agentProcessResultToObject**\<`O`\>(`response`): `Promise`\<`O`\>
+
+#### Type Parameters
+
+| Type Parameter                      |
+| ----------------------------------- |
+| `O` _extends_ [`Message`](#message) |
+
+#### Parameters
+
+| Parameter  | Type                                               |
+| ---------- | -------------------------------------------------- |
+| `response` | [`AgentProcessResult`](#agentprocessresult)\<`O`\> |
+
+#### Returns
+
+`Promise`\<`O`\>
 
 ---
 

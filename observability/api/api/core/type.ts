@@ -3,10 +3,7 @@ import { z } from "zod";
 import type { Trace } from "../server/models/trace.js";
 
 export const AIGNEObserverOptionsSchema = z
-  .object({
-    storage: z.string().optional(),
-    exportFn: z.function().args(z.array(z.any())).returns(z.promise(z.any())).optional(),
-  })
+  .object({ storage: z.string().optional() })
   .optional()
   .default({});
 

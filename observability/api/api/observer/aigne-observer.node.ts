@@ -11,12 +11,16 @@ export class AIGNEObserver {
   public tracer = trace.getTracer("aigne-tracer");
   public traceExporter: HttpExporterInterface | undefined;
   private sdkServerStarted: Promise<void> | undefined;
-  private observeExportsFunction: ((spans: TraceFormatSpans[]) => Promise<void>) | undefined;
+
+  static exportFn?: (spans: TraceFormatSpans[]) => Promise<void>;
+
+  static setExportFn(exportFn: (spans: TraceFormatSpans[]) => Promise<void>) {
+    AIGNEObserver.exportFn = exportFn;
+  }
 
   constructor(options?: AIGNEObserverOptions) {
     const parsed = AIGNEObserverOptionsSchema.parse(options);
     this.storage = parsed?.storage ?? (!isBlocklet ? getObservabilityDbPath() : undefined);
-    this.observeExportsFunction = parsed?.observeExportsFunction;
   }
 
   async serve(): Promise<void> {
@@ -31,7 +35,7 @@ export class AIGNEObserver {
 
     this.traceExporter = await initOpenTelemetry({
       dbPath: this.storage,
-      observeExportsFunction: this.observeExportsFunction,
+      exportFn: AIGNEObserver.exportFn,
     });
   }
 

@@ -1,4 +1,5 @@
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
+import type { TraceFormatSpans } from "../core/type.js";
 
 export class AIGNEObserver {
   public tracer = {
@@ -14,6 +15,12 @@ export class AIGNEObserver {
       };
     },
   };
+
+  static exportFn?: (spans: TraceFormatSpans[]) => Promise<void>;
+
+  static setExportFn(exportFn: (spans: TraceFormatSpans[]) => Promise<void>) {
+    AIGNEObserver.exportFn = exportFn;
+  }
 
   constructor(options?: AIGNEObserverOptions) {
     AIGNEObserverOptionsSchema.parse(options);

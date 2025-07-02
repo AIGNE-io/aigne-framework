@@ -6,12 +6,12 @@ import HttpExporter from "../exporter/http-exporter.js";
 
 export async function initOpenTelemetry({
   dbPath,
-  observeExportsFunction,
+  exportFn,
 }: {
   dbPath?: string;
-  observeExportsFunction?: (spans: TraceFormatSpans[]) => Promise<void>;
+  exportFn?: (spans: TraceFormatSpans[]) => Promise<void>;
 }) {
-  const traceExporter = new HttpExporter({ dbPath, observeExportsFunction });
+  const traceExporter = new HttpExporter({ dbPath, exportFn });
   const spanProcessor = new SimpleSpanProcessor(traceExporter);
 
   const sdk = new NodeSDK({

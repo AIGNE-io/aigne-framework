@@ -1,7 +1,6 @@
 import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
-import chalk from "chalk";
 import { and, eq, isNull, or } from "drizzle-orm";
 import type { TraceFormatSpans } from "../../core/type.js";
 import { isBlocklet } from "../../core/util.js";
@@ -37,16 +36,16 @@ class HttpExporter implements HttpExporterInterface {
 
   constructor({
     dbPath,
-    observeExportsFunction,
-  }: { dbPath?: string; observeExportsFunction?: (spans: TraceFormatSpans[]) => Promise<void> }) {
+    exportFn,
+  }: { dbPath?: string; exportFn?: (spans: TraceFormatSpans[]) => Promise<void> }) {
     this.dbPath = dbPath;
     this._db ??= this.getDb();
     this.upsert =
-      observeExportsFunction ??
+      exportFn ??
       (isBlocklet
         ? async () => {
             console.warn(
-              `Please set up ${chalk.bold("AIGNE.setObserveCallback")} to enable tracing agents.`,
+              "Please set up AIGNEObserver.setExportFn to collect tracing data from agents.",
             );
           }
         : this._upsertWithSQLite);

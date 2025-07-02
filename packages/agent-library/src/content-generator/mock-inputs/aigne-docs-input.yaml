@@ -1,19 +1,23 @@
 rules: |
   请帮助我生成一个 AIGNE Framework 相关的文档
-  
+
 
   ## 结构规划
-  对于结构规划需要生成完整的文档结构，覆盖源码中的所有功能，并提供代码示例的示例。
+  - 对于结构规划需要生成完整的文档结构，覆盖源码中的所有功能，并提供代码示例的示例。
+  - 相关的内容要聚合到同一个部分文档中，不要分散到多个部分文档中，避免内容在多个部分文档中重复
+  - 结构规划要精炼，避免同一个功能被拆为了多个部分
 
   ## 章节详情
-  - 章节详情使用 markdown 格式返回
-  - 每个章节需要包含：标题、开头介绍、多个 section 介绍、结尾总结
+  - 每个部分文档详情使用 markdown 格式返回
+  - 每个部分文档需要包含：标题、开头介绍、多个 section 介绍、结尾总结
   - 每个 section 需要包含：标题、介绍、代码示例、示例说明，示例说明跟在示例代码后描述，不需要‘示例说明’这样的小标题
   - 说明要尽可能的详细，如果存在配置项或参数，需要解释每个配置项或参数的含义，如果参数有多个可选值，每种可选值需要解释其含义，并尽可能配上代码示例
+  - README 文件只做参考，你需要从代码中获取最新、最完整的信息
 
 targetAudience: 开发者
-nodeName: 章节
+nodeName: 部分
 locale: zh
+docsDir: ../../../../docs-ai
 sources:
   - ../../../cli/README.zh.md
   - ../../../cli/src/cli.ts
@@ -22,10 +26,11 @@ sources:
   - ../../../cli/src/commands/serve.ts
   - ../../../cli/src/commands/test.ts
   - ../../../cli/src/commands/observability.ts
-  - ../../../cli/src/commands/create.ts
-  - ../../../cli/src/commands/run.ts
-  - ../../../cli/src/commands/serve.ts
-  - ../../../cli/src/commands/test.ts
+  - ../../../cli/src/utils/run-with-aigne.ts
+  - ../../../cli/src/utils/run-chat-loop.ts
+  - ../../../cli/src/utils/download.ts
+  - ../../../cli/src/utils/serve-mcp.ts
+  - ../../../cli/src/constants.ts
   - ../../../core/README.zh.md
   - ../../../core/src/index.ts
   - ../../../core/src/agents/team-agent.ts
@@ -64,4 +69,3 @@ sources:
   - ../../../core/src/aigne/message-queue.ts
   - ../../../core/src/aigne/usage.ts
   - ../../../core/src/aigne/index.ts
-  

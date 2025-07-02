@@ -8,6 +8,7 @@ skills:
     jsonata: |
       $merge([$, {"originalStructurePlan": structurePlan}])
   - batch-docs-detail-generator.yaml
+  - save-docs.mjs
   
 input_schema:
   type: object
@@ -23,7 +24,11 @@ input_schema:
       items:
         type: string
       description: 用户生成文档的源码文件
+    docsDir:
+      type: string
+      description: 文档保存目录
   required:
     - rules
     - sources
+    - docsDir
 mode: sequential

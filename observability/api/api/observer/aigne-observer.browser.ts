@@ -1,7 +1,6 @@
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 
 export class AIGNEObserver {
-  private initPort?: number;
   public tracer = {
     startSpan: () => {
       return {
@@ -17,9 +16,7 @@ export class AIGNEObserver {
   };
 
   constructor(options?: AIGNEObserverOptions) {
-    const parsed = AIGNEObserverOptionsSchema.parse(options);
-    const initPort = parsed.server?.port ?? process.env.AIGNE_OBSERVER_PORT;
-    this.initPort = initPort ? Number(initPort) : undefined;
+    AIGNEObserverOptionsSchema.parse(options);
   }
 
   async serve(): Promise<void> {}

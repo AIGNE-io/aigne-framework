@@ -1,14 +1,13 @@
 import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
+import chalk from "chalk";
 import { and, eq, isNull, or } from "drizzle-orm";
-import type { InferInsertModel } from "drizzle-orm";
+import type { TraceFormatSpans } from "../../core/type.js";
 import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
 import { Trace } from "../../server/models/trace.js";
 import { validateTraceSpans } from "./util.js";
-
-type TraceInsertOrUpdateData = InferInsertModel<typeof Trace>;
 
 export interface HttpExporterInterface extends SpanExporter {
   export(
@@ -24,24 +23,48 @@ export interface HttpExporterInterface extends SpanExporter {
 class HttpExporter implements HttpExporterInterface {
   private dbPath?: string;
   private _db?: any;
+  private upsert: (spans: TraceFormatSpans[]) => Promise<void>;
 
   async getDb() {
+    if (isBlocklet) {
+      return;
+    }
+
     const db = await initDatabase({ url: this.dbPath });
     await migrate(db);
     return db;
   }
 
-  constructor({ dbPath }: { dbPath?: string }) {
+  constructor({
+    dbPath,
+    observeExportsFunction,
+  }: { dbPath?: string; observeExportsFunction?: (spans: TraceFormatSpans[]) => Promise<void> }) {
     this.dbPath = dbPath;
     this._db ??= this.getDb();
+    this.upsert =
+      observeExportsFunction ??
+      (isBlocklet
+        ? async () => {
+            console.warn(
+              `Please set up ${chalk.bold("AIGNE.setObserveCallback")} to enable tracing agents.`,
+            );
+          }
+        : this._upsertWithSQLite);
   }
 
-  async _upsertWithSQLite(spans: ReadableSpan[]) {
-    const validatedData = validateTraceSpans(spans);
-
+  async _upsertWithSQLite(validatedData: TraceFormatSpans[]) {
     const db = await this._db;
 
+    if (!db) {
+      throw new Error("Database not initialized");
+    }
+
     for (const trace of validatedData) {
+      if (!trace.id || !trace.rootId) {
+        console.warn("Skipping trace with missing id or rootId:", trace);
+        continue;
+      }
+
       const whereClause = and(
         eq(Trace.id, trace.id),
         eq(Trace.rootId, trace.rootId),
@@ -64,28 +87,12 @@ class HttpExporter implements HttpExporterInterface {
     }
   }
 
-  async _upsertWithBlocklet(validatedData: TraceInsertOrUpdateData[]) {
-    const { call } = await import("@blocklet/sdk/lib/component/index.js");
-    await call({
-      name: "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh",
-      method: "POST",
-      path: "/api/trace/tree",
-      data: validatedData,
-    });
-  }
-
   async export(
     spans: ReadableSpan[],
     resultCallback: (result: { code: ExportResultCode }) => void,
   ) {
     try {
-      const validatedData = validateTraceSpans(spans);
-
-      if (isBlocklet) {
-        await this._upsertWithBlocklet(validatedData);
-      } else {
-        await this._upsertWithSQLite(spans);
-      }
+      await this.upsert(validateTraceSpans(spans));
 
       resultCallback({ code: ExportResultCode.SUCCESS });
     } catch (error) {
@@ -99,12 +106,7 @@ class HttpExporter implements HttpExporterInterface {
   }
 
   async upsertInitialSpan(span: ReadableSpan) {
-    if (isBlocklet) {
-      const validatedData = validateTraceSpans([span]);
-      await this._upsertWithBlocklet(validatedData);
-    } else {
-      await this._upsertWithSQLite([span]);
-    }
+    await this.upsert(validateTraceSpans([span]));
   }
 }
 

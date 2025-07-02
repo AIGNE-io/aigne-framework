@@ -1,10 +1,17 @@
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import chalk from "chalk";
+import type { TraceFormatSpans } from "../../core/type.js";
 import HttpExporter from "../exporter/http-exporter.js";
 
-export async function initOpenTelemetry({ dbPath }: { dbPath?: string }) {
-  const traceExporter = new HttpExporter({ dbPath });
+export async function initOpenTelemetry({
+  dbPath,
+  observeExportsFunction,
+}: {
+  dbPath?: string;
+  observeExportsFunction?: (spans: TraceFormatSpans[]) => Promise<void>;
+}) {
+  const traceExporter = new HttpExporter({ dbPath, observeExportsFunction });
   const spanProcessor = new SimpleSpanProcessor(traceExporter);
 
   const sdk = new NodeSDK({

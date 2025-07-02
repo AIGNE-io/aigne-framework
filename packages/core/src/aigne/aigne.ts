@@ -1,4 +1,5 @@
 import { AIGNEObserver } from "@aigne/observability-api";
+import type { TraceFormatSpans } from "@aigne/observability-api/type";
 import { z } from "zod";
 import type { Agent, AgentResponse, AgentResponseStream, Message } from "../agents/agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
@@ -67,6 +68,14 @@ export interface AIGNEOptions {
  * {@includeCode ../../test/aigne/aigne.test.ts#example-streaming}
  */
 export class AIGNE<U extends UserContext = UserContext> {
+  static observeExportsFunction?: (spans: TraceFormatSpans[]) => Promise<void>;
+
+  static setObserveExportsFunction(
+    observeExportsFunction: (spans: TraceFormatSpans[]) => Promise<void>,
+  ) {
+    AIGNE.observeExportsFunction = observeExportsFunction;
+  }
+
   /**
    * Loads an AIGNE instance from a directory containing an aigne.yaml file and agent definitions.
    * This static method provides a convenient way to initialize an AIGNE system from configuration files.
@@ -105,7 +114,8 @@ export class AIGNE<U extends UserContext = UserContext> {
     this.observer =
       process.env.AIGNE_OBSERVABILITY_DISABLED === "true"
         ? undefined
-        : (options?.observer ?? new AIGNEObserver());
+        : (options?.observer ??
+          new AIGNEObserver({ observeExportsFunction: AIGNE.observeExportsFunction }));
     if (options?.skills?.length) this.skills.push(...options.skills);
     if (options?.agents?.length) this.addAgent(...options.agents);
 

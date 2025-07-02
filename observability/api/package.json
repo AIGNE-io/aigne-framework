@@ -61,6 +61,15 @@
       },
       "types": "./lib/dts/core/db-path.d.ts",
       "default": "./lib/esm/core/db-path.js"
+    },
+    "./type": {
+      "browser": "./lib/esm/core/type.js",
+      "node": {
+        "require": "./lib/cjs/core/type.js",
+        "import": "./lib/esm/core/type.js"
+      },
+      "types": "./lib/dts/core/type.d.ts",
+      "default": "./lib/esm/core/type.js"
     }
   },
   "typesVersions": {
@@ -76,6 +85,9 @@
       ],
       "cli": [
         "./lib/dts/server/cli.d.ts"
+      ],
+      "type": [
+        "./lib/dts/core/type.d.ts"
       ]
     }
   },
@@ -92,7 +104,6 @@
   },
   "dependencies": {
     "@aigne/sqlite": "workspace:^",
-    "@blocklet/sdk": "^1.16.44",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/core": "^2.0.1",
     "@opentelemetry/sdk-node": "^0.202.0",
@@ -104,6 +115,7 @@
     "drizzle-orm": "^0.43.1",
     "express": "^5.1.0",
     "express-sse": "^1.0.0",
+    "terminal-link": "^4.0.0",
     "uuid": "^11.1.0",
     "yaml": "^2.7.1",
     "zod": "^3.25.23"

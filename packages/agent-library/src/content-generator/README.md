@@ -98,7 +98,14 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 
 测试文档生成的命令
 ```bash
+# aigne
 bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --format yaml --output "./output-tmp/aigne-cli-docs.md" --force
+
+# blocklet-sdk
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/blocklet-sdk-docs-input.yaml" --format yaml 
+
+# payment-kit
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/payment-kit-sdk-docs-input.yaml" --format yaml 
 
 ```
 

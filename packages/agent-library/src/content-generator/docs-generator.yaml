@@ -29,6 +29,5 @@ input_schema:
       description: 文档保存目录
   required:
     - rules
-    - sources
     - docsDir
 mode: sequential

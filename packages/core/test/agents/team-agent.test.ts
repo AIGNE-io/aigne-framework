@@ -189,26 +189,54 @@ test("TeamAgent with sequential mode should yield output chunks correctly", asyn
 });
 
 test("TeamAgent with iterateOn should process array input correctly", async () => {
+  const skill = FunctionAgent.from((input: { title: string }) => {
+    return {
+      description: `Description for ${input.title}`,
+    };
+  });
+  const skillProcess = spyOn(skill, "process");
+
   const teamAgent = TeamAgent.from({
     mode: ProcessMode.sequential,
     inputSchema: z.object({
       sections: z.array(z.object({ title: z.string() })),
     }),
     iterateOn: "sections",
-    skills: [
-      FunctionAgent.from((input: { title: string }) => {
-        return {
-          ...input,
-          description: `Description for ${input.title}`,
-        };
-      }),
-    ],
+    skills: [skill],
   });
 
   const aigne = new AIGNE({});
 
   const response = await aigne.invoke(teamAgent, {
-    sections: new Array(5).fill(0).map((_, index) => ({ title: `Test title ${index}` })),
+    sections: new Array(3).fill(0).map((_, index) => ({ title: `Test title ${index}` })),
   });
   expect(response).toMatchSnapshot();
+  expect(skillProcess.mock.calls.map((i) => i[0])).toMatchSnapshot();
+});
+
+test("TeamAgent with iterateOn should iterate with previous step's output", async () => {
+  const skill = FunctionAgent.from((input: { title: string }) => {
+    return {
+      description: `Description for ${input.title}`,
+    };
+  });
+  const skillProcess = spyOn(skill, "process");
+
+  const teamAgent = TeamAgent.from({
+    mode: ProcessMode.sequential,
+    inputSchema: z.object({
+      sections: z.array(z.object({ title: z.string() })),
+    }),
+    iterateOn: "sections",
+    iterateWithPreviousOutput: true,
+    skills: [skill],
+  });
+
+  const aigne = new AIGNE({});
+
+  const response = await aigne.invoke(teamAgent, {
+    sections: new Array(3).fill(0).map((_, index) => ({ title: `Test title ${index}` })),
+  });
+  expect(response).toMatchSnapshot();
+  expect(skillProcess.mock.calls.map((i) => i[0])).toMatchSnapshot();
 });

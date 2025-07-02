@@ -7,6 +7,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import SSE from "express-sse";
 
 import chalk from "chalk";
+import terminalLink from "terminal-link";
 import { z } from "zod";
 import { ZodError } from "zod";
 import { migrate } from "./migrate.js";
@@ -76,7 +77,17 @@ export async function startServer(
   });
 
   const server: Server = app.listen(Number(port), () => {
-    console.log(`Running observability server on ${chalk.greenBright(`http://localhost:${port}`)}`);
+    const url = `http://localhost:${port}`;
+    const renderedMessage = (message: string) => `Running observability server on ${message}`;
+
+    let msg: string;
+    if (terminalLink.isSupported) {
+      msg = renderedMessage(terminalLink(chalk.greenBright(url), url));
+    } else {
+      msg = renderedMessage(chalk.greenBright(url));
+    }
+
+    console.log(msg);
   });
 
   return { app, server };

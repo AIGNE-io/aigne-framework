@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { isAbsolute, resolve } from "node:path";
 import { Command } from "commander";
 
-export function createTestCommand({ aigneFilePath }: { aigneFilePath?: string }): Command {
+export function createTestCommand({ aigneFilePath }: { aigneFilePath?: string } = {}): Command {
   return new Command("test")
     .description("Run tests in the specified agents directory")
     .option(

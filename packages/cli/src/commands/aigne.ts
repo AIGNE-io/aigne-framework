@@ -7,21 +7,17 @@ import { createRunCommand } from "./run.js";
 import { createServeMCPCommand } from "./serve-mcp.js";
 import { createTestCommand } from "./test.js";
 
-export function createAIGNECommand({
-  aigneFilePath,
-}: {
-  aigneFilePath?: string;
-}): Command {
+export function createAIGNECommand(options?: { aigneFilePath?: string }): Command {
   console.log(asciiLogo);
 
   return new Command()
     .name("aigne")
     .description("CLI for AIGNE framework")
     .version(AIGNE_CLI_VERSION)
-    .addCommand(createRunCommand({ aigneFilePath }))
-    .addCommand(createTestCommand({ aigneFilePath }))
+    .addCommand(createRunCommand(options))
+    .addCommand(createTestCommand(options))
     .addCommand(createCreateCommand())
-    .addCommand(createServeMCPCommand({ aigneFilePath }))
+    .addCommand(createServeMCPCommand(options))
     .addCommand(createObservabilityCommand())
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);

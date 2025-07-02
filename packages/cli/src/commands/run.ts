@@ -26,7 +26,7 @@ interface RunOptions extends RunAIGNECommandOptions {
   cacheDir?: string;
 }
 
-export function createRunCommand({ aigneFilePath }: { aigneFilePath?: string }): Command {
+export function createRunCommand({ aigneFilePath }: { aigneFilePath?: string } = {}): Command {
   return createRunAIGNECommand()
     .description("Run AIGNE from the specified agent")
     .option(

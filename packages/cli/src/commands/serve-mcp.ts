@@ -24,7 +24,7 @@ const DEFAULT_PORT = () =>
     (error) => new Error(`parse PORT error ${error.message}`),
   );
 
-export function createServeMCPCommand({ aigneFilePath }: { aigneFilePath?: string }): Command {
+export function createServeMCPCommand({ aigneFilePath }: { aigneFilePath?: string } = {}): Command {
   return new Command("serve-mcp")
     .description("Serve the agents in the specified directory as a MCP server (streamable http)")
     .option(

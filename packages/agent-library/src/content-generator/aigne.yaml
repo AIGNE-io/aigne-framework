@@ -13,3 +13,4 @@ agents:
   - batch-docs-detail-generator.yaml
   - load-sources.mjs
   - save-docs.mjs
+  - translate.yaml

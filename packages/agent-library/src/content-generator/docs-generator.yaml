@@ -6,7 +6,20 @@ skills:
   - structure-planning.yaml
   - type: transform
     jsonata: |
-      $merge([$, {"originalStructurePlan": structurePlan}])
+      $merge([
+        $,
+        {
+          'originalStructurePlan': structurePlan,
+          'structurePlanResult': $map(structurePlan, function($item) {
+            $merge([
+              $item,
+              {
+                'translates': $map(translateLanguages, function($lang) { {"language": $lang} })
+              }
+            ])
+          })
+        }
+      ])
   - batch-docs-detail-generator.yaml
   - save-docs.mjs
   
@@ -27,6 +40,11 @@ input_schema:
     docsDir:
       type: string
       description: 文档保存目录
+    translateLanguages:
+      type: array
+      items:
+        type: string
+        description: 翻译语言，如 zh、en
   required:
     - rules
     - docsDir

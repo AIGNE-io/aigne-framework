@@ -7,18 +7,26 @@ import { join } from "node:path";
  * @param {string} params.docsDir
  * @returns {Promise<Array<{ path: string, success: boolean, error?: string }>>}
  */
-export default async function saveDocs({ structurePlan, docsDir }) {
+export default async function saveDocs({ structurePlanResult: structurePlan, docsDir }) {
   const results = [];
   // 1. 保存每个 markdown 文件
   for (const item of structurePlan) {
     try {
       const relPath = item.path.replace(/^\//, "");
       const segments = relPath.split("/");
-      const fileName = `${segments.pop()}.md`;
+      const fileName = segments.pop();
+      const fileFullName = `${fileName}.md`;
       const dir = join(docsDir, ...segments);
-      const filePath = join(dir, fileName);
+      const filePath = join(dir, fileFullName);
       await mkdir(dir, { recursive: true });
       await writeFile(filePath, item.content, "utf8");
+
+      for (const translate of item.translates || []) {
+        const translatePath = join(dir, `${fileName}.${translate.language}.md`);
+        await writeFile(translatePath, translate.translation, "utf8");
+        results.push({ path: translatePath, success: true });
+      }
+
       results.push({ path: filePath, success: true });
     } catch (err) {
       results.push({ path: item.path, success: false, error: err.message });

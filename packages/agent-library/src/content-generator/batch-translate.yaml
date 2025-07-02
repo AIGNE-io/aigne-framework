@@ -1,0 +1,31 @@
+type: team
+name: batch-translate
+description: 批量翻译文档到多个语言
+skills:
+  - translate.yaml
+input_schema:
+  type: object
+  properties:
+    translates:
+      type: array
+      items:
+        type: object
+        properties:
+          language:
+            type: string
+    content:
+      type: string
+output_schema:
+  type: object
+  properties:
+    translates:
+      type: array
+      items:
+        type: object
+        properties:
+          language:
+            type: string
+          translation:
+            type: string
+iterate_on: translates
+mode: sequential

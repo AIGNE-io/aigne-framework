@@ -26,7 +26,7 @@ interface RunOptions extends RunAIGNECommandOptions {
   cacheDir?: string;
 }
 
-export function createRunCommand(): Command {
+export function createRunCommand({ aigneFilePath }: { aigneFilePath?: string }): Command {
   return createRunAIGNECommand()
     .description("Run AIGNE from the specified agent")
     .option(
@@ -43,7 +43,7 @@ export function createRunCommand(): Command {
       "Directory to download the package to (defaults to the ~/.aigne/xxx)",
     )
     .action(async (options: RunOptions) => {
-      const { path } = options;
+      const path = aigneFilePath || options.path;
 
       if (options.logLevel) logger.level = options.logLevel;
 

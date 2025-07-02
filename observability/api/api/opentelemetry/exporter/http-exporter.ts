@@ -45,7 +45,7 @@ class HttpExporter implements HttpExporterInterface {
       (isBlocklet
         ? async () => {
             console.warn(
-              "Please set up AIGNEObserver.setExportFn to collect tracing data from agents.",
+              "Please setup AIGNEObserver.setExportFn to collect tracing data from agents.",
             );
           }
         : this._upsertWithSQLite);

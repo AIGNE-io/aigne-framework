@@ -1,5 +1,131 @@
 # Changelog
 
+## [0.8.3](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.8.2...example-memory-v0.8.3) (2025-07-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.9
+    * @aigne/cli bumped to 1.20.1
+    * @aigne/core bumped to 1.29.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.16
+
+## [0.8.2](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.8.1...example-memory-v0.8.2) (2025-07-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.8
+    * @aigne/cli bumped to 1.20.0
+    * @aigne/core bumped to 1.29.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.15
+
+## [0.8.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.8.0...example-memory-v0.8.1) (2025-07-01)
+
+
+### Bug Fixes
+
+* fix: compatible with node 20.0 & polish example defintions ([#209](https://github.com/AIGNE-io/aigne-framework/issues/209)) ([9752b96](https://github.com/AIGNE-io/aigne-framework/commit/9752b96dc54a44c6f710f056fe9205c0f2b0a73e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.7
+    * @aigne/cli bumped to 1.19.0
+    * @aigne/core bumped to 1.28.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.14
+
+## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.7.1...example-memory-v0.8.0) (2025-07-01)
+
+
+### Features
+
+* **example:** add serve agent as mcp-server example ([#204](https://github.com/AIGNE-io/aigne-framework/issues/204)) ([d51793b](https://github.com/AIGNE-io/aigne-framework/commit/d51793b919c7c3316e4bcf73ab9af3dc38900e94))
+
+## [0.7.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.7.0...example-memory-v0.7.1) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.6
+    * @aigne/cli bumped to 1.18.1
+    * @aigne/core bumped to 1.28.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.13
+
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.6.1...example-memory-v0.7.0) (2025-07-01)
+
+
+### Features
+
+* **example:** use AIGNE cli to run chat-bot example ([#198](https://github.com/AIGNE-io/aigne-framework/issues/198)) ([7085541](https://github.com/AIGNE-io/aigne-framework/commit/708554100692f2a557f7329ea78e46c3c870ce10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.5
+    * @aigne/cli bumped to 1.18.0
+    * @aigne/core bumped to 1.28.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.12
+
+## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.6.0...example-memory-v0.6.1) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.4
+    * @aigne/cli bumped to 1.17.0
+    * @aigne/core bumped to 1.27.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.11
+
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.5.5...example-memory-v0.6.0) (2025-06-30)
+
+
+### Features
+
+* **ux:** polish tracing ux and update docs ([#193](https://github.com/AIGNE-io/aigne-framework/issues/193)) ([f80b63e](https://github.com/AIGNE-io/aigne-framework/commit/f80b63ecb1cfb00daa9b68330026da839d33f8a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.3
+    * @aigne/cli bumped to 1.16.0
+    * @aigne/core bumped to 1.26.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.10
+
+## [0.5.5](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.5.4...example-memory-v0.5.5) (2025-06-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.17.2
+    * @aigne/cli bumped to 1.15.0
+    * @aigne/core bumped to 1.25.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.4.9
+
 ## [0.5.4](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.5.3...example-memory-v0.5.4) (2025-06-26)
 
 

@@ -1,5 +1,106 @@
 # Changelog
 
+## [0.4.4](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.4.3...xai-v0.4.4) (2025-07-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.6.4
+  * devDependencies
+    * @aigne/core bumped to 1.29.1
+    * @aigne/test-utils bumped to 0.4.16
+
+## [0.4.3](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.4.2...xai-v0.4.3) (2025-07-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.6.3
+  * devDependencies
+    * @aigne/core bumped to 1.29.0
+    * @aigne/test-utils bumped to 0.4.15
+
+## [0.4.2](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.4.1...xai-v0.4.2) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.6.2
+  * devDependencies
+    * @aigne/core bumped to 1.28.2
+    * @aigne/test-utils bumped to 0.4.14
+
+## [0.4.1](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.4.0...xai-v0.4.1) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.6.1
+  * devDependencies
+    * @aigne/core bumped to 1.28.1
+    * @aigne/test-utils bumped to 0.4.13
+
+## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.3.11...xai-v0.4.0) (2025-07-01)
+
+
+### Features
+
+* **example:** use AIGNE cli to run chat-bot example ([#198](https://github.com/AIGNE-io/aigne-framework/issues/198)) ([7085541](https://github.com/AIGNE-io/aigne-framework/commit/708554100692f2a557f7329ea78e46c3c870ce10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.6.0
+  * devDependencies
+    * @aigne/core bumped to 1.28.0
+    * @aigne/test-utils bumped to 0.4.12
+
+## [0.3.11](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.3.10...xai-v0.3.11) (2025-07-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.5.0
+  * devDependencies
+    * @aigne/core bumped to 1.27.0
+    * @aigne/test-utils bumped to 0.4.11
+
+## [0.3.10](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.3.9...xai-v0.3.10) (2025-06-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.4.3
+  * devDependencies
+    * @aigne/core bumped to 1.26.0
+    * @aigne/test-utils bumped to 0.4.10
+
+## [0.3.9](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.3.8...xai-v0.3.9) (2025-06-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.4.2
+  * devDependencies
+    * @aigne/core bumped to 1.25.0
+    * @aigne/test-utils bumped to 0.4.9
+
 ## [0.3.8](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.3.7...xai-v0.3.8) (2025-06-26)
 
 

@@ -11,14 +11,14 @@ import {
   type Message,
   type MessagePayload,
   type MessageQueueListener,
+  newEmptyContextUsage,
   type Unsubscribe,
   type UserAgent,
   type UserContext,
-  newEmptyContextUsage,
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
 import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
-import type { Args, Listener } from "@aigne/core/utils/typed-event-emtter.js";
+import type { Args, Listener } from "@aigne/core/utils/typed-event-emitter.js";
 import { v7 } from "uuid";
 import { ClientAgent, type ClientAgentOptions } from "./client-agent.js";
 import { ClientChatModel } from "./client-chat-model.js";

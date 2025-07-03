@@ -1,7 +1,7 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import { AIAgent, AIGNE, type ContextEventMap, type MessageQueueListener } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
-import type { Listener } from "@aigne/core/utils/typed-event-emtter";
+import type { Listener } from "@aigne/core/utils/typed-event-emitter.js";
 
 test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
   const context = new AIGNE({}).newContext();

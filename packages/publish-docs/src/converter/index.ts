@@ -15,7 +15,7 @@ import {
   type SerializedEditorState,
   TextNode,
 } from "lexical";
-import { type RendererObject, marked } from "marked";
+import { marked, type RendererObject } from "marked";
 import { slugify } from "../utils/slugify.js";
 import { ImageNode } from "./nodes/image-node.js";
 import { MermaidNode } from "./nodes/mermaid-node.js";

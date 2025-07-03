@@ -1,6 +1,6 @@
 # GitHub MCP Server Integration
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [GitHub MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/github) to interact with GitHub repositories. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [GitHub MCP Server](https://github.com/modelcontextprotocol/servers-archived/tree/main/src/github) to interact with GitHub repositories. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid
 flowchart LR
@@ -64,12 +64,12 @@ AI ->> User: Here's the README content: ...
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org) and npm installed on your machine
-- An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
-- [GitHub Personal Access Token](https://github.com/settings/tokens) with appropriate permissions
-- Optional dependencies (if running the example from source code):
-  - [Bun](https://bun.sh) for running unit tests & examples
-  - [Pnpm](https://pnpm.io) for package management
+* [Node.js](https://nodejs.org) (>=20.0) and npm installed on your machine
+* An [OpenAI API key](https://platform.openai.com/api-keys) for interacting with OpenAI's services
+* [GitHub Personal Access Token](https://github.com/settings/tokens) with appropriate permissions
+* Optional dependencies (if running the example from source code):
+  * [Bun](https://bun.sh) for running unit tests & examples
+  * [Pnpm](https://pnpm.io) for package management
 
 ## Quick Start (No Installation Required)
 
@@ -105,6 +105,21 @@ OPENAI_API_KEY="" # Set your OpenAI API key here
 GITHUB_TOKEN="" # Set your GitHub Personal Access Token here
 ```
 
+#### Using Different Models
+
+You can use different AI models by setting the `MODEL` environment variable along with the corresponding API key. The framework supports multiple providers:
+
+* **OpenAI**: `MODEL="openai:gpt-4.1"` with `OPENAI_API_KEY`
+* **Anthropic**: `MODEL="anthropic:claude-3-7-sonnet-latest"` with `ANTHROPIC_API_KEY`
+* **Google Gemini**: `MODEL="gemini:gemini-2.0-flash"` with `GEMINI_API_KEY`
+* **AWS Bedrock**: `MODEL="bedrock:us.amazon.nova-premier-v1:0"` with AWS credentials
+* **DeepSeek**: `MODEL="deepseek:deepseek-chat"` with `DEEPSEEK_API_KEY`
+* **OpenRouter**: `MODEL="openrouter:openai/gpt-4o"` with `OPEN_ROUTER_API_KEY`
+* **xAI**: `MODEL="xai:grok-2-latest"` with `XAI_API_KEY`
+* **Ollama**: `MODEL="ollama:llama3.2"` with `OLLAMA_DEFAULT_BASE_URL`
+
+For detailed configuration examples, please refer to the `.env.local.example` file in this directory.
+
 ### Run the Example
 
 ```bash
@@ -124,7 +139,7 @@ The example supports the following command-line parameters:
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
-| `--model <provider[:model]>` | AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
+| `--model <provider[:model]>` | AI model to use in format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | Temperature for model generation | Provider default |
 | `--top-p <value>` | Top-p sampling value | Provider default |
 | `--presence-penalty <value>` | Presence penalty value | Provider default |
@@ -195,7 +210,7 @@ Always provide clear, concise responses with relevant information from GitHub.
 // Example: Search for repositories
 const result = await aigne.invoke(
   agent,
-  "Search for repositories related to 'modelcontextprotocol'"
+  "Search for repositories related to 'modelcontextprotocol'",
 );
 
 console.log(result);
@@ -216,32 +231,32 @@ The GitHub MCP server provides a wide range of operations including:
 
 1. **Repository Operations**:
 
-   - Search repositories
-   - Create repositories
-   - Get repository information
+   * Search repositories
+   * Create repositories
+   * Get repository information
 
 2. **File Operations**:
 
-   - Get file contents
-   - Create or update files
-   - Push multiple files in a single commit
+   * Get file contents
+   * Create or update files
+   * Push multiple files in a single commit
 
 3. **Issue and PR Operations**:
 
-   - Create issues
-   - Create pull requests
-   - Add comments
-   - Merge pull requests
+   * Create issues
+   * Create pull requests
+   * Add comments
+   * Merge pull requests
 
 4. **Search Operations**:
 
-   - Search code
-   - Search issues
-   - Search users
+   * Search code
+   * Search issues
+   * Search users
 
 5. **Commit Operations**:
-   - List commits
-   - Get commit details
+   * List commits
+   * Get commit details
 
 ## License
 

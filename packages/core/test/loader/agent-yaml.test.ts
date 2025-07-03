@@ -3,8 +3,8 @@ import assert from "node:assert";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
-  AIAgent,
   type Agent,
+  AIAgent,
   FunctionAgent,
   ProcessMode,
   TeamAgent,

@@ -20,7 +20,7 @@ This agent generates a JavaScript code snippet that is suitable to be passed dir
   }),
   process: async (input: { jsCode: string }) => {
     const { jsCode } = input;
-    // biome-ignore lint/security/noGlobalEval: <explanation>
+    // biome-ignore lint/security/noGlobalEval: just for demonstration purposes
     const result = eval(jsCode);
     return { result };
   },

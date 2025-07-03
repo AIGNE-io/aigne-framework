@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agent-library",
-  "version": "1.17.1",
+  "version": "1.17.9",
   "description": "Collection of agent libraries for AIGNE framework",
   "publishConfig": {
     "access": "public"
@@ -51,17 +51,17 @@
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/sqlite": "workspace:^",
-    "drizzle-orm": "^0.43.1",
+    "drizzle-orm": "^0.44.2",
     "fastq": "^1.19.1",
     "jsonata": "^2.0.6",
     "jsonschema": "^1.5.0",
     "to-json-schema": "^0.2.5",
     "uuid": "^11.1.0",
-    "yaml": "^2.7.1",
-    "zod": "^3.24.4"
+    "yaml": "^2.8.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.12",
+    "@types/bun": "^1.2.17",
     "@types/to-json-schema": "^0.2.4",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",

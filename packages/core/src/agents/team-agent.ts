@@ -1,15 +1,16 @@
 import assert from "node:assert";
+import { produce } from "immer";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
-import { type PromiseOrValue, isEmpty, isNil, isRecord, omit } from "../utils/type-utils.js";
+import { isEmpty, isNil, isRecord, omit, type PromiseOrValue } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
   type AgentResponseChunk,
-  type Message,
   agentProcessResultToObject,
   isAgentResponseDelta,
+  type Message,
 } from "./agent.js";
 
 /**
@@ -65,6 +66,26 @@ export interface TeamAgentOptions<I extends Message, O extends Message> extends 
    * - The processing results are streamed incrementally as each iteration completes
    */
   iterateOn?: keyof I;
+
+  /**
+   * Controls whether to merge the output from each iteration back into the array items
+   * for subsequent iterations when using `iterateOn`.
+   *
+   * When set to `true`, the output from processing each array element is merged back
+   * into that element, making it available for the next iteration. This creates a
+   * cumulative effect where each iteration builds upon the results of previous ones.
+   *
+   * When set to `false` or undefined, each array element is processed independently
+   * without any cross-iteration data sharing.
+   *
+   * This is particularly useful for scenarios where:
+   * - You need to progressively enrich data across iterations
+   * - Later iterations depend on the results of earlier ones
+   * - You want to build a chain of transformations on array data
+   *
+   * @default false
+   */
+  iterateWithPreviousOutput?: boolean;
 }
 
 /**
@@ -114,6 +135,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     super(options);
     this.mode = options.mode ?? ProcessMode.sequential;
     this.iterateOn = options.iterateOn;
+    this.iterateWithPreviousOutput = options.iterateWithPreviousOutput;
   }
 
   /**
@@ -133,6 +155,16 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * @see TeamAgentOptions.iterateOn for detailed documentation
    */
   iterateOn?: keyof I;
+
+  /**
+   * Controls whether to merge the output from each iteration back into the array items
+   * for subsequent iterations when using `iterateOn`.
+   *
+   * @see TeamAgentOptions.iterateWithPreviousOutput for detailed documentation
+   *
+   * @default false
+   */
+  iterateWithPreviousOutput?: boolean;
 
   /**
    * Process an input message by routing it through the team's agents.
@@ -176,7 +208,13 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
       );
 
       // Merge the item result with the original item used for next iteration
-      arr[i] = { ...item, ...res };
+      if (this.iterateWithPreviousOutput) {
+        arr = produce(arr, (draft) => {
+          const item = draft[i];
+          assert(item);
+          Object.assign(item, res);
+        });
+      }
 
       result.push(omit(res, key as any) as Message);
 

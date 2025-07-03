@@ -1,6 +1,6 @@
 {
   "name": "@aigne/openai",
-  "version": "0.4.1",
+  "version": "0.6.4",
   "description": "AIGNE OpenAI SDK for integrating with OpenAI's GPT models and API services",
   "publishConfig": {
     "access": "public"
@@ -43,13 +43,13 @@
   "dependencies": {
     "@aigne/core": "workspace:^",
     "nanoid": "^5.1.5",
-    "openai": "^4.87.3",
-    "zod": "^3.24.4"
+    "openai": "^5.8.2",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",
-    "@types/bun": "^1.2.12",
-    "@types/node": "^22.15.15",
+    "@types/bun": "^1.2.17",
+    "@types/node": "^24.0.10",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"

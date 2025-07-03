@@ -20,6 +20,7 @@ await runWithAIGNE(
     });
 
     const agent = AIAgent.from({
+      name: "example_github",
       instructions: `\
   ## GitHub Interaction Assistant
   You are an assistant that helps users interact with GitHub repositories.

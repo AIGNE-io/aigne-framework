@@ -1,6 +1,6 @@
-# Aigne Default Template
+# AIGNE Default Template
 
-This is the default project template for the Aigne framework, providing a basic chat agent and JavaScript code execution functionality.
+This is the default project template for the AIGNE framework, providing a basic chat agent and JavaScript code execution functionality.
 
 ## Template Structure
 

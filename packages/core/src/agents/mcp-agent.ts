@@ -28,7 +28,7 @@ import {
   resourceFromMCPResource,
   toolFromMCPTool,
 } from "../utils/mcp-utils.js";
-import { type PromiseOrValue, checkArguments, createAccessorArray } from "../utils/type-utils.js";
+import { checkArguments, createAccessorArray, type PromiseOrValue } from "../utils/type-utils.js";
 import { Agent, type AgentInvokeOptions, type AgentOptions, type Message } from "./agent.js";
 
 const MCP_AGENT_CLIENT_NAME = "AIGNE/MCPAgent";

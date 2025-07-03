@@ -1,0 +1,9 @@
+#!/usr/bin/env aigne
+
+chat_model:
+  name: gpt-4.1
+  temperature: 0.8
+agents:
+  - agents/system-info.js
+  - agents/current-time.js
+  - agents/poet.yaml

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-reflection",
-  "version": "1.12.4",
+  "version": "1.14.3",
   "description": "A demonstration of using AIGNE Framework to build a reflection workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-reflection",
@@ -18,17 +18,17 @@
   "scripts": {
     "start": "bun run index.ts",
     "lint": "tsc --noEmit",
-    "test:llm": "bun test"
+    "test:llm": "bun run index.ts"
   },
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
-    "zod": "^3.24.4"
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",
-    "@types/bun": "^1.2.9"
+    "@types/bun": "^1.2.17"
   }
 }

@@ -12,7 +12,7 @@ import type {
   Spread,
 } from "lexical";
 
-import { DecoratorNode, createEditor } from "lexical";
+import { createEditor, DecoratorNode } from "lexical";
 
 // Define JSX namespace for headless environment
 declare namespace JSX {

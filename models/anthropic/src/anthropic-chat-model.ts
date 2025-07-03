@@ -14,13 +14,12 @@ import { parseJSON } from "@aigne/core/utils/json-schema.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
 import {
-  type PromiseOrValue,
   checkArguments,
   isEmpty,
   isNonNullable,
+  type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
-import Anthropic from "@anthropic-ai/sdk";
-import type { MessageStream } from "@anthropic-ai/sdk/lib/MessageStream.js";
+import Anthropic, { type ClientOptions } from "@anthropic-ai/sdk";
 import type {
   ContentBlockParam,
   MessageParam,
@@ -55,6 +54,11 @@ export interface AnthropicChatModelOptions {
    * Additional model options to control behavior
    */
   modelOptions?: ChatModelOptions;
+
+  /**
+   * Optional client options for the Anthropic SDK
+   */
+  clientOptions?: Partial<ClientOptions>;
 }
 
 /**
@@ -109,7 +113,10 @@ export class AnthropicChatModel extends ChatModel {
       this.options?.apiKey || process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
     if (!apiKey) throw new Error("Api Key is required for AnthropicChatModel");
 
-    this._client ??= new Anthropic({ apiKey });
+    this._client ??= new Anthropic({
+      apiKey,
+      ...this.options?.clientOptions,
+    });
     return this._client;
   }
 
@@ -169,15 +176,15 @@ export class AnthropicChatModel extends ChatModel {
   }
 
   private async extractResultFromAnthropicStream(
-    stream: MessageStream,
+    stream: ReturnType<typeof this.client.messages.stream>,
     streaming?: false,
   ): Promise<ChatModelOutput>;
   private async extractResultFromAnthropicStream(
-    stream: MessageStream,
+    stream: ReturnType<typeof this.client.messages.stream>,
     streaming: true,
   ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
   private async extractResultFromAnthropicStream(
-    stream: MessageStream,
+    stream: ReturnType<typeof this.client.messages.stream>,
     streaming?: boolean,
   ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
     const logs: string[] = [];
@@ -213,7 +220,9 @@ export class AnthropicChatModel extends ChatModel {
 
             // handle streaming text
             if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-              controller.enqueue({ delta: { text: { text: chunk.delta.text } } });
+              controller.enqueue({
+                delta: { text: { text: chunk.delta.text } },
+              });
             }
 
             if (chunk.type === "content_block_start" && chunk.content_block.type === "tool_use") {
@@ -323,7 +332,13 @@ function convertMessages({ messages, responseFormat }: ChatModelInput): {
 
       msgs.push({
         role: "user",
-        content: [{ type: "tool_result", tool_use_id: msg.toolCallId, content: msg.content }],
+        content: [
+          {
+            type: "tool_result",
+            tool_use_id: msg.toolCallId,
+            content: msg.content,
+          },
+        ],
       });
     } else if (msg.role === "user") {
       if (!msg.content) throw new Error("User message must have content");
@@ -396,7 +411,10 @@ function convertTools({
   } else if (toolChoice === "required") {
     choice = { type: "any", disable_parallel_tool_use: disableParallelToolUse };
   } else if (toolChoice === "auto") {
-    choice = { type: "auto", disable_parallel_tool_use: disableParallelToolUse };
+    choice = {
+      type: "auto",
+      disable_parallel_tool_use: disableParallelToolUse,
+    };
   } else if (toolChoice === "none") {
     choice = { type: "none" };
   }

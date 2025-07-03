@@ -4,5 +4,5 @@ instructions: |
   You are a helpful assistant that can answer questions and provide information on a wide range of topics.
 input_key: message
 memory: true
-tools:
+skills:
   - sandbox.js

@@ -2,15 +2,15 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import {
-  AIAgent,
-  AIGNE,
   Agent,
   type AgentInvokeOptions,
   type AgentProcessResult,
+  AIAgent,
+  AIGNE,
   FunctionAgent,
-  type Message,
   guideRailAgentOptions,
   isAgentResponseDelta,
+  type Message,
 } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";

@@ -4,7 +4,7 @@ import assert from "node:assert";
 import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent, PromptBuilder } from "@aigne/core";
-import { UnauthorizedError, refreshAuthorization } from "@modelcontextprotocol/sdk/client/auth.js";
+import { refreshAuthorization, UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import JWT from "jsonwebtoken";
 import { TerminalOAuthProvider } from "./oauth.js";
@@ -73,7 +73,7 @@ try {
               const metadata = await fetch(oauthUrl.href).then((res) => res.json());
               tokens = await refreshAuthorization(appUrl.href, {
                 metadata,
-                // biome-ignore lint/style/noNonNullAssertion: <explanation>
+                // biome-ignore lint/style/noNonNullAssertion: non-null assertion
                 clientInformation: (await provider.clientInformation())!,
                 refreshToken: tokens.refresh_token,
               });
@@ -120,6 +120,7 @@ await runWithAIGNE(
     });
 
     const agent = AIAgent.from({
+      name: "example_blocklet",
       instructions: PromptBuilder.from(
         "You are a helpful assistant that can help users query and analyze data from the blocklet. You can perform various database queries on the blocklet database, before performing any queries, please try to understand the user's request and generate a query base on the database schema.",
       ),

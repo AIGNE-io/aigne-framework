@@ -1,25 +1,74 @@
+import type { Agent } from "node:https";
+import { createRequire } from "node:module";
 import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
+import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { GeminiChatModel } from "@aigne/gemini";
 import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";
 import { OpenAIChatModel } from "@aigne/openai";
 import { XAIChatModel } from "@aigne/xai";
-import pkg from "../package.json" with { type: "json" };
+import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
+import { HttpsProxyAgent } from "https-proxy-agent";
 
-export const AIGNE_CLI_VERSION = pkg.version;
+const require = createRequire(import.meta.url);
 
-export const availableModels = [
-  OpenAIChatModel,
-  AnthropicChatModel,
-  BedrockChatModel,
-  DeepSeekChatModel,
-  GeminiChatModel,
-  OllamaChatModel,
-  OpenRouterChatModel,
-  XAIChatModel,
-];
+export const AIGNE_CLI_VERSION = require("../package.json").version;
+
+export function availableModels(): LoadableModel[] {
+  const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
+    .map((i) => process.env[i])
+    .filter(Boolean)[0];
+
+  const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
+  const clientOptions = { fetchOptions: { agent: httpAgent } };
+
+  return [
+    {
+      name: OpenAIChatModel.name,
+      create: (params) => new OpenAIChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: AnthropicChatModel.name,
+      create: (params) => new AnthropicChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: BedrockChatModel.name,
+      create: (params) =>
+        new BedrockChatModel({
+          ...params,
+          clientOptions: {
+            requestHandler: NodeHttpHandler.create({
+              httpAgent,
+              httpsAgent: httpAgent,
+            }),
+            streamCollector,
+          },
+        }),
+    },
+    {
+      name: DeepSeekChatModel.name,
+      create: (params) => new DeepSeekChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: GeminiChatModel.name,
+      create: (params) => new GeminiChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: OllamaChatModel.name,
+      create: (params) => new OllamaChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: OpenRouterChatModel.name,
+      create: (params) => new OpenRouterChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: XAIChatModel.name,
+      create: (params) => new XAIChatModel({ ...params, clientOptions }),
+    },
+  ];
+}
 
 export const availableMemories = [DefaultMemory];

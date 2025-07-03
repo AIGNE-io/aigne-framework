@@ -1,6 +1,6 @@
 {
   "name": "@aigne/bedrock",
-  "version": "0.3.8",
+  "version": "0.5.4",
   "description": "AIGNE AWS Bedrock SDK for integrating with AWS foundation models",
   "publishConfig": {
     "access": "public"
@@ -42,14 +42,14 @@
   },
   "dependencies": {
     "@aigne/core": "workspace:^",
-    "@aws-sdk/client-bedrock-runtime": "^3.812.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.840.0",
     "nanoid": "^5.1.5",
-    "zod": "^3.24.4"
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",
-    "@types/bun": "^1.2.12",
-    "@types/node": "^22.15.15",
+    "@types/bun": "^1.2.17",
+    "@types/node": "^24.0.10",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"

@@ -1,7 +1,7 @@
 import {
+  getDefaultEnvironment,
   StdioClientTransport,
   type StdioServerParameters,
-  getDefaultEnvironment,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 export async function createStdioClientTransport(

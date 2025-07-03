@@ -53,7 +53,7 @@ If you are using Vite as your client development server, add the following confi
 * `worker.format` set to `es` to support modern browser modularity
 * `optimizeDeps.exclude` to exclude `sqlocal` from dependency optimization
 
-```ts file="../../examples/browser/vite.config.ts"
+```ts file="../../tests/browser/vite.config.ts"
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 

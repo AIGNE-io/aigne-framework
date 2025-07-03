@@ -1,0 +1,21 @@
+{
+  "name": "@aigne/example-mcp-server",
+  "version": "0.3.1",
+  "description": "A demonstration of using AIGNE CLI to build a MCP server",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-server",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "type": "module",
+  "bin": "aigne.yaml",
+  "scripts": {
+    "test": "aigne test",
+    "test:llm": "aigne run"
+  },
+  "dependencies": {
+    "@aigne/cli": "workspace:^"
+  }
+}

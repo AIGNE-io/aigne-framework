@@ -10,6 +10,7 @@ export interface ChatLoopOptions {
   defaultQuestion?: string;
   inputKey?: string;
   skipLoop?: boolean;
+  outputKey?: string;
 }
 
 export async function runChatLoopInTerminal(
@@ -60,7 +61,7 @@ export async function runChatLoopInTerminal(
 }
 
 async function callAgent(userAgent: UserAgent, input: Message | string, options: ChatLoopOptions) {
-  const tracer = new TerminalTracer(userAgent.context);
+  const tracer = new TerminalTracer(userAgent.context, options);
 
   await tracer.run(
     userAgent,

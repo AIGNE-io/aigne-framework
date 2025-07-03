@@ -23,7 +23,7 @@ export async function toAIGNEPackage(src: string, dst: string) {
   };
 
   for (const agent of definition.agents) {
-    const { content } = await assistantToAigneV2(agent, definition);
+    const { content } = await assistantToAIGNEV2(agent, definition);
     const filename = getAgentFilename(agent);
     await writeFile(join(dst, filename), content);
     aigne.agents.push(filename);
@@ -54,7 +54,7 @@ async function loadAgentV1Package(path: string) {
   return definition;
 }
 
-function assistantToAigneV2(agent: AgentV1, project: ProjectDefinitionV1) {
+function assistantToAIGNEV2(agent: AgentV1, project: ProjectDefinitionV1) {
   const converter = AGENT_MAP[agent.type];
 
   if (!converter) throw new Error(`Unsupported agent type: ${agent.type}`);

@@ -54,7 +54,7 @@ export function remove<T>(arr: T[], remove: T[] | ((item: T) => boolean)): T[] {
   const removed: T[] = [];
 
   for (let i = 0; i < arr.length; i++) {
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    // biome-ignore lint/style/noNonNullAssertion: false positive
     const item = arr[i]!;
     if (
       (Array.isArray(remove) && remove.includes(item)) ||

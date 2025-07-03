@@ -8,7 +8,7 @@ The AIGNE Framework lets you build powerful AI Agents and workflows with minimal
 
 Before starting the installation, please ensure your local environment meets the following conditions:
 
-* [Node.js](https://nodejs.org) v22.14.0 or higher
+* [Node.js](https://nodejs.org) v20 or higher
 * Support for any package manager: npm/[yarn](https://yarnpkg.com)/[pnpm](https://pnpm.io)
 
 ## Installation 🛠️

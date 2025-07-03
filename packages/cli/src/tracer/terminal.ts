@@ -1,8 +1,8 @@
 import { EOL } from "node:os";
 import { inspect } from "node:util";
 import {
-  AIAgent,
   type Agent,
+  AIAgent,
   ChatModel,
   type ChatModelOutput,
   type Context,
@@ -14,8 +14,8 @@ import {
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
 import { omit } from "@aigne/core/utils/type-utils.js";
-import type { Listener } from "@aigne/core/utils/typed-event-emtter.js";
-import { type Listr, figures } from "@aigne/listr2";
+import type { Listener } from "@aigne/core/utils/typed-event-emitter.js";
+import { figures, type Listr } from "@aigne/listr2";
 import { markedTerminal } from "@aigne/marked-terminal";
 import chalk from "chalk";
 import { Marked } from "marked";
@@ -228,7 +228,7 @@ export class TerminalTracer {
 
   formatResult(agent: Agent, context: Context, m: Message = {}) {
     const { isTTY } = process.stdout;
-    const outputKey = agent instanceof AIAgent ? agent.outputKey : undefined;
+    const outputKey = this.outputKey || (agent instanceof AIAgent ? agent.outputKey : undefined);
 
     const prefix = logger.enabled(LogLevel.INFO)
       ? `${chalk.grey(figures.tick)} 🤖 ${this.formatTokenUsage(context.usage)}`

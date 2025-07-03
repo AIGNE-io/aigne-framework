@@ -1,5 +1,5 @@
 import type { Context } from "../aigne/context.js";
-import { type MessagePayload, type Unsubscribe, toMessagePayload } from "../aigne/message-queue.js";
+import { type MessagePayload, toMessagePayload, type Unsubscribe } from "../aigne/message-queue.js";
 import { orArrayToArray } from "../utils/type-utils.js";
 import {
   Agent,
@@ -80,7 +80,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
       typeof this.publishTopic === "function" ? await this.publishTopic(input) : this.publishTopic;
 
     if (publicTopic?.length) {
-      options.context.publish(publicTopic, input);
+      options.context.publish(publicTopic, input, { newContext: false });
 
       if (this.subscribeTopic) {
         return this.subscribe(this.subscribeTopic).then((res) => res.message as O);

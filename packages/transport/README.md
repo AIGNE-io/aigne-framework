@@ -82,9 +82,9 @@ const httpServer = server.listen(port);
 const client = new AIGNEHTTPClient({ url });
 
 // Invoke the agent by client
-const response = await client.invoke("chat", { $message: "hello" });
+const response = await client.invoke("chat", { message: "hello" });
 
-console.log(response); // Output: {$message: "Hello world!"}
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 #### Hono Example
@@ -120,8 +120,8 @@ const server = serve({ port, fetch: honoApp.fetch });
 const client = new AIGNEHTTPClient({ url });
 
 // Invoke the agent by client
-const response = await client.invoke("chat", { $message: "hello" });
-console.log(response); // Output: {$message: "Hello world!"}
+const response = await client.invoke("chat", { message: "hello" });
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 ### HTTP Client
@@ -131,27 +131,30 @@ import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
 
 const client = new AIGNEHTTPClient({ url });
 
-const response = await client.invoke("chat", { $message: "hello" });
+const response = await client.invoke("chat", { message: "hello" });
 
-console.log(response); // Output: {$message: "Hello world!"}
+console.log(response); // Output: {message: "Hello world!"}
 ```
 
 ### Streaming Responses
 
 ```typescript file="test/http-client/http-client.test.ts" region="example-aigne-client-streaming"
+import { isAgentResponseDelta } from "@aigne/core";
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
 
 const client = new AIGNEHTTPClient({ url });
 
 const stream = await client.invoke(
   "chat",
-  { $message: "hello" },
+  { message: "hello" },
   { streaming: true },
 );
 
 let text = "";
 for await (const chunk of stream) {
-  if (chunk.delta.text?.$message) text += chunk.delta.text.$message;
+  if (isAgentResponseDelta(chunk)) {
+    if (chunk.delta.text?.message) text += chunk.delta.text.message;
+  }
 }
 
 console.log(text); // Output: "Hello world!"

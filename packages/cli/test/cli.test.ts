@@ -53,8 +53,8 @@ test("aigne cli should print pretty error message", async () => {
 
   await import(withQuery("@aigne/cli/cli.js", { key: Date.now() }));
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("test error"));
   expect(exit).toHaveBeenCalledWith(1);
+  expect(error).toHaveBeenCalledWith(expect.stringContaining("test error"));
 
   error.mockRestore();
   exit.mockRestore();

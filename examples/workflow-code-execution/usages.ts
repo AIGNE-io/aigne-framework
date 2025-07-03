@@ -18,7 +18,7 @@ const sandbox = FunctionAgent.from({
   }),
   process: async (input: { code: string }) => {
     const { code } = input;
-    // biome-ignore lint/security/noGlobalEval: <explanation>
+    // biome-ignore lint/security/noGlobalEval: just for demonstration purposes
     const result = eval(code);
     return { result };
   },

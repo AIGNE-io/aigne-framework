@@ -17,7 +17,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { serveStatic } from "hono/serve-static";
-import { type BrowserType, type Page, chromium, webkit } from "playwright";
+import { type BrowserType, chromium, type Page, webkit } from "playwright";
 
 test.each<Readonly<[AIGNEHTTPClientInvokeOptions, string, BrowserType]>>(
   [{ streaming: false }, { streaming: true }].flatMap((options) =>
@@ -191,7 +191,12 @@ async function runAgentInBrowser({
       url,
       input,
       streaming,
-    }: { agentName: string; url: string; input: Message; streaming?: boolean }) => {
+    }: {
+      agentName: string;
+      url: string;
+      input: Message;
+      streaming?: boolean;
+    }) => {
       const g = globalThis as unknown as typeof import("@aigne/core") & {
         AIGNEHTTPClient: typeof AIGNEHTTPClient;
         DefaultMemory: typeof DefaultMemory;

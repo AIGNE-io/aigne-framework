@@ -36,7 +36,7 @@
     "@vitejs/plugin-react": "^4.6.0",
     "detect-port": "^2.1.0",
     "hono": "^4.8.3",
-    "playwright": "^1.53.1",
+    "playwright": "^1.53.2",
     "rimraf": "^6.0.1",
     "vite": "^7.0.0"
   }

@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { LogLevel, Logger, getLevelFromEnv, logger } from "@aigne/core/utils/logger.js";
+import { getLevelFromEnv, Logger, LogLevel, logger } from "@aigne/core/utils/logger.js";
 import debug from "debug";
 
 test("Logger.enabled should return correct value", async () => {

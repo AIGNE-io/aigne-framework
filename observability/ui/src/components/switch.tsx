@@ -18,7 +18,7 @@ const SwitchComponent = ({ ...props }: { live: boolean; setLive: (live: boolean)
       });
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
     fetchSettings();
   }, []);

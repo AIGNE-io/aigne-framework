@@ -1,16 +1,16 @@
 import assert from "node:assert";
 import { produce } from "immer";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
-import { type PromiseOrValue, isEmpty, isNil, isRecord, omit } from "../utils/type-utils.js";
+import { isEmpty, isNil, isRecord, omit, type PromiseOrValue } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
   type AgentResponseChunk,
-  type Message,
   agentProcessResultToObject,
   isAgentResponseDelta,
+  type Message,
 } from "./agent.js";
 
 /**

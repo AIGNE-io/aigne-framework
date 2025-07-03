@@ -5,7 +5,11 @@ export function mockOpenAIStreaming<T>({
   text,
   inputTokens,
   outputTokens,
-}: { text: string; inputTokens?: number; outputTokens?: number }): T {
+}: {
+  text: string;
+  inputTokens?: number;
+  outputTokens?: number;
+}): T {
   const id = nanoid();
   const segments = Array.from(new Intl.Segmenter(undefined, { granularity: "word" }).segment(text));
   const events: unknown[] = [];
@@ -51,5 +55,5 @@ export function mockOpenAIStreaming<T>({
 }
 
 function getUnixTimestamp() {
-  return Math.round(new Date().getTime() / 1000);
+  return Math.round(Date.now() / 1000);
 }

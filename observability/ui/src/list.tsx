@@ -6,8 +6,8 @@ import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import { DataGrid } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
 import useLocalStorageState from "ahooks/lib/useLocalStorageState";
 import useRafInterval from "ahooks/lib/useRafInterval";
@@ -68,7 +68,12 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     pageSize,
     searchText = "",
     dateRange,
-  }: { page: number; pageSize: number; searchText?: string; dateRange?: [Date, Date] }) => {
+  }: {
+    page: number;
+    pageSize: number;
+    searchText?: string;
+    dateRange?: [Date, Date];
+  }) => {
     try {
       const res = await fetch(
         withQuery(joinURL(origin, "/api/trace/tree"), {
@@ -91,7 +96,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
     if (documentVisibility === "visible") {
       setLoading(true);
@@ -117,7 +122,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       });
   }, 3000);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useImperativeHandle(
     ref,
     () => ({
@@ -130,7 +135,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     [page.pageSize],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
     const abortController = new AbortController();
     (async () => {

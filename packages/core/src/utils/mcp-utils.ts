@@ -4,8 +4,8 @@ import {
   CallToolResultSchema,
   GetPromptResultSchema,
   type ListPromptsResult,
-  type ListResourceTemplatesResult,
   type ListResourcesResult,
+  type ListResourceTemplatesResult,
   type ListToolsResult,
   ReadResourceResultSchema,
 } from "@modelcontextprotocol/sdk/types.js";

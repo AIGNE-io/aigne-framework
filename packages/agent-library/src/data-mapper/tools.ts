@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import jsonata from "jsonata";
-import { Validator } from "jsonschema";
 import type { Schema } from "jsonschema";
+import { Validator } from "jsonschema";
 import toJsonSchema from "to-json-schema";
 
 export interface TransformResult {
@@ -161,7 +161,7 @@ export function addNullableToOptional(schema: Schema): Schema {
     const required = new Set(Array.isArray(schema.required) ? schema.required : []);
     newSchema.properties = Object.entries(schema.properties).reduce(
       (acc, [key, value]) => ({
-        // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+        // biome-ignore lint/performance/noAccumulatingSpread: false positive
         ...acc,
         [key]: !required.has(key) ? makeNullable(value) : addNullableToOptional(value),
       }),
@@ -193,7 +193,7 @@ function makeNullable(schema: any): any {
   if (schema.properties) {
     newSchema.properties = Object.entries(schema.properties).reduce(
       (acc, [key, value]) => ({
-        // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+        // biome-ignore lint/performance/noAccumulatingSpread: false positive
         ...acc,
         [key]: makeNullable(value),
       }),

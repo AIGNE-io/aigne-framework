@@ -27,9 +27,9 @@
   },
   "devDependencies": {
     "@aigne/publish-docs": "workspace:^",
-    "@biomejs/biome": "^1.9.4",
-    "@biomejs/js-api": "^0.7.1",
-    "@biomejs/wasm-nodejs": "^1.9.4",
+    "@biomejs/biome": "^2.0.6",
+    "@biomejs/js-api": "^1.0.0",
+    "@biomejs/wasm-nodejs": "^2.0.6",
     "fenceparser": "^2.2.0",
     "mdast": "^3.0.0",
     "remark-cli": "^12.0.1",
@@ -38,12 +38,12 @@
     "remark-preset-lint-recommended": "^7.0.1",
     "simple-git-hooks": "^2.13.0",
     "ts-morph": "^26.0.0",
-    "typedoc": "^0.28.4",
-    "typedoc-plugin-markdown": "^4.6.3",
+    "typedoc": "^0.28.7",
+    "typedoc-plugin-markdown": "^4.7.0",
     "typedoc-plugin-no-inherit": "^1.6.1",
     "typescript": "^5.8.3",
     "unist-util-visit": "^5.0.0",
-    "zx": "^8.5.4"
+    "zx": "^8.6.1"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

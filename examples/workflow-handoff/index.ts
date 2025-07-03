@@ -2,7 +2,7 @@
 
 import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
-import { AIAgent, type Agent, FunctionAgent } from "@aigne/core";
+import { type Agent, AIAgent, FunctionAgent } from "@aigne/core";
 import { z } from "zod";
 
 const execute_order_tool = FunctionAgent.from({

@@ -15,9 +15,9 @@ import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { getJsonOutputPrompt } from "@aigne/core/utils/prompts.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
 import {
-  type PromiseOrValue,
   checkArguments,
   isNonNullable,
+  type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import { nanoid } from "nanoid";
 import OpenAI, { type ClientOptions } from "openai";
@@ -188,7 +188,7 @@ export class OpenAIChatModel extends ChatModel {
     };
 
     const { jsonMode, responseFormat } = await this.getRunResponseFormat(input);
-    const stream = await this.client.chat.completions.create({
+    const stream = (await this.client.chat.completions.create({
       ...body,
       tools: toolsFromInputTools(input.tools, {
         addTypeToEmptyParameters: !this.supportsToolsEmptyParameters,
@@ -196,7 +196,7 @@ export class OpenAIChatModel extends ChatModel {
       tool_choice: input.toolChoice,
       parallel_tool_calls: this.getParallelToolCalls(input),
       response_format: responseFormat,
-    });
+    })) as unknown as Stream<OpenAI.Chat.Completions.ChatCompletionChunk>;
 
     if (input.responseFormat?.type !== "json_schema") {
       return await this.extractResultFromStream(stream, false, true);
@@ -251,7 +251,10 @@ export class OpenAIChatModel extends ChatModel {
 
     if (!this.supportsNativeStructuredOutputs) {
       const jsonMode = input.responseFormat?.type === "json_schema";
-      return { jsonMode, responseFormat: jsonMode ? { type: "json_object" } : undefined };
+      return {
+        jsonMode,
+        responseFormat: jsonMode ? { type: "json_object" } : undefined,
+      };
     }
 
     if (input.responseFormat?.type === "json_schema") {
@@ -281,10 +284,10 @@ export class OpenAIChatModel extends ChatModel {
     const { jsonMode, responseFormat: resolvedResponseFormat } = await this.getRunResponseFormat({
       responseFormat,
     });
-    const res = await this.client.chat.completions.create({
+    const res = (await this.client.chat.completions.create({
       ...body,
       response_format: resolvedResponseFormat,
-    });
+    })) as unknown as Stream<OpenAI.Chat.Completions.ChatCompletionChunk>;
 
     return this.extractResultFromStream(res, jsonMode);
   }
@@ -525,8 +528,12 @@ export function jsonSchemaToOpenAIJsonSchema(
 }
 
 function handleToolCallDelta(
-  toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & { args: string })[],
-  call: OpenAI.Chat.Completions.ChatCompletionChunk.Choice.Delta.ToolCall & { index: number },
+  toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
+    args: string;
+  })[],
+  call: OpenAI.Chat.Completions.ChatCompletionChunk.Choice.Delta.ToolCall & {
+    index: number;
+  },
 ) {
   toolCalls[call.index] ??= {
     id: call.id || nanoid(),
@@ -544,7 +551,9 @@ function handleToolCallDelta(
 }
 
 function handleCompleteToolCall(
-  toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & { args: string })[],
+  toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
+    args: string;
+  })[],
   call: OpenAI.Chat.Completions.ChatCompletionChunk.Choice.Delta.ToolCall,
 ) {
   toolCalls.push({

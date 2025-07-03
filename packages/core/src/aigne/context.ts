@@ -1,6 +1,6 @@
 import type { AIGNEObserver } from "@aigne/observability-api";
-import { SpanStatusCode, context, trace } from "@opentelemetry/api";
 import type { Span } from "@opentelemetry/api";
+import { context, SpanStatusCode, trace } from "@opentelemetry/api";
 import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";
 import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
@@ -14,14 +14,14 @@ import {
   type AgentResponseChunk,
   type AgentResponseStream,
   type FunctionAgentFn,
-  type Message,
   isAgentResponseDelta,
   isEmptyChunk,
+  type Message,
 } from "../agents/agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
 import {
-  type TransferAgentOutput,
   isTransferAgentOutput,
+  type TransferAgentOutput,
   transferAgentOutputKey,
 } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
@@ -36,10 +36,10 @@ import {
   onAgentResponseStreamEnd,
 } from "../utils/stream-utils.js";
 import {
-  type OmitPropertiesFromArrayFirstElement,
   checkArguments,
   isEmpty,
   isNil,
+  type OmitPropertiesFromArrayFirstElement,
   omit,
 } from "../utils/type-utils.js";
 import type { Args, Listener, TypedEventEmitter } from "../utils/typed-event-emitter.js";
@@ -47,8 +47,8 @@ import {
   type MessagePayload,
   MessageQueue,
   type MessageQueueListener,
-  type Unsubscribe,
   toMessagePayload,
+  type Unsubscribe,
 } from "./message-queue.js";
 import { type ContextLimits, type ContextUsage, newEmptyContextUsage } from "./usage.js";
 

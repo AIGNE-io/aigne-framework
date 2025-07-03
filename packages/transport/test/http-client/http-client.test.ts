@@ -7,8 +7,8 @@ import {
   AIGNE,
   ChatModel,
   type ContextEventMap,
-  type Message,
   isAgentResponseDelta,
+  type Message,
 } from "@aigne/core";
 import {
   arrayToReadableStream,

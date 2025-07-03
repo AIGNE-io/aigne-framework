@@ -1,5 +1,5 @@
-import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import type { TraceFormatSpans } from "../core/type.js";
+import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 
 export class AIGNEObserver {
   public tracer = {

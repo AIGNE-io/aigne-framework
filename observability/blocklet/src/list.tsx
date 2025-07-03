@@ -7,7 +7,7 @@ export default function ListPage() {
   const appRef = useRef<{ refetch: () => void }>(null);
   const { session } = useSessionContext();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
     appRef.current?.refetch?.();
 

@@ -2,11 +2,7 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { joinURL } from "ufo";
 import { origin } from "./index.ts";
 
-export async function watchSSE({
-  signal,
-}: {
-  signal?: AbortSignal | null;
-}) {
+export async function watchSSE({ signal }: { signal?: AbortSignal | null }) {
   const url = joinURL(origin, "/api/sse");
 
   return new ReadableStream<{ type: "event"; data: any } | { type: "error"; message: string }>({

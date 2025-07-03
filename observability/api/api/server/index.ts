@@ -1,15 +1,13 @@
 import type { Server } from "node:http";
 import { initDatabase } from "@aigne/sqlite";
+import chalk from "chalk";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv-flow";
 import express, { type NextFunction, type Request, type Response } from "express";
 import SSE from "express-sse";
-
-import chalk from "chalk";
 import terminalLink from "terminal-link";
-import { z } from "zod";
-import { ZodError } from "zod";
+import { ZodError, z } from "zod";
 import { migrate } from "./migrate.js";
 import settingsRouter from "./routes/settings.js";
 import traceRouter from "./routes/trace.js";

@@ -2,7 +2,7 @@ import { AIAgent, type AIGNE } from "@aigne/core";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import express, { type Request, type Response, Router, json } from "express";
+import express, { json, type Request, type Response, Router } from "express";
 import { ZodObject, type ZodRawShape } from "zod";
 import { AIGNE_CLI_VERSION } from "../constants.js";
 
@@ -11,7 +11,12 @@ export async function serveMCPServer({
   aigne,
   host = "localhost",
   port,
-}: { pathname?: string; aigne: AIGNE; host?: string; port: number }) {
+}: {
+  pathname?: string;
+  aigne: AIGNE;
+  host?: string;
+  port: number;
+}) {
   const app = express();
 
   app.use(json());

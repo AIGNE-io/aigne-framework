@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import type { AgentInvokeOptions, AIGNE, InvokeOptions, UserContext } from "@aigne/core";
+import type { AIGNE, InvokeOptions, UserContext } from "@aigne/core";
 import { AgentResponseStreamSSE } from "@aigne/core/utils/event-stream.js";
 import { checkArguments, isRecord, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import contentType from "content-type";
@@ -66,8 +66,7 @@ export interface AIGNEHTTPServerOptions {
 }
 
 export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext>
-  extends Pick<AgentInvokeOptions<U>, "userContext" | "memories">,
-    Pick<InvokeOptions, "returnProgressChunks"> {}
+  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories"> {}
 
 /**
  * AIGNEHTTPServer provides HTTP API access to AIGNE capabilities.

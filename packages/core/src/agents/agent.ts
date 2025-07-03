@@ -204,10 +204,6 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
    * and returns the final JSON result
    */
   streaming?: boolean;
-
-  userContext?: U;
-
-  memories?: Pick<Memory, "content">[];
 }
 
 /**
@@ -568,15 +564,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       ...options,
       context: options.context ?? (await this.newDefaultContext()),
     };
-
-    if (options.userContext) {
-      Object.assign(opts.context.userContext, options.userContext);
-      options.userContext = undefined;
-    }
-    if (options.memories?.length) {
-      opts.context.memories.push(...options.memories);
-      options.memories = undefined;
-    }
 
     logger.debug("Invoke agent %s started with input: %O", this.name, input);
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });

@@ -99,12 +99,19 @@ export interface InvokeOptions<U extends UserContext = UserContext>
    * @default true
    */
   newContext?: boolean;
+
+  userContext?: U;
+
+  memories?: Pick<Memory, "content">[];
 }
 
 /**
  * @hidden
  */
-export interface UserContext extends Record<string, unknown> {}
+export interface UserContext extends Record<string, unknown> {
+  userId?: string;
+  sessionId?: string;
+}
 
 /**
  * @hidden

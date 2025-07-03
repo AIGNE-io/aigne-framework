@@ -102,13 +102,18 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 aigne run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
 
 # blocklet-sdk
-aigne run --entry-agent "docs-generator" --input "@mock-inputs/blocklet-sdk-docs-input.yaml" --format yaml 
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/blocklet-sdk-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
 
 # payment-kit
-bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/payment-kit-sdk-docs-input.yaml" --format yaml 
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/payment-kit-sdk-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
 
 # did-spaces
-bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/did-spaces-sdk-docs-input.yaml" --format yaml 
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/did-spaces-sdk-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
+
+# blockchain
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/blockchain-sdk-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
+
+
 ```
 
 ### 使用 observability 查看执行记录

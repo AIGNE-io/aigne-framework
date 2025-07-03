@@ -1,6 +1,6 @@
 chat_model:
   provider: gemini
-  name: gemini-2.5-flash
+  name: gemini-2.5-flash-preview-05-20
   temperature: 0.8
 agents:
   - content-generator.yaml

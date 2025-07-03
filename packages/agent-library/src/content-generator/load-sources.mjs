@@ -1,12 +1,6 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-// 简单 glob pattern 转正则，仅支持 * 和 **
-function globToRegExp(pattern) {
-  const regex = pattern.replace(/\./g, "\\.").replace(/\*\*/g, "(.|/)*").replace(/\*/g, "[^/]*");
-  return new RegExp(`^${regex}$`);
-}
-
 async function walk(dir) {
   let files = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -23,18 +17,31 @@ async function walk(dir) {
 export default async function loadSources({
   sources = [],
   sourcesPath,
-  includePatterns = ["*", "**/*"],
+  includePatterns,
+  excludePatterns,
 }) {
   let files = Array.isArray(sources) ? [...sources] : [];
   if (sourcesPath) {
     const allFiles = await walk(sourcesPath);
-    const patterns = Array.isArray(includePatterns) ? includePatterns : [includePatterns];
-    const regexps = patterns.map(globToRegExp);
+    let includeRegexps = null;
+    if (includePatterns) {
+      const patterns = Array.isArray(includePatterns) ? includePatterns : [includePatterns];
+      includeRegexps = patterns.map((p) => new RegExp(p));
+    }
+    let excludeRegexps = null;
+    if (excludePatterns) {
+      const patterns = Array.isArray(excludePatterns) ? excludePatterns : [excludePatterns];
+      excludeRegexps = patterns.map((p) => new RegExp(p));
+    }
     files = files.concat(
-      allFiles.filter((f) => regexps.some((r) => r.test(path.relative(sourcesPath, f)))),
+      allFiles.filter((f) => {
+        const fileName = path.basename(f);
+        if (includeRegexps?.some((r) => r.test(fileName)) === false) return false;
+        if (excludeRegexps?.some((r) => r.test(fileName)) === true) return false;
+        return true;
+      }),
     );
   }
-  // 去重
   files = [...new Set(files)];
   const contents = await Promise.all(
     files.map(async (file) => {
@@ -62,7 +69,13 @@ loadSources.input_schema = {
     },
     includePatterns: {
       anyOf: [{ type: "string" }, { type: "array", items: { type: "string" } }],
-      description: "Glob patterns to filter files in sourcesPath (supports * and **)",
+      description:
+        "Regex patterns to filter files by file name (not path). If not set, include all.",
+    },
+    excludePatterns: {
+      anyOf: [{ type: "string" }, { type: "array", items: { type: "string" } }],
+      description:
+        "Regex patterns to exclude files by file name (not path). If not set, exclude none.",
     },
   },
   required: [],

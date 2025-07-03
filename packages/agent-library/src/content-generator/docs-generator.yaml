@@ -14,7 +14,7 @@ skills:
             $merge([
               $item,
               {
-                'translates': $map(translateLanguages, function($lang) { {"language": $lang} })
+                'translates': [$map(translateLanguages, function($lang) { {"language": $lang} })]
               }
             ])
           })

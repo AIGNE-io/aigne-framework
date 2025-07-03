@@ -107,6 +107,8 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 # payment-kit
 bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/payment-kit-sdk-docs-input.yaml" --format yaml 
 
+# did-spaces
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/did-spaces-sdk-docs-input.yaml" --format yaml 
 ```
 
 ### 使用 observability 查看执行记录

@@ -1,5 +1,5 @@
 rules: |
-  请帮助我生成一个 Payment Kit SDK 相关的文档
+  请帮助我生成一个 DID Spaces SDK 相关的文档
 
 
   ## 结构规划
@@ -17,7 +17,7 @@ rules: |
 targetAudience: 开发者
 nodeName: 部分
 locale: zh
-docsDir: ../../../../docs-payment-kit-sdk-ai-v0.2
-sourcesPath: /Users/lban/arcblock/code/payment-kit/packages/client/src
+docsDir: ../../../../docs-did-spaces-sdk-ai-v0.3
+sourcesPath: /Users/lban/arcblock/code/did-spaces/packages/client/src
 sources:
-  - /Users/lban/arcblock/code/payment-kit/packages/client/README.md
+  - /Users/lban/arcblock/code/did-spaces/packages/client/README.md

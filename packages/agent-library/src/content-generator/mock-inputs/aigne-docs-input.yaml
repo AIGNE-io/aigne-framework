@@ -16,8 +16,10 @@ rules: |
 
 targetAudience: 开发者
 nodeName: 部分
-locale: zh
-docsDir: ../../../../docs-ai
+locale: en
+translateLanguages:
+  - zh
+docsDir: ../../../../docs-ai-v0.1
 sources:
   - ../../../cli/README.zh.md
   - ../../../cli/src/cli.ts

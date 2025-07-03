@@ -96,7 +96,7 @@
     "lint": "tsc --build scripts/tsconfig.build.json --noEmit",
     "build": "run-p build:ui build:api",
     "build:ui": "node scripts/build-ui.mjs",
-    "build:api": "tsc --build scripts/tsconfig.build.json",
+    "build:api": "tsc --build scripts/tsconfig.build.json && zx --quiet scripts/download-json.mjs",
     "prepublishOnly": "run-s clean build",
     "test": "bun test",
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",

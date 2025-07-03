@@ -24,7 +24,7 @@ AIGNE 监视器支持以代码方式集成到你的 Node.js 应用中，暴露�
 适用于 Blocklet 部署或需要以服务方式运行的场景。
 
 ```js
-import { startServer as startObservabilityBlockletServer } from "@aigne/observability-api/server";
+import { startObservabilityBlockletServer } from "@aigne/observability/server";
 
 startObservabilityBlockletServer({
   port: Number(process.env.BLOCKLET_PORT) || 3000,

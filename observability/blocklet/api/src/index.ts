@@ -1,5 +1,5 @@
 import path from "node:path";
-import { startServer as startObservabilityServer } from "@aigne/observability-api/server";
+import { startObservabilityBlockletServer } from "@aigne/observability/server";
 import middleware from "@blocklet/sdk/lib/middlewares";
 import fallback from "@blocklet/sdk/lib/middlewares/fallback";
 import dotenv from "dotenv-flow";
@@ -22,7 +22,7 @@ const isProduction =
   process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
 
 const startServer = async () => {
-  const { app, server } = await startObservabilityServer({
+  const { app, server } = await startObservabilityBlockletServer({
     port: Number(process.env.BLOCKLET_PORT) || 3000,
     dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
     traceTreeMiddleware: [middleware.session({ accessKey: true }), requireAdminRole],

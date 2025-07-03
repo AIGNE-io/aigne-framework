@@ -13,7 +13,8 @@
       "!**/dist/**",
       "!**/package.json",
       "!**/.oauth/**",
-      "!**/.blocklet/**"
+      "!**/.blocklet/**",
+      "!observability/api/api/server/utils/modelPricesAndContextWindow.json"
     ]
   },
   "formatter": {

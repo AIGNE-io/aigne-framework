@@ -24,11 +24,17 @@
 {{ datasources }}
 </datasources>
 
-<rules>
+<terms>
+专有词汇表，使用时请确保拼写正确。
+
+{{glossary}}
+</terms>
+
 <user_rules>
 {{ rules }}
 </user_rules>
 
+<rules>
 DataSources 使用规则：
 1. 结构规划时要要尽可能的把 DataSources 中的信息合理的进行规划展示，不能遗漏
 2. 用户可能提供的 DataSources 很少，这个时候你可以用你已知的信息进行补充，来完成结构规划

@@ -19,55 +19,10 @@ nodeName: 部分
 locale: en
 translateLanguages:
   - zh
-docsDir: ../../../../docs-ai-v0.1
+docsDir: ../../../../docs-ai-v0.2
+sourcesPath:
+  - /Users/lban/arcblock/code/aigne-framework/packages/cli/src
+  - /Users/lban/arcblock/code/aigne-framework/packages/core/src
 sources:
-  - ../../../cli/README.zh.md
-  - ../../../cli/src/cli.ts
-  - ../../../cli/src/commands/create.ts
-  - ../../../cli/src/commands/run.ts
-  - ../../../cli/src/commands/serve.ts
-  - ../../../cli/src/commands/test.ts
-  - ../../../cli/src/commands/observability.ts
-  - ../../../cli/src/utils/run-with-aigne.ts
-  - ../../../cli/src/utils/run-chat-loop.ts
-  - ../../../cli/src/utils/download.ts
-  - ../../../cli/src/utils/serve-mcp.ts
-  - ../../../cli/src/constants.ts
-  - ../../../core/README.zh.md
-  - ../../../core/src/index.ts
-  - ../../../core/src/agents/team-agent.ts
-  - ../../../core/src/agents/transform-agent.ts
-  - ../../../core/src/agents/user-agent.ts
-  - ../../../core/src/agents/ai-agent.ts
-  - ../../../core/src/agents/chat-model.ts
-  - ../../../core/src/agents/mcp-agent.ts
-  - ../../../core/src/agents/agent.ts
-  - ../../../core/src/agents/guide-rail-agent.ts
-  - ../../../core/src/agents/types.ts
-  - ../../../core/src/loader/agent-yaml.ts
-  - ../../../core/src/loader/index.ts
-  - ../../../core/src/loader/agent-js.ts
-  - ../../../core/src/loader/schema.ts
-  - ../../../core/src/memory/memory.ts
-  - ../../../core/src/memory/recorder.ts
-  - ../../../core/src/memory/retriever.ts
-  - ../../../core/src/memory/index.ts
-  - ../../../core/src/prompt/template.ts
-  - ../../../core/src/prompt/prompt-builder.ts
-  - ../../../core/src/prompt/prompts/memory-message-template.ts
-  - ../../../core/src/utils/type-utils.ts
-  - ../../../core/src/utils/stream-utils.ts
-  - ../../../core/src/utils/event-stream.ts
-  - ../../../core/src/utils/stream-polyfill.ts
-  - ../../../core/src/utils/logger.ts
-  - ../../../core/src/utils/promise.ts
-  - ../../../core/src/utils/json-schema.ts
-  - ../../../core/src/utils/model-utils.ts
-  - ../../../core/src/utils/mcp-utils.ts
-  - ../../../core/src/utils/prompts.ts
-  - ../../../core/src/utils/typed-event-emtter.ts
-  - ../../../core/src/aigne/aigne.ts
-  - ../../../core/src/aigne/context.ts
-  - ../../../core/src/aigne/message-queue.ts
-  - ../../../core/src/aigne/usage.ts
-  - ../../../core/src/aigne/index.ts
+  - /Users/lban/arcblock/code/aigne-framework/packages/cli/README.md
+  - /Users/lban/arcblock/code/aigne-framework/packages/core/README.md

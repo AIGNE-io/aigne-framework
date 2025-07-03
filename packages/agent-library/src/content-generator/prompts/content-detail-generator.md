@@ -12,6 +12,12 @@
 {{ datasources }}
 </datasources>
 
+<terms>
+专有词汇表，使用时请确保拼写正确。
+
+{{glossary}}
+</terms>
+
 <structure_plan>
 {{ originalStructurePlan }}
 </structure_plan>
@@ -24,10 +30,11 @@ path: {{path}}
 parentId: {{parentId}}
 </current>
 
-<rules>
 <user_rules>
 {{ rules }}
 </user_rules>
+
+<rules>
 
 目标受众：{{targetAudience}}
 

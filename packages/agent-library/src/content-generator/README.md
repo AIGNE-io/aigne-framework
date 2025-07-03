@@ -51,7 +51,7 @@ aigne run --entry-agent "content-generator" --input "@mock-inputs/input.yaml" --
 
 ```bash
 # arcshpere
-aigne run --entry-agent "content-generator" --input "@mock-inputs/input-arcsphere.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml
+aigne run --entry-agent "content-generator" --input "@mock-inputs/input-arcsphere.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md"  --format yaml
 
 # lban
 aigne run --entry-agent "content-generator" --input "@mock-inputs/input-lban.yaml" --input-evaluationDimensions "@prompts/structure-evaluation-dimensions.md" --format yaml
@@ -99,10 +99,10 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 测试文档生成的命令
 ```bash
 # aigne
-bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --format yaml 
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
 
 # blocklet-sdk
-bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/blocklet-sdk-docs-input.yaml" --format yaml 
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/blocklet-sdk-docs-input.yaml" --format yaml 
 
 # payment-kit
 bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "docs-generator" --input "@mock-inputs/payment-kit-sdk-docs-input.yaml" --format yaml 

@@ -45,6 +45,9 @@ input_schema:
       items:
         type: string
         description: 翻译语言，如 zh、en
+    glossary:
+      type: string
+      description: 术语表
   required:
     - rules
     - docsDir

@@ -50,6 +50,9 @@ input_schema:
       type:
         - string
         - 'null'
+    glossary:
+      type: string
+      description: 术语表
   required:
     - rules
     - datasources

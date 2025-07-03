@@ -20,6 +20,9 @@ input_schema:
     nodeName:
       type: string
       description: 结构规划的节点名称
+    glossary:
+      type: string
+      description: 术语表
   required:
     - rules
     - datasources

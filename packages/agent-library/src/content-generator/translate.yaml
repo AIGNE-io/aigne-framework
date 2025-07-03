@@ -11,6 +11,9 @@ input_schema:
     content:
       type: string
       description: Content to translate
+    glossary:
+      type: string
+      description: 术语表
   required:
     - language
     - content

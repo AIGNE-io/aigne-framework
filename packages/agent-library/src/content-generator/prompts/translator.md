@@ -25,6 +25,8 @@
 保留术语（不翻译）：
 <terms>
 - Agent（所有 Agent 或带有 Agent 前缀或后缀的术语均不翻译）
+
+{{glossary}}
 </terms>
 
 双语术语（使用 `原文 (翻译)` 格式）：

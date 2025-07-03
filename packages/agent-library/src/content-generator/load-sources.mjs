@@ -1,4 +1,4 @@
-import { readFile, readdir } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 async function walk(dir) {
@@ -22,7 +22,16 @@ export default async function loadSources({
 }) {
   let files = Array.isArray(sources) ? [...sources] : [];
   if (sourcesPath) {
-    const allFiles = await walk(sourcesPath);
+    const paths = Array.isArray(sourcesPath) ? sourcesPath : [sourcesPath];
+    let allFiles = [];
+    for (const dir of paths) {
+      try {
+        const filesInDir = await walk(dir);
+        allFiles = allFiles.concat(filesInDir);
+      } catch (err) {
+        if (err.code !== "ENOENT") throw err;
+      }
+    }
     let includeRegexps = null;
     if (includePatterns) {
       const patterns = Array.isArray(includePatterns) ? includePatterns : [includePatterns];
@@ -64,7 +73,7 @@ loadSources.input_schema = {
       description: "Array of paths to the sources files",
     },
     sourcesPath: {
-      type: "string",
+      anyOf: [{ type: "string" }, { type: "array", items: { type: "string" } }],
       description: "Directory to recursively read files from",
     },
     includePatterns: {

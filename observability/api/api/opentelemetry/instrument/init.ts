@@ -30,6 +30,5 @@ export async function initOpenTelemetry({
     );
   }
 
-
   return traceExporter;
 }

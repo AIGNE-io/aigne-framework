@@ -15,18 +15,18 @@ import {
   onAgentResponseStreamEnd,
 } from "../utils/stream-utils.js";
 import {
-  type Nullish,
-  type PromiseOrValue,
-  type XOr,
   checkArguments,
   createAccessorArray,
   isEmpty,
+  type Nullish,
   orArrayToArray,
+  type PromiseOrValue,
+  type XOr,
 } from "../utils/type-utils.js";
 import type { GuideRailAgent, GuideRailAgentOutput } from "./guide-rail-agent.js";
 import {
-  type TransferAgentOutput,
   replaceTransferAgentToName,
+  type TransferAgentOutput,
   transferToAgentOutput,
 } from "./types.js";
 

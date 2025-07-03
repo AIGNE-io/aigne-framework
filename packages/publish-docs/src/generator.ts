@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { type Tokens, type TokensList, marked } from "marked";
+import { marked, type Tokens, type TokensList } from "marked";
 import { Converter } from "./converter/index.js";
 import { slugify } from "./utils/slugify.js";
 

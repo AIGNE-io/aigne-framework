@@ -1,9 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import { inspect } from "node:util";
 import {
-  AIAgent,
-  AIAgentToolChoice,
-  AIGNE,
   Agent,
   type AgentInput,
   type AgentInvokeOptions,
@@ -11,9 +8,12 @@ import {
   type AgentProcessAsyncGenerator,
   type AgentResponseChunk,
   type AgentResponseStream,
+  AIAgent,
+  AIAgentToolChoice,
+  AIGNE,
   FunctionAgent,
-  type Message,
   isAgentResponseDelta,
+  type Message,
   textDelta,
 } from "@aigne/core";
 import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent";

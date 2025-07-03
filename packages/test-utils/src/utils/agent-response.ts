@@ -1,8 +1,8 @@
 import {
   type AgentResponseChunk,
   type AgentResponseStream,
-  type Message,
   isAgentResponseProgress,
+  type Message,
 } from "@aigne/core";
 import { readableStreamToArray } from "@aigne/core/utils/stream-utils.js";
 

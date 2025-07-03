@@ -1,7 +1,7 @@
 import { trace } from "@opentelemetry/api";
 import getObservabilityDbPath from "../core/db-path.js";
-import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import type { TraceFormatSpans } from "../core/type.js";
+import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import { isBlocklet } from "../core/util.js";
 import type { HttpExporterInterface } from "../opentelemetry/exporter/http-exporter.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";

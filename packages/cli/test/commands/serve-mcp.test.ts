@@ -1,4 +1,4 @@
-import { type Mock, afterEach, beforeEach, expect, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, expect, type Mock, spyOn, test } from "bun:test";
 import { Server } from "node:http";
 import { join } from "node:path";
 import { createServeMCPCommand } from "@aigne/cli/commands/serve-mcp.js";

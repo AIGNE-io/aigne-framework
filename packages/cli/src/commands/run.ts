@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
-import { AIGNE, type Agent } from "@aigne/core";
+import { type Agent, AIGNE } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { isNonNullable } from "@aigne/core/utils/type-utils.js";
@@ -13,10 +13,10 @@ import { availableMemories, availableModels } from "../constants.js";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import {
-  type RunAIGNECommandOptions,
   createRunAIGNECommand,
   parseAgentInputByCommander,
   parseModelOption,
+  type RunAIGNECommandOptions,
   runAgentWithAIGNE,
 } from "../utils/run-with-aigne.js";
 

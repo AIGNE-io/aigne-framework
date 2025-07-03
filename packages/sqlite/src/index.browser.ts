@@ -1,4 +1,4 @@
-import { type SqliteRemoteDatabase, drizzle } from "drizzle-orm/sqlite-proxy";
+import { drizzle, type SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
 // @ts-ignore sqlocal does not support commonjs, but we can use it in the browser with ESM module
 import { SQLocalDrizzle } from "sqlocal/drizzle";
 import type { InitDatabaseOptions } from "./index.js";

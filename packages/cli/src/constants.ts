@@ -1,3 +1,4 @@
+import type { Agent } from "node:https";
 import { createRequire } from "node:module";
 import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AnthropicChatModel } from "@aigne/anthropic";
@@ -21,16 +22,17 @@ export function availableModels(): LoadableModel[] {
     .map((i) => process.env[i])
     .filter(Boolean)[0];
 
-  const httpAgent = proxy ? new HttpsProxyAgent(proxy) : undefined;
+  const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
+  const clientOptions = { fetchOptions: { agent: httpAgent } };
 
   return [
     {
       name: OpenAIChatModel.name,
-      create: (params) => new OpenAIChatModel({ ...params, clientOptions: { httpAgent } }),
+      create: (params) => new OpenAIChatModel({ ...params, clientOptions }),
     },
     {
       name: AnthropicChatModel.name,
-      create: (params) => new AnthropicChatModel({ ...params, clientOptions: { httpAgent } }),
+      create: (params) => new AnthropicChatModel({ ...params, clientOptions }),
     },
     {
       name: BedrockChatModel.name,
@@ -48,23 +50,23 @@ export function availableModels(): LoadableModel[] {
     },
     {
       name: DeepSeekChatModel.name,
-      create: (params) => new DeepSeekChatModel({ ...params, clientOptions: { httpAgent } }),
+      create: (params) => new DeepSeekChatModel({ ...params, clientOptions }),
     },
     {
       name: GeminiChatModel.name,
-      create: (params) => new GeminiChatModel({ ...params, clientOptions: { httpAgent } }),
+      create: (params) => new GeminiChatModel({ ...params, clientOptions }),
     },
     {
       name: OllamaChatModel.name,
-      create: (params) => new OllamaChatModel({ ...params, clientOptions: { httpAgent } }),
+      create: (params) => new OllamaChatModel({ ...params, clientOptions }),
     },
     {
       name: OpenRouterChatModel.name,
-      create: (params) => new OpenRouterChatModel({ ...params, clientOptions: { httpAgent } }),
+      create: (params) => new OpenRouterChatModel({ ...params, clientOptions }),
     },
     {
       name: XAIChatModel.name,
-      create: (params) => new XAIChatModel({ ...params, clientOptions: { httpAgent } }),
+      create: (params) => new XAIChatModel({ ...params, clientOptions }),
     },
   ];
 }

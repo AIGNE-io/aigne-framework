@@ -3,7 +3,7 @@ import { startObservabilityBlockletServer } from "@aigne/observability-api/serve
 import middleware from "@blocklet/sdk/lib/middlewares";
 import fallback from "@blocklet/sdk/lib/middlewares/fallback";
 import dotenv from "dotenv-flow";
-import express, { type Request, type Response, type NextFunction } from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 
 dotenv.config({ silent: true });
 

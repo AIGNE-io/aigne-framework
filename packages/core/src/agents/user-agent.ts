@@ -1,5 +1,5 @@
 import type { Context } from "../aigne/context.js";
-import { type MessagePayload, type Unsubscribe, toMessagePayload } from "../aigne/message-queue.js";
+import { type MessagePayload, toMessagePayload, type Unsubscribe } from "../aigne/message-queue.js";
 import { orArrayToArray } from "../utils/type-utils.js";
 import {
   Agent,

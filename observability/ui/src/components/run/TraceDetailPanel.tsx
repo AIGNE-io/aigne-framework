@@ -4,11 +4,11 @@ import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import Tag from "@arcblock/ux/lib/Tag";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
+import { styled } from "@mui/material/styles";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { styled } from "@mui/material/styles";
 import Decimal from "decimal.js";
 import { isUndefined, omitBy } from "lodash";
 import { useMemo, useState } from "react";
@@ -41,7 +41,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
     }
 
     if (tab === "output") {
-      const { model, usage, ...rest } = trace?.attributes?.output || {};
+      const { model: _model, usage: _usage, ...rest } = trace?.attributes?.output || {};
       return rest;
     }
 

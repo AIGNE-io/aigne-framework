@@ -3,11 +3,11 @@ import {
   type AgentProcessAsyncGenerator,
   type AgentResponseChunk,
   type AgentResponseStream,
-  type Message,
   isAgentResponseDelta,
   isEmptyChunk,
+  type Message,
 } from "../agents/agent.js";
-import { type PromiseOrValue, omitBy } from "./type-utils.js";
+import { omitBy, type PromiseOrValue } from "./type-utils.js";
 import "./stream-polyfill.js";
 import type { ReadableStreamDefaultReadResult } from "bun";
 

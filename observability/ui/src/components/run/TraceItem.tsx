@@ -1,6 +1,5 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import { Box, Card, LinearProgress, Tooltip, Typography } from "@mui/material";
-import { useMediaQuery } from "@mui/material";
+import { Box, Card, LinearProgress, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import type { ReactElement } from "react";
 import { parseDurationMs } from "../../utils/latency.ts";
 import Status from "../status.tsx";

@@ -2,8 +2,8 @@ import { expect, test } from "bun:test";
 import {
   AgentMessageTemplate,
   PromptTemplate,
-  ToolMessageTemplate,
   parseChatMessages,
+  ToolMessageTemplate,
 } from "@aigne/core";
 
 test("PromptTemplate.format", async () => {

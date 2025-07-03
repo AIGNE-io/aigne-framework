@@ -3,10 +3,10 @@ import { ToastProvider } from "@arcblock/ux/lib/Toast";
 import { Box, CssBaseline } from "@mui/material";
 import { Suspense } from "react";
 import {
-  Route,
-  RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
+  Route,
+  RouterProvider,
 } from "react-router-dom";
 
 import Layout from "./layout.tsx";

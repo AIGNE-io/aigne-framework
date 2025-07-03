@@ -49,7 +49,7 @@ export default function RunDetailDrawer({
       .catch(() => setLoading(false));
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
     if (traceId) {
       init();

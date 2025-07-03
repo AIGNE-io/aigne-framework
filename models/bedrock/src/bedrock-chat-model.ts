@@ -14,9 +14,9 @@ import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { getJsonToolInputPrompt } from "@aigne/core/utils/prompts.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
 import {
-  type PromiseOrValue,
   checkArguments,
   isNonNullable,
+  type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import {
   BedrockRuntimeClient,

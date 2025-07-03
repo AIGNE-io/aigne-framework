@@ -8,8 +8,7 @@ import SSE from "express-sse";
 
 import chalk from "chalk";
 import terminalLink from "terminal-link";
-import { z } from "zod";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 import { migrate } from "./migrate.js";
 import settingsRouter from "./routes/settings.js";
 import traceRouter from "./routes/trace.js";

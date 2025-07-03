@@ -4,8 +4,8 @@ import {
   CallToolResultSchema,
   GetPromptResultSchema,
   type ListPromptsResult,
-  type ListResourceTemplatesResult,
   type ListResourcesResult,
+  type ListResourceTemplatesResult,
   type ListToolsResult,
   ReadResourceResultSchema,
 } from "@modelcontextprotocol/sdk/types.js";
@@ -21,7 +21,7 @@ export function toolFromMCPTool(tool: ListToolsResult["tools"][number], options:
     inputSchema: isEmpty(tool.inputSchema.properties)
       ? z.object({})
       : jsonSchemaToZod<ZodObject<Record<string, ZodType>>>(tool.inputSchema as JsonSchema),
-    outputSchema: CallToolResultSchema,
+    outputSchema: CallToolResultSchema as ZodType<any>,
   });
 }
 

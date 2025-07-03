@@ -8,9 +8,9 @@ import {
   type AgentOptions,
   type AgentProcessAsyncGenerator,
   type AgentResponseStream,
-  type Message,
   agentOptionsSchema,
   isAgentResponseDelta,
+  type Message,
 } from "./agent.js";
 import type {
   ChatModel,
@@ -442,9 +442,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     options: AgentInvokeOptions,
     toolsMap: Map<string, Agent>,
   ): AgentProcessAsyncGenerator<O> {
-    const {
-      toolCalls: [call] = [],
-    } = await options.context.invoke(model, modelInput);
+    const { toolCalls: [call] = [] } = await options.context.invoke(model, modelInput);
 
     if (!call) {
       throw new Error("Router toolChoice requires exactly one tool to be executed");

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.1.2...platform-helpers-v0.2.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
 ## [0.1.2](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.1.1...platform-helpers-v0.1.2) (2025-06-19)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.29.1",
+  "version": "1.30.0",
   "description": "AIGNE core library for building AI-powered applications",
   "publishConfig": {
     "access": "public"

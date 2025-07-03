@@ -13,6 +13,22 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.18.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.17.9...agent-library-v1.18.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.30.0
+    * @aigne/openai bumped to 0.7.0
+    * @aigne/sqlite bumped to 0.2.0
+
 ## [1.17.9](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.17.8...agent-library-v1.17.9) (2025-07-02)
 
 

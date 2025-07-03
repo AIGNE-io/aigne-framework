@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.34.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.33.1...aigne-framework-v1.34.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Bug Fixes
+
+* **observability:** load model metadata from api instead of js bundles ([#217](https://github.com/AIGNE-io/aigne-framework/issues/217)) ([4418126](https://github.com/AIGNE-io/aigne-framework/commit/44181263d3a8d8eca794d7e485679fcf80f0abad))
+
 ## [1.33.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.33.0...aigne-framework-v1.33.1) (2025-07-02)
 
 

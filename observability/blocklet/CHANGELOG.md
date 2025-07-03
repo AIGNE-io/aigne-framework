@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.7.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.6.4...blocklet-observability-v1.7.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Bug Fixes
+
+* **observability:** load model metadata from api instead of js bundles ([#217](https://github.com/AIGNE-io/aigne-framework/issues/217)) ([4418126](https://github.com/AIGNE-io/aigne-framework/commit/44181263d3a8d8eca794d7e485679fcf80f0abad))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.4.0
+    * @aigne/observability-ui bumped to 0.4.0
+    * @aigne/sqlite bumped to 0.2.0
+
 ## [1.6.4](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.6.3...blocklet-observability-v1.6.4) (2025-07-02)
 
 

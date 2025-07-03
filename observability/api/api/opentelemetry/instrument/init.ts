@@ -3,6 +3,7 @@ import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import chalk from "chalk";
 import type { TraceFormatSpans } from "../../core/type.js";
 import HttpExporter from "../exporter/http-exporter.js";
+import { isBlocklet } from "../../core/util.js";
 
 export async function initOpenTelemetry({
   dbPath,
@@ -21,11 +22,14 @@ export async function initOpenTelemetry({
 
   await sdk.start();
 
-  console.log(
-    `Install the CLI first with: ${chalk.greenBright("npm install -g @aigne/cli")}, then run ${chalk.greenBright(
-      "aigne observe",
-    )} to start the observability server.`,
-  );
+  if (!isBlocklet) {
+    console.log(
+      `Install the CLI first with: ${chalk.greenBright("npm install -g @aigne/cli")}, then run ${chalk.greenBright(
+        "aigne observe",
+      )} to start the observability server.`,
+    );
+  }
+
 
   return traceExporter;
 }

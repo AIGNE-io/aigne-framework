@@ -32,7 +32,7 @@ AIGNE Observability can be integrated into your Node.js application programmatic
 For Blocklet deployment or running as a standalone service.
 
 ```js
-import { startObservabilityBlockletServer } from "@aigne/observability/server";
+import { startObservabilityBlockletServer } from "@aigne/observability-api/server";
 
 startObservabilityBlockletServer({
   port: Number(process.env.BLOCKLET_PORT) || 3000,

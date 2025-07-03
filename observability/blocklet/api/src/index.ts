@@ -1,5 +1,5 @@
 import path from "node:path";
-import { startObservabilityBlockletServer } from "@aigne/observability/server";
+import { startObservabilityBlockletServer } from "@aigne/observability-api/server";
 import middleware from "@blocklet/sdk/lib/middlewares";
 import fallback from "@blocklet/sdk/lib/middlewares/fallback";
 import dotenv from "dotenv-flow";

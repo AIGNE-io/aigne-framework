@@ -2,7 +2,9 @@ import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
-const getGlobalSettingPath = (settingFileName: string = "settings.yaml") => {
+const defaultName = process.env.NODE_ENV === "test" ? "mock-setting.yaml" : "settings.yaml";
+
+const getGlobalSettingPath = (settingFileName: string = defaultName) => {
   if (process.env.BLOCKLET_DATA_DIR) {
     return join(process.env.BLOCKLET_DATA_DIR, settingFileName);
   }

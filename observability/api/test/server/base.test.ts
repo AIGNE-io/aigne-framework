@@ -1,208 +1,208 @@
-import { afterAll, beforeAll, expect, spyOn, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { rmSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import getObservabilityDbPath from "../../api/core/db-path.js";
 import { startServer } from "../../api/server/base.js";
-import * as utils from "../../api/server/utils/index.js";
 
 const observerDir = join(homedir(), ".aigne", "observability");
 const mockDbFilePath = resolve(observerDir, "mock-observer.db");
-const mockSettingFilePath = resolve(observerDir, "mock-setting.yaml");
+const mockSettingFilePath = resolve(observerDir, "setting.yaml");
 
-beforeAll(() => {
-  rmSync(mockDbFilePath, { recursive: true, force: true });
-});
-
-spyOn(utils, "getGlobalSettingPath").mockReturnValue(mockSettingFilePath);
-
-test("startServer should start server successfully", async () => {
-  const port = 12345;
-  const url = `http://localhost:${port}`;
-
-  const { server } = await startServer({
-    port,
-    dbUrl: getObservabilityDbPath("mock-observer.db"),
+describe("Base Server", () => {
+  beforeAll(() => {
+    rmSync(mockDbFilePath, { recursive: true, force: true });
+    rmSync(mockSettingFilePath, { recursive: true, force: true });
   });
 
-  const res = await fetch(`${url}/health`, {
-    method: "GET",
+  test("startServer should start server successfully", async () => {
+    const port = 12345;
+    const url = `http://localhost:${port}`;
+
+    const { server } = await startServer({
+      port,
+      dbUrl: getObservabilityDbPath("mock-observer.db"),
+    });
+
+    const res = await fetch(`${url}/health`, {
+      method: "GET",
+    });
+
+    expect(res.status).toBe(200);
+    const text = await res.text();
+    expect(text).toContain("ok");
+
+    server.closeAllConnections();
+    server.close();
   });
 
-  expect(res.status).toBe(200);
-  const text = await res.text();
-  expect(text).toContain("ok");
+  test("POST /tree and fetch it via /tree and /tree/:id and /tree/stats", async () => {
+    const port = 12346;
+    const url = `http://localhost:${port}`;
 
-  server.closeAllConnections();
-  server.close();
-});
+    const { server } = await startServer({
+      port,
+      dbUrl: getObservabilityDbPath("mock-observer.db"),
+    });
 
-test("POST /tree and fetch it via /tree and /tree/:id and /tree/stats", async () => {
-  const port = 12346;
-  const url = `http://localhost:${port}`;
+    const validTrace = {
+      id: "trace-1",
+      rootId: "root-1",
+      parentId: null,
+      name: "test-trace",
+      startTime: 1710000000,
+      endTime: 1710000010,
+      status: { code: "OK" },
+      attributes: JSON.stringify({
+        input: { foo: "bar" },
+        output: { foo: "bar" },
+      }),
+    };
 
-  const { server } = await startServer({
-    port,
-    dbUrl: getObservabilityDbPath("mock-observer.db"),
+    // Step 1: POST trace
+    const postRes = await fetch(`${url}/api/trace/tree`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([validTrace]),
+    });
+    expect(postRes.status).toBe(200);
+    const postJson = await postRes.json();
+    expect(postJson.message).toBe("ok");
+
+    // Step 2: GET /tree list
+    const listRes = await fetch(`${url}/api/trace/tree`);
+    expect(listRes.status).toBe(200);
+    const listJson = await listRes.json();
+    expect(listJson.data.length).toBe(1);
+    expect(listJson.data[0].id).toBe("trace-1");
+
+    // Step 3: GET /tree/trace-1
+    const detailRes = await fetch(`${url}/api/trace/tree/trace-1`);
+    expect(detailRes.status).toBe(200);
+    const detailJson = await detailRes.json();
+    expect(detailJson.data.id).toBe("trace-1");
+    expect(detailJson.data.children).toEqual([]);
+
+    // Step 4: GET /tree/stats
+    const statsRes = await fetch(`${url}/api/trace/tree/stats`);
+    expect(statsRes.status).toBe(200);
+    const statsJson = await statsRes.json();
+    expect(statsJson.data.lastTraceChanged).toBe(true);
+
+    const statsRes2 = await fetch(`${url}/api/trace/tree/stats`);
+    expect(statsRes2.status).toBe(200);
+    const statsJson2 = await statsRes2.json();
+    expect(statsJson2.data.lastTraceChanged).toBe(false);
+
+    // Step 5: GET /api/trace/tree/stats
+    const validTrace1 = {
+      id: "trace-2",
+      rootId: "root-2",
+      parentId: null,
+      name: "test-trace-2",
+      startTime: 1710000001,
+      endTime: 1710000011,
+      status: { code: "OK" },
+      attributes: JSON.stringify({
+        input: { foo: "bar" },
+        output: { foo: "bar" },
+      }),
+    };
+    const postRes1 = await fetch(`${url}/api/trace/tree`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([validTrace1]),
+    });
+    expect(postRes1.status).toBe(200);
+    const postJson1 = await postRes1.json();
+    expect(postJson1.message).toBe("ok");
+
+    const listRes1 = await fetch(`${url}/api/trace/tree`);
+    expect(listRes1.status).toBe(200);
+    const listJson1 = await listRes1.json();
+    expect(listJson1.data.length).toBe(2);
+    expect(listJson1.data[0].id).toBe("trace-2");
+
+    // Step 6: GET /tree/stats
+    const statsRes1 = await fetch(`${url}/api/trace/tree/stats`);
+    expect(statsRes1.status).toBe(200);
+    const statsJson1 = await statsRes1.json();
+    expect(statsJson1.data.lastTraceChanged).toBe(true);
+
+    server.closeAllConnections();
+    server.close();
   });
 
-  const validTrace = {
-    id: "trace-1",
-    rootId: "root-1",
-    parentId: null,
-    name: "test-trace",
-    startTime: 1710000000,
-    endTime: 1710000010,
-    status: { code: "OK" },
-    attributes: JSON.stringify({
-      input: { foo: "bar" },
-      output: { foo: "bar" },
-    }),
-  };
+  test("GET /api/settings should return default when file not exists", async () => {
+    const port = 12347;
+    const url = `http://localhost:${port}`;
 
-  // Step 1: POST trace
-  const postRes = await fetch(`${url}/api/trace/tree`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify([validTrace]),
-  });
-  expect(postRes.status).toBe(200);
-  const postJson = await postRes.json();
-  expect(postJson.message).toBe("ok");
+    const { server } = await startServer({
+      port,
+      dbUrl: getObservabilityDbPath("mock-observer.db"),
+    });
 
-  // Step 2: GET /tree list
-  const listRes = await fetch(`${url}/api/trace/tree`);
-  expect(listRes.status).toBe(200);
-  const listJson = await listRes.json();
-  expect(listJson.data.length).toBe(1);
-  expect(listJson.data[0].id).toBe("trace-1");
+    const res = await fetch(`${url}/api/settings`, { method: "GET" });
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.data.live).toEqual(undefined);
 
-  // Step 3: GET /tree/trace-1
-  const detailRes = await fetch(`${url}/api/trace/tree/trace-1`);
-  expect(detailRes.status).toBe(200);
-  const detailJson = await detailRes.json();
-  expect(detailJson.data.id).toBe("trace-1");
-  expect(detailJson.data.children).toEqual([]);
-
-  // Step 4: GET /tree/stats
-  const statsRes = await fetch(`${url}/api/trace/tree/stats`);
-  expect(statsRes.status).toBe(200);
-  const statsJson = await statsRes.json();
-  expect(statsJson.data.lastTraceChanged).toBe(true);
-
-  const statsRes2 = await fetch(`${url}/api/trace/tree/stats`);
-  expect(statsRes2.status).toBe(200);
-  const statsJson2 = await statsRes2.json();
-  expect(statsJson2.data.lastTraceChanged).toBe(false);
-
-  // Step 5: GET /api/trace/tree/stats
-  const validTrace1 = {
-    id: "trace-2",
-    rootId: "root-2",
-    parentId: null,
-    name: "test-trace-2",
-    startTime: 1710000001,
-    endTime: 1710000011,
-    status: { code: "OK" },
-    attributes: JSON.stringify({
-      input: { foo: "bar" },
-      output: { foo: "bar" },
-    }),
-  };
-  const postRes1 = await fetch(`${url}/api/trace/tree`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify([validTrace1]),
-  });
-  expect(postRes1.status).toBe(200);
-  const postJson1 = await postRes1.json();
-  expect(postJson1.message).toBe("ok");
-
-  const listRes1 = await fetch(`${url}/api/trace/tree`);
-  expect(listRes1.status).toBe(200);
-  const listJson1 = await listRes1.json();
-  expect(listJson1.data.length).toBe(2);
-  expect(listJson1.data[0].id).toBe("trace-2");
-
-  // Step 6: GET /tree/stats
-  const statsRes1 = await fetch(`${url}/api/trace/tree/stats`);
-  expect(statsRes1.status).toBe(200);
-  const statsJson1 = await statsRes1.json();
-  expect(statsJson1.data.lastTraceChanged).toBe(true);
-
-  server.closeAllConnections();
-  server.close();
-});
-
-test("GET /api/settings should return default when file not exists", async () => {
-  const port = 12347;
-  const url = `http://localhost:${port}`;
-
-  const { server } = await startServer({
-    port,
-    dbUrl: getObservabilityDbPath("mock-observer.db"),
+    server.closeAllConnections();
+    server.close();
   });
 
-  const res = await fetch(`${url}/api/settings`, { method: "GET" });
-  expect(res.status).toBe(200);
-  const json = await res.json();
-  expect(json.data.live).toEqual(undefined);
+  test("POST /api/settings then GET /api/settings should persist and return settings", async () => {
+    const port = 12348;
+    const url = `http://localhost:${port}`;
 
-  server.closeAllConnections();
-  server.close();
-});
+    const { server } = await startServer({
+      port,
+      dbUrl: getObservabilityDbPath("mock-observer.db"),
+    });
 
-test("POST /api/settings then GET /api/settings should persist and return settings", async () => {
-  const port = 12348;
-  const url = `http://localhost:${port}`;
+    const postRes = await fetch(`${url}/api/settings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ live: true }),
+    });
+    expect(postRes.status).toBe(200);
+    const postJson = await postRes.json();
+    expect(postJson.data.live).toEqual(true);
 
-  const { server } = await startServer({
-    port,
-    dbUrl: getObservabilityDbPath("mock-observer.db"),
+    const getRes = await fetch(`${url}/api/settings`, { method: "GET" });
+    expect(getRes.status).toBe(200);
+    const getJson = await getRes.json();
+    expect(getJson.data.live).toEqual(true);
+
+    server.closeAllConnections();
+    server.close();
   });
 
-  const postRes = await fetch(`${url}/api/settings`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ live: true }),
-  });
-  expect(postRes.status).toBe(200);
-  const postJson = await postRes.json();
-  expect(postJson.data.live).toEqual(true);
+  test("POST Error", async () => {
+    const port = 12349;
+    const url = `http://localhost:${port}`;
 
-  const getRes = await fetch(`${url}/api/settings`, { method: "GET" });
-  expect(getRes.status).toBe(200);
-  const getJson = await getRes.json();
-  expect(getJson.data.live).toEqual(true);
+    const { server } = await startServer({
+      port,
+      dbUrl: getObservabilityDbPath("mock-observer.db"),
+    });
 
-  server.closeAllConnections();
-  server.close();
-});
+    // Step 1: POST trace
+    const postRes = await fetch(`${url}/api/trace/tree`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([]),
+    });
+    expect(postRes.status).toBe(500);
+    const postJson = await postRes.json();
+    expect(postJson.error).toBe("req.body is empty");
 
-test("POST Error", async () => {
-  const port = 12349;
-  const url = `http://localhost:${port}`;
-
-  const { server } = await startServer({
-    port,
-    dbUrl: getObservabilityDbPath("mock-observer.db"),
+    server.closeAllConnections();
+    server.close();
   });
 
-  // Step 1: POST trace
-  const postRes = await fetch(`${url}/api/trace/tree`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify([]),
+  afterAll(() => {
+    rmSync(mockDbFilePath, { recursive: true, force: true });
+    rmSync(mockSettingFilePath, { recursive: true, force: true });
   });
-  expect(postRes.status).toBe(500);
-  const postJson = await postRes.json();
-  expect(postJson.error).toBe("req.body is empty");
-
-  server.closeAllConnections();
-  server.close();
-});
-
-afterAll(() => {
-  rmSync(mockDbFilePath, { recursive: true, force: true });
-  rmSync(mockSettingFilePath, { recursive: true, force: true });
 });

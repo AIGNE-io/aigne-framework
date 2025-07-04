@@ -111,7 +111,7 @@ jobs:
             MODELS="us.amazon.nova-premier-v1:0 us.amazon.nova-pro-v1:0 us.amazon.nova-lite-v1:0"
           fi
 
-          DEFAULT_EXCLUDE_PATTERN="browser|mcp-blocklet|workflow-group-chat|workflow-orchestrator"
+          DEFAULT_EXCLUDE_PATTERN="browser|mcp-blocklet|workflow-group-chat|workflow-orchestrator"|"workflow-router"
 
           declare -A PROVIDER_EXCLUDE_PATTERNS
           # PROVIDER_EXCLUDE_PATTERNS["Bedrock"]="mcp-sqlite"

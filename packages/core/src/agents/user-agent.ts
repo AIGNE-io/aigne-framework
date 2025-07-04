@@ -1,6 +1,6 @@
 import type { Context } from "../aigne/context.js";
 import { type MessagePayload, toMessagePayload, type Unsubscribe } from "../aigne/message-queue.js";
-import { orArrayToArray } from "../utils/type-utils.js";
+import { flat } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
@@ -112,7 +112,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
     return new ReadableStream<MessagePayload & { topic: string }>({
       start: (controller) => {
-        const subscribeTopic = orArrayToArray(this.subscribeTopic);
+        const subscribeTopic = flat(this.subscribeTopic);
 
         subscriptions = subscribeTopic.map((topic) =>
           this.subscribe(topic, (message) => {

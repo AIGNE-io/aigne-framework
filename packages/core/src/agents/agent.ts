@@ -17,9 +17,9 @@ import {
 import {
   checkArguments,
   createAccessorArray,
+  flat,
   isEmpty,
   type Nullish,
-  orArrayToArray,
   type PromiseOrValue,
   type XOr,
 } from "../utils/type-utils.js";
@@ -420,7 +420,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
   }
 
   protected subscribeToTopics(context: Pick<Context, "subscribe">) {
-    for (const topic of orArrayToArray(this.subscribeTopic).concat(this.topic)) {
+    for (const topic of flat(this.subscribeTopic).concat(this.topic)) {
       this.subscriptions.push(context.subscribe(topic, (payload) => this.onMessage(payload)));
     }
   }

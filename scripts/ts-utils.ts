@@ -34,17 +34,15 @@ export function removeCommentsFromCode(
   return sourceFile.getText();
 }
 
-const biome = await Biome.create({
+const { biome, projectKey } = await Biome.create({
   distribution: Distribution.NODE,
 }).then((biome) => {
-  biome.applyConfiguration({
+  const project = biome.openProject();
+  biome.applyConfiguration(project.projectKey, {
     formatter: {
       enabled: true,
       indentStyle: "space",
       indentWidth: 2,
-    },
-    organizeImports: {
-      enabled: true,
     },
     linter: {
       enabled: true,
@@ -58,14 +56,23 @@ const biome = await Biome.create({
         },
       },
     },
+    assist: {
+      enabled: true,
+      actions: {
+        source: {
+          organizeImports: "on",
+        },
+      },
+    },
   });
 
-  return biome;
+  return { biome, projectKey: project.projectKey };
 });
 
 export function formatCode(code: string): string {
   return biome.formatContent(
-    biome.lintContent(code, { fixFileMode: "SafeFixes", filePath: "test.ts" }).content,
+    projectKey,
+    biome.lintContent(projectKey, code, { fixFileMode: "safeFixes", filePath: "test.ts" }).content,
     { filePath: "test.ts" },
   ).content;
 }

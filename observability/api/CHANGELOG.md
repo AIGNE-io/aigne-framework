@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.4.0...observability-api-v0.5.0) (2025-07-04)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.3.0
+
 ## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.3.3...observability-api-v0.4.0) (2025-07-03)
 
 

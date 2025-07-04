@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.8.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.7.0...blocklet-observability-v1.8.0) (2025-07-04)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.5.0
+    * @aigne/observability-ui bumped to 0.5.0
+    * @aigne/sqlite bumped to 0.3.0
+
 ## [1.7.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.6.4...blocklet-observability-v1.7.0) (2025-07-03)
 
 

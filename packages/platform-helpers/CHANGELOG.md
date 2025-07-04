@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.2.0...platform-helpers-v0.3.0) (2025-07-04)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+
 ## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.1.2...platform-helpers-v0.2.0) (2025-07-03)
 
 

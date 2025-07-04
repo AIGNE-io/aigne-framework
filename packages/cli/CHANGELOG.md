@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.22.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.21.0...cli-v1.22.0) (2025-07-04)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+* **core:** add strucutredStreamMode option for AIAgent to support text and json output in one-shot ([#222](https://github.com/AIGNE-io/aigne-framework/issues/222)) ([c0af92b](https://github.com/AIGNE-io/aigne-framework/commit/c0af92b6a020453b047e5bb3782239795839baa8))
+
+
+### Bug Fixes
+
+* **cli:** set run as the default command ([#221](https://github.com/AIGNE-io/aigne-framework/issues/221)) ([7f3346c](https://github.com/AIGNE-io/aigne-framework/commit/7f3346c461a13de9df24ca00b7a7c1102ece2d06))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.19.0
+    * @aigne/anthropic bumped to 0.6.1
+    * @aigne/bedrock bumped to 0.6.1
+    * @aigne/core bumped to 1.31.0
+    * @aigne/deepseek bumped to 0.5.1
+    * @aigne/gemini bumped to 0.5.1
+    * @aigne/observability-api bumped to 0.5.0
+    * @aigne/ollama bumped to 0.5.1
+    * @aigne/open-router bumped to 0.5.1
+    * @aigne/openai bumped to 0.7.1
+    * @aigne/xai bumped to 0.5.1
+
 ## [1.21.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.20.1...cli-v1.21.0) (2025-07-03)
 
 

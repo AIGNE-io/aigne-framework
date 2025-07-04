@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.8.0...transport-v0.9.0) (2025-07-04)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+* **memory:** add support for AgenticMemory & some improvements for DefaultMemory ([#224](https://github.com/AIGNE-io/aigne-framework/issues/224)) ([f4a08af](https://github.com/AIGNE-io/aigne-framework/commit/f4a08aff935205c62615c060763c835a9579607d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.7.1
+  * devDependencies
+    * @aigne/agent-library bumped to 1.19.0
+    * @aigne/core bumped to 1.31.0
+    * @aigne/test-utils bumped to 0.5.1
+
 ## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.7.4...transport-v0.8.0) (2025-07-03)
 
 

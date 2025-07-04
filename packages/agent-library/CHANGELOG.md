@@ -13,6 +13,22 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.19.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.18.0...agent-library-v1.19.0) (2025-07-04)
+
+
+### Features
+
+* **memory:** add support for AgenticMemory & some improvements for DefaultMemory ([#224](https://github.com/AIGNE-io/aigne-framework/issues/224)) ([f4a08af](https://github.com/AIGNE-io/aigne-framework/commit/f4a08aff935205c62615c060763c835a9579607d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.31.0
+    * @aigne/openai bumped to 0.7.1
+    * @aigne/sqlite bumped to 0.3.0
+
 ## [1.18.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.17.9...agent-library-v1.18.0) (2025-07-03)
 
 

@@ -13,6 +13,13 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.19.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.19.0...agent-library-v1.19.1) (2025-07-04)
+
+
+### Bug Fixes
+
+* wrong type AgenticMemoryRetrieverOptions ([0893e02](https://github.com/AIGNE-io/aigne-framework/commit/0893e0271ea6870a420f8c6fd59022ab6566b9c2))
+
 ## [1.19.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.18.0...agent-library-v1.19.0) (2025-07-04)
 
 

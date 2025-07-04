@@ -64,6 +64,9 @@ export async function startServer(
       middleware: Array.isArray(middleware) ? middleware : [middleware],
     }),
   );
+  app.get("/health", (_req: Request, res: Response) => {
+    res.send("ok");
+  });
 
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof ZodError) {

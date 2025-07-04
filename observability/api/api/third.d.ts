@@ -9,6 +9,5 @@ declare namespace Express {
       emailVerified?: boolean;
       phoneVerified?: boolean;
     };
-    isBlocklet?: boolean;
   }
 }

@@ -29,7 +29,7 @@ class HttpExporter implements HttpExporterInterface {
       return;
     }
 
-    const db = await initDatabase({ url: this.dbPath });
+    const db = await initDatabase({ url: this.dbPath, wal: true });
     await migrate(db);
     return db;
   }

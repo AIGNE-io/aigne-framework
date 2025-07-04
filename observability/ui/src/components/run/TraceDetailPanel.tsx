@@ -243,25 +243,25 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
                     justifyContent: "flex-end",
                   }}
                 >
-                  {(window as any)._modelPricesAndContextWindow?.[model] && (
-                    <Tooltip
-                      slotProps={{
-                        tooltip: {
-                          sx: { bgcolor: "common.white", color: "common.black", boxShadow: 4 },
-                        },
-                      }}
-                      title={
+                  <Tooltip
+                    slotProps={{
+                      tooltip: {
+                        sx: { bgcolor: "common.white", color: "common.black", boxShadow: 4 },
+                      },
+                    }}
+                    title={
+                      (window as any)._modelPricesAndContextWindow?.[model] ? (
                         <ModelInfoTip
                           modelInfo={{
                             ...(window as any)._modelPricesAndContextWindow?.[model],
                             model,
                           }}
                         />
-                      }
-                    >
-                      <Tag sx={{ cursor: "pointer" }}>{model}</Tag>
-                    </Tooltip>
-                  )}
+                      ) : undefined
+                    }
+                  >
+                    <Tag sx={{ cursor: "pointer" }}>{model}</Tag>
+                  </Tooltip>
                 </Box>
               </InfoRowBox>
             )}

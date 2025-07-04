@@ -1,5 +1,6 @@
 export interface InitDatabaseOptions {
   url?: string;
+  wal?: boolean;
 }
 
 export async function initDatabase(options?: InitDatabaseOptions) {

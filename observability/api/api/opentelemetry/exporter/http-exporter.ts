@@ -21,7 +21,7 @@ export interface HttpExporterInterface extends SpanExporter {
 
 class HttpExporter implements HttpExporterInterface {
   private dbPath?: string;
-  private _db?: any;
+  public _db?: any;
   private upsert: (spans: TraceFormatSpans[]) => Promise<void>;
 
   async getDb() {

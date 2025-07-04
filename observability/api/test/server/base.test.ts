@@ -179,6 +179,29 @@ test("POST /api/settings then GET /api/settings should persist and return settin
   server.close();
 });
 
+test("POST Error", async () => {
+  const port = 12349;
+  const url = `http://localhost:${port}`;
+
+  const { server } = await startServer({
+    port,
+    dbUrl: getObservabilityDbPath("mock-observer.db"),
+  });
+
+  // Step 1: POST trace
+  const postRes = await fetch(`${url}/api/trace/tree`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify([]),
+  });
+  expect(postRes.status).toBe(500);
+  const postJson = await postRes.json();
+  expect(postJson.error).toBe("req.body is empty");
+
+  server.closeAllConnections();
+  server.close();
+});
+
 afterAll(() => {
   rmSync(mockDbFilePath, { recursive: true, force: true });
   rmSync(mockSettingFilePath, { recursive: true, force: true });

@@ -57,4 +57,31 @@ describe("validateTraceSpans", () => {
       },
     });
   });
+
+  test("should parse spans into validated trace objects", () => {
+    const result = validateTraceSpans([
+      {
+        ...mockSpan,
+        attributes: {
+          ...mockSpan.attributes,
+          goo: "{123}",
+        },
+      },
+    ]);
+
+    expect(result.length).toBe(1);
+    expect(result[0]).toMatchObject({
+      id: "def456",
+      rootId: "abc123",
+      parentId: "parent789",
+      name: "mock-operation",
+      startTime: 1720000000000,
+      status: { code: 1 },
+      attributes: {
+        foo: true,
+        bar: 123,
+        goo: "{123}",
+      },
+    });
+  });
 });

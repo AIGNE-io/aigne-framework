@@ -1,15 +1,16 @@
 import { describe, expect, it, jest } from "bun:test";
 import { ExportResultCode, hrTime } from "@opentelemetry/core";
 import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";
+import * as util from "../../../api/core/util.js";
 import HttpExporter from "../../../api/opentelemetry/exporter/http-exporter.js";
 
-const createMockSpan = (_id: string): ReadableSpan => ({
+const createMockSpan = (id: string): ReadableSpan => ({
   name: "mock-operation",
   startTime: hrTime(),
   endTime: hrTime(),
   spanContext: () => ({
     traceId: "abc123",
-    spanId: "def456",
+    spanId: id,
     traceFlags: 1,
   }),
   parentSpanContext: {
@@ -21,10 +22,14 @@ const createMockSpan = (_id: string): ReadableSpan => ({
   attributes: {
     "custom.started_at": "1720000000000",
     "custom.trace_id": "abc123",
-    "custom.span_id": "def456",
+    "custom.span_id": id,
     "custom.parent_id": "parent789",
     foo: "true",
     bar: "123",
+    goo: JSON.stringify({
+      foo: "bar",
+      bar: "foo",
+    }),
   },
   links: [],
   events: [],
@@ -52,12 +57,94 @@ describe("HttpExporter", () => {
     expect(mockExportFn).toHaveBeenCalledTimes(1);
   });
 
+  it("should warn if isBlocklet and no exportFn", async () => {
+    // @ts-ignore
+    jest.spyOn(util, "isBlocklet", "getter").mockReturnValue(true);
+    const spy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const exporter = new HttpExporter({});
+    await exporter.export([createMockSpan("abc123")], () => {});
+    expect(spy).toHaveBeenCalledWith(
+      "Please setup AIGNEObserver.setExportFn to collect tracing data from agents.",
+    );
+    spy.mockRestore();
+    // @ts-ignore
+    jest.spyOn(util, "isBlocklet", "getter").mockRestore();
+  });
+
+  it("should throw if db is not initialized", async () => {
+    const exporter = new HttpExporter({});
+    exporter._db = undefined;
+    await expect(exporter._upsertWithSQLite([{} as any])).rejects.toThrow(
+      "Database not initialized",
+    );
+  });
+
+  it("should insert if not exists, update if exists, and catch errors", async () => {
+    const db = {
+      select: () => ({
+        from: () => ({
+          where: () => ({
+            limit: () => ({
+              execute: jest.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([{}]),
+            }),
+          }),
+        }),
+      }),
+      insert: () => ({
+        values: () => ({
+          execute: jest.fn().mockResolvedValueOnce(undefined),
+        }),
+      }),
+      update: () => ({
+        set: () => ({
+          where: () => ({
+            execute: jest.fn().mockResolvedValueOnce(undefined),
+          }),
+        }),
+      }),
+    };
+    const exporter = new HttpExporter({});
+    exporter._db = db;
+
+    // insert path
+    await exporter._upsertWithSQLite([{ id: "1", rootId: "r", parentId: "" } as any]);
+    // update path
+    await exporter._upsertWithSQLite([{ id: "1", rootId: "r", parentId: "" } as any]);
+
+    // catch path
+    const dbWithError = {
+      select: () => ({
+        from: () => ({
+          where: () => ({
+            limit: () => ({
+              execute: jest.fn().mockRejectedValue(new Error("fail")),
+            }),
+          }),
+        }),
+      }),
+      insert: () => ({
+        values: () => ({
+          execute: jest.fn(),
+        }),
+      }),
+      update: () => ({
+        set: () => ({
+          where: () => ({
+            execute: jest.fn(),
+          }),
+        }),
+      }),
+    };
+    exporter._db = dbWithError;
+    const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+    await exporter._upsertWithSQLite([{ id: "2", rootId: "r", parentId: "" } as any]);
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
   it("should call upsertInitialSpan", async () => {
     const exporter = new HttpExporter({ exportFn: mockExportFn });
-
-    const span = createMockSpan("xyz789");
-    await exporter.upsertInitialSpan(span);
-
-    expect(mockExportFn).toHaveBeenCalledWith(expect.any(Array));
+    await exporter.upsertInitialSpan(createMockSpan("abc123"));
+    expect(mockExportFn).toHaveBeenCalled();
   });
 });

@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import { join } from "path";
 
-export default async function saveOutput({ outputDir, saveKey, ...rest }) {
+export default async function saveOutput({ savePath, fileName, saveKey, ...rest }) {
   if (!(saveKey in rest)) {
     console.warn(`saveKey "${saveKey}" not found in input, skip saving.`);
     return;
@@ -13,7 +13,7 @@ export default async function saveOutput({ outputDir, saveKey, ...rest }) {
   } else {
     content = String(value);
   }
-  await fs.mkdir(outputDir, { recursive: true });
-  const filePath = join(outputDir, `${saveKey}.txt`);
+  await fs.mkdir(savePath, { recursive: true });
+  const filePath = join(savePath, fileName);
   await fs.writeFile(filePath, content, "utf8");
 }

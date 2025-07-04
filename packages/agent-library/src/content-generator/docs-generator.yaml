@@ -7,7 +7,9 @@ skills:
   - type: transform
     jsonata: |
       $merge([$, {
-      "saveKey": "structurePlan"
+      "saveKey": "structurePlan",
+      "savePath": outputDir,
+      "fileName": "structure-plan.json"
       }])
   - save-output.mjs
   - type: transform

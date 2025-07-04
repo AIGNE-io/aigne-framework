@@ -1,6 +1,8 @@
 import { type ZodObject, type ZodType, z } from "zod";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
+import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
+import { ExtractMetadataTransform } from "../utils/structured-stream-extractor.js";
 import { checkArguments, isEmpty } from "../utils/type-utils.js";
 import {
   Agent,
@@ -76,6 +78,50 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    * @default true
    */
   catchToolsError?: boolean;
+
+  /**
+   * Whether to enable structured stream mode
+   *
+   * When enabled, the AI model's streaming response will be processed to extract
+   * structured metadata. The model needs to include specific format metadata tags
+   * (like <metadata></metadata>) in its response, which will be parsed as JSON
+   * objects and passed through the stream.
+   *
+   * This is useful for scenarios that need to extract structured information
+   * (like classifications, scores, tags, etc.) from AI responses.
+   *
+   * @default false
+   */
+  structuredStreamMode?: boolean;
+
+  /**
+   * Custom structured stream instructions configuration
+   *
+   * Allows customization of structured stream mode behavior, including:
+   * - instructions: Prompt instructions to guide the AI model on how to output structured data
+   * - metadataStart: Metadata start marker (e.g., "<metadata>")
+   * - metadataEnd: Metadata end marker (e.g., "</metadata>")
+   * - parse: Function to parse metadata content, converting raw string to object
+   *
+   * If not provided, the default STRUCTURED_STREAM_INSTRUCTIONS configuration will be used,
+   * which outputs structured data in YAML format within <metadata> tags.
+   *
+   * @example
+   * ```typescript
+   * {
+   *   instructions: "Output metadata in JSON format at the end of response in markdown code block with json language",
+   *   metadataStart: "```json",
+   *   metadataEnd: "```",
+   *   parse: JSON.parse
+   * }
+   * ```
+   */
+  customStructuredStreamInstructions?: {
+    instructions: string | PromptBuilder;
+    metadataStart: string;
+    metadataEnd: string;
+    parse: (raw: string) => object;
+  };
 
   /**
    * Whether to include memory agents as tools for the AI model
@@ -223,6 +269,14 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
     if (typeof options.catchToolsError === "boolean")
       this.catchToolsError = options.catchToolsError;
+    this.structuredStreamMode = options.structuredStreamMode;
+    this.customStructuredStreamInstructions = options.customStructuredStreamInstructions && {
+      ...options.customStructuredStreamInstructions,
+      instructions:
+        typeof options.customStructuredStreamInstructions.instructions === "string"
+          ? PromptBuilder.from(options.customStructuredStreamInstructions.instructions)
+          : options.customStructuredStreamInstructions.instructions,
+    };
 
     if (!this.inputKey && !this.instructions) {
       throw new Error("AIAgent requires either inputKey or instructions to be set");
@@ -303,6 +357,40 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
   catchToolsError = true;
 
   /**
+   * Whether to enable structured stream mode
+   *
+   * When enabled, the AI model's streaming response will be processed to extract
+   * structured metadata. The model needs to include specific format metadata tags
+   * (like <metadata></metadata>) in its response, which will be parsed as JSON
+   * objects and passed through the stream.
+   *
+   * This is useful for scenarios that need to extract structured information
+   * (like classifications, scores, tags, etc.) from AI responses.
+   *
+   * @default false
+   */
+  structuredStreamMode?: boolean;
+
+  /**
+   * Custom structured stream instructions configuration
+   *
+   * Allows customization of structured stream mode behavior, including:
+   * - instructions: Prompt instructions to guide the AI model on how to output structured data
+   * - metadataStart: Metadata start marker (e.g., "<metadata>")
+   * - metadataEnd: Metadata end marker (e.g., "</metadata>")
+   * - parse: Function to parse metadata content, converting raw string to object
+   *
+   * If not provided, the default STRUCTURED_STREAM_INSTRUCTIONS configuration will be used,
+   * which outputs structured data in YAML format within <metadata> tags.
+   */
+  customStructuredStreamInstructions?: {
+    instructions: PromptBuilder;
+    metadataStart: string;
+    metadataEnd: string;
+    parse: (raw: string) => object;
+  };
+
+  /**
    * Process an input message and generate a response
    *
    * @protected
@@ -330,11 +418,20 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     for (;;) {
       const modelOutput: ChatModelOutput = {};
 
-      const stream = await options.context.invoke(
+      let stream = await options.context.invoke(
         model,
         { ...modelInput, messages: modelInput.messages.concat(toolCallMessages) },
         { streaming: true },
       );
+
+      if (this.structuredStreamMode) {
+        const { metadataStart, metadataEnd, parse } =
+          this.customStructuredStreamInstructions || STRUCTURED_STREAM_INSTRUCTIONS;
+
+        stream = stream.pipeThrough(
+          new ExtractMetadataTransform({ start: metadataStart, end: metadataEnd, parse }),
+        );
+      }
 
       for await (const value of stream) {
         if (isAgentResponseDelta(value)) {
@@ -407,7 +504,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
       if (json) {
         Object.assign(result, json);
-      } else if (text) {
+      }
+      if (text) {
         Object.assign(result, { [outputKey]: text });
       }
 

@@ -1,0 +1,121 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExtractMetadataTransform should extract metadata from structured stream 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": ",",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "How",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "can",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "I",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "help",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "you",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " ",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "today",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": "?",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "json": {
+          "baz": 123,
+          "foo": "bar",
+        },
+      },
+    },
+  },
+]
+`;

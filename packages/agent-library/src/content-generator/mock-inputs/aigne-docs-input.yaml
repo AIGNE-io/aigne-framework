@@ -24,6 +24,7 @@ locale: en
 translateLanguages:
   - zh
 docsDir: ../../../../docs-ai-v0.3
+outputDir: ../../../../docs-ai-v0.3/output
 sourcesPath:
   - /Users/lban/arcblock/code/aigne-framework/packages/cli/src
   - /Users/lban/arcblock/code/aigne-framework/packages/core/src

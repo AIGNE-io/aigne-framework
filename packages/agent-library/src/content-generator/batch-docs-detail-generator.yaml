@@ -31,22 +31,5 @@ input_schema:
           - title
           - description
           - path
-output_schema:
-  type: object
-  properties:
-    contentDetails:
-      type: array
-      description: 内容详情
-      items:
-        type: object
-        properties:
-          title:
-            type: string
-          description:
-            type: string
-          path:
-            type: string
-          content:
-            type: string
 iterate_on: structurePlanResult
 mode: sequential

@@ -25,6 +25,8 @@ translateLanguages:
   - zh
 docsDir: ../../../../docs-ai-v0.4
 outputDir: ../../../../docs-ai-v0.4/output
+currentPath: /cli
+feedback: 安装方法只保留使用 pnpm 的方式
 sourcesPath:
   - /Users/lban/arcblock/code/aigne-framework/packages/cli/src
   - /Users/lban/arcblock/code/aigne-framework/packages/core/src

@@ -14,3 +14,4 @@ agents:
   - load-sources.mjs
   - save-docs.mjs
   - translate.yaml
+  - detail-generator-and-translate.yaml

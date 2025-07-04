@@ -101,6 +101,9 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 # aigne
 aigne run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
 
+# aigne detail
+aigne run --entry-agent "detail-generator-and-translate" --input "@mock-inputs/aigne-docs-input-detail.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --input-originalStructurePlan "@../../../../docs-ai-v0.4/output/structure-plan.json" --input-content "@../../../../docs-ai-v0.4/cli.md" --format yaml --model openai:gpt-4o-mini 
+
 # blocklet-sdk
 aigne run --entry-agent "docs-generator" --input "@mock-inputs/blocklet-sdk-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
 

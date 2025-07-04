@@ -6,14 +6,6 @@ skills:
   - structure-planning.yaml
   - type: transform
     jsonata: |
-      $merge([$, {
-      "saveKey": "structurePlan",
-      "savePath": outputDir,
-      "fileName": "structure-plan.json"
-      }])
-  - save-output.mjs
-  - type: transform
-    jsonata: |
       $merge([
         $,
         {
@@ -28,6 +20,14 @@ skills:
           })
         }
       ])
+  - type: transform
+    jsonata: |
+      $merge([$, {
+      "saveKey": "structurePlanResult",
+      "savePath": outputDir,
+      "fileName": "structure-plan.json"
+      }])
+  - save-output.mjs
   - batch-docs-detail-generator.yaml
   - save-docs.mjs
   

@@ -28,6 +28,16 @@ title: {{title}}
 description: {{description}}
 path: {{path}}
 parentId: {{parentId}}
+
+上一轮生成的内容：
+<last_content>
+{{content}}
+</last_content>
+
+用户对上一轮的反馈意见：
+<feedback>
+{{feedback}}
+</feedback>
 </current>
 
 <user_rules>

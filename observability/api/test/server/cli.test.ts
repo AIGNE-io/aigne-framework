@@ -37,6 +37,24 @@ test("startObservabilityCLIServer should start server successfully", async () =>
   server.close();
 });
 
+test("startObservabilityCLIServer should start server successfully with static file", async () => {
+  const port = 12345;
+  const url = `http://localhost:${port}`;
+
+  const { server } = await startObservabilityCLIServer({
+    port,
+    dbUrl: getObservabilityDbPath("mock-observer.db"),
+  });
+
+  const res = await fetch(`${url}/api/static/model-prices.json`, { method: "GET" });
+  expect(res.status).toBe(200);
+  const text = await res.text();
+  expect(text).toContain("window._modelPricesAndContextWindow");
+
+  server.closeAllConnections();
+  server.close();
+});
+
 afterAll(() => {
   rmSync(mockDbFilePath, { recursive: true, force: true });
   rmSync(mockSettingFilePath, { recursive: true, force: true });

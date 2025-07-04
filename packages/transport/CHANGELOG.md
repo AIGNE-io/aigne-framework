@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.0...transport-v0.9.1) (2025-07-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/agent-library bumped to 1.19.1
+
 ## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.8.0...transport-v0.9.0) (2025-07-04)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.35.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.35.0...aigne-framework-v1.35.1) (2025-07-04)
+
+
+### Bug Fixes
+
+* wrong type AgenticMemoryRetrieverOptions ([0893e02](https://github.com/AIGNE-io/aigne-framework/commit/0893e0271ea6870a420f8c6fd59022ab6566b9c2))
+
 ## [1.35.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.34.0...aigne-framework-v1.35.0) (2025-07-04)
 
 

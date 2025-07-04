@@ -10,7 +10,7 @@ export async function startObservabilityBlockletServer(
 ): Promise<{ app: express.Express; server: Server }> {
   const { app, server } = await startServer(options);
 
-  app.get("/api/static/modelPricesAndContextWindow.json", (_req, res) => {
+  app.get("/api/static/model-prices.json", (_req, res) => {
     res.set("Cache-Control", "public, max-age=86400, immutable");
     res.type("application/javascript");
     res.send(

@@ -2,9 +2,11 @@ import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
-const getGlobalSettingPath = () => {
+const defaultName = process.env.NODE_ENV === "test" ? "mock-setting.yaml" : "settings.yaml";
+
+const getGlobalSettingPath = (settingFileName: string = defaultName) => {
   if (process.env.BLOCKLET_DATA_DIR) {
-    return join(process.env.BLOCKLET_DATA_DIR, "settings.yaml");
+    return join(process.env.BLOCKLET_DATA_DIR, settingFileName);
   }
 
   const AIGNE_OBSERVER_DIR = join(homedir(), ".aigne", "observability");
@@ -12,7 +14,7 @@ const getGlobalSettingPath = () => {
     mkdirSync(AIGNE_OBSERVER_DIR, { recursive: true });
   }
 
-  const settingFilePath = resolve(AIGNE_OBSERVER_DIR, "settings.yaml");
+  const settingFilePath = resolve(AIGNE_OBSERVER_DIR, settingFileName);
   return settingFilePath;
 };
 

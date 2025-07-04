@@ -1,5 +1,5 @@
 rules: |
-  请帮助我生成一个 Blocklet SDK 相关的文档
+  请帮助我生成一个 OCAP (Blockchain) 相关的文档
 
 
   ## 结构规划
@@ -27,6 +27,9 @@ locale: en
 translateLanguages:
   - zh
 docsDir: ../../../../docs-blockchain-sdk-ai-v0.1
+sources:
+  - /Users/lban/arcblock/code/blockchain/core/client/README.md
 sourcesPath: 
-  - /Users/lban/arcblock/code/blockchain/core/client
+  - /Users/lban/arcblock/code/blockchain/core/client/examples
+  - /Users/lban/arcblock/code/blockchain/core/client/src
   - /Users/lban/arcblock/code/blockchain/core/types/lib

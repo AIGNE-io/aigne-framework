@@ -31,7 +31,7 @@ export interface PromptBuilderOptions {
   instructions?: string | ChatMessagesTemplate;
 }
 
-export interface PromptBuildOptions extends Pick<AgentInvokeOptions, "context"> {
+export interface PromptBuildOptions extends Partial<Pick<AgentInvokeOptions, "context">> {
   agent?: AIAgent;
   input?: Message;
   model?: ChatModel;
@@ -114,11 +114,16 @@ export class PromptBuilder {
 
     const memories: Pick<Memory, "content">[] = [];
 
-    if (options.agent?.inputKey) {
-      memories.push(...(await options.agent.retrieveMemories({ search: message }, options)));
+    if (options.agent?.inputKey && options.context) {
+      memories.push(
+        ...(await options.agent.retrieveMemories(
+          { search: message },
+          { context: options.context },
+        )),
+      );
     }
 
-    if (options.context.memories?.length) {
+    if (options.context?.memories?.length) {
       memories.push(...options.context.memories);
     }
 
@@ -133,7 +138,6 @@ export class PromptBuilder {
 
       messages.push(
         ...(await instructions.buildMessages({
-          context: options.context,
           input: {
             ...input,
             outputJsonSchema: zodToJsonSchema(outputSchema),

@@ -49,7 +49,7 @@ const { biome, projectKey } = await Biome.create({
       rules: {
         recommended: true,
         correctness: {
-          noUnusedVariables: "error",
+          noUnusedVariables: "off",
           noUnusedImports: "error",
           noUnusedFunctionParameters: "error",
           noUnusedPrivateClassMembers: "error",
@@ -72,7 +72,8 @@ const { biome, projectKey } = await Biome.create({
 export function formatCode(code: string): string {
   return biome.formatContent(
     projectKey,
-    biome.lintContent(projectKey, code, { fixFileMode: "safeFixes", filePath: "test.ts" }).content,
+    biome.lintContent(projectKey, code, { fixFileMode: "safeAndUnsafeFixes", filePath: "test.ts" })
+      .content,
     { filePath: "test.ts" },
   ).content;
 }

@@ -131,7 +131,7 @@ echo "Analyze product: Smart home assistant with voice control and AI learning c
 The following example demonstrates how to build a concurrency workflow:
 
 ```typescript
-import { AIAgent, AIGNE, TeamAgent, ProcessMode } from "@aigne/core";
+import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;

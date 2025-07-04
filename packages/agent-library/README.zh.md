@@ -45,9 +45,9 @@ pnpm add @aigne/agent-library @aigne/core
 ## 基本用法
 
 ```typescript
+import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 import { AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 
 // 创建 AI 模型实例
 const model = new OpenAIChatModel({
@@ -85,9 +85,9 @@ console.log(result);
 ### 创建编排工作流
 
 ```typescript
+import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,

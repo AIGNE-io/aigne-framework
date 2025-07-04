@@ -7,7 +7,7 @@ export abstract class MemoryStorage {
   ): Promise<{ result: Memory }>;
 
   abstract search(
-    query: { search?: string; limit?: number },
+    query: { search?: string; limit?: number; orderBy?: [string, "asc" | "desc"] },
     options: AgentInvokeOptions,
   ): Promise<{ result: Memory[] }>;
 }

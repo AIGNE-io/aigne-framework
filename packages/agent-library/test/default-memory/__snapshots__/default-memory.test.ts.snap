@@ -28,17 +28,12 @@ Please answer in zh."
     "role": "system",
   },
   {
-    "content": 
-"Here are some useful memories to consider:
-
-<memories>
-- user: I like blue color
-  agent: Great, the blue color is nice!
-
-</memories>
-"
-,
-    "role": "system",
+    "content": "I like blue color",
+    "role": "user",
+  },
+  {
+    "content": "Great, the blue color is nice!",
+    "role": "agent",
   },
   {
     "content": "I also like red color",
@@ -52,10 +47,10 @@ exports[`DefaultMemory should remember memories for AIAgent correctly 3`] = `
   {
     "content": {
       "input": {
-        "message": "I like blue color",
+        "message": "I also like red color",
       },
       "output": {
-        "message": "Great, the blue color is nice!",
+        "message": "Red is also a nice color!",
       },
       "source": "TestAgent",
     },
@@ -66,10 +61,10 @@ exports[`DefaultMemory should remember memories for AIAgent correctly 3`] = `
   {
     "content": {
       "input": {
-        "message": "I also like red color",
+        "message": "I like blue color",
       },
       "output": {
-        "message": "Red is also a nice color!",
+        "message": "Great, the blue color is nice!",
       },
       "source": "TestAgent",
     },

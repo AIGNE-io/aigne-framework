@@ -16,7 +16,7 @@ import type {
 } from "../agents/chat-model.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { unique } from "../utils/type-utils.js";
+import { isRecord, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import {
@@ -114,7 +114,7 @@ export class PromptBuilder {
 
     const memories: Pick<Memory, "content">[] = [];
 
-    if (options.agent?.inputKey && options.context) {
+    if (options.agent && options.context) {
       memories.push(
         ...(await options.agent.retrieveMemories(
           { search: message },
@@ -160,16 +160,33 @@ export class PromptBuilder {
     memories: Pick<Memory, "content">[],
     options: PromptBuildOptions,
   ): ChatModelInputMessage[] {
-    const str = stringify(memories.map((i) => i.content));
+    const messages: ChatModelInputMessage[] = [];
+    const other: unknown[] = [];
 
-    return [
-      {
+    const stringOrStringify = (value: unknown): string =>
+      typeof value === "string" ? value : stringify(value);
+
+    for (const { content } of memories) {
+      if (isRecord(content) && "input" in content && "output" in content) {
+        messages.push(
+          { role: "user", content: stringOrStringify(content.input) },
+          { role: "agent", content: stringOrStringify(content.output) },
+        );
+      } else {
+        other.push(content);
+      }
+    }
+
+    if (other.length) {
+      messages.unshift({
         role: "system",
         content: PromptTemplate.from(
           options.agent?.memoryPromptTemplate || MEMORY_MESSAGE_TEMPLATE,
-        ).format({ memories: str }),
-      },
-    ];
+        ).format({ memories: stringify(other) }),
+      });
+    }
+
+    return messages;
   }
 
   private buildResponseFormat(

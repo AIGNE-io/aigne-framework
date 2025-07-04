@@ -89,25 +89,7 @@ test("AIGNE HTTP Client should work with client memory in browser", async () => 
   expect(result2).toEqual({
     message: 'You just said, "Hello, AIGNE!"',
   });
-  expect(modelProcess).toHaveBeenLastCalledWith(
-    expect.objectContaining({
-      messages: expect.arrayContaining([
-        expect.objectContaining({
-          role: "system",
-          content: expect.stringContaining("Hello, AIGNE!"),
-        }),
-        expect.objectContaining({
-          role: "system",
-          content: expect.stringContaining("Hello, How can I help you?"),
-        }),
-        expect.objectContaining({
-          role: "user",
-          content: "What did I just say?",
-        }),
-      ]),
-    }),
-    expect.anything(),
-  );
+  expect(modelProcess.mock.lastCall).toMatchSnapshot([{}, expect.anything()]);
 
   await browser.close();
   await server.stop(true);

@@ -411,6 +411,15 @@ test("Build first agent: setup memory for client agent", async () => {
   });
 
   // #region example-client-agent-memory-invoke-agent
+  await spyOn(
+    {
+      clean: async () => {
+        await rm(join(process.cwd(), "memories.sqlite3"), { force: true });
+      },
+    },
+    "clean",
+  )();
+
   const chatbot = await client.getAgent({
     name: "chatbot",
     memory: new DefaultMemory({
@@ -437,25 +446,7 @@ test("Build first agent: setup memory for client agent", async () => {
   expect(result1).toEqual({
     message: "You just asked about the crypto price of ABT/USD on Coinbase.",
   });
-  expect(modelProcess).toHaveBeenLastCalledWith(
-    expect.objectContaining({
-      messages: expect.arrayContaining([
-        expect.objectContaining({
-          role: "system",
-          content: expect.stringContaining("What is the crypto price of ABT/USD on coinbase?"),
-        }),
-        expect.objectContaining({
-          role: "system",
-          content: expect.stringContaining("The current price of ABT/USD on Coinbase is $0.9684."),
-        }),
-        expect.objectContaining({
-          role: "user",
-          content: "What question did I just ask?",
-        }),
-      ]),
-    }),
-    expect.anything(),
-  );
+  expect(modelProcess.mock.lastCall).toMatchSnapshot([{}, expect.anything()]);
   // #endregion example-client-agent-memory-invoke-agent-1
 
   // #endregion example-client-agent-memory

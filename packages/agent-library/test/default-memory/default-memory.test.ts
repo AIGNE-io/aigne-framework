@@ -10,7 +10,7 @@ import { OpenAIChatModel } from "@aigne/openai";
 import { v7 } from "uuid";
 import { z } from "zod";
 
-test("should add a new memory if it is not the same as the last one", async () => {
+test("should add a new memory", async () => {
   const context = new AIGNE().newContext();
 
   const memoryAgent = new DefaultMemory();
@@ -50,7 +50,10 @@ test("should add multiple different memories", async () => {
   await memoryAgent.record({ content: [memory1] }, context);
   await memoryAgent.record({ content: [memory2] }, context);
 
-  const { result: allMemories } = await storage.search({}, { context });
+  const { result: allMemories } = await storage.search(
+    { orderBy: ["createdAt", "asc"] },
+    { context },
+  );
 
   expect(allMemories).toHaveLength(2);
   expect(allMemories[0]).toEqual(expect.objectContaining({ content: memory1 }));
@@ -110,7 +113,8 @@ test("DefaultMemory should remember memories for AIAgent correctly", async () =>
   const model = new OpenAIChatModel();
 
   const memory = new DefaultMemory({
-    messageKey: "message",
+    inputKey: "message",
+    outputKey: "message",
   });
 
   const agent = AIAgent.from({

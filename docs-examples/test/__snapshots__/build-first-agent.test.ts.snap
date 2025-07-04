@@ -1,0 +1,32 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Build first agent: setup memory for client agent 1`] = `
+[
+  {
+    "messages": [
+      {
+        "content": "You are a helpful assistant",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": "What is the crypto price of ABT/USD on coinbase?",
+        "role": "user",
+      },
+      {
+        "content": "The current price of ABT/USD on Coinbase is $0.9684.",
+        "role": "agent",
+      },
+      {
+        "content": "What question did I just ask?",
+        "role": "user",
+      },
+    ],
+    "modelOptions": undefined,
+    "responseFormat": undefined,
+    "toolChoice": undefined,
+    "tools": undefined,
+  },
+  Anything,
+]
+`;

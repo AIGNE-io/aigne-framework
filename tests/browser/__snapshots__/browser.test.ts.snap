@@ -1,0 +1,27 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AIGNE HTTP Client should work with client memory in browser 1`] = `
+[
+  {
+    "messages": [
+      {
+        "content": "Hello, AIGNE!",
+        "role": "user",
+      },
+      {
+        "content": "Hello, How can I help you?",
+        "role": "agent",
+      },
+      {
+        "content": "What did I just say?",
+        "role": "user",
+      },
+    ],
+    "modelOptions": undefined,
+    "responseFormat": undefined,
+    "toolChoice": undefined,
+    "tools": undefined,
+  },
+  Anything,
+]
+`;

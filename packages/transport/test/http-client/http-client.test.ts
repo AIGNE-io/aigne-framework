@@ -334,25 +334,7 @@ test("AIGNEClient should support custom memory for client agent", async () => {
 
     const response2 = await clientAgent.invoke({ message: "My name is?" });
     expect(response2).toEqual({ message: "Your name is Bob." });
-    expect(modelProcess).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            role: "system",
-            content: expect.stringContaining("Hello, I'm Bob!"),
-          }),
-          expect.objectContaining({
-            role: "system",
-            content: expect.stringContaining("Hello Bob, How can I help you?"),
-          }),
-          expect.objectContaining({
-            role: "user",
-            content: expect.stringContaining("My name is?"),
-          }),
-        ]),
-      }),
-      expect.anything(),
-    );
+    expect(modelProcess.mock.lastCall).toMatchSnapshot([{}, expect.anything()]);
   } finally {
     close();
   }

@@ -14,12 +14,16 @@ rules: |
   - 说明要尽可能的详细，如果存在配置项或参数，需要解释每个配置项或参数的含义，如果参数有多个可选值，每种可选值需要解释其含义，并尽可能配上代码示例
   - README 文件只做参考，你需要从代码中获取最新、最完整的信息
 
+  ## 专有名词
+  - 使用 Agent ,不要使用 Agents
+  - 不要翻译 Agent
+
 targetAudience: 开发者
 nodeName: 部分
 locale: en
 translateLanguages:
   - zh
-docsDir: ../../../../docs-ai-v0.2
+docsDir: ../../../../docs-ai-v0.3
 sourcesPath:
   - /Users/lban/arcblock/code/aigne-framework/packages/cli/src
   - /Users/lban/arcblock/code/aigne-framework/packages/core/src

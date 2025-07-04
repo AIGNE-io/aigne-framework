@@ -9,7 +9,7 @@
 </user_locale>
 
 <datasources>
-{{ datasources }}
+{{ detailDataSources }}
 </datasources>
 
 <terms>

@@ -2,6 +2,7 @@ type: team
 name: batch-docs-detail-generator
 description: 批量生成文档详情
 skills:
+  - transform-detail-datasources.mjs
   - content-detail-generator.yaml
   - batch-translate.yaml
 input_schema:

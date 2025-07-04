@@ -52,15 +52,21 @@ export default async function loadSources({
     );
   }
   files = [...new Set(files)];
-  const contents = await Promise.all(
+  let allSources = "";
+  const sourceFiles = await Promise.all(
     files.map(async (file) => {
       const content = await readFile(file, "utf8");
-      return `// file: ${file}\n${content}`;
+      allSources += `// sourceId: ${file}\n${content}\n`;
+      return {
+        sourceId: file,
+        content,
+      };
     }),
   );
+
   return {
-    datasources: contents.join("\n"),
-    sourceFiles: files,
+    datasourcesList: sourceFiles,
+    datasources: allSources,
   };
 }
 
@@ -74,7 +80,7 @@ loadSources.input_schema = {
     },
     sourcesPath: {
       anyOf: [{ type: "string" }, { type: "array", items: { type: "string" } }],
-      description: "Directory to recursively read files from",
+      description: "Directory or directories to recursively read files from",
     },
     includePatterns: {
       anyOf: [{ type: "string" }, { type: "array", items: { type: "string" } }],
@@ -95,8 +101,16 @@ loadSources.output_schema = {
   properties: {
     datasources: {
       type: "string",
-      description:
-        "Concatenated contents of the sources files, each prefixed with // file: filename",
+    },
+    datasourcesList: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          sourceId: { type: "string" },
+          content: { type: "string" },
+        },
+      },
     },
   },
 };

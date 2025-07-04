@@ -1,4 +1,3 @@
-// src/lib/validate.test.ts
 import { describe, expect, test } from "bun:test";
 import { hrTime } from "@opentelemetry/core";
 import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";

@@ -1,4 +1,3 @@
-// src/schema.test.ts
 import { describe, expect, test } from "bun:test";
 import { AIGNEObserverOptionsSchema } from "../../api/core/type.js";
 

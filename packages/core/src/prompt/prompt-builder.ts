@@ -1,5 +1,6 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
+import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
@@ -155,7 +156,7 @@ export class PromptBuilder {
     memories: Pick<Memory, "content">[],
     options: PromptBuildOptions,
   ): ChatModelInputMessage[] {
-    const str = memories.map((i) => i.content);
+    const str = stringify(memories.map((i) => i.content));
 
     return [
       {

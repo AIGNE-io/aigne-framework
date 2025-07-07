@@ -26,7 +26,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
 
     const rootFilter = and(
       or(isNull(Trace.parentId), eq(Trace.parentId, "")),
-      or(isNull(Trace.action)),
+      isNull(Trace.action),
     );
 
     const count = await db.select({ count: sql`count(*)` }).from(Trace).where(rootFilter).execute();
@@ -80,7 +80,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const components = await db
       .select({ componentId: Trace.componentId })
       .from(Trace)
-      .where(and(isNotNull(Trace.componentId), or(isNull(Trace.action))))
+      .where(and(isNotNull(Trace.componentId), isNull(Trace.action)))
       .groupBy(Trace.componentId)
       .execute();
 
@@ -98,7 +98,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
 
     const rootFilter = and(
       or(isNull(Trace.parentId), eq(Trace.parentId, "")),
-      or(isNull(Trace.action)),
+      isNull(Trace.action),
     );
 
     const [latestRoot] =
@@ -224,11 +224,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
 
   router.delete("/tree", async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
-    await db
-      .update(Trace)
-      .set({ action: 1 })
-      .where(or(isNull(Trace.action)))
-      .execute();
+    await db.update(Trace).set({ action: 1 }).where(isNull(Trace.action)).execute();
     res.json({ code: 0, message: "ok" });
   });
 

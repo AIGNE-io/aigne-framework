@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { rmSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
+import { withQuery } from "ufo";
 import getObservabilityDbPath from "../../api/core/db-path.js";
 import { startServer } from "../../api/server/base.js";
 
@@ -107,22 +108,23 @@ describe("Base Server", () => {
         input: { foo: "bar" },
         output: { foo: "bar" },
       },
+      componentId: "z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq",
     };
     const postRes1 = await fetch(`${url}/api/trace/tree`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify([
-        { ...validTrace1, componentId: "z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq" },
-      ]),
+      body: JSON.stringify([validTrace1]),
     });
     expect(postRes1.status).toBe(200);
     const postJson1 = await postRes1.json();
     expect(postJson1.message).toBe("ok");
 
-    const listRes1 = await fetch(`${url}/api/trace/tree`);
+    const listRes1 = await fetch(
+      withQuery(`${url}/api/trace/tree`, { componentId: "z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq" }),
+    );
     expect(listRes1.status).toBe(200);
     const listJson1 = await listRes1.json();
-    expect(listJson1.data.length).toBe(2);
+    expect(listJson1.data.length).toBe(1);
     expect(listJson1.data[0].id).toBe("trace-2");
 
     // Step 6: GET /tree/stats

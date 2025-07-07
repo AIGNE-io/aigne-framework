@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import { and, between, desc, eq, inArray, isNull, like, or, sql } from "drizzle-orm";
+import { and, between, desc, eq, inArray, isNotNull, isNull, like, or, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import express, { type Request, type Response } from "express";
 import type SSE from "express-sse";
@@ -11,6 +11,8 @@ import { getGlobalSettingPath } from "../utils/index.js";
 
 const router = express.Router();
 
+import { createTraceBatchSchema } from "../../core/schema.js";
+
 export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHandler[] }) => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
@@ -18,6 +20,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const pageSize = Number(req.query.pageSize) || 10;
     const offset = page * pageSize;
     const searchText = req.query.searchText as string;
+    const componentId = req.query.componentId as string;
     const startDate = req.query.startDate as string;
     const endDate = req.query.endDate as string;
 
@@ -44,6 +47,10 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       );
     }
 
+    if (componentId) {
+      whereClause = and(whereClause, eq(Trace.componentId, componentId));
+    }
+
     const rootCalls = await db
       .select()
       .from(Trace)
@@ -66,6 +73,25 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     }
 
     res.json({ total, page, pageSize, data: rootCalls.filter((r) => r.rootId) });
+  });
+
+  router.get("/tree/components", ...middleware, async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+
+    const components = await db
+      .select({ componentId: Trace.componentId })
+      .from(Trace)
+      .where(isNotNull(Trace.componentId))
+      .groupBy(Trace.componentId)
+      .execute();
+
+    const componentIds = components.map((c) => c.componentId).filter(Boolean);
+
+    res.json({
+      code: 0,
+      data: componentIds,
+      total: componentIds.length,
+    });
   });
 
   router.get("/tree/stats", async (req: Request, res: Response) => {
@@ -123,7 +149,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const db = req.app.locals.db as LibSQLDatabase;
     const rootCalls = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
     if (rootCalls.length === 0) {
-      throw new Error("rootCall not found");
+      throw new Error(`Not found trace: ${id}`);
     }
 
     const rootCallIds = rootCalls.map((r) => r.rootId).filter((id): id is string => !!id);
@@ -150,6 +176,8 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       throw new Error("req.body is empty");
     }
 
+    const validatedTraces = createTraceBatchSchema.parse(req.body);
+
     let live = false;
     const settingPath = getGlobalSettingPath();
     if (!existsSync(settingPath)) {
@@ -161,7 +189,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
 
     const db = req.app.locals.db as LibSQLDatabase;
 
-    for (const trace of req.body) {
+    for (const trace of validatedTraces) {
       const whereClause = and(
         eq(Trace.id, trace.id),
         eq(Trace.rootId, trace.rootId),

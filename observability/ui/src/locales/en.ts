@@ -55,4 +55,9 @@ export default flatten({
   },
   search: "Search",
   pending: "Running",
+  component: "Component",
+  selectComponent: "Select Component",
+  clear: "Clear",
+  noOptions: "No Options",
+  user: "User Info",
 });

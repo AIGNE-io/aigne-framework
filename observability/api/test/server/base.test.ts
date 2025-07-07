@@ -48,15 +48,15 @@ describe("Base Server", () => {
     const validTrace = {
       id: "trace-1",
       rootId: "root-1",
-      parentId: null,
+      parentId: undefined,
       name: "test-trace",
       startTime: 1710000000,
       endTime: 1710000010,
       status: { code: "OK" },
-      attributes: JSON.stringify({
+      attributes: {
         input: { foo: "bar" },
         output: { foo: "bar" },
-      }),
+      },
     };
 
     // Step 1: POST trace
@@ -98,20 +98,22 @@ describe("Base Server", () => {
     const validTrace1 = {
       id: "trace-2",
       rootId: "root-2",
-      parentId: null,
+      parentId: undefined,
       name: "test-trace-2",
       startTime: 1710000001,
       endTime: 1710000011,
       status: { code: "OK" },
-      attributes: JSON.stringify({
+      attributes: {
         input: { foo: "bar" },
         output: { foo: "bar" },
-      }),
+      },
     };
     const postRes1 = await fetch(`${url}/api/trace/tree`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify([validTrace1]),
+      body: JSON.stringify([
+        { ...validTrace1, componentId: "z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq" },
+      ]),
     });
     expect(postRes1.status).toBe(200);
     const postJson1 = await postRes1.json();
@@ -128,6 +130,13 @@ describe("Base Server", () => {
     expect(statsRes1.status).toBe(200);
     const statsJson1 = await statsRes1.json();
     expect(statsJson1.data.lastTraceChanged).toBe(true);
+
+    // Step 7: GET /tree/components
+    const componentsRes = await fetch(`${url}/api/trace/tree/components`);
+    expect(componentsRes.status).toBe(200);
+    const componentsJson = await componentsRes.json();
+    expect(componentsJson.data.length).toBe(1);
+    expect(componentsJson.data[0]).toBe("z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq");
 
     server.closeAllConnections();
     server.close();

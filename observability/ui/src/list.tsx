@@ -4,13 +4,18 @@ import Empty from "@arcblock/ux/lib/Empty";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
+import UserCard from "@arcblock/ux/lib/UserCard";
+import { CardType, InfoType } from "@arcblock/ux/lib/UserCard/types";
+import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
 import type { GridColDef } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
 import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
 import useLocalStorageState from "ahooks/lib/useLocalStorageState";
 import useRafInterval from "ahooks/lib/useRafInterval";
+import useRequest from "ahooks/lib/useRequest";
 import { useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
@@ -33,11 +38,13 @@ interface TracesResponse {
 }
 
 interface SearchState {
+  componentId: string;
   searchText: string;
   dateRange: [Date, Date];
 }
 
 const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
+  const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const documentVisibility = useDocumentVisibility();
@@ -51,6 +58,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   });
 
   const [search, setSearch] = useState<SearchState>({
+    componentId: "",
     searchText: "",
     dateRange: [
       dayjs().subtract(1, "month").startOf("day").toDate(),
@@ -62,6 +70,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedTrace, setSelectedTrace] = useState<TraceData | null>(null);
+
+  const { data: components } = useRequest(async () => {
+    const res = await fetch(joinURL(origin, "/api/trace/tree/components"));
+    return res.json() as Promise<{ data: string[] }>;
+  });
 
   const fetchTraces = async ({
     page,
@@ -82,6 +95,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           searchText,
           startDate: dateRange?.[0]?.toISOString() ?? "",
           endDate: dateRange?.[1]?.toISOString() ?? "",
+          componentId: search.componentId,
         }),
       ).then((r) => r.json() as Promise<TracesResponse>);
       const formatted: TraceData[] = res.data.map((trace) => ({
@@ -107,11 +121,18 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
         dateRange: search.dateRange,
       });
     }
-  }, [page.page, page.pageSize, search.searchText, search.dateRange, documentVisibility]);
+  }, [
+    page.page,
+    page.pageSize,
+    search.searchText,
+    search.dateRange,
+    documentVisibility,
+    search.componentId,
+  ]);
 
   useRafInterval(() => {
     if (!live) return;
-    if (window.blocklet?.prefix) return;
+    if (isBlocklet) return;
 
     fetch(joinURL(origin, "/api/trace/tree/stats"))
       .then((res) => res.json() as Promise<{ data: { lastTraceChanged: boolean } }>)
@@ -237,6 +258,31 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
         );
       },
     },
+    // @ts-ignore
+    isBlocklet
+      ? {
+          field: "userId",
+          headerName: t("user"),
+          minWidth: 260,
+          renderCell: ({ row }) => {
+            if (row.userId) {
+              return (
+                <Box sx={{ height: 44, my: 0.5, span: { display: "flex", alignItems: "center" } }}>
+                  <UserCard
+                    showDid
+                    did={row.userId}
+                    cardType={CardType.Detailed}
+                    infoType={InfoType.Minimal}
+                    sx={{ border: 0, padding: 0 }}
+                  />
+                </Box>
+              );
+            }
+
+            return null;
+          },
+        }
+      : undefined,
     {
       field: "startTime",
       headerName: t("startedAt"),
@@ -265,6 +311,24 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     },
   ];
 
+  if (isBlocklet) {
+    columns.unshift({
+      field: "component",
+      headerName: t("component"),
+      minWidth: 150,
+      sortable: false,
+      renderCell: ({ row }) => {
+        if (!row.componentId) return "";
+
+        const component = window.blocklet.componentMountPoints?.find(
+          (c) => c.did === row.componentId,
+        );
+
+        return <Chip label={component?.title ?? component?.name} size="small" />;
+      },
+    });
+  }
+
   const onDateRangeChange = (value: [Date, Date]) => {
     setSearch((x) => ({ ...x, dateRange: value, page: 1 }));
   };
@@ -291,6 +355,33 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             onSearchOpen={() => {}}
           />
 
+          {isBlocklet && (
+            <Autocomplete
+              size="small"
+              sx={{ minWidth: 240 }}
+              options={components?.data || []}
+              value={search.componentId || null}
+              onChange={(_, value) => setSearch((x) => ({ ...x, componentId: value || "" }))}
+              getOptionLabel={(option) => {
+                if (!option) return "";
+                const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
+                return comp?.title ?? comp?.name ?? option;
+              }}
+              renderInput={(params) => <TextField {...params} placeholder={t("selectComponent")} />}
+              renderOption={(props, option) => {
+                const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
+                return (
+                  <li {...props} key={option}>
+                    {comp?.title ?? comp?.name ?? option}
+                  </li>
+                );
+              }}
+              clearOnEscape
+              clearText={t("clear")}
+              noOptionsText={t("noOptions")}
+            />
+          )}
+
           <Box key="date-picker" sx={{ mx: 1 }}>
             <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
           </Box>
@@ -311,7 +402,6 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             setPage((x) => ({ ...x, page: model.page + 1, pageSize: model.pageSize }));
           }}
           rowCount={total}
-          rowHeight={40}
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? "" : "striped-row"
           }

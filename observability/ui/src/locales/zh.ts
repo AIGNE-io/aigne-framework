@@ -55,4 +55,9 @@ export default flatten({
   },
   search: "搜索",
   pending: "进行中",
+  component: "组件",
+  selectComponent: "选择组件",
+  clear: "清除",
+  noOptions: "无选项",
+  user: "用户信息",
 });

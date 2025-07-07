@@ -405,9 +405,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             <SwitchComponent live={live} setLive={setLive} />
           </Box>
 
-          <IconButton onClick={() => setDialogOpen(true)}>
-            <TrashIcon sx={{ color: "error.main" }} />
-          </IconButton>
+          {!isBlocklet && (
+            <IconButton onClick={() => setDialogOpen(true)}>
+              <TrashIcon sx={{ color: "error.main" }} />
+            </IconButton>
+          )}
         </Box>
 
         <DataGrid

@@ -226,7 +226,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const db = req.app.locals.db as LibSQLDatabase;
     await db
       .update(Trace)
-      .set({ action: "1" })
+      .set({ action: 1 })
       .where(or(isNull(Trace.action)))
       .execute();
     res.json({ code: 0, message: "ok" });

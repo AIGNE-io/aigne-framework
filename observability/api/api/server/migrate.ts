@@ -2,9 +2,11 @@ import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { sql } from "drizzle-orm/sql";
 import type { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
 import init from "./migrations/001-init.js";
+import addComponentId from "./migrations/002-add-componentId.js";
+import addAction from "./migrations/003-add-action.js";
 
 export async function migrate(db: LibSQLDatabase | SqliteRemoteDatabase) {
-  const migrations = [init];
+  const migrations = [init, addComponentId, addAction];
 
   const migrationsTable = "__drizzle_migrations";
   const migrationTableCreate = sql`

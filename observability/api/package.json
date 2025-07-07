@@ -94,9 +94,10 @@
   "scripts": {
     "clean": "node scripts/build-clean.mjs",
     "lint": "tsc --build scripts/tsconfig.build.json --noEmit",
-    "build": "run-p build:ui build:api",
+    "build": "run-p build:ui build:api build:copy",
     "build:ui": "node scripts/build-ui.mjs",
-    "build:api": "tsc --build scripts/tsconfig.build.json && zx --quiet scripts/download-json.mjs",
+    "build:api": "tsc --build scripts/tsconfig.build.json",
+    "build:copy": "zx --quiet scripts/download-json.mjs",
     "prepublishOnly": "run-s clean build",
     "test": "bun test",
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",

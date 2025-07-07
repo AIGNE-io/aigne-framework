@@ -65,11 +65,7 @@ class HttpExporter implements HttpExporterInterface {
           await db.insert(Trace).values(trace).execute();
         }
       } catch (err) {
-        console.error(`upsert spans failed for trace ${trace.id}:`, {
-          message: err.message,
-          stack: err.stack,
-          dbPath: this.dbPath,
-        });
+        console.error(`upsert spans failed for trace ${trace.id}:`, err);
       }
     }
   }

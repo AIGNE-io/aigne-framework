@@ -60,4 +60,12 @@ export default flatten({
   clear: "Clear",
   noOptions: "No Options",
   user: "User Info",
+  common: {
+    confirm: "Confirm",
+    cancel: "Cancel",
+  },
+  delete: {
+    restConfirmTitle: "Delete Traces",
+    restConfirmDesc: "Are you sure you want to delete all traces?",
+  },
 });

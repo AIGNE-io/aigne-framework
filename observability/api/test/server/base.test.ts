@@ -140,6 +140,12 @@ describe("Base Server", () => {
     expect(componentsJson.data.length).toBe(1);
     expect(componentsJson.data[0]).toBe("z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq");
 
+    // Step 8: GET /tree/trace-2
+    const detailRes1 = await fetch(`${url}/api/trace/tree/trace-3`);
+    expect(detailRes1.status).toBe(500);
+    const detailJson1 = await detailRes1.json();
+    expect(detailJson1.error).toBe("Not found trace: trace-3");
+
     server.closeAllConnections();
     server.close();
   });

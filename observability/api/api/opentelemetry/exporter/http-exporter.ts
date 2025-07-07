@@ -1,7 +1,7 @@
 import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
-import { and, eq, isNull, or } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { TraceFormatSpans } from "../../core/type.js";
 import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
@@ -25,9 +25,7 @@ class HttpExporter implements HttpExporterInterface {
   private upsert: (spans: TraceFormatSpans[]) => Promise<void>;
 
   async getDb() {
-    if (isBlocklet) {
-      return;
-    }
+    if (isBlocklet) return;
 
     const db = await initDatabase({ url: this.dbPath, wal: true });
     await migrate(db);
@@ -53,19 +51,10 @@ class HttpExporter implements HttpExporterInterface {
 
   async _upsertWithSQLite(validatedData: TraceFormatSpans[]) {
     const db = await this._db;
-
-    if (!db) {
-      throw new Error("Database not initialized");
-    }
+    if (!db) throw new Error("Database not initialized");
 
     for (const trace of validatedData) {
-      const whereClause = and(
-        eq(Trace.id, trace.id),
-        eq(Trace.rootId, trace.rootId),
-        !trace.parentId
-          ? or(isNull(Trace.parentId), eq(Trace.parentId, ""))
-          : eq(Trace.parentId, trace.parentId),
-      );
+      const whereClause = and(eq(Trace.id, trace.id), eq(Trace.rootId, trace.rootId));
 
       try {
         const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();
@@ -76,7 +65,11 @@ class HttpExporter implements HttpExporterInterface {
           await db.insert(Trace).values(trace).execute();
         }
       } catch (err) {
-        console.error(`upsert spans failed for trace ${trace.id}:`, err);
+        console.error(`upsert spans failed for trace ${trace.id}:`, {
+          message: err.message,
+          stack: err.stack,
+          dbPath: this.dbPath,
+        });
       }
     }
   }

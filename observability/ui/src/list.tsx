@@ -16,6 +16,7 @@ import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
 import useLocalStorageState from "ahooks/lib/useLocalStorageState";
 import useRafInterval from "ahooks/lib/useRafInterval";
 import useRequest from "ahooks/lib/useRequest";
+import { compact } from "lodash";
 import { useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
@@ -177,7 +178,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     };
   }, [page.pageSize]);
 
-  const columns: GridColDef<TraceData>[] = [
+  const columns: GridColDef<TraceData>[] = compact([
     { field: "id", headerName: "ID", width: 160, sortable: false },
     { field: "name", headerName: t("agentName"), minWidth: 150, sortable: false },
     {
@@ -238,7 +239,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               alignItems: "center",
               justifyContent: "center",
               gap: 1,
-              height: 40,
+              height: !isBlocklet ? 40 : 52,
             }}
           >
             {row.status?.code === 0 ? (
@@ -309,7 +310,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           "-"
         ),
     },
-  ];
+  ]);
 
   if (isBlocklet) {
     columns.unshift({
@@ -402,6 +403,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             setPage((x) => ({ ...x, page: model.page + 1, pageSize: model.pageSize }));
           }}
           rowCount={total}
+          rowHeight={isBlocklet ? 52 : 40}
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? "" : "striped-row"
           }

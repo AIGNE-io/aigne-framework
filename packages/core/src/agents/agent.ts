@@ -19,6 +19,7 @@ import {
   createAccessorArray,
   flat,
   isEmpty,
+  isRecord,
   type Nullish,
   type PromiseOrValue,
   type XOr,
@@ -649,6 +650,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     options: AgentInvokeOptions,
   ): Promise<O> {
     const { context } = options;
+
+    if (!isRecord(output)) {
+      throw new Error(
+        `expect to return a record type such as {result: ...}, but got (${typeof output}): ${output}`,
+      );
+    }
 
     const parsedOutput = checkArguments(
       `Agent ${this.name} output`,

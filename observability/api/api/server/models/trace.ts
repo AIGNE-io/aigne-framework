@@ -26,4 +26,5 @@ export const Trace = sqliteTable("Trace", {
   userId: text("userId"),
   sessionId: text("sessionId"),
   componentId: text("componentId"),
+  action: integer("action"),
 });

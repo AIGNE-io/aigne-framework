@@ -1,14 +1,17 @@
 import dayjs from "@abtnode/util/lib/dayjs";
 import TableSearch from "@arcblock/ux/lib/Datatable/TableSearch";
+import { Confirm } from "@arcblock/ux/lib/Dialog";
 import Empty from "@arcblock/ux/lib/Empty";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
 import UserCard from "@arcblock/ux/lib/UserCard";
 import { CardType, InfoType } from "@arcblock/ux/lib/UserCard/types";
+import TrashIcon from "@mui/icons-material/Delete";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import type { GridColDef } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
@@ -71,6 +74,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedTrace, setSelectedTrace] = useState<TraceData | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const { data: components } = useRequest(async () => {
     const res = await fetch(joinURL(origin, "/api/trace/tree/components"));
@@ -108,6 +112,16 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       setTotal(res.total);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteTraces = async () => {
+    try {
+      await fetch(joinURL(origin, "/api/trace/tree"), { method: "DELETE" });
+      setDialogOpen(false);
+      fetchTraces({ page: 0, pageSize: page.pageSize });
+    } finally {
+      setDialogOpen(false);
     }
   };
 
@@ -390,6 +404,12 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           <Box sx={{ display: "flex" }}>
             <SwitchComponent live={live} setLive={setLive} />
           </Box>
+
+          {!isBlocklet && (
+            <IconButton onClick={() => setDialogOpen(true)}>
+              <TrashIcon sx={{ color: "error.main" }} />
+            </IconButton>
+          )}
         </Box>
 
         <DataGrid
@@ -464,6 +484,33 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           });
         }}
       />
+
+      {dialogOpen && (
+        <Confirm
+          confirmButton={{
+            text: t("common.confirm"),
+            props: {
+              variant: "contained",
+              color: "error",
+            },
+          }}
+          cancelButton={{
+            text: t("common.cancel"),
+            props: {
+              color: "primary",
+            },
+          }}
+          open={dialogOpen}
+          title={t("delete.restConfirmTitle")}
+          onConfirm={async () => {
+            await deleteTraces();
+            setDialogOpen(false);
+          }}
+          onCancel={() => setDialogOpen(false)}
+        >
+          <p>{t("delete.restConfirmDesc")}</p>
+        </Confirm>
+      )}
     </ToastProvider>
   );
 };

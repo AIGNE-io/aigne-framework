@@ -24,15 +24,14 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const startDate = req.query.startDate as string;
     const endDate = req.query.endDate as string;
 
-    const count = await db
-      .select({ count: sql`count(*)` })
-      .from(Trace)
-      .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
-      .execute();
+    const rootFilter = and(
+      or(isNull(Trace.parentId), eq(Trace.parentId, "")),
+      isNull(Trace.action),
+    );
 
+    const count = await db.select({ count: sql`count(*)` }).from(Trace).where(rootFilter).execute();
     const total = Number((count[0] as { count: string }).count ?? 0);
 
-    const rootFilter = or(isNull(Trace.parentId), eq(Trace.parentId, ""));
     const searchFilter = or(
       like(Trace.attributes, `%${searchText}%`),
       like(Trace.name, `%${searchText}%`),
@@ -81,7 +80,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const components = await db
       .select({ componentId: Trace.componentId })
       .from(Trace)
-      .where(isNotNull(Trace.componentId))
+      .where(and(isNotNull(Trace.componentId), isNull(Trace.action)))
       .groupBy(Trace.componentId)
       .execute();
 
@@ -97,11 +96,16 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
   router.get("/tree/stats", async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
 
+    const rootFilter = and(
+      or(isNull(Trace.parentId), eq(Trace.parentId, "")),
+      isNull(Trace.action),
+    );
+
     const [latestRoot] =
       (await db
         .select()
         .from(Trace)
-        .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
+        .where(rootFilter)
         .orderBy(desc(Trace.startTime))
         .limit(1)
         .execute()) || [];
@@ -215,6 +219,12 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       sse.send({ type: "event", data: {} });
     }
 
+    res.json({ code: 0, message: "ok" });
+  });
+
+  router.delete("/tree", async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+    await db.update(Trace).set({ action: 1 }).where(isNull(Trace.action)).execute();
     res.json({ code: 0, message: "ok" });
   });
 

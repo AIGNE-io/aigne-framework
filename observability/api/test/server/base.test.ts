@@ -146,6 +146,18 @@ describe("Base Server", () => {
     const detailJson1 = await detailRes1.json();
     expect(detailJson1.error).toBe("Not found trace: trace-3");
 
+    // Step 9: DELETE /tree
+    const deleteRes = await fetch(`${url}/api/trace/tree`, { method: "DELETE" });
+    expect(deleteRes.status).toBe(200);
+    const deleteJson = await deleteRes.json();
+    expect(deleteJson.message).toBe("ok");
+
+    // Step 10: GET /tree list
+    const listRes10 = await fetch(`${url}/api/trace/tree`);
+    expect(listRes10.status).toBe(200);
+    const listJson10 = await listRes10.json();
+    expect(listJson10.data.length).toBe(0);
+
     server.closeAllConnections();
     server.close();
   });

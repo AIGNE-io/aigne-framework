@@ -7,11 +7,17 @@ import {
   isEmptyChunk,
   type Message,
 } from "../agents/agent.js";
-import { omitBy, type PromiseOrValue } from "./type-utils.js";
+import { isRecord, omitBy, type PromiseOrValue } from "./type-utils.js";
 import "./stream-polyfill.js";
 import type { ReadableStreamDefaultReadResult } from "bun";
 
 export function objectToAgentResponseStream<T extends Message>(json: T): AgentResponseStream<T> {
+  if (!isRecord(json)) {
+    throw new Error(
+      `expect to return a record type such as {result: ...}, but got (${typeof json}): ${json}`,
+    );
+  }
+
   return new ReadableStream({
     pull(controller) {
       controller.enqueue({ delta: { json } });

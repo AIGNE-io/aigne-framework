@@ -1,6 +1,31 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`loadAgentFromYaml should load nested agent correctly 1`] = `
+exports[`loadAgentFromYaml should load AIAgent with prompt file correctly 1`] = `
+"You are a helper agent to answer everything about chat prompt in AIGNE.
+
+{% include "language_instruction.txt" %}
+"
+`;
+
+exports[`loadAgentFromYaml should load AIAgent with prompt file correctly 2`] = `
+{
+  "messages": [
+    {
+      "content": 
+"You are a helper agent to answer everything about chat prompt in AIGNE.
+
+Output in English
+
+"
+,
+      "name": undefined,
+      "role": "system",
+    },
+  ],
+}
+`;
+
+exports[`loadAgentFromYaml should load nested agent correctly 3`] = `
 {
   "inputSchema": undefined,
   "instructions": undefined,
@@ -52,6 +77,8 @@ Your goal is to assist users in finding the information they need and to engage 
       "inputSchema": undefined,
       "instructions": 
 "You are a helper agent to answer everything about chat prompt in AIGNE.
+
+{% include "language_instruction.txt" %}
 "
 ,
       "name": "child",
@@ -122,6 +149,8 @@ Your goal is to assist users in finding the information they need and to engage 
           },
           "instructions": 
 "You are a helper agent to answer everything about chat prompt in AIGNE.
+
+{% include "language_instruction.txt" %}
 "
 ,
           "name": "nested-child",

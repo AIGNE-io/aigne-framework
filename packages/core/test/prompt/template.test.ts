@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import assert from "node:assert";
 import {
   AgentMessageTemplate,
   PromptTemplate,
@@ -8,24 +9,24 @@ import {
 
 test("PromptTemplate.format", async () => {
   const prompt = PromptTemplate.from("Hello, {{name}}!").format({ name: "Alice" });
-  expect(prompt).toBe("Hello, Alice!");
+  expect(prompt).resolves.toBe("Hello, Alice!");
 });
 
 test("PromptTemplate.format with variable value is nil", async () => {
   const prompt = PromptTemplate.from("Hello, {{name}}!").format({});
-  expect(prompt).toBe("Hello, !");
+  expect(prompt).resolves.toBe("Hello, !");
 });
 
 test("PromptTemplate.format with json variable", async () => {
   const prompt = PromptTemplate.from("Hello, {{name}}!").format({ name: { username: "Alice" } });
-  expect(prompt).toBe('Hello, {"username":"Alice"}!');
+  expect(prompt).resolves.toBe('Hello, {"username":"Alice"}!');
 });
 
 test("AgentMessageTemplate", async () => {
   const prompt = AgentMessageTemplate.from("Hello, {{name}}!", undefined, "AgentA").format({
     name: "Alice",
   });
-  expect(prompt).toEqual({
+  expect(prompt).resolves.toEqual({
     role: "agent",
     content: "Hello, Alice!",
     toolCalls: undefined,
@@ -46,7 +47,7 @@ test("AgentMessageTemplate", async () => {
     ],
     "AgentA",
   ).format();
-  expect(toolCallsPrompt).toEqual({
+  expect(toolCallsPrompt).resolves.toEqual({
     role: "agent",
     content: undefined,
     toolCalls: [
@@ -67,7 +68,7 @@ test("ToolMessageTemplate", async () => {
   const prompt = ToolMessageTemplate.from("Hello, {{name}}!", "tool1", "AgentA").format({
     name: "Alice",
   });
-  expect(prompt).toEqual({
+  expect(prompt).resolves.toEqual({
     role: "tool",
     toolCallId: "tool1",
     content: "Hello, Alice!",
@@ -79,7 +80,7 @@ test("ToolMessageTemplate", async () => {
     "tool1",
     "AgentA",
   ).format();
-  expect(objectPrompt).toEqual({
+  expect(objectPrompt).resolves.toEqual({
     role: "tool",
     toolCallId: "tool1",
     content: JSON.stringify({ result: { content: "call tool success" } }),
@@ -91,7 +92,7 @@ test("ToolMessageTemplate", async () => {
     "tool1",
     "AgentA",
   ).format();
-  expect(bigintPrompt).toEqual({
+  expect(bigintPrompt).resolves.toEqual({
     role: "tool",
     toolCallId: "tool1",
     content: JSON.stringify({ result: { content: "1234567890" } }),
@@ -131,8 +132,11 @@ test("parseChatMessages", async () => {
       name: "AgentA",
     },
   ];
-  const result = parseChatMessages(messages)?.map((m) => m.format());
-  expect(result).toEqual([
+  const msgs = parseChatMessages(messages);
+  assert(msgs);
+
+  const result = Promise.all(msgs.map((m) => m.format()));
+  expect(result).resolves.toEqual([
     { role: "system", content: "system message" },
     { role: "user", content: "user message", name: "UserA" },
     { role: "agent", content: "agent message", name: "AgentA" },

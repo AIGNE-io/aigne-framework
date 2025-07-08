@@ -1,5 +1,4 @@
 import { expect, test } from "bun:test";
-import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   AIAgent,
@@ -349,18 +348,13 @@ test("PromptBuilder from file", async () => {
   const context = new AIGNE().newContext();
 
   const path = join(import.meta.dirname, "test-prompt.txt");
-  const content = await readFile(path, "utf-8");
 
   const builder = PromptBuilder.from({ path });
 
-  const prompt = await builder.build({ input: { agentName: "Alice" }, context });
-
-  expect(prompt).toEqual({
-    messages: [
-      {
-        role: "system",
-        content: content.replace("{{agentName}}", "Alice"),
-      },
-    ],
+  const prompt = await builder.build({
+    input: { agentName: "Alice", language: "English" },
+    context,
   });
+
+  expect(prompt).toMatchSnapshot();
 });

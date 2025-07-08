@@ -47,6 +47,23 @@ interface SearchState {
   dateRange: [Date, Date];
 }
 
+const BlockletComponent = ({
+  component,
+}: {
+  component: (typeof window.blocklet.componentMountPoints)[number];
+}) => {
+  const url = new URL(window.location.origin);
+  url.pathname = `/.well-known/service/blocklet/logo-bundle/${component.did}`;
+  url.searchParams.set("v", "0.5.55");
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ width: 36, height: 36, borderRadius: 1 }} component="img" src={url.toString()} />
+      <Box>{component?.title ?? component?.name}</Box>
+    </Box>
+  );
+};
+
 const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
@@ -282,8 +299,15 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           renderCell: ({ row }) => {
             if (row.userId) {
               return (
-                <Box sx={{ height: 44, my: 0.5, span: { display: "flex", alignItems: "center" } }}>
+                <Box
+                  sx={{
+                    height: 44,
+                    my: 0.5,
+                    span: { display: "flex", alignItems: "center", fontSize: 12 },
+                  }}
+                >
                   <UserCard
+                    avatarSize={36}
                     showDid
                     did={row.userId}
                     cardType={CardType.Detailed}
@@ -330,7 +354,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     columns.unshift({
       field: "component",
       headerName: t("component"),
-      minWidth: 150,
+      minWidth: 300,
       sortable: false,
       renderCell: ({ row }) => {
         if (!row.componentId) return "";
@@ -339,7 +363,9 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           (c) => c.did === row.componentId,
         );
 
-        return <Chip label={component?.title ?? component?.name} size="small" />;
+        if (!component) return "";
+
+        return <BlockletComponent component={component} />;
       },
     });
   }
@@ -385,10 +411,12 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               renderInput={(params) => <TextField {...params} placeholder={t("selectComponent")} />}
               renderOption={(props, option) => {
                 const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
+                if (!comp) return null;
+
                 return (
-                  <li {...props} key={option}>
-                    {comp?.title ?? comp?.name ?? option}
-                  </li>
+                  <Box component="li" {...props} key={option}>
+                    <BlockletComponent component={comp} />
+                  </Box>
                 );
               }}
               clearOnEscape

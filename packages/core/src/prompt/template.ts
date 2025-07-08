@@ -70,6 +70,7 @@ export class CustomLoader extends nunjucks.Loader {
       },
     );
 
+    // nunjucks expects return LoaderSource synchronously, but we handle it asynchronously.
     return result as any;
   }
 }

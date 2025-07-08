@@ -8,32 +8,34 @@ import {
 } from "@aigne/core";
 
 test("PromptTemplate.format", async () => {
-  const prompt = PromptTemplate.from("Hello, {{name}}!").format({ name: "Alice" });
-  expect(prompt).resolves.toBe("Hello, Alice!");
+  const prompt = await PromptTemplate.from("Hello, {{name}}!").format({ name: "Alice" });
+  expect(prompt).toBe("Hello, Alice!");
 });
 
 test("PromptTemplate.format with variable value is nil", async () => {
-  const prompt = PromptTemplate.from("Hello, {{name}}!").format({});
-  expect(prompt).resolves.toBe("Hello, !");
+  const prompt = await PromptTemplate.from("Hello, {{name}}!").format({});
+  expect(prompt).toBe("Hello, !");
 });
 
 test("PromptTemplate.format with json variable", async () => {
-  const prompt = PromptTemplate.from("Hello, {{name}}!").format({ name: { username: "Alice" } });
-  expect(prompt).resolves.toBe('Hello, {"username":"Alice"}!');
+  const prompt = await PromptTemplate.from("Hello, {{name}}!").format({
+    name: { username: "Alice" },
+  });
+  expect(prompt).toBe('Hello, {"username":"Alice"}!');
 });
 
 test("AgentMessageTemplate", async () => {
-  const prompt = AgentMessageTemplate.from("Hello, {{name}}!", undefined, "AgentA").format({
+  const prompt = await AgentMessageTemplate.from("Hello, {{name}}!", undefined, "AgentA").format({
     name: "Alice",
   });
-  expect(prompt).resolves.toEqual({
+  expect(prompt).toEqual({
     role: "agent",
     content: "Hello, Alice!",
     toolCalls: undefined,
     name: "AgentA",
   });
 
-  const toolCallsPrompt = AgentMessageTemplate.from(
+  const toolCallsPrompt = await AgentMessageTemplate.from(
     undefined,
     [
       {
@@ -47,7 +49,7 @@ test("AgentMessageTemplate", async () => {
     ],
     "AgentA",
   ).format();
-  expect(toolCallsPrompt).resolves.toEqual({
+  expect(toolCallsPrompt).toEqual({
     role: "agent",
     content: undefined,
     toolCalls: [
@@ -65,34 +67,34 @@ test("AgentMessageTemplate", async () => {
 });
 
 test("ToolMessageTemplate", async () => {
-  const prompt = ToolMessageTemplate.from("Hello, {{name}}!", "tool1", "AgentA").format({
+  const prompt = await ToolMessageTemplate.from("Hello, {{name}}!", "tool1", "AgentA").format({
     name: "Alice",
   });
-  expect(prompt).resolves.toEqual({
+  expect(prompt).toEqual({
     role: "tool",
     toolCallId: "tool1",
     content: "Hello, Alice!",
     name: "AgentA",
   });
 
-  const objectPrompt = ToolMessageTemplate.from(
+  const objectPrompt = await ToolMessageTemplate.from(
     { result: { content: "call tool success" } },
     "tool1",
     "AgentA",
   ).format();
-  expect(objectPrompt).resolves.toEqual({
+  expect(objectPrompt).toEqual({
     role: "tool",
     toolCallId: "tool1",
     content: JSON.stringify({ result: { content: "call tool success" } }),
     name: "AgentA",
   });
 
-  const bigintPrompt = ToolMessageTemplate.from(
+  const bigintPrompt = await ToolMessageTemplate.from(
     { result: { content: 1234567890n } },
     "tool1",
     "AgentA",
   ).format();
-  expect(bigintPrompt).resolves.toEqual({
+  expect(bigintPrompt).toEqual({
     role: "tool",
     toolCallId: "tool1",
     content: JSON.stringify({ result: { content: "1234567890" } }),
@@ -135,8 +137,8 @@ test("parseChatMessages", async () => {
   const msgs = parseChatMessages(messages);
   assert(msgs);
 
-  const result = Promise.all(msgs.map((m) => m.format()));
-  expect(result).resolves.toEqual([
+  const result = await Promise.all(msgs.map((m) => m.format()));
+  expect(result).toEqual([
     { role: "system", content: "system message" },
     { role: "user", content: "user message", name: "UserA" },
     { role: "agent", content: "agent message", name: "AgentA" },

@@ -60,10 +60,6 @@ parentId: {{parentId}}
 - 确保每个{{nodeName}}的详情中，都包含一个 markdown 的一级标题，展示当前{{nodeName}}的标题，标题不超过 20 个字
 - markdown 输出内容正常换行、添加空行，让内容容易阅读
 - 对于列表数据，如果列表项较多，优先使用 markdown 中的 table 来展示，让内容看上去更整齐，容易阅读
-- 使用 mermaid 图标解释复杂的概念 (```mermaid``` format). 
-  - 使用 `flowchart` 图表解释概念之间的关系
-  - 使用 `sequenceDiagram` 图表解释调用、执行的流程
-  - **确保 mermaid `flowchart` 图表中所有节点的 label 都使用 " 包裹**，避免因为 label 中存在特殊符号，导致渲染失败，示例：A["@abc"]、B("AIGNE")、C{"@aigne/core"}
 - 不要在输出中提到 'DataSources' ，你输出的内容是给用户阅读的，用户不知道 DataSources 的存在
 - 不要在输出中直接 Data Sources 中的文件路径，这对用户是没有意义的
 - 不要出现 '当前{{nodeName}}' 这种说法
@@ -77,6 +73,11 @@ parentId: {{parentId}}
 - 确保文档中的内容是完整、连贯的，用户可以跟着文档一步步顺利执行
 - 说明要尽可能的详细，如果存在配置项或参数，需要解释每个配置项或参数的含义，如果参数有多个可选值，每种可选值需要解释其含义，并尽可能配上代码示例
 - 参数优先使用 markdown 中的 table 来展示，让内容看上去更整齐，容易阅读
+- 使用 mermaid 图表解释复杂的概念 (```mermaid``` format)，每个 {{nodeName}} 至少包含一个图表，让页面内容展示形式更丰富
+  - 使用 `flowchart` 图表解释概念之间的关系
+  - 使用 `sequenceDiagram` 图表解释调用、执行的流程
+  - **确保 mermaid `flowchart` 图表中所有节点的 label 都使用 " 包裹**，避免因为 label 中存在特殊符号，导致渲染失败，示例：A["@abc"]、B("AIGNE")、C{"@aigne/core"}
+- 更多的使用 table 、mermaid 图表来解释信息，过长的文本描述会让用户阅读有压力
 - 概览部分，必须包含 mermaid 图表，展示产品的架构图
 - README 文件只做参考，你需要从代码中获取最新、最完整的信息
 </rules>

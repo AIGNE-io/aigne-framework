@@ -91,7 +91,7 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 测试页面模板生成的命令
 ```bash
 # arcshpere home
-bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "page-template-generator" --input "@mock-inputs/template-input-arcsphere-home.yaml" --format yaml --output "./output-tmp/arcsphere-home-template.txt" --force
+bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --entry-agent "page-template-generator" --input "@mock-inputs/template-input-arcsphere-home.yaml" --format yaml --output "./output-tmp/arcsphere-home-template.txt" --force 
 
 ```
 
@@ -99,10 +99,12 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 测试文档生成的命令
 ```bash
 # aigne
-aigne run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml  --model anthropic:claude-3-7-sonnet-latest
 
 # aigne detail
-aigne run --entry-agent "detail-generator-and-translate" --input "@mock-inputs/aigne-docs-input-detail.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --input-originalStructurePlan "@../../../../docs-ai-v0.4/output/structure-plan.json" --input-content "@../../../../docs-ai-v0.4/cli.md" --format yaml --model openai:gpt-4o-mini 
+aigne run --entry-agent "detail-generator-and-translate" --input "@mock-inputs/aigne-docs-input-detail.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --input-originalStructurePlan "@../../../../docs-ai-v0.1/output/structure-plan.json" --input-content "@../../../../docs-ai-v0.1/cli.md" --format yaml --model anthropic:claude-3-7-sonnet-latest
+
+aigne run --entry-agent "detail-generator-and-translate" --input "@mock-inputs/aigne-docs-input-detail.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --input-originalStructurePlan "@../../../../docs-ai-v0.1/output/structure-plan.json" --format yaml --model anthropic:claude-3-7-sonnet-latest
 
 # blocklet-sdk
 aigne run --entry-agent "docs-generator" --input "@mock-inputs/blocklet-sdk-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 

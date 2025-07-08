@@ -24,7 +24,7 @@ import { useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
 import CustomDateRangePicker from "./components/date-picker.tsx";
-import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx";
+import RunDetailDrawer from "./components/run/trace-detail-drawer.tsx";
 import type { TraceData } from "./components/run/types.ts";
 import Status from "./components/status.tsx";
 import SwitchComponent from "./components/switch.tsx";

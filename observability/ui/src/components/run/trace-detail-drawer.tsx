@@ -7,9 +7,9 @@ import { joinURL } from "ufo";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import { origin } from "../../utils/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
-import RunStatsHeader from "./RunStatsHeader.tsx";
-import TraceDetailPanel from "./TraceDetailPanel.tsx";
-import TraceItemList from "./TraceItem.tsx";
+import TraceDetailPanel from "./trace-detail-panel.tsx";
+import TraceItemList from "./trace-item.tsx";
+import RunStatsHeader from "./trace-stats-header.tsx";
 import type { TraceData } from "./types.ts";
 
 interface RunDetailDrawerProps {

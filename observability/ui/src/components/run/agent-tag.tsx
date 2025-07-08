@@ -60,7 +60,7 @@ const agentTagColors = {
   },
 };
 
-export const AgentTag = ({ agentTag }: { agentTag?: string }) => {
+export const AgentTag = ({ agentTag, model }: { agentTag?: string; model?: string }) => {
   if (!agentTag) return null;
 
   const agentColors = Object.entries(agentTagColors).reduce(
@@ -77,14 +77,20 @@ export const AgentTag = ({ agentTag }: { agentTag?: string }) => {
     {} as Record<string, { color: string; backgroundColor: string }>,
   );
 
+  const replaced = agentTag.replace("Agent", "");
+  const tag = replaced === "ChatModel" ? (model?.toLocaleUpperCase() ?? replaced) : replaced;
+
   return (
     <Chip
-      label={agentTag}
+      label={tag}
       size="small"
       variant="outlined"
       sx={{
         height: 21,
-        width: "150px",
+        width: "120px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
         backgroundColor: `${agentColors[agentTag as keyof typeof agentColors]?.backgroundColor} !important`,
         color: `${agentColors[agentTag as keyof typeof agentColors]?.color} !important`,
         border: 0,

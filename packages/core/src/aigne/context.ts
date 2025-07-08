@@ -255,6 +255,21 @@ export class AIGNEContext implements Context {
     }
 
     this.id = this.span?.spanContext()?.spanId ?? v7();
+
+    process.on("exit", (code) => {
+      if (code === 1) {
+        this.observer?.traceExporter
+          ?.updateSpanStatus?.({
+            id: this.id,
+            traceId: this.rootId,
+            status: SpanStatusCode.ERROR,
+          })
+          .catch((err: any) => {
+            logger.error("upsertInitialSpan error", err?.message || err);
+          });
+      }
+      console.log(`进程退出，退出码: ${code}`);
+    });
   }
 
   id: string;

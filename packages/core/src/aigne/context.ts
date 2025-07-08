@@ -507,12 +507,6 @@ export class AIGNEContext implements Context {
 
           span.setStatus({ code: SpanStatusCode.OK });
 
-          await this.observer?.traceExporter
-            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
-            .catch((err) => {
-              logger.error("upsertInitialSpan error", err?.message || err);
-            });
-
           span.end();
 
           break;

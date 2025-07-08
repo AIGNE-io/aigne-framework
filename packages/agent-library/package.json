@@ -49,7 +49,6 @@
   },
   "dependencies": {
     "@aigne/core": "workspace:^",
-    "@aigne/cli": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/sqlite": "workspace:^",
     "drizzle-orm": "^0.44.2",

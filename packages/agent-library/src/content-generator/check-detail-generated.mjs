@@ -1,7 +1,6 @@
 import { access } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { availableModels } from "@aigne/cli/constants.js";
 import { AIGNE, TeamAgent } from "@aigne/core";
 
 // 获取当前脚本所在目录
@@ -32,7 +31,7 @@ export default async function checkDetailGenerated({ path, docsDir, ...rest }, o
   }
 
   const aigne = await AIGNE.load(__dirname, {
-    models: availableModels(),
+    models: [],
   });
 
   console.log("checkDetailGenerated agents", aigne.agents);

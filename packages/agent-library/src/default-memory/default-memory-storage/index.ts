@@ -1,7 +1,7 @@
 import type { AgentInvokeOptions, Context, Memory } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { initDatabase } from "@aigne/sqlite";
-import { desc, eq, type InferSelectModel, isNull, sql } from "drizzle-orm";
+import { asc, desc, eq, type InferSelectModel, isNull, sql } from "drizzle-orm";
 import type { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
 import { v7 } from "uuid";
 import { stringify } from "yaml";
@@ -48,7 +48,11 @@ export class DefaultMemoryStorage extends MemoryStorage {
   }
 
   async search(
-    query: { search?: string; limit?: number },
+    query: {
+      search?: string;
+      limit?: number;
+      orderBy?: [keyof typeof Memories.$inferSelect, "asc" | "desc"];
+    },
     { context }: AgentInvokeOptions,
   ): Promise<{ result: Memory[] }> {
     const { limit = DEFAULT_MAX_MEMORY_COUNT } = query;
@@ -72,12 +76,16 @@ export class DefaultMemoryStorage extends MemoryStorage {
             .select()
             .from(Memories)
             .where(sessionId ? eq(Memories.sessionId, sessionId) : isNull(Memories.sessionId))
-            .orderBy(desc(Memories.id))
+            .orderBy(
+              query.orderBy
+                ? (query.orderBy[1] === "asc" ? asc : desc)(sql.identifier(query.orderBy[0]))
+                : desc(Memories.id),
+            )
             .limit(limit)
             .execute();
 
     return {
-      result: memories.reverse().map(this.convertMemory),
+      result: memories.map(this.convertMemory),
     };
   }
 

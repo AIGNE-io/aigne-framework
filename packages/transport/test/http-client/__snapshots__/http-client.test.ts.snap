@@ -1402,14 +1402,28 @@ exports[`AIGNEClient should support custom memory for client agent 1`] = `
 ]
 `;
 
-exports[`AIGNEClient should support invoke chat model on the server side 1`] = `
+exports[`AIGNEClient should support custom memory for client agent 2`] = `
 [
   {
-    "content": "{"input":{"message":"Hello, I'm Bob!"},"output":{"message":"Hello Bob, How can I help you?"},"source":"chat"}",
-    "createdAt": Any<String>,
-    "id": Any<String>,
-    "sessionId": null,
-    "updatedAt": Any<String>,
+    "messages": [
+      {
+        "content": "Hello, I'm Bob!",
+        "role": "user",
+      },
+      {
+        "content": "Hello Bob, How can I help you?",
+        "role": "agent",
+      },
+      {
+        "content": "My name is?",
+        "role": "user",
+      },
+    ],
+    "modelOptions": undefined,
+    "responseFormat": undefined,
+    "toolChoice": undefined,
+    "tools": undefined,
   },
+  Anything,
 ]
 `;

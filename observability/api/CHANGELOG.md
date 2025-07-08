@@ -1,5 +1,45 @@
 # Changelog
 
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.5.0...observability-api-v0.6.0) (2025-07-08)
+
+
+### Features
+
+* support setting component id to different component data ([#226](https://github.com/AIGNE-io/aigne-framework/issues/226)) ([c7b3224](https://github.com/AIGNE-io/aigne-framework/commit/c7b32240e6660f34974615bcb9b91978a1191e3e))
+
+## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.4.0...observability-api-v0.5.0) (2025-07-04)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.3.0
+
+## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.3.3...observability-api-v0.4.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Bug Fixes
+
+* **observability:** load model metadata from api instead of js bundles ([#217](https://github.com/AIGNE-io/aigne-framework/issues/217)) ([4418126](https://github.com/AIGNE-io/aigne-framework/commit/44181263d3a8d8eca794d7e485679fcf80f0abad))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.2.0
+
 ## [0.3.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.3.2...observability-api-v0.3.3) (2025-07-02)
 
 

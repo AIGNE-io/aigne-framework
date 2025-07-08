@@ -45,9 +45,9 @@ pnpm add @aigne/agent-library @aigne/core
 ## Basic Usage
 
 ```typescript
+import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 import { AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 
 // Create AI model instance
 const model = new OpenAIChatModel({
@@ -85,9 +85,9 @@ The library currently provides one specialized agent implementation:
 ### Creating an Orchestration Workflow
 
 ```typescript
+import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,

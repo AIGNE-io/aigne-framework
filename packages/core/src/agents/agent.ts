@@ -17,9 +17,10 @@ import {
 import {
   checkArguments,
   createAccessorArray,
+  flat,
   isEmpty,
+  isRecord,
   type Nullish,
-  orArrayToArray,
   type PromiseOrValue,
   type XOr,
 } from "../utils/type-utils.js";
@@ -204,10 +205,6 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
    * and returns the final JSON result
    */
   streaming?: boolean;
-
-  userContext?: U;
-
-  memories?: Pick<Memory, "content">[];
 }
 
 /**
@@ -424,7 +421,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
   }
 
   protected subscribeToTopics(context: Pick<Context, "subscribe">) {
-    for (const topic of orArrayToArray(this.subscribeTopic).concat(this.topic)) {
+    for (const topic of flat(this.subscribeTopic).concat(this.topic)) {
       this.subscriptions.push(context.subscribe(topic, (payload) => this.onMessage(payload)));
     }
   }
@@ -569,15 +566,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       context: options.context ?? (await this.newDefaultContext()),
     };
 
-    if (options.userContext) {
-      Object.assign(opts.context.userContext, options.userContext);
-      options.userContext = undefined;
-    }
-    if (options.memories?.length) {
-      opts.context.memories.push(...options.memories);
-      options.memories = undefined;
-    }
-
     logger.debug("Invoke agent %s started with input: %O", this.name, input);
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });
 
@@ -662,6 +650,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     options: AgentInvokeOptions,
   ): Promise<O> {
     const { context } = options;
+
+    if (!isRecord(output)) {
+      throw new Error(
+        `expect to return a record type such as {result: ...}, but got (${typeof output}): ${output}`,
+      );
+    }
 
     const parsedOutput = checkArguments(
       `Agent ${this.name} output`,

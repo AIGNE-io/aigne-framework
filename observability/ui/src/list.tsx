@@ -1,16 +1,25 @@
 import dayjs from "@abtnode/util/lib/dayjs";
 import TableSearch from "@arcblock/ux/lib/Datatable/TableSearch";
+import { Confirm } from "@arcblock/ux/lib/Dialog";
 import Empty from "@arcblock/ux/lib/Empty";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
+import UserCard from "@arcblock/ux/lib/UserCard";
+import { CardType, InfoType } from "@arcblock/ux/lib/UserCard/types";
+import TrashIcon from "@mui/icons-material/Delete";
+import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
 import type { GridColDef } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
 import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
 import useLocalStorageState from "ahooks/lib/useLocalStorageState";
 import useRafInterval from "ahooks/lib/useRafInterval";
+import useRequest from "ahooks/lib/useRequest";
+import { compact } from "lodash";
 import { useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
@@ -33,11 +42,30 @@ interface TracesResponse {
 }
 
 interface SearchState {
+  componentId: string;
   searchText: string;
   dateRange: [Date, Date];
 }
 
+const BlockletComponent = ({
+  component,
+}: {
+  component: (typeof window.blocklet.componentMountPoints)[number];
+}) => {
+  const url = new URL(window.location.origin);
+  url.pathname = `/.well-known/service/blocklet/logo-bundle/${component.did}`;
+  url.searchParams.set("v", "0.5.55");
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ width: 36, height: 36, borderRadius: 1 }} component="img" src={url.toString()} />
+      <Box>{component?.title ?? component?.name}</Box>
+    </Box>
+  );
+};
+
 const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
+  const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const documentVisibility = useDocumentVisibility();
@@ -51,6 +79,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   });
 
   const [search, setSearch] = useState<SearchState>({
+    componentId: "",
     searchText: "",
     dateRange: [
       dayjs().subtract(1, "month").startOf("day").toDate(),
@@ -62,6 +91,12 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedTrace, setSelectedTrace] = useState<TraceData | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const { data: components } = useRequest(async () => {
+    const res = await fetch(joinURL(origin, "/api/trace/tree/components"));
+    return res.json() as Promise<{ data: string[] }>;
+  });
 
   const fetchTraces = async ({
     page,
@@ -82,6 +117,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           searchText,
           startDate: dateRange?.[0]?.toISOString() ?? "",
           endDate: dateRange?.[1]?.toISOString() ?? "",
+          componentId: search.componentId,
         }),
       ).then((r) => r.json() as Promise<TracesResponse>);
       const formatted: TraceData[] = res.data.map((trace) => ({
@@ -96,6 +132,16 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     }
   };
 
+  const deleteTraces = async () => {
+    try {
+      await fetch(joinURL(origin, "/api/trace/tree"), { method: "DELETE" });
+      setDialogOpen(false);
+      fetchTraces({ page: 0, pageSize: page.pageSize });
+    } finally {
+      setDialogOpen(false);
+    }
+  };
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
     if (documentVisibility === "visible") {
@@ -107,11 +153,18 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
         dateRange: search.dateRange,
       });
     }
-  }, [page.page, page.pageSize, search.searchText, search.dateRange, documentVisibility]);
+  }, [
+    page.page,
+    page.pageSize,
+    search.searchText,
+    search.dateRange,
+    documentVisibility,
+    search.componentId,
+  ]);
 
   useRafInterval(() => {
     if (!live) return;
-    if (window.blocklet?.prefix) return;
+    if (isBlocklet) return;
 
     fetch(joinURL(origin, "/api/trace/tree/stats"))
       .then((res) => res.json() as Promise<{ data: { lastTraceChanged: boolean } }>)
@@ -156,7 +209,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     };
   }, [page.pageSize]);
 
-  const columns: GridColDef<TraceData>[] = [
+  const columns: GridColDef<TraceData>[] = compact([
     { field: "id", headerName: "ID", width: 160, sortable: false },
     { field: "name", headerName: t("agentName"), minWidth: 150, sortable: false },
     {
@@ -217,7 +270,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               alignItems: "center",
               justifyContent: "center",
               gap: 1,
-              height: 40,
+              height: !isBlocklet ? 40 : 52,
             }}
           >
             {row.status?.code === 0 ? (
@@ -237,6 +290,38 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
         );
       },
     },
+    // @ts-ignore
+    isBlocklet
+      ? {
+          field: "userId",
+          headerName: t("user"),
+          minWidth: 260,
+          renderCell: ({ row }) => {
+            if (row.userId) {
+              return (
+                <Box
+                  sx={{
+                    height: 44,
+                    my: 0.5,
+                    span: { display: "flex", alignItems: "center", fontSize: 12 },
+                  }}
+                >
+                  <UserCard
+                    avatarSize={36}
+                    showDid
+                    did={row.userId}
+                    cardType={CardType.Detailed}
+                    infoType={InfoType.Minimal}
+                    sx={{ border: 0, padding: 0 }}
+                  />
+                </Box>
+              );
+            }
+
+            return null;
+          },
+        }
+      : undefined,
     {
       field: "startTime",
       headerName: t("startedAt"),
@@ -263,7 +348,27 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           "-"
         ),
     },
-  ];
+  ]);
+
+  if (isBlocklet) {
+    columns.unshift({
+      field: "component",
+      headerName: t("component"),
+      minWidth: 300,
+      sortable: false,
+      renderCell: ({ row }) => {
+        if (!row.componentId) return "";
+
+        const component = window.blocklet.componentMountPoints?.find(
+          (c) => c.did === row.componentId,
+        );
+
+        if (!component) return "";
+
+        return <BlockletComponent component={component} />;
+      },
+    });
+  }
 
   const onDateRangeChange = (value: [Date, Date]) => {
     setSearch((x) => ({ ...x, dateRange: value, page: 1 }));
@@ -291,6 +396,35 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             onSearchOpen={() => {}}
           />
 
+          {isBlocklet && (
+            <Autocomplete
+              size="small"
+              sx={{ minWidth: 240 }}
+              options={components?.data || []}
+              value={search.componentId || null}
+              onChange={(_, value) => setSearch((x) => ({ ...x, componentId: value || "" }))}
+              getOptionLabel={(option) => {
+                if (!option) return "";
+                const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
+                return comp?.title ?? comp?.name ?? option;
+              }}
+              renderInput={(params) => <TextField {...params} placeholder={t("selectComponent")} />}
+              renderOption={(props, option) => {
+                const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
+                if (!comp) return null;
+
+                return (
+                  <Box component="li" {...props} key={option}>
+                    <BlockletComponent component={comp} />
+                  </Box>
+                );
+              }}
+              clearOnEscape
+              clearText={t("clear")}
+              noOptionsText={t("noOptions")}
+            />
+          )}
+
           <Box key="date-picker" sx={{ mx: 1 }}>
             <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
           </Box>
@@ -298,6 +432,12 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           <Box sx={{ display: "flex" }}>
             <SwitchComponent live={live} setLive={setLive} />
           </Box>
+
+          {!isBlocklet && (
+            <IconButton onClick={() => setDialogOpen(true)}>
+              <TrashIcon sx={{ color: "error.main" }} />
+            </IconButton>
+          )}
         </Box>
 
         <DataGrid
@@ -311,7 +451,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             setPage((x) => ({ ...x, page: model.page + 1, pageSize: model.pageSize }));
           }}
           rowCount={total}
-          rowHeight={40}
+          rowHeight={isBlocklet ? 52 : 40}
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? "" : "striped-row"
           }
@@ -372,6 +512,33 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           });
         }}
       />
+
+      {dialogOpen && (
+        <Confirm
+          confirmButton={{
+            text: t("common.confirm"),
+            props: {
+              variant: "contained",
+              color: "error",
+            },
+          }}
+          cancelButton={{
+            text: t("common.cancel"),
+            props: {
+              color: "primary",
+            },
+          }}
+          open={dialogOpen}
+          title={t("delete.restConfirmTitle")}
+          onConfirm={async () => {
+            await deleteTraces();
+            setDialogOpen(false);
+          }}
+          onCancel={() => setDialogOpen(false)}
+        >
+          <p>{t("delete.restConfirmDesc")}</p>
+        </Confirm>
+      )}
     </ToastProvider>
   );
 };

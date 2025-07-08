@@ -55,4 +55,17 @@ export default flatten({
   },
   search: "搜索",
   pending: "进行中",
+  component: "组件",
+  selectComponent: "选择组件",
+  clear: "清除",
+  noOptions: "无选项",
+  user: "用户信息",
+  common: {
+    confirm: "确定",
+    cancel: "取消",
+  },
+  delete: {
+    restConfirmTitle: "删除 Trace",
+    restConfirmDesc: "确定要删除所有 Trace 吗？",
+  },
 });

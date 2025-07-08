@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.29.1",
+  "version": "1.32.0",
   "description": "AIGNE core library for building AI-powered applications",
   "publishConfig": {
     "access": "public"
@@ -85,6 +85,7 @@
     "jsonata": "^2.0.6",
     "mustache": "^4.2.0",
     "nanoid": "^5.1.5",
+    "nunjucks": "^3.2.4",
     "p-retry": "^6.2.1",
     "raw-body": "^3.0.0",
     "strict-event-emitter": "^0.5.1",
@@ -101,6 +102,7 @@
     "@types/express": "^5.0.3",
     "@types/mustache": "^4.2.6",
     "@types/node": "^24.0.10",
+    "@types/nunjucks": "^3.2.6",
     "compression": "^1.8.0",
     "detect-port": "^2.1.0",
     "express": "^5.1.0",

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.2.0...sqlite-v0.3.0) (2025-07-04)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+
+## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.1.1...sqlite-v0.2.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
 ## [0.1.1](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.1.0...sqlite-v0.1.1) (2025-06-05)
 
 

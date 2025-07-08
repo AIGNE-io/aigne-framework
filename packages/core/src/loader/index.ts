@@ -9,6 +9,7 @@ import { MCPAgent } from "../agents/mcp-agent.js";
 import { TeamAgent } from "../agents/team-agent.js";
 import { TransformAgent } from "../agents/transform-agent.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
+import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { loadAgentFromYamlFile } from "./agent-yaml.js";
@@ -107,6 +108,9 @@ async function parseAgent(
     case "ai": {
       return AIAgent.from({
         ...agent,
+        instructions:
+          agent.instructions &&
+          PromptBuilder.from(agent.instructions, { workingDir: nodejs.path.dirname(path) }),
         memory,
         skills,
       });

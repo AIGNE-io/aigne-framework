@@ -55,4 +55,17 @@ export default flatten({
   },
   search: "Search",
   pending: "Running",
+  component: "Component",
+  selectComponent: "Select Component",
+  clear: "Clear",
+  noOptions: "No Options",
+  user: "User Info",
+  common: {
+    confirm: "Confirm",
+    cancel: "Cancel",
+  },
+  delete: {
+    restConfirmTitle: "Delete Traces",
+    restConfirmDesc: "Are you sure you want to delete all traces?",
+  },
 });

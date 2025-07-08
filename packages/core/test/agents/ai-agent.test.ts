@@ -592,3 +592,94 @@ test("AIAgent should pass memories from invocation options to the tools", async 
     }),
   );
 });
+
+test("AIAgent should respond with metadata in structuredStreamMode", async () => {
+  const model = new OpenAIChatModel();
+  const aigne = new AIGNE({ model });
+
+  const agent = AIAgent.from({
+    inputKey: "message",
+    structuredStreamMode: true,
+    outputSchema: z.object({
+      confidence: z.number().min(0).max(10),
+      needMoreContext: z.boolean(),
+    }),
+  });
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve(
+      stringToAgentResponseStream(
+        `\
+Hello, How can I help you today?
+<metadata>
+confidence: 9
+needMoreContext: false
+</metadata>
+`,
+      ),
+    ),
+  );
+
+  const response = await aigne.invoke(agent, { message: "Hello" });
+  expect(response).toMatchInlineSnapshot(`
+    {
+      "confidence": 9,
+      "message": 
+    "Hello, How can I help you today?
+
+    "
+    ,
+      "needMoreContext": false,
+    }
+  `);
+});
+
+test("AIAgent should respond with metadata in structuredStreamMode with customStructuredStreamInstructions", async () => {
+  const model = new OpenAIChatModel();
+  const aigne = new AIGNE({ model });
+
+  const agent = AIAgent.from({
+    inputKey: "message",
+    structuredStreamMode: true,
+    customStructuredStreamInstructions: {
+      instructions:
+        "Output metadata in JSON format at the end of response in markdown code block with json language",
+      metadataStart: "```json",
+      metadataEnd: "```",
+      parse: JSON.parse,
+    },
+    outputSchema: z.object({
+      confidence: z.number().min(0).max(10),
+      needMoreContext: z.boolean(),
+    }),
+  });
+
+  spyOn(model, "process").mockReturnValueOnce(
+    Promise.resolve(
+      stringToAgentResponseStream(
+        `\
+Hello, How can I help you today?
+${"```json"}
+{
+  "confidence": 9,
+  "needMoreContext": false
+}
+${"```"}
+`,
+      ),
+    ),
+  );
+
+  const response = await aigne.invoke(agent, { message: "Hello" });
+  expect(response).toMatchInlineSnapshot(`
+    {
+      "confidence": 9,
+      "message": 
+    "Hello, How can I help you today?
+
+    "
+    ,
+      "needMoreContext": false,
+    }
+  `);
+});

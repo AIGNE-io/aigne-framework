@@ -123,7 +123,7 @@ test("XAIChatModel.invoke should return the correct tool", async () => {
   );
 
   const result = await model.invoke({
-    messages: createWeatherToolMessages(),
+    messages: await createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
 
@@ -143,7 +143,7 @@ test("XAIChatModel.invoke", async () => {
   );
 
   const result = await model.invoke({
-    messages: createWeatherToolCallMessages(),
+    messages: await createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
   });

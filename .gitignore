@@ -62,4 +62,4 @@ lerna-debug.log*
 /docs/CONTRIBUTING.zh.md
 /docs/RELEASING.md
 /docs/RELEASING.zh.md
-**/*/observer.*
+**/*/modelPricesAndContextWindow.json

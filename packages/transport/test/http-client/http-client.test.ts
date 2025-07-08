@@ -256,7 +256,7 @@ test("AIGNEClient example simple", async () => {
   error.mockRestore();
 });
 
-test("AIGNEClient should support custom memory for client agent", async () => {
+test("AIGNEClient should support invoke chat model on the server side", async () => {
   const { url, close, aigne } = await createExpressServer();
 
   try {
@@ -291,7 +291,7 @@ test("AIGNEClient should support custom memory for client agent", async () => {
   }
 });
 
-test("AIGNEClient should support invoke chat model on the server side", async () => {
+test("AIGNEClient should support custom memory for client agent", async () => {
   const { url, close, aigne } = await createExpressServer();
 
   try {
@@ -334,24 +334,41 @@ test("AIGNEClient should support invoke chat model on the server side", async ()
 
     const response2 = await clientAgent.invoke({ message: "My name is?" });
     expect(response2).toEqual({ message: "Your name is Bob." });
+    expect(modelProcess.mock.lastCall).toMatchSnapshot([{}, expect.anything()]);
+  } finally {
+    close();
+  }
+});
+
+test("AIGNEClient should pass userContext to server side agent", async () => {
+  const { url, close, aigne } = await createExpressServer();
+
+  try {
+    assert(aigne.model instanceof ChatModel);
+
+    const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce(
+      stringToAgentResponseStream("Hello Bob, How can I help you?"),
+    );
+
+    const client = new AIGNEHTTPClient({ url });
+
+    const clientAgent = await client.getAgent({ name: "chat" });
+
+    const response = await client.invoke(
+      clientAgent,
+      { message: "Hello, I'm Bob!" },
+      { userContext: { userId: "test_user_id" } },
+    );
+
+    expect(response).toEqual({ message: "Hello Bob, How can I help you?" });
+
     expect(modelProcess).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            role: "system",
-            content: expect.stringContaining("Hello, I'm Bob!"),
-          }),
-          expect.objectContaining({
-            role: "system",
-            content: expect.stringContaining("Hello Bob, How can I help you?"),
-          }),
-          expect.objectContaining({
-            role: "user",
-            content: expect.stringContaining("My name is?"),
-          }),
-        ]),
-      }),
       expect.anything(),
+      expect.objectContaining({
+        context: expect.objectContaining({
+          userContext: { userId: "test_user_id" },
+        }),
+      }),
     );
   } finally {
     close();

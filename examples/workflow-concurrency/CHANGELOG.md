@@ -1,5 +1,57 @@
 # Changelog
 
+## [1.16.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.0...example-workflow-concurrency-v1.16.1) (2025-07-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.0
+    * @aigne/cli bumped to 1.22.1
+    * @aigne/core bumped to 1.32.0
+    * @aigne/openai bumped to 0.8.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.2
+
+## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.15.0...example-workflow-concurrency-v1.16.0) (2025-07-04)
+
+
+### Features
+
+* **memory:** add support for AgenticMemory & some improvements for DefaultMemory ([#224](https://github.com/AIGNE-io/aigne-framework/issues/224)) ([f4a08af](https://github.com/AIGNE-io/aigne-framework/commit/f4a08aff935205c62615c060763c835a9579607d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.19.0
+    * @aigne/cli bumped to 1.22.0
+    * @aigne/core bumped to 1.31.0
+    * @aigne/openai bumped to 0.7.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.1
+
+## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.14.3...example-workflow-concurrency-v1.15.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.18.0
+    * @aigne/cli bumped to 1.21.0
+    * @aigne/core bumped to 1.30.0
+    * @aigne/openai bumped to 0.7.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.0
+
 ## [1.14.3](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.14.2...example-workflow-concurrency-v1.14.3) (2025-07-02)
 
 

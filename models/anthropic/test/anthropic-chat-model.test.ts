@@ -135,7 +135,7 @@ test("AnthropicChatModel.invoke", async () => {
   );
 
   const result1 = await model.invoke({
-    messages: createWeatherToolMessages(),
+    messages: await createWeatherToolMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
   });
@@ -143,7 +143,7 @@ test("AnthropicChatModel.invoke", async () => {
   expect(result1).toMatchSnapshot();
 
   const result2 = await model.invoke({
-    messages: createWeatherToolCallMessages(),
+    messages: await createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
   });

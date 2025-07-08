@@ -259,7 +259,7 @@ export class OrchestratorAgent<
       const agent = this.skills.find((skill) => skill.name === task.agent);
       if (!agent) throw new Error(`Agent ${task.agent} not found`);
 
-      const prompt = PromptTemplate.from(TASK_PROMPT_TEMPLATE).format(<TaskPromptInput>{
+      const prompt = await PromptTemplate.from(TASK_PROMPT_TEMPLATE).format(<TaskPromptInput>{
         objective: planResult.objective,
         step,
         task,

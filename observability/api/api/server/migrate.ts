@@ -1,11 +1,9 @@
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { sql } from "drizzle-orm/sql";
 import type { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
-import init from "./migrations/001-init.js";
+import migrations from "./migrations/index.js";
 
 export async function migrate(db: LibSQLDatabase | SqliteRemoteDatabase) {
-  const migrations = [init];
-
   const migrationsTable = "__drizzle_migrations";
   const migrationTableCreate = sql`
     CREATE TABLE IF NOT EXISTS ${sql.identifier(migrationsTable)} (
@@ -16,26 +14,20 @@ export async function migrate(db: LibSQLDatabase | SqliteRemoteDatabase) {
 
   await db.run(migrationTableCreate).execute();
 
-  const dbMigrations = await db
-    .values<[number, string]>(
-      sql`SELECT id, hash FROM ${sql.identifier(migrationsTable)} ORDER BY id DESC LIMIT 1`,
-    )
-    .execute();
+  const executedMigrations = await db.all<{ hash: string }>(
+    sql`SELECT hash FROM ${sql.identifier(migrationsTable)} ORDER BY id`,
+  );
 
-  const lastDbMigration = dbMigrations[0];
-
-  const queriesToRun = [];
+  const executedHashes = new Set(executedMigrations.map((m) => m.hash));
 
   for (const migration of migrations) {
-    if (!lastDbMigration || lastDbMigration[1] < migration.hash) {
-      queriesToRun.push(
-        ...migration.sql,
-        `INSERT INTO \`${migrationsTable}\` ("hash") VALUES('${migration.hash}')`,
-      );
-    }
-  }
+    if (!executedHashes.has(migration.hash)) {
+      await db.run(migration.sql).execute();
+      await db
+        .run(sql`INSERT INTO ${sql.identifier(migrationsTable)} (hash) VALUES (${migration.hash})`)
+        .execute();
 
-  for (const query of queriesToRun) {
-    await db.run(query).execute();
+      console.log(`Migration ${migration.hash} executed`);
+    }
   }
 }

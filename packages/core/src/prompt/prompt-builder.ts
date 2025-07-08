@@ -2,6 +2,7 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
 import type { AIAgent } from "../agents/ai-agent.js";
 import type {
@@ -15,8 +16,9 @@ import type {
 } from "../agents/chat-model.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { unique } from "../utils/type-utils.js";
+import { isRecord, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
+import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
@@ -27,9 +29,10 @@ import {
 
 export interface PromptBuilderOptions {
   instructions?: string | ChatMessagesTemplate;
+  workingDir?: string;
 }
 
-export interface PromptBuildOptions extends Pick<AgentInvokeOptions, "context"> {
+export interface PromptBuildOptions extends Partial<Pick<AgentInvokeOptions, "context">> {
   agent?: AIAgent;
   input?: Message;
   model?: ChatModel;
@@ -37,19 +40,23 @@ export interface PromptBuildOptions extends Pick<AgentInvokeOptions, "context"> 
 }
 
 export class PromptBuilder {
-  static from(instructions: string | { path: string } | GetPromptResult): PromptBuilder {
-    if (typeof instructions === "string") return new PromptBuilder({ instructions });
+  static from(
+    instructions: string | { path: string } | GetPromptResult,
+    { workingDir }: { workingDir?: string } = {},
+  ): PromptBuilder {
+    if (typeof instructions === "string")
+      return new PromptBuilder({ instructions, workingDir: workingDir });
 
     if (isFromPromptResult(instructions)) return PromptBuilder.fromMCPPromptResult(instructions);
 
-    if (isFromPath(instructions)) return PromptBuilder.fromFile(instructions.path);
+    if (isFromPath(instructions)) return PromptBuilder.fromFile(instructions.path, { workingDir });
 
     throw new Error(`Invalid instructions ${instructions}`);
   }
 
-  private static fromFile(path: string): PromptBuilder {
+  private static fromFile(path: string, { workingDir }: { workingDir?: string }): PromptBuilder {
     const text = nodejs.fsSync.readFileSync(path, "utf-8");
-    return PromptBuilder.from(text);
+    return PromptBuilder.from(text, { workingDir: workingDir || nodejs.path.dirname(path) });
   }
 
   private static fromMCPPromptResult(result: GetPromptResult): PromptBuilder {
@@ -84,14 +91,19 @@ export class PromptBuilder {
 
   constructor(options?: PromptBuilderOptions) {
     this.instructions = options?.instructions;
+    this.workingDir = options?.workingDir;
   }
 
   instructions?: string | ChatMessagesTemplate;
 
+  workingDir?: string;
+
   async build(options: PromptBuildOptions): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
     return {
       messages: await this.buildMessages(options),
-      responseFormat: this.buildResponseFormat(options),
+      responseFormat: options.agent?.structuredStreamMode
+        ? undefined
+        : this.buildResponseFormat(options),
       ...this.buildTools(options),
     };
   }
@@ -103,22 +115,45 @@ export class PromptBuilder {
     const message = inputKey && typeof input?.[inputKey] === "string" ? input[inputKey] : undefined;
 
     const messages =
-      (typeof this.instructions === "string"
+      (await (typeof this.instructions === "string"
         ? ChatMessagesTemplate.from([SystemMessageTemplate.from(this.instructions)])
         : this.instructions
-      )?.format(options.input) ?? [];
+      )?.format(options.input, { workingDir: this.workingDir })) ?? [];
 
     const memories: Pick<Memory, "content">[] = [];
 
-    if (options.agent?.inputKey) {
-      memories.push(...(await options.agent.retrieveMemories({ search: message }, options)));
+    if (options.agent && options.context) {
+      memories.push(
+        ...(await options.agent.retrieveMemories(
+          { search: message },
+          { context: options.context },
+        )),
+      );
     }
 
-    if (options.context.memories?.length) {
+    if (options.context?.memories?.length) {
       memories.push(...options.context.memories);
     }
 
-    if (memories.length) messages.push(...this.convertMemoriesToMessages(memories, options));
+    if (memories.length)
+      messages.push(...(await this.convertMemoriesToMessages(memories, options)));
+
+    // if the agent is using structured stream mode, add the instructions
+    const { structuredStreamMode, outputSchema } = options.agent || {};
+    if (structuredStreamMode && outputSchema) {
+      const instructions =
+        options.agent?.customStructuredStreamInstructions?.instructions ||
+        PromptBuilder.from(STRUCTURED_STREAM_INSTRUCTIONS.instructions);
+
+      messages.push(
+        ...(await instructions.buildMessages({
+          input: {
+            ...input,
+            outputJsonSchema: zodToJsonSchema(outputSchema),
+          },
+        })),
+      );
+    }
 
     if (message) {
       messages.push({
@@ -130,20 +165,37 @@ export class PromptBuilder {
     return messages;
   }
 
-  private convertMemoriesToMessages(
+  private async convertMemoriesToMessages(
     memories: Pick<Memory, "content">[],
     options: PromptBuildOptions,
-  ): ChatModelInputMessage[] {
-    const str = stringify(memories.map((i) => i.content));
+  ): Promise<ChatModelInputMessage[]> {
+    const messages: ChatModelInputMessage[] = [];
+    const other: unknown[] = [];
 
-    return [
-      {
+    const stringOrStringify = (value: unknown): string =>
+      typeof value === "string" ? value : stringify(value);
+
+    for (const { content } of memories) {
+      if (isRecord(content) && "input" in content && "output" in content) {
+        messages.push(
+          { role: "user", content: stringOrStringify(content.input) },
+          { role: "agent", content: stringOrStringify(content.output) },
+        );
+      } else {
+        other.push(content);
+      }
+    }
+
+    if (other.length) {
+      messages.unshift({
         role: "system",
-        content: PromptTemplate.from(
+        content: await PromptTemplate.from(
           options.agent?.memoryPromptTemplate || MEMORY_MESSAGE_TEMPLATE,
-        ).format({ memories: str }),
-      },
-    ];
+        ).format({ memories: stringify(other) }),
+      });
+    }
+
+    return messages;
   }
 
   private buildResponseFormat(

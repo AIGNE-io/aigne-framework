@@ -23,4 +23,6 @@ export interface TraceData {
     userContext?: Record<string, unknown>;
     memories?: Record<string, unknown>[];
   };
+  componentId?: string;
+  userId?: string;
 }

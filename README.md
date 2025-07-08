@@ -121,8 +121,7 @@ The AIGNE Framework offers multiple workflow patterns, each tailored to address 
 * [Workflow Code Execution](./examples/workflow-code-execution) - Safely execute dynamically generated code within AI-driven workflows.
 * [Workflow Group Chat](./examples/workflow-group-chat) - Share messages and interact with multiple agents in a group chat environment.
 
-
-### Sequential 
+### Sequential
 
 **Use Cases**: Processing multi-step tasks that require a specific execution order, such as content generation pipelines, multi-stage data processing, etc.
 
@@ -146,9 +145,9 @@ class writer processing
 class formatProof processing
 ```
 
-**Example**: [@aigne/example-workflow-sequential: Pipeline](./examples/workflow-sequential/README.md) 
+**Example**: [@aigne/example-workflow-sequential: Pipeline](./examples/workflow-sequential/README.md)
 
-### Concurrency 
+### Concurrency
 
 **Use Cases**: Scenarios requiring simultaneous processing of multiple independent tasks to improve efficiency, such as parallel data analysis, multi-dimensional content evaluation, etc.
 
@@ -176,7 +175,7 @@ class aggregator processing
 
 **Example**: [@aigne/example-workflow-concurrency: Concurrency](./examples/workflow-concurrency/README.md)
 
-### Router 
+### Router
 
 **Use Cases**: Scenarios where requests need to be routed to different specialized processors based on input content type, such as intelligent customer service systems, multi-functional assistants, etc.
 
@@ -207,8 +206,7 @@ class other processing
 
 **Example**: [@aigne/example-workflow-router: Router](./examples/workflow-router/README.md)
 
-
-### Handoff 
+### Handoff
 
 **Use Cases**: Scenarios requiring control transfer between different specialized agents to solve complex problems, such as expert collaboration systems, etc.
 
@@ -233,8 +231,7 @@ class agentB processing
 
 **Example**: [@aigne/example-workflow-handoff: Task handoff](./examples/workflow-handoff/README.md)
 
-
-### Reflection 
+### Reflection
 
 **Use Cases**: Scenarios requiring self-assessment and iterative improvement of output quality, such as code reviews, content quality control, etc.
 
@@ -259,8 +256,7 @@ class reviewer processing
 
 **Example**: [@aigne/example-workflow-reflection: Reflection](./examples/workflow-reflection/README.md)
 
-
-### Code Execution 
+### Code Execution
 
 **Use Cases**: Scenarios requiring dynamically generated code execution to solve problems, such as automated data analysis, algorithmic problem solving, etc.
 

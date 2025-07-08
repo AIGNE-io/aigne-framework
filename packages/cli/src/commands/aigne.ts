@@ -14,7 +14,7 @@ export function createAIGNECommand(options?: { aigneFilePath?: string }): Comman
     .name("aigne")
     .description("CLI for AIGNE framework")
     .version(AIGNE_CLI_VERSION)
-    .addCommand(createRunCommand(options))
+    .addCommand(createRunCommand(options), { isDefault: true })
     .addCommand(createTestCommand(options))
     .addCommand(createCreateCommand())
     .addCommand(createServeMCPCommand(options))

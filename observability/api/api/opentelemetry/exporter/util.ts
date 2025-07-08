@@ -1,7 +1,7 @@
 import { hrTimeToMilliseconds } from "@opentelemetry/core";
 import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";
 
-import { recordTraceBatchSchema } from "../../core/schema.js";
+import { createTraceBatchSchema } from "../../core/schema.js";
 
 export const validateTraceSpans = (spans: ReadableSpan[]) => {
   const payload = spans
@@ -33,7 +33,7 @@ export const validateTraceSpans = (spans: ReadableSpan[]) => {
       const trace = {
         id: span.spanContext().spanId,
         rootId: span.spanContext().traceId,
-        parentId: span?.parentSpanContext?.spanId,
+        parentId: span?.parentSpanContext?.spanId || undefined,
         name: span.name,
         startTime: Number.isNaN(Number(startTime))
           ? Math.floor(hrTimeToMilliseconds(span.startTime))
@@ -41,13 +41,15 @@ export const validateTraceSpans = (spans: ReadableSpan[]) => {
         endTime: Math.floor(hrTimeToMilliseconds(span.endTime)),
         status: span.status,
         attributes: parsedAttributes,
+        userId: parsedAttributes?.userContext?.userId,
+        sessionId: parsedAttributes?.userContext?.sessionId,
       };
 
       return trace;
     })
     .reverse();
 
-  const validatedTraces = recordTraceBatchSchema.parse(payload);
+  const validatedTraces = createTraceBatchSchema.parse(payload);
 
   return validatedTraces;
 };

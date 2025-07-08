@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.6.1...anthropic-v0.7.0) (2025-07-08)
+
+
+### Features
+
+* **core:** add jinja syntax support for prompt builder ([#230](https://github.com/AIGNE-io/aigne-framework/issues/230)) ([74436a7](https://github.com/AIGNE-io/aigne-framework/commit/74436a7faac0c59a32b0153481386162649f4357))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.32.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.2
+
+## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.6.0...anthropic-v0.6.1) (2025-07-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.31.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.1
+
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.5.4...anthropic-v0.6.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.30.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.0
+
 ## [0.5.4](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.5.3...anthropic-v0.5.4) (2025-07-02)
 
 

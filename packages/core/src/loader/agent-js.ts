@@ -19,7 +19,7 @@ const agentJsFileSchema = z.object({
 
 export async function loadAgentFromJsFile(path: string) {
   const { default: agent } = await tryOrThrow(
-    () => import(path),
+    () => import(/* @vite-ignore */ path),
     (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
   );
 

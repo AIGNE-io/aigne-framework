@@ -9,7 +9,6 @@ export function load(app: Application) {
     help: 'Expression to remove from examples. Example: ["spyOn", "expect"]',
   });
 
-  // @ts-ignore
   app.converter.on("resolveReflection", (_: Context, reflection: Reflection) => {
     const expressions = z
       .array(z.string())

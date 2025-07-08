@@ -1,6 +1,15 @@
 import { expect, mock, spyOn, test } from "bun:test";
-import { AIAgent, AIGNE, type ContextEventMap, type MessageQueueListener } from "@aigne/core";
-import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
+import {
+  AIAgent,
+  AIGNE,
+  type ContextEventMap,
+  FunctionAgent,
+  type MessageQueueListener,
+} from "@aigne/core";
+import {
+  arrayToAgentProcessAsyncGenerator,
+  readableStreamToArray,
+} from "@aigne/core/utils/stream-utils.js";
 import type { Listener } from "@aigne/core/utils/typed-event-emitter.js";
 
 test("AIGNEContext should subscribe/unsubscribe correctly", async () => {
@@ -143,4 +152,49 @@ test("AIGNEContext should get/set userContext correctly", async () => {
 
   context.userContext = { userId: "new_user_id" };
   expect(context.userContext).toEqual({ userId: "new_user_id" });
+});
+
+test("AIGNEContext.invoke should update userContext/memories correctly", async () => {
+  const aigne = new AIGNE({});
+
+  const agent = FunctionAgent.from(() => ({}));
+
+  const agentProcess = spyOn(agent, "process");
+
+  await aigne.invoke(
+    agent,
+    { message: "hello" },
+    { userContext: { userId: "test_user_id" }, memories: [{ content: "test memory content" }] },
+  );
+
+  expect(agentProcess).toHaveBeenLastCalledWith(
+    expect.anything(),
+    expect.objectContaining({
+      context: expect.objectContaining({
+        userContext: { userId: "test_user_id" },
+        memories: [{ content: "test memory content" }],
+      }),
+    }),
+  );
+});
+
+test("AIGNEContext.invoke should check output is a record type", async () => {
+  const aigne = new AIGNE({});
+
+  // biome-ignore lint/security/noGlobalEval: just for testing
+  const agent = FunctionAgent.from(() => eval("4 * 4"));
+
+  expect(
+    await readableStreamToArray(await aigne.invoke(agent, {}, { streaming: true }), {
+      catchError: true,
+    }),
+  ).toMatchInlineSnapshot(`
+    [
+      [Error: expect to return a record type such as {result: ...}, but got (number): 16],
+    ]
+  `);
+
+  expect(aigne.invoke(agent, {})).rejects.toThrow(
+    "expect to return a record type such as {result: ...}, but got (number): 16",
+  );
 });

@@ -13,6 +13,58 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.20.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.19.0...agent-library-v1.20.0) (2025-07-08)
+
+
+### Features
+
+* **core:** add jinja syntax support for prompt builder ([#230](https://github.com/AIGNE-io/aigne-framework/issues/230)) ([74436a7](https://github.com/AIGNE-io/aigne-framework/commit/74436a7faac0c59a32b0153481386162649f4357))
+
+
+### Bug Fixes
+
+* wrong type AgenticMemoryRetrieverOptions ([0893e02](https://github.com/AIGNE-io/aigne-framework/commit/0893e0271ea6870a420f8c6fd59022ab6566b9c2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.32.0
+    * @aigne/openai bumped to 0.8.0
+
+## [1.19.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.18.0...agent-library-v1.19.0) (2025-07-04)
+
+
+### Features
+
+* **memory:** add support for AgenticMemory & some improvements for DefaultMemory ([#224](https://github.com/AIGNE-io/aigne-framework/issues/224)) ([f4a08af](https://github.com/AIGNE-io/aigne-framework/commit/f4a08aff935205c62615c060763c835a9579607d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.31.0
+    * @aigne/openai bumped to 0.7.1
+    * @aigne/sqlite bumped to 0.3.0
+
+## [1.18.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.17.9...agent-library-v1.18.0) (2025-07-03)
+
+
+### Features
+
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.30.0
+    * @aigne/openai bumped to 0.7.0
+    * @aigne/sqlite bumped to 0.2.0
+
 ## [1.17.9](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.17.8...agent-library-v1.17.9) (2025-07-02)
 
 

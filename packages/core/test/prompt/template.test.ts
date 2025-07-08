@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import assert from "node:assert";
 import {
   AgentMessageTemplate,
   PromptTemplate,
@@ -7,22 +8,24 @@ import {
 } from "@aigne/core";
 
 test("PromptTemplate.format", async () => {
-  const prompt = PromptTemplate.from("Hello, {{name}}!").format({ name: "Alice" });
+  const prompt = await PromptTemplate.from("Hello, {{name}}!").format({ name: "Alice" });
   expect(prompt).toBe("Hello, Alice!");
 });
 
 test("PromptTemplate.format with variable value is nil", async () => {
-  const prompt = PromptTemplate.from("Hello, {{name}}!").format({});
+  const prompt = await PromptTemplate.from("Hello, {{name}}!").format({});
   expect(prompt).toBe("Hello, !");
 });
 
 test("PromptTemplate.format with json variable", async () => {
-  const prompt = PromptTemplate.from("Hello, {{name}}!").format({ name: { username: "Alice" } });
+  const prompt = await PromptTemplate.from("Hello, {{name}}!").format({
+    name: { username: "Alice" },
+  });
   expect(prompt).toBe('Hello, {"username":"Alice"}!');
 });
 
 test("AgentMessageTemplate", async () => {
-  const prompt = AgentMessageTemplate.from("Hello, {{name}}!", undefined, "AgentA").format({
+  const prompt = await AgentMessageTemplate.from("Hello, {{name}}!", undefined, "AgentA").format({
     name: "Alice",
   });
   expect(prompt).toEqual({
@@ -32,7 +35,7 @@ test("AgentMessageTemplate", async () => {
     name: "AgentA",
   });
 
-  const toolCallsPrompt = AgentMessageTemplate.from(
+  const toolCallsPrompt = await AgentMessageTemplate.from(
     undefined,
     [
       {
@@ -64,7 +67,7 @@ test("AgentMessageTemplate", async () => {
 });
 
 test("ToolMessageTemplate", async () => {
-  const prompt = ToolMessageTemplate.from("Hello, {{name}}!", "tool1", "AgentA").format({
+  const prompt = await ToolMessageTemplate.from("Hello, {{name}}!", "tool1", "AgentA").format({
     name: "Alice",
   });
   expect(prompt).toEqual({
@@ -74,7 +77,7 @@ test("ToolMessageTemplate", async () => {
     name: "AgentA",
   });
 
-  const objectPrompt = ToolMessageTemplate.from(
+  const objectPrompt = await ToolMessageTemplate.from(
     { result: { content: "call tool success" } },
     "tool1",
     "AgentA",
@@ -86,7 +89,7 @@ test("ToolMessageTemplate", async () => {
     name: "AgentA",
   });
 
-  const bigintPrompt = ToolMessageTemplate.from(
+  const bigintPrompt = await ToolMessageTemplate.from(
     { result: { content: 1234567890n } },
     "tool1",
     "AgentA",
@@ -131,7 +134,10 @@ test("parseChatMessages", async () => {
       name: "AgentA",
     },
   ];
-  const result = parseChatMessages(messages)?.map((m) => m.format());
+  const msgs = parseChatMessages(messages);
+  assert(msgs);
+
+  const result = await Promise.all(msgs.map((m) => m.format()));
   expect(result).toEqual([
     { role: "system", content: "system message" },
     { role: "user", content: "user message", name: "UserA" },

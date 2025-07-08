@@ -1,21 +1,24 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   type Agent,
   AIAgent,
+  AIGNE,
   FunctionAgent,
   ProcessMode,
+  stringToAgentResponseStream,
   TeamAgent,
   TransformAgent,
 } from "@aigne/core";
 import { loadAgentFromYamlFile } from "@aigne/core/loader/agent-yaml.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
 import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
+import { pick } from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { ZodType } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 test("loadAgentFromYaml should load AIAgent correctly", async () => {
   const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/chat.yaml"));
@@ -134,6 +137,10 @@ test("loadAgentFromYaml should load TeamAgent correctly", async () => {
 });
 
 test("loadAgentFromYaml should load AIAgent with prompt file correctly", async () => {
+  const model = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/chat-with-prompt.yaml"),
   );
@@ -141,9 +148,15 @@ test("loadAgentFromYaml should load AIAgent with prompt file correctly", async (
   expect(agent).toBeInstanceOf(AIAgent);
   assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
 
-  expect(agent.instructions.instructions).toEqual(
-    await readFile(join(import.meta.dirname, "../../test-agents/chat-prompt.md"), "utf8"),
+  expect(agent.instructions.instructions).toMatchSnapshot();
+
+  const modelProcess = spyOn(model, "process").mockReturnValueOnce(
+    stringToAgentResponseStream("Hello, this is a test response message"),
   );
+  await aigne.invoke(agent, {
+    language: "English",
+  });
+  expect(pick(modelProcess.mock.lastCall?.at(0) as any, "messages")).toMatchSnapshot({});
 });
 
 test("loadAgentFromYaml should load nested agent correctly", async () => {

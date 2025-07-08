@@ -13,8 +13,12 @@ export const recordTraceSchema = z.object({
   events: z.array(z.any()).optional(),
   userId: z.string().optional(),
   sessionId: z.string().optional(),
+  componentId: z.string().optional(),
 });
 
-export type RecordTrace = z.infer<typeof recordTraceSchema>;
-
-export const recordTraceBatchSchema = z.array(recordTraceSchema);
+export const createTraceSchema = recordTraceSchema.omit({});
+export const updateTraceSchema = recordTraceSchema.partial();
+export const createTraceBatchSchema = z.array(createTraceSchema);
+export type TraceInput = z.infer<typeof createTraceSchema>;
+export type TraceUpdate = z.infer<typeof updateTraceSchema>;
+export type TraceBatch = z.infer<typeof createTraceBatchSchema>;

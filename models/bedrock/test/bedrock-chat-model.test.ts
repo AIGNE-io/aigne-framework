@@ -138,14 +138,14 @@ test("BedrockChatModel.invoke with tool call and structured output", async () =>
     .mockImplementationOnce(() => import("./bedrock-structured-response-3.json"));
 
   const result1 = await model.invoke({
-    messages: createWeatherToolMessages(),
+    messages: await createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
 
   expect(result1).toMatchSnapshot();
 
   const result2 = await model.invoke({
-    messages: createWeatherToolCallMessages(),
+    messages: await createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
   });

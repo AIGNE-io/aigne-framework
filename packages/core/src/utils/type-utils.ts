@@ -129,7 +129,7 @@ export function omitBy<T extends Record<string, unknown>, K extends keyof T>(
   ) as Partial<T>;
 }
 
-export function orArrayToArray<T>(value?: T | T[]): T[] {
+export function flat<T>(value?: T | T[]): T[] {
   if (isNil(value)) return [];
   return Array.isArray(value) ? value : [value];
 }

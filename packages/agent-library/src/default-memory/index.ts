@@ -11,7 +11,7 @@ import {
   type MemoryRetrieverInput,
   type MemoryRetrieverOutput,
 } from "@aigne/core";
-import { isRecord, pick } from "@aigne/core/utils/type-utils.js";
+import { flat, isRecord, pick } from "@aigne/core/utils/type-utils.js";
 import {
   DefaultMemoryStorage,
   type DefaultMemoryStorageOptions,
@@ -20,11 +20,11 @@ import { MemoryStorage } from "./storage.js";
 
 const DEFAULT_RETRIEVE_MEMORY_COUNT = 10;
 
-export interface DefaultMemoryOptions extends Partial<MemoryAgentOptions> {
+export interface DefaultMemoryOptions
+  extends Partial<MemoryAgentOptions>,
+    Omit<DefaultMemoryRecorderOptions, "storage" | keyof AgentOptions>,
+    Omit<DefaultMemoryRetrieverOptions, "storage" | keyof AgentOptions> {
   storage?: MemoryStorage | DefaultMemoryStorageOptions;
-  recorderOptions?: Omit<DefaultMemoryRecorderOptions, "storage">;
-  retrieverOptions?: Omit<DefaultMemoryRetrieverOptions, "storage">;
-  messageKey?: string | string[];
 }
 
 export class DefaultMemory extends MemoryAgent {
@@ -36,20 +36,14 @@ export class DefaultMemory extends MemoryAgent {
 
     super({
       ...options,
-      recorder:
-        options.recorder ??
-        new DefaultMemoryRecorder({
-          ...options.recorderOptions,
-          rememberFromMessageKey:
-            options.recorderOptions?.rememberFromMessageKey ?? options.messageKey,
-          storage,
-        }),
+      recorder: options.recorder ?? new DefaultMemoryRecorder({ ...options, storage }),
       retriever:
         options.retriever ??
         new DefaultMemoryRetriever({
-          ...options.retrieverOptions,
-          retrieveFromMessageKey:
-            options.retrieverOptions?.retrieveFromMessageKey ?? options.messageKey,
+          ...options,
+          retrieveRecentMemoryCount:
+            options.retrieveRecentMemoryCount ??
+            Math.ceil(options.retrieveMemoryCount ?? DEFAULT_RETRIEVE_MEMORY_COUNT) / 2,
           storage,
         }),
       autoUpdate: options.autoUpdate ?? true,
@@ -64,19 +58,23 @@ export class DefaultMemory extends MemoryAgent {
 export interface DefaultMemoryRetrieverOptions
   extends AgentOptions<MemoryRetrieverInput, MemoryRetrieverOutput> {
   storage: MemoryStorage;
-  defaultRetrieveMemoryCount?: number;
-  retrieveFromMessageKey?: string | string[];
+  retrieveMemoryCount?: number;
+  retrieveRecentMemoryCount?: number;
+  inputKey?: string | string[];
+  outputKey?: string | string[];
   getSearchPattern?: DefaultMemoryRetriever["getSearchPattern"];
   formatMessage?: DefaultMemoryRetriever["formatMessage"];
   formatMemory?: DefaultMemoryRetriever["formatMemory"];
 }
 
-class DefaultMemoryRetriever extends MemoryRetriever {
+export class DefaultMemoryRetriever extends MemoryRetriever {
   constructor(options: DefaultMemoryRetrieverOptions) {
     super(options);
     this.storage = options.storage;
-    this.defaultRetrieveMemoryCount = options.defaultRetrieveMemoryCount;
-    this.retrieveFromMessageKey = options.retrieveFromMessageKey;
+    this.retrieveMemoryCount = options.retrieveMemoryCount;
+    this.retrieveRecentMemoryCount = options.retrieveRecentMemoryCount;
+    this.inputKey = flat(options.inputKey);
+    this.outputKey = flat(options.outputKey);
     if (options.getSearchPattern) this.getSearchPattern = options.getSearchPattern;
     if (options.formatMessage) this.formatMessage = options.formatMessage;
     if (options.formatMemory) this.formatMemory = options.formatMemory;
@@ -84,25 +82,28 @@ class DefaultMemoryRetriever extends MemoryRetriever {
 
   private storage: MemoryStorage;
 
-  private defaultRetrieveMemoryCount?: number;
+  private retrieveMemoryCount?: number;
 
-  private retrieveFromMessageKey?: string | string[];
+  private retrieveRecentMemoryCount?: number;
+
+  private inputKey?: string[];
+
+  private outputKey?: string[];
 
   private getSearchPattern = (search: MemoryRetrieverInput["search"]): string | undefined => {
     if (!search || typeof search === "string") return search;
 
-    const obj =
-      search && this.retrieveFromMessageKey ? pick(search, this.retrieveFromMessageKey) : search;
+    const obj = search && this.inputKey ? pick(search, this.inputKey) : search;
 
     return Object.values(obj)
       .map((v) => (typeof v === "string" ? v : undefined))
       .join("\n");
   };
 
-  private formatMessage = (content: unknown): unknown => {
-    if (!this.retrieveFromMessageKey || !isRecord(content)) return content;
+  private formatMessage = (content: unknown, key?: string[]): unknown => {
+    if (!isRecord(content)) return content;
 
-    const obj = pick(content, this.retrieveFromMessageKey);
+    const obj = !key?.length ? content : pick(content, key);
 
     return Object.values(obj)
       .map((v) => (typeof v === "string" ? v : undefined))
@@ -110,47 +111,69 @@ class DefaultMemoryRetriever extends MemoryRetriever {
   };
 
   private formatMemory = (content: unknown): unknown => {
-    if (!isRecord(content)) return content;
-    if ("input" in content || "output" in content) {
+    if (isRecord(content) && "input" in content && "output" in content) {
       return {
-        user: this.formatMessage(content.input),
-        agent: this.formatMessage(content.output),
+        input: this.formatMessage(content.input, this.inputKey),
+        output: this.formatMessage(content.output, this.outputKey),
+        source: content.source,
       };
     }
+
+    return content;
   };
 
   override async process(
     input: MemoryRetrieverInput,
     options: AgentInvokeOptions,
   ): Promise<MemoryRetrieverOutput> {
-    const { result } = await this.storage.search(
-      {
-        ...input,
-        search: this.getSearchPattern(input.search),
-        limit: input.limit ?? this.defaultRetrieveMemoryCount ?? DEFAULT_RETRIEVE_MEMORY_COUNT,
-      },
-      options,
-    );
-    return { memories: result.map((i) => ({ ...i, content: this.formatMemory(i.content) })) };
+    const limit = input.limit ?? this.retrieveMemoryCount ?? DEFAULT_RETRIEVE_MEMORY_COUNT;
+    const search = this.getSearchPattern(input.search);
+    const recentLimit = this.retrieveRecentMemoryCount;
+
+    const [recent, related] = await Promise.all([
+      // Query latest messages
+      !recentLimit
+        ? <Memory[]>[]
+        : this.storage
+            .search({ limit: recentLimit, orderBy: ["createdAt", "desc"] }, options)
+            .then(({ result }) => result.reverse()),
+      // Query related messages
+      !input.search
+        ? <Memory[]>[]
+        : this.storage.search({ ...input, search, limit }, options).then(({ result }) => result),
+    ]);
+
+    const recentSet = new Set(recent.map((i) => i.id));
+    const memories = related
+      // Filter out recent memories from related results
+      .filter((i) => !recentSet.has(i.id))
+      .concat(recent)
+      .slice(-limit);
+
+    return { memories: memories.map((i) => ({ ...i, content: this.formatMemory(i.content) })) };
   }
 }
 
 export interface DefaultMemoryRecorderOptions
   extends AgentOptions<MemoryRecorderInput, MemoryRecorderOutput> {
   storage: MemoryStorage;
-  rememberFromMessageKey?: string | string[];
+  inputKey?: string | string[];
+  outputKey?: string | string[];
 }
 
-class DefaultMemoryRecorder extends MemoryRecorder {
+export class DefaultMemoryRecorder extends MemoryRecorder {
   constructor(options: DefaultMemoryRecorderOptions) {
     super(options);
     this.storage = options.storage;
-    this.rememberFromMessageKey = options.rememberFromMessageKey;
+    this.inputKey = flat(options.inputKey);
+    this.outputKey = flat(options.outputKey);
   }
 
   private storage: MemoryStorage;
 
-  private rememberFromMessageKey?: string | string[];
+  private inputKey?: string[];
+
+  private outputKey?: string[];
 
   override async process(
     input: MemoryRecorderInput,
@@ -163,12 +186,10 @@ class DefaultMemoryRecorder extends MemoryRecorder {
         {
           content: {
             input:
-              item.input && this.rememberFromMessageKey
-                ? pick(item.input, this.rememberFromMessageKey)
-                : item.input,
+              item.input && this.inputKey?.length ? pick(item.input, this.inputKey) : item.input,
             output:
-              item.output && this.rememberFromMessageKey
-                ? pick(item.output, this.rememberFromMessageKey)
+              item.output && this.outputKey?.length
+                ? pick(item.output, this.outputKey)
                 : item.output,
             source: item.source,
           },

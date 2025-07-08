@@ -19,6 +19,7 @@ export default async function loadSources({
   sourcesPath,
   includePatterns,
   excludePatterns,
+  outputDir,
 }) {
   let files = Array.isArray(sources) ? [...sources] : [];
   if (sourcesPath) {
@@ -64,9 +65,22 @@ export default async function loadSources({
     }),
   );
 
+  // 获取上次结构规划结果
+  const structurePlanResult = await readFile(path.join(outputDir, "structure-plan.json"), "utf8");
+
+  let originalStructurePlan;
+  if (structurePlanResult) {
+    try {
+      originalStructurePlan = JSON.parse(structurePlanResult);
+    } catch (err) {
+      console.error(`Failed to parse structure-plan.json: ${err.message}`);
+    }
+  }
+
   return {
     datasourcesList: sourceFiles,
     datasources: allSources,
+    originalStructurePlan,
   };
 }
 

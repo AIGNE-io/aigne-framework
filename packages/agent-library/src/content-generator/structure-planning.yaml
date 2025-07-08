@@ -23,6 +23,9 @@ input_schema:
     glossary:
       type: string
       description: 术语表
+    structurePlanFeedback:
+      type: string
+      description: 结构规划的反馈
   required:
     - rules
     - datasources

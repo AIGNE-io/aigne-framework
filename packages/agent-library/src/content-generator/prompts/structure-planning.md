@@ -24,6 +24,14 @@
 {{ datasources }}
 </datasources>
 
+<last_structure_plan>
+{{originalStructurePlan}}
+</last_structure_plan>
+
+<structure_plan_feedback>
+{{structurePlanFeedback}}
+</structure_plan_feedback>
+
 <terms>
 专有词汇表，使用时请确保拼写正确。
 
@@ -49,6 +57,7 @@ DataSources 使用规则：
 5. 输出中{{nodeName}}的顺序要符合目标受众的浏览路径, 不需要完全按照 DataSources 中出现的顺序显示，由简单到深入，由了解到探索，路径要合理
 6. 每个{{nodeName}}需要有明确的内容展示规划，不能与其他{{nodeName}}展示重复的内容
 7. 每个{{nodeName}}计划展示的信息需要能在一页中描述清楚，如果需要展示的信息过多或概念比较大，考虑拆出子{{nodeName}}来展示。
+8. 如果提供了上一轮的结构规划和用户反馈，基于用户的反馈在上轮的结果上只要必要的修改，不要大幅变化
 
 {{nodeName}}规划规则：
 1. 每个{{nodeName}}需要包含这些信息：
@@ -68,7 +77,7 @@ DataSources 使用规则：
 
 其他：
 1. 必须满足用户提出的规则
-2. 使用用户的语言返回信息
+2. 使用用户的语言 {{locale}} 返回信息
 </rules>
 
 <output_schema>

@@ -15,3 +15,8 @@ agents:
   - save-docs.mjs
   - translate.yaml
   - detail-generator-and-translate.yaml
+  - check-detail-generated.mjs
+  - transform-detail-datasources.mjs
+  - batch-translate.yaml
+  - save-single-doc.mjs
+  - save-output.mjs

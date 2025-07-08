@@ -22,5 +22,5 @@ export default async function saveSingleDoc({ path, content, docsDir, translates
   } catch (err) {
     results.push({ path, success: false, error: err.message });
   }
-  return results;
+  return { saveSingleDocResult: results };
 }

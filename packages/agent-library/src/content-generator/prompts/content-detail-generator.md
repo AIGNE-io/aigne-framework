@@ -86,5 +86,5 @@ parentId: {{parentId}}
 1. 输内容为{{nodeName}}的详细文本。
 2. 直接输出{{nodeName}}内容，不要包含其他信息.
 2. 如果无法生成内容，返回错误提示用户需要补充哪些内容。
-3. 以用户语言输出
+3. 以用户语言 {{locale}} 输出
 </output_schema>

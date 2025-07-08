@@ -1,5 +1,5 @@
-import { promises as fs } from "fs";
-import { join } from "path";
+import { promises as fs } from "node:fs";
+import { join } from "node:path";
 
 export default async function saveOutput({ savePath, fileName, saveKey, ...rest }) {
   if (!(saveKey in rest)) {
@@ -16,4 +16,7 @@ export default async function saveOutput({ savePath, fileName, saveKey, ...rest 
   await fs.mkdir(savePath, { recursive: true });
   const filePath = join(savePath, fileName);
   await fs.writeFile(filePath, content, "utf8");
+  return {
+    saveOutputStatus: true,
+  };
 }

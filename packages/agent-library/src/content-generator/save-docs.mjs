@@ -11,6 +11,10 @@ export default async function saveDocs({ structurePlanResult: structurePlan, doc
   const results = [];
   // 1. 保存每个 markdown 文件
   for (const item of structurePlan) {
+    if (item.detailGenerated) {
+      continue;
+    }
+
     try {
       const relPath = item.path.replace(/^\//, "");
       const segments = relPath.split("/");
@@ -43,7 +47,7 @@ export default async function saveDocs({ structurePlanResult: structurePlan, doc
     results.push({ path: "_sidebar.md", success: false, error: err.message });
   }
 
-  return results;
+  return { saveDocsResult: results };
 }
 
 // 生成 sidebar 内容，支持多级嵌套，顺序与 structurePlan 一致

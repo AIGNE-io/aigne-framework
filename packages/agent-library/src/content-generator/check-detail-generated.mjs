@@ -1,7 +1,10 @@
 import { access } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { AnthropicChatModel } from "@aigne/anthropic";
 import { AIGNE, TeamAgent } from "@aigne/core";
+import { GeminiChatModel } from "@aigne/gemini";
+import { OpenAIChatModel } from "@aigne/openai";
 
 // 获取当前脚本所在目录
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -31,7 +34,20 @@ export default async function checkDetailGenerated({ path, docsDir, ...rest }, o
   }
 
   const aigne = await AIGNE.load(__dirname, {
-    models: [],
+    models: [
+      {
+        name: OpenAIChatModel.name,
+        create: (params) => new OpenAIChatModel({ ...params }),
+      },
+      {
+        name: AnthropicChatModel.name,
+        create: (params) => new AnthropicChatModel({ ...params }),
+      },
+      {
+        name: GeminiChatModel.name,
+        create: (params) => new GeminiChatModel({ ...params }),
+      },
+    ],
   });
 
   console.log("checkDetailGenerated agents", aigne.agents);

@@ -50,6 +50,8 @@
   "dependencies": {
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
+    "@aigne/anthropic": "workspace:^",
+    "@aigne/gemini": "workspace:^",
     "@aigne/sqlite": "workspace:^",
     "drizzle-orm": "^0.44.2",
     "fastq": "^1.19.1",

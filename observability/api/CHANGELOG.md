@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.5.0...observability-api-v0.6.0) (2025-07-08)
+
+
+### Features
+
+* support setting component id to different component data ([#226](https://github.com/AIGNE-io/aigne-framework/issues/226)) ([c7b3224](https://github.com/AIGNE-io/aigne-framework/commit/c7b32240e6660f34974615bcb9b91978a1191e3e))
+
 ## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.4.0...observability-api-v0.5.0) (2025-07-04)
 
 

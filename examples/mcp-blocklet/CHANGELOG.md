@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.15.2](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.15.1...example-mcp-blocklet-v1.15.2) (2025-07-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.0
+    * @aigne/cli bumped to 1.22.1
+    * @aigne/core bumped to 1.32.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.2
+
 ## [1.15.1](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.15.0...example-mcp-blocklet-v1.15.1) (2025-07-04)
 
 

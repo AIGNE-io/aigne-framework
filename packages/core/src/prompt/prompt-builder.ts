@@ -29,6 +29,7 @@ import {
 
 export interface PromptBuilderOptions {
   instructions?: string | ChatMessagesTemplate;
+  workingDir?: string;
 }
 
 export interface PromptBuildOptions extends Partial<Pick<AgentInvokeOptions, "context">> {
@@ -39,19 +40,23 @@ export interface PromptBuildOptions extends Partial<Pick<AgentInvokeOptions, "co
 }
 
 export class PromptBuilder {
-  static from(instructions: string | { path: string } | GetPromptResult): PromptBuilder {
-    if (typeof instructions === "string") return new PromptBuilder({ instructions });
+  static from(
+    instructions: string | { path: string } | GetPromptResult,
+    { workingDir }: { workingDir?: string } = {},
+  ): PromptBuilder {
+    if (typeof instructions === "string")
+      return new PromptBuilder({ instructions, workingDir: workingDir });
 
     if (isFromPromptResult(instructions)) return PromptBuilder.fromMCPPromptResult(instructions);
 
-    if (isFromPath(instructions)) return PromptBuilder.fromFile(instructions.path);
+    if (isFromPath(instructions)) return PromptBuilder.fromFile(instructions.path, { workingDir });
 
     throw new Error(`Invalid instructions ${instructions}`);
   }
 
-  private static fromFile(path: string): PromptBuilder {
+  private static fromFile(path: string, { workingDir }: { workingDir?: string }): PromptBuilder {
     const text = nodejs.fsSync.readFileSync(path, "utf-8");
-    return PromptBuilder.from(text);
+    return PromptBuilder.from(text, { workingDir: workingDir || nodejs.path.dirname(path) });
   }
 
   private static fromMCPPromptResult(result: GetPromptResult): PromptBuilder {
@@ -86,9 +91,12 @@ export class PromptBuilder {
 
   constructor(options?: PromptBuilderOptions) {
     this.instructions = options?.instructions;
+    this.workingDir = options?.workingDir;
   }
 
   instructions?: string | ChatMessagesTemplate;
+
+  workingDir?: string;
 
   async build(options: PromptBuildOptions): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
     return {
@@ -107,10 +115,10 @@ export class PromptBuilder {
     const message = inputKey && typeof input?.[inputKey] === "string" ? input[inputKey] : undefined;
 
     const messages =
-      (typeof this.instructions === "string"
+      (await (typeof this.instructions === "string"
         ? ChatMessagesTemplate.from([SystemMessageTemplate.from(this.instructions)])
         : this.instructions
-      )?.format(options.input) ?? [];
+      )?.format(options.input, { workingDir: this.workingDir })) ?? [];
 
     const memories: Pick<Memory, "content">[] = [];
 
@@ -127,7 +135,8 @@ export class PromptBuilder {
       memories.push(...options.context.memories);
     }
 
-    if (memories.length) messages.push(...this.convertMemoriesToMessages(memories, options));
+    if (memories.length)
+      messages.push(...(await this.convertMemoriesToMessages(memories, options)));
 
     // if the agent is using structured stream mode, add the instructions
     const { structuredStreamMode, outputSchema } = options.agent || {};
@@ -156,10 +165,10 @@ export class PromptBuilder {
     return messages;
   }
 
-  private convertMemoriesToMessages(
+  private async convertMemoriesToMessages(
     memories: Pick<Memory, "content">[],
     options: PromptBuildOptions,
-  ): ChatModelInputMessage[] {
+  ): Promise<ChatModelInputMessage[]> {
     const messages: ChatModelInputMessage[] = [];
     const other: unknown[] = [];
 
@@ -180,7 +189,7 @@ export class PromptBuilder {
     if (other.length) {
       messages.unshift({
         role: "system",
-        content: PromptTemplate.from(
+        content: await PromptTemplate.from(
           options.agent?.memoryPromptTemplate || MEMORY_MESSAGE_TEMPLATE,
         ).format({ memories: stringify(other) }),
       });

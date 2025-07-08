@@ -6,34 +6,19 @@ export interface TestConfig {
   scriptPath?: string;
 }
 
-export function runExampleTest(
-  config?: TestConfig,
-): Promise<{ stdout: string; stderr: string; code: number | null }> {
+export function runExampleTest(config?: TestConfig): Promise<{ code: number | null }> {
   const scriptPath = config?.scriptPath ?? join(process.cwd(), "index.ts");
   return new Promise((resolve, reject) => {
     const child = spawn("bun", [scriptPath], {
-      stdio: ["inherit", "pipe", "pipe"],
+      stdio: ["inherit", "inherit", "inherit"],
       env: {
         ...process.env,
         INITIAL_CALL: config?.initialCall ?? process.env.INITIAL_CALL,
       },
     });
 
-    let stdout = "";
-    let stderr = "";
-
-    child.stdout.on("data", (data) => {
-      // GitHub Action runner is not a TTY, avoid writing to stdout to prevent long ANSI output. https://github.com/actions/runner/issues/241
-      stdout += data;
-    });
-
-    child.stderr.on("data", (data) => {
-      process.stderr.write(data);
-      stderr += data;
-    });
-
-    child.on("close", (code) => {
-      resolve({ stdout, stderr, code });
+    child.on("exit", (code) => {
+      resolve({ code });
     });
 
     child.on("error", (err) => {

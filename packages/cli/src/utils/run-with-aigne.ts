@@ -155,7 +155,7 @@ export async function parseAgentInputByCommander(
     options.input ||
     (isatty(process.stdin.fd) || !(await stdinHasData())
       ? null
-      : [await readAllString(process.stdin)]);
+      : [await readAllString(process.stdin)].filter(Boolean));
 
   if (rawInput?.length) {
     for (let raw of rawInput) {
@@ -233,7 +233,11 @@ export async function runWithAIGNE(
         });
 
         if (isEmpty(input)) {
-          const defaultInput = chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion;
+          const defaultInput =
+            chatLoopOptions?.initialCall ||
+            chatLoopOptions?.defaultQuestion ||
+            process.env.INITIAL_CALL;
+
           Object.assign(
             input,
             typeof defaultInput === "string"

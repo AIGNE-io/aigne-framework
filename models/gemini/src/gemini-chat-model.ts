@@ -1,3 +1,4 @@
+import type { ChatModelInput, ChatModelInputMessage } from "@aigne/core";
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
 
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai";
@@ -27,8 +28,21 @@ export class GeminiChatModel extends OpenAIChatModel {
   }
 
   protected override apiKeyEnvName = "GEMINI_API_KEY";
-  protected override supportsEndWithSystemMessage = false;
   protected override supportsToolsUseWithJsonSchema = false;
   protected override supportsParallelToolCalls = false;
   protected override supportsToolStreaming = false;
+
+  override async getRunMessages(
+    input: ChatModelInput,
+  ): ReturnType<OpenAIChatModel["getRunMessages"]> {
+    const messages = await super.getRunMessages(input);
+
+    const lastMessage = messages.at(-1);
+
+    if (lastMessage?.role === "system") {
+      (lastMessage as ChatModelInputMessage).role = "user"; // Ensure the last message is from the user
+    }
+
+    return messages;
+  }
 }

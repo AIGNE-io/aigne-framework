@@ -87,7 +87,6 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const componentIds = components.map((c) => c.componentId).filter(Boolean);
 
     res.json({
-      code: 0,
       data: componentIds,
       total: componentIds.length,
     });

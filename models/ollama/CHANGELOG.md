@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/ollama-v0.5.1...ollama-v0.6.0) (2025-07-08)
+
+
+### Features
+
+* **core:** add jinja syntax support for prompt builder ([#230](https://github.com/AIGNE-io/aigne-framework/issues/230)) ([74436a7](https://github.com/AIGNE-io/aigne-framework/commit/74436a7faac0c59a32b0153481386162649f4357))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.0
+  * devDependencies
+    * @aigne/core bumped to 1.32.0
+    * @aigne/test-utils bumped to 0.5.2
+
 ## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/ollama-v0.5.0...ollama-v0.5.1) (2025-07-04)
 
 

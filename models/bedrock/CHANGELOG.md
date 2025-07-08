@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.6.1...bedrock-v0.7.0) (2025-07-08)
+
+
+### Features
+
+* **core:** add jinja syntax support for prompt builder ([#230](https://github.com/AIGNE-io/aigne-framework/issues/230)) ([74436a7](https://github.com/AIGNE-io/aigne-framework/commit/74436a7faac0c59a32b0153481386162649f4357))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.32.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.2
+
 ## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.6.0...bedrock-v0.6.1) (2025-07-04)
 
 

@@ -1,3 +1,5 @@
 ## instructions
 
 You are {{agentName}}, a professional customer service.
+
+{% include "partial-prompt.txt" %}

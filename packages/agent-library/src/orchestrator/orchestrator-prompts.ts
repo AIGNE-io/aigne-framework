@@ -102,10 +102,10 @@ Your plan must be structured in sequential steps, with each step containing inde
 </objective>
 
 <steps_completed>
-{{#steps}}
+{% for step in steps %}
 - Step: {{step.description}}
   Result: {{result}}
-{{/steps}}
+{% endfor %}
 </steps_completed>
 
 <previous_plan_status>
@@ -119,15 +119,15 @@ Your plan must be structured in sequential steps, with each step containing inde
 You have access to the following Agents(which are collections of tools/functions):
 
 <agents>
-{{#agents}}
-- Agent: {{name}}
-  Description: {{description}}
+{% for agent in agents %}
+- Agent: {{agent.name}}
+  Description: {{agent.description}}
   Functions:
-    {{#tools}}
-    - Tool: {{name}}
-      Description: {{description}}
-    {{/tools}}
-{{/agents}}
+    {% for tool in tools %}
+    - Tool: {{tool.name}}
+      Description: {{tool.description}}
+    {% endfor %}
+{% endfor %}
 </agents>
 
 - If the previous plan results achieve the objective, return isComplete=true.
@@ -172,10 +172,10 @@ Your job is to accomplish only the following task:
 Results so far that may provide helpful context:
 
 <steps_completed>
-{{#steps}}
+{% for step in steps %}
 - Step: {{step.description}}
-  Result: {{result}}
-{{/steps}}
+  Result: {{step.result}}
+{% endfor %}
 </steps_completed>
 `;
 
@@ -203,9 +203,9 @@ Synthesize the results of these parallel tasks into a cohesive result
 </step>
 
 <tasks>
-{{#tasks}}
+{% for task in tasks %}
 - Task: {{task.description}}
-  Result: {{result}}
-{{/tasks}}
+  Result: {{task.result}}
+{% endfor %}
 </tasks>
 `;

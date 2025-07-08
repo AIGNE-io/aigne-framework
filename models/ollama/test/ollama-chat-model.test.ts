@@ -108,7 +108,7 @@ test("OllamaChatModel.invoke llama3.1 should return the correct tool", async () 
   );
 
   const result = await model.invoke({
-    messages: createWeatherToolMessages(),
+    messages: await createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
 
@@ -123,7 +123,7 @@ test("OllamaChatModel.invoke llama3.1", async () => {
   );
 
   const result = await model.invoke({
-    messages: createWeatherToolCallMessages(),
+    messages: await createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
   });

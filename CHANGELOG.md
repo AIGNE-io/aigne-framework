@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.36.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.35.0...aigne-framework-v1.36.0) (2025-07-08)
+
+
+### Features
+
+* **core:** add jinja syntax support for prompt builder ([#230](https://github.com/AIGNE-io/aigne-framework/issues/230)) ([74436a7](https://github.com/AIGNE-io/aigne-framework/commit/74436a7faac0c59a32b0153481386162649f4357))
+* support setting component id to different component data ([#226](https://github.com/AIGNE-io/aigne-framework/issues/226)) ([c7b3224](https://github.com/AIGNE-io/aigne-framework/commit/c7b32240e6660f34974615bcb9b91978a1191e3e))
+
+
+### Bug Fixes
+
+* **core:** ensure output is a record type ([#228](https://github.com/AIGNE-io/aigne-framework/issues/228)) ([dfd9104](https://github.com/AIGNE-io/aigne-framework/commit/dfd910451e5f1f9edd94a719857e36d34fadbe45))
+* wrong type AgenticMemoryRetrieverOptions ([0893e02](https://github.com/AIGNE-io/aigne-framework/commit/0893e0271ea6870a420f8c6fd59022ab6566b9c2))
+
 ## [1.35.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.34.0...aigne-framework-v1.35.0) (2025-07-04)
 
 

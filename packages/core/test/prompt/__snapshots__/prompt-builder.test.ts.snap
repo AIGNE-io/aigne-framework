@@ -1,0 +1,26 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PromptBuilder from file 1`] = `
+{
+  "messages": [
+    {
+      "content": 
+"## instructions
+
+You are Alice, a professional customer service.
+
+Output in English
+
+"
+,
+      "name": undefined,
+      "role": "system",
+    },
+  ],
+  "modelOptions": undefined,
+  "responseFormat": undefined,
+  "toolAgents": undefined,
+  "toolChoice": undefined,
+  "tools": undefined,
+}
+`;

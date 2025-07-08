@@ -124,7 +124,7 @@ test("DeepSeekChatModel.invoke should return the correct tool", async () => {
   );
 
   const result = await model.invoke({
-    messages: createWeatherToolCallMessages(),
+    messages: await createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
   });
 
@@ -139,7 +139,7 @@ test("DeepSeekChatModel.invoke", async () => {
   );
 
   const result = await model.invoke({
-    messages: createWeatherToolCallMessages(),
+    messages: await createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
   });

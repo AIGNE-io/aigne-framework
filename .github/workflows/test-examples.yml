@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-examples:
     runs-on: ubuntu-latest
@@ -112,7 +116,7 @@ jobs:
           fi
 
           DEFAULT_EXCLUDE_PATTERN="browser|mcp-blocklet|workflow-group-chat|workflow-orchestrator|workflow-router"
-          
+
           declare -A PROVIDER_EXCLUDE_PATTERNS
           # PROVIDER_EXCLUDE_PATTERNS["Bedrock"]="mcp-sqlite"
 

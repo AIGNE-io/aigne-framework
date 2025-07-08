@@ -1042,11 +1042,11 @@ importers:
         specifier: workspace:^
         version: link:../sqlite
       '@blocklet/did-space-js':
-        specifier: ^1.1.1
-        version: 1.1.1(encoding@0.1.13)(sqlite3@5.1.7)
+        specifier: ^1.1.3
+        version: 1.1.3(encoding@0.1.13)(sqlite3@5.1.7)
       '@did-space/core':
-        specifier: ^1.1.1
-        version: 1.1.1(encoding@0.1.13)(sqlite3@5.1.7)
+        specifier: ^1.1.3
+        version: 1.1.3(encoding@0.1.13)(sqlite3@5.1.7)
       drizzle-orm:
         specifier: ^0.44.2
         version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.17)(sqlite3@5.1.7)
@@ -1737,9 +1737,6 @@ packages:
   '@arcblock/did@1.20.13':
     resolution: {integrity: sha512-n0KbXGBgDQg0ehHZKwD1w/YSSfYekTMKJ7l/haYxdRf4eIVr1eqaGEv/KywFhudUVe0Zg+OM+gDeFfhsy1+ISQ==}
 
-  '@arcblock/did@1.20.14':
-    resolution: {integrity: sha512-RmDLGNOht+K2kGcGloDX31OaU2KDsp10WZ9rNq0lOzolag0W4rkDmjswMxAuspJUXgweYBeh0RIAzGUf+O516w==}
-
   '@arcblock/did@1.20.15':
     resolution: {integrity: sha512-bULbBnM9E0dxZ3l8tPI7PrgiNqI8qZfb8623w8xtIfY0Lk12vcKXW8PQTi5dxq8h66QQWKi9ccUrT81Zqk/+Fg==}
 
@@ -1794,9 +1791,6 @@ packages:
 
   '@arcblock/validator@1.20.13':
     resolution: {integrity: sha512-nhVeXpdZvA0Ww0NoGVCKsFC6Bkg44BkJ+j9i2W5FIqfH+qAnMtdFytO64m3COcs7Dfx5Cl9ZaYgPT10APyKcqQ==}
-
-  '@arcblock/validator@1.20.14':
-    resolution: {integrity: sha512-FKeleONlN4WXuPq7QUOARAmKVfPDzjcugkFRAGuUMlShJk5Cgh6mzPckkZcKrj3a52ROHEq3Aty35InCv0l8/w==}
 
   '@arcblock/validator@1.20.15':
     resolution: {integrity: sha512-oC10PMvlo2ll07qiWmW3R3gSM9+N9SnTqpfW8H8uXmfNeKhyAZ63CqvGKSk+M9FL126u3yj5IrNg2YJoO1jBuQ==}
@@ -2097,8 +2091,11 @@ packages:
   '@blocklet/constant@1.16.44':
     resolution: {integrity: sha512-VIvwBld5HYB1kI99UJylbEKu4UBdMr8eDTYi/Fqkft1AgjWW8VzEWo4h7oN7ZojkdpZ44Dzsz+5r2RD/5AKPLg==}
 
-  '@blocklet/did-space-js@1.1.1':
-    resolution: {integrity: sha512-eeKz6yLZsyFejR+SAESobXfbtCx5IYTu1i9dps9q0yxgQkv+cbbnS9fPD761HONM/poYWITB9BGCCBrtFUP5YA==}
+  '@blocklet/constant@1.16.45':
+    resolution: {integrity: sha512-dvPPJGVq41d+HBdsYSWrbwkaGlSW2NjtdXduIe9ZjczQdXk7hmCj6GZFE6MO7kM7qginuqLnt7m8KxOwRQVLOQ==}
+
+  '@blocklet/did-space-js@1.1.3':
+    resolution: {integrity: sha512-ekxOiK8B1s473h/8YMB/zPSFfbL612EH0qH7T2XLWUfyfEq+KdcEUbcG3OgkHlo+dKGER3QHoAnaIVe3PiRI2Q==}
 
   '@blocklet/did-space-react@1.0.63':
     resolution: {integrity: sha512-siYjqDZta98I4y8IAbf9AhnK4/UKJxRSOLbP1DNSvieF+2debpSFhxEwcDB8Af1me4NOX9CKE+Xk4nUOGK2lzA==}
@@ -2111,6 +2108,9 @@ packages:
 
   '@blocklet/env@1.16.44':
     resolution: {integrity: sha512-JDWh6/szYFRSAdHkiu2SM1p5Qs8YyMrLjHLAsOia5yG9+1gKvHwhpIkWV62FnSxk8Q6cbNrMPlwuPjteEFMuOA==}
+
+  '@blocklet/env@1.16.45':
+    resolution: {integrity: sha512-kOVbZgYvPX1JJdZL17wmM+6nfYYVjTsEKHielHn3k6z0DULD8bMLggb5hmraZVvOEw/GPx0qq99HWZb+juvBdA==}
 
   '@blocklet/error@0.2.5':
     resolution: {integrity: sha512-fuvTH5XqM6/ZsEks18sirJSaYvlNfBa69iWSeuKU6syw3/STujz8a0uxrU6TnoMqDVAXWUD/wZiOHMnRcutP4A==}
@@ -2197,11 +2197,11 @@ packages:
   '@did-space/constants@1.0.63':
     resolution: {integrity: sha512-nvnPwL//doUDQzX67mLY+81cxFUlW/n4ncD6gslJeKD4rZ9ZqZYY1fTU7ULmgWVDVSd7rrYPdOuxMKI2GDZYZw==}
 
-  '@did-space/constants@1.1.1':
-    resolution: {integrity: sha512-rs6ZRDSBOwfhNryU58QwU1sOGmyaMo5jnYYR8GFmCTDsOQZb98r0pcT/Epaa/jOtdSvW/5cqsJ0q8QuCnMTeAw==}
+  '@did-space/constants@1.1.3':
+    resolution: {integrity: sha512-Kc+iIcKbBQwfct3tOl1HQXRe2Axl/vWuux+x6c6kondRh97SqO73cQiA0W4SzecITdajV8akvmDkSU9WsZRiZA==}
 
-  '@did-space/core@1.1.1':
-    resolution: {integrity: sha512-lQw5c4AHacy9NLTZQJUccE8CkvNhSVoh5JBY6tx9r79Cp3Nae9cZzrcRQjAVGWmrl9lqqATpAccBr3A7kP8XOQ==}
+  '@did-space/core@1.1.3':
+    resolution: {integrity: sha512-alYM9nevggRBCv3cyQH2UYAcOJuZEmiJpzjrqmK6mhFr0Af7Qx7wzGT61tey0uXSJdyt+VDWLJhiilnLhFpTyg==}
 
   '@emotion/babel-plugin@11.13.5':
     resolution: {integrity: sha512-pxHCpT2ex+0q+HH91/zsdHkw/lXd468DIN2zvfvLtPKLLMo6gQj7oLObq8PhkrxOZb/gGCq03S3Z7PDhS8pduQ==}
@@ -3141,9 +3141,6 @@ packages:
   '@ocap/mcrypto@1.20.13':
     resolution: {integrity: sha512-NChOGef3egLCuMjDj0POxK+WrfRJuqevULOBDJkoECZFZnME/q7Y+MTNWouls0kmy8X7R9OA+ECEjHoY/wGDug==}
 
-  '@ocap/mcrypto@1.20.14':
-    resolution: {integrity: sha512-EKOIqQ45lSHUTp04sa0+Irff97CKr89fXkWy4YKQ0VeFviwjqzoxUQAAEgML5DYuM9Ly4rNFs0kOziBUBBzSDA==}
-
   '@ocap/mcrypto@1.20.15':
     resolution: {integrity: sha512-0rTlUHryfUldTsFsSKJDB2+/HQQe67nqcfpYbl4wPqrStqzfDiaNIzs8RwU9Xyny4zuLFpO+S4pSOdeQ4mfuew==}
 
@@ -3173,9 +3170,6 @@ packages:
 
   '@ocap/util@1.20.13':
     resolution: {integrity: sha512-7Ozz2d4OCw7Q86fZKP9G4twILMVhaaRIUGEW98rIA2EyRFsr/Ok11lt6DXhyDQK30gXrcpyFU32Je/qu7To24Q==}
-
-  '@ocap/util@1.20.14':
-    resolution: {integrity: sha512-PJhm+UW394DmSFtx2tn/cP+yAuYEGSAWv6zRq7xmHrV7J8i3HGYUH1hXpQvycVnhJXHcZrG/U0V6kCHSWdOAmw==}
 
   '@ocap/util@1.20.15':
     resolution: {integrity: sha512-s1N6vXZ4ZXjC2pdaeHnioRQ2+IPlPC11TEy0VGZ13OpX2tfENzmm9oMHq2z7DqjkB+Z6mueC/iPYuX0eCyq3pw==}
@@ -10259,7 +10253,7 @@ snapshots:
       '@ocap/wallet': 1.20.13
       archiver: 7.0.1
       axios: 1.10.0(debug@4.4.1)
-      axios-mock-adapter: 2.1.0(axios@1.10.0)
+      axios-mock-adapter: 2.1.0(axios@1.10.0(debug@4.4.1))
       axon: 2.0.3
       chalk: 4.1.2
       cookie: 1.0.2
@@ -10443,16 +10437,6 @@ snapshots:
     dependencies:
       '@ocap/mcrypto': 1.20.13
       '@ocap/util': 1.20.13
-      bn.js: 5.2.2
-      debug: 4.4.1(supports-color@5.5.0)
-      lodash: 4.17.21
-    transitivePeerDependencies:
-      - supports-color
-
-  '@arcblock/did@1.20.14':
-    dependencies:
-      '@ocap/mcrypto': 1.20.14
-      '@ocap/util': 1.20.14
       bn.js: 5.2.2
       debug: 4.4.1(supports-color@5.5.0)
       lodash: 4.17.21
@@ -10683,17 +10667,6 @@ snapshots:
       '@arcblock/did': 1.20.13
       '@ocap/mcrypto': 1.20.13
       '@ocap/util': 1.20.13
-      bn.js: 5.2.1
-      joi: 17.13.3
-      lodash: 4.17.21
-    transitivePeerDependencies:
-      - supports-color
-
-  '@arcblock/validator@1.20.14':
-    dependencies:
-      '@arcblock/did': 1.20.14
-      '@ocap/mcrypto': 1.20.14
-      '@ocap/util': 1.20.14
       bn.js: 5.2.1
       joi: 17.13.3
       lodash: 4.17.21
@@ -11298,14 +11271,16 @@ snapshots:
 
   '@blocklet/constant@1.16.44': {}
 
-  '@blocklet/did-space-js@1.1.1(encoding@0.1.13)(sqlite3@5.1.7)':
+  '@blocklet/constant@1.16.45': {}
+
+  '@blocklet/did-space-js@1.1.3(encoding@0.1.13)(sqlite3@5.1.7)':
     dependencies:
       '@arcblock/did': 1.20.15
       '@arcblock/jwt': 1.20.15
       '@arcblock/validator': 1.20.15
-      '@blocklet/env': 1.16.44
-      '@did-space/constants': 1.1.1
-      '@did-space/core': 1.1.1(encoding@0.1.13)(sqlite3@5.1.7)
+      '@blocklet/env': 1.16.45
+      '@did-space/constants': 1.1.3
+      '@did-space/core': 1.1.3(encoding@0.1.13)(sqlite3@5.1.7)
       '@ocap/mcrypto': 1.20.15
       '@ocap/util': 1.20.15
       '@ocap/wallet': 1.20.15
@@ -11379,6 +11354,10 @@ snapshots:
   '@blocklet/env@1.16.44':
     dependencies:
       '@blocklet/constant': 1.16.44
+
+  '@blocklet/env@1.16.45':
+    dependencies:
+      '@blocklet/constant': 1.16.45
 
   '@blocklet/error@0.2.5': {}
 
@@ -11644,7 +11623,7 @@ snapshots:
 
   '@did-connect/types@2.2.8':
     dependencies:
-      '@arcblock/validator': 1.20.14
+      '@arcblock/validator': 1.20.15
       '@ocap/mcrypto': 1.20.15
       joi: 17.13.3
     transitivePeerDependencies:
@@ -11652,14 +11631,14 @@ snapshots:
 
   '@did-space/constants@1.0.63': {}
 
-  '@did-space/constants@1.1.1': {}
+  '@did-space/constants@1.1.3': {}
 
-  '@did-space/core@1.1.1(encoding@0.1.13)(sqlite3@5.1.7)':
+  '@did-space/core@1.1.3(encoding@0.1.13)(sqlite3@5.1.7)':
     dependencies:
       '@arcblock/did': 1.20.15
       '@arcblock/ipfs-only-hash': 0.0.2(encoding@0.1.13)
       '@arcblock/validator': 1.20.15
-      '@did-space/constants': 1.1.1
+      '@did-space/constants': 1.1.3
       dayjs: 1.11.13
       debug: 4.4.1(supports-color@5.5.0)
       destroy: 1.2.0
@@ -12777,20 +12756,6 @@ snapshots:
       randombytes: 2.1.0
       tweetnacl: 1.0.3
 
-  '@ocap/mcrypto@1.20.14':
-    dependencies:
-      '@ocap/util': 1.20.14
-      '@simplewebauthn/server': 13.1.1
-      bn.js: 5.2.1
-      crypto-js: 4.2.0
-      elliptic: 6.6.1
-      eth-lib: 0.2.8
-      hash.js: 1.1.7
-      interface: 1.2.1
-      js-sha3: 0.8.0
-      randombytes: 2.1.0
-      tweetnacl: 1.0.3
-
   '@ocap/mcrypto@1.20.15':
     dependencies:
       '@ocap/util': 1.20.15
@@ -12899,14 +12864,6 @@ snapshots:
       google-protobuf: 3.21.0
 
   '@ocap/util@1.20.13':
-    dependencies:
-      base64-url: 2.3.3
-      bn.js: 5.2.1
-      bs58: 5.0.0
-      lodash: 4.17.21
-      utf8: 3.0.0
-
-  '@ocap/util@1.20.14':
     dependencies:
       base64-url: 2.3.3
       bn.js: 5.2.1
@@ -14498,9 +14455,9 @@ snapshots:
 
   awesome-phonenumber@7.5.0: {}
 
-  axios-mock-adapter@2.1.0(axios@1.10.0):
+  axios-mock-adapter@2.1.0(axios@1.10.0(debug@4.4.1)):
     dependencies:
-      axios: 1.10.0
+      axios: 1.10.0(debug@4.4.1)
       fast-deep-equal: 3.1.3
       is-buffer: 2.0.5
 

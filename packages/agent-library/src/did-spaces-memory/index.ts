@@ -168,7 +168,6 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
     const client = new SpaceClient({
       url: this.options.url,
       auth: this.options.auth,
-      wallet: null as any,
     });
 
     const output: GetObjectCommandOutput = await client.send(
@@ -268,7 +267,6 @@ class DIDSpacesMemoryRecorder extends MemoryRecorder {
     const client = new SpaceClient({
       url: this.options.url,
       auth: this.options.auth,
-      wallet: null as any,
     });
 
     const output: GetObjectCommandOutput = await client.send(

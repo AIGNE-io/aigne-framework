@@ -515,12 +515,6 @@ export class AIGNEContext implements Context {
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
 
-          await this.observer?.traceExporter
-            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
-            .catch((err) => {
-              logger.error("upsertInitialSpan error", err?.message || err);
-            });
-
           span.end();
 
           break;

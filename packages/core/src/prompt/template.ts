@@ -14,7 +14,7 @@ import { isNil } from "../utils/type-utils.js";
 };
 
 export interface FormatOptions {
-  cwd?: string;
+  workingDir?: string;
 }
 
 export class PromptTemplate {
@@ -22,16 +22,13 @@ export class PromptTemplate {
     return new PromptTemplate(template);
   }
 
-  constructor(
-    public template: string,
-    private options?: { cwd?: string },
-  ) {}
+  constructor(public template: string) {}
 
   async format(variables: Record<string, unknown> = {}, options?: FormatOptions): Promise<string> {
     let env = new nunjucks.Environment();
 
-    if (options?.cwd) {
-      env = new nunjucks.Environment(new CustomLoader({ cwd: options.cwd }));
+    if (options?.workingDir) {
+      env = new nunjucks.Environment(new CustomLoader({ workingDir: options.workingDir }));
     }
 
     return new Promise((resolve, reject) =>
@@ -47,7 +44,7 @@ export class PromptTemplate {
 }
 
 export class CustomLoader extends nunjucks.Loader {
-  constructor(public options: { cwd: string }) {
+  constructor(public options: { workingDir: string }) {
     super();
   }
 
@@ -56,7 +53,7 @@ export class CustomLoader extends nunjucks.Loader {
   getSource(name: string, callback: Callback<Error, LoaderSource>): LoaderSource {
     let result: LoaderSource | null = null;
 
-    nodejs.fs.readFile(nodejs.path.join(this.options.cwd, name), "utf-8").then(
+    nodejs.fs.readFile(nodejs.path.join(this.options.workingDir, name), "utf-8").then(
       (content) => {
         result = {
           src: content,

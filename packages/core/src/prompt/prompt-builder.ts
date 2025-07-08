@@ -29,7 +29,7 @@ import {
 
 export interface PromptBuilderOptions {
   instructions?: string | ChatMessagesTemplate;
-  cwd?: string;
+  workingDir?: string;
 }
 
 export interface PromptBuildOptions extends Partial<Pick<AgentInvokeOptions, "context">> {
@@ -42,20 +42,21 @@ export interface PromptBuildOptions extends Partial<Pick<AgentInvokeOptions, "co
 export class PromptBuilder {
   static from(
     instructions: string | { path: string } | GetPromptResult,
-    { cwd }: { cwd?: string } = {},
+    { workingDir }: { workingDir?: string } = {},
   ): PromptBuilder {
-    if (typeof instructions === "string") return new PromptBuilder({ instructions, cwd });
+    if (typeof instructions === "string")
+      return new PromptBuilder({ instructions, workingDir: workingDir });
 
     if (isFromPromptResult(instructions)) return PromptBuilder.fromMCPPromptResult(instructions);
 
-    if (isFromPath(instructions)) return PromptBuilder.fromFile(instructions.path, { cwd });
+    if (isFromPath(instructions)) return PromptBuilder.fromFile(instructions.path, { workingDir });
 
     throw new Error(`Invalid instructions ${instructions}`);
   }
 
-  private static fromFile(path: string, { cwd }: { cwd?: string }): PromptBuilder {
+  private static fromFile(path: string, { workingDir }: { workingDir?: string }): PromptBuilder {
     const text = nodejs.fsSync.readFileSync(path, "utf-8");
-    return PromptBuilder.from(text, { cwd: cwd || nodejs.path.dirname(path) });
+    return PromptBuilder.from(text, { workingDir: workingDir || nodejs.path.dirname(path) });
   }
 
   private static fromMCPPromptResult(result: GetPromptResult): PromptBuilder {
@@ -90,12 +91,12 @@ export class PromptBuilder {
 
   constructor(options?: PromptBuilderOptions) {
     this.instructions = options?.instructions;
-    this.cwd = options?.cwd;
+    this.workingDir = options?.workingDir;
   }
 
   instructions?: string | ChatMessagesTemplate;
 
-  cwd?: string;
+  workingDir?: string;
 
   async build(options: PromptBuildOptions): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
     return {
@@ -117,7 +118,7 @@ export class PromptBuilder {
       (await (typeof this.instructions === "string"
         ? ChatMessagesTemplate.from([SystemMessageTemplate.from(this.instructions)])
         : this.instructions
-      )?.format(options.input, { cwd: this.cwd })) ?? [];
+      )?.format(options.input, { workingDir: this.workingDir })) ?? [];
 
     const memories: Pick<Memory, "content">[] = [];
 

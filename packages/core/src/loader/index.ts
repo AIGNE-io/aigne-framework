@@ -110,7 +110,7 @@ async function parseAgent(
         ...agent,
         instructions:
           agent.instructions &&
-          PromptBuilder.from(agent.instructions, { cwd: nodejs.path.dirname(path) }),
+          PromptBuilder.from(agent.instructions, { workingDir: nodejs.path.dirname(path) }),
         memory,
         skills,
       });

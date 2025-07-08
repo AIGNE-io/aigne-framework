@@ -13,7 +13,7 @@
   "bin": "aigne.yaml",
   "scripts": {
     "test": "aigne test",
-    "test:llm": "aigne run"
+    "test:llm": "aigne run --input 'What can AIGNE do?'"
   },
   "dependencies": {
     "@aigne/cli": "workspace:^"

@@ -62,17 +62,5 @@ output_schema:
   properties:
     content:
       type: string
-    title:
-      type: string
-      description: 当前页面的标题
-    description:
-      type: string
-      description: 当前页面的描述
-    path:
-      type: string
-      description: 当前页面的路径
   required:
     - content
-    - title
-    - description
-    - path

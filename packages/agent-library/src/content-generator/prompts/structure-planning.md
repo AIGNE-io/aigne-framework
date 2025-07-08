@@ -53,7 +53,7 @@ DataSources 使用规则：
 {{nodeName}}规划规则：
 1. 每个{{nodeName}}需要包含这些信息：
   - 标题
-  - 一句话描述{{nodeName}}计划展示的重要信息，描述要匹配目标受众
+  - 描述{{nodeName}}计划展示的重要信息，描述要匹配目标受众
 
 2. 内容规划优先展示用户提供的 DataSources 中的信息，或者使用你拥有的知识进行补充，不可以随意虚构信息。
 
@@ -93,7 +93,10 @@ DataSources 使用规则：
     - about 页面 -> /about
     - 产品详情页 -> /products/xxx
 6. metadata：每个 {{nodeName}} 的元数据，其中 sourceIds 是关联的数据源，其中必须是 DataSources 中的 sourceId，最少必要和一个 source 关联，不能有虚假的值，不能为空。
-7. 关联的 sourceIds 要尽可能全面，你可以包含尽可能多的相关 datasources, 如果 datasource 中源代码，尽可能包含相关的源代码，来提供后续详情生成的质量。
+7. 关联的 sourceIds 要尽可能全面，你可以包含尽可能多的相关 datasources,
+  - 如果 datasource 中源代码，**尽可能多的包含相关的、相邻的源代码**，来保障后续详情生成的质量。
+  - 先找到最相关的源代码文件，然后分析其中引用的源代码，引用的文件路径，引用的文件、引用的路径中的文件都需要包含在 sourceIds 中
+  - 引用的文件，仍需再分析一层其中引用的源代码文件，添加 sourceIds 中，确保生成详情的上下文完整
 8. structurePlanTree 是结构规划的树形结构，用于展示结构规划的层级关系，每一级有不同的缩进，方便用户直观查看结构规划的层级关系,参考格式：
         ```
         - 首页

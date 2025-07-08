@@ -268,6 +268,9 @@ test("AIGNEClient should support invoke chat model on the server side", async ()
 
     const client = new AIGNEHTTPClient({ url });
 
+    client.userContext.userId = "test_user_id";
+    client.userContext.sessionId = "test_session_id";
+
     const response = await client.model.invoke({
       messages: [{ role: "user", content: "Hello, I'm Bob!" }],
     });
@@ -286,6 +289,13 @@ test("AIGNEClient should support invoke chat model on the server side", async ()
         ],
       }
     `);
+    expect(modelProcess.mock.lastCall?.[1]).toEqual(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          userContext: { userId: "test_user_id", sessionId: "test_session_id" },
+        }),
+      }),
+    );
   } finally {
     close();
   }

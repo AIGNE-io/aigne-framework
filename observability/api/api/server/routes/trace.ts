@@ -194,7 +194,11 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const db = req.app.locals.db as LibSQLDatabase;
 
     for (const trace of validatedTraces) {
-      const whereClause = and(eq(Trace.id, trace.id), eq(Trace.rootId, trace.rootId));
+      const whereClause = and(
+        eq(Trace.id, trace.id),
+        eq(Trace.rootId, trace.rootId),
+        !trace.parentId ? isNull(Trace.parentId) : eq(Trace.parentId, trace.parentId),
+      );
 
       try {
         const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();

@@ -4,8 +4,8 @@ import type { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
 
 const migrations = [
   {
-    id: "20250608-init-trace",
-    sql: sql`
+    hash: "20250608-init-trace",
+    sql: sql`\
       CREATE TABLE IF NOT EXISTS Trace (
         id TEXT PRIMARY KEY NOT NULL,
         rootId TEXT,
@@ -26,12 +26,18 @@ const migrations = [
     `,
   },
   {
-    id: "20250707_add_componentId",
-    sql: sql`ALTER TABLE Trace ADD COLUMN componentId TEXT;`,
+    hash: "20250707_add_componentId",
+    sql: sql`\
+      ALTER TABLE Trace ADD COLUMN componentId TEXT;
+
+      CREATE INDEX IF NOT EXISTS idx_trace_componentId ON Trace (componentId);
+    `,
   },
   {
-    id: "20250707_add_action",
-    sql: sql`ALTER TABLE Trace ADD COLUMN action INTEGER;`,
+    hash: "20250707_add_action",
+    sql: sql`\
+      ALTER TABLE Trace ADD COLUMN action INTEGER;
+    `,
   },
 ];
 
@@ -53,12 +59,13 @@ export async function migrate(db: LibSQLDatabase | SqliteRemoteDatabase) {
   const executedHashes = new Set(executedMigrations.map((m) => m.hash));
 
   for (const migration of migrations) {
-    if (!executedHashes.has(migration.id)) {
+    if (!executedHashes.has(migration.hash)) {
       await db.run(migration.sql).execute();
       await db
-        .run(sql`INSERT INTO ${sql.identifier(migrationsTable)} (hash) VALUES (${migration.id})`)
+        .run(sql`INSERT INTO ${sql.identifier(migrationsTable)} (hash) VALUES (${migration.hash})`)
         .execute();
-      console.log(`Migration ${migration.id} executed`);
+
+      console.log(`Migration ${migration.hash} executed`);
     }
   }
 }

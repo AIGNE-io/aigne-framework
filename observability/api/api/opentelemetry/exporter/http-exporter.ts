@@ -1,7 +1,7 @@
 import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import type { TraceFormatSpans } from "../../core/type.js";
 import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
@@ -54,7 +54,11 @@ class HttpExporter implements HttpExporterInterface {
     if (!db) throw new Error("Database not initialized");
 
     for (const trace of validatedData) {
-      const whereClause = and(eq(Trace.id, trace.id), eq(Trace.rootId, trace.rootId));
+      const whereClause = and(
+        eq(Trace.id, trace.id),
+        eq(Trace.rootId, trace.rootId),
+        !trace.parentId ? isNull(Trace.parentId) : eq(Trace.parentId, trace.parentId),
+      );
 
       try {
         const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();

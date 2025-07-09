@@ -179,3 +179,126 @@ test("OpenAIChatModel.invoke without streaming", async () => {
 
   expect(result).toMatchSnapshot();
 });
+
+test("OpenAIChatModel should use tool to get json output directly if no tools input", async () => {
+  const model = new OpenAIChatModel({});
+
+  spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
+    createMockEventStream({
+      path: join(import.meta.dirname, "openai-streaming-response-2.txt"),
+    }),
+  );
+
+  const result = await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: `\
+What is the weather in New York?
+
+<context>
+{
+  "city": "New York",
+  "temperature": 20
+}
+</context>
+`,
+      },
+    ],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "output",
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            text: {
+              type: "string",
+              description: "Your answer",
+            },
+          },
+          required: ["text"],
+        },
+        strict: true,
+      },
+    },
+  });
+
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The current temperature in New York is 20°C." },
+    }),
+  );
+});
+
+test("OpenAIChatModel should try parse text as json if there are both tools and json response format (supportsToolsUseWithJsonSchema disabled)", async () => {
+  const model = new OpenAIChatModel({});
+  model["supportsToolsUseWithJsonSchema"] = false;
+
+  spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
+    createMockEventStream({
+      path: join(import.meta.dirname, "openai-streaming-response-2.txt"),
+    }),
+  );
+
+  const result = await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: `\
+What is the weather in New York?
+
+<context>
+{
+  "city": "New York",
+  "temperature": 20
+}
+</context>
+`,
+      },
+    ],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get_weather",
+          parameters: {
+            type: "object",
+            properties: {
+              city: {
+                type: "string",
+                description: "The location to get wether",
+              },
+            },
+            required: ["city"],
+          },
+        },
+      },
+    ],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "output",
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            text: {
+              type: "string",
+              description: "Your answer",
+            },
+          },
+          required: ["text"],
+        },
+        strict: true,
+      },
+    },
+  });
+
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The current temperature in New York is 20°C." },
+    }),
+  );
+});

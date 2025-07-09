@@ -1,7 +1,5 @@
 # Release Process
 
-[English](./RELEASING.md) | [中文](./RELEASING.zh.md)
-
 This project uses [Release Please Action](https://github.com/marketplace/actions/release-please-action) to manage the release process. Release Please simplifies the release workflow by analyzing commit messages, maintaining the CHANGELOG, and proposing version change pull requests.
 
 ## Commit Convention

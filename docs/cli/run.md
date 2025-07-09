@@ -1,7 +1,5 @@
 # Run Agent
 
-**English** | [中文](run.zh.md)
-
 Use AIGNE CLI to run your agents.
 
 ## `aigne run` Command

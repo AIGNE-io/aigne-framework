@@ -1,7 +1,5 @@
 # AIAgent
 
-[English](./ai-agent.md) | [中文](./ai-agent.zh.md)
-
 ## Overview
 
 AIAgent is a core component in the AIGNE framework that allows developers to easily create intelligent agents powered by Large Language Models (LLMs). This document details the various creation patterns of AIAgent (basic, custom instructions, custom instructions with variables, structured output, and skill integration) and how to invoke these agents. The main advantages of AIAgent lie in its simplicity and flexibility, supporting multiple language models, custom instructions, and structured output, enabling developers to quickly build intelligent conversational systems for different scenarios. Whether for applications requiring simple Q\&A or complex multi-skill agents, AIAgent provides concise yet powerful solutions.

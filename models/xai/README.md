@@ -6,8 +6,6 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/xai)](https://www.npmjs.com/package/@aigne/xai)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/xai)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-**English** | [中文](README.zh.md)
-
 AIGNE XAI SDK for integrating with XAI language models and API services within the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework).
 
 ## Introduction

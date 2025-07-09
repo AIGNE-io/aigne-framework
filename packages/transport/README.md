@@ -6,8 +6,6 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/transport)](https://www.npmjs.com/package/@aigne/transport)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/transport)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-**English** | [中文](README.zh.md)
-
 AIGNE Transport SDK providing HTTP client and server implementations for communication between AIGNE components within the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework).
 
 ## Introduction

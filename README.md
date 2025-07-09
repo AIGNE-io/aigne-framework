@@ -2,10 +2,6 @@
   <img src="./logo.svg" alt="AIGNE Logo" width="400"/>
 </p>
 
-<p align="center">
-  <a href="./README.md">English</a> | <a href="./README.zh.md">中文</a>
-</p>
-
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)

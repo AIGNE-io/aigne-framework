@@ -1,7 +1,5 @@
 # Agent
 
-[English](./agent.md) | [中文](./agent.zh.md)
-
 Agent is the core foundation of the AIGNE framework. It's not just a simple class, but the soul of the entire Agent ecosystem. Through the Agent class, you can build various intelligent applications from simple conversational assistants to complex decision-making systems. It provides a unified mechanism for all Agents to define input/output schemas and implement processing logic.
 
 Think of Agent as providing a powerful and flexible skeleton for your AI applications, which you can extend to create Agents with rich capabilities:

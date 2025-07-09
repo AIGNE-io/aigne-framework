@@ -1,7 +1,5 @@
 # AIGNE
 
-[English](./aigne.md) | [中文](./aigne.zh.md)
-
 AIGNE is a powerful framework for orchestrating multiple Agents to build complex AI applications. It serves as a central coordination point for Agent interactions, message passing, and execution flow.
 
 ## Basic Concepts

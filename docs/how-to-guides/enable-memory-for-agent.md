@@ -1,7 +1,5 @@
 # Enable Memory for Agent
 
-[English](./enable-memory-for-agent.md) | [中文](./enable-memory-for-agent.zh.md)
-
 In conversational applications, the ability to remember previous conversation content is a very important feature. The AIGNE framework provides a simple way to enable memory capabilities for Agents, allowing them to maintain contextual coherence across multiple conversation rounds. This guide will introduce how to enable and use Agent memory functionality.
 
 ## Basic Process

@@ -6,8 +6,6 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/agent-library)](https://www.npmjs.com/package/@aigne/agent-library)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/agent-library)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
-**English** | [中文](README.zh.md)
-
 Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing pre-built agent implementations.
 
 ## Introduction

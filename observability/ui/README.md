@@ -2,9 +2,6 @@
   <img src="./screenshots/logo.svg" alt="AIGNE Logo" width="400"/>
 </p>
 
-<p align="center">
-  🇬🇧 <a href="./README.md">English</a> | 🇨🇳 <a href="./README.zh.md">中文</a>
-</p>
 
 # AIGNE Observability
 

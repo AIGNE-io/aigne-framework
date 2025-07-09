@@ -1,7 +1,5 @@
 # AIGNE CLI
 
-**English** | [中文](index.zh.md)
-
 AIGNE Command Line Interface (CLI) is a powerful tool designed for creating, running, testing, and deploying AI Agents. With AIGNE CLI, you can:
 
 * **🎯 Code-free Agent Development** - Define and build fully functional AI Agents using only YAML configuration files

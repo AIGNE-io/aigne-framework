@@ -1,7 +1,5 @@
 # Serving Agents as APIs
 
-[English](./serve-agent-as-api.md) | [中文](./serve-agent-as-api.zh.md)
-
 After creating an Agent, you may want to serve it as a Web API, making it callable by various client applications (such as websites, mobile apps, or desktop software). The AIGNE framework provides a simple way to expose Agents through HTTP interfaces, enabling developers to easily build AI-based service architectures. This guide will introduce how to serve Agents as APIs.
 
 ## Basic Process

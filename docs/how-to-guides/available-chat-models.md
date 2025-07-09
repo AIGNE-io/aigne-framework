@@ -1,7 +1,5 @@
 # Available Chat Models
 
-[English](./available-chat-models.md) | [中文](./available-chat-models.zh.md)
-
 The AIGNE framework supports multiple chat models, allowing you to choose the AI capabilities that best suit your application scenarios. This document provides detailed information about all available chat models, including installation instructions, basic usage, and feature overviews.
 
 ## Supported Model Providers

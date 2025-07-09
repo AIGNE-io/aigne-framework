@@ -1,7 +1,5 @@
 # Creating Agents through JS Functions
 
-**English** | [中文](function.zh.md)
-
 Using JavaScript functions to create AI agents provides developers with a flexible programming approach. Through familiar JavaScript syntax, you can implement complex business logic and custom functionality.
 
 ## Basic Structure

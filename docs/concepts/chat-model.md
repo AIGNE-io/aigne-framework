@@ -1,7 +1,5 @@
 # ChatModel
 
-[English](./chat-model.md) | [中文](./chat-model.zh.md)
-
 ## Overview
 
 ChatModel is a core component in the AIGNE framework that provides a unified interface for interacting with Large Language Models (LLMs). As an extension of the Agent class, ChatModel abstracts the detail differences between different AI service providers, enabling developers to use various language models such as OpenAI, Anthropic, Bedrock, etc., in a consistent manner. ChatModel supports text generation, tool calling, JSON structured output, and image understanding capabilities, providing a solid foundation for building complex AI applications.

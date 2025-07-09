@@ -1,7 +1,5 @@
 # GuideRailAgent
 
-[English](./guide-rail-agent.md) | [中文](./guide-rail-agent.zh.md)
-
 ## Overview
 
 GuideRailAgent is a special agent type in the AIGNE framework that is used to validate, filter, and control the input and output of other agents. GuideRailAgent can be viewed as a "guardian" or "reviewer" that can check whether an agent's responses comply with specific rules or policies, and block non-compliant responses when necessary. This mechanism is crucial for building safe and compliant AI applications, preventing agents from generating harmful, inaccurate, or inappropriate content. Through GuideRailAgent, developers can implement various control mechanisms such as content moderation, fact-checking, format validation, etc., ensuring that AI system outputs meet expected standards.

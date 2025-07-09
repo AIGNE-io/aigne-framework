@@ -25,14 +25,7 @@ ${apiSidebar
 writeFileSync(sidebarPath, sidebarContent);
 
 // Copy the README.md file to the docs directory
-const files = [
-  "README.md",
-  "README.zh.md",
-  "LICENSE.md",
-  "CONTRIBUTING.md",
-  "RELEASING.md",
-  "RELEASING.zh.md",
-];
+const files = ["README.md", "LICENSE.md", "CONTRIBUTING.md", "RELEASING.md"];
 for (const file of files) {
   const content = readFileSync(join(root, file), "utf-8")
     .replaceAll(/\(\.\/docs\/(\S+)\)/g, "(./$1)")

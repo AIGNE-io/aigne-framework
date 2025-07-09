@@ -55,10 +55,7 @@ lerna-debug.log*
 /docs/api
 /docs/_media
 /docs/README.md
-/docs/README.zh.md
 /docs/LICENSE
 /docs/CONTRIBUTING.md
-/docs/CONTRIBUTING.zh.md
 /docs/RELEASING.md
-/docs/RELEASING.zh.md
 **/*/modelPricesAndContextWindow.json

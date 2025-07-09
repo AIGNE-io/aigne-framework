@@ -1,4 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { isAgentResponseDelta, textDelta } from "@aigne/core";
@@ -248,4 +249,144 @@ test("AnthropicChatModel.invoke without streaming", async () => {
   });
 
   expect(result).toMatchSnapshot();
+});
+
+test("AnthropicChatModel should use tool to get json output directly if no tools input", async () => {
+  const model = new AnthropicChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
+
+  spyOn(model.client.messages, "create").mockReturnValueOnce(
+    JSON.parse(
+      await readFile(join(import.meta.dirname, "anthropic-structured-response-3.json"), "utf8"),
+    ),
+  );
+
+  const result = await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: `\
+What is the weather in New York?
+
+<context>
+{
+  "city": "New York",
+  "temperature": 20
+}
+</context>
+`,
+      },
+    ],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "output",
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            text: {
+              type: "string",
+              description: "Your answer",
+            },
+          },
+          required: ["text"],
+        },
+        strict: true,
+      },
+    },
+  });
+
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The current temperature in New York is 20 degrees." },
+    }),
+  );
+});
+
+test("AnthropicChatModel should try parse text as json if there are both tools and json response format", async () => {
+  const model = new AnthropicChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
+
+  spyOn(model.client.messages, "stream").mockReturnValueOnce(
+    createMockEventStream({
+      path: join(import.meta.dirname, "anthropic-streaming-response-2.txt"),
+    }),
+  );
+
+  const result = await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: `\
+What is the weather in New York?
+
+<context>
+{
+  "city": "New York",
+  "temperature": 20
+}
+</context>
+`,
+      },
+    ],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get_weather",
+          parameters: {
+            type: "object",
+            properties: {
+              city: {
+                type: "string",
+                description: "The location to get wether",
+              },
+            },
+            required: ["city"],
+          },
+        },
+      },
+    ],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "output",
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            text: {
+              type: "string",
+              description: "Your answer",
+            },
+          },
+          required: ["text"],
+        },
+        strict: true,
+      },
+    },
+  });
+
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The current temperature in New York is 20 degrees." },
+    }),
+  );
+});
+
+test("AnthropicChatModel.getMaxTokens should return max tokens correctly", async () => {
+  const model = new AnthropicChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
+
+  expect(model["getMaxTokens"]("claude-opus-4-20250514")).toBe(32000);
+  expect(model["getMaxTokens"]("claude-sonnet-4-20250514")).toBe(64000);
+  expect(model["getMaxTokens"]("claude-3-7-sonnet-20250219")).toBe(64000);
+  expect(model["getMaxTokens"]("claude-3-5-sonnet-20241022")).toBe(8192);
+  expect(model["getMaxTokens"]("claude-3-5-haiku-20241022")).toBe(8192);
+  expect(model["getMaxTokens"]("claude-3-opus-20240229")).toBe(4096);
+  expect(model["getMaxTokens"]("claude-3-haiku-20240307")).toBe(4096);
 });

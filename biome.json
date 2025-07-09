@@ -7,15 +7,17 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "experimentalScannerIgnores": [
-      "node_modules",
-      "**/node_modules/**",
-      "**/lib/**",
-      "**/dist/**",
-      "**/package.json",
-      "**/.oauth/**",
-      "**/.blocklet/**",
-      "observability/api/api/server/utils/modelPricesAndContextWindow.json"
+    "includes": [
+      "**",
+      "!docs",
+      "!node_modules",
+      "!**/node_modules/**",
+      "!**/lib/**",
+      "!**/dist/**",
+      "!**/package.json",
+      "!**/.oauth/**",
+      "!**/.blocklet/**",
+      "!observability/api/api/server/utils/modelPricesAndContextWindow.json"
     ]
   },
   "formatter": {

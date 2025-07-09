@@ -9,7 +9,6 @@ export interface ChatLoopOptions {
   welcome?: string;
   defaultQuestion?: string;
   inputKey?: string;
-  skipLoop?: boolean;
   outputKey?: string;
 }
 
@@ -17,8 +16,7 @@ export async function runChatLoopInTerminal(
   userAgent: UserAgent<any, any>,
   options: ChatLoopOptions = {},
 ) {
-  const { initialCall = process.env.INITIAL_CALL, skipLoop = process.env.SKIP_LOOP === "true" } =
-    options;
+  const { initialCall } = options;
 
   let prompt: ReturnType<typeof inquirer.prompt<{ question: string }>> | undefined;
 
@@ -26,7 +24,6 @@ export async function runChatLoopInTerminal(
 
   if (initialCall) {
     await callAgent(userAgent, initialCall, { ...options });
-    if (skipLoop) return;
   }
 
   for (let i = 0; ; i++) {

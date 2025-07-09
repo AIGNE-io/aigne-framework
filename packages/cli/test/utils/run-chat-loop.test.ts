@@ -86,28 +86,3 @@ test("runChatLoopInTerminal should invoke agent correctly", async () => {
     expect.anything(),
   );
 });
-
-test("runChatLoopInTerminal should skip loop If initialCall is provided and skipLoop is true", async () => {
-  const aigne = new AIGNE({});
-  const agent = AIAgent.from({
-    inputKey: "message",
-  });
-  const userAgent = aigne.invoke(agent);
-
-  const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
-    arrayToAgentProcessAsyncGenerator([
-      { delta: { json: { text: "hello, this is a test response message" } } },
-    ]),
-  );
-
-  await runChatLoopInTerminal(userAgent, {
-    initialCall: "hello, this is a test message",
-    skipLoop: true,
-  });
-
-  expect(agentProcess).toHaveBeenCalledTimes(1);
-  expect(agentProcess).toHaveBeenCalledWith(
-    { message: "hello, this is a test message" },
-    expect.anything(),
-  );
-});

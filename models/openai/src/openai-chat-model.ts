@@ -20,7 +20,7 @@ import {
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import { nanoid } from "nanoid";
-import OpenAI, { type ClientOptions } from "openai";
+import OpenAI, { type APIError, type ClientOptions } from "openai";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
@@ -137,7 +137,6 @@ export class OpenAIChatModel extends ChatModel {
   protected apiKeyEnvName = "OPENAI_API_KEY";
   protected apiKeyDefault: string | undefined;
   protected supportsNativeStructuredOutputs = true;
-  protected supportsEndWithSystemMessage = true;
   protected supportsToolsUseWithJsonSchema = true;
   protected override supportsParallelToolCalls = true;
   protected supportsToolsEmptyParameters = true;
@@ -148,7 +147,7 @@ export class OpenAIChatModel extends ChatModel {
     const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault;
     if (!apiKey) throw new Error(`Api Key is required for ${this.name}`);
 
-    this._client ??= new OpenAI({
+    this._client ??= new CustomOpenAI({
       baseURL: this.options?.baseURL,
       apiKey,
       ...this.options?.clientOptions,
@@ -223,12 +222,8 @@ export class OpenAIChatModel extends ChatModel {
     return input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls;
   }
 
-  private async getRunMessages(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {
+  protected async getRunMessages(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {
     const messages = await contentsFromInputMessages(input.messages);
-
-    if (!this.supportsEndWithSystemMessage && messages.at(-1)?.role !== "user") {
-      messages.push({ role: "user", content: "" });
-    }
 
     if (!this.supportsToolsUseWithJsonSchema && input.tools?.length) return messages;
     if (this.supportsNativeStructuredOutputs) return messages;
@@ -565,4 +560,20 @@ function handleCompleteToolCall(
     },
     args: call.function?.arguments || "",
   });
+}
+
+// Use a custom OpenAI client to handle API errors for better error messages
+class CustomOpenAI extends OpenAI {
+  protected override makeStatusError(
+    status: number,
+    error: object,
+    message: string | undefined,
+    headers: Headers,
+  ): APIError {
+    if (!("error" in error) || typeof error.error !== "string") {
+      message = JSON.stringify(error);
+    }
+
+    return super.makeStatusError(status, error, message, headers);
+  }
 }

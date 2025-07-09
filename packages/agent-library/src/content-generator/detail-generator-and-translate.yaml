@@ -6,7 +6,7 @@ skills:
   - type: transform
     jsonata: |
       (
-        $array := $eval(originalStructurePlan);
+        $array := originalStructurePlan;
         $path := currentPath;
         $foundItem := $array[path=$path][0];
         $merge([

@@ -1,4 +1,4 @@
-import { readdir, readFile } from "node:fs/promises";
+import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 async function walk(dir) {
@@ -66,15 +66,20 @@ export default async function loadSources({
   );
 
   // 获取上次结构规划结果
-  const structurePlanResult = await readFile(path.join(outputDir, "structure-plan.json"), "utf8");
-
   let originalStructurePlan;
-  if (structurePlanResult) {
-    try {
-      originalStructurePlan = JSON.parse(structurePlanResult);
-    } catch (err) {
-      console.error(`Failed to parse structure-plan.json: ${err.message}`);
+  const structurePlanPath = path.join(outputDir, "structure-plan.json");
+  try {
+    await access(structurePlanPath);
+    const structurePlanResult = await readFile(structurePlanPath, "utf8");
+    if (structurePlanResult) {
+      try {
+        originalStructurePlan = JSON.parse(structurePlanResult);
+      } catch (err) {
+        console.error(`Failed to parse structure-plan.json: ${err.message}`);
+      }
     }
+  } catch {
+    // 文件不存在，originalStructurePlan 保持 undefined
   }
 
   return {

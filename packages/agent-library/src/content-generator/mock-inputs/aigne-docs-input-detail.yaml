@@ -22,8 +22,8 @@ translateLanguages:
   - zh
 docsDir: ../../../../docs-ai-v0.1
 outputDir: ../../../../docs-ai-v0.1/output
-currentPath: /aigne-cli/run
-feedback: 生成 aigne-cli run 部分
+currentPath: /overview
+feedback: 生成 overview 部分
 sourcesPath:
   - /Users/lban/arcblock/code/aigne-framework/packages/cli/src
   - /Users/lban/arcblock/code/aigne-framework/packages/cli/templates

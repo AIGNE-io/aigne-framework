@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { processContent } from "./utils.mjs";
 
 export default async function saveSingleDoc({ path, content, docsDir, translates }) {
   const results = [];
@@ -11,12 +12,12 @@ export default async function saveSingleDoc({ path, content, docsDir, translates
     const dir = join(docsDir, ...segments);
     const filePath = join(dir, fileFullName);
     await mkdir(dir, { recursive: true });
-    await writeFile(filePath, content, "utf8");
+    await writeFile(filePath, processContent({ content }), "utf8");
     results.push({ path: filePath, success: true });
 
     for (const translate of translates || []) {
       const translatePath = join(dir, `${fileName}.${translate.language}.md`);
-      await writeFile(translatePath, translate.translation, "utf8");
+      await writeFile(translatePath, processContent({ content: translate.translation }), "utf8");
       results.push({ path: translatePath, success: true });
     }
   } catch (err) {

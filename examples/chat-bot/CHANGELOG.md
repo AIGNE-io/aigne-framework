@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.15.5](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.4...example-chat-bot-v1.15.5) (2025-07-09)
+
+
+### Bug Fixes
+
+* **model:** ensure last message is not system role for gemini ([#231](https://github.com/AIGNE-io/aigne-framework/issues/231)) ([1b72e1e](https://github.com/AIGNE-io/aigne-framework/commit/1b72e1e6be98060aa32e68585142b2eea401d109))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.22.2
+
 ## [1.15.4](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.3...example-chat-bot-v1.15.4) (2025-07-08)
 
 

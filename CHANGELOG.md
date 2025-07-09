@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.37.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.36.0...aigne-framework-v1.37.0) (2025-07-09)
+
+
+### Features
+
+* **observability:** show chat model name in trace waterfall ([#232](https://github.com/AIGNE-io/aigne-framework/issues/232)) ([a7131ed](https://github.com/AIGNE-io/aigne-framework/commit/a7131edacbda9f69f619c18cc58a6d708223b4e2))
+
+
+### Bug Fixes
+
+* **model:** ensure last message is not system role for gemini ([#231](https://github.com/AIGNE-io/aigne-framework/issues/231)) ([1b72e1e](https://github.com/AIGNE-io/aigne-framework/commit/1b72e1e6be98060aa32e68585142b2eea401d109))
+* share user context between server and client ([#233](https://github.com/AIGNE-io/aigne-framework/issues/233)) ([d55bfbc](https://github.com/AIGNE-io/aigne-framework/commit/d55bfbcc230e9c876c6d2fc0b74a4d7821f9e6ce))
+
 ## [1.36.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.35.0...aigne-framework-v1.36.0) (2025-07-08)
 
 

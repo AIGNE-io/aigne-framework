@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.6.0...gemini-v0.6.1) (2025-07-09)
+
+
+### Bug Fixes
+
+* **model:** ensure last message is not system role for gemini ([#231](https://github.com/AIGNE-io/aigne-framework/issues/231)) ([1b72e1e](https://github.com/AIGNE-io/aigne-framework/commit/1b72e1e6be98060aa32e68585142b2eea401d109))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.1
+  * devDependencies
+    * @aigne/core bumped to 1.32.1
+    * @aigne/test-utils bumped to 0.5.3
+
 ## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.5.1...gemini-v0.6.0) (2025-07-08)
 
 

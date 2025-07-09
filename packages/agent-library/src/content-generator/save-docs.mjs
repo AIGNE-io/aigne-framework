@@ -76,11 +76,3 @@ function generateSidebar(structurePlan) {
   }
   return walk(root).replace(/\n+$/, "");
 }
-
-saveDocs.input_schema = {
-  type: "object",
-  properties: {
-    structurePlanResult: { type: "string" },
-    docsDir: { type: "string" },
-  },
-};

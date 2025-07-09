@@ -24,7 +24,7 @@ import { useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { joinURL, withQuery } from "ufo";
 import CustomDateRangePicker from "./components/date-picker.tsx";
-import RunDetailDrawer from "./components/run/RunDetailDrawer.tsx";
+import RunDetailDrawer from "./components/run/trace-detail-drawer.tsx";
 import type { TraceData } from "./components/run/types.ts";
 import Status from "./components/status.tsx";
 import SwitchComponent from "./components/switch.tsx";
@@ -217,7 +217,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       headerName: t("input"),
       flex: 1,
       minWidth: 120,
-      valueGetter: (_, row) => JSON.stringify(row.attributes?.input),
+      valueGetter: (_, row) => row.attributes?.input,
       sortable: false,
     },
     {
@@ -225,7 +225,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       headerName: t("output"),
       flex: 1,
       minWidth: 120,
-      valueGetter: (_, row) => JSON.stringify(row.attributes?.output),
+      valueGetter: (_, row) => row.attributes?.output,
       sortable: false,
     },
     {

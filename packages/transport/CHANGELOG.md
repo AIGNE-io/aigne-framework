@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.9.2](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.1...transport-v0.9.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* share user context between server and client ([#233](https://github.com/AIGNE-io/aigne-framework/issues/233)) ([d55bfbc](https://github.com/AIGNE-io/aigne-framework/commit/d55bfbcc230e9c876c6d2fc0b74a4d7821f9e6ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.1
+  * devDependencies
+    * @aigne/agent-library bumped to 1.20.1
+    * @aigne/core bumped to 1.32.1
+    * @aigne/test-utils bumped to 0.5.3
+
 ## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.0...transport-v0.9.1) (2025-07-08)
 
 

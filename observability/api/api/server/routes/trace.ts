@@ -51,7 +51,38 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     }
 
     const rootCalls = await db
-      .select()
+      .select({
+        id: Trace.id,
+        rootId: Trace.rootId,
+        parentId: Trace.parentId,
+        name: Trace.name,
+        startTime: Trace.startTime,
+        endTime: Trace.endTime,
+        status: Trace.status,
+        attributes: sql<string>`
+          CASE 
+            WHEN ${Trace.attributes} IS NULL THEN JSON_OBJECT('input', '', 'output', '')
+            ELSE JSON_OBJECT(
+              'input', 
+              CASE 
+                WHEN JSON_EXTRACT(${Trace.attributes}, '$.input') IS NOT NULL 
+                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), 1, 150) || 
+                CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT)) > 150 THEN '...' ELSE '' END
+                ELSE ''
+              END,
+              'output',
+              CASE 
+                WHEN JSON_EXTRACT(${Trace.attributes}, '$.output') IS NOT NULL 
+                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), 1, 150) || 
+                CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT)) > 150 THEN '...' ELSE '' END
+                ELSE ''
+              END
+            )
+          END
+        `,
+        userId: Trace.userId,
+        componentId: Trace.componentId,
+      })
       .from(Trace)
       .where(whereClause)
       .orderBy(desc(Trace.startTime))
@@ -59,19 +90,18 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       .offset(offset)
       .execute();
 
-    const rootCallIds = rootCalls.map((r) => r.rootId).filter((id): id is string => !!id);
+    const processedRootCalls = rootCalls.map((call) => {
+      try {
+        return {
+          ...call,
+          attributes: JSON.parse(call.attributes),
+        };
+      } catch (_err) {
+        return call;
+      }
+    });
 
-    if (rootCallIds.length === 0) {
-      res.json({
-        total,
-        page,
-        pageSize,
-        data: [],
-      });
-      return;
-    }
-
-    res.json({ total, page, pageSize, data: rootCalls.filter((r) => r.rootId) });
+    res.json({ total, page, pageSize, data: processedRootCalls.filter((r) => r.rootId) });
   });
 
   router.get("/tree/components", ...middleware, async (req: Request, res: Response) => {

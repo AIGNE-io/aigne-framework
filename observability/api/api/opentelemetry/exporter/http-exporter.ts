@@ -1,13 +1,13 @@
 import { initDatabase } from "@aigne/sqlite";
+import type { SpanStatusCode } from "@opentelemetry/api";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import type { TraceFormatSpans } from "../../core/type.js";
 import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
 import { Trace } from "../../server/models/trace.js";
 import { validateTraceSpans } from "./util.js";
-
 export interface HttpExporterInterface extends SpanExporter {
   export(
     spans: ReadableSpan[],
@@ -17,6 +17,8 @@ export interface HttpExporterInterface extends SpanExporter {
   shutdown(): Promise<void>;
 
   upsertInitialSpan(span: ReadableSpan): Promise<void>;
+
+  updateSpanStatus(data: { id: string; traceId: string; status: SpanStatusCode }): Promise<void>;
 }
 
 class HttpExporter implements HttpExporterInterface {
@@ -94,6 +96,35 @@ class HttpExporter implements HttpExporterInterface {
 
   async upsertInitialSpan(span: ReadableSpan) {
     await this.upsert(validateTraceSpans([span]));
+  }
+
+  async updateSpanStatus({
+    id,
+    traceId,
+    status,
+  }: {
+    id: string;
+    traceId: string;
+    status: SpanStatusCode;
+  }) {
+    const db = await this._db;
+    if (!db) throw new Error("Database not initialized");
+
+    const whereClause = and(
+      eq(Trace.id, id),
+      eq(Trace.rootId, traceId),
+      sql`json_extract(${Trace.status}, '$.code') = 0`,
+    );
+
+    try {
+      const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();
+
+      if (existing.length > 0) {
+        await db.update(Trace).set({ status }).where(whereClause).execute();
+      }
+    } catch (err) {
+      console.error(`update span status failed for trace ${id}:`, err);
+    }
   }
 }
 

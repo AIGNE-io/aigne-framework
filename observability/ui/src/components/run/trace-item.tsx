@@ -3,7 +3,7 @@ import { Box, Card, LinearProgress, Tooltip, Typography, useMediaQuery } from "@
 import type { ReactElement } from "react";
 import { parseDurationMs } from "../../utils/latency.ts";
 import Status from "../status.tsx";
-import { AgentTag } from "./AgentTag.tsx";
+import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
 
 type TraceItemProps = {
@@ -16,6 +16,7 @@ type TraceItemProps = {
   onSelect?: () => void;
   status?: number;
   agentTag?: string;
+  model?: string;
 };
 
 function TraceItem({
@@ -28,6 +29,7 @@ function TraceItem({
   onSelect,
   status,
   agentTag,
+  model,
 }: TraceItemProps) {
   const widthPercent = Math.min((duration / totalDuration) * 100 || 0, 100);
   const marginLeftPercent = (start / totalDuration) * 100;
@@ -84,7 +86,7 @@ function TraceItem({
 
         {!isMobile && (
           <Box sx={{ mr: 2 }}>
-            <AgentTag agentTag={agentTag} />
+            <AgentTag agentTag={agentTag} model={model} />
           </Box>
         )}
 
@@ -219,6 +221,7 @@ export function renderTraceItems({
       selected={item.selected}
       depth={depth}
       status={item.status?.code}
+      model={item.run?.attributes?.output?.model}
       agentTag={item.agentTag}
       onSelect={() => onSelect?.(item.run)}
     />,

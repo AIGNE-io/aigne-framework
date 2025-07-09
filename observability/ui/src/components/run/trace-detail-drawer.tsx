@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Decimal from "decimal.js";
@@ -7,9 +7,9 @@ import { joinURL } from "ufo";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import { origin } from "../../utils/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
-import RunStatsHeader from "./RunStatsHeader.tsx";
-import TraceDetailPanel from "./TraceDetailPanel.tsx";
-import TraceItemList from "./TraceItem.tsx";
+import TraceDetailPanel from "./trace-detail-panel.tsx";
+import TraceItemList from "./trace-item.tsx";
+import RunStatsHeader from "./trace-stats-header.tsx";
 import type { TraceData } from "./types.ts";
 
 interface RunDetailDrawerProps {
@@ -154,20 +154,6 @@ export default function RunDetailDrawer({
             <TraceDetailPanel trace={selectedTrace} />
           </Box>
         </Box>
-
-        {loading && (
-          <Backdrop
-            sx={{
-              color: "common.white",
-              zIndex: (theme) => theme.zIndex.drawer + 1,
-              position: "absolute",
-              inset: 0,
-            }}
-            open
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        )}
       </Box>
     );
   };
@@ -177,11 +163,25 @@ export default function RunDetailDrawer({
       anchor="right"
       open={open}
       onClose={onClose}
-      slotProps={{
-        paper: { sx: { width: "85vw", p: 0, boxSizing: "border-box" } },
-      }}
+      slotProps={{ paper: { sx: { width: "85vw", p: 0, boxSizing: "border-box" } } }}
     >
-      {renderContent()}
+      <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
+        {renderContent()}
+
+        {loading && (
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CircularProgress color="primary" />
+          </Box>
+        )}
+      </Box>
     </Drawer>
   );
 }

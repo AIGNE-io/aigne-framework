@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.3](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.2...test-utils-v0.5.3) (2025-07-09)
+
+
+### Bug Fixes
+
+* **model:** ensure last message is not system role for gemini ([#231](https://github.com/AIGNE-io/aigne-framework/issues/231)) ([1b72e1e](https://github.com/AIGNE-io/aigne-framework/commit/1b72e1e6be98060aa32e68585142b2eea401d109))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.32.1
+
 ## [0.5.2](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.1...test-utils-v0.5.2) (2025-07-08)
 
 

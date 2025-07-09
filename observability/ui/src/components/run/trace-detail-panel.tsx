@@ -19,7 +19,7 @@ import JsonView from "../json-view.tsx";
 import ModelInfoTip from "../model-tip.tsx";
 import RenderView from "../render-view.tsx";
 import YamlView from "../yaml-view.tsx";
-import { AgentTag } from "./AgentTag.tsx";
+import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
 
 export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }) {
@@ -124,7 +124,7 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
           {`${trace?.name}`}
         </Typography>
 
-        <AgentTag agentTag={trace?.attributes?.agentTag} />
+        <AgentTag agentTag={trace?.attributes?.agentTag} model={trace?.attributes?.output?.model} />
       </Box>
       <Box sx={{ my: 1 }}>
         <Box

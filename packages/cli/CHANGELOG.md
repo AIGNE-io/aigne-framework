@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.22.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.1...cli-v1.22.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* **model:** ensure last message is not system role for gemini ([#231](https://github.com/AIGNE-io/aigne-framework/issues/231)) ([1b72e1e](https://github.com/AIGNE-io/aigne-framework/commit/1b72e1e6be98060aa32e68585142b2eea401d109))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.1
+    * @aigne/anthropic bumped to 0.7.1
+    * @aigne/bedrock bumped to 0.7.1
+    * @aigne/core bumped to 1.32.1
+    * @aigne/deepseek bumped to 0.6.1
+    * @aigne/gemini bumped to 0.6.1
+    * @aigne/observability-api bumped to 0.7.0
+    * @aigne/ollama bumped to 0.6.1
+    * @aigne/open-router bumped to 0.6.1
+    * @aigne/openai bumped to 0.8.1
+    * @aigne/xai bumped to 0.6.1
+
 ## [1.22.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.0...cli-v1.22.1) (2025-07-08)
 
 

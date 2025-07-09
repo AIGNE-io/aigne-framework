@@ -1,4 +1,5 @@
 import { Chip } from "@mui/material";
+import { capitalize } from "lodash";
 import tinycolor from "tinycolor2";
 
 const agentTagColors = {
@@ -60,7 +61,7 @@ const agentTagColors = {
   },
 };
 
-export const AgentTag = ({ agentTag }: { agentTag?: string }) => {
+export const AgentTag = ({ agentTag, model }: { agentTag?: string; model?: string }) => {
   if (!agentTag) return null;
 
   const agentColors = Object.entries(agentTagColors).reduce(
@@ -77,14 +78,20 @@ export const AgentTag = ({ agentTag }: { agentTag?: string }) => {
     {} as Record<string, { color: string; backgroundColor: string }>,
   );
 
+  const replaced = agentTag.replace("Agent", "");
+  const tag = replaced === "ChatModel" ? (model ?? replaced) : replaced;
+
   return (
     <Chip
-      label={agentTag}
+      label={capitalize(tag)}
       size="small"
       variant="outlined"
       sx={{
         height: 21,
-        width: "150px",
+        width: "120px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
         backgroundColor: `${agentColors[agentTag as keyof typeof agentColors]?.backgroundColor} !important`,
         color: `${agentColors[agentTag as keyof typeof agentColors]?.color} !important`,
         border: 0,

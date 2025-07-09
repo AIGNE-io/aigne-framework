@@ -106,7 +106,11 @@ export const createRunAIGNECommand = (name = "run") =>
 
 export async function parseAgentInputByCommander(
   agent: Agent,
-  options: RunAIGNECommandOptions & { inputKey?: string; argv?: string[] } = {},
+  options: RunAIGNECommandOptions & {
+    inputKey?: string;
+    argv?: string[];
+    defaultInput?: string | Message;
+  } = {},
 ): Promise<Message> {
   const cmd = new Command()
     .description(`Run agent ${agent.name} with AIGNE`)
@@ -155,7 +159,7 @@ export async function parseAgentInputByCommander(
     options.input ||
     (isatty(process.stdin.fd) || !(await stdinHasData())
       ? null
-      : [await readAllString(process.stdin)]);
+      : [await readAllString(process.stdin)].filter(Boolean));
 
   if (rawInput?.length) {
     for (let raw of rawInput) {
@@ -176,6 +180,17 @@ export async function parseAgentInputByCommander(
         );
       }
     }
+  }
+
+  if (isEmpty(input)) {
+    const defaultInput = options.defaultInput || process.env.INITIAL_CALL;
+
+    Object.assign(
+      input,
+      typeof defaultInput === "string"
+        ? { [options?.inputKey || DEFAULT_CHAT_INPUT_KEY]: defaultInput }
+        : defaultInput,
+    );
   }
 
   return input;
@@ -230,17 +245,8 @@ export async function runWithAIGNE(
         const input = await parseAgentInputByCommander(agent, {
           ...options,
           inputKey: chatLoopOptions?.inputKey,
+          defaultInput: chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion,
         });
-
-        if (isEmpty(input)) {
-          const defaultInput = chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion;
-          Object.assign(
-            input,
-            typeof defaultInput === "string"
-              ? { [chatLoopOptions?.inputKey || DEFAULT_CHAT_INPUT_KEY]: defaultInput }
-              : defaultInput,
-          );
-        }
 
         await runAgentWithAIGNE(aigne, agent, {
           ...options,

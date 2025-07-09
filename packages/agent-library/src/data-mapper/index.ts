@@ -2,13 +2,12 @@ import { AIGNE, type ChatModel, UserInputTopic, UserOutputTopic } from "@aigne/c
 
 import mapper from "./agents/mapper.js";
 import reviewer from "./agents/reviewer.js";
-import { getSchemaFromData } from "./tools.js";
 
 export interface TransformInput {
   responseSchema: string;
   responseSampleData?: string;
   sourceData?: string;
-  sourceSchema?: string;
+  sourceSchema: string;
   instruction?: string;
   [key: string]: unknown;
 }
@@ -25,11 +24,6 @@ export async function generateMapping({
   confidenceReasoning: string;
 } | null> {
   if (!model) throw new Error("model is required to run data mapper");
-
-  // if sourceSchema is not provided, generate it from sourceData
-  if (!input.sourceSchema && input.sourceData) {
-    input.sourceSchema = JSON.stringify(getSchemaFromData(JSON.parse(input.sourceData)));
-  }
 
   const aigne = new AIGNE({ model, agents: [mapper, reviewer] });
 

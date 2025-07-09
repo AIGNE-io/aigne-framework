@@ -1053,9 +1053,6 @@ importers:
       jsonschema:
         specifier: ^1.5.0
         version: 1.5.0
-      to-json-schema:
-        specifier: ^0.2.5
-        version: 0.2.5
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -1069,9 +1066,6 @@ importers:
       '@types/bun':
         specifier: ^1.2.17
         version: 1.2.17
-      '@types/to-json-schema':
-        specifier: ^0.2.4
-        version: 0.2.4
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -4097,9 +4091,6 @@ packages:
   '@types/tinycolor2@1.4.6':
     resolution: {integrity: sha512-iEN8J0BoMnsWBqjVbWH/c0G0Hh7O21lpR2/+PrvAVgWdzL7eexIFm4JN/Wn10PTcmNdtS6U67r499mlWMXOxNw==}
 
-  '@types/to-json-schema@0.2.4':
-    resolution: {integrity: sha512-ENEB7JBlKODdihNrg08RgtLT8DZj43K48dV39yzV93QQPZhbQ+zan8osWpKll3HFEuLsiSttBdJ6QZFGsvRd4Q==}
-
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
 
@@ -6939,18 +6930,11 @@ packages:
   lodash.isundefined@3.0.1:
     resolution: {integrity: sha512-MXB1is3s899/cD8jheYYE2V9qTHwKvt+npCwpD+1Sxm3Q3cECXCiYHjeHWXNwr6Q0SOBPrYUDxendrO6goVTEA==}
 
-  lodash.keys@4.2.0:
-    resolution: {integrity: sha512-J79MkJcp7Df5mizHiVNpjoHXLi4HLjh9VLS/M7lQSGoQ+0oQ+lWEigREkqKyizPB1IawvQLLKY8mzEcm1tkyxQ==}
-
   lodash.memoize@4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
-
-  lodash.omit@4.5.0:
-    resolution: {integrity: sha512-XeqSp49hNGmlkj2EJlfrQFIzQ6lXdNro9sddtQzcJY8QaoC2GO0DT7xaIokHeyM+mIT0mPMlPvkYzg2xCuHdZg==}
-    deprecated: This package is deprecated. Use destructuring assignment syntax instead.
 
   lodash.once@4.1.1:
     resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==}
@@ -6960,12 +6944,6 @@ packages:
 
   lodash.throttle@4.1.1:
     resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
-
-  lodash.without@4.4.0:
-    resolution: {integrity: sha512-M3MefBwfDhgKgINVuBJCO1YR3+gf6s9HNJsIiZ/Ru77Ws6uTb9eBuvrkpzO+9iLoAaRodGuq7tyrPCx+74QYGQ==}
-
-  lodash.xor@4.5.0:
-    resolution: {integrity: sha512-sVN2zimthq7aZ5sPGXnSz32rZPuqcparVW50chJQe+mzTYV+IsxSsl/2gnkWWE2Of7K3myBQBqtLKOUEHJKRsQ==}
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -9282,9 +9260,6 @@ packages:
     resolution: {integrity: sha512-tB82LpAIWjhLYbqjx3X4zEeHN6M8CiuOEy2JY8SEQVdYRe3CCHOFaqrBW1doLDrfpWhplcW7BL+bO3/6S3pcDQ==}
     engines: {node: '>= 0.4'}
 
-  to-json-schema@0.2.5:
-    resolution: {integrity: sha512-jP1ievOee8pec3tV9ncxLSS48Bnw7DIybgy112rhMCEhf3K4uyVNZZHr03iQQBzbV5v5Hos+dlZRRyk6YSMNDw==}
-
   to-readable-stream@1.0.0:
     resolution: {integrity: sha512-Iq25XBt6zD5npPhlLVXGFN3/gyR2/qODcKNNyTMd4vbm39HUaOiAM4PMq0eMVC/Tkxz+Zjdsc55g9yyz+Yq00Q==}
     engines: {node: '>=6'}
@@ -10041,7 +10016,7 @@ snapshots:
       '@ocap/wallet': 1.20.13
       archiver: 7.0.1
       axios: 1.10.0(debug@4.4.1)
-      axios-mock-adapter: 2.1.0(axios@1.10.0(debug@4.4.1))
+      axios-mock-adapter: 2.1.0(axios@1.10.0)
       axon: 2.0.3
       chalk: 4.1.2
       cookie: 1.0.2
@@ -13747,10 +13722,6 @@ snapshots:
 
   '@types/tinycolor2@1.4.6': {}
 
-  '@types/to-json-schema@0.2.4':
-    dependencies:
-      '@types/json-schema': 7.0.15
-
   '@types/tough-cookie@4.0.5': {}
 
   '@types/trusted-types@2.0.7':
@@ -14157,9 +14128,9 @@ snapshots:
 
   awesome-phonenumber@7.5.0: {}
 
-  axios-mock-adapter@2.1.0(axios@1.10.0(debug@4.4.1)):
+  axios-mock-adapter@2.1.0(axios@1.10.0):
     dependencies:
-      axios: 1.10.0(debug@4.4.1)
+      axios: 1.10.0
       fast-deep-equal: 3.1.3
       is-buffer: 2.0.5
 
@@ -16910,23 +16881,15 @@ snapshots:
 
   lodash.isundefined@3.0.1: {}
 
-  lodash.keys@4.2.0: {}
-
   lodash.memoize@4.1.2: {}
 
   lodash.merge@4.6.2: {}
-
-  lodash.omit@4.5.0: {}
 
   lodash.once@4.1.1: {}
 
   lodash.set@4.3.2: {}
 
   lodash.throttle@4.1.1: {}
-
-  lodash.without@4.4.0: {}
-
-  lodash.xor@4.5.0: {}
 
   lodash@4.17.21: {}
 
@@ -19820,15 +19783,6 @@ snapshots:
       isarray: 2.0.5
       safe-buffer: 5.2.1
       typed-array-buffer: 1.0.3
-
-  to-json-schema@0.2.5:
-    dependencies:
-      lodash.isequal: 4.5.0
-      lodash.keys: 4.2.0
-      lodash.merge: 4.6.2
-      lodash.omit: 4.5.0
-      lodash.without: 4.4.0
-      lodash.xor: 4.5.0
 
   to-readable-stream@1.0.0: {}
 

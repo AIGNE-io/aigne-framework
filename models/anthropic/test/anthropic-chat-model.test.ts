@@ -372,3 +372,15 @@ What is the weather in New York?
     }),
   );
 });
+
+test("AnthropicChatModel.getMaxTokens should return max tokens correctly", async () => {
+  const model = new AnthropicChatModel({});
+
+  expect(model["getMaxTokens"]("claude-opus-4-20250514")).toBe(32000);
+  expect(model["getMaxTokens"]("claude-sonnet-4-20250514")).toBe(64000);
+  expect(model["getMaxTokens"]("claude-3-7-sonnet-20250219")).toBe(64000);
+  expect(model["getMaxTokens"]("claude-3-5-sonnet-20241022")).toBe(8192);
+  expect(model["getMaxTokens"]("claude-3-5-haiku-20241022")).toBe(8192);
+  expect(model["getMaxTokens"]("claude-3-opus-20240229")).toBe(4096);
+  expect(model["getMaxTokens"]("claude-3-haiku-20240307")).toBe(4096);
+});

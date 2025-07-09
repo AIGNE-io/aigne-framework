@@ -127,6 +127,24 @@ export class AnthropicChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
+  private getMaxTokens(model: string): number {
+    const matchers = [
+      [/claude-opus-4-/, 32000],
+      [/claude-sonnet-4-/, 64000],
+      [/claude-3-7-sonnet-/, 64000],
+      [/claude-3-5-sonnet-/, 8192],
+      [/claude-3-5-haiku-/, 8192],
+    ] as const;
+
+    for (const [regex, maxTokens] of matchers) {
+      if (regex.test(model)) {
+        return maxTokens;
+      }
+    }
+
+    return 4096;
+  }
+
   /**
    * Process the input using Claude's chat model
    * @param input - The input to process
@@ -147,7 +165,7 @@ export class AnthropicChatModel extends ChatModel {
       temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
       top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       // TODO: make dynamic based on model https://docs.anthropic.com/en/docs/about-claude/models/all-models
-      max_tokens: /claude-3-[5|7]/.test(model) ? 8192 : 4096,
+      max_tokens: this.getMaxTokens(model),
       ...convertMessages(input),
       ...convertTools({ ...input, disableParallelToolUse }),
     };

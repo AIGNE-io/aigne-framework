@@ -1,4 +1,5 @@
 import { Chip } from "@mui/material";
+import { capitalize } from "lodash";
 import tinycolor from "tinycolor2";
 
 const agentTagColors = {
@@ -78,11 +79,11 @@ export const AgentTag = ({ agentTag, model }: { agentTag?: string; model?: strin
   );
 
   const replaced = agentTag.replace("Agent", "");
-  const tag = replaced === "ChatModel" ? (model?.toLocaleUpperCase() ?? replaced) : replaced;
+  const tag = replaced === "ChatModel" ? (model ?? replaced) : replaced;
 
   return (
     <Chip
-      label={tag}
+      label={capitalize(tag)}
       size="small"
       variant="outlined"
       sx={{

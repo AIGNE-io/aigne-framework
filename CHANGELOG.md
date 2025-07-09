@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.37.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.1...aigne-framework-v1.37.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* **xai:** handle multiple tool calls correctly ([#238](https://github.com/AIGNE-io/aigne-framework/issues/238)) ([d087d53](https://github.com/AIGNE-io/aigne-framework/commit/d087d533f83867451b3352937998eae36f85a0be))
+
 ## [1.37.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.0...aigne-framework-v1.37.1) (2025-07-09)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.6.2...xai-v0.6.3) (2025-07-09)
+
+
+### Bug Fixes
+
+* **xai:** handle multiple tool calls correctly ([#238](https://github.com/AIGNE-io/aigne-framework/issues/238)) ([d087d53](https://github.com/AIGNE-io/aigne-framework/commit/d087d533f83867451b3352937998eae36f85a0be))
+
 ## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.6.1...xai-v0.6.2) (2025-07-09)
 
 

@@ -55,10 +55,12 @@ export async function loadAgentFromYamlFile(path: string) {
     const baseAgentSchema = z.object({
       name: optionalize(z.string()),
       description: optionalize(z.string()),
-      inputSchema: optionalize(inputOutputSchema).transform<BaseAgentSchema["inputSchema"]>((v) =>
-        v ? jsonSchemaToZod(v) : undefined,
-      ) as unknown as ZodType<BaseAgentSchema["inputSchema"]>,
-      outputSchema: optionalize(inputOutputSchema).transform((v) =>
+      inputSchema: optionalize(inputOutputSchema({ path })).transform<
+        BaseAgentSchema["inputSchema"]
+      >((v) => (v ? jsonSchemaToZod(v) : undefined)) as unknown as ZodType<
+        BaseAgentSchema["inputSchema"]
+      >,
+      outputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["outputSchema"]>,
       skills: optionalize(z.array(z.union([z.string(), agentSchema]))),

@@ -204,3 +204,42 @@ test("loadAgentFromYaml should load transform agent correctly", async () => {
     "
   `);
 });
+
+test("loadAgentFromYaml should load external schema agent correctly", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/external-schema-agent.yaml"),
+  );
+
+  expect(zodToJsonSchema(agent.inputSchema)).toMatchInlineSnapshot(`
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": true,
+      "properties": {
+        "message": {
+          "description": "Message to process",
+          "type": "string",
+        },
+      },
+      "required": [
+        "message",
+      ],
+      "type": "object",
+    }
+  `);
+  expect(zodToJsonSchema(agent.outputSchema)).toMatchInlineSnapshot(`
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": true,
+      "properties": {
+        "message": {
+          "description": "Message to process",
+          "type": "string",
+        },
+      },
+      "required": [
+        "message",
+      ],
+      "type": "object",
+    }
+  `);
+});

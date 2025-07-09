@@ -13,6 +13,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.20.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.20.1...agent-library-v1.20.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* resolve warning caused by dependencies. ([#237](https://github.com/AIGNE-io/aigne-framework/issues/237)) ([3ad7cc6](https://github.com/AIGNE-io/aigne-framework/commit/3ad7cc66b0c1ab425879176849af97c88c01b5a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.32.2
+    * @aigne/openai bumped to 0.8.2
+
 ## [1.20.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.20.0...agent-library-v1.20.1) (2025-07-09)
 
 

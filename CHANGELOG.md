@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.37.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.0...aigne-framework-v1.37.1) (2025-07-09)
+
+
+### Bug Fixes
+
+* **observability:** reduce the size of the requested data ([#235](https://github.com/AIGNE-io/aigne-framework/issues/235)) ([760b5d4](https://github.com/AIGNE-io/aigne-framework/commit/760b5d4aaec0c60ef0908e3376ba7d7ad9dd630b))
+* resolve warning caused by dependencies. ([#237](https://github.com/AIGNE-io/aigne-framework/issues/237)) ([3ad7cc6](https://github.com/AIGNE-io/aigne-framework/commit/3ad7cc66b0c1ab425879176849af97c88c01b5a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.2.0
+
 ## [1.37.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.36.0...aigne-framework-v1.37.0) (2025-07-09)
 
 

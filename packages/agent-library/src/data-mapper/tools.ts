@@ -2,22 +2,11 @@
 import jsonata from "jsonata";
 import type { Schema } from "jsonschema";
 import { Validator } from "jsonschema";
-import toJsonSchema from "to-json-schema";
 
 export interface TransformResult {
   success: boolean;
   data?: unknown;
   error?: string;
-}
-
-/**
- * Extract JSON Schema from data
- * @param data Any data
- * @returns JSON Schema or null
- */
-export function getSchemaFromData(data: unknown): unknown {
-  if (!data) return null;
-  return toJsonSchema(data);
 }
 
 export async function applyJsonataWithValidation(

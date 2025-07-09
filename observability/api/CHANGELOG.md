@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.7.0...observability-api-v0.7.1) (2025-07-09)
+
+
+### Bug Fixes
+
+* **observability:** reduce the size of the requested data ([#235](https://github.com/AIGNE-io/aigne-framework/issues/235)) ([760b5d4](https://github.com/AIGNE-io/aigne-framework/commit/760b5d4aaec0c60ef0908e3376ba7d7ad9dd630b))
+
 ## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.6.0...observability-api-v0.7.0) (2025-07-09)
 
 

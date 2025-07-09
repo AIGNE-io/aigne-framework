@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Decimal from "decimal.js";
@@ -154,20 +154,6 @@ export default function RunDetailDrawer({
             <TraceDetailPanel trace={selectedTrace} />
           </Box>
         </Box>
-
-        {loading && (
-          <Backdrop
-            sx={{
-              color: "common.white",
-              zIndex: (theme) => theme.zIndex.drawer + 1,
-              position: "absolute",
-              inset: 0,
-            }}
-            open
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        )}
       </Box>
     );
   };
@@ -177,11 +163,25 @@ export default function RunDetailDrawer({
       anchor="right"
       open={open}
       onClose={onClose}
-      slotProps={{
-        paper: { sx: { width: "85vw", p: 0, boxSizing: "border-box" } },
-      }}
+      slotProps={{ paper: { sx: { width: "85vw", p: 0, boxSizing: "border-box" } } }}
     >
-      {renderContent()}
+      <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
+        {renderContent()}
+
+        {loading && (
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CircularProgress color="primary" />
+          </Box>
+        )}
+      </Box>
     </Drawer>
   );
 }

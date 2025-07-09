@@ -217,7 +217,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       headerName: t("input"),
       flex: 1,
       minWidth: 120,
-      valueGetter: (_, row) => JSON.stringify(row.attributes?.input),
+      valueGetter: (_, row) => row.attributes?.input,
       sortable: false,
     },
     {
@@ -225,7 +225,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       headerName: t("output"),
       flex: 1,
       minWidth: 120,
-      valueGetter: (_, row) => JSON.stringify(row.attributes?.output),
+      valueGetter: (_, row) => row.attributes?.output,
       sortable: false,
     },
     {

@@ -29,4 +29,6 @@ export class XAIChatModel extends OpenAIChatModel {
   }
 
   protected override apiKeyEnvName = "XAI_API_KEY";
+
+  protected override supportsToolStreaming = false;
 }

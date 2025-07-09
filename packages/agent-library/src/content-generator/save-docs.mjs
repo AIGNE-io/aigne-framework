@@ -1,6 +1,6 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { processContent } from "./utils.mjs";
+import { saveDocWithTranslations } from "./utils.mjs";
 
 /**
  * @param {Object} params
@@ -15,27 +15,13 @@ export default async function saveDocs({ structurePlanResult: structurePlan, doc
     if (item.detailGenerated) {
       continue;
     }
-
-    try {
-      const relPath = item.path.replace(/^\//, "");
-      const segments = relPath.split("/");
-      const fileName = segments.pop();
-      const fileFullName = `${fileName}.md`;
-      const dir = join(docsDir, ...segments);
-      const filePath = join(dir, fileFullName);
-      await mkdir(dir, { recursive: true });
-      await writeFile(filePath, processContent({ content: item.content }), "utf8");
-
-      for (const translate of item.translates || []) {
-        const translatePath = join(dir, `${fileName}.${translate.language}.md`);
-        await writeFile(translatePath, processContent({ content: translate.translation }), "utf8");
-        results.push({ path: translatePath, success: true });
-      }
-
-      results.push({ path: filePath, success: true });
-    } catch (err) {
-      results.push({ path: item.path, success: false, error: err.message });
-    }
+    const saveResults = await saveDocWithTranslations({
+      path: item.path,
+      content: item.content,
+      docsDir,
+      translates: item.translates || [],
+    });
+    results.push(...saveResults);
   }
 
   // 2. 生成 _sidebar.md
@@ -61,26 +47,40 @@ function generateSidebar(structurePlan) {
     let node = root;
     for (let i = 0; i < segments.length; i++) {
       const seg = segments[i];
-      if (!node[seg]) node[seg] = { __children: {}, __title: null };
+      if (!node[seg])
+        node[seg] = {
+          __children: {},
+          __title: null,
+          __fullPath: segments.slice(0, i + 1).join("/"),
+        };
       if (i === segments.length - 1) node[seg].__title = title;
       node = node[seg].__children;
     }
   }
-  // 递归生成 sidebar 文本
-  function walk(node, parentPath = "", indent = "") {
+  // 递归生成 sidebar 文本，link 路径为拉平后的文件名
+  function walk(node, parentSegments = [], indent = "") {
     let out = "";
     for (const key of Object.keys(node)) {
       const item = node[key];
-      const filePath = `${parentPath}/${key}.md`;
+      const fullSegments = [...parentSegments, key];
+      const flatFile = fullSegments.join("-") + ".md";
       if (item.__title) {
-        out += `${indent}* [${item.__title}](${filePath})\n`;
+        out += `${indent}* [${item.__title}](/${flatFile})\n`;
       }
       const children = item.__children;
       if (Object.keys(children).length > 0) {
-        out += walk(children, `${parentPath}/${key}`, `${indent}  `);
+        out += walk(children, fullSegments, `${indent}  `);
       }
     }
     return out;
   }
   return walk(root).replace(/\n+$/, "");
 }
+
+saveDocs.input_schema = {
+  type: "object",
+  properties: {
+    structurePlanResult: { type: "string" },
+    docsDir: { type: "string" },
+  },
+};

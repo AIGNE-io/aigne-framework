@@ -239,14 +239,16 @@ export class OpenAIChatModel extends ChatModel {
   protected async getRunMessages(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {
     const messages = await contentsFromInputMessages(input.messages);
 
-    if (this.supportsToolsUseWithJsonSchema || !input.tools?.length) return messages;
-    if (this.supportsNativeStructuredOutputs) return messages;
-
     if (input.responseFormat?.type === "json_schema") {
-      messages.unshift({
-        role: "system",
-        content: getJsonOutputPrompt(input.responseFormat.jsonSchema.schema),
-      });
+      if (
+        !this.supportsNativeStructuredOutputs ||
+        (!this.supportsToolsUseWithJsonSchema && input.tools?.length)
+      ) {
+        messages.unshift({
+          role: "system",
+          content: getJsonOutputPrompt(input.responseFormat.jsonSchema.schema),
+        });
+      }
     }
     return messages;
   }

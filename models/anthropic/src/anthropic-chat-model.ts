@@ -119,6 +119,7 @@ export class AnthropicChatModel extends ChatModel {
     this._client ??= new Anthropic({
       apiKey,
       ...this.options?.clientOptions,
+      timeout: this.options?.clientOptions?.timeout ?? 600e3,
     });
     return this._client;
   }
@@ -153,6 +154,8 @@ export class AnthropicChatModel extends ChatModel {
   override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     return this._process(input);
   }
+
+  private ajv = new Ajv();
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const model = this.options?.model || CHAT_MODEL_CLAUDE_DEFAULT_MODEL;
@@ -192,7 +195,7 @@ export class AnthropicChatModel extends ChatModel {
     // Try to parse the text response as JSON
     // If it matches the json_schema, return it as json
     const json = safeParseJSON(result.text || "");
-    if (new Ajv().validate(input.responseFormat.jsonSchema.schema, json)) {
+    if (this.ajv.validate(input.responseFormat.jsonSchema.schema, json)) {
       return { ...result, json, text: undefined };
     }
     logger.warn(

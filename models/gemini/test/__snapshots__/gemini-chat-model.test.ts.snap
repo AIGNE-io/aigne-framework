@@ -6,6 +6,16 @@ exports[`GeminiChatModel.invoke should use tool result correctly 1`] = `
     "frequency_penalty": undefined,
     "messages": [
       {
+        "content": 
+"Output must be a JSON object containing the following fields only.
+<json_fields>
+{"type":"object","properties":{"text":{"type":"string"}},"required":["text"],"additionalProperties":false}
+</json_fields>
+Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON."
+,
+        "role": "system",
+      },
+      {
         "content": "You are a chatbot",
         "name": undefined,
         "role": "system",

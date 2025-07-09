@@ -252,7 +252,9 @@ test("AnthropicChatModel.invoke without streaming", async () => {
 });
 
 test("AnthropicChatModel should use tool to get json output directly if no tools input", async () => {
-  const model = new AnthropicChatModel({});
+  const model = new AnthropicChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
 
   spyOn(model.client.messages, "create").mockReturnValueOnce(
     JSON.parse(
@@ -304,7 +306,9 @@ What is the weather in New York?
 });
 
 test("AnthropicChatModel should try parse text as json if there are both tools and json response format", async () => {
-  const model = new AnthropicChatModel({});
+  const model = new AnthropicChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
 
   spyOn(model.client.messages, "stream").mockReturnValueOnce(
     createMockEventStream({
@@ -374,7 +378,9 @@ What is the weather in New York?
 });
 
 test("AnthropicChatModel.getMaxTokens should return max tokens correctly", async () => {
-  const model = new AnthropicChatModel({});
+  const model = new AnthropicChatModel({
+    apiKey: "YOUR_API_KEY",
+  });
 
   expect(model["getMaxTokens"]("claude-opus-4-20250514")).toBe(32000);
   expect(model["getMaxTokens"]("claude-sonnet-4-20250514")).toBe(64000);

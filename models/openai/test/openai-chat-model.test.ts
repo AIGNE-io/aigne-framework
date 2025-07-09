@@ -181,7 +181,10 @@ test("OpenAIChatModel.invoke without streaming", async () => {
 });
 
 test("OpenAIChatModel should use tool to get json output directly if no tools input", async () => {
-  const model = new OpenAIChatModel({});
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_API_KEY",
+    model: "gpt-4o-mini",
+  });
 
   spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
     createMockEventStream({
@@ -233,7 +236,10 @@ What is the weather in New York?
 });
 
 test("OpenAIChatModel should try parse text as json if there are both tools and json response format (supportsToolsUseWithJsonSchema disabled)", async () => {
-  const model = new OpenAIChatModel({});
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_API_KEY",
+    model: "gpt-4o-mini",
+  });
   model["supportsToolsUseWithJsonSchema"] = false;
 
   spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
@@ -268,7 +274,7 @@ What is the weather in New York?
             properties: {
               city: {
                 type: "string",
-                description: "The location to get wether",
+                description: "The location to get weather",
               },
             },
             required: ["city"],

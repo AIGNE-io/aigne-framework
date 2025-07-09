@@ -170,6 +170,8 @@ export class OpenAIChatModel extends ChatModel {
     return this._process(input);
   }
 
+  private ajv = new Ajv();
+
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
@@ -216,7 +218,7 @@ export class OpenAIChatModel extends ChatModel {
     // Try to parse the text response as JSON
     // If it matches the json_schema, return it as json
     const json = safeParseJSON(result.text || "");
-    if (new Ajv().validate(input.responseFormat.jsonSchema.schema, json)) {
+    if (this.ajv.validate(input.responseFormat.jsonSchema.schema, json)) {
       return { ...result, json, text: undefined };
     }
     logger.warn(

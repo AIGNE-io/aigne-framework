@@ -104,7 +104,7 @@ jobs:
           elif [ "${{ matrix.provider }}" = "Anthropic" ]; then
             MODELS="claude-3-7-sonnet-latest claude-3-5-haiku-latest"
           elif [ "${{ matrix.provider }}" = "XAI" ]; then
-            MODELS="grok-3 grok-2"
+            MODELS="grok-4 grok-3 grok-2"
           elif [ "${{ matrix.provider }}" = "Gemini" ]; then
             MODELS="gemini-2.5-flash-preview-04-17 gemini-2.0-flash gemini-1.5-flash"
           elif [ "${{ matrix.provider }}" = "DeepSeek" ]; then

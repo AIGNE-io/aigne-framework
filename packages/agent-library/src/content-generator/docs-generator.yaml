@@ -3,7 +3,7 @@ name: docs-generator
 description: 文档生成
 skills:
   - load-sources.mjs
-  - structure-planning.yaml
+  - check-structure-planning.mjs
   - type: transform
     jsonata: |
       $merge([

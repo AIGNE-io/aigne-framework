@@ -20,3 +20,4 @@ agents:
   - batch-translate.yaml
   - save-single-doc.mjs
   - save-output.mjs
+  - check-structure-planning.mjs

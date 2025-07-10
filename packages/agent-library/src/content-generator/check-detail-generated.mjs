@@ -11,12 +11,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default async function checkDetailGenerated({ path, docsDir, ...rest }, options) {
   // 检查详情文件是否已存在
-  const relPath = path.replace(/^\//, "");
-  const segments = relPath.split("/");
-  const fileName = segments.pop();
-  const fileFullName = `${fileName}.md`;
-  const dir = join(docsDir, ...segments);
-  const filePath = join(dir, fileFullName);
+  const flatName = path.replace(/^\//, "").replace(/\//g, "-");
+  const fileFullName = `${flatName}.md`;
+  const filePath = join(docsDir, fileFullName);
   let detailGenerated = true;
   try {
     await access(filePath);
@@ -49,8 +46,6 @@ export default async function checkDetailGenerated({ path, docsDir, ...rest }, o
       },
     ],
   });
-
-  console.log("checkDetailGenerated agents", aigne.agents);
 
   const teamAgent = TeamAgent.from({
     name: "generate-detail",

@@ -37,13 +37,6 @@ export const MEMORY_FILE_NAME = 'memory.yaml';
  */
 export interface DIDSpacesMemoryOptions extends Partial<MemoryAgentOptions> {
   /**
-   * The root directory where memory files will be stored.
-   * Can be absolute or relative path. Relative paths are resolved from the current working directory.
-   * Home directory prefix (~) will be expanded appropriately.
-   */
-  rootDir: string;
-
-  /**
    * The URL of the DIDSpaces.
    */
   url: string;
@@ -79,7 +72,8 @@ export class DIDSpacesMemory extends MemoryAgent {
    * Creates a new DIDSpacesMemory instance.
    */
   constructor(options: DIDSpacesMemoryOptions) {
-    const memoryFileName = join(options.rootDir, MEMORY_FILE_NAME);
+    const rootDir: string = '/.aigne/';
+    const memoryFileName = join(rootDir, MEMORY_FILE_NAME);
 
     super({
       ...options,

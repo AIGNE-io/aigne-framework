@@ -153,12 +153,12 @@ function once<T>(
 
 const subscribeArgsSchema = z.object({
   topic: z.union([z.string(), z.array(z.string())]),
-  listener: z.function(z.tuple([z.any()]), z.any()).optional(),
+  listener: z.custom<MessageQueueListener>().optional(),
 });
 
 const unsubscribeArgsSchema = z.object({
   topic: z.union([z.string(), z.array(z.string())]),
-  listener: z.function(z.tuple([z.any()]), z.any()),
+  listener: z.custom<MessageQueueListener>(),
 });
 
 const publishArgsSchema = z.object({
@@ -166,7 +166,7 @@ const publishArgsSchema = z.object({
   payload: z.object({
     role: z.union([z.literal("user"), z.literal("agent")]),
     source: z.string().optional(),
-    message: z.union([z.string(), z.record(z.unknown())]),
+    message: z.union([z.string(), z.record(z.string(), z.unknown())]),
     context: z.any(),
   }),
 });

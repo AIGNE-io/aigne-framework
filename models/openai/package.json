@@ -45,13 +45,13 @@
     "ajv": "^8.17.1",
     "jaison": "^2.0.2",
     "nanoid": "^5.1.5",
-    "openai": "^5.8.2",
+    "openai": "^5.8.3",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",
-    "@types/bun": "^1.2.17",
-    "@types/node": "^24.0.10",
+    "@types/bun": "^1.2.18",
+    "@types/node": "^24.0.12",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"

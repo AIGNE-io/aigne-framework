@@ -1172,15 +1172,17 @@ function checkAgentInputOutputSchema<I extends Message>(
 ): asserts schema is ZodObject<{ [key in keyof I]: ZodType<I[key]> }>;
 function checkAgentInputOutputSchema<I extends Message>(
   schema: (agent: Agent) => ZodType<I>,
-): asserts schema is (agent: Agent) => ZodType;
-function checkAgentInputOutputSchema<I extends Message>(
-  schema: ZodType | ((agent: Agent) => ZodType<I>),
-): asserts schema is ZodObject<{ [key in keyof I]: ZodType<I[key]> }> | ((agent: Agent) => ZodType);
+): asserts schema is (agent: Agent) => ZodType<I>;
 function checkAgentInputOutputSchema<I extends Message>(
   schema: ZodType | ((agent: Agent) => ZodType<I>),
 ): asserts schema is
   | ZodObject<{ [key in keyof I]: ZodType<I[key]> }>
-  | ((agent: Agent) => ZodType) {
+  | ((agent: Agent) => ZodType<I>);
+function checkAgentInputOutputSchema<I extends Message>(
+  schema: ZodType | ((agent: Agent) => ZodType<I>),
+): asserts schema is
+  | ZodObject<{ [key in keyof I]: ZodType<I[key]> }>
+  | ((agent: Agent) => ZodType<I>) {
   if (!(schema instanceof ZodObject) && typeof schema !== "function") {
     throw new Error(
       `schema must be a zod object or function return a zod object, got: ${typeof schema}`,

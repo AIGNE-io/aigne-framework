@@ -10,7 +10,7 @@ const router = express.Router();
 const AIGNEObserverSettingsSchema = z
   .object({ live: z.boolean().optional().default(false) })
   .optional()
-  .default({});
+  .default({ live: false });
 
 export default ({ middleware }: { middleware: express.RequestHandler[] }) => {
   router.get("/", ...middleware, async (_req: Request, res: Response) => {

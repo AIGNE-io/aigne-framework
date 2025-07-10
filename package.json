@@ -27,9 +27,9 @@
   },
   "devDependencies": {
     "@aigne/publish-docs": "workspace:^",
-    "@biomejs/biome": "^2.0.6",
-    "@biomejs/js-api": "^1.0.0",
-    "@biomejs/wasm-nodejs": "^2.0.6",
+    "@biomejs/biome": "^2.1.1",
+    "@biomejs/js-api": "^2.0.3",
+    "@biomejs/wasm-nodejs": "^2.1.1",
     "fenceparser": "^2.2.0",
     "mdast": "^3.0.0",
     "remark-cli": "^12.0.1",
@@ -43,7 +43,7 @@
     "typedoc-plugin-no-inherit": "^1.6.1",
     "typescript": "^5.8.3",
     "unist-util-visit": "^5.0.0",
-    "zx": "^8.6.1"
+    "zx": "^8.6.2"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

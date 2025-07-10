@@ -31,7 +31,7 @@ export async function loadAgentFromJsFile(path: string) {
 
   return tryOrThrow(
     () =>
-      agentJsFileSchema.parse(
+      agentJsFileSchema.parseAsync(
         camelize({
           ...agent,
           name: agent.agent_name || agent.agentName || agent.name,

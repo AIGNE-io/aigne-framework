@@ -1,7 +1,0 @@
-type: object
-properties:
-  message:
-    type: string
-    description: Message to process
-required:
-  - message

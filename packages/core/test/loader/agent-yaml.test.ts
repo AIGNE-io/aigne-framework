@@ -210,36 +210,15 @@ test("loadAgentFromYaml should load external schema agent correctly", async () =
     join(import.meta.dirname, "../../test-agents/external-schema-agent.yaml"),
   );
 
-  expect(zodToJsonSchema(agent.inputSchema)).toMatchInlineSnapshot(`
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "additionalProperties": true,
-      "properties": {
-        "message": {
-          "description": "Message to process",
-          "type": "string",
-        },
-      },
-      "required": [
-        "message",
-      ],
-      "type": "object",
-    }
-  `);
-  expect(zodToJsonSchema(agent.outputSchema)).toMatchInlineSnapshot(`
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "additionalProperties": true,
-      "properties": {
-        "message": {
-          "description": "Message to process",
-          "type": "string",
-        },
-      },
-      "required": [
-        "message",
-      ],
-      "type": "object",
-    }
-  `);
+  expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
+  expect(zodToJsonSchema(agent.outputSchema)).toMatchSnapshot();
+});
+
+test("loadAgentFromYaml should load nested external schema agent correctly", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/external-schema-agent-nested.yaml"),
+  );
+
+  expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
+  expect(zodToJsonSchema(agent.outputSchema)).toMatchSnapshot();
 });

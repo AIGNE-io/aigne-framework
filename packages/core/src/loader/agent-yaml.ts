@@ -11,8 +11,8 @@ import { inputOutputSchema, optionalize } from "./schema.js";
 interface BaseAgentSchema {
   name?: string;
   description?: string;
-  inputSchema?: ZodType<Record<string, ZodType>>;
-  outputSchema?: ZodType<Record<string, ZodType>>;
+  inputSchema?: ZodType<Record<string, any>>;
+  outputSchema?: ZodType<Record<string, any>>;
   skills?: (string | AgentSchema)[];
   memory?:
     | boolean
@@ -55,11 +55,9 @@ export async function loadAgentFromYamlFile(path: string) {
     const baseAgentSchema = z.object({
       name: optionalize(z.string()),
       description: optionalize(z.string()),
-      inputSchema: optionalize(inputOutputSchema({ path })).transform<
-        BaseAgentSchema["inputSchema"]
-      >((v) => (v ? jsonSchemaToZod(v) : undefined)) as unknown as ZodType<
-        BaseAgentSchema["inputSchema"]
-      >,
+      inputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
+        v ? jsonSchemaToZod(v) : undefined,
+      ) as unknown as ZodType<BaseAgentSchema["inputSchema"]>,
       outputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["outputSchema"]>,

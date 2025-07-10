@@ -1,4 +1,4 @@
 name: external-schema-agent
 description: External schema agent
-input_schema: ./external-schema.yaml
-output_schema: ./external-schema.yaml
+input_schema: ./external-schema-first.yaml
+output_schema: ./external-schema-first.yaml

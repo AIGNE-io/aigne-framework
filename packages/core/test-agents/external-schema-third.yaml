@@ -1,0 +1,7 @@
+type: object
+properties:
+  third:
+    type: string
+    description: Third level property
+required:
+  - third

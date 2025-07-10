@@ -1,0 +1,9 @@
+type: object
+properties:
+  first:
+    type: string
+    description: First level property
+  second: ./external-schema-second.yaml
+required:
+  - first
+  - second

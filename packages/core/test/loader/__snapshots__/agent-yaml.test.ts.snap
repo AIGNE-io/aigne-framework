@@ -11,7 +11,7 @@ exports[`loadAgentFromYaml should load AIAgent with prompt file correctly 2`] = 
 {
   "messages": [
     {
-      "content": 
+      "content":
 "You are a helper agent to answer everything about chat prompt in AIGNE.
 
 Output in English
@@ -34,7 +34,7 @@ exports[`loadAgentFromYaml should load nested agent correctly 3`] = `
   "skills": [
     {
       "inputSchema": undefined,
-      "instructions": 
+      "instructions":
 "You are a helpful assistant that can answer questions and provide information on a wide range of topics.
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 "
@@ -75,7 +75,7 @@ Your goal is to assist users in finding the information they need and to engage 
     },
     {
       "inputSchema": undefined,
-      "instructions": 
+      "instructions":
 "You are a helper agent to answer everything about chat prompt in AIGNE.
 
 {% include "language_instruction.txt" %}
@@ -93,7 +93,7 @@ Your goal is to assist users in finding the information they need and to engage 
       "skills": [
         {
           "inputSchema": undefined,
-          "instructions": 
+          "instructions":
 "You are a helpful assistant that can answer questions and provide information on a wide range of topics.
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 "
@@ -147,7 +147,7 @@ Your goal is to assist users in finding the information they need and to engage 
             ],
             "type": "object",
           },
-          "instructions": 
+          "instructions":
 "You are a helper agent to answer everything about chat prompt in AIGNE.
 
 {% include "language_instruction.txt" %}
@@ -173,5 +173,673 @@ Your goal is to assist users in finding the information they need and to engage 
       ],
     },
   ],
+}
+`;
+
+exports[`loadAgentFromYaml should load external schema agent correctly 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "first": {
+      "description": "First level property",
+      "type": "string",
+    },
+    "second": {
+      "additionalProperties": false,
+      "properties": {
+        "array": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "third": {
+                "description": "Third level property",
+                "type": "string",
+              },
+            },
+            "required": [
+              "third",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "second": {
+          "description": "Second level property",
+          "type": "string",
+        },
+        "third": {
+          "additionalProperties": false,
+          "properties": {
+            "third": {
+              "description": "Third level property",
+              "type": "string",
+            },
+          },
+          "required": [
+            "third",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "second",
+        "third",
+        "array",
+      ],
+      "type": "object",
+    },
+  },
+  "required": [
+    "first",
+    "second",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`loadAgentFromYaml should load external schema agent correctly 2`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "first": {
+      "description": "First level property",
+      "type": "string",
+    },
+    "second": {
+      "additionalProperties": false,
+      "properties": {
+        "array": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "third": {
+                "description": "Third level property",
+                "type": "string",
+              },
+            },
+            "required": [
+              "third",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "second": {
+          "description": "Second level property",
+          "type": "string",
+        },
+        "third": {
+          "additionalProperties": false,
+          "properties": {
+            "third": {
+              "description": "Third level property",
+              "type": "string",
+            },
+          },
+          "required": [
+            "third",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "second",
+        "third",
+        "array",
+      ],
+      "type": "object",
+    },
+  },
+  "required": [
+    "first",
+    "second",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`loadAgentFromYaml should load nested external schema agent correctly 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "array": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "external": {
+            "additionalProperties": false,
+            "properties": {
+              "first": {
+                "description": "First level property",
+                "type": "string",
+              },
+              "second": {
+                "additionalProperties": false,
+                "properties": {
+                  "array": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "third": {
+                          "description": "Third level property",
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "third",
+                      ],
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                  "second": {
+                    "description": "Second level property",
+                    "type": "string",
+                  },
+                  "third": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "third": {
+                        "description": "Third level property",
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "third",
+                    ],
+                    "type": "object",
+                  },
+                },
+                "required": [
+                  "second",
+                  "third",
+                  "array",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "first",
+              "second",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "external",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "external": {
+      "additionalProperties": false,
+      "properties": {
+        "first": {
+          "description": "First level property",
+          "type": "string",
+        },
+        "second": {
+          "additionalProperties": false,
+          "properties": {
+            "array": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "third": {
+                    "description": "Third level property",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "third",
+                ],
+                "type": "object",
+              },
+              "type": "array",
+            },
+            "second": {
+              "description": "Second level property",
+              "type": "string",
+            },
+            "third": {
+              "additionalProperties": false,
+              "properties": {
+                "third": {
+                  "description": "Third level property",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "third",
+              ],
+              "type": "object",
+            },
+          },
+          "required": [
+            "second",
+            "third",
+            "array",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "first",
+        "second",
+      ],
+      "type": "object",
+    },
+    "items": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "first": {
+            "description": "First level property",
+            "type": "string",
+          },
+          "second": {
+            "additionalProperties": false,
+            "properties": {
+              "array": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "third": {
+                      "description": "Third level property",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "third",
+                  ],
+                  "type": "object",
+                },
+                "type": "array",
+              },
+              "second": {
+                "description": "Second level property",
+                "type": "string",
+              },
+              "third": {
+                "additionalProperties": false,
+                "properties": {
+                  "third": {
+                    "description": "Third level property",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "third",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "second",
+              "third",
+              "array",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "first",
+          "second",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "nested": {
+      "additionalProperties": false,
+      "properties": {
+        "external": {
+          "additionalProperties": false,
+          "properties": {
+            "first": {
+              "description": "First level property",
+              "type": "string",
+            },
+            "second": {
+              "additionalProperties": false,
+              "properties": {
+                "array": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "third": {
+                        "description": "Third level property",
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "third",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+                "second": {
+                  "description": "Second level property",
+                  "type": "string",
+                },
+                "third": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "third": {
+                      "description": "Third level property",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "third",
+                  ],
+                  "type": "object",
+                },
+              },
+              "required": [
+                "second",
+                "third",
+                "array",
+              ],
+              "type": "object",
+            },
+          },
+          "required": [
+            "first",
+            "second",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "external",
+      ],
+      "type": "object",
+    },
+  },
+  "required": [
+    "external",
+    "nested",
+    "items",
+    "array",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`loadAgentFromYaml should load nested external schema agent correctly 2`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "array": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "external": {
+            "additionalProperties": false,
+            "properties": {
+              "first": {
+                "description": "First level property",
+                "type": "string",
+              },
+              "second": {
+                "additionalProperties": false,
+                "properties": {
+                  "array": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "third": {
+                          "description": "Third level property",
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "third",
+                      ],
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                  "second": {
+                    "description": "Second level property",
+                    "type": "string",
+                  },
+                  "third": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "third": {
+                        "description": "Third level property",
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "third",
+                    ],
+                    "type": "object",
+                  },
+                },
+                "required": [
+                  "second",
+                  "third",
+                  "array",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "first",
+              "second",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "external",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "external": {
+      "additionalProperties": false,
+      "properties": {
+        "first": {
+          "description": "First level property",
+          "type": "string",
+        },
+        "second": {
+          "additionalProperties": false,
+          "properties": {
+            "array": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "third": {
+                    "description": "Third level property",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "third",
+                ],
+                "type": "object",
+              },
+              "type": "array",
+            },
+            "second": {
+              "description": "Second level property",
+              "type": "string",
+            },
+            "third": {
+              "additionalProperties": false,
+              "properties": {
+                "third": {
+                  "description": "Third level property",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "third",
+              ],
+              "type": "object",
+            },
+          },
+          "required": [
+            "second",
+            "third",
+            "array",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "first",
+        "second",
+      ],
+      "type": "object",
+    },
+    "items": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "first": {
+            "description": "First level property",
+            "type": "string",
+          },
+          "second": {
+            "additionalProperties": false,
+            "properties": {
+              "array": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "third": {
+                      "description": "Third level property",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "third",
+                  ],
+                  "type": "object",
+                },
+                "type": "array",
+              },
+              "second": {
+                "description": "Second level property",
+                "type": "string",
+              },
+              "third": {
+                "additionalProperties": false,
+                "properties": {
+                  "third": {
+                    "description": "Third level property",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "third",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "second",
+              "third",
+              "array",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "first",
+          "second",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "nested": {
+      "additionalProperties": false,
+      "properties": {
+        "external": {
+          "additionalProperties": false,
+          "properties": {
+            "first": {
+              "description": "First level property",
+              "type": "string",
+            },
+            "second": {
+              "additionalProperties": false,
+              "properties": {
+                "array": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "third": {
+                        "description": "Third level property",
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "third",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+                "second": {
+                  "description": "Second level property",
+                  "type": "string",
+                },
+                "third": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "third": {
+                      "description": "Third level property",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "third",
+                  ],
+                  "type": "object",
+                },
+              },
+              "required": [
+                "second",
+                "third",
+                "array",
+              ],
+              "type": "object",
+            },
+          },
+          "required": [
+            "first",
+            "second",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "external",
+      ],
+      "type": "object",
+    },
+  },
+  "required": [
+    "external",
+    "nested",
+    "items",
+    "array",
+  ],
+  "type": "object",
 }
 `;

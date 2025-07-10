@@ -37,23 +37,28 @@ const agent = AIAgent.from({
   inputKey: 'message',
 });
 
-// Test MCP DID Spaces functionality
-const result1 = await aigne.invoke(agent, {
-  message: `Get space metadata`,
-});
-console.log(result1.message);
-
-const result2 = await aigne.invoke(agent, {
-  message: `List root objects`,
-});
-console.log(result2.message);
-
-const result3 = await aigne.invoke(agent, {
+const writeObjectResponse = await aigne.invoke(agent, {
   message: `Write test.txt with "Hello MCP"`,
 });
-console.log(result3.message);
+console.log('writeObjectResponse', writeObjectResponse.message);
+
+const readObjectResponse = await aigne.invoke(agent, {
+  message: `Read test.txt data`,
+});
+console.log('readObjectResponse', readObjectResponse.message);
+
+const listRootResponse = await aigne.invoke(agent, {
+  message: `List root objects`,
+});
+console.log('listRootResponse', listRootResponse.message);
+
+// Test MCP DID Spaces functionality
+const getSpaceMetadataResponse = await aigne.invoke(agent, {
+  message: `Get space metadata`,
+});
+console.log('getSpaceMetadataResponse', getSpaceMetadataResponse.message);
 
 // Save results to markdown file
 const filename = `mcp-did-spaces-results.md`;
-const content = `# MCP DID Spaces Test Results\n\n${result1.message}\n\n${result2.message}\n\n${result3.message}`;
+const content = `# MCP DID Spaces Test Results\n\n${writeObjectResponse.message}\n\n${readObjectResponse.message}\n\n${listRootResponse.message}\n\n${getSpaceMetadataResponse.message}`;
 writeFileSync(filename, content, 'utf8');

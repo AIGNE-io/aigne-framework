@@ -1,6 +1,6 @@
 # Memory DID Spaces Test Results
 
-Noted, John. Bitcoin enthusiast.
+Hi John, Bitcoin enthusiast!
 
 Bitcoin.
 

@@ -29,6 +29,7 @@ import {
 } from '@blocklet/did-space-js';
 import { streamToString } from '../utils/fs.js';
 import { logger } from '@aigne/core/utils/logger.js';
+import { ReadmeManager } from './ReadmeManager.js';
 
 export const MEMORY_FILE_NAME = 'memory.yaml';
 
@@ -95,6 +96,25 @@ export class DIDSpacesMemory extends MemoryAgent {
         }),
       autoUpdate: options.autoUpdate ?? true,
     });
+
+    // Initialize README files asynchronously
+    this.initializeReadmeFiles(options.url, options.auth, rootDir).catch(
+      (error) => {
+        logger.warn('Failed to initialize README files:', error);
+      }
+    );
+  }
+
+  /**
+   * Initialize README files in the memory directory
+   */
+  private async initializeReadmeFiles(
+    url: string,
+    auth: SpaceClientOptionsAuth,
+    rootDir: string
+  ): Promise<void> {
+    const readmeManager = new ReadmeManager(url, auth, rootDir);
+    await readmeManager.initializeReadmeFiles();
   }
 }
 
@@ -137,7 +157,8 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
       description: 'Retrieves memories from the file or directory.',
       ...options,
       instructions:
-        options.instructions || DEFAULT_FS_MEMORY_RETRIEVER_INSTRUCTIONS,
+        options.instructions ||
+        DEFAULT_DID_SPACES_MEMORY_RETRIEVER_INSTRUCTIONS,
       outputSchema: z.object({
         memories: z
           .array(
@@ -359,7 +380,7 @@ Return ALL memories (existing and new) in your response.
 </conversation>
 `;
 
-const DEFAULT_FS_MEMORY_RETRIEVER_INSTRUCTIONS = `You retrieve only the most relevant memories for the current conversation.
+const DEFAULT_DID_SPACES_MEMORY_RETRIEVER_INSTRUCTIONS = `You retrieve only the most relevant memories for the current conversation.
 
 ## IMPORTANT: All existing memories are available in the allMemory variable
 

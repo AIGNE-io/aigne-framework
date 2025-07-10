@@ -7,7 +7,7 @@ import dotenv from 'dotenv-flow';
 
 dotenv.config({ silent: true });
 
-test.only(
+test.skip(
   'skills',
   async () => {
     const mcp = await MCPAgent.from({

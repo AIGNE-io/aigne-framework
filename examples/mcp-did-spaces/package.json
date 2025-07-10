@@ -11,9 +11,9 @@
   },
   "bin": "index.ts",
   "files": [
-    ".env.local.example",
     "*.ts",
-    "README.md"
+    "README.md",
+    "CONFIG.md"
   ],
   "scripts": {
     "start": "bun run index.ts",

@@ -3,3 +3,6 @@ dist
 .env.local
 *.log
 .DS_Store
+
+# Generated result files
+mcp-did-spaces-results-*.md

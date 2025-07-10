@@ -16,11 +16,8 @@ This example demonstrates how to create a chatbot with MCP (Model Context Protoc
 ```bash
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-# Run the chatbot with MCP DID Spaces integration
-npx -y @aigne/example-mcp-did-spaces --input 'What DID Spaces features are available?'
-
-# Run in interactive chat mode
-npx -y @aigne/example-mcp-did-spaces --chat
+# Run the MCP test example
+npx -y @aigne/example-mcp-did-spaces
 ```
 
 ## Installation
@@ -41,10 +38,17 @@ pnpm install
 
 ### Setup Environment Variables
 
-Setup your OpenAI API key in the `.env.local` file:
+Create a `.env.local` file and configure the required environment variables. See [CONFIG.md](CONFIG.md) for detailed configuration instructions.
 
+**Quick Setup:**
 ```bash
-OPENAI_API_KEY="" # Set your OpenAI API key here
+# Copy the example configuration
+cp CONFIG.md .env.local
+
+# Edit the file and add your API keys
+OPENAI_API_KEY=your_openai_api_key_here
+DID_SPACES_URL=https://your-did-spaces-url.com/app/mcp
+DID_SPACES_AUTHORIZATION=Bearer your-did-spaces-token
 ```
 
 #### Using Different Models
@@ -60,13 +64,19 @@ You can use different AI models by setting the `MODEL` environment variable alon
 * **xAI**: `MODEL="xai:grok-2-latest"` with `XAI_API_KEY`
 * **Ollama**: `MODEL="ollama:llama3.2"` with `OLLAMA_DEFAULT_BASE_URL`
 
-For detailed configuration examples, please refer to the `.env.local.example` file in this directory.
+For detailed configuration examples, please refer to the [CONFIG.md](CONFIG.md) file in this directory.
 
 ### Run the Example
 
 ```bash
 pnpm start
 ```
+
+The example will:
+1. Test MCP DID Spaces with 3 simple operations (check metadata, list objects, write file)
+2. Display all results in the console with proper markdown formatting
+3. Automatically save a complete markdown report file
+4. Show you the filename where results are saved for easy viewing
 
 ## How MCP DID Spaces Integration Works
 
@@ -89,14 +99,13 @@ Available skills typically include:
 
 ## Example Usage
 
-Try using the chatbot in these ways to test its MCP DID Spaces capabilities:
+The example demonstrates MCP DID Spaces capabilities by:
 
-1. Ask about available DID Spaces features
-2. Request to read or write data to DID Spaces
-3. Explore the metadata of your DID Space
-4. List objects in your DID Space directories
+1. Checking DID Space metadata and configuration
+2. Listing objects and directories in the DID Space
+3. Writing new files to the DID Space
 
-The chatbot can perform various DID Spaces operations through the MCP integration.
+All operations are performed through MCP protocol integration.
 
 ## Configuration
 

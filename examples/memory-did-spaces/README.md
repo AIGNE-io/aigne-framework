@@ -16,12 +16,8 @@ This example demonstrates how to create a chatbot with DID Spaces memory capabil
 ```bash
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
-# Run the chatbot with DID Spaces memory
-npx -y @aigne/example-memory-did-spaces --input 'I like Bitcoin and my work is engineering'
-npx -y @aigne/example-memory-did-spaces --input 'What is my favorite cryptocurrency?'
-
-# Run in interactive chat mode
-npx -y @aigne/example-memory-did-spaces --chat
+# Run the memory test example
+npx -y @aigne/example-memory-did-spaces
 ```
 
 ## Installation
@@ -42,10 +38,17 @@ pnpm install
 
 ### Setup Environment Variables
 
-Setup your OpenAI API key in the `.env.local` file:
+Create a `.env.local` file and configure the required environment variables. See [CONFIG.md](CONFIG.md) for detailed configuration instructions.
 
+**Quick Setup:**
 ```bash
-OPENAI_API_KEY="" # Set your OpenAI API key here
+# Copy the example configuration
+cp CONFIG.md .env.local
+
+# Edit the file and add your API keys
+OPENAI_API_KEY=your_openai_api_key_here
+DID_SPACES_URL=https://your-did-spaces-url.com/app
+DID_SPACES_AUTHORIZATION=Bearer your-did-spaces-token
 ```
 
 #### Using Different Models
@@ -61,13 +64,19 @@ You can use different AI models by setting the `MODEL` environment variable alon
 * **xAI**: `MODEL="xai:grok-2-latest"` with `XAI_API_KEY`
 * **Ollama**: `MODEL="ollama:llama3.2"` with `OLLAMA_DEFAULT_BASE_URL`
 
-For detailed configuration examples, please refer to the `.env.local.example` file in this directory.
+For detailed configuration examples, please refer to the [CONFIG.md](CONFIG.md) file in this directory.
 
 ### Run the Example
 
 ```bash
 pnpm start
 ```
+
+The example will:
+1. Test DID Spaces memory with 3 simple tests (store profile, recall preferences, create portfolio)
+2. Display all results in the console with proper markdown formatting
+3. Automatically save a complete markdown report file
+4. Show you the filename where results are saved for easy viewing
 
 ## How DID Spaces Memory Works
 
@@ -82,14 +91,13 @@ Key features of the DID Spaces memory implementation:
 
 ## Example Usage
 
-Try using the chatbot in these ways to test its memory capabilities:
+The example demonstrates memory persistence by:
 
-1. Introduce yourself to the chatbot and share your interests
-2. Ask it a question or have a conversation about cryptocurrencies
-3. Close the session and restart the chatbot
-4. Ask the chatbot if it remembers your previous conversation
+1. Storing user profile information (name, profession, investment preferences)
+2. Recalling stored information in subsequent interactions
+3. Creating personalized recommendations based on remembered data
 
-The chatbot should be able to recall information from your previous interactions stored in DID Spaces.
+All conversation history is persisted in DID Spaces across sessions.
 
 ## Configuration
 

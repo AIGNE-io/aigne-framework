@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.38.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.2...aigne-framework-v1.38.0) (2025-07-10)
+
+
+### Features
+
+* **core:** support external files as agent input/output schema ([#242](https://github.com/AIGNE-io/aigne-framework/issues/242)) ([58f8de6](https://github.com/AIGNE-io/aigne-framework/commit/58f8de63008b78ea1b404ba7721c3a242c330113))
+* **model:** reduce unnecessary LLM requests for structured output ([#241](https://github.com/AIGNE-io/aigne-framework/issues/241)) ([e28813c](https://github.com/AIGNE-io/aigne-framework/commit/e28813c021ed35c0251e198e2e007e2d746ab3d8))
+
 ## [1.37.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.1...aigne-framework-v1.37.2) (2025-07-09)
 
 

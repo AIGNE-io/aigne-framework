@@ -158,6 +158,25 @@ importers:
         specifier: ^9.0.10
         version: 9.0.10
 
+  examples/mcp-did-spaces:
+    dependencies:
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.17
+        version: 1.2.17
+      dotenv-flow:
+        specifier: ^4.1.0
+        version: 4.1.0
+
   examples/mcp-github:
     dependencies:
       '@aigne/agent-library':
@@ -248,6 +267,31 @@ importers:
       '@types/bun':
         specifier: ^1.2.17
         version: 1.2.17
+
+  examples/memory-did-spaces:
+    dependencies:
+      '@aigne/agent-library':
+        specifier: workspace:^
+        version: link:../../packages/agent-library
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../../models/openai
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.17
+        version: 1.2.17
+      dotenv-flow:
+        specifier: ^4.1.0
+        version: 4.1.0
 
   examples/workflow-code-execution:
     dependencies:

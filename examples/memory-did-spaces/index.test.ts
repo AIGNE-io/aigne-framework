@@ -2,46 +2,21 @@ import { DIDSpacesMemory } from '@aigne/agent-library/did-spaces-memory';
 import { AIGNE, AIAgent } from '@aigne/core';
 import { OpenAIChatModel as Model } from '@aigne/openai';
 import { test } from 'bun:test';
-import { MCPAgent } from '@aigne/core';
 import dotenv from 'dotenv-flow';
 
 dotenv.config({ silent: true });
 
-test.only(
-  'skills',
-  async () => {
-    const mcp = await MCPAgent.from({
-      url: 'https://bbqa4abi4d7hjydb3qo5l7lyxduukztmhj3gpghkole.did.abtnet.io/app/mcp',
-      transport: 'streamableHttp',
-      opts: {
-        requestInit: {
-          headers: {
-            Authorization:
-              'Bearer blocklet-z7QAdYvhxBLVcHfFsLwRryKEjDgQ3aLM46ycEQViV2qSe',
-          },
-        },
-      },
-    });
-
-    console.log(mcp.skills);
-
-    const headSpace = mcp.skills['head_space']!;
-    const result = await headSpace.invoke({});
-    console.log(result);
-  },
-  1000 * 120
-);
-
 test(
-  'test',
+  'DIDSpacesMemory test',
   async () => {
     try {
       const aigne = new AIGNE({
         model: new Model({
-          apiKey: process.env.OPEN_API_KEY!,
+          apiKey: process.env.OPENAI_API_KEY!,
           model: 'gpt-4o-mini',
         }),
       });
+
       const agent = AIAgent.from({
         instructions: 'You are a helpful assistant for Crypto market analysis',
         memory: new DIDSpacesMemory({
@@ -71,6 +46,7 @@ test(
       });
       console.log('result3', result3);
     } finally {
+      // Cleanup if needed
     }
   },
   1000 * 120

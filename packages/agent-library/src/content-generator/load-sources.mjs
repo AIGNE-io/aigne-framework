@@ -20,6 +20,8 @@ export default async function loadSources({
   includePatterns,
   excludePatterns,
   outputDir,
+  docsDir,
+  currentPath,
 }) {
   let files = Array.isArray(sources) ? [...sources] : [];
   if (sourcesPath) {
@@ -82,9 +84,24 @@ export default async function loadSources({
     // 文件不存在，originalStructurePlan 保持 undefined
   }
 
+  // 获取指定 path 上次输出结果
+  let content;
+  if (currentPath) {
+    const flatName = currentPath.replace(/^\//, "").replace(/\//g, "-");
+    const fileFullName = `${flatName}.md`;
+    const filePath = path.join(docsDir, fileFullName);
+    try {
+      await access(filePath);
+      content = await readFile(filePath, "utf8");
+    } catch {
+      // 文件不存在，content 保持 undefined
+    }
+  }
+
   return {
     datasourcesList: sourceFiles,
     datasources: allSources,
+    content,
     originalStructurePlan,
   };
 }
@@ -110,6 +127,10 @@ loadSources.input_schema = {
       anyOf: [{ type: "string" }, { type: "array", items: { type: "string" } }],
       description:
         "Regex patterns to exclude files by file name (not path). If not set, exclude none.",
+    },
+    currentPath: {
+      type: "string",
+      description: "The current path of the document",
     },
   },
   required: [],

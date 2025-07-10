@@ -26,4 +26,3 @@
 - [ ] The newly added code logic is also covered by tests
 - [ ] This change adds dependencies, and they are placed in dependencies and devDependencies
 - [ ] This change includes adding or updating npm dependencies, and it does not result in multiple versions of the same dependency [check the diff of pnpm-lock.yaml]
-- [ ] I have updated ArcBlock dependencies to the latest version: `pnpm update:deps`

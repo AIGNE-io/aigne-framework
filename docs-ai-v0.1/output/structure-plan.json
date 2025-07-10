@@ -1,0 +1,339 @@
+[
+  {
+    "title": "Overview",
+    "description": "Introduction to AIGNE Framework, its key features, architecture, and components for building AI-powered applications.",
+    "path": "/",
+    "parentId": null,
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/README.md",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/README.md",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/index.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/aigne/aigne.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Getting Started",
+    "description": "Quick installation guide and basic examples to help developers get started with AIGNE Framework quickly.",
+    "path": "/getting-started",
+    "parentId": "/",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/README.md",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/README.md",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/templates/default/README.md",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/templates/default/.env.local.example"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "AIGNE CLI",
+    "description": "Comprehensive guide to the AIGNE CLI tool, including installation, commands, and usage patterns for managing AIGNE projects.",
+    "path": "/cli",
+    "parentId": "/",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/README.md",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/commands/aigne.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/constants.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/bunwrapper.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "CLI Commands",
+    "description": "Detailed documentation for each CLI command, including create, run, test, serve-mcp, and observe with examples and options.",
+    "path": "/cli/commands",
+    "parentId": "/cli",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/commands/create.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/commands/run.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/commands/test.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/commands/serve-mcp.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/commands/observe.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/utils/run-with-aigne.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/utils/serve-mcp.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Core Concepts",
+    "description": "Explanation of AIGNE Framework's fundamental concepts and components, including AIGNE, Context, Agents, and message passing.",
+    "path": "/core-concepts",
+    "parentId": "/",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/aigne/aigne.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/aigne/context.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/aigne/message-queue.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/aigne/usage.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/aigne/index.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Agents",
+    "description": "Comprehensive guide to all agent types in AIGNE Framework, with details on usage, configurations, and implementation patterns.",
+    "path": "/agents",
+    "parentId": "/",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/agent.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/types.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/chat-model.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Base Agent",
+    "description": "Detailed documentation on the base Agent class, including its API, lifecycle, and extension patterns for custom agents.",
+    "path": "/agents/base",
+    "parentId": "/agents",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/agent.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/types.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "AI Agent",
+    "description": "Complete guide to AI-powered agents, including configuration, prompting, model integration, and streaming capabilities.",
+    "path": "/agents/ai-agent",
+    "parentId": "/agents",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/ai-agent.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/chat-model.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/prompt/prompt-builder.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/prompt/template.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Chat Model",
+    "description": "Documentation on the ChatModel interface, model integration, and implementation patterns for different AI providers.",
+    "path": "/agents/chat-model",
+    "parentId": "/agents",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/chat-model.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/model-utils.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/json-schema.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/constants.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Team Agent",
+    "description": "Documentation on using TeamAgent for orchestrating multiple agents in sequential or parallel execution patterns.",
+    "path": "/agents/team-agent",
+    "parentId": "/agents",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/team-agent.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Transform Agent",
+    "description": "Guide to using TransformAgent for data transformation using JSONata expressions with examples and patterns.",
+    "path": "/agents/transform-agent",
+    "parentId": "/agents",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/transform-agent.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "MCP Agent",
+    "description": "Documentation on Model Context Protocol (MCP) integration, including server connections, tool access, and resource handling.",
+    "path": "/agents/mcp-agent",
+    "parentId": "/agents",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/mcp-agent.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/mcp-utils.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "GuideRail Agent",
+    "description": "Documentation on using GuideRail agents for validation, transformation, and control of message flow between agents.",
+    "path": "/agents/guiderail-agent",
+    "parentId": "/agents",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/guide-rail-agent.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "User Agent",
+    "description": "Guide to UserAgent for managing user interactions and conversation state within the AIGNE Framework.",
+    "path": "/agents/user-agent",
+    "parentId": "/agents",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/agents/user-agent.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Memory Management",
+    "description": "Comprehensive guide to memory systems in AIGNE Framework, including memory agents, recorders, retrievers, and usage patterns.",
+    "path": "/memory",
+    "parentId": "/",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/memory/index.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/memory/memory.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/memory/recorder.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/memory/retriever.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/prompt/prompts/memory-message-template.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Prompt Management",
+    "description": "Documentation on prompt engineering capabilities, including prompt builders, templates, and structured stream techniques.",
+    "path": "/prompts",
+    "parentId": "/",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/prompt/prompt-builder.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/prompt/template.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/prompt/prompts/structured-stream-instructions.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/prompt/prompts/memory-message-template.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/prompts.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Loading and Configuration",
+    "description": "Guide to configuration, agent loading, project setup, and environment management in AIGNE Framework.",
+    "path": "/configuration",
+    "parentId": "/",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/loader/index.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/loader/agent-yaml.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/loader/agent-js.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/loader/schema.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/templates/default/aigne.yaml",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/templates/default/.env.local.example"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  },
+  {
+    "title": "Utilities",
+    "description": "Documentation on utility functions and classes for working with streams, promises, events, and other common patterns.",
+    "path": "/utilities",
+    "parentId": "/",
+    "metadata": {
+      "sourceIds": [
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/stream-utils.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/event-stream.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/logger.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/promise.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/structured-stream-extractor.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/core/src/utils/type-utils.ts",
+        "/Users/lban/arcblock/code/aigne-framework/packages/cli/src/utils/time.ts"
+      ]
+    },
+    "translates": [
+      {
+        "language": "zh"
+      }
+    ]
+  }
+]

@@ -104,6 +104,8 @@ aigne run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.
 # aigne detail
 aigne run --entry-agent "detail-generator-and-translate" --input "@mock-inputs/aigne-docs-input-detail.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md"  --format yaml --model anthropic:claude-3-7-sonnet-latest
 
+aigne run --entry-agent "translate" --input-content "@../../../../docs-ai-v0.1/cli.md" --input-language zh-CN --input-glossary "@mock-inputs/arcblock-glossary.md"  
+
 aigne run --entry-agent "detail-generator-and-translate" --input "@mock-inputs/aigne-docs-input-detail.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --input-originalStructurePlan "@../../../../docs-ai-v0.1/output/structure-plan.json" --format yaml --model anthropic:claude-3-7-sonnet-latest
 
 # blocklet-sdk

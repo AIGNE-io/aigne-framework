@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.16.7](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.16.6...example-workflow-code-execution-v1.16.7) (2025-07-10)
+
+
+### Bug Fixes
+
+* **example:** add command `/exit` to quit example ([#244](https://github.com/AIGNE-io/aigne-framework/issues/244)) ([6f479ce](https://github.com/AIGNE-io/aigne-framework/commit/6f479ce58fa716bc8e4b0e9d8b100bc022509de5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.22.6
+
 ## [1.16.6](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.16.5...example-workflow-code-execution-v1.16.6) (2025-07-10)
 
 

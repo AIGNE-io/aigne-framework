@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.38.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.0...aigne-framework-v1.38.1) (2025-07-10)
+
+
+### Bug Fixes
+
+* **cli:** reduce excessive console output to improve cli performance ([#246](https://github.com/AIGNE-io/aigne-framework/issues/246)) ([4430504](https://github.com/AIGNE-io/aigne-framework/commit/4430504b643bba92775e5a908ca1c1153d90a402))
+* **example:** add command `/exit` to quit example ([#244](https://github.com/AIGNE-io/aigne-framework/issues/244)) ([6f479ce](https://github.com/AIGNE-io/aigne-framework/commit/6f479ce58fa716bc8e4b0e9d8b100bc022509de5))
+
 ## [1.38.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.2...aigne-framework-v1.38.0) (2025-07-10)
 
 

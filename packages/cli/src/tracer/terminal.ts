@@ -1,5 +1,5 @@
 import { EOL } from "node:os";
-import { inspect } from "node:util";
+import { type InspectOptions, inspect } from "node:util";
 import {
   type Agent,
   AIAgent,
@@ -42,9 +42,12 @@ export class TerminalTracer {
 
     const listr = new AIGNEListr(
       {
-        formatRequest: () =>
-          this.options.printRequest ? this.formatRequest(agent, context, input) : undefined,
-        formatResult: (result) => [this.formatResult(agent, context, result)].filter(Boolean),
+        formatRequest: (options?: { running?: boolean }) =>
+          this.options.printRequest
+            ? this.formatRequest(agent, context, input, options)
+            : undefined,
+        formatResult: (result, options?: { running?: boolean }) =>
+          [this.formatResult(agent, context, result, options)].filter(Boolean),
       },
       [],
       { concurrent: true },
@@ -208,7 +211,7 @@ export class TerminalTracer {
     return this.options.outputKey || DEFAULT_OUTPUT_KEY;
   }
 
-  formatRequest(agent: Agent, _context: Context, m: Message = {}) {
+  formatRequest(agent: Agent, _context: Context, m: Message = {}, { running = false } = {}) {
     if (!logger.enabled(LogLevel.INFO)) return;
 
     const prefix = `${chalk.grey(figures.pointer)} 💬 `;
@@ -221,12 +224,15 @@ export class TerminalTracer {
     const text =
       msg && typeof msg === "string" ? this.marked.parse(msg, { async: false }).trim() : undefined;
 
-    const json = Object.keys(message).length > 0 ? inspect(message, { colors: true }) : undefined;
+    const json =
+      Object.keys(message).length > 0
+        ? inspect(message, { colors: true, ...(running ? this.runningInspectOptions : undefined) })
+        : undefined;
 
     return [prefix, [text, json].filter(Boolean).join(EOL)].join(" ");
   }
 
-  formatResult(agent: Agent, context: Context, m: Message = {}) {
+  formatResult(agent: Agent, context: Context, m: Message = {}, { running = false } = {}) {
     const { isTTY } = process.stdout;
     const outputKey = this.outputKey || (agent instanceof AIAgent ? agent.outputKey : undefined);
 
@@ -244,10 +250,18 @@ export class TerminalTracer {
           : msg
         : undefined;
 
-    const json = Object.keys(message).length > 0 ? inspect(message, { colors: isTTY }) : undefined;
+    const json =
+      Object.keys(message).length > 0
+        ? inspect(message, { colors: isTTY, ...(running ? this.runningInspectOptions : undefined) })
+        : undefined;
 
     return [prefix, text, json].filter(Boolean).join(EOL);
   }
+
+  protected runningInspectOptions: InspectOptions = {
+    maxArrayLength: 3,
+    maxStringLength: 200,
+  };
 }
 
 type Task = ReturnType<typeof promiseWithResolvers<void>> & {

@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@aigne/cli": "workspace:^",
-    "@aigne/core": "workspace:^"
+    "@aigne/core": "workspace:^",
+    "@aigne/openai": "workspace:^"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

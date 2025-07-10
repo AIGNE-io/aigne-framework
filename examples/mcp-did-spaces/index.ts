@@ -1,41 +1,53 @@
-#!/usr/bin/env npx -y bun
-
 import { MCPAgent } from '@aigne/core';
-import { runWithAIGNE } from '@aigne/cli/utils/run-with-aigne.js';
-import { AIAgent } from '@aigne/core';
+import { AIGNE, AIAgent } from '@aigne/core';
+import { OpenAIChatModel as Model } from '@aigne/openai';
+import dotenv from 'dotenv-flow';
 
-async function main() {
-  // Create MCP agent for DID Spaces
-  const mcpAgent = await MCPAgent.from({
-    url: 'https://bbqa4abi4d7hjydb3qo5l7lyxduukztmhj3gpghkole.did.abtnet.io/app/mcp',
-    transport: 'streamableHttp',
-    opts: {
-      requestInit: {
-        headers: {
-          Authorization:
-            'Bearer blocklet-z7QAdYvhxBLVcHfFsLwRryKEjDgQ3aLM46ycEQViV2qSe',
-        },
+dotenv.config({ silent: true });
+
+const aigne = new AIGNE({
+  model: new Model({
+    apiKey: process.env.OPENAI_API_KEY!,
+    model: 'gpt-4o-mini',
+  }),
+});
+
+// Create MCP agent for DID Spaces
+const mcpAgent = await MCPAgent.from({
+  url: process.env.DID_SPACES_URL!,
+  transport: 'streamableHttp',
+  opts: {
+    requestInit: {
+      headers: {
+        Authorization: process.env.DID_SPACES_AUTHORIZATION!,
       },
     },
-  });
+  },
+});
+console.log('Available MCP Skills:', mcpAgent.skills);
 
-  console.log('Available MCP Skills:', Object.keys(mcpAgent.skills));
+// Create AI agent with MCP skills
+const agent = AIAgent.from({
+  instructions:
+    'You are a helpful assistant with access to DID Spaces through MCP. You can help users manage their DID Spaces data.',
+  skills: Object.values(mcpAgent.skills),
+  inputKey: 'message',
+});
 
-  // Create AI agent with MCP skills
-  const agent = AIAgent.from({
-    name: 'mcp_did_spaces_example',
-    instructions:
-      'You are a helpful assistant with access to DID Spaces through MCP. You can help users manage their DID Spaces data.',
-    skills: Object.values(mcpAgent.skills),
-    inputKey: 'message',
-  });
+// Test MCP DID Spaces functionality
+const result1 = await aigne.invoke(agent, {
+  message:
+    'Can you check the metadata of my DID Space? Please output structure data.',
+});
+console.log('result1', result1);
 
-  await runWithAIGNE(agent, {
-    chatLoopOptions: {
-      welcome:
-        "Hello! I'm a chatbot with MCP DID Spaces integration. I can help you manage your DID Spaces data!",
-    },
-  });
-}
+const result2 = await aigne.invoke(agent, {
+  message: 'What objects in root folder are available in my DID Space?',
+});
+console.log('result2', result2);
 
-main().catch(console.error);
+const result3 = await aigne.invoke(agent, {
+  message:
+    'Can you write a test file to my DID Space with the content "Hello from MCP test" and name it "test.txt"?',
+});
+console.log('result3', result3);

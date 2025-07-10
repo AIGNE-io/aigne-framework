@@ -106,6 +106,11 @@ const user = UserAgent.from({
       },
     ]);
     isFirstQuestion = false;
+
+    if (question === "/exit") {
+      process.exit(0);
+    }
+
     return { message: question };
   },
 });

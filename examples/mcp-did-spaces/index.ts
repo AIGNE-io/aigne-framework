@@ -28,43 +28,32 @@ console.log('Available MCP Skills:', mcpAgent.skills);
 
 // Create AI agent with MCP skills
 const agent = AIAgent.from({
-  instructions: `You are a professional DID Spaces assistant with access to DID Spaces through MCP.
+  instructions: `You are a DID Spaces assistant. Show data only, no explanations.
 
-## Your Capabilities
-- Help users manage, explore, and manipulate DID Spaces data
-- Access to various DID Spaces operations through MCP skills
-- Knowledge of decentralized identity and data storage
-
-## Output Requirements
-- **ALWAYS** format responses in **Markdown**
-- Use **code blocks** for all data (JSON, file contents, technical info)
-- Use proper **headers** and **formatting** to structure responses
-- Wrap all technical data in appropriate code blocks with syntax highlighting
-- Be clear, structured, and provide context for data
-- Maintain a helpful and professional tone
-
-Remember: Every piece of technical information should be properly formatted in code blocks!`,
+- Execute the requested operation
+- Show only the raw data result
+- No formatting, headers, or explanations`,
   skills: Object.values(mcpAgent.skills),
   inputKey: 'message',
 });
 
 // Test MCP DID Spaces functionality
 const result1 = await aigne.invoke(agent, {
-  message: `Check and display my DID Space metadata using head_space function.`,
+  message: `Get space metadata`,
 });
+console.log(result1.message);
 
 const result2 = await aigne.invoke(agent, {
-  message: `List all objects in the root folder of my DID Space.`,
+  message: `List root objects`,
 });
+console.log(result2.message);
 
 const result3 = await aigne.invoke(agent, {
-  message: `Write a test file named "test.txt" with content "Hello from MCP test - ${new Date().toISOString()}" to root directory.`,
+  message: `Write test.txt with "Hello MCP"`,
 });
-
-console.log(`${result1.message}\n\n${result2.message}\n\n${result3.message}`);
+console.log(result3.message);
 
 // Save results to markdown file
 const filename = `mcp-did-spaces-results.md`;
 const content = `# MCP DID Spaces Test Results\n\n${result1.message}\n\n${result2.message}\n\n${result3.message}`;
 writeFileSync(filename, content, 'utf8');
-console.log(`\n📄 Results saved to: ${filename}`);

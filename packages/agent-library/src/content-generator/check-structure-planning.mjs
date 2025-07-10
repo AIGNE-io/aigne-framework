@@ -1,7 +1,12 @@
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { AIGNE } from "@aigne/core";
 import { GeminiChatModel } from "@aigne/gemini";
 import { OpenAIChatModel } from "@aigne/openai";
+
+// 获取当前脚本所在目录
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default async function checkStructurePlanning(
   { originalStructurePlan, structurePlanFeedback, ...rest },

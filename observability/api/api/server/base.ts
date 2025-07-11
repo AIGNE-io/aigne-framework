@@ -16,10 +16,8 @@ const sse = new SSE();
 
 dotenv.config({ silent: true });
 
-const expressMiddlewareSchema = z
-  .function()
-  .args(z.custom<Request>(), z.custom<Response>(), z.custom<NextFunction>())
-  .returns(z.void());
+const expressMiddlewareSchema =
+  z.custom<(req: Request, res: Response, next: NextFunction) => void>();
 
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
@@ -70,7 +68,7 @@ export async function startServer(
 
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof ZodError) {
-      res.status(400).json({ success: false, error: err.errors });
+      res.status(400).json({ success: false, error: err.message });
     } else {
       const message = err instanceof Error ? err.message : "Unknown error";
       res.status(500).json({ success: false, error: message });

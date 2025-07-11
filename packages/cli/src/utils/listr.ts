@@ -38,7 +38,7 @@ export class AIGNEListr extends Listr<
   constructor(
     public myOptions: {
       formatRequest: () => string | undefined;
-      formatResult: (result: Message) => string[];
+      formatResult: (result: Message, options?: { running?: boolean }) => string[];
     },
     ...[task, options, parentTask]: ConstructorParameters<
       typeof Listr<object, typeof AIGNEListrRenderer, typeof AIGNEListrFallbackRenderer>
@@ -48,8 +48,8 @@ export class AIGNEListr extends Listr<
       getStdoutLogs: () => {
         return this.logs.splice(0);
       },
-      getBottomBarLogs: () => {
-        return this.myOptions.formatResult(this.result);
+      getBottomBarLogs: (options?: { running?: boolean }) => {
+        return this.myOptions.formatResult(this.result, options);
       },
     };
 
@@ -126,7 +126,7 @@ export class AIGNEListr extends Listr<
 export interface AIGNEListrRendererOptions extends ListrDefaultRendererOptions {
   aigne?: {
     getStdoutLogs?: () => string[];
-    getBottomBarLogs?: () => string[];
+    getBottomBarLogs?: (options?: { running?: boolean }) => string[];
   };
 }
 
@@ -136,23 +136,19 @@ export class AIGNEListrRenderer extends DefaultRenderer {
   };
 
   get _updater() {
-    // @ts-ignore `updater` is a private property
-    return this.updater as ReturnType<typeof createLogUpdate>;
+    return this["updater"] as ReturnType<typeof createLogUpdate>;
   }
 
   get _logger() {
-    // @ts-ignore `logger` is a private property
-    return this.logger as ListrLogger;
+    return this["logger"] as ListrLogger;
   }
 
   get _options() {
-    // @ts-ignore `options` is a private property
-    return this.options as AIGNEListrRendererOptions;
+    return this["options"] as AIGNEListrRendererOptions;
   }
 
   get _spinner() {
-    // @ts-ignore `spinner` is a private property
-    return this.spinner as Spinner;
+    return this["spinner"] as Spinner;
   }
 
   override update(): void {
@@ -169,16 +165,29 @@ export class AIGNEListrRenderer extends DefaultRenderer {
       this._logger.toStdout(logs.join(EOL));
     }
 
-    const tasks = [super.create(options)];
+    let tasks = super.create(options);
 
-    const bottomBar = this._options.aigne?.getBottomBarLogs?.();
+    const bottomBar = this._options.aigne?.getBottomBarLogs?.({ running });
     if (bottomBar?.length) {
-      tasks.push(
-        [...bottomBar, running ? this._spinner.fetch() : ""].map((i) => this._wrap(i)).join(EOL),
-      );
+      tasks += EOL.repeat(2);
+
+      const output = [...bottomBar, running ? this._spinner.fetch() : ""]
+        .map((i) => this._wrap(i))
+        .join(EOL);
+
+      // If the task is not running, we show all lines
+      if (!running) {
+        tasks += output;
+      }
+      // For running tasks, we only show the last few lines
+      else {
+        const { rows } = process.stdout;
+        const lines = rows - tasks.split(EOL).length - 2;
+        tasks += output.split(EOL).slice(-Math.max(4, lines)).join(EOL);
+      }
     }
 
-    return tasks.join(EOL.repeat(2));
+    return tasks;
   }
 
   _wrap(str: string) {
@@ -199,13 +208,11 @@ export class AIGNEListrFallbackRenderer extends SimpleRenderer {
   };
 
   get _logger() {
-    // @ts-ignore `logger` is a private property
-    return this.logger as ListrLogger;
+    return this["logger"] as ListrLogger;
   }
 
   get _options() {
-    // @ts-ignore `options` is a private property
-    return this.options as AIGNEListrFallbackRendererOptions;
+    return this["options"] as AIGNEListrFallbackRendererOptions;
   }
 
   override end(): void {

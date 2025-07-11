@@ -10,7 +10,7 @@ import {
   type ChatModelOutput,
   type Role,
 } from "@aigne/core";
-import { parseJSON } from "@aigne/core/utils/json-schema.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { getJsonOutputPrompt } from "@aigne/core/utils/prompts.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
@@ -19,8 +19,10 @@ import {
   isNonNullable,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
+import { Ajv } from "ajv";
+import jaison from "jaison";
 import { nanoid } from "nanoid";
-import OpenAI, { type ClientOptions } from "openai";
+import OpenAI, { type APIError, type ClientOptions } from "openai";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
@@ -137,7 +139,6 @@ export class OpenAIChatModel extends ChatModel {
   protected apiKeyEnvName = "OPENAI_API_KEY";
   protected apiKeyDefault: string | undefined;
   protected supportsNativeStructuredOutputs = true;
-  protected supportsEndWithSystemMessage = true;
   protected supportsToolsUseWithJsonSchema = true;
   protected override supportsParallelToolCalls = true;
   protected supportsToolsEmptyParameters = true;
@@ -148,7 +149,7 @@ export class OpenAIChatModel extends ChatModel {
     const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault;
     if (!apiKey) throw new Error(`Api Key is required for ${this.name}`);
 
-    this._client ??= new OpenAI({
+    this._client ??= new CustomOpenAI({
       baseURL: this.options?.baseURL,
       apiKey,
       ...this.options?.clientOptions,
@@ -169,6 +170,8 @@ export class OpenAIChatModel extends ChatModel {
     return this._process(input);
   }
 
+  private ajv = new Ajv();
+
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
@@ -187,6 +190,12 @@ export class OpenAIChatModel extends ChatModel {
       stream: true,
     };
 
+    // For models that do not support tools use with JSON schema in same request,
+    // so we need to handle the case where tools are not used and responseFormat is json
+    if (!input.tools?.length && input.responseFormat?.type === "json_schema") {
+      return await this.requestStructuredOutput(body, input.responseFormat);
+    }
+
     const { jsonMode, responseFormat } = await this.getRunResponseFormat(input);
     const stream = (await this.client.chat.completions.create({
       ...body,
@@ -203,18 +212,22 @@ export class OpenAIChatModel extends ChatModel {
     }
 
     const result = await this.extractResultFromStream(stream, jsonMode);
+    // Just return the result if it has tool calls
+    if (result.toolCalls?.length || result.json) return result;
 
-    if (
-      !this.supportsToolsUseWithJsonSchema &&
-      !result.toolCalls?.length &&
-      input.responseFormat?.type === "json_schema" &&
-      result.text
-    ) {
-      const output = await this.requestStructuredOutput(body, input.responseFormat);
-      return { ...output, usage: mergeUsage(result.usage, output.usage) };
+    // Try to parse the text response as JSON
+    // If it matches the json_schema, return it as json
+    const json = safeParseJSON(result.text || "");
+    if (this.ajv.validate(input.responseFormat.jsonSchema.schema, json)) {
+      return { ...result, json, text: undefined };
     }
+    logger.warn(
+      `${this.name}: Text response does not match JSON schema, trying to use tool to extract json `,
+      { text: result.text },
+    );
 
-    return result;
+    const output = await this.requestStructuredOutput(body, input.responseFormat);
+    return { ...output, usage: mergeUsage(result.usage, output.usage) };
   }
 
   private getParallelToolCalls(input: ChatModelInput): boolean | undefined {
@@ -223,21 +236,19 @@ export class OpenAIChatModel extends ChatModel {
     return input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls;
   }
 
-  private async getRunMessages(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {
+  protected async getRunMessages(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {
     const messages = await contentsFromInputMessages(input.messages);
 
-    if (!this.supportsEndWithSystemMessage && messages.at(-1)?.role !== "user") {
-      messages.push({ role: "user", content: "" });
-    }
-
-    if (!this.supportsToolsUseWithJsonSchema && input.tools?.length) return messages;
-    if (this.supportsNativeStructuredOutputs) return messages;
-
     if (input.responseFormat?.type === "json_schema") {
-      messages.unshift({
-        role: "system",
-        content: getJsonOutputPrompt(input.responseFormat.jsonSchema.schema),
-      });
+      if (
+        !this.supportsNativeStructuredOutputs ||
+        (!this.supportsToolsUseWithJsonSchema && input.tools?.length)
+      ) {
+        messages.unshift({
+          role: "system",
+          content: getJsonOutputPrompt(input.responseFormat.jsonSchema.schema),
+        });
+      }
     }
     return messages;
   }
@@ -383,7 +394,7 @@ export class OpenAIChatModel extends ChatModel {
             controller.enqueue({
               delta: {
                 json: {
-                  json: parseJSON(text),
+                  json: safeParseJSON(text),
                 },
               },
             });
@@ -395,7 +406,7 @@ export class OpenAIChatModel extends ChatModel {
                 json: {
                   toolCalls: toolCalls.map(({ args, ...c }) => ({
                     ...c,
-                    function: { ...c.function, arguments: parseJSON(args) },
+                    function: { ...c.function, arguments: safeParseJSON(args) },
                   })),
                 },
               },
@@ -561,8 +572,34 @@ function handleCompleteToolCall(
     type: "function" as const,
     function: {
       name: call.function?.name || "",
-      arguments: parseJSON(call.function?.arguments || "{}"),
+      arguments: safeParseJSON(call.function?.arguments || "{}"),
     },
     args: call.function?.arguments || "",
   });
+}
+
+// Use a custom OpenAI client to handle API errors for better error messages
+class CustomOpenAI extends OpenAI {
+  protected override makeStatusError(
+    status: number,
+    error: object,
+    message: string | undefined,
+    headers: Headers,
+  ): APIError {
+    if (!("error" in error) || typeof error.error !== "string") {
+      message = JSON.stringify(error);
+    }
+
+    return super.makeStatusError(status, error, message, headers);
+  }
+}
+
+function safeParseJSON(text: string): any {
+  if (!text) return null;
+
+  try {
+    return jaison(text);
+  } catch {
+    return null;
+  }
 }

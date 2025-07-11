@@ -25,4 +25,6 @@ export const Trace = sqliteTable("Trace", {
   events: json("events"), // JSON 数组
   userId: text("userId"),
   sessionId: text("sessionId"),
+  componentId: text("componentId"),
+  action: integer("action"),
 });

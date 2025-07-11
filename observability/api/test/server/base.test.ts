@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { rmSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
+import { withQuery } from "ufo";
 import getObservabilityDbPath from "../../api/core/db-path.js";
 import { startServer } from "../../api/server/base.js";
 
@@ -48,15 +49,15 @@ describe("Base Server", () => {
     const validTrace = {
       id: "trace-1",
       rootId: "root-1",
-      parentId: null,
+      parentId: undefined,
       name: "test-trace",
       startTime: 1710000000,
       endTime: 1710000010,
       status: { code: "OK" },
-      attributes: JSON.stringify({
+      attributes: {
         input: { foo: "bar" },
         output: { foo: "bar" },
-      }),
+      },
     };
 
     // Step 1: POST trace
@@ -98,15 +99,16 @@ describe("Base Server", () => {
     const validTrace1 = {
       id: "trace-2",
       rootId: "root-2",
-      parentId: null,
+      parentId: undefined,
       name: "test-trace-2",
       startTime: 1710000001,
       endTime: 1710000011,
       status: { code: "OK" },
-      attributes: JSON.stringify({
+      attributes: {
         input: { foo: "bar" },
         output: { foo: "bar" },
-      }),
+      },
+      componentId: "z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq",
     };
     const postRes1 = await fetch(`${url}/api/trace/tree`, {
       method: "POST",
@@ -117,10 +119,12 @@ describe("Base Server", () => {
     const postJson1 = await postRes1.json();
     expect(postJson1.message).toBe("ok");
 
-    const listRes1 = await fetch(`${url}/api/trace/tree`);
+    const listRes1 = await fetch(
+      withQuery(`${url}/api/trace/tree`, { componentId: "z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq" }),
+    );
     expect(listRes1.status).toBe(200);
     const listJson1 = await listRes1.json();
-    expect(listJson1.data.length).toBe(2);
+    expect(listJson1.data.length).toBe(1);
     expect(listJson1.data[0].id).toBe("trace-2");
 
     // Step 6: GET /tree/stats
@@ -128,6 +132,31 @@ describe("Base Server", () => {
     expect(statsRes1.status).toBe(200);
     const statsJson1 = await statsRes1.json();
     expect(statsJson1.data.lastTraceChanged).toBe(true);
+
+    // Step 7: GET /tree/components
+    const componentsRes = await fetch(`${url}/api/trace/tree/components`);
+    expect(componentsRes.status).toBe(200);
+    const componentsJson = await componentsRes.json();
+    expect(componentsJson.data.length).toBe(1);
+    expect(componentsJson.data[0]).toBe("z2qa9KiiADmMo5FGfidpzpXZwaNGWNeqJ7rLq");
+
+    // Step 8: GET /tree/trace-2
+    const detailRes1 = await fetch(`${url}/api/trace/tree/trace-3`);
+    expect(detailRes1.status).toBe(500);
+    const detailJson1 = await detailRes1.json();
+    expect(detailJson1.error).toBe("Not found trace: trace-3");
+
+    // Step 9: DELETE /tree
+    const deleteRes = await fetch(`${url}/api/trace/tree`, { method: "DELETE" });
+    expect(deleteRes.status).toBe(200);
+    const deleteJson = await deleteRes.json();
+    expect(deleteJson.message).toBe("ok");
+
+    // Step 10: GET /tree list
+    const listRes10 = await fetch(`${url}/api/trace/tree`);
+    expect(listRes10.status).toBe(200);
+    const listJson10 = await listRes10.json();
+    expect(listJson10.data.length).toBe(0);
 
     server.closeAllConnections();
     server.close();

@@ -507,12 +507,6 @@ export class AIGNEContext implements Context {
 
           span.setStatus({ code: SpanStatusCode.OK });
 
-          await this.observer?.traceExporter
-            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
-            .catch((err) => {
-              logger.error("upsertInitialSpan error", err?.message || err);
-            });
-
           span.end();
 
           break;
@@ -520,12 +514,6 @@ export class AIGNEContext implements Context {
         case "agentFailed": {
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-
-          await this.observer?.traceExporter
-            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
-            .catch((err) => {
-              logger.error("upsertInitialSpan error", err?.message || err);
-            });
 
           span.end();
 
@@ -723,6 +711,6 @@ async function* withAbortSignal<T extends Message>(
 
 const aigneContextInvokeArgsSchema = z.object({
   agent: z.union([z.custom<FunctionAgentFn>(), z.custom<Agent>()]),
-  message: z.union([z.record(z.unknown()), z.string()]).optional(),
+  message: z.union([z.record(z.string(), z.unknown()), z.string()]).optional(),
   options: z.object({ returnActiveAgent: z.boolean().optional() }).optional(),
 });

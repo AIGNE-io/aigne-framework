@@ -6,8 +6,6 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/open-router)](https://www.npmjs.com/package/@aigne/open-router)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/open-router)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-**English** | [中文](README.zh.md)
-
 AIGNE OpenRouter SDK for accessing multiple AI models through a unified API within the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework).
 
 ## Introduction

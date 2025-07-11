@@ -1,5 +1,62 @@
 # Changelog
 
+## [0.9.4](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.3...transport-v0.9.4) (2025-07-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.9.0
+  * devDependencies
+    * @aigne/agent-library bumped to 1.20.3
+    * @aigne/core bumped to 1.33.0
+    * @aigne/test-utils bumped to 0.5.5
+
+## [0.9.3](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.2...transport-v0.9.3) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.2
+  * devDependencies
+    * @aigne/agent-library bumped to 1.20.2
+    * @aigne/core bumped to 1.32.2
+    * @aigne/test-utils bumped to 0.5.4
+
+## [0.9.2](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.1...transport-v0.9.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* share user context between server and client ([#233](https://github.com/AIGNE-io/aigne-framework/issues/233)) ([d55bfbc](https://github.com/AIGNE-io/aigne-framework/commit/d55bfbcc230e9c876c6d2fc0b74a4d7821f9e6ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.1
+  * devDependencies
+    * @aigne/agent-library bumped to 1.20.1
+    * @aigne/core bumped to 1.32.1
+    * @aigne/test-utils bumped to 0.5.3
+
+## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.0...transport-v0.9.1) (2025-07-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.0
+  * devDependencies
+    * @aigne/agent-library bumped to 1.20.0
+    * @aigne/core bumped to 1.32.0
+    * @aigne/test-utils bumped to 0.5.2
+
 ## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.8.0...transport-v0.9.0) (2025-07-04)
 
 

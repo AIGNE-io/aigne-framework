@@ -106,6 +106,11 @@ const user = UserAgent.from({
       },
     ]);
     isFirstQuestion = false;
+
+    if (question === "/exit") {
+      process.exit(0);
+    }
+
     return { message: question };
   },
 });
@@ -117,7 +122,7 @@ const manager = AIAgent.from({
   subscribeTopic: DEFAULT_TOPIC,
   publishTopic: (output) => output.role,
   memory: new DefaultMemory({ subscribeTopic: DEFAULT_TOPIC }),
-  instructions: PromptTemplate.from(`\
+  instructions: await PromptTemplate.from(`\
   You are participating in a role-playing game. The available roles are:
 
   <roles>

@@ -487,13 +487,15 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         // Continue LLM function calling loop if any tools were executed
         if (executedToolCalls.length) {
           toolCallMessages.push(
-            AgentMessageTemplate.from(
+            await AgentMessageTemplate.from(
               undefined,
               executedToolCalls.map(({ call }) => call),
             ).format(),
-            ...executedToolCalls.map(({ call, output }) =>
-              ToolMessageTemplate.from(output, call.id).format(),
-            ),
+            ...(await Promise.all(
+              executedToolCalls.map(({ call, output }) =>
+                ToolMessageTemplate.from(output, call.id).format(),
+              ),
+            )),
           );
 
           continue;

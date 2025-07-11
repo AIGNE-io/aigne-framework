@@ -1,5 +1,101 @@
 # Changelog
 
+## [1.22.6](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.5...cli-v1.22.6) (2025-07-10)
+
+
+### Bug Fixes
+
+* **cli:** reduce excessive console output to improve cli performance ([#246](https://github.com/AIGNE-io/aigne-framework/issues/246)) ([4430504](https://github.com/AIGNE-io/aigne-framework/commit/4430504b643bba92775e5a908ca1c1153d90a402))
+
+## [1.22.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.4...cli-v1.22.5) (2025-07-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.3
+    * @aigne/anthropic bumped to 0.8.0
+    * @aigne/bedrock bumped to 0.7.3
+    * @aigne/core bumped to 1.33.0
+    * @aigne/deepseek bumped to 0.6.3
+    * @aigne/gemini bumped to 0.7.0
+    * @aigne/ollama bumped to 0.6.3
+    * @aigne/open-router bumped to 0.6.3
+    * @aigne/openai bumped to 0.9.0
+    * @aigne/xai bumped to 0.6.4
+
+## [1.22.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.3...cli-v1.22.4) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/xai bumped to 0.6.3
+
+## [1.22.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.2...cli-v1.22.3) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.2
+    * @aigne/anthropic bumped to 0.7.2
+    * @aigne/bedrock bumped to 0.7.2
+    * @aigne/core bumped to 1.32.2
+    * @aigne/deepseek bumped to 0.6.2
+    * @aigne/gemini bumped to 0.6.2
+    * @aigne/observability-api bumped to 0.7.1
+    * @aigne/ollama bumped to 0.6.2
+    * @aigne/open-router bumped to 0.6.2
+    * @aigne/openai bumped to 0.8.2
+    * @aigne/xai bumped to 0.6.2
+
+## [1.22.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.1...cli-v1.22.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* **model:** ensure last message is not system role for gemini ([#231](https://github.com/AIGNE-io/aigne-framework/issues/231)) ([1b72e1e](https://github.com/AIGNE-io/aigne-framework/commit/1b72e1e6be98060aa32e68585142b2eea401d109))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.1
+    * @aigne/anthropic bumped to 0.7.1
+    * @aigne/bedrock bumped to 0.7.1
+    * @aigne/core bumped to 1.32.1
+    * @aigne/deepseek bumped to 0.6.1
+    * @aigne/gemini bumped to 0.6.1
+    * @aigne/observability-api bumped to 0.7.0
+    * @aigne/ollama bumped to 0.6.1
+    * @aigne/open-router bumped to 0.6.1
+    * @aigne/openai bumped to 0.8.1
+    * @aigne/xai bumped to 0.6.1
+
+## [1.22.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.0...cli-v1.22.1) (2025-07-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.0
+    * @aigne/anthropic bumped to 0.7.0
+    * @aigne/bedrock bumped to 0.7.0
+    * @aigne/core bumped to 1.32.0
+    * @aigne/deepseek bumped to 0.6.0
+    * @aigne/gemini bumped to 0.6.0
+    * @aigne/observability-api bumped to 0.6.0
+    * @aigne/ollama bumped to 0.6.0
+    * @aigne/open-router bumped to 0.6.0
+    * @aigne/openai bumped to 0.8.0
+    * @aigne/xai bumped to 0.6.0
+
 ## [1.22.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.21.0...cli-v1.22.0) (2025-07-04)
 
 

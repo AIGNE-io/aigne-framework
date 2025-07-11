@@ -104,6 +104,7 @@ beforeEach(() => {
     model: "gemini-2.0-flash",
   });
 });
+
 test("GeminiChatModel.invoke should return the correct tool", async () => {
   spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
@@ -112,15 +113,15 @@ test("GeminiChatModel.invoke should return the correct tool", async () => {
   );
 
   const result = await model.invoke({
-    messages: createWeatherToolMessages(),
+    messages: await createWeatherToolMessages(),
     tools: COMMON_TOOLS,
   });
 
   expect(result).toEqual(createWeatherToolExpected());
 });
 
-test("GeminiChatModel.invoke", async () => {
-  spyOn(model.client.chat.completions, "create")
+test("GeminiChatModel.invoke should use tool result correctly", async () => {
+  const create = spyOn(model.client.chat.completions, "create")
     .mockReturnValueOnce(
       createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-2.txt") }),
     )
@@ -129,10 +130,12 @@ test("GeminiChatModel.invoke", async () => {
     );
 
   const result = await model.invoke({
-    messages: createWeatherToolCallMessages(),
+    messages: await createWeatherToolCallMessages(),
     tools: COMMON_TOOLS,
     responseFormat: COMMON_RESPONSE_FORMAT,
   });
+
+  expect(create.mock.lastCall).toMatchSnapshot();
 
   expect(result).toEqual(
     expect.objectContaining({
@@ -141,6 +144,29 @@ test("GeminiChatModel.invoke", async () => {
         inputTokens: 66,
         outputTokens: 32,
       },
+    }),
+  );
+});
+
+test("GeminiChatModel should reset last message role from system to user", async () => {
+  const create = spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
+    createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-2.txt") }),
+  );
+
+  const _result = await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: "This is a system message that should be treated as user input.",
+      },
+    ],
+  });
+
+  expect(create).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      messages: [
+        { role: "user", content: "This is a system message that should be treated as user input." },
+      ],
     }),
   );
 });

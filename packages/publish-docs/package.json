@@ -1,6 +1,6 @@
 {
   "name": "@aigne/publish-docs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AIGNE Publish Docs for publishing docs to Discuss Kit",
   "publishConfig": {
     "access": "public"
@@ -41,18 +41,18 @@
     "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
   },
   "dependencies": {
-    "@lexical/code": "^0.32.1",
-    "@lexical/headless": "^0.32.1",
-    "@lexical/html": "^0.32.1",
-    "@lexical/link": "^0.32.1",
-    "@lexical/list": "^0.32.1",
-    "@lexical/react": "^0.32.1",
-    "@lexical/rich-text": "^0.32.1",
-    "@lexical/table": "^0.32.1",
+    "@lexical/code": "^0.33.0",
+    "@lexical/headless": "^0.33.0",
+    "@lexical/html": "^0.33.0",
+    "@lexical/link": "^0.33.0",
+    "@lexical/list": "^0.33.0",
+    "@lexical/react": "^0.33.0",
+    "@lexical/rich-text": "^0.33.0",
+    "@lexical/table": "^0.33.0",
     "gray-matter": "^4.0.3",
     "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
-    "lexical": "^0.32.1",
+    "lexical": "^0.33.0",
     "marked": "^16.0.0",
     "open": "^10.1.2",
     "ufo": "^1.6.1",

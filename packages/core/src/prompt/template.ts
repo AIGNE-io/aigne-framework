@@ -1,10 +1,21 @@
-import Mustache from "mustache";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+import nunjucks, { type Callback, type LoaderSource } from "nunjucks";
 import { z } from "zod";
 import type {
   ChatModelInputMessage,
   ChatModelInputMessageContent,
   ChatModelOutputToolCall,
 } from "../agents/chat-model.js";
+import { isNil } from "../utils/type-utils.js";
+
+(nunjucks.runtime as any).suppressValue = (v: unknown) => {
+  if (isNil(v)) return "";
+  return typeof v === "object" ? JSON.stringify(v) : v;
+};
+
+export interface FormatOptions {
+  workingDir?: string;
+}
 
 export class PromptTemplate {
   static from(template: string) {
@@ -13,12 +24,51 @@ export class PromptTemplate {
 
   constructor(public template: string) {}
 
-  format(variables?: Record<string, unknown>): string {
-    return Mustache.render(this.template, variables, undefined, {
-      escape: (v) => {
-        return typeof v === "object" ? JSON.stringify(v) : v;
+  async format(variables: Record<string, unknown> = {}, options?: FormatOptions): Promise<string> {
+    let env = new nunjucks.Environment();
+
+    if (options?.workingDir) {
+      env = new nunjucks.Environment(new CustomLoader({ workingDir: options.workingDir }));
+    }
+
+    return new Promise((resolve, reject) =>
+      env.renderString(this.template, variables, (err, res) => {
+        if (err || !res) {
+          reject(err || new Error(`Failed to render template: ${this.template}`));
+        } else {
+          resolve(res);
+        }
+      }),
+    );
+  }
+}
+
+export class CustomLoader extends nunjucks.Loader {
+  constructor(public options: { workingDir: string }) {
+    super();
+  }
+
+  async = true;
+
+  getSource(name: string, callback: Callback<Error, LoaderSource>): LoaderSource {
+    let result: LoaderSource | null = null;
+
+    nodejs.fs.readFile(nodejs.path.join(this.options.workingDir, name), "utf-8").then(
+      (content) => {
+        result = {
+          src: content,
+          path: name,
+          noCache: true,
+        };
+        callback(null, result);
       },
-    });
+      (error) => {
+        callback(error, null);
+      },
+    );
+
+    // nunjucks expects return LoaderSource synchronously, but we handle it asynchronously.
+    return result as any;
   }
 }
 
@@ -29,15 +79,21 @@ export class ChatMessageTemplate {
     public name?: string,
   ) {}
 
-  format(variables?: Record<string, unknown>): ChatModelInputMessage {
+  async format(
+    variables?: Record<string, unknown>,
+    options?: FormatOptions,
+  ): Promise<ChatModelInputMessage> {
     let { content } = this;
     if (Array.isArray(content)) {
-      content = content.map((i) => {
-        if (i.type === "text") return { ...i, text: PromptTemplate.from(i.text).format(variables) };
-        return i;
-      });
+      content = await Promise.all(
+        content.map(async (i) => {
+          if (i.type === "text")
+            return { ...i, text: await PromptTemplate.from(i.text).format(variables, options) };
+          return i;
+        }),
+      );
     } else if (typeof content === "string") {
-      content = PromptTemplate.from(content).format(variables);
+      content = await PromptTemplate.from(content).format(variables, options);
     }
 
     return {
@@ -77,9 +133,9 @@ export class AgentMessageTemplate extends ChatMessageTemplate {
     super("agent", content, name);
   }
 
-  override format(variables?: Record<string, unknown>) {
+  override async format(variables?: Record<string, unknown>, options?: FormatOptions) {
     return {
-      ...super.format(variables),
+      ...(await super.format(variables, options)),
       toolCalls: this.toolCalls,
     };
   }
@@ -106,9 +162,9 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
     );
   }
 
-  override format(variables?: Record<string, unknown>) {
+  override async format(variables?: Record<string, unknown>, options?: FormatOptions) {
     return {
-      ...super.format(variables),
+      ...(await super.format(variables, options)),
       toolCallId: this.toolCallId,
     };
   }
@@ -123,8 +179,11 @@ export class ChatMessagesTemplate {
 
   constructor(public messages: ChatMessageTemplate[]) {}
 
-  format(variables?: Record<string, unknown>): ChatModelInputMessage[] {
-    return this.messages.map((message) => message.format(variables));
+  async format(
+    variables?: Record<string, unknown>,
+    options?: FormatOptions,
+  ): Promise<ChatModelInputMessage[]> {
+    return Promise.all(this.messages.map((message) => message.format(variables, options)));
   }
 }
 
@@ -145,7 +204,7 @@ const chatModelOutputToolCallSchema = z.object({
   type: z.literal("function"),
   function: z.object({
     name: z.string(),
-    arguments: z.record(z.unknown()),
+    arguments: z.record(z.string(), z.unknown()),
   }),
 });
 
@@ -159,7 +218,7 @@ const agentChatMessageSchema = z.object({
 const toolChatMessageSchema = z.object({
   role: z.literal("tool"),
   content: z
-    .union([z.string(), z.record(z.unknown())])
+    .union([z.string(), z.record(z.string(), z.unknown())])
     .transform((val) => (typeof val !== "string" ? JSON.stringify(val) : val)),
   toolCallId: z.string(),
   name: z.string().optional(),

@@ -1,5 +1,58 @@
 # Changelog
 
+## [0.6.3](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.6.2...deepseek-v0.6.3) (2025-07-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.9.0
+  * devDependencies
+    * @aigne/core bumped to 1.33.0
+    * @aigne/test-utils bumped to 0.5.5
+
+## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.6.1...deepseek-v0.6.2) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.2
+  * devDependencies
+    * @aigne/core bumped to 1.32.2
+    * @aigne/test-utils bumped to 0.5.4
+
+## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.6.0...deepseek-v0.6.1) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.1
+  * devDependencies
+    * @aigne/core bumped to 1.32.1
+    * @aigne/test-utils bumped to 0.5.3
+
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.5.1...deepseek-v0.6.0) (2025-07-08)
+
+
+### Features
+
+* **core:** add jinja syntax support for prompt builder ([#230](https://github.com/AIGNE-io/aigne-framework/issues/230)) ([74436a7](https://github.com/AIGNE-io/aigne-framework/commit/74436a7faac0c59a32b0153481386162649f4357))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.8.0
+  * devDependencies
+    * @aigne/core bumped to 1.32.0
+    * @aigne/test-utils bumped to 0.5.2
+
 ## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.5.0...deepseek-v0.5.1) (2025-07-04)
 
 

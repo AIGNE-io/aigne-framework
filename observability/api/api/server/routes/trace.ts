@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import { and, between, desc, eq, inArray, isNull, like, or, sql } from "drizzle-orm";
+import { and, between, desc, eq, inArray, isNotNull, isNull, like, or, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import express, { type Request, type Response } from "express";
 import type SSE from "express-sse";
@@ -11,6 +11,8 @@ import { getGlobalSettingPath } from "../utils/index.js";
 
 const router = express.Router();
 
+import { createTraceBatchSchema } from "../../core/schema.js";
+
 export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHandler[] }) => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
@@ -18,18 +20,18 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const pageSize = Number(req.query.pageSize) || 10;
     const offset = page * pageSize;
     const searchText = req.query.searchText as string;
+    const componentId = req.query.componentId as string;
     const startDate = req.query.startDate as string;
     const endDate = req.query.endDate as string;
 
-    const count = await db
-      .select({ count: sql`count(*)` })
-      .from(Trace)
-      .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
-      .execute();
+    const rootFilter = and(
+      or(isNull(Trace.parentId), eq(Trace.parentId, "")),
+      isNull(Trace.action),
+    );
 
+    const count = await db.select({ count: sql`count(*)` }).from(Trace).where(rootFilter).execute();
     const total = Number((count[0] as { count: string }).count ?? 0);
 
-    const rootFilter = or(isNull(Trace.parentId), eq(Trace.parentId, ""));
     const searchFilter = or(
       like(Trace.attributes, `%${searchText}%`),
       like(Trace.name, `%${searchText}%`),
@@ -44,8 +46,43 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       );
     }
 
+    if (componentId) {
+      whereClause = and(whereClause, eq(Trace.componentId, componentId));
+    }
+
     const rootCalls = await db
-      .select()
+      .select({
+        id: Trace.id,
+        rootId: Trace.rootId,
+        parentId: Trace.parentId,
+        name: Trace.name,
+        startTime: Trace.startTime,
+        endTime: Trace.endTime,
+        status: Trace.status,
+        attributes: sql<string>`
+          CASE 
+            WHEN ${Trace.attributes} IS NULL THEN JSON_OBJECT('input', '', 'output', '')
+            ELSE JSON_OBJECT(
+              'input', 
+              CASE 
+                WHEN JSON_EXTRACT(${Trace.attributes}, '$.input') IS NOT NULL 
+                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), 1, 150) || 
+                CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT)) > 150 THEN '...' ELSE '' END
+                ELSE ''
+              END,
+              'output',
+              CASE 
+                WHEN JSON_EXTRACT(${Trace.attributes}, '$.output') IS NOT NULL 
+                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), 1, 150) || 
+                CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT)) > 150 THEN '...' ELSE '' END
+                ELSE ''
+              END
+            )
+          END
+        `,
+        userId: Trace.userId,
+        componentId: Trace.componentId,
+      })
       .from(Trace)
       .where(whereClause)
       .orderBy(desc(Trace.startTime))
@@ -53,29 +90,51 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       .offset(offset)
       .execute();
 
-    const rootCallIds = rootCalls.map((r) => r.rootId).filter((id): id is string => !!id);
+    const processedRootCalls = rootCalls.map((call) => {
+      try {
+        return {
+          ...call,
+          attributes: JSON.parse(call.attributes),
+        };
+      } catch (_err) {
+        return call;
+      }
+    });
 
-    if (rootCallIds.length === 0) {
-      res.json({
-        total,
-        page,
-        pageSize,
-        data: [],
-      });
-      return;
-    }
+    res.json({ total, page, pageSize, data: processedRootCalls.filter((r) => r.rootId) });
+  });
 
-    res.json({ total, page, pageSize, data: rootCalls.filter((r) => r.rootId) });
+  router.get("/tree/components", ...middleware, async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+
+    const components = await db
+      .select({ componentId: Trace.componentId })
+      .from(Trace)
+      .where(and(isNotNull(Trace.componentId), isNull(Trace.action)))
+      .groupBy(Trace.componentId)
+      .execute();
+
+    const componentIds = components.map((c) => c.componentId).filter(Boolean);
+
+    res.json({
+      data: componentIds,
+      total: componentIds.length,
+    });
   });
 
   router.get("/tree/stats", async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
 
+    const rootFilter = and(
+      or(isNull(Trace.parentId), eq(Trace.parentId, "")),
+      isNull(Trace.action),
+    );
+
     const [latestRoot] =
       (await db
         .select()
         .from(Trace)
-        .where(or(isNull(Trace.parentId), eq(Trace.parentId, "")))
+        .where(rootFilter)
         .orderBy(desc(Trace.startTime))
         .limit(1)
         .execute()) || [];
@@ -123,7 +182,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const db = req.app.locals.db as LibSQLDatabase;
     const rootCalls = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
     if (rootCalls.length === 0) {
-      throw new Error("rootCall not found");
+      throw new Error(`Not found trace: ${id}`);
     }
 
     const rootCallIds = rootCalls.map((r) => r.rootId).filter((id): id is string => !!id);
@@ -150,6 +209,8 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       throw new Error("req.body is empty");
     }
 
+    const validatedTraces = createTraceBatchSchema.parse(req.body);
+
     let live = false;
     const settingPath = getGlobalSettingPath();
     if (!existsSync(settingPath)) {
@@ -161,13 +222,11 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
 
     const db = req.app.locals.db as LibSQLDatabase;
 
-    for (const trace of req.body) {
+    for (const trace of validatedTraces) {
       const whereClause = and(
         eq(Trace.id, trace.id),
         eq(Trace.rootId, trace.rootId),
-        !trace.parentId
-          ? or(isNull(Trace.parentId), eq(Trace.parentId, ""))
-          : eq(Trace.parentId, trace.parentId),
+        !trace.parentId ? isNull(Trace.parentId) : eq(Trace.parentId, trace.parentId),
       );
 
       try {
@@ -187,6 +246,12 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       sse.send({ type: "event", data: {} });
     }
 
+    res.json({ code: 0, message: "ok" });
+  });
+
+  router.delete("/tree", async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+    await db.update(Trace).set({ action: 1 }).where(isNull(Trace.action)).execute();
     res.json({ code: 0, message: "ok" });
   });
 

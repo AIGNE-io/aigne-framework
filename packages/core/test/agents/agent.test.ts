@@ -726,3 +726,16 @@ test("AgentInput/AgentOutput should infer correct types", async () => {
   expectType<AgentInput<typeof agent>>().is<{ name: string; age: number }>();
   expectType<AgentOutput<typeof agent>>().is<{ greeting: string; ageInMonths: number }>();
 });
+
+test("Agent must return a record type", async () => {
+  // biome-ignore lint/security/noGlobalEval: just for testing
+  const agent = FunctionAgent.from(() => eval("4 * 4"));
+
+  expect(agent.invoke({}, { streaming: false })).rejects.toThrow(
+    "expect to return a record type such as {result: ...}, but got (number): 16",
+  );
+
+  expect(agent.invoke({}, { streaming: true })).rejects.toThrow(
+    "expect to return a record type such as {result: ...}, but got (number): 16",
+  );
+});

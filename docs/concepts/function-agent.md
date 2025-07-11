@@ -1,7 +1,5 @@
 # FunctionAgent
 
-[English](./function-agent.md) | [中文](./function-agent.zh.md)
-
 ## Overview
 
 FunctionAgent is a core component in the AIGNE framework that allows developers to convert ordinary functions into intelligent agents. This document details the four creation patterns of FunctionAgent (basic, minimal, streaming, and generator) and how to invoke these agents. The main advantages of FunctionAgent lie in its flexibility and type safety, supporting synchronous/asynchronous processing, streaming output, and type inference, enabling developers to choose the most suitable implementation approach for different scenarios. Whether for complex applications requiring strict type definitions or rapid prototype development, FunctionAgent provides concise yet powerful solutions.

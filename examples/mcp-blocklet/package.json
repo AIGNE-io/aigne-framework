@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-mcp-blocklet",
-  "version": "1.15.1",
+  "version": "1.15.7",
   "description": "A demonstration of using AIGNE Framework and MCP Server hosted by the Blocklet platform",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-blocklet",
@@ -23,7 +23,7 @@
     "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "@modelcontextprotocol/sdk": "^1.13.3",
+    "@modelcontextprotocol/sdk": "^1.15.0",
     "jsonwebtoken": "^9.0.2",
     "open": "^10.1.2",
     "zod": "^3.25.67"

@@ -1,13 +1,13 @@
 import { initDatabase } from "@aigne/sqlite";
+import type { SpanStatusCode } from "@opentelemetry/api";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
-import { and, eq, isNull, or } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import type { TraceFormatSpans } from "../../core/type.js";
 import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
 import { Trace } from "../../server/models/trace.js";
 import { validateTraceSpans } from "./util.js";
-
 export interface HttpExporterInterface extends SpanExporter {
   export(
     spans: ReadableSpan[],
@@ -17,6 +17,8 @@ export interface HttpExporterInterface extends SpanExporter {
   shutdown(): Promise<void>;
 
   upsertInitialSpan(span: ReadableSpan): Promise<void>;
+
+  updateSpanStatus(data: { id: string; traceId: string; status: SpanStatusCode }): Promise<void>;
 }
 
 class HttpExporter implements HttpExporterInterface {
@@ -25,9 +27,7 @@ class HttpExporter implements HttpExporterInterface {
   private upsert: (spans: TraceFormatSpans[]) => Promise<void>;
 
   async getDb() {
-    if (isBlocklet) {
-      return;
-    }
+    if (isBlocklet) return;
 
     const db = await initDatabase({ url: this.dbPath, wal: true });
     await migrate(db);
@@ -53,18 +53,13 @@ class HttpExporter implements HttpExporterInterface {
 
   async _upsertWithSQLite(validatedData: TraceFormatSpans[]) {
     const db = await this._db;
-
-    if (!db) {
-      throw new Error("Database not initialized");
-    }
+    if (!db) throw new Error("Database not initialized");
 
     for (const trace of validatedData) {
       const whereClause = and(
         eq(Trace.id, trace.id),
         eq(Trace.rootId, trace.rootId),
-        !trace.parentId
-          ? or(isNull(Trace.parentId), eq(Trace.parentId, ""))
-          : eq(Trace.parentId, trace.parentId),
+        !trace.parentId ? isNull(Trace.parentId) : eq(Trace.parentId, trace.parentId),
       );
 
       try {
@@ -101,6 +96,35 @@ class HttpExporter implements HttpExporterInterface {
 
   async upsertInitialSpan(span: ReadableSpan) {
     await this.upsert(validateTraceSpans([span]));
+  }
+
+  async updateSpanStatus({
+    id,
+    traceId,
+    status,
+  }: {
+    id: string;
+    traceId: string;
+    status: SpanStatusCode;
+  }) {
+    const db = await this._db;
+    if (!db) throw new Error("Database not initialized");
+
+    const whereClause = and(
+      eq(Trace.id, id),
+      eq(Trace.rootId, traceId),
+      sql`json_extract(${Trace.status}, '$.code') = 0`,
+    );
+
+    try {
+      const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();
+
+      if (existing.length > 0) {
+        await db.update(Trace).set({ status }).where(whereClause).execute();
+      }
+    } catch (err) {
+      console.error(`update span status failed for trace ${id}:`, err);
+    }
   }
 }
 

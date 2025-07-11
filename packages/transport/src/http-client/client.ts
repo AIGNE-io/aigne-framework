@@ -118,6 +118,15 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
     if (options?.returnActiveAgent) throw new Error("Method not implemented.");
     if (!message) throw new Error("Message is required for invoking an agent");
 
+    if (options?.userContext) {
+      Object.assign(this.userContext, options.userContext);
+      options.userContext = undefined;
+    }
+    if (options?.memories?.length) {
+      this.memories.push(...options.memories);
+      options.memories = undefined;
+    }
+
     const a =
       typeof agent === "string" ? this.getAgent<I, O>({ name: agent }) : Promise.resolve(agent);
 
@@ -252,7 +261,15 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
         "Content-Type": "application/json",
         ...options?.fetchOptions?.headers,
       },
-      body: JSON.stringify({ agent, input, options: options && omit(options, "context" as any) }),
+      body: JSON.stringify({
+        agent,
+        input,
+        options: options && {
+          ...omit(options, "context" as any),
+          userContext: { ...this.userContext, ...options.userContext },
+          memories: [...this.memories, ...(options.memories ?? [])],
+        },
+      }),
     });
 
     // For non-streaming responses, simply parse the JSON response and return it

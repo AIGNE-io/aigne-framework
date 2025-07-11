@@ -6,7 +6,6 @@ import {
   addNullableToOptional,
   applyJsonata,
   applyJsonataWithValidation,
-  getSchemaFromData,
 } from "../../src/data-mapper/tools.js";
 import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 import { resultArray, resultBasic, resultComplex } from "./mock-model-response.js";
@@ -108,23 +107,6 @@ test(
     timeout: 100000,
   },
 );
-
-// New test case: testing the getSchemaFromData function in tools.js
-test("getSchemaFromData - basic tests", () => {
-  // Test with null data
-  expect(getSchemaFromData(null)).toBeNull();
-
-  // Test with undefined data
-  expect(getSchemaFromData(undefined)).toBeNull();
-
-  // Test with simple data
-  const simpleData = { name: "test", value: 123 };
-  const schema = getSchemaFromData(simpleData);
-  expect(schema).not.toBeNull();
-  expect((schema as any).type).toBe("object");
-  expect((schema as any).properties.name.type).toBe("string");
-  expect((schema as any).properties.value.type).toBe("integer");
-});
 
 // Testing error handling for applyJsonata
 test("applyJsonata - error handling", async () => {
@@ -430,6 +412,7 @@ test("reviewer - JSON parsing errors through generateMapping", async () => {
   // Creating a test input with invalid JSON
   const invalidInput = {
     responseSchema: "}",
+    sourceSchema: "}",
     sourceData: "{}",
   };
 

@@ -1,5 +1,80 @@
 # Changelog
 
+## [0.9.7](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.6...example-memory-v0.9.7) (2025-07-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.22.6
+
+## [0.9.6](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.5...example-memory-v0.9.6) (2025-07-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.3
+    * @aigne/cli bumped to 1.22.5
+    * @aigne/core bumped to 1.33.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.5
+
+## [0.9.5](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.4...example-memory-v0.9.5) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.22.4
+
+## [0.9.4](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.3...example-memory-v0.9.4) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.2
+    * @aigne/cli bumped to 1.22.3
+    * @aigne/core bumped to 1.32.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.4
+
+## [0.9.3](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.2...example-memory-v0.9.3) (2025-07-09)
+
+
+### Bug Fixes
+
+* **model:** ensure last message is not system role for gemini ([#231](https://github.com/AIGNE-io/aigne-framework/issues/231)) ([1b72e1e](https://github.com/AIGNE-io/aigne-framework/commit/1b72e1e6be98060aa32e68585142b2eea401d109))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.1
+    * @aigne/cli bumped to 1.22.2
+    * @aigne/core bumped to 1.32.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.3
+
+## [0.9.2](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.1...example-memory-v0.9.2) (2025-07-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.0
+    * @aigne/cli bumped to 1.22.1
+    * @aigne/core bumped to 1.32.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.2
+
 ## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.0...example-memory-v0.9.1) (2025-07-04)
 
 

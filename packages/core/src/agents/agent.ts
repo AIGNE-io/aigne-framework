@@ -19,6 +19,7 @@ import {
   createAccessorArray,
   flat,
   isEmpty,
+  isRecord,
   type Nullish,
   type PromiseOrValue,
   type XOr,
@@ -650,6 +651,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
   ): Promise<O> {
     const { context } = options;
 
+    if (!isRecord(output)) {
+      throw new Error(
+        `expect to return a record type such as {result: ...}, but got (${typeof output}): ${output}`,
+      );
+    }
+
     const parsedOutput = checkArguments(
       `Agent ${this.name} output`,
       this.outputSchema,
@@ -1165,15 +1172,17 @@ function checkAgentInputOutputSchema<I extends Message>(
 ): asserts schema is ZodObject<{ [key in keyof I]: ZodType<I[key]> }>;
 function checkAgentInputOutputSchema<I extends Message>(
   schema: (agent: Agent) => ZodType<I>,
-): asserts schema is (agent: Agent) => ZodType;
-function checkAgentInputOutputSchema<I extends Message>(
-  schema: ZodType | ((agent: Agent) => ZodType<I>),
-): asserts schema is ZodObject<{ [key in keyof I]: ZodType<I[key]> }> | ((agent: Agent) => ZodType);
+): asserts schema is (agent: Agent) => ZodType<I>;
 function checkAgentInputOutputSchema<I extends Message>(
   schema: ZodType | ((agent: Agent) => ZodType<I>),
 ): asserts schema is
   | ZodObject<{ [key in keyof I]: ZodType<I[key]> }>
-  | ((agent: Agent) => ZodType) {
+  | ((agent: Agent) => ZodType<I>);
+function checkAgentInputOutputSchema<I extends Message>(
+  schema: ZodType | ((agent: Agent) => ZodType<I>),
+): asserts schema is
+  | ZodObject<{ [key in keyof I]: ZodType<I[key]> }>
+  | ((agent: Agent) => ZodType<I>) {
   if (!(schema instanceof ZodObject) && typeof schema !== "function") {
     throw new Error(
       `schema must be a zod object or function return a zod object, got: ${typeof schema}`,

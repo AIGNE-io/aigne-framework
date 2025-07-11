@@ -1,7 +1,5 @@
 # Building Your First Agent
 
-[English](./build-your-first-agent.md) | [中文](./build-your-first-agent.zh.md)
-
 Creating a basic AI Agent in the AIGNE framework is intuitive and efficient. This guide will walk you through building and running your first intelligent Agent from scratch.
 
 ## Basic Process

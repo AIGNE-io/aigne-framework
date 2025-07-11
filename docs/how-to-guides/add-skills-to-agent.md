@@ -1,7 +1,5 @@
 # Adding Skills to Agents
 
-[English](./add-skills-to-agent.md) | [中文](./add-skills-to-agent.zh.md)
-
 By adding skills to Agents, you can significantly expand their functional scope, enabling Agents to perform more specialized tasks. This guide will demonstrate how to add MCP Servers as skills to Agents, allowing them to access cryptocurrency market data.
 
 ## Basic Process

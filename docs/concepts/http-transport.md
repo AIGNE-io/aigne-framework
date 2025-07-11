@@ -1,7 +1,5 @@
 # HTTP Transport
 
-[English](./http-transport.md) | [中文](./http-transport.zh.md)
-
 ## Overview
 
 HTTP Transport is an important component in the AIGNE framework that allows developers to expose AI agents as API services through the HTTP protocol and remotely invoke these agents through clients. This mechanism enables AIGNE agents to be easily integrated into various applications, whether Web applications, mobile applications, or other services. HTTP Transport consists of two main parts: AIGNEHTTPServer and AIGNEHTTPClient, which are responsible for server-side and client-side functionality implementation respectively. Through HTTP Transport, developers can build distributed AI application architectures, providing AI capabilities as microservices for multiple clients to use.

@@ -2,10 +2,6 @@
   <img src="./logo.svg" alt="AIGNE Logo" width="400"/>
 </p>
 
-<p align="center">
-  <a href="./README.md">English</a> | <a href="./README.zh.md">中文</a>
-</p>
-
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
@@ -112,14 +108,14 @@ The AIGNE Framework offers multiple workflow patterns, each tailored to address 
 
 ### Workflow Patterns
 
-* [Workflow Router](./examples/workflow-router) - Implement intelligent routing logic to direct requests to appropriate handlers based on content.
-* [Workflow Sequential](./examples/workflow-sequential) - Build step-by-step processing pipelines with guaranteed execution order.
-* [Workflow Concurrency](./examples/workflow-concurrency) - Optimize performance by processing multiple tasks simultaneously with parallel execution.
-* [Workflow Handoff](./examples/workflow-handoff) - Create seamless transitions between specialized agents to solve complex problems.
-* [Workflow Reflection](./examples/workflow-reflection) - Enable self-improvement through output evaluation and refinement capabilities.
-* [Workflow Orchestration](./examples/workflow-orchestration) - Coordinate multiple agents working together in sophisticated processing pipelines.
-* [Workflow Code Execution](./examples/workflow-code-execution) - Safely execute dynamically generated code within AI-driven workflows.
-* [Workflow Group Chat](./examples/workflow-group-chat) - Share messages and interact with multiple agents in a group chat environment.
+* [Workflow Router](./examples/workflow-router/README.md) - Implement intelligent routing logic to direct requests to appropriate handlers based on content.
+* [Workflow Sequential](./examples/workflow-sequential/README.md) - Build step-by-step processing pipelines with guaranteed execution order.
+* [Workflow Concurrency](./examples/workflow-concurrency/README.md) - Optimize performance by processing multiple tasks simultaneously with parallel execution.
+* [Workflow Handoff](./examples/workflow-handoff/README.md) - Create seamless transitions between specialized agents to solve complex problems.
+* [Workflow Reflection](./examples/workflow-reflection/README.md) - Enable self-improvement through output evaluation and refinement capabilities.
+* [Workflow Orchestration](./examples/workflow-orchestration/README.md) - Coordinate multiple agents working together in sophisticated processing pipelines.
+* [Workflow Code Execution](./examples/workflow-code-execution/README.md) - Safely execute dynamically generated code within AI-driven workflows.
+* [Workflow Group Chat](./examples/workflow-group-chat/README.md) - Share messages and interact with multiple agents in a group chat environment.
 
 ### Sequential
 
@@ -290,29 +286,29 @@ Built-in MCP support allows the AIGNE framework to effortlessly run its own MCP 
 
 ### Implement MCP Server
 
-* [MCP Server](./examples/mcp-server) - Build a MCP server using AIGNE CLI to provide MCP services.
+* [MCP Server](./examples/mcp-server/README.md) - Build a MCP server using AIGNE CLI to provide MCP services.
 
 ### Use MCP Servers
 
-* [Puppeteer MCP Server](./examples/mcp-puppeteer) - Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.
-* [SQLite MCP Server](./examples/mcp-sqlite) - Explore database operations by connecting to SQLite through the Model Context Protocol.
-* [Github](./examples/mcp-github) - Interact with GitHub repositories using the GitHub MCP Server.
+* [Puppeteer MCP Server](./examples/mcp-puppeteer/README.md) - Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.
+* [SQLite MCP Server](./examples/mcp-sqlite/README.md) - Explore database operations by connecting to SQLite through the Model Context Protocol.
+* [Github](./examples/mcp-github/README.md) - Interact with GitHub repositories using the GitHub MCP Server.
 
 ## Packages
 
-* [examples](./examples) - Example project demonstrating how to use different agents to handle various tasks.
-* [packages/core](./packages/core) - Core package providing the foundation for building AIGNE applications.
-* [packages/agent-library](./packages/agent-library) - AIGNE agent library, providing a variety of specialized agents for different tasks.
-* [packages/cli](./packages/cli) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
+* [examples](./examples/README.md) - Example project demonstrating how to use different agents to handle various tasks.
+* [packages/core](./packages/core/README.md) - Core package providing the foundation for building AIGNE applications.
+* [packages/agent-library](./packages/agent-library/README.md) - AIGNE agent library, providing a variety of specialized agents for different tasks.
+* [packages/cli](./packages/cli/README.md) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
 * models - AIGNE Framework's built-in models, including OpenAI, Gemini, Claude, and Nova.
-  * [models/openai](./models/openai) - OpenAI model implementation, supporting OpenAI's API and function calling.
-  * [models/anthropic](./models/anthropic) - Anthropic model implementation, supporting Anthropic's API and function calling.
-  * [models/bedrock](./models/bedrock) - Bedrock model implementation, supporting Bedrock's API and function calling.
-  * [models/deepseek](./models/deepseek) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
-  * [models/gemini](./models/gemini) - Gemini model implementation, supporting Gemini's API and function calling.
-  * [models/ollama](./models/ollama) - Ollama model implementation, supporting Ollama's API and function calling.
-  * [models/open-router](./models/open-router) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
-  * [models/xai](./models/xai) - XAI model implementation, supporting XAI's API and function calling.
+  * [models/openai](./models/openai/README.md) - OpenAI model implementation, supporting OpenAI's API and function calling.
+  * [models/anthropic](./models/anthropic/README.md) - Anthropic model implementation, supporting Anthropic's API and function calling.
+  * [models/bedrock](./models/bedrock/README.md) - Bedrock model implementation, supporting Bedrock's API and function calling.
+  * [models/deepseek](./models/deepseek/README.md) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
+  * [models/gemini](./models/gemini/README.md) - Gemini model implementation, supporting Gemini's API and function calling.
+  * [models/ollama](./models/ollama/README.md) - Ollama model implementation, supporting Ollama's API and function calling.
+  * [models/open-router](./models/open-router/README.md) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
+  * [models/xai](./models/xai/README.md) - XAI model implementation, supporting XAI's API and function calling.
 
 ## Documentation
 

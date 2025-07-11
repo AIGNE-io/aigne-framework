@@ -1,7 +1,5 @@
 # Enable Memory for Client Agent
 
-[English](./enable-memory-for-client-agent.md) | [中文](./enable-memory-for-client-agent.zh.md)
-
 Client Agent memory functionality is an important feature of the AIGNE framework that allows storing and managing conversation history locally on the client side. **The biggest advantage is privacy protection** - all memory data is stored locally on the client and never sent to the server.
 
 ## Privacy Protection Features

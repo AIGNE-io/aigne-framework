@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { recordTraceBatchSchema, recordTraceSchema } from "../../api/core/schema.js";
+import { createTraceBatchSchema, recordTraceSchema } from "../../api/core/schema.js";
 
 const validTrace = {
   id: "trace-1",
@@ -43,14 +43,14 @@ test("recordTraceSchema: optional fields are optional", () => {
   expect(result.success).toBe(true);
 });
 
-test("recordTraceBatchSchema: array of valid traces passes", () => {
+test("createTraceBatchSchema: array of valid traces passes", () => {
   const traces = [validTrace, { ...validTrace, id: "trace-3" }];
-  const result = recordTraceBatchSchema.safeParse(traces);
+  const result = createTraceBatchSchema.safeParse(traces);
   expect(result.success).toBe(true);
 });
 
-test("recordTraceBatchSchema: array with invalid trace fails", () => {
+test("createTraceBatchSchema: array with invalid trace fails", () => {
   const traces = [validTrace, { ...validTrace, startTime: "bad" }];
-  const result = recordTraceBatchSchema.safeParse(traces);
+  const result = createTraceBatchSchema.safeParse(traces);
   expect(result.success).toBe(false);
 });

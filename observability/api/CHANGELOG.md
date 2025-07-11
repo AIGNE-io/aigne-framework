@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.7.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.7.0...observability-api-v0.7.1) (2025-07-09)
+
+
+### Bug Fixes
+
+* **observability:** reduce the size of the requested data ([#235](https://github.com/AIGNE-io/aigne-framework/issues/235)) ([760b5d4](https://github.com/AIGNE-io/aigne-framework/commit/760b5d4aaec0c60ef0908e3376ba7d7ad9dd630b))
+
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.6.0...observability-api-v0.7.0) (2025-07-09)
+
+
+### Features
+
+* **observability:** show chat model name in trace waterfall ([#232](https://github.com/AIGNE-io/aigne-framework/issues/232)) ([a7131ed](https://github.com/AIGNE-io/aigne-framework/commit/a7131edacbda9f69f619c18cc58a6d708223b4e2))
+
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.5.0...observability-api-v0.6.0) (2025-07-08)
+
+
+### Features
+
+* support setting component id to different component data ([#226](https://github.com/AIGNE-io/aigne-framework/issues/226)) ([c7b3224](https://github.com/AIGNE-io/aigne-framework/commit/c7b32240e6660f34974615bcb9b91978a1191e3e))
+
 ## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.4.0...observability-api-v0.5.0) (2025-07-04)
 
 

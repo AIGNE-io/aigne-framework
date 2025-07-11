@@ -13,6 +13,61 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.20.3](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.20.2...agent-library-v1.20.3) (2025-07-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.33.0
+    * @aigne/openai bumped to 0.9.0
+
+## [1.20.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.20.1...agent-library-v1.20.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* resolve warning caused by dependencies. ([#237](https://github.com/AIGNE-io/aigne-framework/issues/237)) ([3ad7cc6](https://github.com/AIGNE-io/aigne-framework/commit/3ad7cc66b0c1ab425879176849af97c88c01b5a2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.32.2
+    * @aigne/openai bumped to 0.8.2
+
+## [1.20.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.20.0...agent-library-v1.20.1) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.32.1
+    * @aigne/openai bumped to 0.8.1
+
+## [1.20.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.19.0...agent-library-v1.20.0) (2025-07-08)
+
+
+### Features
+
+* **core:** add jinja syntax support for prompt builder ([#230](https://github.com/AIGNE-io/aigne-framework/issues/230)) ([74436a7](https://github.com/AIGNE-io/aigne-framework/commit/74436a7faac0c59a32b0153481386162649f4357))
+
+
+### Bug Fixes
+
+* wrong type AgenticMemoryRetrieverOptions ([0893e02](https://github.com/AIGNE-io/aigne-framework/commit/0893e0271ea6870a420f8c6fd59022ab6566b9c2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.32.0
+    * @aigne/openai bumped to 0.8.0
+
 ## [1.19.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.18.0...agent-library-v1.19.0) (2025-07-04)
 
 

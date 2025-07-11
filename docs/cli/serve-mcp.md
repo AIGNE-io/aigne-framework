@@ -1,7 +1,5 @@
 # Serve as MCP Server
 
-**English** | [中文](serve-mcp.zh.md)
-
 Use AIGNE CLI to deploy agents as services.
 
 ## `aigne serve-mcp` Command

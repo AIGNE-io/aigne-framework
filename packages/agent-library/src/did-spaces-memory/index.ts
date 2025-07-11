@@ -1,9 +1,5 @@
-import {
-  type AgentInvokeOptions,
-  AIAgent,
-  type AIAgentOptions,
-  type Message,
-} from '@aigne/core';
+import { join } from "node:path";
+import { type AgentInvokeOptions, AIAgent, type AIAgentOptions, type Message } from "@aigne/core";
 import {
   type Memory,
   MemoryAgent,
@@ -15,23 +11,22 @@ import {
   type MemoryRetrieverInput,
   type MemoryRetrieverOutput,
   newMemoryId,
-} from '@aigne/core/memory/index.js';
-import { stringify } from 'yaml';
-import { z } from 'zod';
-import { join } from 'node:path';
+} from "@aigne/core/memory/index.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import {
   GetObjectCommand,
-  PutObjectCommand,
-  SpaceClient,
-  SpaceClientOptionsAuth,
   type GetObjectCommandOutput,
+  PutObjectCommand,
   type PutObjectCommandOutput,
-} from '@blocklet/did-space-js';
-import { streamToString } from '../utils/fs.js';
-import { logger } from '@aigne/core/utils/logger.js';
-import { ReadmeManager } from './ReadmeManager.js';
+  SpaceClient,
+  type SpaceClientOptionsAuth,
+} from "@blocklet/did-space-js";
+import { stringify } from "yaml";
+import { z } from "zod";
+import { streamToString } from "../utils/fs.js";
+import { ReadmeManager } from "./ReadmeManager.js";
 
-export const MEMORY_FILE_NAME = 'memory.yaml';
+export const MEMORY_FILE_NAME = "memory.yaml";
 
 /**
  * Configuration options for the DIDSpacesMemory class.
@@ -73,7 +68,7 @@ export class DIDSpacesMemory extends MemoryAgent {
    * Creates a new DIDSpacesMemory instance.
    */
   constructor(options: DIDSpacesMemoryOptions) {
-    const rootDir: string = '/.aigne/';
+    const rootDir: string = "/.aigne/";
     const memoryFileName = join(rootDir, MEMORY_FILE_NAME);
 
     super({
@@ -98,11 +93,9 @@ export class DIDSpacesMemory extends MemoryAgent {
     });
 
     // Initialize README files asynchronously
-    this.initializeReadmeFiles(options.url, options.auth, rootDir).catch(
-      (error) => {
-        logger.warn('Failed to initialize README files:', error);
-      }
-    );
+    this.initializeReadmeFiles(options.url, options.auth, rootDir).catch((error) => {
+      logger.warn("Failed to initialize README files:", error);
+    });
   }
 
   /**
@@ -111,7 +104,7 @@ export class DIDSpacesMemory extends MemoryAgent {
   private async initializeReadmeFiles(
     url: string,
     auth: SpaceClientOptionsAuth,
-    rootDir: string
+    rootDir: string,
   ): Promise<void> {
     const readmeManager = new ReadmeManager(url, auth, rootDir);
     await readmeManager.initializeReadmeFiles();
@@ -119,10 +112,7 @@ export class DIDSpacesMemory extends MemoryAgent {
 }
 
 interface DIDSpacesMemoryRetrieverOptions
-  extends AIAgentOptions<
-    DIDSpacesMemoryRetrieverAgentInput,
-    DIDSpacesMemoryRetrieverAgentOutput
-  > {
+  extends AIAgentOptions<DIDSpacesMemoryRetrieverAgentInput, DIDSpacesMemoryRetrieverAgentOutput> {
   /**
    * The URL of the DIDSpaces.
    */
@@ -153,33 +143,25 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
   constructor(public readonly options: DIDSpacesMemoryRetrieverOptions) {
     super({});
     this.agent = AIAgent.from({
-      name: 'did_spaces_memory_retriever',
-      description: 'Retrieves memories from the file or directory.',
+      name: "did_spaces_memory_retriever",
+      description: "Retrieves memories from the file or directory.",
       ...options,
-      instructions:
-        options.instructions ||
-        DEFAULT_DID_SPACES_MEMORY_RETRIEVER_INSTRUCTIONS,
+      instructions: options.instructions || DEFAULT_DID_SPACES_MEMORY_RETRIEVER_INSTRUCTIONS,
       outputSchema: z.object({
         memories: z
           .array(
             z.object({
-              content: z.string().describe('Content of the memory'),
-            })
+              content: z.string().describe("Content of the memory"),
+            }),
           )
-          .describe('List of memories'),
+          .describe("List of memories"),
       }),
     });
   }
 
-  agent: AIAgent<
-    DIDSpacesMemoryRetrieverAgentInput,
-    DIDSpacesMemoryRetrieverAgentOutput
-  >;
+  agent: AIAgent<DIDSpacesMemoryRetrieverAgentInput, DIDSpacesMemoryRetrieverAgentOutput>;
 
-  async read(
-    input: MemoryRetrieverInput,
-    options: AgentInvokeOptions
-  ): Promise<Memory[]> {
+  async read(input: MemoryRetrieverInput, options: AgentInvokeOptions): Promise<Memory[]> {
     const client = new SpaceClient({
       url: this.options.url,
       auth: this.options.auth,
@@ -188,12 +170,10 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
     const output: GetObjectCommandOutput = await client.send(
       new GetObjectCommand({
         key: this.options.memoryFileName,
-      })
+      }),
     );
     if (output.statusCode !== 200) {
-      logger.warn(
-        `statusCode: ${output.statusCode}, statusMessage: ${output.statusMessage}`
-      );
+      logger.warn(`statusCode: ${output.statusCode}, statusMessage: ${output.statusMessage}`);
       return [];
     }
 
@@ -213,7 +193,7 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
 
   override async process(
     input: MemoryRetrieverInput,
-    options: AgentInvokeOptions
+    options: AgentInvokeOptions,
   ): Promise<MemoryRetrieverOutput> {
     const memories = await this.read(input, options);
     return { memories };
@@ -221,10 +201,7 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
 }
 
 interface DIDSpacesMemoryRecorderOptions
-  extends AIAgentOptions<
-    DIDSpacesMemoryRecorderAgentInput,
-    DIDSpacesMemoryRecorderAgentOutput
-  > {
+  extends AIAgentOptions<DIDSpacesMemoryRecorderAgentInput, DIDSpacesMemoryRecorderAgentOutput> {
   /**
    * The URL of the DIDSpaces.
    */
@@ -253,31 +230,27 @@ class DIDSpacesMemoryRecorder extends MemoryRecorder {
   constructor(public readonly options: DIDSpacesMemoryRecorderOptions) {
     super({});
     this.agent = AIAgent.from({
-      name: 'did_spaces_memory_recorder',
-      description: 'Records memories in files by AI agent',
+      name: "did_spaces_memory_recorder",
+      description: "Records memories in files by AI agent",
       ...options,
-      instructions:
-        options.instructions || DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS,
+      instructions: options.instructions || DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS,
       outputSchema: z.object({
         memories: z
           .array(
             z.object({
-              content: z.string().describe('Content of the memory'),
-            })
+              content: z.string().describe("Content of the memory"),
+            }),
           )
-          .describe('List of memories'),
+          .describe("List of memories"),
       }),
     });
   }
 
-  agent: AIAgent<
-    DIDSpacesMemoryRecorderAgentInput,
-    DIDSpacesMemoryRecorderAgentOutput
-  >;
+  agent: AIAgent<DIDSpacesMemoryRecorderAgentInput, DIDSpacesMemoryRecorderAgentOutput>;
 
   async write(
     input: MemoryRecorderInput,
-    options: AgentInvokeOptions
+    options: AgentInvokeOptions,
   ): Promise<MemoryRecorderOutput> {
     const client = new SpaceClient({
       url: this.options.url,
@@ -287,10 +260,9 @@ class DIDSpacesMemoryRecorder extends MemoryRecorder {
     const output: GetObjectCommandOutput = await client.send(
       new GetObjectCommand({
         key: this.options.memoryFileName,
-      })
+      }),
     );
-    const allMemory =
-      output.statusCode === 200 ? await streamToString(output.data) : '';
+    const allMemory = output.statusCode === 200 ? await streamToString(output.data) : "";
     const { memories } = await options.context.invoke(this.agent, {
       ...input,
       allMemory,
@@ -299,17 +271,17 @@ class DIDSpacesMemoryRecorder extends MemoryRecorder {
     const raws = stringify(
       memories.map((i) => ({
         content: i.content,
-      }))
+      })),
     );
     const putObjectCommandOutput: PutObjectCommandOutput = await client.send(
       new PutObjectCommand({
         key: this.options.memoryFileName,
         data: raws,
-      })
+      }),
     );
     if (putObjectCommandOutput.statusCode !== 200) {
       logger.warn(
-        `statusCode: ${putObjectCommandOutput.statusCode}, statusMessage: ${putObjectCommandOutput.statusMessage}`
+        `statusCode: ${putObjectCommandOutput.statusCode}, statusMessage: ${putObjectCommandOutput.statusMessage}`,
       );
       return { memories: [] };
     }
@@ -324,7 +296,7 @@ class DIDSpacesMemoryRecorder extends MemoryRecorder {
 
   override async process(
     input: MemoryRecorderInput,
-    options: AgentInvokeOptions
+    options: AgentInvokeOptions,
   ): Promise<MemoryRecorderOutput> {
     return this.write(input, options);
   }

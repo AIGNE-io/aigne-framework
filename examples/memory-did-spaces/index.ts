@@ -1,15 +1,15 @@
-import { DIDSpacesMemory } from '@aigne/agent-library/did-spaces-memory/index.js';
-import { AIGNE, AIAgent } from '@aigne/core';
-import { OpenAIChatModel as Model } from '@aigne/openai';
-import { writeFileSync } from 'fs';
-import dotenv from 'dotenv-flow';
+import { DIDSpacesMemory } from "@aigne/agent-library/did-spaces-memory/index.js";
+import { AIAgent, AIGNE } from "@aigne/core";
+import { OpenAIChatModel as Model } from "@aigne/openai";
+import dotenv from "dotenv-flow";
+import { writeFileSync } from "fs";
 
 dotenv.config({ silent: true });
 
 const aigne = new AIGNE({
   model: new Model({
     apiKey: process.env.OPENAI_API_KEY!,
-    model: 'gpt-4o-mini',
+    model: "gpt-4o-mini",
   }),
 });
 
@@ -25,7 +25,7 @@ const agent = AIAgent.from({
       authorization: process.env.DID_SPACES_AUTHORIZATION!,
     },
   }),
-  inputKey: 'message',
+  inputKey: "message",
 });
 
 // Test DID Spaces Memory functionality
@@ -47,4 +47,4 @@ console.log(result3.message);
 // Save results to markdown file
 const filename = `memory-did-spaces-results.md`;
 const content = `# Memory DID Spaces Test Results\n\n${result1.message}\n\n${result2.message}\n\n${result3.message}`;
-writeFileSync(filename, content, 'utf8');
+writeFileSync(filename, content, "utf8");

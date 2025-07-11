@@ -1,12 +1,12 @@
-import { join } from 'path';
 import {
   ListObjectCommand,
+  type ListObjectCommandOutput,
   PutObjectCommand,
   SpaceClient,
-  SpaceClientOptionsAuth,
-  type ListObjectCommandOutput,
-} from '@blocklet/did-space-js';
-import { README_EN_CONTENT } from './readme-contents.js';
+  type SpaceClientOptionsAuth,
+} from "@blocklet/did-space-js";
+import { join } from "path";
+import { README_EN_CONTENT } from "./readme-contents.js";
 
 /**
  * Manages README files for DID Spaces Memory
@@ -26,7 +26,7 @@ export class ReadmeManager {
   private async exists(key: string): Promise<boolean> {
     try {
       const output: ListObjectCommandOutput = await this.client.send(
-        new ListObjectCommand({ key })
+        new ListObjectCommand({ key }),
       );
       return output.statusCode === 200;
     } catch {
@@ -37,10 +37,7 @@ export class ReadmeManager {
   /**
    * Create README file if it doesn't exist
    */
-  private async createReadmeIfNotExists(
-    filename: string,
-    content: string
-  ): Promise<void> {
+  private async createReadmeIfNotExists(filename: string, content: string): Promise<void> {
     const filePath = join(this.rootDir, filename);
 
     if (!(await this.exists(filePath))) {
@@ -48,7 +45,7 @@ export class ReadmeManager {
         new PutObjectCommand({
           key: filePath,
           data: content,
-        })
+        }),
       );
     }
   }
@@ -57,6 +54,6 @@ export class ReadmeManager {
    * Initialize all README files
    */
   async initializeReadmeFiles(): Promise<void> {
-    await this.createReadmeIfNotExists('README.md', README_EN_CONTENT);
+    await this.createReadmeIfNotExists("README.md", README_EN_CONTENT);
   }
 }

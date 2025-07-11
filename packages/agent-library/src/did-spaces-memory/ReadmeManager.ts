@@ -6,7 +6,7 @@ import {
   SpaceClientOptionsAuth,
   type ListObjectCommandOutput,
 } from '@blocklet/did-space-js';
-import { README_EN_CONTENT, README_ZH_CONTENT } from './readme-contents.js';
+import { README_EN_CONTENT } from './readme-contents.js';
 
 /**
  * Manages README files for DID Spaces Memory
@@ -57,9 +57,6 @@ export class ReadmeManager {
    * Initialize all README files
    */
   async initializeReadmeFiles(): Promise<void> {
-    await Promise.all([
-      this.createReadmeIfNotExists('README.md', README_EN_CONTENT),
-      this.createReadmeIfNotExists('README.zh.md', README_ZH_CONTENT),
-    ]);
+    await this.createReadmeIfNotExists('README.md', README_EN_CONTENT);
   }
 }

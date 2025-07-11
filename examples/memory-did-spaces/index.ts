@@ -17,16 +17,12 @@ const agent = AIAgent.from({
   instructions: `You are a crypto analyst with memory. Give brief answers only.
 
 - Remember user details
-- Answer in 5 words or less
+- Answer in 20 words or less
 - Show facts only, no explanations`,
   memory: new DIDSpacesMemory({
-    url:
-      process.env.DID_SPACES_URL ||
-      'https://bbqa4abi4d7hjydb3qo5l7lyxduukztmhj3gpghkole.did.abtnet.io/app',
+    url: process.env.DID_SPACES_URL!,
     auth: {
-      authorization:
-        process.env.DID_SPACES_AUTHORIZATION ||
-        'Bearer blocklet-zGdxEzkGqKz15PGyjDg37Mq4aZXHqzKVoPtarx2Jb4VGS',
+      authorization: process.env.DID_SPACES_AUTHORIZATION!,
     },
   }),
   inputKey: 'message',

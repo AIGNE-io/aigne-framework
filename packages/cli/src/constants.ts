@@ -1,32 +1,25 @@
-import type { Agent } from 'node:https';
-import { createRequire } from 'node:module';
-import { DefaultMemory } from '@aigne/agent-library/default-memory/index.js';
-import { AnthropicChatModel } from '@aigne/anthropic';
-import { BedrockChatModel } from '@aigne/bedrock';
-import type { LoadableModel } from '@aigne/core/loader/index.js';
-import { DeepSeekChatModel } from '@aigne/deepseek';
-import { GeminiChatModel } from '@aigne/gemini';
-import { OllamaChatModel } from '@aigne/ollama';
-import { OpenRouterChatModel } from '@aigne/open-router';
-import { OpenAIChatModel } from '@aigne/openai';
-import { XAIChatModel } from '@aigne/xai';
-import { NodeHttpHandler, streamCollector } from '@smithy/node-http-handler';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import type { ClientOptions } from 'openai';
+import type { Agent } from "node:https";
+import { createRequire } from "node:module";
+import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
+import { AnthropicChatModel } from "@aigne/anthropic";
+import { BedrockChatModel } from "@aigne/bedrock";
+import type { LoadableModel } from "@aigne/core/loader/index.js";
+import { DeepSeekChatModel } from "@aigne/deepseek";
+import { GeminiChatModel } from "@aigne/gemini";
+import { OllamaChatModel } from "@aigne/ollama";
+import { OpenRouterChatModel } from "@aigne/open-router";
+import { OpenAIChatModel } from "@aigne/openai";
+import { XAIChatModel } from "@aigne/xai";
+import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
+import { HttpsProxyAgent } from "https-proxy-agent";
+import type { ClientOptions } from "openai";
 
 const require = createRequire(import.meta.url);
 
-export const AIGNE_CLI_VERSION = require('../package.json').version;
+export const AIGNE_CLI_VERSION = require("../package.json").version;
 
 export function availableModels(): LoadableModel[] {
-  const proxy = [
-    'HTTPS_PROXY',
-    'https_proxy',
-    'HTTP_PROXY',
-    'http_proxy',
-    'ALL_PROXY',
-    'all_proxy',
-  ]
+  const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
     .map((i) => process.env[i])
     .filter(Boolean)[0];
 

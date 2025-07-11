@@ -1218,6 +1218,9 @@ importers:
       marked:
         specifier: ^16.0.0
         version: 16.0.0
+      node-fetch:
+        specifier: ^3.3.2
+        version: 3.3.2
       prettier:
         specifier: ^3.6.2
         version: 3.6.2

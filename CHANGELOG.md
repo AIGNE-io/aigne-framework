@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.38.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.1...aigne-framework-v1.38.2) (2025-07-11)
+
+
+### Bug Fixes
+
+* **deps:** update deps to latest version ([#247](https://github.com/AIGNE-io/aigne-framework/issues/247)) ([3972f88](https://github.com/AIGNE-io/aigne-framework/commit/3972f887a9abff20c26da6b51c1071cbd54c0bf1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.2.1
+
 ## [1.38.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.0...aigne-framework-v1.38.1) (2025-07-10)
 
 

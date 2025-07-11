@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.9.0...openai-v0.9.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* **deps:** update deps to latest version ([#247](https://github.com/AIGNE-io/aigne-framework/issues/247)) ([3972f88](https://github.com/AIGNE-io/aigne-framework/commit/3972f887a9abff20c26da6b51c1071cbd54c0bf1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.33.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.6
+
 ## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.8.2...openai-v0.9.0) (2025-07-10)
 
 

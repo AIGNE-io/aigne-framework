@@ -30,7 +30,9 @@ test("FSMemory simple example", async () => {
 
   const result1 = await engine.invoke(agent, { message: "I like blue color" });
 
-  expect(result1).toEqual({ message: "Great! I will remember that you like blue color." });
+  expect(result1).toEqual({
+    message: "Great! I will remember that you like blue color.",
+  });
   console.log(result1);
   // Output: { message: 'Great! I will remember that you like blue color.' }
 
@@ -52,7 +54,9 @@ test("FSMemory simple example", async () => {
     }),
   );
 
-  const result2 = await engine.invoke(agent, { message: "What color do I like?" });
+  const result2 = await engine.invoke(agent, {
+    message: "What color do I like?",
+  });
   expect(result2).toEqual({ message: "You like blue color." });
   console.log(result2);
   // Output: { message: 'You like blue color.' }

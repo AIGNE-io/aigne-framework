@@ -12,6 +12,7 @@ import { OpenAIChatModel } from "@aigne/openai";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import type { ClientOptions } from "openai";
 
 const require = createRequire(import.meta.url);
 
@@ -23,7 +24,7 @@ export function availableModels(): LoadableModel[] {
     .filter(Boolean)[0];
 
   const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
-  const clientOptions = { fetchOptions: { agent: httpAgent } };
+  const clientOptions: ClientOptions = { fetchOptions: { agent: httpAgent } };
 
   return [
     {

@@ -1,0 +1,33 @@
+{
+  "name": "@aigne/example-mcp-did-spaces",
+  "version": "0.9.1",
+  "description": "A demonstration of using AIGNE Framework with MCP DID Spaces integration.",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-did-spaces",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bin": "index.ts",
+  "files": [
+    "*.ts",
+    "README.md",
+    "CONFIG.md"
+  ],
+  "scripts": {
+    "start": "bun run index.ts",
+    "lint": "tsc --noEmit",
+    "test:llm": "bun test index.test.ts"
+  },
+  "dependencies": {
+    "@aigne/cli": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/openai": "workspace:^"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
+    "@types/bun": "^1.2.17",
+    "dotenv-flow": "^4.1.0"
+  }
+}

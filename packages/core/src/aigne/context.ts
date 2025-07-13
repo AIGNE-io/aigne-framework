@@ -711,6 +711,6 @@ async function* withAbortSignal<T extends Message>(
 
 const aigneContextInvokeArgsSchema = z.object({
   agent: z.union([z.custom<FunctionAgentFn>(), z.custom<Agent>()]),
-  message: z.union([z.record(z.unknown()), z.string()]).optional(),
+  message: z.union([z.record(z.string(), z.unknown()), z.string()]).optional(),
   options: z.object({ returnActiveAgent: z.boolean().optional() }).optional(),
 });

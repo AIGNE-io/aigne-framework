@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-orchestrator",
-  "version": "1.13.4",
+  "version": "1.13.7",
   "description": "A demonstration of using AIGNE Framework to build a orchestrator workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-orchestrator",
@@ -27,6 +27,6 @@
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",
-    "@types/bun": "^1.2.17"
+    "@types/bun": "^1.2.18"
   }
 }

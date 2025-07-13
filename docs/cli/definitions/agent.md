@@ -1,7 +1,5 @@
 # Creating AI Agents
 
-**English** | [中文](agent.zh.md)
-
 Using AIGNE's YAML configuration approach, you can quickly create powerful AI agents. Through simple configuration files, you can define AI behavior, input/output formats, and skills.
 
 ## Basic Structure

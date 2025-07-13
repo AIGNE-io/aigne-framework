@@ -315,7 +315,7 @@ const chatModelInputMessageSchema = z.object({
         type: z.literal("function"),
         function: z.object({
           name: z.string(),
-          arguments: z.record(z.unknown()),
+          arguments: z.record(z.string(), z.unknown()),
         }),
       }),
     )
@@ -348,7 +348,7 @@ const chatModelInputResponseFormatSchema = z.discriminatedUnion("type", [
     jsonSchema: z.object({
       name: z.string(),
       description: z.string().optional(),
-      schema: z.record(z.unknown()),
+      schema: z.record(z.string(), z.unknown()),
       strict: z.boolean().optional(),
     }),
   }),
@@ -395,7 +395,7 @@ const chatModelInputToolSchema = z.object({
   function: z.object({
     name: z.string(),
     description: z.string().optional(),
-    parameters: z.record(z.unknown()),
+    parameters: z.record(z.string(), z.unknown()),
   }),
 });
 
@@ -560,7 +560,7 @@ const chatModelOutputToolCallSchema = z.object({
   type: z.literal("function"),
   function: z.object({
     name: z.string(),
-    arguments: z.record(z.unknown()),
+    arguments: z.record(z.string(), z.unknown()),
   }),
 });
 
@@ -588,7 +588,7 @@ const chatModelOutputUsageSchema = z.object({
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
   text: z.string().optional(),
-  json: z.record(z.unknown()).optional(),
+  json: z.record(z.string(), z.unknown()).optional(),
   toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
   usage: chatModelOutputUsageSchema.optional(),
   model: z.string().optional(),

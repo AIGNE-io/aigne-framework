@@ -30,14 +30,14 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.17",
+    "@types/bun": "^1.2.18",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
     "detect-port": "^2.1.0",
-    "hono": "^4.8.3",
-    "playwright": "^1.53.2",
+    "hono": "^4.8.4",
+    "playwright": "^1.54.0",
     "rimraf": "^6.0.1",
-    "vite": "^7.0.0"
+    "vite": "^7.0.4"
   }
 }

@@ -1,0 +1,13 @@
+type: object
+properties:
+  second:
+    type: string
+    description: Second level property
+  third: ./external-schema-third.yaml
+  array:
+    type: array
+    items: ./external-schema-third.yaml
+required:
+  - second
+  - third
+  - array

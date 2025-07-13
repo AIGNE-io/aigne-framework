@@ -1,7 +1,5 @@
 # Create Project
 
-**English** | [中文](create.zh.md)
-
 Use AIGNE CLI to create new AIGNE projects.
 
 ## `aigne create` Command

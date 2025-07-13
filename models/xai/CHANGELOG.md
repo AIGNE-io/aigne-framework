@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.4](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.6.3...xai-v0.6.4) (2025-07-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.9.0
+  * devDependencies
+    * @aigne/core bumped to 1.33.0
+    * @aigne/test-utils bumped to 0.5.5
+
+## [0.6.3](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.6.2...xai-v0.6.3) (2025-07-09)
+
+
+### Bug Fixes
+
+* **xai:** handle multiple tool calls correctly ([#238](https://github.com/AIGNE-io/aigne-framework/issues/238)) ([d087d53](https://github.com/AIGNE-io/aigne-framework/commit/d087d533f83867451b3352937998eae36f85a0be))
+
 ## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.6.1...xai-v0.6.2) (2025-07-09)
 
 

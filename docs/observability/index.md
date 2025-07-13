@@ -1,7 +1,5 @@
 # AIGNE Observability
 
-**English** | [中文](index.zh.md)
-
 AIGNE Observability is a powerful visualization tool built on OpenTelemetry, specifically designed for monitoring and analyzing AI Agent data flows. With AIGNE Observability, you can:
 
 * **📊 Real-time Monitoring** - Visualize trace data and call chains, understand Agent runtime status in real-time

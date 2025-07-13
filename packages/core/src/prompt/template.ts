@@ -204,7 +204,7 @@ const chatModelOutputToolCallSchema = z.object({
   type: z.literal("function"),
   function: z.object({
     name: z.string(),
-    arguments: z.record(z.unknown()),
+    arguments: z.record(z.string(), z.unknown()),
   }),
 });
 
@@ -218,7 +218,7 @@ const agentChatMessageSchema = z.object({
 const toolChatMessageSchema = z.object({
   role: z.literal("tool"),
   content: z
-    .union([z.string(), z.record(z.unknown())])
+    .union([z.string(), z.record(z.string(), z.unknown())])
     .transform((val) => (typeof val !== "string" ? JSON.stringify(val) : val)),
   toolCallId: z.string(),
   name: z.string().optional(),

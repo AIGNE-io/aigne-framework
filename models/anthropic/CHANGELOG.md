@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.7.2...anthropic-v0.8.0) (2025-07-10)
+
+
+### Features
+
+* **model:** reduce unnecessary LLM requests for structured output ([#241](https://github.com/AIGNE-io/aigne-framework/issues/241)) ([e28813c](https://github.com/AIGNE-io/aigne-framework/commit/e28813c021ed35c0251e198e2e007e2d746ab3d8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.33.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.5
+
 ## [0.7.2](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.7.1...anthropic-v0.7.2) (2025-07-09)
 
 

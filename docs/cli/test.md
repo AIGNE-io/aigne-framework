@@ -1,7 +1,5 @@
 # Testing
 
-**English** | [中文](test.zh.md)
-
 Use AIGNE CLI to run agent tests.
 
 ## `aigne test` Command

@@ -114,10 +114,3 @@ jobs:
           DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_DISCUSS_KIT_ACCESS_TOKEN }}
           DOC_DISCUSS_KIT_URL: ${{ vars.DOC_DISCUSS_KIT_URL }}
           DOC_DISCUSS_KIT_BOARD_ID: ${{ vars.DOC_DISCUSS_KIT_BOARD_ID }}
-
-      - name: Deploy to GitHub Pages
-        if: ${{ steps.release.outputs.release_created }}
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs

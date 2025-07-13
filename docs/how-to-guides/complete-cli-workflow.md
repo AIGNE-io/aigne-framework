@@ -1,7 +1,5 @@
 # Complete AIGNE CLI Workflow Guide
 
-[English](./complete-cli-workflow.md) | [中文](./complete-cli-workflow.zh.md)
-
 This guide will take you through the complete AIGNE CLI workflow, from creating a project to configuring Agents, running and deploying services. Through this end-to-end process, you will master the complete skills of developing and deploying AI Agents using AIGNE CLI.
 
 ## Overview

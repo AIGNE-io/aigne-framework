@@ -102,9 +102,9 @@ jobs:
           if [ "${{ matrix.provider }}" = "OpenAI" ]; then
             MODELS="gpt-4.1-mini gpt-4o-mini o4-mini o3-mini"
           elif [ "${{ matrix.provider }}" = "Anthropic" ]; then
-            MODELS="claude-3-7-sonnet-latest claude-3-5-haiku-latest"
+            MODELS="claude-opus-4-0 claude-sonnet-4-0 claude-3-7-sonnet-latest claude-3-5-sonnet-latest claude-3-5-haiku-latest"
           elif [ "${{ matrix.provider }}" = "XAI" ]; then
-            MODELS="grok-3 grok-2"
+            MODELS="grok-4 grok-3 grok-2"
           elif [ "${{ matrix.provider }}" = "Gemini" ]; then
             MODELS="gemini-2.5-flash-preview-04-17 gemini-2.0-flash gemini-1.5-flash"
           elif [ "${{ matrix.provider }}" = "DeepSeek" ]; then

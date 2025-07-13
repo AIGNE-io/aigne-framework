@@ -204,3 +204,21 @@ test("loadAgentFromYaml should load transform agent correctly", async () => {
     "
   `);
 });
+
+test("loadAgentFromYaml should load external schema agent correctly", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/external-schema-agent.yaml"),
+  );
+
+  expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
+  expect(zodToJsonSchema(agent.outputSchema)).toMatchSnapshot();
+});
+
+test("loadAgentFromYaml should load nested external schema agent correctly", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/external-schema-agent-nested.yaml"),
+  );
+
+  expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
+  expect(zodToJsonSchema(agent.outputSchema)).toMatchSnapshot();
+});

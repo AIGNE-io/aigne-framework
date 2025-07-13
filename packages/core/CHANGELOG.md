@@ -12,6 +12,13 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.33.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.32.2...core-v1.33.0) (2025-07-10)
+
+
+### Features
+
+* **core:** support external files as agent input/output schema ([#242](https://github.com/AIGNE-io/aigne-framework/issues/242)) ([58f8de6](https://github.com/AIGNE-io/aigne-framework/commit/58f8de63008b78ea1b404ba7721c3a242c330113))
+
 ## [1.32.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.32.1...core-v1.32.2) (2025-07-09)
 
 

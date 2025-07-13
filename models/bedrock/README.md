@@ -6,8 +6,6 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/bedrock)](https://www.npmjs.com/package/@aigne/bedrock)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/bedrock)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-**English** | [中文](README.zh.md)
-
 AIGNE AWS Bedrock SDK for integrating with AWS foundation models within the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework).
 
 ## Introduction

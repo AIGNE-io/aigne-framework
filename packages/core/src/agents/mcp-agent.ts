@@ -510,6 +510,6 @@ const mcpAgentOptionsSchema: ZodType<
   z.object({
     command: z.string(),
     args: z.array(z.string()).optional(),
-    env: z.record(z.string()).optional(),
+    env: z.record(z.string(), z.string()).optional(),
   }),
 ]);

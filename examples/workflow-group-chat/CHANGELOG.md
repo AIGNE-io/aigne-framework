@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.15.5](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.15.4...example-workflow-group-chat-v1.15.5) (2025-07-10)
+
+
+### Bug Fixes
+
+* **example:** add command `/exit` to quit example ([#244](https://github.com/AIGNE-io/aigne-framework/issues/244)) ([6f479ce](https://github.com/AIGNE-io/aigne-framework/commit/6f479ce58fa716bc8e4b0e9d8b100bc022509de5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.22.6
+
+## [1.15.4](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.15.3...example-workflow-group-chat-v1.15.4) (2025-07-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.20.3
+    * @aigne/cli bumped to 1.22.5
+    * @aigne/core bumped to 1.33.0
+    * @aigne/openai bumped to 0.9.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.5
+
+## [1.15.3](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.15.2...example-workflow-group-chat-v1.15.3) (2025-07-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.22.4
+
 ## [1.15.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.15.1...example-workflow-group-chat-v1.15.2) (2025-07-09)
 
 

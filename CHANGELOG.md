@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.38.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.0...aigne-framework-v1.38.1) (2025-07-10)
+
+
+### Bug Fixes
+
+* **cli:** reduce excessive console output to improve cli performance ([#246](https://github.com/AIGNE-io/aigne-framework/issues/246)) ([4430504](https://github.com/AIGNE-io/aigne-framework/commit/4430504b643bba92775e5a908ca1c1153d90a402))
+* **example:** add command `/exit` to quit example ([#244](https://github.com/AIGNE-io/aigne-framework/issues/244)) ([6f479ce](https://github.com/AIGNE-io/aigne-framework/commit/6f479ce58fa716bc8e4b0e9d8b100bc022509de5))
+
+## [1.38.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.2...aigne-framework-v1.38.0) (2025-07-10)
+
+
+### Features
+
+* **core:** support external files as agent input/output schema ([#242](https://github.com/AIGNE-io/aigne-framework/issues/242)) ([58f8de6](https://github.com/AIGNE-io/aigne-framework/commit/58f8de63008b78ea1b404ba7721c3a242c330113))
+* **model:** reduce unnecessary LLM requests for structured output ([#241](https://github.com/AIGNE-io/aigne-framework/issues/241)) ([e28813c](https://github.com/AIGNE-io/aigne-framework/commit/e28813c021ed35c0251e198e2e007e2d746ab3d8))
+
+## [1.37.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.1...aigne-framework-v1.37.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* **xai:** handle multiple tool calls correctly ([#238](https://github.com/AIGNE-io/aigne-framework/issues/238)) ([d087d53](https://github.com/AIGNE-io/aigne-framework/commit/d087d533f83867451b3352937998eae36f85a0be))
+
 ## [1.37.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.37.0...aigne-framework-v1.37.1) (2025-07-09)
 
 

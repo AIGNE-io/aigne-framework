@@ -1,6 +1,6 @@
 {
   "name": "@aigne/transport",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "AIGNE Transport SDK providing HTTP client and server implementations for communication between AIGNE components",
   "publishConfig": {
     "access": "public"
@@ -54,14 +54,14 @@
     "@aigne/agent-library": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/test-utils": "workspace:^",
-    "@types/bun": "^1.2.17",
+    "@types/bun": "^1.2.18",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.0.10",
+    "@types/node": "^24.0.12",
     "compression": "^1.8.0",
     "detect-port": "^2.1.0",
     "express": "^5.1.0",
     "fast-deep-equal": "^3.1.3",
-    "hono": "^4.8.3",
+    "hono": "^4.8.4",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",

@@ -45,17 +45,17 @@
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
-    "@abtnode/util": "^1.16.44",
-    "@arcblock/did-connect": "^3.0.9",
-    "@arcblock/ux": "^3.0.9",
-    "@blocklet/sdk": "^1.16.44",
+    "@abtnode/util": "^1.16.46",
+    "@arcblock/did-connect": "^3.0.24",
+    "@arcblock/ux": "^3.0.24",
+    "@blocklet/sdk": "^1.16.46",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/material": "^7.2.0",
-    "@mui/x-data-grid": "^8.6.0",
+    "@mui/x-data-grid": "^8.7.0",
     "ahooks": "^3.9.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
-    "decimal.js": "^10.5.0",
+    "decimal.js": "^10.6.0",
     "flat": "^6.0.1",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
@@ -87,9 +87,9 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.35.1",
-    "vite": "^7.0.0",
+    "typescript-eslint": "^8.36.0",
+    "vite": "^7.0.4",
     "vite-plugin-svgr": "^4.3.0",
-    "zx": "^8.6.1"
+    "zx": "^8.6.2"
   }
 }

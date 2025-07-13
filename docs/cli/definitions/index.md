@@ -1,7 +1,5 @@
 # Agent Definitions
 
-**English** | [中文](index.zh.md)
-
 AIGNE provides flexible AI agent creation methods. You can create various types of AI agents through simple configuration files, including chatbots, tool assistants, and complex intelligent systems.
 
 ## Project Configuration File (aigne.yaml)

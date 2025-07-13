@@ -1,7 +1,5 @@
 # 🚀 Quick Start
 
-[English](./quick-start.md) | [中文](./quick-start.zh.md)
-
 The AIGNE Framework lets you build powerful AI Agents and workflows with minimal code. Follow the steps below to experience AI magic right away and enjoy the fun of "write a little, achieve a lot"! ✨
 
 ## Environment Requirements

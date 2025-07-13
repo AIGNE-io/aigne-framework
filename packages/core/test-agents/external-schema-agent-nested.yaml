@@ -1,0 +1,54 @@
+name: external-schema-agent-nested
+description: External schema in nested properties
+input_schema:
+  type: object
+  properties:
+    external: ./external-schema-first.yaml
+    nested:
+      type: object
+      properties:
+        external: ./external-schema-first.yaml
+      required:
+        - external
+    items:
+      type: array
+      items: ./external-schema-first.yaml
+    array:
+      type: array
+      items:
+        type: object
+        properties:
+          external: ./external-schema-first.yaml
+        required:
+          - external
+  required:
+    - external
+    - nested
+    - items
+    - array
+output_schema:
+  type: object
+  properties:
+    external: ./external-schema-first.yaml
+    nested:
+      type: object
+      properties:
+        external: ./external-schema-first.yaml
+      required:
+        - external
+    items:
+      type: array
+      items: ./external-schema-first.yaml
+    array:
+      type: array
+      items:
+        type: object
+        properties:
+          external: ./external-schema-first.yaml
+        required:
+          - external
+  required:
+    - external
+    - nested
+    - items
+    - array

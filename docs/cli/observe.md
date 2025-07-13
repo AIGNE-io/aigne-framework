@@ -1,7 +1,5 @@
 # Observe Agent
 
-**English** | [中文](observe.zh.md)
-
 Use the AIGNE CLI to start the observability service.
 
 ## `aigne observe` Command

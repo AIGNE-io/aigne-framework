@@ -1,7 +1,5 @@
 # Using the Observability
 
-**English** | [中文](observe.zh.md)
-
 Use AIGNE CLI to start the observability service, monitor and analyze AI Agent runtime status in real-time.
 
 ## `aigne observe` Command

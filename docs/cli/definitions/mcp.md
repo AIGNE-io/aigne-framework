@@ -1,7 +1,5 @@
 # Creating MCP Agents
 
-**English** | [中文](mcp.zh.md)
-
 Want to give your AI Agent more powerful capabilities? MCP (Model Context Protocol) is a standard protocol for connecting external resources. Through MCP, your AI can access file systems, databases, APIs, and various external resources, becoming a feature-rich intelligent assistant.
 
 ## Basic Structure

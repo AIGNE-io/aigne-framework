@@ -28,9 +28,10 @@ exports[`AnthropicChatModel.invoke 2`] = `
     "text": "The current temperature in New York is 20 degrees.",
   },
   "model": "claude-3-7-sonnet-20250219",
+  "text": undefined,
   "usage": {
-    "inputTokens": 955,
-    "outputTokens": 54,
+    "inputTokens": 486,
+    "outputTokens": 20,
   },
 }
 `;

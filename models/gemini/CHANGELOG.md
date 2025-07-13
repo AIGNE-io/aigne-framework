@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.6.2...gemini-v0.7.0) (2025-07-10)
+
+
+### Features
+
+* **model:** reduce unnecessary LLM requests for structured output ([#241](https://github.com/AIGNE-io/aigne-framework/issues/241)) ([e28813c](https://github.com/AIGNE-io/aigne-framework/commit/e28813c021ed35c0251e198e2e007e2d746ab3d8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.9.0
+  * devDependencies
+    * @aigne/core bumped to 1.33.0
+    * @aigne/test-utils bumped to 0.5.5
+
 ## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.6.1...gemini-v0.6.2) (2025-07-09)
 
 

@@ -1,7 +1,5 @@
 # Using MCP Server to Create Agents
 
-[English](./mcp-server-as-agent.md) | [中文](./mcp-server-as-agent.zh.md)
-
 Model Context Protocol (MCP) is a standardized protocol that can be used to create specialized domain Agent services. The AIGNE framework provides the MCPAgent class, enabling you to easily integrate MCP servers as Agents into your applications. This guide will introduce how to use MCP Servers to create powerful functional Agents.
 
 ## Basic Process

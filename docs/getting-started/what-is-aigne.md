@@ -1,7 +1,5 @@
 # What is AIGNE?
 
-[English](./what-is-aigne.md) | [中文](./what-is-aigne.zh.md)
-
 AIGNE is a cutting-edge framework and runtime engine for Large Language Model (LLM) application development. It provides a unified platform for Agent orchestration, complex AI workflow design, and integration of various AI models with external tools, focusing on flexibility, scalability, and ease of use.
 
 ```ts file="../../docs-examples/test/what-is-aigne.test.ts" region="example-what-is-aigne-basic"

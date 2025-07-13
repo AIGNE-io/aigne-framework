@@ -21,7 +21,7 @@ const aigneFilePath = getAIGNEFilePath();
 createAIGNECommand({ aigneFilePath })
   .parseAsync(["", "", ...process.argv.slice(aigneFilePath ? 3 : 2)])
   .catch((error) => {
-    console.log("\n");
+    console.log(""); // Add an empty line for better readability
     console.error(`${chalk.red("Error:")} ${error.message}`);
     process.exit(1);
   });

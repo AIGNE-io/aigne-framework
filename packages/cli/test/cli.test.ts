@@ -41,7 +41,7 @@ test("CLI imports and loads with shebang mode correctly", async () => {
   });
 });
 
-test("aigne cli should print pretty error message", async () => {
+test("aigne cli should print error message", async () => {
   const error = spyOn(console, "error").mockImplementationOnce(() => {});
   const exit = spyOn(process, "exit").mockImplementationOnce(() => undefined as never);
 

@@ -92,14 +92,14 @@ test("load should process path correctly", async () => {
   const readFile = spyOn(nodejs.fs, "readFile");
 
   // mock a non-existing file
-  stat.mockReturnValueOnce(Promise.reject(new Error("no such file or directory")));
+  stat.mockReturnValueOnce(Promise.reject(new Error("not found")));
   expect(
     load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }),
-  ).rejects.toThrow("no such file or directory");
+  ).rejects.toThrow("not found");
 
   // mock a yaml file with invalid content
   stat.mockReturnValueOnce(
-    Promise.resolve({ isDirectory: () => false }) as ReturnType<typeof nodejs.fs.stat>,
+    Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"));
   expect(
@@ -112,7 +112,7 @@ test("load should process path correctly", async () => {
 
   // mock a valid yaml but invalid properties
   stat.mockReturnValueOnce(
-    Promise.resolve({ isDirectory: () => false }) as ReturnType<typeof nodejs.fs.stat>,
+    Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: 123"));
   expect(
@@ -124,9 +124,6 @@ test("load should process path correctly", async () => {
   expect(readFile).toHaveBeenLastCalledWith("invalid-properties/aigne.yaml", "utf8");
 
   // mock a directory with a .yaml file
-  stat.mockReturnValueOnce(
-    Promise.resolve({ isDirectory: () => true }) as ReturnType<typeof nodejs.fs.stat>,
-  );
   stat.mockReturnValueOnce(
     Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
@@ -143,9 +140,6 @@ test("load should process path correctly", async () => {
   expect(readFile).toHaveBeenLastCalledWith("foo/aigne.yaml", "utf8");
 
   // mock a directory with a .yml file
-  stat.mockReturnValueOnce(
-    Promise.resolve({ isDirectory: () => true }) as ReturnType<typeof nodejs.fs.stat>,
-  );
   stat
     .mockReturnValueOnce(
       Promise.resolve({ isFile: () => false }) as ReturnType<typeof nodejs.fs.stat>,
@@ -164,11 +158,14 @@ test("load should process path correctly", async () => {
     }),
   );
   expect(readFile).toHaveBeenLastCalledWith("bar/aigne.yml", "utf8");
+
+  stat.mockRestore();
+  readFile.mockRestore();
 });
 
 test("load should load model correctly", async () => {
-  spyOn(nodejs.fs, "stat").mockReturnValue(
-    Promise.resolve({ isDirectory: () => false }) as ReturnType<typeof nodejs.fs.stat>,
+  const stat = spyOn(nodejs.fs, "stat").mockReturnValue(
+    Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   const readFile = spyOn(nodejs.fs, "readFile");
 
@@ -213,6 +210,9 @@ chat_model:
     (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
       .model,
   ).toBeInstanceOf(XAIChatModel);
+
+  stat.mockRestore();
+  readFile.mockRestore();
 });
 
 test("loadAgent should load MCP agent from url correctly", async () => {
@@ -223,7 +223,7 @@ test("loadAgent should load MCP agent from url correctly", async () => {
 
   const from = spyOn(MCPAgent, "from").mockReturnValueOnce(testMcp);
 
-  spyOn(nodejs.fs, "readFile").mockReturnValueOnce(
+  const readFile = spyOn(nodejs.fs, "readFile").mockReturnValueOnce(
     Promise.resolve(`\
 type: mcp
 url: http://localhost:3000/sse
@@ -234,6 +234,8 @@ url: http://localhost:3000/sse
   expect(from).toHaveBeenLastCalledWith({
     url: "http://localhost:3000/sse",
   });
+
+  readFile.mockRestore();
 });
 
 test("loadAgent should load MCP agent from command correctly", async () => {
@@ -243,7 +245,7 @@ test("loadAgent should load MCP agent from command correctly", async () => {
   });
   const from = spyOn(MCPAgent, "from").mockReturnValueOnce(fsMcp);
 
-  spyOn(nodejs.fs, "readFile").mockReturnValueOnce(
+  const readFile = spyOn(nodejs.fs, "readFile").mockReturnValueOnce(
     Promise.resolve(`\
 type: mcp
 command: npx
@@ -256,6 +258,8 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
     command: "npx",
     args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
   });
+
+  readFile.mockRestore();
 });
 
 test("loadAgent should error if MCP agent options is not valid", async () => {

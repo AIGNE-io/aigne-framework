@@ -19,6 +19,12 @@ import type { ContextLimits } from "./usage.js";
  */
 export interface AIGNEOptions {
   /**
+   * Optional root directory for this AIGNE instance.
+   * This is used to resolve relative paths for agents and skills.
+   */
+  rootDir?: string;
+
+  /**
    * The name of the AIGNE instance.
    */
   name?: string;
@@ -79,9 +85,10 @@ export class AIGNE<U extends UserContext = UserContext> {
     path: string,
     options: AIGNEOptions & Omit<LoadOptions, "path">,
   ): Promise<AIGNE> {
-    const { model, agents, skills, ...aigne } = await load({ ...options, path });
+    const { model, agents = [], skills = [], ...aigne } = await load({ ...options, path });
     return new AIGNE({
       ...options,
+      rootDir: aigne.rootDir,
       model: options?.model || model,
       name: options?.name || aigne.name || undefined,
       description: options?.description || aigne.description || undefined,
@@ -98,6 +105,7 @@ export class AIGNE<U extends UserContext = UserContext> {
   constructor(options?: AIGNEOptions) {
     if (options) checkArguments("AIGNE", aigneOptionsSchema, options);
 
+    this.rootDir = options?.rootDir;
     this.name = options?.name;
     this.description = options?.description;
     this.model = options?.model;
@@ -112,6 +120,11 @@ export class AIGNE<U extends UserContext = UserContext> {
     this.observer?.serve();
     this.initProcessExitHandler();
   }
+
+  /**
+   * Optional root directory for this AIGNE instance.
+   */
+  rootDir?: string;
 
   /**
    * Optional name identifier for this AIGNE instance.

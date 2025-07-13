@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { existsSync, realpathSync, statSync } from "node:fs";
+import chalk from "chalk";
 import { config } from "dotenv-flow";
-import PrettyError from "pretty-error";
 import { createAIGNECommand } from "./commands/aigne.js";
 
 config({ silent: true });
@@ -21,6 +21,7 @@ const aigneFilePath = getAIGNEFilePath();
 createAIGNECommand({ aigneFilePath })
   .parseAsync(["", "", ...process.argv.slice(aigneFilePath ? 3 : 2)])
   .catch((error) => {
-    console.error(new PrettyError().render(error));
+    console.log("\n");
+    console.error(`${chalk.red("Error:")} ${error.message}`);
     process.exit(1);
   });

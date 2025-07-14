@@ -240,3 +240,15 @@ test("TeamAgent with iterateOn should iterate with previous step's output", asyn
   expect(response).toMatchSnapshot();
   expect(skillProcess.mock.calls.map((i) => i[0])).toMatchSnapshot();
 });
+
+test("TeamAgent should throw an error if skills is empty", async () => {
+  const teamAgent = TeamAgent.from({
+    mode: ProcessMode.sequential,
+  });
+
+  const aigne = new AIGNE({});
+
+  expect(aigne.invoke(teamAgent, {})).rejects.toThrow(
+    "TeamAgent must have at least one skill defined.",
+  );
+});

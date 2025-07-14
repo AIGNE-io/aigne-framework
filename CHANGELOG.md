@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.38.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.2...aigne-framework-v1.38.3) (2025-07-14)
+
+
+### Bug Fixes
+
+* **core:** fix error of external schema with array type ([#251](https://github.com/AIGNE-io/aigne-framework/issues/251)) ([bd80921](https://github.com/AIGNE-io/aigne-framework/commit/bd80921bbbe8385645eb7c52fd719ce48d672da9))
+
 ## [1.38.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.1...aigne-framework-v1.38.2) (2025-07-14)
 
 

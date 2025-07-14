@@ -1,10 +1,10 @@
 import type { Agent } from "node:https";
 import { createRequire } from "node:module";
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { DeepSeekChatModel } from "@aigne/deepseek";
+import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
 import { GeminiChatModel } from "@aigne/gemini";
 import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";

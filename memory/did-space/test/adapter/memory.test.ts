@@ -1,6 +1,6 @@
 import { beforeEach, expect, spyOn, test } from "bun:test";
-import { DIDSpacesMemory } from "@aigne/agent-library/adapter/memory.js";
 import { AIAgent, AIGNE } from "@aigne/core";
+import { DIDSpacesMemory } from "@aigne/did-space-memory/adapter/memory.js";
 import { SpaceClient } from "@blocklet/did-space-js";
 import { stringify } from "yaml";
 import { OpenAIChatModel } from "../_mocks_/mock-models.js";

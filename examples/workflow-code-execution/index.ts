@@ -1,9 +1,9 @@
 #!/usr/bin/env bunwrapper
 
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, FunctionAgent } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
+import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
 import { z } from "zod";
 
 const sandbox = FunctionAgent.from({

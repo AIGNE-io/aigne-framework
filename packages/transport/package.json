@@ -54,6 +54,7 @@
     "@aigne/agent-library": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/test-utils": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
     "@types/bun": "^1.2.18",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.12",

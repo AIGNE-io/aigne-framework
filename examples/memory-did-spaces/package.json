@@ -24,7 +24,8 @@
     "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "@aigne/openai": "workspace:^"
+    "@aigne/openai": "workspace:^",
+    "@aigne/did-space-memory": "workspace:^"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

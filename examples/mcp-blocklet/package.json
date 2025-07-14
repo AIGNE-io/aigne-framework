@@ -23,6 +23,7 @@
     "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
     "@modelcontextprotocol/sdk": "^1.15.0",
     "jsonwebtoken": "^9.0.2",
     "open": "^10.1.2",

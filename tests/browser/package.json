@@ -26,6 +26,7 @@
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/transport": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

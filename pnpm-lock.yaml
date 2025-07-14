@@ -83,6 +83,9 @@ importers:
       '@aigne/deepseek':
         specifier: workspace:^
         version: link:../models/deepseek
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../memory/default
       '@aigne/gemini':
         specifier: workspace:^
         version: link:../models/gemini
@@ -141,6 +144,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@modelcontextprotocol/sdk':
         specifier: ^1.15.0
         version: 1.15.0
@@ -194,6 +200,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -216,6 +225,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -244,6 +256,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -266,6 +281,12 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
+      '@aigne/fs-memory':
+        specifier: workspace:^
+        version: link:../../memory/fs
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -285,6 +306,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/did-space-memory':
+        specifier: workspace:^
+        version: link:../../memory/did-space
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -310,6 +334,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -357,6 +384,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -382,6 +412,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -454,6 +487,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -599,6 +635,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/did-space-memory':
+        specifier: workspace:^
+        version: 'link:'
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -1372,6 +1411,9 @@ importers:
       '@aigne/deepseek':
         specifier: workspace:^
         version: link:../../models/deepseek
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/gemini':
         specifier: workspace:^
         version: link:../../models/gemini
@@ -1826,6 +1868,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../test-utils
@@ -1874,6 +1919,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai

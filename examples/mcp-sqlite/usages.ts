@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { join } from "node:path";
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
 import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;

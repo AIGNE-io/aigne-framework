@@ -1,5 +1,5 @@
-import { DIDSpacesMemory } from "@aigne/agent-library/did-spaces-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
+import { DIDSpacesMemory } from "@aigne/did-space-memory/adapter/memory.js";
 import { OpenAIChatModel as Model } from "@aigne/openai";
 import dotenv from "dotenv-flow";
 import { writeFileSync } from "fs";

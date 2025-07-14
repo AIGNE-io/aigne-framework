@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
 import { OpenAIChatModel } from "@aigne/openai";
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
@@ -49,7 +49,9 @@ test("Example HTTPTransport: AIGNEHTTPServer and AIGNEHTTPClient", async () => {
   // #region example-http-client-usage
 
   // #region example-http-client-create-client
-  const client = new AIGNEHTTPClient({ url: `http://localhost:${port}/api/chat` });
+  const client = new AIGNEHTTPClient({
+    url: `http://localhost:${port}/api/chat`,
+  });
   // #endregion example-http-client-create-client
 
   spyOn(aigne.model, "process").mockReturnValueOnce({
@@ -62,7 +64,9 @@ test("Example HTTPTransport: AIGNEHTTPServer and AIGNEHTTPClient", async () => {
   });
   console.log(result);
   // Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
-  expect(result).toEqual({ message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  expect(result).toEqual({
+    message: "The current price of ABT/USD on Coinbase is $0.9684.",
+  });
   // #endregion example-http-client-invoke-agent
 
   // #endregion example-http-client-usage

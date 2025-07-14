@@ -23,7 +23,9 @@
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
-    "@aigne/core": "workspace:^"
+    "@aigne/core": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
+    "@aigne/fs-memory": "workspace:^"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

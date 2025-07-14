@@ -1,9 +1,9 @@
 #!/usr/bin/env bunwrapper
 
 import assert from "node:assert";
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent, PromptBuilder } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
 import { refreshAuthorization, UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import JWT from "jsonwebtoken";

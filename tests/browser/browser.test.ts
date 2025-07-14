@@ -2,9 +2,9 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { exists, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE, type Message } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
+import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
 import { OpenAIChatModel } from "@aigne/openai";
 import type {
   AIGNEHTTPClient,

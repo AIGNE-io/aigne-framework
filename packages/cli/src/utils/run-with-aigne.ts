@@ -22,8 +22,8 @@ import {
   type PromiseOrValue,
   tryOrThrow,
 } from "@aigne/core/utils/type-utils.js";
+import chalk from "chalk";
 import { Command } from "commander";
-import PrettyError from "pretty-error";
 import { parse } from "yaml";
 import { ZodError, ZodObject, z } from "zod";
 import { availableModels } from "../constants.js";
@@ -261,7 +261,7 @@ export async function runWithAIGNE(
     })
     .parseAsync(argv)
     .catch((error) => {
-      console.error(new PrettyError().render(error));
+      console.error(`${chalk.red("Error:")} ${error.message}`);
       process.exit(1);
     });
 }

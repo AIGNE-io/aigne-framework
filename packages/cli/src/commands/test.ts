@@ -1,6 +1,9 @@
+import assert from "node:assert";
 import { spawnSync } from "node:child_process";
 import { isAbsolute, resolve } from "node:path";
+import { AIGNE } from "@aigne/core";
 import { Command } from "commander";
+import { availableMemories, availableModels } from "../constants.js";
 
 export function createTestCommand({ aigneFilePath }: { aigneFilePath?: string } = {}): Command {
   return new Command("test")
@@ -14,7 +17,13 @@ export function createTestCommand({ aigneFilePath }: { aigneFilePath?: string } 
       const path = aigneFilePath || options.path;
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
 
-      spawnSync("node", ["--test"], { cwd: absolutePath, stdio: "inherit" });
+      const aigne = await AIGNE.load(absolutePath, {
+        models: availableModels(),
+        memories: availableMemories,
+      });
+      assert(aigne.rootDir);
+
+      spawnSync("node", ["--test"], { cwd: aigne.rootDir, stdio: "inherit" });
     })
     .showHelpAfterError(true)
     .showSuggestionAfterError(true);

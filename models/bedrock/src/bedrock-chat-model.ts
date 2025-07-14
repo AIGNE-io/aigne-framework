@@ -84,16 +84,19 @@ export class BedrockChatModel extends ChatModel {
   protected _client?: BedrockRuntimeClient;
 
   get client() {
-    const credentials =
-      this.options?.accessKeyId && this.options?.secretAccessKey
-        ? {
-            accessKeyId: this.options.accessKeyId,
-            secretAccessKey: this.options.secretAccessKey,
-          }
-        : undefined;
+    const accessKeyId = this.options?.accessKeyId || process.env["AWS_ACCESS_KEY_ID"];
+    const secretAccessKey = this.options?.secretAccessKey || process.env["AWS_SECRET_ACCESS_KEY"];
+
+    if (!accessKeyId || !secretAccessKey)
+      throw new Error(
+        `\
+${this.name} requires access key id and secret. Please provide it via \`options.accessKeyId\` and \`options.secretAccessKey\`, \
+or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment variables`,
+      );
+
     this._client ??= new BedrockRuntimeClient({
       region: this.options?.region,
-      credentials,
+      credentials: { accessKeyId, secretAccessKey },
       ...this.options?.clientOptions,
     });
     return this._client;

@@ -179,6 +179,8 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * @returns A stream of message chunks that collectively form the response
    */
   process(input: I, options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>> {
+    if (!this.skills.length) throw new Error("TeamAgent must have at least one skill defined.");
+
     if (this.iterateOn) {
       return this._processIterator(this.iterateOn, input, options);
     }

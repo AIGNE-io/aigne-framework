@@ -15,8 +15,8 @@ test("OpenAI chat model basic usage", async () => {
   // #region example-bedrock-chat-model
   const model = new BedrockChatModel({
     // Provide API key directly or use environment variable AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
-    accessKeyId: "",
-    secretAccessKey: "",
+    accessKeyId: "YOUR_ACCESS_KEY_ID",
+    secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
     model: "us.amazon.nova-premier-v1:0",
     modelOptions: {
       temperature: 0.7,
@@ -65,8 +65,8 @@ test("OpenAI chat model with streaming using async generator", async () => {
   // #region example-bedrock-chat-model-streaming
   const model = new BedrockChatModel({
     // Provide API key directly or use environment variable AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
-    accessKeyId: "",
-    secretAccessKey: "",
+    accessKeyId: "YOUR_ACCESS_KEY_ID",
+    secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
     model: "us.amazon.nova-premier-v1:0",
     modelOptions: {
       temperature: 0.7,
@@ -118,7 +118,10 @@ test("OpenAI chat model with streaming using async generator", async () => {
 });
 
 test("BedrockChatModel.invoke with tool call and structured output", async () => {
-  const model = new BedrockChatModel();
+  const model = new BedrockChatModel({
+    accessKeyId: "YOUR_ACCESS_KEY_ID",
+    secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
+  });
 
   spyOn(model.client, "send")
     .mockImplementationOnce(() =>
@@ -154,7 +157,10 @@ test("BedrockChatModel.invoke with tool call and structured output", async () =>
 });
 
 test("BedrockChatModel.invoke with streaming", async () => {
-  const model = new BedrockChatModel();
+  const model = new BedrockChatModel({
+    accessKeyId: "YOUR_ACCESS_KEY_ID",
+    secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
+  });
 
   spyOn(model.client, "send").mockImplementation(() =>
     Promise.resolve({
@@ -175,7 +181,10 @@ test("BedrockChatModel.invoke with streaming", async () => {
 });
 
 test("BedrockChatModel.invoke without streaming", async () => {
-  const model = new BedrockChatModel();
+  const model = new BedrockChatModel({
+    accessKeyId: "YOUR_ACCESS_KEY_ID",
+    secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
+  });
 
   spyOn(model.client, "send").mockImplementation(() =>
     Promise.resolve({

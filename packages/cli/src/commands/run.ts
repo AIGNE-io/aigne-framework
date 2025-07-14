@@ -94,16 +94,16 @@ export function createRunCommand({ aigneFilePath }: { aigneFilePath?: string } =
               if (options.entryAgent) {
                 entryAgent = aigne.agents[options.entryAgent];
                 if (!entryAgent) {
-                  console.error(`Agent "${options.entryAgent}" not found in ${path}`);
-                  console.log("Available agents:");
-                  for (const agent of aigne.agents) {
-                    console.log(`- ${agent.name}`);
-                  }
-                  throw new Error(`Agent "${options.entryAgent}" not found in ${path}`);
+                  throw new Error(`\
+Agent "${options.entryAgent}" not found in ${aigne.rootDir}
+
+Available agents:
+${aigne.agents.map((agent) => `  - ${agent.name}`).join("\n")}
+`);
                 }
               } else {
                 entryAgent = aigne.agents[0];
-                if (!entryAgent) throw new Error(`No agents found in ${path}`);
+                if (!entryAgent) throw new Error(`No any agent found in ${aigne.rootDir}`);
               }
 
               ctx.agent = entryAgent;
@@ -113,6 +113,7 @@ export function createRunCommand({ aigneFilePath }: { aigneFilePath?: string } =
         {
           rendererOptions: {
             collapseSubtasks: false,
+            showErrorMessage: false,
             timer: PRESET_TIMER,
           },
         },

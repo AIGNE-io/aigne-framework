@@ -35,7 +35,5 @@ outputDir: ../../../../docs-ai-v0.1/output
 sourcesPath:
   - /Users/lban/arcblock/code/aigne-framework/packages/cli/src
   - /Users/lban/arcblock/code/aigne-framework/packages/cli/templates
-  - /Users/lban/arcblock/code/aigne-framework/packages/core/src
 sources:
   - /Users/lban/arcblock/code/aigne-framework/packages/cli/README.md
-  - /Users/lban/arcblock/code/aigne-framework/packages/core/README.md

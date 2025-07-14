@@ -74,6 +74,8 @@ DataSources 使用规则：
 2. 使用用户的语言 {{locale}} 返回信息
 </rules>
 
+{% include "prompts/document/structure-example.md" %}
+
 <output_schema>
 参考的输出格式：
 ```json

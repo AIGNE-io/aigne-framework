@@ -12,16 +12,16 @@ import {
   type PromptBuilder,
 } from "@aigne/core";
 import { flat, pick } from "@aigne/core/utils/type-utils.js";
+import { z } from "zod";
 import {
   DefaultMemoryStorage,
   type DefaultMemoryStorageOptions,
-} from "@aigne/default-memory/adapter/default-memory-storage/index.js";
+} from "../default-memory/default-memory-storage/index.js";
 import {
   DefaultMemoryRetriever,
   type DefaultMemoryRetrieverOptions,
-} from "@aigne/default-memory/adapter/memory.js";
-import { MemoryStorage } from "@aigne/default-memory/adapter/storage.js";
-import { z } from "zod";
+} from "../default-memory/memory.js";
+import { MemoryStorage } from "../default-memory/storage.js";
 import { DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS } from "./prompt.js";
 
 export interface AgenticMemoryOptions

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.3.0...platform-helpers-v0.3.1) (2025-07-14)
+
+
+### Bug Fixes
+
+* **deps:** update deps to latest version ([#247](https://github.com/AIGNE-io/aigne-framework/issues/247)) ([3972f88](https://github.com/AIGNE-io/aigne-framework/commit/3972f887a9abff20c26da6b51c1071cbd54c0bf1))
+
 ## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.2.0...platform-helpers-v0.3.0) (2025-07-04)
 
 

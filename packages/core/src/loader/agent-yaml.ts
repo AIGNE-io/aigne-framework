@@ -121,20 +121,18 @@ export async function loadAgentFromYamlFile(path: string) {
     (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
   );
 
-  const json = await tryOrThrow(
-    () => parse(raw),
+  const json = tryOrThrow(
+    () => camelize(parse(raw)) as any,
     (error) => new Error(`Failed to parse agent definition from ${path}: ${error.message}`),
   );
 
   const agent = await tryOrThrow(
     async () =>
-      await agentSchema.parseAsync(
-        camelize({
-          ...json,
-          type: json.type ?? "ai",
-          skills: json.skills ?? json.tools,
-        }),
-      ),
+      await agentSchema.parseAsync({
+        ...json,
+        type: json.type ?? "ai",
+        skills: json.skills ?? json.tools,
+      }),
 
     (error) => new Error(`Failed to validate agent definition from ${path}: ${error.message}`),
   );

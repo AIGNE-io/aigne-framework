@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.22.6",
+  "version": "1.22.8",
   "description": "cli for AIGNE framework",
   "publishConfig": {
     "access": "public"
@@ -73,7 +73,6 @@
     "inquirer": "^12.7.0",
     "marked": "^16.0.0",
     "prettier": "^3.6.2",
-    "pretty-error": "^4.0.0",
     "tar": "^7.4.3",
     "wrap-ansi": "^9.0.0",
     "yaml": "^2.8.0",

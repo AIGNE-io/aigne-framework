@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.9.5](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.4...transport-v0.9.5) (2025-07-14)
+
+
+### Bug Fixes
+
+* **deps:** update deps to latest version ([#247](https://github.com/AIGNE-io/aigne-framework/issues/247)) ([3972f88](https://github.com/AIGNE-io/aigne-framework/commit/3972f887a9abff20c26da6b51c1071cbd54c0bf1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.9.1
+  * devDependencies
+    * @aigne/agent-library bumped to 1.20.4
+    * @aigne/core bumped to 1.33.1
+    * @aigne/test-utils bumped to 0.5.6
+
 ## [0.9.4](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.3...transport-v0.9.4) (2025-07-10)
 
 

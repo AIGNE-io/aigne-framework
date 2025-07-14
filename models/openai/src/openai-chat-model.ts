@@ -147,7 +147,10 @@ export class OpenAIChatModel extends ChatModel {
 
   get client() {
     const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault;
-    if (!apiKey) throw new Error(`Api Key is required for ${this.name}`);
+    if (!apiKey)
+      throw new Error(
+        `${this.name} requires an API key. Please provide it via \`options.apiKey\`, or set the \`${this.apiKeyEnvName}\` environment variable`,
+      );
 
     this._client ??= new CustomOpenAI({
       baseURL: this.options?.baseURL,

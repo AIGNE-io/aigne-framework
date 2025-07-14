@@ -9,6 +9,10 @@ packages:
 
 onlyBuiltDependencies:
   - '@biomejs/biome'
+  - core-js
+  - core-js-pure
   - esbuild
+  - fast-folder-size
   - protobufjs
   - simple-git-hooks
+  - sqlite3

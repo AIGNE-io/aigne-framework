@@ -16,12 +16,10 @@ import { z } from 'zod';
 import {
   DefaultMemoryStorage,
   type DefaultMemoryStorageOptions,
-} from '../default-memory/default-memory-storage/index.js';
-import {
   DefaultMemoryRetriever,
   type DefaultMemoryRetrieverOptions,
-} from '../default-memory/index.js';
-import { MemoryStorage } from '../default-memory/storage.js';
+  MemoryStorage,
+} from '@aigne/default-memory';
 import { DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS } from './prompt.js';
 
 export interface AgenticMemoryOptions

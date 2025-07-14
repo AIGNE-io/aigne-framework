@@ -489,6 +489,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai

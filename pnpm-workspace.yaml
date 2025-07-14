@@ -6,7 +6,9 @@ packages:
   - tests/*
   - observability/*
   - docs-examples
+
 onlyBuiltDependencies:
-  - "@biomejs/biome"
+  - '@biomejs/biome'
   - esbuild
+  - protobufjs
   - simple-git-hooks

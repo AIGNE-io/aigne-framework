@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  node-fetch: ^3.3.2
+
 importers:
 
   .:
@@ -500,10 +503,10 @@ importers:
         version: link:../../packages/sqlite
       '@blocklet/did-space-js':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       '@did-space/core':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       drizzle-orm:
         specifier: ^0.44.2
         version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.18(@types/react@19.1.8))(sqlite3@5.1.7)
@@ -552,10 +555,10 @@ importers:
         version: link:../../packages/sqlite
       '@blocklet/did-space-js':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       '@did-space/core':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       drizzle-orm:
         specifier: ^0.44.2
         version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.18(@types/react@19.1.8))(sqlite3@5.1.7)
@@ -604,10 +607,10 @@ importers:
         version: link:../../packages/sqlite
       '@blocklet/did-space-js':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       '@did-space/core':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       drizzle-orm:
         specifier: ^0.44.2
         version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.18(@types/react@19.1.8))(sqlite3@5.1.7)
@@ -656,10 +659,10 @@ importers:
         version: link:../../packages/sqlite
       '@blocklet/did-space-js':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       '@did-space/core':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       drizzle-orm:
         specifier: ^0.44.2
         version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.18(@types/react@19.1.8))(sqlite3@5.1.7)
@@ -1107,7 +1110,7 @@ importers:
         version: 19.1.0(react@19.1.0)
       react-json-view:
         specifier: ^1.21.3
-        version: 1.21.3(@types/react@19.1.8)(encoding@0.1.13)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 1.21.3(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       vite-plugin-blocklet:
         specifier: ^0.10.1
         version: 0.10.1(rollup@4.41.1)(vite@7.0.4(@types/node@24.0.12)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))
@@ -1219,7 +1222,7 @@ importers:
         version: 19.1.0(react@19.1.0)
       react-json-view:
         specifier: ^1.21.3
-        version: 1.21.3(@types/react@19.1.8)(encoding@0.1.13)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 1.21.3(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react-router-dom:
         specifier: ^7.6.3
         version: 7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1313,10 +1316,10 @@ importers:
         version: link:../sqlite
       '@blocklet/did-space-js':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       '@did-space/core':
         specifier: ^1.1.3
-        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+        version: 1.1.6(sqlite3@5.1.7)
       drizzle-orm:
         specifier: ^0.44.2
         version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.18(@types/react@19.1.8))(sqlite3@5.1.7)
@@ -1429,9 +1432,6 @@ importers:
       marked:
         specifier: ^16.0.0
         version: 16.0.0
-      node-fetch:
-        specifier: ^3.3.2
-        version: 3.3.2
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -7774,15 +7774,6 @@ packages:
   node-fetch-native@1.6.6:
     resolution: {integrity: sha512-8Mc2HhqPdlIfedsuZoc3yioPuzp6b+L5jRCRY1QzuWZh2EGJVQrGppC6V6cF0bLdbW0+O2YpqCA25aF/1lvipQ==}
 
-  node-fetch@2.7.0:
-    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
-    engines: {node: 4.x || >=6.0.0}
-    peerDependencies:
-      encoding: ^0.1.0
-    peerDependenciesMeta:
-      encoding:
-        optional: true
-
   node-fetch@3.3.2:
     resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -9747,9 +9738,6 @@ packages:
     resolution: {integrity: sha512-FVDYdxtnj0G6Qm/DhNPSb8Ju59ULcup3tuJxkFb5K8Bv2pUXILbf0xZWU8PX8Ov19OXljbUyveOFwRMwkXzO+A==}
     engines: {node: '>=16'}
 
-  tr46@0.0.3:
-    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-
   tr46@5.1.1:
     resolution: {integrity: sha512-hdF5ZgjTqgAntKkklYw0R03MG2x/bSzTtkxmIRw/sTNV8YXsCJ1tfLAX23lhxhHJlEf3CRCOCGGWw3vI3GaSPw==}
     engines: {node: '>=18'}
@@ -10203,9 +10191,6 @@ packages:
   webfontloader@1.6.28:
     resolution: {integrity: sha512-Egb0oFEga6f+nSgasH3E0M405Pzn6y3/9tOVanv/DLfa1YBIgcv90L18YyWnvXkRbIM17v5Kv6IT2N6g1x5tvQ==}
 
-  webidl-conversions@3.0.1:
-    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-
   webidl-conversions@7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
     engines: {node: '>=12'}
@@ -10224,9 +10209,6 @@ packages:
   whatwg-url@14.2.0:
     resolution: {integrity: sha512-De72GdQZzNTUBBChsXueQUnPKDkg/5A5zp7pFDuQAj5UFoENpiACU0wlCvzpAGnTkj++ihpKwKyYewn/XNUbKw==}
     engines: {node: '>=18'}
-
-  whatwg-url@5.0.0:
-    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
 
   which-boxed-primitive@1.1.1:
     resolution: {integrity: sha512-TbX3mj8n0odCBFVlY8AxkqcHASw3L60jIuF8jFP78az3C2YhmGvqbHBpAjTRH2/xqYunrJ9g1jSyjCjpoWzIAA==}
@@ -10697,12 +10679,11 @@ snapshots:
     dependencies:
       react: 19.1.0
 
-  '@arcblock/ipfs-only-hash@0.0.2(encoding@0.1.13)':
+  '@arcblock/ipfs-only-hash@0.0.2':
     dependencies:
-      ipfs-unixfs-importer: 9.0.10(encoding@0.1.13)
+      ipfs-unixfs-importer: 9.0.10
       multiformats: 9.9.0
     transitivePeerDependencies:
-      - encoding
       - supports-color
 
   '@arcblock/jwt@1.20.15':
@@ -11489,14 +11470,14 @@ snapshots:
 
   '@blocklet/constant@1.16.46': {}
 
-  '@blocklet/did-space-js@1.1.6(encoding@0.1.13)(sqlite3@5.1.7)':
+  '@blocklet/did-space-js@1.1.6(sqlite3@5.1.7)':
     dependencies:
       '@arcblock/did': 1.20.15
       '@arcblock/jwt': 1.20.15
       '@arcblock/validator': 1.20.15
       '@blocklet/env': 1.16.46
       '@did-space/constants': 1.1.6
-      '@did-space/core': 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+      '@did-space/core': 1.1.6(sqlite3@5.1.7)
       '@ocap/mcrypto': 1.20.15
       '@ocap/util': 1.20.15
       '@ocap/wallet': 1.20.15
@@ -11523,7 +11504,6 @@ snapshots:
       xbytes: 1.9.1
       zod: 3.25.67
     transitivePeerDependencies:
-      - encoding
       - ibm_db
       - mariadb
       - mysql2
@@ -11833,10 +11813,10 @@ snapshots:
 
   '@did-space/constants@1.1.6': {}
 
-  '@did-space/core@1.1.6(encoding@0.1.13)(sqlite3@5.1.7)':
+  '@did-space/core@1.1.6(sqlite3@5.1.7)':
     dependencies:
       '@arcblock/did': 1.20.15
-      '@arcblock/ipfs-only-hash': 0.0.2(encoding@0.1.13)
+      '@arcblock/ipfs-only-hash': 0.0.2
       '@arcblock/validator': 1.20.15
       '@did-space/constants': 1.1.6
       dayjs: 1.11.13
@@ -11854,7 +11834,6 @@ snapshots:
       xbytes: 1.9.1
       zod: 3.25.67
     transitivePeerDependencies:
-      - encoding
       - ibm_db
       - mariadb
       - mysql2
@@ -15332,11 +15311,9 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
 
-  cross-fetch@3.2.0(encoding@0.1.13):
+  cross-fetch@3.2.0:
     dependencies:
-      node-fetch: 2.7.0(encoding@0.1.13)
-    transitivePeerDependencies:
-      - encoding
+      node-fetch: 3.3.2
 
   cross-spawn@6.0.6:
     dependencies:
@@ -16151,25 +16128,21 @@ snapshots:
     dependencies:
       format: 0.2.2
 
-  fbemitter@3.0.0(encoding@0.1.13):
+  fbemitter@3.0.0:
     dependencies:
-      fbjs: 3.0.5(encoding@0.1.13)
-    transitivePeerDependencies:
-      - encoding
+      fbjs: 3.0.5
 
   fbjs-css-vars@1.0.2: {}
 
-  fbjs@3.0.5(encoding@0.1.13):
+  fbjs@3.0.5:
     dependencies:
-      cross-fetch: 3.2.0(encoding@0.1.13)
+      cross-fetch: 3.2.0
       fbjs-css-vars: 1.0.2
       loose-envify: 1.4.0
       object-assign: 4.1.1
       promise: 7.3.1
       setimmediate: 1.0.5
       ua-parser-js: 1.0.40
-    transitivePeerDependencies:
-      - encoding
 
   fclone@1.0.11: {}
 
@@ -16263,13 +16236,11 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 3.6.2
 
-  flux@4.0.4(encoding@0.1.13)(react@19.1.0):
+  flux@4.0.4(react@19.1.0):
     dependencies:
-      fbemitter: 3.0.0(encoding@0.1.13)
-      fbjs: 3.0.5(encoding@0.1.13)
+      fbemitter: 3.0.0
+      fbjs: 3.0.5
       react: 19.1.0
-    transitivePeerDependencies:
-      - encoding
 
   folder-walker@3.2.0:
     dependencies:
@@ -16858,7 +16829,7 @@ snapshots:
 
   ipaddr.js@1.9.1: {}
 
-  ipfs-unixfs-importer@9.0.10(encoding@0.1.13):
+  ipfs-unixfs-importer@9.0.10:
     dependencies:
       '@ipld/dag-pb': 2.1.18
       '@multiformats/murmur3': 1.1.3
@@ -16873,10 +16844,9 @@ snapshots:
       it-parallel-batch: 1.0.11
       merge-options: 3.0.4
       multiformats: 9.9.0
-      rabin-wasm: 0.1.5(encoding@0.1.13)
+      rabin-wasm: 0.1.5
       uint8arrays: 3.1.1
     transitivePeerDependencies:
-      - encoding
       - supports-color
 
   ipfs-unixfs@6.0.9:
@@ -18022,12 +17992,6 @@ snapshots:
 
   node-fetch-native@1.6.6: {}
 
-  node-fetch@2.7.0(encoding@0.1.13):
-    dependencies:
-      whatwg-url: 5.0.0
-    optionalDependencies:
-      encoding: 0.1.13
-
   node-fetch@3.3.2:
     dependencies:
       data-uri-to-buffer: 4.0.1
@@ -18830,16 +18794,15 @@ snapshots:
 
   quick-lru@7.0.1: {}
 
-  rabin-wasm@0.1.5(encoding@0.1.13):
+  rabin-wasm@0.1.5:
     dependencies:
       '@assemblyscript/loader': 0.9.4
       bl: 5.1.0
       debug: 4.4.1(supports-color@5.5.0)
       minimist: 1.2.8
-      node-fetch: 2.7.0(encoding@0.1.13)
+      node-fetch: 3.3.2
       readable-stream: 3.6.2
     transitivePeerDependencies:
-      - encoding
       - supports-color
 
   raf@3.4.1:
@@ -18963,9 +18926,9 @@ snapshots:
 
   react-is@19.1.0: {}
 
-  react-json-view@1.21.3(@types/react@19.1.8)(encoding@0.1.13)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  react-json-view@1.21.3(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
-      flux: 4.0.4(encoding@0.1.13)(react@19.1.0)
+      flux: 4.0.4(react@19.1.0)
       react: 19.1.0
       react-base16-styling: 0.6.0
       react-dom: 19.1.0(react@19.1.0)
@@ -18973,7 +18936,6 @@ snapshots:
       react-textarea-autosize: 8.5.9(@types/react@19.1.8)(react@19.1.0)
     transitivePeerDependencies:
       - '@types/react'
-      - encoding
 
   react-lifecycles-compat@3.0.4: {}
 
@@ -20428,8 +20390,6 @@ snapshots:
     dependencies:
       tldts: 6.1.86
 
-  tr46@0.0.3: {}
-
   tr46@5.1.1:
     dependencies:
       punycode: 2.3.1
@@ -20982,8 +20942,6 @@ snapshots:
 
   webfontloader@1.6.28: {}
 
-  webidl-conversions@3.0.1: {}
-
   webidl-conversions@7.0.0: {}
 
   whatwg-encoding@3.1.1:
@@ -20998,11 +20956,6 @@ snapshots:
     dependencies:
       tr46: 5.1.1
       webidl-conversions: 7.0.0
-
-  whatwg-url@5.0.0:
-    dependencies:
-      tr46: 0.0.3
-      webidl-conversions: 3.0.1
 
   which-boxed-primitive@1.1.1:
     dependencies:

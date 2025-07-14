@@ -4,8 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "../src",
-    "noEmit": false,
-    "paths": {}
+    "noEmit": false
   },
   "include": ["../src"],
   "references": [

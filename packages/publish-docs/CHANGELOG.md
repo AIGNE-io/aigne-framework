@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.2.0...publish-docs-v0.2.1) (2025-07-14)
+
+
+### Bug Fixes
+
+* **deps:** update deps to latest version ([#247](https://github.com/AIGNE-io/aigne-framework/issues/247)) ([3972f88](https://github.com/AIGNE-io/aigne-framework/commit/3972f887a9abff20c26da6b51c1071cbd54c0bf1))
+
 ## [0.2.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.1.1...publish-docs-v0.2.0) (2025-07-09)
 
 

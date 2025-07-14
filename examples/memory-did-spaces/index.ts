@@ -1,10 +1,8 @@
+#!/usr/bin/env bunwrapper
+
 import { AIAgent, AIGNE } from "@aigne/core";
 import { DIDSpacesMemory } from "@aigne/did-space-memory/adapter/memory.js";
 import { OpenAIChatModel as Model } from "@aigne/openai";
-import dotenv from "dotenv-flow";
-import { writeFileSync } from "fs";
-
-dotenv.config({ silent: true });
 
 const aigne = new AIGNE({
   model: new Model({
@@ -43,8 +41,3 @@ const result3 = await aigne.invoke(agent, {
   message: `What is my work?`,
 });
 console.log(result3.message);
-
-// Save results to markdown file
-const filename = `memory-did-spaces-results.md`;
-const content = `# Memory DID Spaces Test Results\n\n${result1.message}\n\n${result2.message}\n\n${result3.message}`;
-writeFileSync(filename, content, "utf8");

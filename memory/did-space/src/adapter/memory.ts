@@ -16,6 +16,8 @@ import { logger } from "@aigne/core/utils/logger.js";
 import {
   GetObjectCommand,
   type GetObjectCommandOutput,
+  ListObjectCommand,
+  type ListObjectCommandOutput,
   PutObjectCommand,
   type PutObjectCommandOutput,
   SpaceClient,
@@ -161,23 +163,39 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
 
   agent: AIAgent<DIDSpacesMemoryRetrieverAgentInput, DIDSpacesMemoryRetrieverAgentOutput>;
 
+  async exists(): Promise<boolean> {
+    const client = new SpaceClient({
+      url: this.options.url,
+      auth: this.options.auth,
+    });
+    const listObjectCommandOutput: ListObjectCommandOutput = await client.send(
+      new ListObjectCommand({
+        key: this.options.memoryFileName,
+      }),
+    );
+
+    return listObjectCommandOutput.statusCode === 200;
+  }
+
   async read(input: MemoryRetrieverInput, options: AgentInvokeOptions): Promise<Memory[]> {
     const client = new SpaceClient({
       url: this.options.url,
       auth: this.options.auth,
     });
 
-    const output: GetObjectCommandOutput = await client.send(
+    const getObjectCommandOutput: GetObjectCommandOutput = await client.send(
       new GetObjectCommand({
         key: this.options.memoryFileName,
       }),
     );
-    if (output.statusCode !== 200) {
-      logger.warn(`statusCode: ${output.statusCode}, statusMessage: ${output.statusMessage}`);
-      return [];
+    if (getObjectCommandOutput.statusCode !== 200) {
+      logger.warn(
+        `statusCode: ${getObjectCommandOutput.statusCode}, statusMessage: ${getObjectCommandOutput.statusMessage}`,
+      );
+      throw new Error(getObjectCommandOutput.statusMessage);
     }
 
-    const allMemory = await streamToString(output.data);
+    const allMemory = await streamToString(getObjectCommandOutput.data);
     const { memories } = await options.context.invoke(this.agent, {
       ...input,
       allMemory,
@@ -195,6 +213,10 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
     input: MemoryRetrieverInput,
     options: AgentInvokeOptions,
   ): Promise<MemoryRetrieverOutput> {
+    if (!(await this.exists())) {
+      return { memories: [] };
+    }
+
     const memories = await this.read(input, options);
     return { memories };
   }
@@ -283,7 +305,7 @@ class DIDSpacesMemoryRecorder extends MemoryRecorder {
       logger.warn(
         `statusCode: ${putObjectCommandOutput.statusCode}, statusMessage: ${putObjectCommandOutput.statusMessage}`,
       );
-      return { memories: [] };
+      throw new Error(putObjectCommandOutput.statusMessage);
     }
 
     const results: Memory[] = memories.map((memory) => ({

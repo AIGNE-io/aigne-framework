@@ -1,9 +1,7 @@
+#!/usr/bin/env bunwrapper
+
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel as Model } from "@aigne/openai";
-import dotenv from "dotenv-flow";
-import { writeFileSync } from "fs";
-
-dotenv.config({ silent: true });
 
 const aigne = new AIGNE({
   model: new Model({
@@ -33,7 +31,7 @@ const agent = AIAgent.from({
 - Execute the requested operation
 - Show only the raw data result
 - No formatting, headers, or explanations`,
-  skills: Object.values(mcpAgent.skills),
+  skills: [mcpAgent],
   inputKey: "message",
 });
 
@@ -57,8 +55,3 @@ const getSpaceMetadataResponse = await aigne.invoke(agent, {
   message: `Get space metadata`,
 });
 console.log("getSpaceMetadataResponse", getSpaceMetadataResponse.message);
-
-// Save results to markdown file
-const filename = `mcp-did-spaces-results.md`;
-const content = `# MCP DID Spaces Test Results\n\n${writeObjectResponse.message}\n\n${readObjectResponse.message}\n\n${listRootResponse.message}\n\n${getSpaceMetadataResponse.message}`;
-writeFileSync(filename, content, "utf8");

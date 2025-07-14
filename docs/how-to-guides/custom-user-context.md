@@ -60,7 +60,7 @@ console.log(result);
 The following code demonstrates how to create an Agent and extract session ID from user context to implement multi-user isolated memory functionality:
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-custom-user-context"
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
+import { DefaultMemory } from '@aigne/default-memory/adapter/memory.js';
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 

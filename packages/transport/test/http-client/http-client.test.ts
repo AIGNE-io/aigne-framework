@@ -1,6 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { DefaultMemoryStorage } from "@aigne/agent-library/default-memory/default-memory-storage/index.js";
 import {
   AIAgent,
   AIGNE,
@@ -13,6 +12,7 @@ import {
   arrayToReadableStream,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
+import { DefaultMemoryStorage } from "@aigne/default-memory/adapter/default-memory-storage/index.js";
 import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
 import { agentResponseStreamToArraySnapshot } from "@aigne/test-utils/utils/agent-response.js";
 import {

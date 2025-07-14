@@ -59,7 +59,7 @@ content: |
 
   Products are a fundamental resource in PaymentKit, representing the goods or services you offer. This section provides a comprehensive guide to managing your products using the PaymentKit Node.js SDK, including creating, retrieving, updating, listing, and deleting products.
 
-  For information on defining pricing models for your products, refer to the [Prices](./core-resources-prices.md) section. To manage customer information, see [Customers](./core-resources-customers.md).
+  For information on defining pricing models for your products, refer to the [Prices](./core-resources/prices) section. To manage customer information, see [Customers](./core-resources/customers).
 
   ## Create a Product
 
@@ -350,7 +350,7 @@ content: |
 
   --- 
 
-  This section covered the essential operations for managing products within PaymentKit. You can now define and organize your offerings. Continue to the [Prices](./core-resources-prices.md) section to learn how to set up pricing for your products.
+  This section covered the essential operations for managing products within PaymentKit. You can now define and organize your offerings. Continue to the [Prices](./core-resources/prices) section to learn how to set up pricing for your products.
 
 ```
 

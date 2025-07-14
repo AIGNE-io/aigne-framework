@@ -1,7 +1,11 @@
 import {
+  AIGNEHubBaseModel,
+  type AIGNEHubChatModelInvokeOptions,
+  type AIGNEHubChatModelOptions,
+} from "@aigne/aigne-hub";
+import {
   type Agent,
   type AgentResponse,
-  type AgentResponseChunk,
   type AgentResponseStream,
   type Context,
   type ContextEmitEventMap,
@@ -16,8 +20,7 @@ import {
   type UserAgent,
   type UserContext,
 } from "@aigne/core";
-import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
-import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import { omit } from "@aigne/core/utils/type-utils.js";
 import type { Args, Listener } from "@aigne/core/utils/typed-event-emitter.js";
 import { v7 } from "uuid";
 import { ClientAgent, type ClientAgentOptions } from "./client-agent.js";
@@ -26,7 +29,7 @@ import { ClientChatModel } from "./client-chat-model.js";
 /**
  * Configuration options for the AIGNEHTTPClient.
  */
-export interface AIGNEHTTPClientOptions {
+export interface AIGNEHTTPClientOptions extends AIGNEHubChatModelOptions {
   /**
    * The URL of the AIGNE server to connect to.
    * This should point to the base endpoint where the AIGNEServer is hosted.
@@ -38,7 +41,7 @@ export interface AIGNEHTTPClientOptions {
  * Options for invoking an agent through the AIGNEHTTPClient.
  * Extends the standard AgentInvokeOptions with client-specific options.
  */
-export interface AIGNEHTTPClientInvokeOptions extends InvokeOptions {
+export interface AIGNEHTTPClientInvokeOptions extends AIGNEHubChatModelInvokeOptions {
   /**
    * Additional fetch API options to customize the HTTP request.
    * These options will be merged with the default options used by the client.
@@ -60,12 +63,16 @@ export interface AIGNEHTTPClientInvokeOptions extends InvokeOptions {
  * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
  */
 export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Context<U> {
+  private _baseModel: AIGNEHubBaseModel;
+
   /**
    * Creates a new AIGNEClient instance.
    *
    * @param options - Configuration options for connecting to the AIGNE server
    */
-  constructor(public options: AIGNEHTTPClientOptions) {}
+  constructor(public options: AIGNEHTTPClientOptions) {
+    this._baseModel = new AIGNEHubBaseModel(options);
+  }
 
   id = v7();
 
@@ -253,72 +260,13 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
     input: string | I,
     options?: AIGNEHTTPClientInvokeOptions,
   ): Promise<AgentResponse<O>> {
-    // Send the agent invocation request to the AIGNE server
-    const response = await this.fetch(this.options.url, {
-      ...options?.fetchOptions,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.fetchOptions?.headers,
-      },
-      body: JSON.stringify({
-        agent,
-        input,
-        options: options && {
-          ...omit(options, "context" as any),
-          userContext: { ...this.userContext, ...options.userContext },
-          memories: [...this.memories, ...(options.memories ?? [])],
-        },
-      }),
+    const safeOptions = options || {};
+
+    return this._baseModel._baseInvoke(agent, input, {
+      ...omit(safeOptions, "context" as any),
+      userContext: { ...this.userContext, ...safeOptions.userContext },
+      memories: [...this.memories, ...(safeOptions.memories ?? [])],
     });
-
-    // For non-streaming responses, simply parse the JSON response and return it
-    if (!options?.streaming) {
-      return await response.json();
-    }
-
-    // For streaming responses, set up the streaming pipeline
-    const stream = response.body;
-    if (!stream) throw new Error("Response body is not a stream");
-
-    // Process the stream through a series of transforms:
-    // 1. Convert bytes to text
-    // 2. Parse SSE format into structured events
-    // 3. Convert events into a standardized agent response stream
-    return stream
-      .pipeThrough(new TextDecoderStream())
-      .pipeThrough(new EventStreamParser<AgentResponseChunk<O>>())
-      .pipeThrough(new AgentResponseStreamParser());
-  }
-
-  /**
-   * Enhanced fetch method that handles error responses from the AIGNE server.
-   * This method wraps the standard fetch API to provide better error handling and reporting.
-   *
-   * @param args - Standard fetch API arguments (url and options)
-   * @returns A Response object if the request was successful
-   * @throws Error with detailed information if the request failed
-   *
-   * @private
-   */
-  async fetch(...args: Parameters<typeof globalThis.fetch>): Promise<Response> {
-    const result = await globalThis.fetch(...args);
-
-    if (!result.ok) {
-      let message: string | undefined;
-
-      try {
-        const text = await result.text();
-        const json = tryOrThrow(() => JSON.parse(text) as { error?: { message: string } });
-        message = json?.error?.message || text;
-      } catch {
-        // ignore
-      }
-
-      throw new Error(`Failed to fetch url ${args[0]} with status ${result.status}: ${message}`);
-    }
-
-    return result;
   }
 
   async getAgent<I extends Message = Message, O extends Message = Message>(

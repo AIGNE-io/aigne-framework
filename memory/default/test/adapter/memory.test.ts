@@ -1,186 +1,176 @@
 import { expect, spyOn, test } from 'bun:test';
-import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import assert from 'node:assert';
+import { rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { FSMemory, MEMORY_FILE_NAME } from '../../src/adapter/memory.js';
-import { AIAgent, AIGNE } from '@aigne/core';
-import { stringify } from 'yaml';
-import { OpenAIChatModel } from '../_mocks_/mock-models.js';
+import { DefaultMemoryStorage } from '../../src/adapter/default-memory-storage/index.js';
+import { DefaultMemory } from '../../src/adapter/memory.js';
+import {
+  AIAgent,
+  AIGNE,
+  type MemoryRecorderInput,
+  stringToAgentResponseStream,
+} from '@aigne/core';
+import { OpenAIChatModel } from '@aigne/openai';
+import { v7 } from 'uuid';
+import { z } from 'zod';
 
-test('FSMemory simple example', async () => {
-  // #region example-fs-memory-simple
+test('should add a new memory', async () => {
+  const context = new AIGNE().newContext();
+
+  const memoryAgent = new DefaultMemory();
+  const storage = memoryAgent.storage;
+  assert(storage instanceof DefaultMemoryStorage);
+
+  const memory: MemoryRecorderInput['content'][number] = {
+    input: { text: 'Hello' },
+  };
+
+  await memoryAgent.record({ content: [memory] }, context);
+
+  const { result: allMemories } = await storage.search({}, { context });
+
+  expect(allMemories).toHaveLength(1);
+  expect(allMemories[0]).toEqual(
+    expect.objectContaining({
+      content: memory,
+    })
+  );
+});
+
+test('should add multiple different memories', async () => {
+  const context = new AIGNE().newContext();
+
+  const memoryAgent = new DefaultMemory({});
+  const storage = memoryAgent.storage;
+  assert(storage instanceof DefaultMemoryStorage);
+
+  const memory1: MemoryRecorderInput['content'][number] = {
+    input: { text: 'Hello' },
+  };
+  const memory2: MemoryRecorderInput['content'][number] = {
+    output: { text: 'Hi there' },
+  };
+
+  await memoryAgent.record({ content: [memory1] }, context);
+  await memoryAgent.record({ content: [memory2] }, context);
+
+  const { result: allMemories } = await storage.search(
+    { orderBy: ['createdAt', 'asc'] },
+    { context }
+  );
+
+  expect(allMemories).toHaveLength(2);
+  expect(allMemories[0]).toEqual(expect.objectContaining({ content: memory1 }));
+  expect(allMemories[1]).toEqual(expect.objectContaining({ content: memory2 }));
+});
+
+test('DefaultMemory should add memory with correct sessionId', async () => {
+  const context = new AIGNE().newContext({
+    userContext: { userId: 'test_user_id' },
+  });
+
+  const memoryAgent = new DefaultMemory({
+    storage: {
+      getSessionId: (context) => context.userContext.userId as string,
+    },
+  });
+  const storage = memoryAgent.storage;
+  assert(storage instanceof DefaultMemoryStorage);
+
+  const memory: MemoryRecorderInput['content'][number] = {
+    input: { text: 'Hello' },
+  };
+
+  await memoryAgent.record({ content: [memory] }, context);
+
+  const { result: allMemories } = await storage.search({}, { context });
+
+  expect(allMemories).toHaveLength(1);
+  expect(allMemories[0]).toEqual(
+    expect.objectContaining({
+      sessionId: 'test_user_id',
+      content: memory,
+    })
+  );
+});
+
+test('DefaultMemory should persist memories if path options is provided', async () => {
+  const context = new AIGNE().newContext({
+    userContext: { userId: 'test_user_id' },
+  });
+
+  const path = join(tmpdir(), `${v7()}.db`);
+  try {
+    const memoryAgent = new DefaultMemory({
+      storage: { url: `file:${path}` },
+    });
+    const storage = memoryAgent.storage;
+    assert(storage instanceof DefaultMemoryStorage);
+
+    const memory: MemoryRecorderInput['content'][number] = {
+      input: { text: 'Hello' },
+    };
+
+    await memoryAgent.record({ content: [memory] }, context);
+
+    expect((await stat(path)).isFile()).toBe(true);
+  } finally {
+    await rm(path, { force: true, recursive: true });
+  }
+});
+
+test('DefaultMemory should remember memories for AIAgent correctly', async () => {
   const model = new OpenAIChatModel();
 
-  const engine = new AIGNE({ model });
-
-  const memory = new FSMemory({ rootDir: '/PATH/TO/MEMORY_FOLDER' });
+  const memory = new DefaultMemory({
+    inputKey: 'message',
+    outputKey: 'message',
+  });
 
   const agent = AIAgent.from({
-    memory,
+    name: 'TestAgent',
+    memory: [memory],
+    inputSchema: z.object({
+      language: z.string(),
+    }),
+    instructions:
+      'You are a helpful assistant.\nPlease answer in {{language}}.',
+    inputKey: 'message',
+    outputKey: 'message',
   });
 
-  spyOn(memory, 'retrieve').mockReturnValueOnce(
-    Promise.resolve({ memories: [] })
-  );
-  spyOn(memory, 'record').mockReturnValueOnce(
-    Promise.resolve({ memories: [] })
-  );
-  spyOn(model, 'process').mockReturnValueOnce(
-    Promise.resolve({
-      text: 'Great! I will remember that you like blue color.',
-    })
-  );
+  const aigne = new AIGNE({ model, agents: [agent] });
 
-  const result1 = await engine.invoke(agent, { message: 'I like blue color' });
+  const modelProcess = spyOn(model, 'process');
 
-  expect(result1).toEqual({
-    message: 'Great! I will remember that you like blue color.',
+  modelProcess.mockReturnValueOnce(
+    stringToAgentResponseStream('Great, the blue color is nice!')
+  );
+  await aigne.invoke(agent, { message: 'I like blue color', language: 'zh' });
+  expect(modelProcess.mock.lastCall?.[0].messages).toMatchSnapshot();
+
+  modelProcess.mockReturnValueOnce(
+    stringToAgentResponseStream('Red is also a nice color!')
+  );
+  await aigne.invoke(agent, {
+    message: 'I also like red color',
+    language: 'zh',
   });
-  console.log(result1);
-  // Output: { message: 'Great! I will remember that you like blue color.' }
+  expect(modelProcess.mock.lastCall?.[0].messages).toMatchSnapshot();
 
-  spyOn(memory, 'retrieve').mockReturnValueOnce(
-    Promise.resolve({
-      memories: [
-        {
-          id: 'memory1',
-          content: 'You like blue color.',
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    })
+  const storage = memory.storage;
+  assert(storage instanceof DefaultMemoryStorage);
+
+  const { result: allMemories } = await storage.search(
+    {},
+    { context: aigne.newContext() }
   );
-  spyOn(memory, 'record').mockReturnValueOnce(
-    Promise.resolve({ memories: [] })
+  expect(allMemories).toMatchSnapshot(
+    new Array(allMemories.length).fill(0).map(() => ({
+      createdAt: expect.any(String),
+      id: expect.any(String),
+      sessionId: null,
+    }))
   );
-  spyOn(model, 'process').mockReturnValueOnce(
-    Promise.resolve({
-      text: 'You like blue color.',
-    })
-  );
-
-  const result2 = await engine.invoke(agent, {
-    message: 'What color do I like?',
-  });
-  expect(result2).toEqual({ message: 'You like blue color.' });
-  console.log(result2);
-  // Output: { message: 'You like blue color.' }
-
-  // #endregion example-fs-memory-simple
-});
-
-test('FSMemory retrieve should read all memory from file', async () => {
-  const dir = join(tmpdir(), randomUUID());
-  await mkdir(dir, { recursive: true });
-  try {
-    await writeFile(
-      join(dir, MEMORY_FILE_NAME),
-      stringify([
-        { content: 'User likes blue color.' },
-        { content: 'User likes play basketball.' },
-      ]),
-      'utf-8'
-    );
-
-    const model = new OpenAIChatModel();
-
-    const engine = new AIGNE({ model });
-
-    const memory = new FSMemory({ rootDir: dir });
-
-    const modelProcess = spyOn(model, 'process');
-
-    modelProcess.mockReturnValueOnce(
-      Promise.resolve({
-        json: {
-          memories: [{ content: 'User likes blue color.' }],
-        },
-      })
-    );
-
-    const result = await memory.retrieve(
-      { search: 'What color do I like?' },
-      engine.newContext()
-    );
-
-    expect(modelProcess).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            content: expect.stringContaining('What color do I like?'),
-          }),
-        ]),
-      }),
-      expect.anything()
-    );
-
-    expect(result).toEqual({
-      memories: [
-        {
-          id: expect.any(String),
-          content: 'User likes blue color.',
-          createdAt: expect.any(String),
-        },
-      ],
-    });
-  } finally {
-    await rm(dir, { recursive: true, force: true });
-  }
-});
-
-test('FSMemory retrieve should write all memory into memory file', async () => {
-  const dir = join(tmpdir(), randomUUID());
-  await mkdir(dir, { recursive: true });
-  try {
-    const model = new OpenAIChatModel();
-
-    const engine = new AIGNE({ model });
-
-    const memory = new FSMemory({ rootDir: dir });
-
-    const modelProcess = spyOn(model, 'process');
-
-    modelProcess.mockReturnValueOnce(
-      Promise.resolve({
-        json: {
-          memories: [{ content: 'User likes blue color.' }],
-        },
-      })
-    );
-
-    const result = await memory.record(
-      {
-        content: [{ input: { message: 'I like blue color.' } }],
-      },
-      engine.newContext()
-    );
-
-    expect(modelProcess).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            content: expect.stringContaining('I like blue color.'),
-          }),
-        ]),
-      }),
-      expect.anything()
-    );
-
-    expect(result).toEqual({
-      memories: [
-        {
-          id: expect.any(String),
-          content: 'User likes blue color.',
-          createdAt: expect.any(String),
-        },
-      ],
-    });
-
-    expect(await readFile(join(dir, MEMORY_FILE_NAME), 'utf-8')).toEqual(
-      stringify([{ content: 'User likes blue color.' }])
-    );
-  } finally {
-    await rm(dir, { recursive: true, force: true });
-  }
 });

@@ -1,0 +1,29 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DefaultMemoryStorage should search by fts 1`] = `
+[
+  {
+    "content": {
+      "input": "我讨厌绿色",
+      "output": "绿色真的很糟糕",
+    },
+    "createdAt": Any<String>,
+    "id": Any<String>,
+    "sessionId": null,
+  },
+]
+`;
+
+exports[`DefaultMemoryStorage should search by fts 2`] = `
+[
+  {
+    "content": {
+      "input": "我讨厌绿色",
+      "output": "绿色真的很糟糕",
+    },
+    "createdAt": Any<String>,
+    "id": Any<String>,
+    "sessionId": null,
+  },
+]
+`;

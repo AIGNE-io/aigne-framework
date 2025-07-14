@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@aigne/core": ["../core/src"],
+      "@aigne/core/*": ["../core/src/*"],
+      "@aigne/agent-library/*": ["./src/*"]
+    }
+  },
+  "exclude": ["node_modules", "lib"],
+  "include": ["src", "test"]
+}

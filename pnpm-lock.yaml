@@ -484,6 +484,58 @@ importers:
         specifier: ^1.2.18
         version: 1.2.18(@types/react@19.1.8)
 
+  memory/did-space:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../../models/openai
+      '@aigne/sqlite':
+        specifier: workspace:^
+        version: link:../../packages/sqlite
+      '@blocklet/did-space-js':
+        specifier: ^1.1.3
+        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+      '@did-space/core':
+        specifier: ^1.1.3
+        version: 1.1.6(encoding@0.1.13)(sqlite3@5.1.7)
+      drizzle-orm:
+        specifier: ^0.44.2
+        version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.18(@types/react@19.1.8))(sqlite3@5.1.7)
+      fastq:
+        specifier: ^1.19.1
+        version: 1.19.1
+      jsonata:
+        specifier: ^2.0.6
+        version: 2.0.6
+      jsonschema:
+        specifier: ^1.5.0
+        version: 1.5.0
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+      yaml:
+        specifier: ^2.8.0
+        version: 2.8.0
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.18
+        version: 1.2.18(@types/react@19.1.8)
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   models/anthropic:
     dependencies:
       '@aigne/core':

@@ -1,6 +1,6 @@
 type: team
 name: content-generator
-description: 结构规划和结果评估
+description: 内容生成
 skills:
   - structure-planning.yaml
   - type: transform

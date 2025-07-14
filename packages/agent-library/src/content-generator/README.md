@@ -99,10 +99,10 @@ bun run /Users/lban/arcblock/code/aigne-framework/packages/cli/src/cli.ts run --
 测试文档生成的命令
 ```bash
 # aigne
-aigne run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml  --model anthropic:claude-3-7-sonnet-latest
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/aigne-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml
 
 # aigne detail
-aigne run --entry-agent "detail-generator-and-translate" --input "@mock-inputs/aigne-docs-input-detail.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md"  --format yaml --model anthropic:claude-3-7-sonnet-latest
+aigne run --entry-agent "detail-generator-and-translate" --input "@mock-inputs/aigne-docs-input-detail.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md"  --format yaml
 
 aigne run --entry-agent "translate" --input-content "@../../../../docs-ai-v0.1/cli.md" --input-language zh-CN --input-glossary "@mock-inputs/arcblock-glossary.md"  
 

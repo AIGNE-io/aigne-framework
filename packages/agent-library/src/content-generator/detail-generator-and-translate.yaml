@@ -31,32 +31,41 @@ input_schema:
     targetAudience:
       type: string
       description: 目标受众
-    datasourcesList:
-      type: array
-      items:
-        type: object
-        properties:
-          sourceId:
-            type: string
-          content:
-            type: string
     glossary:
       type: string
       description: 术语表
     currentPath:
       type: string
       description: 当前路径
-    content:
-      type: string
     feedback:
       type: string
       description: 反馈
-    datasources:
+    sources:
+      type: array
+      items:
+        type: string
+        description: 源码路径
+    sourcesPath:
+      type: array
+      items:
+        type: string
+        description: 源码路径
+    includePatterns:
+      type: array
+      items:
+        type: string
+        description: 包含的文件名
+    excludePatterns:
+      type: array
+      items:
+        type: string
+        description: 排除的文件名
+    outputDir:
       type: string
-      description: 结构规划的上下文，用于辅助结构规划
-    originalStructurePlan:
+      description: 输出目录
+    docsDir:
       type: string
-      description: 原始结构规划
+      description: 文档目录
 output_schema:
   type: object
   properties:

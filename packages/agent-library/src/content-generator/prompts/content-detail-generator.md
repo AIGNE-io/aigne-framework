@@ -64,23 +64,7 @@ parentId: {{parentId}}
 - 不要在输出中直接 Data Sources 中的文件路径，这对用户是没有意义的
 - 不要出现 '当前{{nodeName}}' 这种说法
 
-文档类信息生成规则：
-- 每个部分文档需要包含：标题、开头介绍、多个 section 介绍、结尾总结
-- 文档标题中已经主题 API 名称，文档中的小标题不需要重复显示，直接显示子 API 名称
-- 开头介绍包含关联文档的链接，使用 markdown 的 link 格式，引导用户阅读相关的文档
-- 结尾总结中包含下一步阅读文档的链接，使用 markdown 的 link 格式，引导用户阅读相关的文档
-- 确保 markdown 链接格式正确，示例：[Next Chapter Title](next_chapter_path)
-- 每个 section 需要包含：标题、介绍、代码示例、示例说明，示例说明跟在示例代码后描述，不需要‘示例说明’这样的小标题
-- 确保文档中的内容是完整、连贯的，用户可以跟着文档一步步顺利执行
-- 说明要尽可能的详细，如果存在配置项或参数，需要解释每个配置项或参数的含义，如果参数有多个可选值，每种可选值需要解释其含义，并尽可能配上代码示例
-- 参数优先使用 markdown 中的 table 来展示，让内容看上去更整齐，容易阅读
-- 使用 mermaid 图表解释复杂的概念 (```mermaid``` format)，让页面内容展示形式更丰富
-  - 使用 `flowchart` 图表解释概念之间的关系
-  - 使用 `sequenceDiagram` 图表解释调用、执行的流程
-  - **确保 mermaid `flowchart` 图表中所有节点的 label 都使用 " 包裹**，避免因为 label 中存在特殊符号，导致渲染失败，示例：A["@abc"]、B("AIGNE")、C{"@aigne/core"}
-- 更多的使用 table 、mermaid 图表来解释信息，过长的文本描述会让用户阅读有压力
-- 概览部分，必须包含 mermaid 图表，展示产品的架构图
-- README 文件只做参考，你需要从代码中获取最新、最完整的信息
+{% include "prompts/document/detail-generator.md" %}
 </rules>
 
 <output_schema>

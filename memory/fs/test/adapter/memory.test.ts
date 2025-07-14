@@ -1,86 +1,80 @@
-import { expect, spyOn, test } from 'bun:test';
-import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { FSMemory, MEMORY_FILE_NAME } from '../../src/adapter/memory.js';
-import { AIAgent, AIGNE } from '@aigne/core';
-import { stringify } from 'yaml';
-import { OpenAIChatModel } from '../_mocks_/mock-models.js';
+import { expect, spyOn, test } from "bun:test";
+import { randomUUID } from "node:crypto";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { AIAgent, AIGNE } from "@aigne/core";
+import { stringify } from "yaml";
+import { FSMemory, MEMORY_FILE_NAME } from "../../src/adapter/memory.js";
+import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
-test('FSMemory simple example', async () => {
+test("FSMemory simple example", async () => {
   // #region example-fs-memory-simple
   const model = new OpenAIChatModel();
 
   const engine = new AIGNE({ model });
 
-  const memory = new FSMemory({ rootDir: '/PATH/TO/MEMORY_FOLDER' });
+  const memory = new FSMemory({ rootDir: "/PATH/TO/MEMORY_FOLDER" });
 
   const agent = AIAgent.from({
     memory,
   });
 
-  spyOn(memory, 'retrieve').mockReturnValueOnce(
-    Promise.resolve({ memories: [] })
-  );
-  spyOn(memory, 'record').mockReturnValueOnce(
-    Promise.resolve({ memories: [] })
-  );
-  spyOn(model, 'process').mockReturnValueOnce(
+  spyOn(memory, "retrieve").mockReturnValueOnce(Promise.resolve({ memories: [] }));
+  spyOn(memory, "record").mockReturnValueOnce(Promise.resolve({ memories: [] }));
+  spyOn(model, "process").mockReturnValueOnce(
     Promise.resolve({
-      text: 'Great! I will remember that you like blue color.',
-    })
+      text: "Great! I will remember that you like blue color.",
+    }),
   );
 
-  const result1 = await engine.invoke(agent, { message: 'I like blue color' });
+  const result1 = await engine.invoke(agent, { message: "I like blue color" });
 
   expect(result1).toEqual({
-    message: 'Great! I will remember that you like blue color.',
+    message: "Great! I will remember that you like blue color.",
   });
   console.log(result1);
   // Output: { message: 'Great! I will remember that you like blue color.' }
 
-  spyOn(memory, 'retrieve').mockReturnValueOnce(
+  spyOn(memory, "retrieve").mockReturnValueOnce(
     Promise.resolve({
       memories: [
         {
-          id: 'memory1',
-          content: 'You like blue color.',
+          id: "memory1",
+          content: "You like blue color.",
           createdAt: new Date().toISOString(),
         },
       ],
-    })
+    }),
   );
-  spyOn(memory, 'record').mockReturnValueOnce(
-    Promise.resolve({ memories: [] })
-  );
-  spyOn(model, 'process').mockReturnValueOnce(
+  spyOn(memory, "record").mockReturnValueOnce(Promise.resolve({ memories: [] }));
+  spyOn(model, "process").mockReturnValueOnce(
     Promise.resolve({
-      text: 'You like blue color.',
-    })
+      text: "You like blue color.",
+    }),
   );
 
   const result2 = await engine.invoke(agent, {
-    message: 'What color do I like?',
+    message: "What color do I like?",
   });
-  expect(result2).toEqual({ message: 'You like blue color.' });
+  expect(result2).toEqual({ message: "You like blue color." });
   console.log(result2);
   // Output: { message: 'You like blue color.' }
 
   // #endregion example-fs-memory-simple
 });
 
-test('FSMemory retrieve should read all memory from file', async () => {
+test("FSMemory retrieve should read all memory from file", async () => {
   const dir = join(tmpdir(), randomUUID());
   await mkdir(dir, { recursive: true });
   try {
     await writeFile(
       join(dir, MEMORY_FILE_NAME),
       stringify([
-        { content: 'User likes blue color.' },
-        { content: 'User likes play basketball.' },
+        { content: "User likes blue color." },
+        { content: "User likes play basketball." },
       ]),
-      'utf-8'
+      "utf-8",
     );
 
     const model = new OpenAIChatModel();
@@ -89,37 +83,34 @@ test('FSMemory retrieve should read all memory from file', async () => {
 
     const memory = new FSMemory({ rootDir: dir });
 
-    const modelProcess = spyOn(model, 'process');
+    const modelProcess = spyOn(model, "process");
 
     modelProcess.mockReturnValueOnce(
       Promise.resolve({
         json: {
-          memories: [{ content: 'User likes blue color.' }],
+          memories: [{ content: "User likes blue color." }],
         },
-      })
+      }),
     );
 
-    const result = await memory.retrieve(
-      { search: 'What color do I like?' },
-      engine.newContext()
-    );
+    const result = await memory.retrieve({ search: "What color do I like?" }, engine.newContext());
 
     expect(modelProcess).toHaveBeenLastCalledWith(
       expect.objectContaining({
         messages: expect.arrayContaining([
           expect.objectContaining({
-            content: expect.stringContaining('What color do I like?'),
+            content: expect.stringContaining("What color do I like?"),
           }),
         ]),
       }),
-      expect.anything()
+      expect.anything(),
     );
 
     expect(result).toEqual({
       memories: [
         {
           id: expect.any(String),
-          content: 'User likes blue color.',
+          content: "User likes blue color.",
           createdAt: expect.any(String),
         },
       ],
@@ -129,7 +120,7 @@ test('FSMemory retrieve should read all memory from file', async () => {
   }
 });
 
-test('FSMemory retrieve should write all memory into memory file', async () => {
+test("FSMemory retrieve should write all memory into memory file", async () => {
   const dir = join(tmpdir(), randomUUID());
   await mkdir(dir, { recursive: true });
   try {
@@ -139,46 +130,46 @@ test('FSMemory retrieve should write all memory into memory file', async () => {
 
     const memory = new FSMemory({ rootDir: dir });
 
-    const modelProcess = spyOn(model, 'process');
+    const modelProcess = spyOn(model, "process");
 
     modelProcess.mockReturnValueOnce(
       Promise.resolve({
         json: {
-          memories: [{ content: 'User likes blue color.' }],
+          memories: [{ content: "User likes blue color." }],
         },
-      })
+      }),
     );
 
     const result = await memory.record(
       {
-        content: [{ input: { message: 'I like blue color.' } }],
+        content: [{ input: { message: "I like blue color." } }],
       },
-      engine.newContext()
+      engine.newContext(),
     );
 
     expect(modelProcess).toHaveBeenLastCalledWith(
       expect.objectContaining({
         messages: expect.arrayContaining([
           expect.objectContaining({
-            content: expect.stringContaining('I like blue color.'),
+            content: expect.stringContaining("I like blue color."),
           }),
         ]),
       }),
-      expect.anything()
+      expect.anything(),
     );
 
     expect(result).toEqual({
       memories: [
         {
           id: expect.any(String),
-          content: 'User likes blue color.',
+          content: "User likes blue color.",
           createdAt: expect.any(String),
         },
       ],
     });
 
-    expect(await readFile(join(dir, MEMORY_FILE_NAME), 'utf-8')).toEqual(
-      stringify([{ content: 'User likes blue color.' }])
+    expect(await readFile(join(dir, MEMORY_FILE_NAME), "utf-8")).toEqual(
+      stringify([{ content: "User likes blue color." }]),
     );
   } finally {
     await rm(dir, { recursive: true, force: true });

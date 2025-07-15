@@ -20,15 +20,16 @@ import type { Args, Listener } from "@aigne/core/utils/typed-event-emitter.js";
 import { v7 } from "uuid";
 import { ClientAgent, type ClientAgentOptions } from "./client-agent.js";
 import {
-  AIGNEHubBaseModel,
-  type AIGNEHubChatModelInvokeOptions,
-  type AIGNEHubChatModelOptions,
+  ClientChatBaseModel,
+  type ClientChatModelInvokeOptions,
+  type ClientChatModelOptions,
 } from "./client-chat-base-model.js";
 import { ClientChatModel } from "./client-chat-model.js";
+
 /**
  * Configuration options for the AIGNEHTTPClient.
  */
-export interface AIGNEHTTPClientOptions extends AIGNEHubChatModelOptions {
+export interface AIGNEHTTPClientOptions extends ClientChatModelOptions {
   /**
    * The URL of the AIGNE server to connect to.
    * This should point to the base endpoint where the AIGNEServer is hosted.
@@ -40,7 +41,7 @@ export interface AIGNEHTTPClientOptions extends AIGNEHubChatModelOptions {
  * Options for invoking an agent through the AIGNEHTTPClient.
  * Extends the standard AgentInvokeOptions with client-specific options.
  */
-export interface AIGNEHTTPClientInvokeOptions extends AIGNEHubChatModelInvokeOptions {
+export interface AIGNEHTTPClientInvokeOptions extends ClientChatModelInvokeOptions {
   /**
    * Additional fetch API options to customize the HTTP request.
    * These options will be merged with the default options used by the client.
@@ -62,7 +63,7 @@ export interface AIGNEHTTPClientInvokeOptions extends AIGNEHubChatModelInvokeOpt
  * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
  */
 export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Context<U> {
-  private _baseModel: AIGNEHubBaseModel;
+  private _baseModel: ClientChatBaseModel;
 
   /**
    * Creates a new AIGNEClient instance.
@@ -70,7 +71,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
    * @param options - Configuration options for connecting to the AIGNE server
    */
   constructor(public options: AIGNEHTTPClientOptions) {
-    this._baseModel = new AIGNEHubBaseModel(options);
+    this._baseModel = new ClientChatBaseModel(options);
   }
 
   id = v7();

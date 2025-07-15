@@ -20,14 +20,14 @@ import {
 } from "@aigne/core/utils/type-utils.js";
 import { z } from "zod";
 
-export interface AIGNEHubChatModelOptions {
+export interface ClientChatModelOptions {
   url: string;
   accessKeyId?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
 }
 
-export interface AIGNEHubChatModelInvokeOptions extends InvokeOptions {
+export interface ClientChatModelInvokeOptions extends InvokeOptions {
   /**
    * Additional fetch API options to customize the HTTP request.
    * These options will be merged with the default options used by the client.
@@ -38,7 +38,7 @@ export interface AIGNEHubChatModelInvokeOptions extends InvokeOptions {
 /**
  * @hidden
  */
-export const aigneHubChatModelOptionsSchema = z.object({
+export const ClientChatModelOptionsSchema = z.object({
   url: z.string(),
   accessKeyId: z.string().optional(),
   model: z.string().optional(),
@@ -54,9 +54,9 @@ export const aigneHubChatModelOptionsSchema = z.object({
     .optional(),
 });
 
-export class AIGNEHubBaseModel extends ChatModel {
-  constructor(public options: AIGNEHubChatModelOptions) {
-    if (options) checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
+export class ClientChatBaseModel extends ChatModel {
+  constructor(public options: ClientChatModelOptions) {
+    if (options) checkArguments("ClientChatModel", ClientChatModelOptionsSchema, options);
     super();
   }
 
@@ -82,7 +82,7 @@ export class AIGNEHubBaseModel extends ChatModel {
   async __invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options?: AIGNEHubChatModelInvokeOptions & { streaming?: false },
+    options?: ClientChatModelInvokeOptions & { streaming?: false },
   ): Promise<O>;
 
   /**
@@ -100,7 +100,7 @@ export class AIGNEHubBaseModel extends ChatModel {
   async __invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options: AIGNEHubChatModelInvokeOptions & { streaming: true },
+    options: ClientChatModelInvokeOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
   /**
@@ -114,12 +114,12 @@ export class AIGNEHubBaseModel extends ChatModel {
   async __invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options?: AIGNEHubChatModelInvokeOptions,
+    options?: ClientChatModelInvokeOptions,
   ): Promise<AgentResponse<O>>;
   async __invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options?: AIGNEHubChatModelInvokeOptions,
+    options?: ClientChatModelInvokeOptions,
   ): Promise<AgentResponse<O>> {
     const headers: any = {
       "Content-Type": "application/json",

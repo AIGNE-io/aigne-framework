@@ -1,9 +1,11 @@
 import {
+  type AgentInvokeOptions,
   type AgentProcessResult,
   type AgentResponse,
   type AgentResponseChunk,
   type AgentResponseStream,
   ChatModel,
+  type ChatModelInput,
   type ChatModelOptions,
   type ChatModelOutput,
   type InvokeOptions,
@@ -51,7 +53,10 @@ export class ClientChatBaseModel extends ChatModel {
     super();
   }
 
-  process(): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+  process(
+    _input: ChatModelInput,
+    _options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     throw new Error("Method not implemented.");
   }
 

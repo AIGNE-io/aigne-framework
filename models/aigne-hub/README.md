@@ -33,7 +33,7 @@ type AIProvider = 'openai' | 'anthropic' | 'bedrock' | 'deepseek' | 'google' | '
 ## Features
 - 🔌 Unified LLM Access: Route all requests through one endpoint
 - 🧠 Multi-provider Support: Choose from any supported vendor via the model name
-- 🔐 API Key Security: Use accessKeyId to manage authentication and authorization
+- 🔐 API Key Security: Use accessKey to manage authentication and authorization
 - 💬 Chat Completions: Works with standard messages format ({ role, content })
 - 🌊 Streaming Support: Enable streaming: true for real-time token-level responses
 - 🧱 Framework Compatible: Seamless integration with the AIGNE Framework
@@ -59,7 +59,7 @@ import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubChatModel({
   url: "https://your-aigne-hub-instance/ai-kit/api/v2/chat",
-  accessKeyId: "your-access-key-id",
+  accessKey: "your-access-key-id",
   model: "openai/gpt-4o-mini",
 });
 
@@ -85,7 +85,7 @@ import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubChatModel({
   url: "https://your-aigne-hub-instance/ai-kit/api/v2/chat",
-  accessKeyId: "your-access-key-id",
+  accessKey: "your-access-key-id",
   model: "openai/gpt-4o-mini",
 });
 
@@ -114,7 +114,7 @@ console.log(json); // { model: "gpt-4o", usage: { inputTokens: 10, outputTokens:
 ```typescript
 interface ClientChatModelOptions {
   url: string;              // Your AIGNE Hub endpoint
-  accessKeyId: string;      // API access key
+  accessKey: string;      // API access key
   model: string;            // Model name with provider prefix (e.g. openai/gpt-4o-mini)
   modelOptions?: object;    // Optional model-specific parameters
 }

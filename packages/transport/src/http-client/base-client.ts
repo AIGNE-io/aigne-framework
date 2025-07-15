@@ -8,6 +8,7 @@ import type {
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
 import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import { ChatModelName } from "../constants.js";
 
 /**
  * Options for invoking an agent through the BaseClient.
@@ -23,7 +24,7 @@ export interface BaseClientInvokeOptions extends InvokeOptions {
 
 export interface BaseClientOptions {
   url: string;
-  accessKeyId?: string;
+  accessKey?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
 }
@@ -61,9 +62,9 @@ export class BaseClient {
    * Here's a simple example of how to use AIGNEClient:
    * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-simple}
    */
-  async _invoke<I extends Message, O extends Message>(
-    agent: string,
-    input: string | I,
+  async __invoke<I extends Message, O extends Message>(
+    agent?: string,
+    input?: string | I,
     options?: BaseClientInvokeOptions & { streaming?: false },
   ): Promise<O>;
 
@@ -79,10 +80,10 @@ export class BaseClient {
    * Here's an example of how to use AIGNEClient with streaming response:
    * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
    */
-  async _invoke<I extends Message, O extends Message>(
-    agent: string,
-    input: string | I,
-    options: BaseClientInvokeOptions & { streaming: true },
+  async __invoke<I extends Message, O extends Message>(
+    agent?: string,
+    input?: string | I,
+    options?: BaseClientInvokeOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
   /**
@@ -93,14 +94,14 @@ export class BaseClient {
    * @param options - Options for the invocation
    * @returns Either a complete response or a response stream depending on the streaming option
    */
-  async _invoke<I extends Message, O extends Message>(
-    agent: string,
-    input: string | I,
+  async __invoke<I extends Message, O extends Message>(
+    agent?: string,
+    input?: string | I,
     options?: BaseClientInvokeOptions,
   ): Promise<AgentResponse<O>>;
-  async _invoke<I extends Message, O extends Message>(
-    agent: string,
-    input: string | I,
+  async __invoke<I extends Message, O extends Message>(
+    agent?: string,
+    input?: string | I,
     options?: BaseClientInvokeOptions,
   ): Promise<AgentResponse<O>> {
     const model = this.options.modelOptions?.model ?? this.options.model;
@@ -110,25 +111,27 @@ export class BaseClient {
       ...options?.fetchOptions?.headers,
     };
 
-    if (this.options?.accessKeyId) {
-      headers["Authorization"] = `Bearer ${this.options.accessKeyId}`;
+    if (this.options?.accessKey) {
+      headers["Authorization"] = `Bearer ${this.options.accessKey}`;
     }
+
+    const body: Record<string, any> = {
+      model,
+      input,
+      agent: agent ?? ChatModelName,
+      options: options && {
+        ...omit(options, "context" as any),
+        userContext: { ...options.userContext },
+        memories: [...(options.memories ?? [])],
+        modelOptions: this.options.modelOptions,
+      },
+    };
 
     const response = await this.fetch(this.options.url, {
       ...options?.fetchOptions,
       method: "POST",
       headers: headers,
-      body: JSON.stringify({
-        model,
-        agent,
-        input,
-        options: options && {
-          ...omit(options, "context" as any),
-          userContext: { ...options.userContext },
-          memories: [...(options.memories ?? [])],
-          modelOptions: this.options.modelOptions,
-        },
-      }),
+      body: JSON.stringify(body),
     });
 
     // For non-streaming responses, simply parse the JSON response and return it

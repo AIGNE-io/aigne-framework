@@ -41,12 +41,11 @@
   },
   "dependencies": {
     "@aigne/core": "workspace:^",
-    "@aws-sdk/client-bedrock-runtime": "^3.844.0",
+    "@aigne/transport": "workspace:^",
     "nanoid": "^5.1.5",
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@aigne/transport": "workspace:^",
     "@aigne/test-utils": "workspace:^",
     "@types/bun": "^1.2.18",
     "@types/node": "^24.0.12",

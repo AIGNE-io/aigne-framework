@@ -7,13 +7,14 @@ import {
   type ChatModelOutput,
 } from "@aigne/core";
 import { checkArguments, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import { ChatModelName } from "@aigne/transport/constants.js";
 import { BaseClient } from "@aigne/transport/http-client/base-client.js";
 import { z } from "zod";
 
+const defaultUrl = "https://www.aikit.rocks/ai-kit/api/v2/chat";
+
 const aigneHubChatModelOptionsSchema = z.object({
-  url: z.string(),
-  accessKeyId: z.string(),
+  url: z.string().optional().default(defaultUrl),
+  accessKey: z.string(),
   model: z.string(),
   modelOptions: z
     .object({
@@ -28,8 +29,8 @@ const aigneHubChatModelOptionsSchema = z.object({
 });
 
 interface AIGNEHubChatModelOptions {
-  url: string;
-  accessKeyId: string;
+  url?: string;
+  accessKey: string;
   model: string;
   modelOptions?: ChatModelOptions;
 }
@@ -41,15 +42,13 @@ export class AIGNEHubChatModel extends ChatModel {
     checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
 
     super();
-    this._baseClient = new BaseClient(options);
+    this._baseClient = new BaseClient({ ...options, url: options.url ?? defaultUrl });
   }
-
-  override name = ChatModelName;
 
   override process(
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this._baseClient._invoke(this.name, input, options);
+    return this._baseClient.__invoke(undefined, input, options);
   }
 }

@@ -46,16 +46,17 @@ export interface AIGNEHTTPClientInvokeOptions extends BaseClientInvokeOptions {}
  * Here's an example of how to use AIGNEClient with streaming response:
  * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
  */
-export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Context<U> {
-  private _baseClient: BaseClient;
-
+export class AIGNEHTTPClient<U extends UserContext = UserContext>
+  extends BaseClient
+  implements Context<U>
+{
   /**
    * Creates a new AIGNEClient instance.
    *
    * @param options - Configuration options for connecting to the AIGNE server
    */
-  constructor(public options: AIGNEHTTPClientOptions) {
-    this._baseClient = new BaseClient(options);
+  constructor(public override options: AIGNEHTTPClientOptions) {
+    super(options);
   }
 
   id = v7();
@@ -246,7 +247,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
   ): Promise<AgentResponse<O>> {
     const safeOptions = options || {};
 
-    return this._baseClient._invoke(agent, input, {
+    return this.__invoke(agent, input, {
       ...omit(safeOptions, "context" as any),
       userContext: { ...this.userContext, ...safeOptions.userContext },
       memories: [...this.memories, ...(safeOptions.memories ?? [])],

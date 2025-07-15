@@ -1,6 +1,8 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import type { AIGNE, InvokeOptions, UserContext } from "@aigne/core";
 import { AgentResponseStreamSSE } from "@aigne/core/utils/event-stream.js";
+import { onAgentResponseStreamEnd } from "@aigne/core/utils/stream-utils.js";
+import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { checkArguments, isRecord, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import contentType from "content-type";
 import getRawBody from "raw-body";
@@ -66,7 +68,9 @@ export interface AIGNEHTTPServerOptions {
 }
 
 export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext>
-  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories"> {}
+  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories"> {
+  callback?: (result: Record<string, unknown>) => PromiseOrValue<void>;
+}
 
 /**
  * AIGNEHTTPServer provides HTTP API access to AIGNE capabilities.
@@ -193,6 +197,7 @@ export class AIGNEHTTPServer {
 
       if (!streaming) {
         const result = await aigne.invoke(agent, input, mergedOptions);
+        options.callback?.(result);
 
         return new Response(JSON.stringify(result), {
           headers: { "Content-Type": "application/json" },
@@ -205,7 +210,13 @@ export class AIGNEHTTPServer {
         streaming: true,
       });
 
-      return new Response(new AgentResponseStreamSSE(stream), {
+      const newStream = onAgentResponseStreamEnd(stream, {
+        onResult: async (result) => {
+          options.callback?.(result);
+        },
+      });
+
+      return new Response(new AgentResponseStreamSSE(newStream), {
         headers: {
           "Content-Type": "text/event-stream",
           "Cache-Control": "no-cache",

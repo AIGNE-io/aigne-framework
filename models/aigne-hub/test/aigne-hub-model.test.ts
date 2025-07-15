@@ -2,12 +2,12 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, ChatModel, isAgentResponseDelta } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import { Hono } from "hono";
 import { AIGNEHubChatModel } from "../src/aigne-hub-model.js";
-import { OpenAIChatModel } from "./_mocks_/mock-models.js";
 
 test("AIGNEClient example simple", async () => {
   const { url, aigne, close } = await createHonoServer();

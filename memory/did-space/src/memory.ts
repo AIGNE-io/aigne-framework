@@ -25,8 +25,8 @@ import {
 } from "@blocklet/did-space-js";
 import { stringify } from "yaml";
 import { z } from "zod";
-import { streamToString } from "../utils/fs.js";
 import { ReadmeManager } from "./readme-manager.js";
+import { streamToString } from "./utils/fs.js";
 
 export const MEMORY_FILE_NAME = "memory.yaml";
 

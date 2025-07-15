@@ -15,7 +15,7 @@ import {
 } from "@aigne/core/memory/index.js";
 import { stringify } from "yaml";
 import { z } from "zod";
-import { exists, expandHome } from "../utils/fs.js";
+import { exists, expandHome } from "./utils/fs.js";
 
 export const MEMORY_FILE_NAME = "memory.yaml";
 

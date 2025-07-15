@@ -12,8 +12,7 @@ import {
   arrayToReadableStream,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
-import { DefaultMemoryStorage } from "@aigne/default-memory/adapter/default-memory-storage/index.js";
-import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
+import { DefaultMemory, DefaultMemoryStorage } from "@aigne/default-memory";
 import { agentResponseStreamToArraySnapshot } from "@aigne/test-utils/utils/agent-response.js";
 import {
   AIGNEHTTPClient,

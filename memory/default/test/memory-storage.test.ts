@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { AIGNE } from "@aigne/core";
-import { DefaultMemoryStorage } from "../../src/adapter/default-memory-storage/index.js";
+import { DefaultMemoryStorage } from "@aigne/default-memory";
 
 test("DefaultMemoryStorage should search by fts", async () => {
   const context = new AIGNE().newContext();

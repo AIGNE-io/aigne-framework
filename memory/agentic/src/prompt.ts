@@ -1,4 +1,4 @@
-export const DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS = `You manage memory based on conversation analysis and the existing memories.
+export const DEFAULT_AGENTIC_MEMORY_RECORDER_INSTRUCTIONS = `You manage memory based on conversation analysis and the existing memories.
 
 ## IMPORTANT: All existing memories are available in the allMemory variable. DO NOT call any tools.
 

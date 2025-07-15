@@ -4,13 +4,15 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AIAgent, AIGNE } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/openai";
 import { stringify } from "yaml";
-import { FSMemory, MEMORY_FILE_NAME } from "../../src/adapter/memory.js";
-import { OpenAIChatModel } from "../_mocks_/mock-models.js";
+import { FSMemory, MEMORY_FILE_NAME } from "../src/memory.js";
 
 test("FSMemory simple example", async () => {
   // #region example-fs-memory-simple
-  const model = new OpenAIChatModel();
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_OPENAI_API_KEY",
+  });
 
   const engine = new AIGNE({ model });
 
@@ -77,7 +79,9 @@ test("FSMemory retrieve should read all memory from file", async () => {
       "utf-8",
     );
 
-    const model = new OpenAIChatModel();
+    const model = new OpenAIChatModel({
+      apiKey: "YOUR_OPENAI_API_KEY",
+    });
 
     const engine = new AIGNE({ model });
 
@@ -124,7 +128,9 @@ test("FSMemory retrieve should write all memory into memory file", async () => {
   const dir = join(tmpdir(), randomUUID());
   await mkdir(dir, { recursive: true });
   try {
-    const model = new OpenAIChatModel();
+    const model = new OpenAIChatModel({
+      apiKey: "YOUR_OPENAI_API_KEY",
+    });
 
     const engine = new AIGNE({ model });
 

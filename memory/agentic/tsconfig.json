@@ -4,7 +4,7 @@
     "paths": {
       "@aigne/core": ["../../packages/core/src"],
       "@aigne/core/*": ["../../packages/core/src/*"],
-      "@aigne/agent-library/*": ["../../packages/agent-library/src/*"]
+      "@aigne/agentic-memory": ["./src"]
     }
   },
   "exclude": ["node_modules", "lib"],

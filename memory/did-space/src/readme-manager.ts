@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import {
   ListObjectCommand,
   type ListObjectCommandOutput,
@@ -5,7 +6,6 @@ import {
   SpaceClient,
   type SpaceClientOptionsAuth,
 } from "@blocklet/did-space-js";
-import { join } from "path";
 import { README_EN_CONTENT } from "./readme-contents.js";
 
 /**

@@ -1,9 +1,9 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
+import { AgenticMemory } from "@aigne/agentic-memory";
 import { AIGNE } from "@aigne/core";
+import { DefaultMemoryStorage } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
-import { AgenticMemory } from "../../src/adapter/memory.js";
-import { DefaultMemoryStorage } from "../../src/default-memory/default-memory-storage/index.js";
 
 test("AgenticMemory should add new memories correctly", async () => {
   const model = new OpenAIChatModel();

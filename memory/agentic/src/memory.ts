@@ -12,17 +12,15 @@ import {
   type PromptBuilder,
 } from "@aigne/core";
 import { flat, pick } from "@aigne/core/utils/type-utils.js";
-import { z } from "zod";
-import {
-  DefaultMemoryStorage,
-  type DefaultMemoryStorageOptions,
-} from "../default-memory/default-memory-storage/index.js";
 import {
   DefaultMemoryRetriever,
   type DefaultMemoryRetrieverOptions,
-} from "../default-memory/memory.js";
-import { MemoryStorage } from "../default-memory/storage.js";
-import { DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS } from "./prompt.js";
+  DefaultMemoryStorage,
+  type DefaultMemoryStorageOptions,
+  MemoryStorage,
+} from "@aigne/default-memory";
+import { z } from "zod";
+import { DEFAULT_AGENTIC_MEMORY_RECORDER_INSTRUCTIONS } from "./prompt.js";
 
 export interface AgenticMemoryOptions
   extends Partial<MemoryAgentOptions>,
@@ -86,7 +84,7 @@ export class AgenticMemoryRecorder extends MemoryRecorder {
       AIAgent.from({
         name: "agentic_memory_extractor",
         description: "Records memories in files by AI agent",
-        instructions: options.instructions || DEFAULT_FS_MEMORY_RECORDER_INSTRUCTIONS,
+        instructions: options.instructions || DEFAULT_AGENTIC_MEMORY_RECORDER_INSTRUCTIONS,
         outputSchema: z.object({
           newMemories: z
             .array(

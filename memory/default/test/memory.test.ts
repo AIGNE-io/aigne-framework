@@ -4,11 +4,10 @@ import { rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AIAgent, AIGNE, type MemoryRecorderInput, stringToAgentResponseStream } from "@aigne/core";
+import { DefaultMemory, DefaultMemoryStorage } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 import { v7 } from "uuid";
 import { z } from "zod";
-import { DefaultMemoryStorage } from "../../src/adapter/default-memory-storage/index.js";
-import { DefaultMemory } from "../../src/adapter/memory.js";
 
 test("should add a new memory", async () => {
   const context = new AIGNE().newContext();

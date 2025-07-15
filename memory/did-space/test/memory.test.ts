@@ -1,9 +1,9 @@
 import { beforeEach, expect, spyOn, test } from "bun:test";
 import { AIAgent, AIGNE } from "@aigne/core";
-import { DIDSpacesMemory } from "@aigne/did-space-memory/adapter/memory.js";
+import { DIDSpacesMemory } from "@aigne/did-space-memory";
+import { OpenAIChatModel } from "@aigne/openai";
 import { SpaceClient } from "@blocklet/did-space-js";
 import { stringify } from "yaml";
-import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
 // Mock SpaceClient
 const mockSpaceClient = {
@@ -18,7 +18,9 @@ beforeEach(() => {
 
 test("DIDSpacesMemory simple example", async () => {
   // #region example-did-spaces-memory-simple
-  const model = new OpenAIChatModel();
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_OPENAI_API_KEY",
+  });
 
   const engine = new AIGNE({ model });
 
@@ -76,7 +78,9 @@ test("DIDSpacesMemory simple example", async () => {
 });
 
 test("DIDSpacesMemory retrieve should read all memory from DID Spaces", async () => {
-  const model = new OpenAIChatModel();
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_OPENAI_API_KEY",
+  });
   const engine = new AIGNE({ model });
 
   // Mock the GetObjectCommand response
@@ -144,7 +148,9 @@ test("DIDSpacesMemory retrieve should read all memory from DID Spaces", async ()
 });
 
 test("DIDSpacesMemory record should write memory to DID Spaces", async () => {
-  const model = new OpenAIChatModel();
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_OPENAI_API_KEY",
+  });
   const engine = new AIGNE({ model });
 
   const memory = new DIDSpacesMemory({
@@ -207,7 +213,9 @@ test("DIDSpacesMemory record should write memory to DID Spaces", async () => {
 });
 
 test("DIDSpacesMemory should handle empty memory file", async () => {
-  const model = new OpenAIChatModel();
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_OPENAI_API_KEY",
+  });
   const engine = new AIGNE({ model });
 
   const memory = new DIDSpacesMemory({
@@ -237,7 +245,9 @@ test("DIDSpacesMemory should handle empty memory file", async () => {
 });
 
 test("DIDSpacesMemory should handle DID Spaces API errors", async () => {
-  const model = new OpenAIChatModel();
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_OPENAI_API_KEY",
+  });
   const engine = new AIGNE({ model });
 
   const memory = new DIDSpacesMemory({

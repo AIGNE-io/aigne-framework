@@ -16,12 +16,14 @@
 - 使用 mermaid 图表解释复杂的概念 (```mermaid``` format)，让页面内容展示形式更丰富
   - 使用 `flowchart` 图表解释概念之间的关系
   - 使用 `sequenceDiagram` 图表解释调用、执行的流程
-  - **确保 mermaid `flowchart` 图表中所有节点的 label 都使用 " 包裹**，避免因为 label 中存在特殊符号，导致渲染失败，示例：A["@abc"]、B("AIGNE")、C{"@aigne/core"}
+  - **确保 mermaid `flowchart` 和 `graph` 图表中所有节点的 label 都使用 " 包裹**，避免因为 label 中存在特殊符号，导致渲染失败，示例：A["@abc"]、B("AIGNE")、C{"@aigne/core"}
+  - **确保 mermaid `flowchart` 和 `graph` 图表中所有节点连线上的描述都使用 " 包裹**，避免因为描述中中存在特殊符号，导致渲染失败，示例： E -- "Yes, Cache Hit" --> F["Serve Cached HTML"];
 - 更多的使用 table 、mermaid 图表来解释信息，过长的文本描述会让用户阅读有压力
 - 概览部分，必须包含 mermaid 图表，展示产品的架构图
 - 对输出的 markdown 进行检查，确认输出内容完整，table 、mermaid 信息完整并且格式正确
 - **确保内容完整性**：在生成任何文档内容，特别是代码块（如 Mermaid、JSON、代码等）时，必须确保其是**完整且语法正确**的。在输出完成后，必须进行一次**自我检查**，确认所有的代码块、列表、表格等都已完全闭合且没有中途截断。
 - **代码块原子性**：将每个代码块（例如 ```mermaid ... ```）视为一个**不可分割的原子单元**。必须一次性完整生成，从开始标记（```mermaid）到结束标记（```）之间的所有内容都不能省略或截断。
+- **确保 Markdown 语法**：Markdown 格式正确，。特别是表格的分隔线（例如 `|---|---|---|`），需要与表格数据列数一致。
 - README 文件只做参考，你需要从代码中获取最新、最完整的信息
 </document_rules>
 

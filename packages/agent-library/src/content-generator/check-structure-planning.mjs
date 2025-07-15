@@ -40,6 +40,7 @@ export default async function checkStructurePlanning(
 
   const result = await options.context.invoke(panningAgent, {
     structurePlanFeedback,
+    originalStructurePlan,
     ...rest,
   });
 

@@ -9,7 +9,7 @@ import { detect } from "detect-port";
 import { Hono } from "hono";
 import { AIGNEHubChatModel } from "../src/aigne-hub-model.js";
 
-test("AIGNEClient example simple", async () => {
+test("AIGNEHubChatModel example simple", async () => {
   const { url, aigne, close } = await createHonoServer();
 
   assert(aigne.model instanceof ChatModel);
@@ -33,7 +33,7 @@ test("AIGNEClient example simple", async () => {
   await close();
 });
 
-test("AIGNEClient example with streaming", async () => {
+test("AIGNEHubChatModel example with streaming", async () => {
   const { url, aigne, close } = await createHonoServer();
 
   assert(aigne.model instanceof ChatModel);

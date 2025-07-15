@@ -3,12 +3,12 @@ import {
   type AgentProcessResult,
   ChatModel,
   type ChatModelInput,
+  type ChatModelOptions,
   type ChatModelOutput,
 } from "@aigne/core";
 import { checkArguments, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { ChatModelName } from "@aigne/transport/constants.js";
 import { BaseClient } from "@aigne/transport/http-client/base-client.js";
-import type { AIGNEHTTPClientOptions } from "@aigne/transport/http-client/client.js";
 import { z } from "zod";
 
 const aigneHubChatModelOptionsSchema = z.object({
@@ -27,10 +27,17 @@ const aigneHubChatModelOptionsSchema = z.object({
     .optional(),
 });
 
+interface AIGNEHubChatModelOptions {
+  url: string;
+  accessKeyId: string;
+  model: string;
+  modelOptions?: ChatModelOptions;
+}
+
 export class AIGNEHubChatModel extends ChatModel {
   private _baseClient: BaseClient;
 
-  constructor(public options: AIGNEHTTPClientOptions) {
+  constructor(public options: AIGNEHubChatModelOptions) {
     checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
 
     super();

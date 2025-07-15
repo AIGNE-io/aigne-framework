@@ -4,8 +4,7 @@
     "paths": {
       "@aigne/core": ["../core/src"],
       "@aigne/core/*": ["../core/src/*"],
-      "@aigne/bedrock": ["./src"],
-      "@aigne/bedrock/*": ["./src/*"]
+      "@aigne/aigne-hub": ["./src"]
     }
   },
   "exclude": ["node_modules", "lib"],

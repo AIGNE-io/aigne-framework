@@ -243,14 +243,12 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext>
   async _invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options?: AIGNEHTTPClientInvokeOptions,
+    options: AIGNEHTTPClientInvokeOptions = {},
   ): Promise<AgentResponse<O>> {
-    const safeOptions = options || {};
-
     return this.__invoke(agent, input, {
-      ...omit(safeOptions, "context" as any),
-      userContext: { ...this.userContext, ...safeOptions.userContext },
-      memories: [...this.memories, ...(safeOptions.memories ?? [])],
+      ...omit(options, "context" as any),
+      userContext: { ...this.userContext, ...options.userContext },
+      memories: [...this.memories, ...(options.memories ?? [])],
     });
   }
 

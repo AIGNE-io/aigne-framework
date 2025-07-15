@@ -36,19 +36,19 @@ interface AIGNEHubChatModelOptions {
 }
 
 export class AIGNEHubChatModel extends ChatModel {
-  private _baseClient: BaseClient;
+  private client: BaseClient;
 
   constructor(public options: AIGNEHubChatModelOptions) {
     checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
 
     super();
-    this._baseClient = new BaseClient({ ...options, url: options.url ?? defaultUrl });
+    this.client = new BaseClient({ ...options, url: options.url ?? defaultUrl });
   }
 
   override process(
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this._baseClient.__invoke(undefined, input, options);
+    return this.client.__invoke(undefined, input, options);
   }
 }

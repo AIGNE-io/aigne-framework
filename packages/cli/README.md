@@ -91,10 +91,10 @@ Launch a chat loop with the specified agent.
 aigne run
 
 # Run the agent at the specified path
-aigne run path/to/agents
+aigne run --path path/to/agents
 
 # Run the agent from a remote URL
-aigne run https://example.com/aigne-project
+aigne run --url https://example.com/aigne-project
 
 # Run a specific agent
 aigne run --entry-agent myAgent

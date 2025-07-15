@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.23.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.8...cli-v1.23.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+* **model:** support aigne-hub model adapter ([#253](https://github.com/AIGNE-io/aigne-framework/issues/253)) ([4b33f8d](https://github.com/AIGNE-io/aigne-framework/commit/4b33f8d1a819f52357db81d502c56b55eaa0669f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.0
+    * @aigne/agentic-memory bumped to 1.0.0
+    * @aigne/anthropic bumped to 0.9.0
+    * @aigne/bedrock bumped to 0.8.0
+    * @aigne/core bumped to 1.34.0
+    * @aigne/deepseek bumped to 0.7.0
+    * @aigne/default-memory bumped to 1.0.0
+    * @aigne/gemini bumped to 0.8.0
+    * @aigne/observability-api bumped to 0.8.0
+    * @aigne/ollama bumped to 0.7.0
+    * @aigne/open-router bumped to 0.7.0
+    * @aigne/openai bumped to 0.10.0
+    * @aigne/xai bumped to 0.7.0
+    * @aigne/aigne-hub bumped to 0.1.0
+
 ## [1.22.8](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.22.7...cli-v1.22.8) (2025-07-14)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.2.1...publish-docs-v0.3.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
 ## [0.2.1](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.2.0...publish-docs-v0.2.1) (2025-07-14)
 
 

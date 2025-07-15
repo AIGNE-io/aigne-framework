@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.10.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.6...transport-v0.10.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+* **model:** support aigne-hub model adapter ([#253](https://github.com/AIGNE-io/aigne-framework/issues/253)) ([4b33f8d](https://github.com/AIGNE-io/aigne-framework/commit/4b33f8d1a819f52357db81d502c56b55eaa0669f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.0
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.0
+    * @aigne/core bumped to 1.34.0
+    * @aigne/test-utils bumped to 0.5.8
+    * @aigne/default-memory bumped to 1.0.0
+
 ## [0.9.6](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.9.5...transport-v0.9.6) (2025-07-14)
 
 

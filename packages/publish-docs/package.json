@@ -1,6 +1,6 @@
 {
   "name": "@aigne/publish-docs",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "AIGNE Publish Docs for publishing docs to Discuss Kit",
   "publishConfig": {
     "access": "public"

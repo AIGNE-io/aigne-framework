@@ -148,6 +148,7 @@ export class AIGNEHTTPServer {
     const result = await this._invoke(request, {
       userContext: opts?.userContext,
       memories: opts?.memories,
+      callback: opts?.callback,
     });
 
     if (response instanceof ServerResponse) {

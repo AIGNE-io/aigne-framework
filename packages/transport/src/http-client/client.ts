@@ -29,25 +29,13 @@ import { ClientChatModel } from "./client-chat-model.js";
 /**
  * Configuration options for the AIGNEHTTPClient.
  */
-export interface AIGNEHTTPClientOptions extends ClientChatModelOptions {
-  /**
-   * The URL of the AIGNE server to connect to.
-   * This should point to the base endpoint where the AIGNEServer is hosted.
-   */
-  url: string;
-}
+export interface AIGNEHTTPClientOptions extends ClientChatModelOptions {}
 
 /**
  * Options for invoking an agent through the AIGNEHTTPClient.
  * Extends the standard AgentInvokeOptions with client-specific options.
  */
-export interface AIGNEHTTPClientInvokeOptions extends ClientChatModelInvokeOptions {
-  /**
-   * Additional fetch API options to customize the HTTP request.
-   * These options will be merged with the default options used by the client.
-   */
-  fetchOptions?: Partial<RequestInit>;
-}
+export interface AIGNEHTTPClientInvokeOptions extends ClientChatModelInvokeOptions {}
 
 /**
  * Http client for interacting with a remote AIGNE server.

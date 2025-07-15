@@ -1,11 +1,9 @@
 import {
-  type AgentInvokeOptions,
   type AgentProcessResult,
   type AgentResponse,
   type AgentResponseChunk,
   type AgentResponseStream,
   ChatModel,
-  type ChatModelInput,
   type ChatModelOptions,
   type ChatModelOutput,
   type InvokeOptions,
@@ -28,16 +26,9 @@ export interface ClientChatModelOptions {
 }
 
 export interface ClientChatModelInvokeOptions extends InvokeOptions {
-  /**
-   * Additional fetch API options to customize the HTTP request.
-   * These options will be merged with the default options used by the client.
-   */
   fetchOptions?: Partial<RequestInit>;
 }
 
-/**
- * @hidden
- */
 export const ClientChatModelOptionsSchema = z.object({
   url: z.string(),
   accessKeyId: z.string().optional(),
@@ -60,10 +51,7 @@ export class ClientChatBaseModel extends ChatModel {
     super();
   }
 
-  process(
-    _input: ChatModelInput,
-    _options: AgentInvokeOptions,
-  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+  process(): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     throw new Error("Method not implemented.");
   }
 

@@ -18,24 +18,20 @@ import {
 import { omit } from "@aigne/core/utils/type-utils.js";
 import type { Args, Listener } from "@aigne/core/utils/typed-event-emitter.js";
 import { v7 } from "uuid";
+import { BaseClient, type BaseClientInvokeOptions, type BaseClientOptions } from "./base-client.js";
 import { ClientAgent, type ClientAgentOptions } from "./client-agent.js";
-import {
-  ClientChatBaseModel,
-  type ClientChatModelInvokeOptions,
-  type ClientChatModelOptions,
-} from "./client-chat-base-model.js";
 import { ClientChatModel } from "./client-chat-model.js";
 
 /**
  * Configuration options for the AIGNEHTTPClient.
  */
-export interface AIGNEHTTPClientOptions extends ClientChatModelOptions {}
+export interface AIGNEHTTPClientOptions extends BaseClientOptions {}
 
 /**
  * Options for invoking an agent through the AIGNEHTTPClient.
  * Extends the standard AgentInvokeOptions with client-specific options.
  */
-export interface AIGNEHTTPClientInvokeOptions extends ClientChatModelInvokeOptions {}
+export interface AIGNEHTTPClientInvokeOptions extends BaseClientInvokeOptions {}
 
 /**
  * Http client for interacting with a remote AIGNE server.
@@ -51,7 +47,7 @@ export interface AIGNEHTTPClientInvokeOptions extends ClientChatModelInvokeOptio
  * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
  */
 export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Context<U> {
-  private _baseModel: ClientChatBaseModel;
+  private _baseClient: BaseClient;
 
   /**
    * Creates a new AIGNEClient instance.
@@ -59,7 +55,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
    * @param options - Configuration options for connecting to the AIGNE server
    */
   constructor(public options: AIGNEHTTPClientOptions) {
-    this._baseModel = new ClientChatBaseModel(options);
+    this._baseClient = new BaseClient(options);
   }
 
   id = v7();
@@ -250,7 +246,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
   ): Promise<AgentResponse<O>> {
     const safeOptions = options || {};
 
-    return this._baseModel.__invoke(agent, input, {
+    return this._baseClient._invoke(agent, input, {
       ...omit(safeOptions, "context" as any),
       userContext: { ...this.userContext, ...safeOptions.userContext },
       memories: [...this.memories, ...(safeOptions.memories ?? [])],

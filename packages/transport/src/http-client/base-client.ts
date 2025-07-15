@@ -1,64 +1,53 @@
-import {
-  type AgentInvokeOptions,
-  type AgentProcessResult,
-  type AgentResponse,
-  type AgentResponseChunk,
-  type AgentResponseStream,
-  ChatModel,
-  type ChatModelInput,
-  type ChatModelOptions,
-  type ChatModelOutput,
-  type InvokeOptions,
-  type Message,
+import type {
+  AgentResponse,
+  AgentResponseChunk,
+  AgentResponseStream,
+  ChatModelOptions,
+  InvokeOptions,
+  Message,
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
-import {
-  checkArguments,
-  omit,
-  type PromiseOrValue,
-  tryOrThrow,
-} from "@aigne/core/utils/type-utils.js";
-import { z } from "zod";
+import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 
-export interface ClientChatModelOptions {
+/**
+ * Options for invoking an agent through the BaseClient.
+ * Extends the standard AgentInvokeOptions with client-specific options.
+ */
+export interface BaseClientInvokeOptions extends InvokeOptions {
+  /**
+   * Additional fetch API options to customize the HTTP request.
+   * These options will be merged with the default options used by the client.
+   */
+  fetchOptions?: Partial<RequestInit>;
+}
+
+export interface BaseClientOptions {
   url: string;
   accessKeyId?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
 }
 
-export interface ClientChatModelInvokeOptions extends InvokeOptions {
-  fetchOptions?: Partial<RequestInit>;
-}
-
-export const ClientChatModelOptionsSchema = z.object({
-  url: z.string(),
-  accessKeyId: z.string().optional(),
-  model: z.string().optional(),
-  modelOptions: z
-    .object({
-      model: z.string().optional(),
-      temperature: z.number().optional(),
-      topP: z.number().optional(),
-      frequencyPenalty: z.number().optional(),
-      presencePenalty: z.number().optional(),
-      parallelToolCalls: z.boolean().optional().default(true),
-    })
-    .optional(),
-});
-
-export class ClientChatBaseModel extends ChatModel {
-  constructor(public options: ClientChatModelOptions) {
-    if (options) checkArguments("ClientChatModel", ClientChatModelOptionsSchema, options);
-    super();
-  }
-
-  process(
-    _input: ChatModelInput,
-    _options: AgentInvokeOptions,
-  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    throw new Error("Method not implemented.");
-  }
+/**
+ * Http client for interacting with a remote AIGNE server.
+ * BaseClient provides a client-side interface that matches the AIGNE API,
+ * allowing applications to invoke agents and receive responses from a remote AIGNE instance.
+ *
+ * @example
+ * Here's a simple example of how to use AIGNEClient:
+ * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-simple}
+ *
+ * @example
+ * Here's an example of how to use AIGNEClient with streaming response:
+ * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
+ */
+export class BaseClient {
+  /**
+   * Creates a new AIGNEClient instance.
+   *
+   * @param options - Configuration options for connecting to the AIGNE server
+   */
+  constructor(public options: BaseClientOptions) {}
 
   /**
    * Invokes an agent in non-streaming mode and returns the complete response.
@@ -72,10 +61,10 @@ export class ClientChatBaseModel extends ChatModel {
    * Here's a simple example of how to use AIGNEClient:
    * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-simple}
    */
-  async __invoke<I extends Message, O extends Message>(
+  async _invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options?: ClientChatModelInvokeOptions & { streaming?: false },
+    options?: BaseClientInvokeOptions & { streaming?: false },
   ): Promise<O>;
 
   /**
@@ -90,10 +79,10 @@ export class ClientChatBaseModel extends ChatModel {
    * Here's an example of how to use AIGNEClient with streaming response:
    * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
    */
-  async __invoke<I extends Message, O extends Message>(
+  async _invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options: ClientChatModelInvokeOptions & { streaming: true },
+    options: BaseClientInvokeOptions & { streaming: true },
   ): Promise<AgentResponseStream<O>>;
 
   /**
@@ -104,22 +93,23 @@ export class ClientChatBaseModel extends ChatModel {
    * @param options - Options for the invocation
    * @returns Either a complete response or a response stream depending on the streaming option
    */
-  async __invoke<I extends Message, O extends Message>(
+  async _invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options?: ClientChatModelInvokeOptions,
+    options?: BaseClientInvokeOptions,
   ): Promise<AgentResponse<O>>;
-  async __invoke<I extends Message, O extends Message>(
+  async _invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
-    options?: ClientChatModelInvokeOptions,
+    options?: BaseClientInvokeOptions,
   ): Promise<AgentResponse<O>> {
-    const headers: any = {
+    const model = this.options.modelOptions?.model ?? this.options.model;
+    const headers: Record<string, any> = {
       "Content-Type": "application/json",
       ...options?.fetchOptions?.headers,
     };
 
-    if (this.options.accessKeyId) {
+    if (this.options?.accessKeyId) {
       headers["Authorization"] = `Bearer ${this.options.accessKeyId}`;
     }
 
@@ -128,12 +118,14 @@ export class ClientChatBaseModel extends ChatModel {
       method: "POST",
       headers: headers,
       body: JSON.stringify({
+        model,
         agent,
-        input: typeof input === "string" ? input : { model: this.options.model, ...input },
+        input,
         options: options && {
           ...omit(options, "context" as any),
           userContext: { ...options.userContext },
           memories: [...(options.memories ?? [])],
+          modelOptions: this.options.modelOptions,
         },
       }),
     });

@@ -1,21 +1,40 @@
-import type {
-  AgentInvokeOptions,
-  AgentProcessResult,
-  ChatModelInput,
-  ChatModelOutput,
+import {
+  type AgentInvokeOptions,
+  type AgentProcessResult,
+  ChatModel,
+  type ChatModelInput,
+  type ChatModelOutput,
 } from "@aigne/core";
 import { checkArguments, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { ChatModelName } from "@aigne/transport/constants.js";
-import {
-  ClientChatBaseModel,
-  type ClientChatModelOptions,
-  ClientChatModelOptionsSchema,
-} from "@aigne/transport/http-client/client-chat-base-model.js";
+import { BaseClient } from "@aigne/transport/http-client/base-client.js";
+import type { AIGNEHTTPClientOptions } from "@aigne/transport/http-client/client.js";
+import { z } from "zod";
 
-export class AIGNEHubChatModel extends ClientChatBaseModel {
-  constructor(public override options: ClientChatModelOptions) {
-    if (options) checkArguments("AIGNEHubChatModel", ClientChatModelOptionsSchema, options);
-    super(options);
+const aigneHubChatModelOptionsSchema = z.object({
+  url: z.string(),
+  accessKeyId: z.string(),
+  model: z.string(),
+  modelOptions: z
+    .object({
+      model: z.string().optional(),
+      temperature: z.number().optional(),
+      topP: z.number().optional(),
+      frequencyPenalty: z.number().optional(),
+      presencePenalty: z.number().optional(),
+      parallelToolCalls: z.boolean().optional().default(true),
+    })
+    .optional(),
+});
+
+export class AIGNEHubChatModel extends ChatModel {
+  private _baseClient: BaseClient;
+
+  constructor(public options: AIGNEHTTPClientOptions) {
+    checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
+
+    super();
+    this._baseClient = new BaseClient(options);
   }
 
   override name = ChatModelName;
@@ -24,6 +43,6 @@ export class AIGNEHubChatModel extends ClientChatBaseModel {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this.__invoke(this.name, input, options);
+    return this._baseClient._invoke(this.name, input, options);
   }
 }

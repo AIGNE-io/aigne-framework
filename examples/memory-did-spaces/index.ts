@@ -28,5 +28,6 @@ const agent = AIAgent.from({
 await runWithAIGNE(agent, {
   chatLoopOptions: {
     welcome: "Hello! I'm a chatbot with memory (in DID Space). Try asking me a question!",
+    defaultQuestion: "I like Bitcoin and Ethereum. What can you tell me about them?",
   },
 });

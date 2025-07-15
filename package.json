@@ -45,9 +45,6 @@
     "unist-util-visit": "^5.0.0",
     "zx": "^8.6.2"
   },
-  "resolutions": {
-    "node-fetch": "^3.3.2"
-  },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
   },

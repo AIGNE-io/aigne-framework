@@ -26,7 +26,12 @@ export function availableModels(): LoadableModel[] {
     .filter(Boolean)[0];
 
   const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
-  const clientOptions: ClientOptions = { fetchOptions: { agent: httpAgent } };
+  const clientOptions: ClientOptions = {
+    fetchOptions: {
+      // @ts-ignore
+      agent: httpAgent,
+    },
+  };
 
   return [
     {

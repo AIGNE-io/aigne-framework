@@ -3,7 +3,7 @@
 import assert from "node:assert";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent, PromptBuilder } from "@aigne/core";
-import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
+import { DefaultMemory } from "@aigne/default-memory";
 import { refreshAuthorization, UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import JWT from "jsonwebtoken";

@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
-import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
+import { DefaultMemory } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 
 const { OPENAI_API_KEY } = process.env;

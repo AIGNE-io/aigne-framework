@@ -3,7 +3,7 @@
 import assert from "node:assert";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent } from "@aigne/core";
-import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
+import { DefaultMemory } from "@aigne/default-memory";
 
 const { GITHUB_TOKEN } = process.env;
 

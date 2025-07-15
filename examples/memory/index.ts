@@ -3,8 +3,8 @@
 import { join } from "node:path";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent } from "@aigne/core";
-import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
-import { FSMemory } from "@aigne/fs-memory/adapter/memory.js";
+import { DefaultMemory } from "@aigne/default-memory";
+import { FSMemory } from "@aigne/fs-memory";
 
 const agent = AIAgent.from({
   name: "memory_example",

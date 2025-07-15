@@ -1,7 +1,7 @@
 #!/usr/bin/env bunwrapper
 
 import { AIAgent, AIGNE } from "@aigne/core";
-import { DIDSpacesMemory } from "@aigne/did-space-memory/adapter/memory.js";
+import { DIDSpacesMemory } from "@aigne/did-space-memory";
 import { OpenAIChatModel as Model } from "@aigne/openai";
 
 const aigne = new AIGNE({

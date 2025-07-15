@@ -137,7 +137,7 @@ const client = new AIGNEHTTPClient({
 ### Configure Client Memory and Conduct Conversation
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-client-agent-memory-invoke-agent"
-import { DefaultMemory } from '@aigne/default-memory/adapter/memory.js';
+import { DefaultMemory } from '@aigne/default-memory';
 
 const chatbot = await client.getAgent({
   name: "chatbot",

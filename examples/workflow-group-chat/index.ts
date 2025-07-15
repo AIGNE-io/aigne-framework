@@ -10,7 +10,7 @@ import {
   PromptTemplate,
   UserAgent,
 } from "@aigne/core";
-import { DefaultMemory } from "@aigne/default-memory/adapter/memory.js";
+import { DefaultMemory } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 import inquirer from "inquirer";
 import { z } from "zod";

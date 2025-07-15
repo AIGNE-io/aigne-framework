@@ -104,6 +104,7 @@ export class BaseClient {
     options?: BaseClientInvokeOptions,
   ): Promise<AgentResponse<O>> {
     const model = this.options.modelOptions?.model ?? this.options.model;
+
     const headers: Record<string, any> = {
       "Content-Type": "application/json",
       ...options?.fetchOptions?.headers,

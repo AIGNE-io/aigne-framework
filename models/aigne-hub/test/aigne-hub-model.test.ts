@@ -18,8 +18,6 @@ test("AIGNEHubChatModel example simple", async () => {
     Promise.resolve(stringToAgentResponseStream("Hello world!")),
   );
 
-  // #region example-aigne-client-simple
-
   const client = new AIGNEHubChatModel({
     url,
     accessKey: "123",
@@ -42,7 +40,6 @@ test("AIGNEHubChatModel example with streaming", async () => {
     Promise.resolve(stringToAgentResponseStream("Hello world!")),
   );
 
-  // #region example-aigne-client-streaming
   const client = new AIGNEHubChatModel({
     url,
     accessKey: "123",

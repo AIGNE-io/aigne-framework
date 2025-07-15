@@ -1130,6 +1130,9 @@ importers:
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../agent-library
+      '@aigne/aigne-hub':
+        specifier: workspace:^
+        version: link:../../models/aigne-hub
       '@aigne/anthropic':
         specifier: workspace:^
         version: link:../../models/anthropic

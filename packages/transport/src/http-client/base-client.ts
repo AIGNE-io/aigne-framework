@@ -8,6 +8,7 @@ import type {
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
 import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { ChatModelName } from "../constants.js";
 
 /**
@@ -27,6 +28,7 @@ export interface BaseClientOptions {
   accessKey?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
+  clientOptions?: OpenAIChatModelOptions["clientOptions"];
 }
 
 /**
@@ -124,6 +126,7 @@ export class BaseClient {
         userContext: { ...options.userContext },
         memories: [...(options.memories ?? [])],
         modelOptions: this.options.modelOptions,
+        clientOptions: this.options.clientOptions,
       },
     };
 

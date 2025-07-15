@@ -13,7 +13,7 @@ import { z } from "zod";
 const defaultUrl = "https://www.aikit.rocks/ai-kit/api/v2/chat";
 
 const aigneHubChatModelOptionsSchema = z.object({
-  url: z.string().optional().default(defaultUrl),
+  url: z.string().optional(),
   accessKey: z.string(),
   model: z.string(),
   modelOptions: z
@@ -42,7 +42,10 @@ export class AIGNEHubChatModel extends ChatModel {
     checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
 
     super();
-    this.client = new BaseClient({ ...options, url: options.url ?? defaultUrl });
+    this.client = new BaseClient({
+      ...options,
+      url: options.url ?? process.env.AIGNE_HUB_BASE_URL ?? defaultUrl,
+    });
   }
 
   override process(

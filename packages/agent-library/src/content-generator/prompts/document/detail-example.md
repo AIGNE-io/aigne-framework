@@ -1,9 +1,7 @@
 <example>
 下面是一些优质的文档详情供你参考：
 
-```yaml
-path: 快速开始/安装
-content: |
+<example_item>
   # Quick install guide
 
   Before you can use Django, you’ll need to get it installed. We have a complete installation guide that covers all the possibilities; this guide will guide you to a minimal installation that’ll work while you walk through the introduction.
@@ -50,11 +48,9 @@ content: |
   ## That’s it!
 
   That’s it – you can now move onto the tutorial.
-```
+</example_item>
 
-```yaml
-path: API 参考/ Products
-content: |
+<example_item>
   # Products
 
   Products are a fundamental resource in PaymentKit, representing the goods or services you offer. This section provides a comprehensive guide to managing your products using the PaymentKit Node.js SDK, including creating, retrieving, updating, listing, and deleting products.
@@ -111,6 +107,15 @@ content: |
 
   createNewProduct();
   ```
+
+  **Example Response**
+  ```
+  {
+    "id": xxxx,
+    "name": xxxx,
+  }
+  ```
+
   This example demonstrates how to create a new product named "Premium Service Plan" with an associated monthly recurring price.
 
   ## Retrieve a Product
@@ -145,6 +150,15 @@ content: |
 
   getProductDetails('prod_xxx'); // Replace with a valid product ID
   ```
+
+  **Example Response**
+  ```
+  {
+    "id": xxxx,
+    "name": xxxx,
+  }
+  ```
+
   This example retrieves and logs the details of a product using its ID.
 
   ## Update a Product
@@ -182,6 +196,15 @@ content: |
 
   updateProductDescription('prod_xxx'); // Replace with a valid product ID
   ```
+
+  **Example Response**
+  ```
+  {
+    "id": xxxx,
+    "name": xxxx,
+  }
+  ```
+
   This example updates the description of an existing product.
 
   ## List Products
@@ -233,6 +256,22 @@ content: |
 
   listActiveProducts();
   ```
+
+  **Example Response**
+  ```
+  {
+    "page": 1,
+    "pageSize": 20,
+    "total": 100,
+    "data": [
+      {
+        "id": xxx,
+        "name": xxx,
+      }
+    ]
+  }
+  ```
+
   This example lists the first 10 active products, sorted alphabetically by name.
 
   ## Search Products
@@ -278,6 +317,22 @@ content: |
 
   searchProducts('service');
   ```
+
+  **Example Response**
+  ```
+  {
+    "page": 1,
+    "pageSize": 20,
+    "total": 100,
+    "data": [
+      {
+        "id": xxx,
+        "name": xxx,
+      }
+    ]
+  }
+  ```
+
   This example searches for products containing the term "service" and logs the results.
 
   ## Archive a Product
@@ -312,6 +367,15 @@ content: |
 
   archiveProduct('prod_xxx'); // Replace with a valid product ID
   ```
+
+  **Example Response**
+  ```
+  {
+    "id": xxxx,
+    "name": xxxx,
+  }
+  ```
+
   This example archives a specified product.
 
   ## Delete a Product
@@ -346,12 +410,21 @@ content: |
 
   deleteProduct('prod_xxx'); // Replace with a valid product ID
   ```
+
+  **Example Response**
+  ```
+  {
+    "id": xxxx,
+    "name": xxxx,
+  }
+  ```
+
   This example permanently deletes a specified product.
 
   ---
 
   This section covered the essential operations for managing products within PaymentKit. You can now define and organize your offerings. Continue to the [Prices](/core-resources/prices) section to learn how to set up pricing for your products.
 
-```
+</example_item>
 
 </example>

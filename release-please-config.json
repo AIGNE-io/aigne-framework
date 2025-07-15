@@ -22,7 +22,7 @@
     "memory/default": {},
     "memory/agentic": {},
     "memory/fs": {},
-    "memory/did-space": "0.0.0",
+    "memory/did-space": {},
     "observability/blocklet": {
       "package-name": "blocklet-observability",
       "extra-files": [

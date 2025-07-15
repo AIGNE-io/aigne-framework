@@ -1,7 +1,6 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import type { AIGNE, InvokeOptions, UserContext } from "@aigne/core";
 import { AgentResponseStreamSSE } from "@aigne/core/utils/event-stream.js";
-import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { checkArguments, isRecord, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import contentType from "content-type";
 import getRawBody from "raw-body";
@@ -67,9 +66,7 @@ export interface AIGNEHTTPServerOptions {
 }
 
 export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext>
-  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories"> {
-  callback?: (result: Response) => PromiseOrValue<void>;
-}
+  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories"> {}
 
 /**
  * AIGNEHTTPServer provides HTTP API access to AIGNE capabilities.
@@ -143,7 +140,6 @@ export class AIGNEHTTPServer {
     options?: AIGNEHTTPServerInvokeOptions,
   ): Promise<Response | void> {
     const opts = !(response instanceof ServerResponse) ? options || response : options;
-    const callback = opts?.callback || (() => {});
 
     const result = await this._invoke(request, {
       userContext: opts?.userContext,
@@ -151,11 +147,10 @@ export class AIGNEHTTPServer {
     });
 
     if (response instanceof ServerResponse) {
-      await this._writeResponse(result, response, callback);
+      await this._writeResponse(result, response);
       return;
     }
 
-    callback(result);
     return result;
   }
 
@@ -198,6 +193,7 @@ export class AIGNEHTTPServer {
 
       if (!streaming) {
         const result = await aigne.invoke(agent, input, mergedOptions);
+
         return new Response(JSON.stringify(result), {
           headers: { "Content-Type": "application/json" },
         });
@@ -289,18 +285,12 @@ export class AIGNEHTTPServer {
    * @param res - The Node.js ServerResponse to write to
    * @private
    */
-  async _writeResponse(
-    response: Response,
-    res: ServerResponse,
-    callback: (result: Response) => PromiseOrValue<void>,
-  ): Promise<void> {
+  async _writeResponse(response: Response, res: ServerResponse): Promise<void> {
     try {
       res.writeHead(response.status, Object.fromEntries(response.headers.entries()));
       res.flushHeaders();
 
       if (!response.body) throw new Error("Response body is empty");
-
-      callback(response);
 
       for await (const chunk of response.body) {
         res.write(chunk);

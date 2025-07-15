@@ -1,23 +1,24 @@
-# @aigne/agent-library
+# @aigne/fs-memory
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
-[![NPM Version](https://img.shields.io/npm/v/@aigne/agent-library)](https://www.npmjs.com/package/@aigne/agent-library)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/agent-library)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@aigne/fs-memory)](https://www.npmjs.com/package/@aigne/fs-memory)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/fs-memory)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
-Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing pre-built agent implementations.
+File system memory component for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing file system-based memory storage capabilities.
 
 ## Introduction
 
-`@aigne/agent-library` is a collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing pre-built agent implementations for developers. The library is built on top of [@aigne/core](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/core), extending the core functionality to simplify complex workflow orchestration.
+`@aigne/fs-memory` is the file system memory component of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing local file system-based memory storage and retrieval functionality. This component stores memories as YAML files in specified directories, providing a simple and reliable memory persistence solution.
 
 ## Features
 
-* **Orchestrator Agent**: Provides OrchestratorAgent implementation for coordinating workflows between multiple agents
-* **Task Concurrency**: Supports parallel execution of multiple tasks to improve processing efficiency
-* **Planning & Execution**: Automatically generates execution plans and executes them step by step
-* **Result Synthesis**: Intelligently synthesizes results from multiple steps and tasks
+* **File System Storage**: Uses local file system for memory file storage
+* **YAML Format**: Uses YAML format for memory storage, making it easy to read and edit
+* **Directory Management**: Automatically creates and manages memory directory structure
+* **Path Support**: Supports absolute paths, relative paths, and home directory (~) expansion
+* **AI Agent Management**: Uses AI agents to handle memory recording and retrieval
 * **TypeScript Support**: Complete type definitions providing an excellent development experience
 
 ## Installation
@@ -25,27 +26,27 @@ Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/
 ### Using npm
 
 ```bash
-npm install @aigne/agent-library @aigne/core
+npm install @aigne/fs-memory
 ```
 
 ### Using yarn
 
 ```bash
-yarn add @aigne/agent-library @aigne/core
+yarn add @aigne/fs-memory
 ```
 
 ### Using pnpm
 
 ```bash
-pnpm add @aigne/agent-library @aigne/core
+pnpm add @aigne/fs-memory
 ```
 
 ## Basic Usage
 
 ```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { AIAgent, AIGNE } from "@aigne/core";
+import { FSMemory } from "@aigne/fs-memory";
+import { OpenAIChatModel } from "@aigne/openai";
 
 // Create AI model instance
 const model = new OpenAIChatModel({
@@ -53,87 +54,142 @@ const model = new OpenAIChatModel({
   model: "gpt-4-turbo",
 });
 
-// Create AIGNE
-const aigne = new AIGNE({ model });
-
-// Create orchestrator agent
-const orchestrator = new OrchestratorAgent({
-  name: "MainOrchestrator",
-  instructions:
-    "You are a task orchestrator responsible for coordinating multiple specialized agents to complete complex tasks.",
-  // Configure sub-agents and tools...
+// Create file system memory
+const memory = new FSMemory({
+  rootDir: "./memories",
 });
 
-// Execute orchestration task
-const result = await aigne.invoke(
-  orchestrator,
-  "Analyze this article and generate a summary and keywords",
-);
-console.log(result);
+// Create AI agent with file-based memory
+const agent = AIAgent.from({
+  name: "FileAssistant",
+  instructions: "You are a helpful assistant with file-based memory.",
+  memory: memory,
+  inputKey: "message",
+});
+
+// Use AIGNE execution engine
+const aigne = new AIGNE({ model });
+
+// Invoke agent
+const userAgent = await aigne.invoke(agent);
+
+// Send message
+const response = await userAgent.invoke({
+  message: "Remember that I prefer working in the morning",
+});
+
+console.log(response.message);
+
+// Query memory
+const response2 = await userAgent.invoke({
+  message: "What do you know about my work preferences?",
+});
+
+console.log(response2.message);
 ```
 
-## Provided Agent Types
+## Advanced Configuration
 
-The library currently provides one specialized agent implementation:
-
-* **Orchestrator Agent (OrchestratorAgent)**: Responsible for coordinating work between multiple agents and managing complex workflows. It can automatically plan task steps, distribute and execute tasks across multiple agents, and finally synthesize the results.
-
-## Advanced Usage
-
-### Creating an Orchestration Workflow
+### Custom Memory Directory
 
 ```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { FSMemory } from "@aigne/fs-memory";
+import { join } from "path";
 
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
+// Using absolute path
+const memory1 = new FSMemory({
+  rootDir: "/absolute/path/to/memories",
 });
 
-// Create specialized sub-agents
-const researchAgent = AIAgent.from({
-  name: "Researcher",
-  instructions:
-    "You are a professional researcher responsible for collecting and analyzing information.",
-  outputKey: "research",
+// Using relative path
+const memory2 = new FSMemory({
+  rootDir: "./data/memories",
 });
 
-const writerAgent = AIAgent.from({
-  name: "Writer",
-  instructions:
-    "You are a professional writer responsible for creating high-quality content.",
-  outputKey: "content",
+// Using home directory
+const memory3 = new FSMemory({
+  rootDir: "~/my-app/memories",
 });
 
-const editorAgent = AIAgent.from({
-  name: "Editor",
-  instructions:
-    "You are a strict editor responsible for checking content quality and formatting.",
-  outputKey: "edited",
+// Using dynamic path
+const memory4 = new FSMemory({
+  rootDir: join(process.cwd(), "memories"),
 });
+```
 
-// Create orchestrator agent
-const orchestrator = new OrchestratorAgent({
-  name: "WorkflowOrchestrator",
-  instructions:
-    "You are responsible for coordinating research, writing, and editing processes.",
-  skills: [researchAgent, writerAgent, editorAgent],
-  // Optional configuration
-  maxIterations: 30, // Maximum number of iterations
-  tasksConcurrency: 5, // Task concurrency
+### Configure Memory Agent Options
+
+```typescript
+const memory = new FSMemory({
+  rootDir: "./memories",
+  // Custom memory retriever agent configuration
+  retrieverOptions: {
+    name: "CustomRetriever",
+    instructions: "Custom retrieval instructions for file-based memory",
+  },
+  // Custom memory recorder agent configuration
+  recorderOptions: {
+    name: "CustomRecorder",
+    instructions: "Custom recording instructions for file-based memory",
+  },
+  // Other agent configurations
+  autoUpdate: true,
 });
+```
 
-// Use the orchestrator agent
-const aigne = new AIGNE({ model });
+## Using Multiple Memory Types Together
 
-const result = await aigne.invoke(
-  orchestrator,
-  "Applications of artificial intelligence in healthcare",
-);
+```typescript
+import { DefaultMemory } from "@aigne/default-memory";
+import { FSMemory } from "@aigne/fs-memory";
 
-console.log(result);
+// Combine multiple memory types
+const agent = AIAgent.from({
+  name: "MultiMemoryAgent",
+  instructions: "You are an assistant with multiple memory types.",
+  memory: [
+    // Database memory for structured data
+    new DefaultMemory({
+      storage: {
+        url: "file:memory.db",
+      },
+    }),
+    // File system memory for long-term storage
+    new FSMemory({
+      rootDir: "./long-term-memories",
+    }),
+  ],
+  inputKey: "message",
+});
+```
+
+## Memory File Structure
+
+FSMemory creates the following structure in the specified directory:
+
+```
+memories/
+├── conversation-id-1/
+│   └── memory.yaml
+├── conversation-id-2/
+│   └── memory.yaml
+└── ...
+```
+
+Each memory file contains YAML-formatted memory data:
+
+```yaml
+- id: memory-id-1
+  content: "User prefers working in the morning"
+  timestamp: 2024-01-01T10:00:00Z
+  metadata:
+    type: "preference"
+    
+- id: memory-id-2
+  content: "User is a software developer"
+  timestamp: 2024-01-01T10:05:00Z
+  metadata:
+    type: "personal_info"
 ```
 
 ## License

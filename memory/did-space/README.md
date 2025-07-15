@@ -1,23 +1,24 @@
-# @aigne/agent-library
+# @aigne/did-space-memory
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
-[![NPM Version](https://img.shields.io/npm/v/@aigne/agent-library)](https://www.npmjs.com/package/@aigne/agent-library)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/agent-library)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@aigne/did-space-memory)](https://www.npmjs.com/package/@aigne/did-space-memory)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/did-space-memory)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
-Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing pre-built agent implementations.
+DID Spaces memory system component for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing cloud-based memory storage capabilities with DID Spaces.
 
 ## Introduction
 
-`@aigne/agent-library` is a collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing pre-built agent implementations for developers. The library is built on top of [@aigne/core](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/core), extending the core functionality to simplify complex workflow orchestration.
+`@aigne/did-space-memory` is the DID Spaces memory system component of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing cloud-based memory storage and retrieval functionality using DID Spaces. This component uses decentralized storage services to provide secure and reliable memory persistence capabilities for AI applications.
 
 ## Features
 
-* **Orchestrator Agent**: Provides OrchestratorAgent implementation for coordinating workflows between multiple agents
-* **Task Concurrency**: Supports parallel execution of multiple tasks to improve processing efficiency
-* **Planning & Execution**: Automatically generates execution plans and executes them step by step
-* **Result Synthesis**: Intelligently synthesizes results from multiple steps and tasks
+* **Cloud Storage**: Uses DID Spaces for secure cloud-based memory storage
+* **Decentralized**: Based on decentralized identity and storage technologies
+* **Automatic Management**: Supports automatic memory file management and README generation
+* **Secure Authentication**: Supports multiple authentication methods to ensure data security
+* **YAML Format**: Uses YAML format for memory storage, making it easy to read and maintain
 * **TypeScript Support**: Complete type definitions providing an excellent development experience
 
 ## Installation
@@ -25,27 +26,27 @@ Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/
 ### Using npm
 
 ```bash
-npm install @aigne/agent-library @aigne/core
+npm install @aigne/did-space-memory
 ```
 
 ### Using yarn
 
 ```bash
-yarn add @aigne/agent-library @aigne/core
+yarn add @aigne/did-space-memory
 ```
 
 ### Using pnpm
 
 ```bash
-pnpm add @aigne/agent-library @aigne/core
+pnpm add @aigne/did-space-memory
 ```
 
 ## Basic Usage
 
 ```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { AIAgent, AIGNE } from "@aigne/core";
+import { DIDSpacesMemory } from "@aigne/did-space-memory";
+import { OpenAIChatModel } from "@aigne/openai";
 
 // Create AI model instance
 const model = new OpenAIChatModel({
@@ -53,87 +54,116 @@ const model = new OpenAIChatModel({
   model: "gpt-4-turbo",
 });
 
-// Create AIGNE
-const aigne = new AIGNE({ model });
-
-// Create orchestrator agent
-const orchestrator = new OrchestratorAgent({
-  name: "MainOrchestrator",
-  instructions:
-    "You are a task orchestrator responsible for coordinating multiple specialized agents to complete complex tasks.",
-  // Configure sub-agents and tools...
+// Create DID Spaces memory system
+const memory = new DIDSpacesMemory({
+  url: process.env.DID_SPACES_URL!,
+  auth: {
+    authorization: process.env.DID_SPACES_AUTHORIZATION!,
+  },
 });
 
-// Execute orchestration task
-const result = await aigne.invoke(
-  orchestrator,
-  "Analyze this article and generate a summary and keywords",
-);
-console.log(result);
+// Create AI agent with cloud-based memory
+const agent = AIAgent.from({
+  name: "CloudAssistant",
+  instructions: "You are a helpful assistant with cloud-based memory.",
+  memory: memory,
+  inputKey: "message",
+});
+
+// Use AIGNE execution engine
+const aigne = new AIGNE({ model });
+
+// Invoke agent
+const userAgent = await aigne.invoke(agent);
+
+// Send message
+const response = await userAgent.invoke({
+  message: "I'm John, a doctor, and I like Bitcoin",
+});
+
+console.log(response.message);
+
+// Query memory
+const response2 = await userAgent.invoke({
+  message: "What is my profession?",
+});
+
+console.log(response2.message);
 ```
 
-## Provided Agent Types
+## Advanced Configuration
 
-The library currently provides one specialized agent implementation:
-
-* **Orchestrator Agent (OrchestratorAgent)**: Responsible for coordinating work between multiple agents and managing complex workflows. It can automatically plan task steps, distribute and execute tasks across multiple agents, and finally synthesize the results.
-
-## Advanced Usage
-
-### Creating an Orchestration Workflow
+### Custom Memory Agent Options
 
 ```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { DIDSpacesMemory } from "@aigne/did-space-memory";
 
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
+const memory = new DIDSpacesMemory({
+  url: process.env.DID_SPACES_URL!,
+  auth: {
+    authorization: process.env.DID_SPACES_AUTHORIZATION!,
+  },
+  // Custom memory retriever agent configuration
+  retrieverOptions: {
+    name: "CustomRetriever",
+    instructions: "Custom retrieval instructions",
+  },
+  // Custom memory recorder agent configuration
+  recorderOptions: {
+    name: "CustomRecorder", 
+    instructions: "Custom recording instructions",
+  },
+  // Other agent configurations
+  autoUpdate: true,
+});
+```
+
+### Using Different Authentication Methods
+
+```typescript
+// Using access token authentication
+const memory1 = new DIDSpacesMemory({
+  url: "https://your-did-spaces-url.com",
+  auth: {
+    accessToken: process.env.DID_SPACES_ACCESS_TOKEN!,
+  },
 });
 
-// Create specialized sub-agents
-const researchAgent = AIAgent.from({
-  name: "Researcher",
-  instructions:
-    "You are a professional researcher responsible for collecting and analyzing information.",
-  outputKey: "research",
+// Using authorization header authentication
+const memory2 = new DIDSpacesMemory({
+  url: "https://your-did-spaces-url.com",
+  auth: {
+    authorization: process.env.DID_SPACES_AUTHORIZATION!,
+  },
+});
+```
+
+## Memory Management Features
+
+```typescript
+// Get memory storage client
+const client = memory.client;
+
+// List all memory files
+const memories = await client.listObjects({
+  prefix: "/memories/",
 });
 
-const writerAgent = AIAgent.from({
-  name: "Writer",
-  instructions:
-    "You are a professional writer responsible for creating high-quality content.",
-  outputKey: "content",
+// Read specific memory file
+const memoryContent = await client.getObject({
+  key: "/memories/conversation-123/memory.yaml",
 });
+```
 
-const editorAgent = AIAgent.from({
-  name: "Editor",
-  instructions:
-    "You are a strict editor responsible for checking content quality and formatting.",
-  outputKey: "edited",
-});
+## Environment Variables Configuration
 
-// Create orchestrator agent
-const orchestrator = new OrchestratorAgent({
-  name: "WorkflowOrchestrator",
-  instructions:
-    "You are responsible for coordinating research, writing, and editing processes.",
-  skills: [researchAgent, writerAgent, editorAgent],
-  // Optional configuration
-  maxIterations: 30, // Maximum number of iterations
-  tasksConcurrency: 5, // Task concurrency
-});
+Create a `.env` file and configure the following variables:
 
-// Use the orchestrator agent
-const aigne = new AIGNE({ model });
-
-const result = await aigne.invoke(
-  orchestrator,
-  "Applications of artificial intelligence in healthcare",
-);
-
-console.log(result);
+```env
+DID_SPACES_URL=https://your-did-spaces-url.com
+DID_SPACES_AUTHORIZATION=your-authorization-token
+# Or use access token
+DID_SPACES_ACCESS_TOKEN=your-access-token
 ```
 
 ## License

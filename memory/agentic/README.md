@@ -1,23 +1,23 @@
-# @aigne/agent-library
+# @aigne/agentic-memory
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
-[![NPM Version](https://img.shields.io/npm/v/@aigne/agent-library)](https://www.npmjs.com/package/@aigne/agent-library)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/agent-library)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@aigne/agentic-memory)](https://www.npmjs.com/package/@aigne/agentic-memory)
+[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/agentic-memory)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE)
 
-Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing pre-built agent implementations.
+Agentic memory system component for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing AI-powered memory management capabilities.
 
 ## Introduction
 
-`@aigne/agent-library` is a collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing pre-built agent implementations for developers. The library is built on top of [@aigne/core](https://github.com/AIGNE-io/aigne-framework/tree/main/packages/core), extending the core functionality to simplify complex workflow orchestration.
+`@aigne/agentic-memory` is an intelligent memory system component of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), providing AI agent-based memory management functionality. This component uses intelligent agents to handle memory recording, retrieval, and management, providing smarter memory capabilities for AI applications.
 
 ## Features
 
-* **Orchestrator Agent**: Provides OrchestratorAgent implementation for coordinating workflows between multiple agents
-* **Task Concurrency**: Supports parallel execution of multiple tasks to improve processing efficiency
-* **Planning & Execution**: Automatically generates execution plans and executes them step by step
-* **Result Synthesis**: Intelligently synthesizes results from multiple steps and tasks
+* **Intelligent Memory Management**: Uses AI agents to manage memory recording and retrieval processes
+* **Automatic Memory Updates**: Supports automatic memory update mechanisms
+* **Storage Adaptation**: Compatible with multiple storage backends, including default SQLite storage
+* **Memory Filtering**: Intelligent filtering and organization of memory content
 * **TypeScript Support**: Complete type definitions providing an excellent development experience
 
 ## Installation
@@ -25,27 +25,27 @@ Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/
 ### Using npm
 
 ```bash
-npm install @aigne/agent-library @aigne/core
+npm install @aigne/agentic-memory
 ```
 
 ### Using yarn
 
 ```bash
-yarn add @aigne/agent-library @aigne/core
+yarn add @aigne/agentic-memory
 ```
 
 ### Using pnpm
 
 ```bash
-pnpm add @aigne/agent-library @aigne/core
+pnpm add @aigne/agentic-memory
 ```
 
 ## Basic Usage
 
 ```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { AIAgent, AIGNE } from "@aigne/core";
+import { AgenticMemory } from "@aigne/agentic-memory";
+import { OpenAIChatModel } from "@aigne/openai";
 
 // Create AI model instance
 const model = new OpenAIChatModel({
@@ -53,87 +53,74 @@ const model = new OpenAIChatModel({
   model: "gpt-4-turbo",
 });
 
-// Create AIGNE
-const aigne = new AIGNE({ model });
-
-// Create orchestrator agent
-const orchestrator = new OrchestratorAgent({
-  name: "MainOrchestrator",
-  instructions:
-    "You are a task orchestrator responsible for coordinating multiple specialized agents to complete complex tasks.",
-  // Configure sub-agents and tools...
+// Create intelligent memory system
+const memory = new AgenticMemory({
+  storage: {
+    url: "file:memory.db",
+  },
+  autoUpdate: true,
 });
 
-// Execute orchestration task
-const result = await aigne.invoke(
-  orchestrator,
-  "Analyze this article and generate a summary and keywords",
-);
-console.log(result);
+// Create AI agent with intelligent memory
+const agent = AIAgent.from({
+  name: "SmartAssistant",
+  instructions: "You are a helpful assistant with intelligent memory capabilities.",
+  memory: memory,
+  inputKey: "message",
+});
+
+// Use AIGNE execution engine
+const aigne = new AIGNE({ model });
+
+// Invoke agent
+const userAgent = await aigne.invoke(agent);
+
+// Send message
+const response = await userAgent.invoke({
+  message: "Remember that I like to drink coffee in the morning",
+});
+
+console.log(response.message);
+
+// Query memory later
+const response2 = await userAgent.invoke({
+  message: "What do you know about my morning routine?",
+});
+
+console.log(response2.message);
 ```
 
-## Provided Agent Types
+## Advanced Configuration
 
-The library currently provides one specialized agent implementation:
-
-* **Orchestrator Agent (OrchestratorAgent)**: Responsible for coordinating work between multiple agents and managing complex workflows. It can automatically plan task steps, distribute and execute tasks across multiple agents, and finally synthesize the results.
-
-## Advanced Usage
-
-### Creating an Orchestration Workflow
+### Custom Storage Options
 
 ```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { AgenticMemory } from "@aigne/agentic-memory";
+import { DefaultMemoryStorage } from "@aigne/default-memory";
 
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
+const customStorage = new DefaultMemoryStorage({
+  url: "file:custom-memory.db",
+  // Other storage configurations
 });
 
-// Create specialized sub-agents
-const researchAgent = AIAgent.from({
-  name: "Researcher",
-  instructions:
-    "You are a professional researcher responsible for collecting and analyzing information.",
-  outputKey: "research",
+const memory = new AgenticMemory({
+  storage: customStorage,
+  autoUpdate: true,
 });
+```
 
-const writerAgent = AIAgent.from({
-  name: "Writer",
-  instructions:
-    "You are a professional writer responsible for creating high-quality content.",
-  outputKey: "content",
+### Configure Memory Agent Options
+
+```typescript
+const memory = new AgenticMemory({
+  storage: {
+    url: "file:memory.db",
+  },
+  // Custom memory recorder options
+  name: "CustomMemoryAgent",
+  instructions: "Custom memory management instructions",
+  // Other agent configurations
 });
-
-const editorAgent = AIAgent.from({
-  name: "Editor",
-  instructions:
-    "You are a strict editor responsible for checking content quality and formatting.",
-  outputKey: "edited",
-});
-
-// Create orchestrator agent
-const orchestrator = new OrchestratorAgent({
-  name: "WorkflowOrchestrator",
-  instructions:
-    "You are responsible for coordinating research, writing, and editing processes.",
-  skills: [researchAgent, writerAgent, editorAgent],
-  // Optional configuration
-  maxIterations: 30, // Maximum number of iterations
-  tasksConcurrency: 5, // Task concurrency
-});
-
-// Use the orchestrator agent
-const aigne = new AIGNE({ model });
-
-const result = await aigne.invoke(
-  orchestrator,
-  "Applications of artificial intelligence in healthcare",
-);
-
-console.log(result);
 ```
 
 ## License

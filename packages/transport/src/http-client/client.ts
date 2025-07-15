@@ -1,9 +1,4 @@
 import {
-  AIGNEHubBaseModel,
-  type AIGNEHubChatModelInvokeOptions,
-  type AIGNEHubChatModelOptions,
-} from "@aigne/aigne-hub";
-import {
   type Agent,
   type AgentResponse,
   type AgentResponseStream,
@@ -24,8 +19,12 @@ import { omit } from "@aigne/core/utils/type-utils.js";
 import type { Args, Listener } from "@aigne/core/utils/typed-event-emitter.js";
 import { v7 } from "uuid";
 import { ClientAgent, type ClientAgentOptions } from "./client-agent.js";
+import {
+  AIGNEHubBaseModel,
+  type AIGNEHubChatModelInvokeOptions,
+  type AIGNEHubChatModelOptions,
+} from "./client-chat-base-model.js";
 import { ClientChatModel } from "./client-chat-model.js";
-
 /**
  * Configuration options for the AIGNEHTTPClient.
  */
@@ -262,7 +261,7 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext> implements Con
   ): Promise<AgentResponse<O>> {
     const safeOptions = options || {};
 
-    return this._baseModel._baseInvoke(agent, input, {
+    return this._baseModel.__invoke(agent, input, {
       ...omit(safeOptions, "context" as any),
       userContext: { ...this.userContext, ...safeOptions.userContext },
       memories: [...this.memories, ...(safeOptions.memories ?? [])],

@@ -455,6 +455,9 @@ importers:
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../../packages/test-utils
+      '@aigne/transport':
+        specifier: workspace:^
+        version: link:../../packages/transport
       '@types/bun':
         specifier: ^1.2.18
         version: 1.2.18(@types/react@19.1.8)
@@ -1590,9 +1593,6 @@ importers:
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../agent-library
-      '@aigne/aigne-hub':
-        specifier: workspace:^
-        version: link:../../models/aigne-hub
       '@aigne/core':
         specifier: workspace:^
         version: link:../core

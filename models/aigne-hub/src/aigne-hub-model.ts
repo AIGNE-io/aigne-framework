@@ -5,12 +5,12 @@ import type {
   ChatModelOutput,
 } from "@aigne/core";
 import { checkArguments, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+import { ChatModelName } from "@aigne/transport/constants.js";
 import {
   AIGNEHubBaseModel,
   type AIGNEHubChatModelOptions,
   aigneHubChatModelOptionsSchema,
-} from "./aigne-hub-base-model.js";
-import { ChatModelName } from "./constants.js";
+} from "@aigne/transport/http-client/client-chat-base-model.js";
 
 export class AIGNEHubChatModel extends AIGNEHubBaseModel {
   constructor(public override options: AIGNEHubChatModelOptions) {
@@ -24,6 +24,6 @@ export class AIGNEHubChatModel extends AIGNEHubBaseModel {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this._baseInvoke(this.name, input, options);
+    return this.__invoke(this.name, input, options);
   }
 }

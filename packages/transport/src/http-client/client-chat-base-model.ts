@@ -79,7 +79,7 @@ export class AIGNEHubBaseModel extends ChatModel {
    * Here's a simple example of how to use AIGNEClient:
    * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-simple}
    */
-  async _baseInvoke<I extends Message, O extends Message>(
+  async __invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
     options?: AIGNEHubChatModelInvokeOptions & { streaming?: false },
@@ -97,7 +97,7 @@ export class AIGNEHubBaseModel extends ChatModel {
    * Here's an example of how to use AIGNEClient with streaming response:
    * {@includeCode ../../test/http-client/http-client.test.ts#example-aigne-client-streaming}
    */
-  async _baseInvoke<I extends Message, O extends Message>(
+  async __invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
     options: AIGNEHubChatModelInvokeOptions & { streaming: true },
@@ -111,12 +111,12 @@ export class AIGNEHubBaseModel extends ChatModel {
    * @param options - Options for the invocation
    * @returns Either a complete response or a response stream depending on the streaming option
    */
-  async _baseInvoke<I extends Message, O extends Message>(
+  async __invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
     options?: AIGNEHubChatModelInvokeOptions,
   ): Promise<AgentResponse<O>>;
-  async _baseInvoke<I extends Message, O extends Message>(
+  async __invoke<I extends Message, O extends Message>(
     agent: string,
     input: string | I,
     options?: AIGNEHubChatModelInvokeOptions,

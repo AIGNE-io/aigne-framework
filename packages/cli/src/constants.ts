@@ -1,6 +1,7 @@
 import type { Agent } from "node:https";
 import { createRequire } from "node:module";
 import { AgenticMemory } from "@aigne/agentic-memory";
+import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
@@ -42,10 +43,7 @@ export function availableModels(): LoadableModel[] {
         new BedrockChatModel({
           ...params,
           clientOptions: {
-            requestHandler: NodeHttpHandler.create({
-              httpAgent,
-              httpsAgent: httpAgent,
-            }),
+            requestHandler: NodeHttpHandler.create({ httpAgent, httpsAgent: httpAgent }),
             streamCollector,
           },
         }),
@@ -69,6 +67,10 @@ export function availableModels(): LoadableModel[] {
     {
       name: XAIChatModel.name,
       create: (params) => new XAIChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: AIGNEHubChatModel.name,
+      create: (params) => new AIGNEHubChatModel({ ...params, clientOptions }),
     },
   ];
 }

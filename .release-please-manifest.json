@@ -16,6 +16,7 @@
   "models/open-router": "0.6.5",
   "models/openai": "0.9.2",
   "models/xai": "0.6.6",
+  "models/aigne-hub": "0.0.1",
   "observability/blocklet": "1.8.4",
   "observability/api": "0.7.2",
   "observability/ui": "0.7.2",

@@ -19,6 +19,7 @@
     "models/open-router": {},
     "models/openai": {},
     "models/xai": {},
+    "models/aigne-hub": {},
     "memory/default": {},
     "memory/agentic": {},
     "memory/fs": {},

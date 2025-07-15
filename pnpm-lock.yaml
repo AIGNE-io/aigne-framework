@@ -650,6 +650,43 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  models/aigne-hub:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/transport':
+        specifier: workspace:^
+        version: link:../../packages/transport
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
+    devDependencies:
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.18
+        version: 1.2.18(@types/react@19.1.8)
+      detect-port:
+        specifier: ^2.1.0
+        version: 2.1.0
+      hono:
+        specifier: ^4.8.4
+        version: 4.8.4
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   models/anthropic:
     dependencies:
       '@aigne/core':
@@ -1309,6 +1346,9 @@ importers:
       '@aigne/agentic-memory':
         specifier: workspace:^
         version: link:../../memory/agentic
+      '@aigne/aigne-hub':
+        specifier: workspace:^
+        version: link:../../models/aigne-hub
       '@aigne/anthropic':
         specifier: workspace:^
         version: link:../../models/anthropic

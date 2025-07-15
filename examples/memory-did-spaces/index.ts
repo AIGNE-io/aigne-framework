@@ -1,15 +1,14 @@
 #!/usr/bin/env bunwrapper
 
-import { AIAgent, AIGNE } from "@aigne/core";
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { AIAgent } from "@aigne/core";
 import { DIDSpacesMemory } from "@aigne/did-space-memory";
-import { OpenAIChatModel as Model } from "@aigne/openai";
 
-const aigne = new AIGNE({
-  model: new Model({
-    apiKey: process.env.OPENAI_API_KEY!,
-    model: "gpt-4o-mini",
-  }),
-});
+const { DID_SPACES_URL, DID_SPACES_AUTHORIZATION } = process.env;
+if (!DID_SPACES_URL || !DID_SPACES_AUTHORIZATION) {
+  console.error("Please set DID_SPACES_URL and DID_SPACES_AUTHORIZATION environment variables.");
+  process.exit(1);
+}
 
 const agent = AIAgent.from({
   instructions: `You are a crypto analyst with memory. Give brief answers only.
@@ -18,26 +17,16 @@ const agent = AIAgent.from({
 - Answer in 20 words or less
 - Show facts only, no explanations`,
   memory: new DIDSpacesMemory({
-    url: process.env.DID_SPACES_URL!,
+    url: DID_SPACES_URL,
     auth: {
-      authorization: process.env.DID_SPACES_AUTHORIZATION!,
+      authorization: DID_SPACES_AUTHORIZATION,
     },
   }),
   inputKey: "message",
 });
 
-// Test DID Spaces Memory functionality
-const result1 = await aigne.invoke(agent, {
-  message: `I'm John, doctor, like Bitcoin`,
+await runWithAIGNE(agent, {
+  chatLoopOptions: {
+    welcome: "Hello! I'm a chatbot with memory (in DID Space). Try asking me a question!",
+  },
 });
-console.log(result1.message);
-
-const result2 = await aigne.invoke(agent, {
-  message: `My favorite crypto?`,
-});
-console.log(result2.message);
-
-const result3 = await aigne.invoke(agent, {
-  message: `What is my work?`,
-});
-console.log(result3.message);

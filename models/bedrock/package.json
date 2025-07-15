@@ -38,7 +38,7 @@
     "prepublishOnly": "run-s clean build",
     "test": "bun test",
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
-    "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
+    "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
     "@aigne/core": "workspace:^",

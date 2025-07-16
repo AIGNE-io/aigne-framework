@@ -66,6 +66,9 @@ input_schema:
     docsDir:
       type: string
       description: 文档目录
+    additionalInformation:
+      type: string
+      description: 额外补充信息
 output_schema:
   type: object
   properties:

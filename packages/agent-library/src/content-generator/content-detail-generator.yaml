@@ -34,6 +34,9 @@ input_schema:
     glossary:
       type: string
       description: 术语表
+    additionalInformation:
+      type: string
+      description: 额外补充信息
   required:
     - rules
     - datasources

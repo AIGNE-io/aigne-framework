@@ -59,6 +59,9 @@ input_schema:
     outputDir:
       type: string
       description: 输出目录
+    additionalInformation:
+      type: string
+      description: 额外补充信息
   required:
     - rules
     - docsDir

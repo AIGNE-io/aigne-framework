@@ -10,6 +10,8 @@
 
 <datasources>
 {{ detailDataSources }}
+
+{{ additionalInformation }}
 </datasources>
 
 <terms>

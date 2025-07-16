@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { availableModels } from "@aigne/cli/constants.js";
 import { DEFAULT_CHAT_INPUT_KEY } from "@aigne/cli/utils/run-chat-loop.js";
 import {
   parseAgentInputByCommander,
@@ -239,4 +240,33 @@ test("runAgentWithAIGNE should throw error if output file is not empty and force
   expect(runAgentWithAIGNE(aigne, agent, { input: {}, output: outputFile })).rejects.toThrow(
     "already exists. Use --force to overwrite.",
   );
+});
+
+test("runAgentWithAIGNE should save steps and resume from special step", async () => {
+  const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
+    models: availableModels(),
+  });
+
+  const { team } = aigne.agents;
+  assert(team, "team agent should be loaded");
+
+  const result = (
+    await runAgentWithAIGNE(aigne, team, {
+      saveSteps: true,
+      saveStepsDir: ".cache/test-steps",
+      resumeFrom: "team2",
+    })
+  )?.result.result as { date: string }[];
+
+  const result1 = (
+    await runAgentWithAIGNE(aigne, team, {
+      saveSteps: true,
+      saveStepsDir: ".cache/test-steps",
+      resumeFrom: "team2",
+    })
+  )?.result.result as { date: string }[];
+
+  expect(result[0]).toEqual(result1[0]!);
+  expect(result[1]?.date).not.toEqual(result1[1]?.date);
+  expect(result[2]?.date).not.toEqual(result1[2]?.date);
 });

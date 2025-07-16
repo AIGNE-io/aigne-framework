@@ -1,6 +1,6 @@
 type: team
 name: team
 skills:
-  - team-1.js
-  - team-2.js
-  - team-3.js
+  - team1.js
+  - team2.js
+  - team3.js

@@ -1,4 +1,3 @@
-import assert from "node:assert";
 import { fstat } from "node:fs";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
@@ -341,26 +340,24 @@ export async function runAgentWithAIGNE(
     outputKey,
   });
 
-  assert(options.input);
-
   let resumed = false;
 
-  const { result } = await tracer.run(agent, options.input, {
+  const { result } = await tracer.run(agent, options.input ?? {}, {
     hooks: options.saveSteps
       ? {
-          async onStart({ agent: a }) {
+          async onStart(event) {
             if (resumed) return;
-            if (agent === a) return; // Skip the entry agent
-            if (options.resumeFrom === a.name) {
+            if (agent === event.agent) return; // Skip the entry agent
+            if (options.resumeFrom === event.agent.name) {
               resumed = true;
               return;
             }
 
-            const cache = await getCachedStepOutput(options, { agent });
+            const cache = await getCachedStepOutput(options, { agent: event.agent });
             if (cache?.output) return { cachedOutput: cache.output };
           },
-          async onEnd({ agent, input, output }) {
-            if (output) await saveStep(options, { agent, input, output });
+          async onEnd({ input, output, ...event }) {
+            if (output) await saveStep(options, { agent: event.agent, input, output });
           },
         }
       : undefined,
@@ -415,7 +412,7 @@ async function getCachedStepOutput(
     const parsed = stepFileSchema.parse(obj);
     if (parsed.output) return parsed;
   } catch (error) {
-    if (error.code !== "ENOENT") return undefined;
+    if (error.code === "ENOENT") return undefined;
     logger.warn('No cached step output found for agent "%s" at %s', agent.name, filename);
     return undefined;
   }

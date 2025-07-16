@@ -427,4 +427,15 @@
 
 </example_item>
 
+<bad_example>
+  - 错误示例：
+    - A["开始：`blocklet server upgrade`"]
+    - A -- "执行命令（例如 `start`、`stop`）" --> B
+</bad_example>
+
+<good_example>
+  - 正确示例：
+    - A["开始：blocklet server upgrade"]
+    - A -- "执行命令（例如 start、stop）" --> B
+</good_example>
 </example>

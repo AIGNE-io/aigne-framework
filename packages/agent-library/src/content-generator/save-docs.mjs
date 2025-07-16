@@ -41,7 +41,7 @@ export default async function saveDocs({ structurePlanResult: structurePlan, doc
 function generateSidebar(structurePlan) {
   // 构建树结构
   const root = {};
-  for (const { path, title } of structurePlan) {
+  for (const { path, title, parentId } of structurePlan) {
     const relPath = path.replace(/^\//, "");
     const segments = relPath.split("/");
     let node = root;
@@ -52,6 +52,7 @@ function generateSidebar(structurePlan) {
           __children: {},
           __title: null,
           __fullPath: segments.slice(0, i + 1).join("/"),
+          __parentId: parentId,
         };
       if (i === segments.length - 1) node[seg].__title = title;
       node = node[seg].__children;
@@ -65,7 +66,8 @@ function generateSidebar(structurePlan) {
       const fullSegments = [...parentSegments, key];
       const flatFile = fullSegments.join("-") + ".md";
       if (item.__title) {
-        out += `${indent}* [${item.__title}](/${flatFile})\n`;
+        const realIndent = item.__parentId === null ? "" : indent;
+        out += `${realIndent}* [${item.__title}](/${flatFile})\n`;
       }
       const children = item.__children;
       if (Object.keys(children).length > 0) {

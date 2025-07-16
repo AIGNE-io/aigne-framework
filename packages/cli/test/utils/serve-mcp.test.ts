@@ -45,6 +45,9 @@ test("serveMCPServer should work", async () => {
       expect.objectContaining({
         name: "chat",
       }),
+      expect.objectContaining({
+        name: "team",
+      }),
     ],
   });
 

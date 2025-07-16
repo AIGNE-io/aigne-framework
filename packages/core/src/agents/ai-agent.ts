@@ -421,7 +421,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       let stream = await options.context.invoke(
         model,
         { ...modelInput, messages: modelInput.messages.concat(toolCallMessages) },
-        { streaming: true },
+        { ...options, streaming: true },
       );
 
       if (this.structuredStreamMode) {
@@ -542,7 +542,10 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     options: AgentInvokeOptions,
     toolsMap: Map<string, Agent>,
   ): AgentProcessAsyncGenerator<O> {
-    const { toolCalls: [call] = [] } = await options.context.invoke(model, modelInput);
+    const { toolCalls: [call] = [] } = await options.context.invoke(model, modelInput, {
+      ...options,
+      streaming: false,
+    });
 
     if (!call) {
       throw new Error("Router toolChoice requires exactly one tool to be executed");
@@ -554,7 +557,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     const stream = await options.context.invoke(
       tool,
       { ...call.function.arguments, ...input },
-      { streaming: true, sourceAgent: this },
+      { ...options, streaming: true, sourceAgent: this },
     );
 
     return yield* stream as AgentResponseStream<O>;

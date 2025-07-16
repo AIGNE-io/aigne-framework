@@ -24,7 +24,7 @@ import {
 } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import { Command } from "commander";
-import { parse } from "yaml";
+import { parse, stringify } from "yaml";
 import { ZodError, ZodObject, z } from "zod";
 import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
@@ -45,6 +45,9 @@ export interface RunAIGNECommandOptions {
   format?: "text" | "json" | "yaml";
   output?: string;
   outputKey?: string;
+  saveSteps?: boolean;
+  saveStepsDir?: string;
+  resumeFrom?: string;
   logLevel?: LogLevel;
   force?: boolean;
 }
@@ -92,6 +95,17 @@ export const createRunAIGNECommand = (name = "run") =>
       "Key in the result to save to the output file",
       DEFAULT_OUTPUT_KEY,
     )
+    .option(
+      "--save-steps",
+      "Enable saving the results of intermediate steps in the workflow",
+      false,
+    )
+    .option(
+      "--save-steps-dir <dir>",
+      "Directory to save the results of intermediate steps in the workflow (defaults to .cache/steps)",
+      ".cache/steps",
+    )
+    .option("--resume-from <skill-name>", "Resume workflow from the given skill name")
     .option(
       "--force",
       "Truncate the output file if it exists, and create directory if the output path is not exists",
@@ -320,13 +334,37 @@ export async function runAgentWithAIGNE(
     return;
   }
 
-  const tracer = new TerminalTracer(aigne.newContext(), {
+  const context = aigne.newContext();
+
+  const tracer = new TerminalTracer(context, {
     printRequest: logger.enabled(LogLevel.INFO),
     outputKey,
   });
 
   assert(options.input);
-  const { result } = await tracer.run(agent, options.input);
+
+  let resumed = false;
+
+  const { result } = await tracer.run(agent, options.input, {
+    hooks: options.saveSteps
+      ? {
+          async onStart({ agent: a }) {
+            if (resumed) return;
+            if (agent === a) return; // Skip the entry agent
+            if (options.resumeFrom === a.name) {
+              resumed = true;
+              return;
+            }
+
+            const cache = await getCachedStepOutput(options, { agent });
+            if (cache?.output) return { cachedOutput: cache.output };
+          },
+          async onEnd({ agent, input, output }) {
+            if (output) await saveStep(options, { agent, input, output });
+          },
+        }
+      : undefined,
+  });
 
   if (options.output) {
     const message = result[outputKey || DEFAULT_OUTPUT_KEY];
@@ -342,4 +380,52 @@ export async function runAgentWithAIGNE(
 async function stdinHasData(): Promise<boolean> {
   const stats = await promisify(fstat)(0);
   return stats.isFIFO() || stats.isFile();
+}
+
+const stepFileSchema = z.object({
+  agent: z.string(),
+  input: z.record(z.any()),
+  output: z.record(z.any()),
+  createdAt: z.string().datetime(),
+});
+
+async function saveStep(
+  options: Pick<RunAIGNECommandOptions, "saveStepsDir">,
+  { agent, input, output }: { agent: Agent; input: Message; output: Message },
+) {
+  const filename = getCacheOutputFilename(options, agent);
+  await mkdir(dirname(filename), { recursive: true });
+  const data: z.infer<typeof stepFileSchema> = {
+    agent: agent.name,
+    input,
+    output,
+    createdAt: new Date().toISOString(),
+  };
+  await writeFile(filename, stringify(data), "utf8");
+}
+
+async function getCachedStepOutput(
+  options: Pick<RunAIGNECommandOptions, "saveStepsDir">,
+  { agent }: { agent: Agent },
+): Promise<{ output: Message } | undefined> {
+  const filename = getCacheOutputFilename(options, agent);
+  try {
+    const raw = await readFile(filename, "utf8");
+    const obj = parse(raw);
+    const parsed = stepFileSchema.parse(obj);
+    if (parsed.output) return parsed;
+  } catch (error) {
+    if (error.code !== "ENOENT") return undefined;
+    logger.warn('No cached step output found for agent "%s" at %s', agent.name, filename);
+    return undefined;
+  }
+}
+
+function getCacheOutputFilename(
+  options: Pick<RunAIGNECommandOptions, "saveStepsDir">,
+  agent: Agent,
+): string {
+  let dir = options.saveStepsDir || ".cache/steps";
+  if (!isAbsolute(dir)) dir = join(process.cwd(), dir);
+  return join(dir, `${agent.name}.yaml`);
 }

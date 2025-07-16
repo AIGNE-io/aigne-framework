@@ -1,0 +1,6 @@
+type: team
+name: team
+skills:
+  - team-1.js
+  - team-2.js
+  - team-3.js

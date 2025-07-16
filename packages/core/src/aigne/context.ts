@@ -247,7 +247,9 @@ export class AIGNEContext implements Context {
         }
       }
     } else {
-      this.internal = new AIGNEContextShared(parent);
+      this.internal = new AIGNEContextShared(
+        parent instanceof AIGNEContext ? parent.internal : parent,
+      );
       this.span = tracer?.startSpan("AIGNEContext");
 
       // 修改了 rootId 是否会之前的有影响？，之前为 this.id
@@ -550,14 +552,16 @@ class AIGNEContextShared {
   constructor(
     private readonly parent?: Pick<Context, "model" | "skills" | "limits" | "observer"> & {
       messageQueue?: MessageQueue;
+      events?: Emitter<any>;
     },
   ) {
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
+    this.events = this.parent?.events ?? new Emitter<any>();
   }
 
   readonly messageQueue: MessageQueue;
 
-  readonly events = new Emitter<any>();
+  readonly events: Emitter<any>;
 
   get model() {
     return this.parent?.model;
@@ -617,7 +621,7 @@ class AIGNEContextShared {
     agent: Agent<I, O>,
     input: I & Message,
     context: Context,
-    options?: InvokeOptions,
+    options: InvokeOptions = {},
   ): AgentProcessAsyncGenerator<O & { __activeAgent__: Agent }> {
     const startedAt = Date.now();
     try {
@@ -635,7 +639,11 @@ class AIGNEContextShared {
           });
         }
 
-        const stream = await activeAgent.invoke(input, { ...options, context, streaming: true });
+        const stream = await activeAgent.invoke(input, {
+          hooks: options.hooks,
+          context,
+          streaming: true,
+        });
         for await (const value of stream) {
           if (isAgentResponseDelta(value)) {
             if (value.delta.json) {

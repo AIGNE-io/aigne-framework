@@ -698,8 +698,6 @@ test("Agent hook onHandoff should work correctly", async () => {
 
   const result = await aigne.invoke(triage, { message: "I want to give feedback" });
 
-  console.log(result);
-
   expect(onHandoff).toHaveBeenLastCalledWith(
     expect.objectContaining({
       source: triage,

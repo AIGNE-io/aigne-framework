@@ -205,6 +205,11 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
    * and returns the final JSON result
    */
   streaming?: boolean;
+
+  /**
+   * Optional hooks for agent invocation
+   */
+  hooks?: AgentHooks;
 }
 
 /**
@@ -570,8 +575,18 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });
 
     try {
-      let parsedInput =
-        ((await this.hooks.onStart?.({ context: opts.context, input }))?.input as I) ?? input;
+      let parsedInput = input;
+      let response: AgentProcessResult<O> | undefined;
+
+      for (const hooks of [opts.hooks, this.hooks]) {
+        const s = await hooks?.onStart?.({
+          agent: this,
+          context: opts.context,
+          input: parsedInput,
+        });
+        if (s?.cachedOutput) response = s.cachedOutput as AgentProcessResult<O>;
+        if (s?.input) parsedInput = s.input as I;
+      }
 
       parsedInput = checkArguments(`Agent ${this.name} input`, this.inputSchema, input);
 
@@ -579,9 +594,11 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
       this.checkContextStatus(opts);
 
-      let response = await this.process(parsedInput, opts);
-      if (response instanceof Agent) {
-        response = transferToAgentOutput(response);
+      if (!response) {
+        response = await this.process(parsedInput, opts);
+        if (response instanceof Agent) {
+          response = transferToAgentOutput(response);
+        }
       }
 
       if (opts.streaming) {
@@ -663,15 +680,17 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       output,
     ) as O;
 
-    const finalOutput = this.includeInputInOutput ? { ...input, ...parsedOutput } : parsedOutput;
+    let finalOutput = this.includeInputInOutput ? { ...input, ...parsedOutput } : parsedOutput;
 
     await this.postprocess(input, finalOutput, options);
 
     logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
-    const o = (await this.hooks.onEnd?.({ context, input, output: finalOutput }))?.output;
-    if (o) return o as O;
+    for (const hooks of [options.hooks, this.hooks]) {
+      const o = await hooks?.onEnd?.({ agent: this, context, input, output: finalOutput });
+      if (o?.output) finalOutput = o.output as O;
+    }
 
     return finalOutput;
   }
@@ -694,7 +713,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     const { context } = options;
 
-    await this.hooks.onEnd?.({ context, input, error });
+    await options.hooks?.onEnd?.({ agent: this, context, input, error });
+    await this.hooks.onEnd?.({ agent: this, context, input, error });
 
     return error;
   }
@@ -935,7 +955,11 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the input message
    */
-  onStart?: (event: { context: Context; input: I }) => PromiseOrValue<void | { input?: I }>;
+  onStart?: (event: {
+    agent: Agent;
+    context: Context;
+    input: I;
+  }) => PromiseOrValue<void | { input?: I; cachedOutput?: O }>;
 
   /**
    * Called when agent processing completes or fails
@@ -947,7 +971,11 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    * @param event Object containing the input message and either output or error
    */
   onEnd?: (
-    event: XOr<{ context: Context; input: I; output: O; error: Error }, "output", "error">,
+    event: XOr<
+      { agent: Agent; context: Context; input: I; output: O; error: Error },
+      "output",
+      "error"
+    >,
   ) => PromiseOrValue<void | { output?: O }>;
 
   /**

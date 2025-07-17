@@ -17,7 +17,7 @@
   "models/openai": "0.10.2",
   "models/xai": "0.7.2",
   "models/aigne-hub": "0.1.2",
-  "observability/blocklet": "1.9.0",
+  "observability/blocklet": "1.9.1",
   "observability/api": "0.8.0",
   "observability/ui": "0.7.2",
   "examples/mcp-server": "0.3.14",

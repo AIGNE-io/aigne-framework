@@ -934,6 +934,9 @@ exports[`loadAgentFromYaml should support default input 1`] = `
   "skills": [
     {
       "default_input": {
+        "description": {
+          "$get": "title",
+        },
         "title": "Default Title",
       },
       "input_schema": {
@@ -959,6 +962,9 @@ exports[`loadAgentFromYaml should support default input 1`] = `
     },
     {
       "default_input": {
+        "description": {
+          "$get": "title",
+        },
         "title": "Another Default Title",
       },
       "input_schema": {

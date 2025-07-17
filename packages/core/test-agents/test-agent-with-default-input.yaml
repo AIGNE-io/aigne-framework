@@ -4,6 +4,8 @@ skills:
   - url: ./test-agent-with-default-input-skill.yaml
     default_input:
       title: Default Title
+      description:
+        $get: title
   - type: ai
     name: test_agent_with_default_input_skill2.yaml
     input_schema:
@@ -20,3 +22,5 @@ skills:
         - description
     default_input:
       title: Another Default Title
+      description:
+        $get: title

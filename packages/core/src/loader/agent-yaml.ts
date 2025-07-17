@@ -5,7 +5,7 @@ import { type ZodType, z } from "zod";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { ProcessMode } from "../agents/team-agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
-import { camelizeSchema, inputOutputSchema, optionalize } from "./schema.js";
+import { camelizeSchema, defaultInputSchema, inputOutputSchema, optionalize } from "./schema.js";
 
 interface BaseAgentSchema {
   name?: string;
@@ -61,7 +61,7 @@ export async function loadAgentFromYamlFile(path: string) {
       inputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["inputSchema"]>,
-      defaultInput: optionalize(z.record(z.any())),
+      defaultInput: optionalize(defaultInputSchema),
       outputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["outputSchema"]>,
@@ -73,7 +73,7 @@ export async function loadAgentFromYamlFile(path: string) {
             camelizeSchema(
               z.object({
                 url: z.string(),
-                defaultInput: optionalize(z.record(z.any())),
+                defaultInput: optionalize(defaultInputSchema),
               }),
             ),
           ]),

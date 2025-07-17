@@ -19,6 +19,7 @@ import {
   createAccessorArray,
   flat,
   isEmpty,
+  isNil,
   isRecord,
   type Nullish,
   type PromiseOrValue,
@@ -32,6 +33,8 @@ import {
 } from "./types.js";
 
 export * from "./types.js";
+
+export const DEFAULT_INPUT_ACTION_GET = "$get";
 
 /**
  * Basic message type that can contain any key-value pairs
@@ -111,7 +114,7 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    * Default input message for the agent, it can be used to provide partial input
    * or default values for the agent's input schema.
    */
-  defaultInput?: Partial<I>;
+  defaultInput?: Agent<I, O>["defaultInput"];
 
   /**
    * Zod schema defining the output message structure
@@ -338,7 +341,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
   private readonly _inputSchema?: AgentInputOutputSchema<I>;
 
-  defaultInput?: Partial<I>;
+  defaultInput?: Partial<{ [key in keyof I]: { [DEFAULT_INPUT_ACTION_GET]: string } | I[key] }>;
 
   private readonly _outputSchema?: AgentInputOutputSchema<O>;
 
@@ -576,7 +579,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       context: options.context ?? (await this.newDefaultContext()),
     };
 
-    input = { ...this.defaultInput, ...input };
+    input = this.mergeDefaultInput(input);
 
     logger.debug("Invoke agent %s started with input: %O", this.name, input);
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });
@@ -625,6 +628,32 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     } catch (error) {
       throw await this.processAgentError(input, error, opts);
     }
+  }
+
+  private mergeDefaultInput(input: I & Message): I & Message {
+    const defaultInput = Object.fromEntries(
+      Object.entries(this.defaultInput ?? {}).filter(
+        ([, v]) => !(typeof v === "object" && DEFAULT_INPUT_ACTION_GET in v),
+      ),
+    );
+
+    input = { ...defaultInput, ...input };
+
+    for (const key of Object.keys(this.defaultInput ?? {})) {
+      const v = this.defaultInput?.[key];
+      if (
+        v &&
+        typeof v === "object" &&
+        DEFAULT_INPUT_ACTION_GET in v &&
+        typeof v[DEFAULT_INPUT_ACTION_GET] === "string" &&
+        isNil(input[key])
+      ) {
+        const value = input[v[DEFAULT_INPUT_ACTION_GET]];
+        if (!isNil(value)) Object.assign(input, { [key]: value });
+      }
+    }
+
+    return input;
   }
 
   protected async invokeSkill<I extends Message, O extends Message>(

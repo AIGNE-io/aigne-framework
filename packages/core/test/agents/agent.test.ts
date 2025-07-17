@@ -745,9 +745,11 @@ test("Agent should merge default input before invoking", async () => {
     inputSchema: z.object({
       title: z.string(),
       description: z.string().optional(),
+      foo: z.string().optional(),
     }),
     defaultInput: {
       description: "Default description",
+      foo: { $get: "title" },
     },
     process: async (input) => input,
   });
@@ -756,5 +758,32 @@ test("Agent should merge default input before invoking", async () => {
   expect(result).toEqual({
     title: "Test Title",
     description: "Default description",
+    foo: "Test Title",
+  });
+});
+
+test("Agent should prioritize direct input over default input", async () => {
+  const agent = FunctionAgent.from({
+    inputSchema: z.object({
+      title: z.string(),
+      description: z.string().optional(),
+      foo: z.string().optional(),
+    }),
+    defaultInput: {
+      description: "Default description",
+      foo: { $get: "title" },
+    },
+    process: async (input) => input,
+  });
+
+  const result = await agent.invoke({
+    title: "Test Title",
+    description: "Custom description",
+    foo: "Custom Foo",
+  });
+  expect(result).toEqual({
+    title: "Test Title",
+    description: "Custom description",
+    foo: "Custom Foo",
   });
 });

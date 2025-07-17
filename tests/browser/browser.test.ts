@@ -1,4 +1,4 @@
-import { expect, spyOn, test } from "bun:test";
+import { afterAll, beforeAll, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { exists, readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -17,20 +17,34 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { serveStatic } from "hono/serve-static";
-import { type BrowserType, chromium, type Page, webkit } from "playwright";
+import { type Browser, chromium, type Page, webkit } from "playwright";
 
-test.each<Readonly<[AIGNEHTTPClientInvokeOptions, string, BrowserType]>>(
+let browsers: {
+  webkit: Browser;
+  chromium: Browser;
+};
+
+beforeAll(async () => {
+  browsers = {
+    webkit: await webkit.launch({}),
+    chromium: await chromium.launch({}),
+  };
+});
+
+afterAll(async () => {
+  await Promise.all(Object.values(browsers).map((browser) => browser.close()));
+});
+
+test.each<Readonly<[AIGNEHTTPClientInvokeOptions, keyof typeof browsers]>>(
   [{ streaming: false }, { streaming: true }].flatMap((options) =>
-    [["webkit", webkit] as const, ["chromium", chromium] as const].map(
-      (browser) => [options, ...browser] as const,
-    ),
+    ["webkit" as const, "chromium" as const].map((browser) => [options, browser] as const),
   ),
 )(
   "AIGNE HTTP Client should work in browser with %p %s",
-  async (options, _, browserType) => {
+  async (options, browserType) => {
     const { server, aigne, pageURL, aigneURL } = await startServer();
 
-    const browser = await browserType.launch({});
+    const browser = browsers[browserType];
     const page = await browser.newPage();
 
     spyOn(aigne.model, "process").mockReturnValueOnce(
@@ -51,7 +65,6 @@ test.each<Readonly<[AIGNEHTTPClientInvokeOptions, string, BrowserType]>>(
       message: "Hello, How can I help you?",
     });
 
-    await browser.close();
     await server.stop(true);
   },
   60e3,
@@ -60,7 +73,7 @@ test.each<Readonly<[AIGNEHTTPClientInvokeOptions, string, BrowserType]>>(
 test("AIGNE HTTP Client should work with client memory in browser", async () => {
   const { server, aigne, pageURL, aigneURL } = await startServer();
 
-  const browser = await chromium.launch({});
+  const browser = browsers.chromium;
   const page = await browser.newPage();
   await page.goto(pageURL);
 
@@ -89,9 +102,9 @@ test("AIGNE HTTP Client should work with client memory in browser", async () => 
   expect(result2).toEqual({
     message: 'You just said, "Hello, AIGNE!"',
   });
+
   expect(modelProcess.mock.lastCall).toMatchSnapshot([{}, expect.anything()]);
 
-  await browser.close();
   await server.stop(true);
 }, 60e3);
 

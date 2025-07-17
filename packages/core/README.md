@@ -74,26 +74,25 @@ import { OpenAIChatModel } from "@aigne/openai";
 // Create AI model instance
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
-  model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
+  model: process.env.DEFAULT_CHAT_MODEL || "gpt-4o-mini",
 });
 
 // Create AI agent
-const agent = AIAgent.from({
-  name: "Assistant",
-  instructions: "You are a helpful assistant.",
-});
+  const agent = AIAgent.from({
+    instructions: "You are a helpful assistant",
+    inputKey: "message",
+    outputKey: "text",
+  });
 
 // AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({ model });
 
 // Use the AIGNE to invoke the agent
-const userAgent = await aigne.invoke(agent);
-
-// Send a message to the agent
-const response = await userAgent.invoke(
+const response = await aigne.invoke(, agent,
   "Hello, can you help me write a short article?",
 );
 console.log(response);
+// { text: "xxxxx"}
 ```
 
 ## License

@@ -16,9 +16,10 @@
 - 接口/方法调用的说明必须包含 **响应数据示例** 
 - 使用 mermaid 图表解释复杂的概念 (```mermaid``` format)，让页面内容展示形式更丰富
   - 使用 `flowchart` 图表解释概念之间的关系
-  - 使用 `sequenceDiagram` 图表解释调用、执行的流程
+  - 使用 `sequenceDiagram` 图表解释调用、执行的流程，
   - **确保 mermaid `flowchart` 和 `graph` 图表中所有节点的 label 都使用 " 包裹**，使用简单文案描述，不包含任何特殊符号，示例：A["@abc"]、B("AIGNE")、C{"@aigne/core"}
   - **确保 mermaid `flowchart` 和 `graph` 图表中所有节点连线上的描述都使用 " 包裹**，使用简单文案描述，不包含任何特殊符号，示例： E -- "Yes, Cache Hit" --> F["Serve Cached HTML"];
+  - **确保 mermaid`sequenceDiagram` 图表所有节点名不使用 " 包裹，示例：`participant AIGNE as AIGNE Engine`
 - 更多的使用 table 、mermaid 图表来解释信息，过长的文本描述会让用户阅读有压力
 - 概览部分，必须包含 mermaid 图表，展示产品的架构图
 - 对输出的 markdown 进行检查，确认输出内容完整，table 、mermaid 信息完整并且格式正确

@@ -23,29 +23,53 @@ Core library of [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) f
 
 ## Installation
 
+The AIGNE Framework depends on the core package `@aigne/core` and model packages (such as `@aigne/openai`). You can choose the appropriate installation command based on your package manager. After installation, you can start building your own Agents.
+
 ### Using npm
 
 ```bash
 npm install @aigne/core
+
+# model packages
+npm install @aigne/openai
 ```
 
 ### Using yarn
 
 ```bash
 yarn add @aigne/core
+
+# model packages
+yarn add @aigne/openai
 ```
 
 ### Using pnpm
 
 ```bash
 pnpm add @aigne/core
+
+# model packages
+pnpm add @aigne/openai
+```
+
+### available models
+
+```typescript
+import { AnthropicChatModel } from "@aigne/anthropic";
+import { BedrockChatModel } from "@aigne/bedrock";
+import { DeepSeekChatModel } from "@aigne/deepseek";
+import { GeminiChatModel } from "@aigne/gemini";
+import { OllamaChatModel } from "@aigne/ollama";
+import { OpenRouterChatModel } from "@aigne/open-router";
+import { OpenAIChatModel } from "@aigne/openai";
+import { XAIChatModel } from "@aigne/xai";
 ```
 
 ## Basic Usage
 
 ```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+import { OpenAIChatModel } from "@aigne/openai";
 
 // Create AI model instance
 const model = new OpenAIChatModel({

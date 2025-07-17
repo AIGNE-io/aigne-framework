@@ -108,6 +108,12 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   inputSchema?: AgentInputOutputSchema<I>;
 
   /**
+   * Default input message for the agent, it can be used to provide partial input
+   * or default values for the agent's input schema.
+   */
+  defaultInput?: Partial<I>;
+
+  /**
    * Zod schema defining the output message structure
    *
    * Used to validate that output messages conform to the expected format
@@ -160,6 +166,7 @@ export const agentOptionsSchema: ZodObject<{
   name: z.string().optional(),
   description: z.string().optional(),
   inputSchema: z.custom<AgentInputOutputSchema>().optional(),
+  defaultInput: z.record(z.any()).optional(),
   outputSchema: z.custom<AgentInputOutputSchema>().optional(),
   includeInputInOutput: z.boolean().optional(),
   skills: z.array(z.union([z.custom<Agent>(), z.custom<FunctionAgentFn>()])).optional(),
@@ -239,6 +246,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     if (inputSchema) checkAgentInputOutputSchema(inputSchema);
     if (outputSchema) checkAgentInputOutputSchema(outputSchema);
     this._inputSchema = inputSchema;
+    this.defaultInput = options.defaultInput;
     this._outputSchema = outputSchema;
     this.includeInputInOutput = options.includeInputInOutput;
     this.subscribeTopic = options.subscribeTopic;
@@ -329,6 +337,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
   readonly description?: string;
 
   private readonly _inputSchema?: AgentInputOutputSchema<I>;
+
+  defaultInput?: Partial<I>;
 
   private readonly _outputSchema?: AgentInputOutputSchema<O>;
 
@@ -566,20 +576,21 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       context: options.context ?? (await this.newDefaultContext()),
     };
 
+    input = { ...this.defaultInput, ...input };
+
     logger.debug("Invoke agent %s started with input: %O", this.name, input);
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });
 
     try {
-      let parsedInput =
-        ((await this.hooks.onStart?.({ context: opts.context, input }))?.input as I) ?? input;
+      input = ((await this.hooks.onStart?.({ context: opts.context, input }))?.input as I) ?? input;
 
-      parsedInput = checkArguments(`Agent ${this.name} input`, this.inputSchema, input);
+      input = checkArguments(`Agent ${this.name} input`, this.inputSchema, input);
 
-      await this.preprocess(parsedInput, opts);
+      await this.preprocess(input, opts);
 
       this.checkContextStatus(opts);
 
-      let response = await this.process(parsedInput, opts);
+      let response = await this.process(input, opts);
       if (response instanceof Agent) {
         response = transferToAgentOutput(response);
       }
@@ -596,7 +607,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
           input,
           onAgentResponseStreamEnd(stream, {
             onResult: async (result) => {
-              return await this.processAgentOutput(parsedInput, result, opts);
+              return await this.processAgentOutput(input, result, opts);
             },
             onError: async (error) => {
               return await this.processAgentError(input, error, opts);
@@ -608,7 +619,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
       return await this.checkResponseByGuideRails(
         input,
-        this.processAgentOutput(parsedInput, await agentProcessResultToObject(response), opts),
+        this.processAgentOutput(input, await agentProcessResultToObject(response), opts),
         opts,
       );
     } catch (error) {

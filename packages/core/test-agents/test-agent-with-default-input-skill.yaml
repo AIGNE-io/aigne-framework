@@ -1,0 +1,14 @@
+type: ai
+name: test_agent_input_naming_skill
+input_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      description: Title of the input
+    description:
+      type: string
+      description: Description of the input
+  required:
+    - title
+    - description

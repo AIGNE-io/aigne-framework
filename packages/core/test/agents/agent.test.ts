@@ -739,3 +739,22 @@ test("Agent must return a record type", async () => {
     "expect to return a record type such as {result: ...}, but got (number): 16",
   );
 });
+
+test("Agent should merge default input before invoking", async () => {
+  const agent = FunctionAgent.from({
+    inputSchema: z.object({
+      title: z.string(),
+      description: z.string().optional(),
+    }),
+    defaultInput: {
+      description: "Default description",
+    },
+    process: async (input) => input,
+  });
+
+  const result = await agent.invoke({ title: "Test Title" });
+  expect(result).toEqual({
+    title: "Test Title",
+    description: "Default description",
+  });
+});

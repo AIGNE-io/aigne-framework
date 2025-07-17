@@ -1,0 +1,34 @@
+type: ai
+name: test_agent_input_naming
+input_schema:
+  type: object
+  properties:
+    snake_case:
+      type: string
+      description: Snake case property
+    camelCase:
+      type: string
+      description: Camel case property
+    kebab-case:
+      type: string
+      description: Kebab case property
+    SCREAM_CASE:
+      type: string
+      description: Scream case property
+    PascalCase:
+      type: string
+      description: Pascal case property
+  required:
+    - snake_case
+    - camelCase
+    - kebab-case
+    - SCREAM_CASE
+    - PascalCase
+outputSchema:
+  type: object
+  properties:
+    response:
+      type: string
+      description: Response from the agent
+  required:
+    - response

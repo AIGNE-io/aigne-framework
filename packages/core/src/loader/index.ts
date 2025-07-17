@@ -3,7 +3,7 @@ import type { Camelize } from "camelize-ts";
 import camelize from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
-import { Agent, FunctionAgent } from "../agents/agent.js";
+import { Agent, type AgentOptions, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
@@ -63,7 +63,11 @@ export async function load(options: LoadOptions): Promise<AIGNEOptions> {
   };
 }
 
-export async function loadAgent(path: string, options?: LoadOptions): Promise<Agent> {
+export async function loadAgent(
+  path: string,
+  options?: LoadOptions,
+  agentOptions?: AgentOptions,
+): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromJsFile(path);
     if (agent instanceof Agent) return agent;
@@ -73,7 +77,7 @@ export async function loadAgent(path: string, options?: LoadOptions): Promise<Ag
   if ([".yml", ".yaml"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromYamlFile(path);
 
-    return parseAgent(path, agent, options);
+    return parseAgent(path, agent, options, agentOptions);
   }
 
   throw new Error(`Unsupported agent file type: ${path}`);
@@ -83,15 +87,20 @@ async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
   options?: LoadOptions,
+  agentOptions?: AgentOptions,
 ): Promise<Agent> {
   const skills =
     "skills" in agent
       ? agent.skills &&
         (await Promise.all(
           agent.skills.map((skill) =>
-            typeof skill === "string"
-              ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), skill), options)
-              : parseAgent(path, skill, options),
+            typeof skill === "object" && "type" in skill
+              ? parseAgent(path, skill, options)
+              : typeof skill === "string"
+                ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), skill), options)
+                : loadAgent(nodejs.path.join(nodejs.path.dirname(path), skill.url), options, {
+                    defaultInput: skill.defaultInput,
+                  }),
           ),
         ))
       : undefined;
@@ -108,6 +117,7 @@ async function parseAgent(
   switch (agent.type) {
     case "ai": {
       return AIAgent.from({
+        ...agentOptions,
         ...agent,
         instructions:
           agent.instructions &&

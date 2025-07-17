@@ -47,6 +47,7 @@ requirements:
 environments: []
 capabilities:
   navigation: true
+  component: true
 screenshots:
   - 5621f112b2493f73592e2c43c9700233.png
   - d8a9b45108c4ec0d77af9c173279ead6.png

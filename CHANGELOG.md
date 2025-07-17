@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.40.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.39.0...aigne-framework-v1.40.0) (2025-07-17)
+
+
+### Features
+
+* **core:** support custom default input value for agent ([#258](https://github.com/AIGNE-io/aigne-framework/issues/258)) ([352ac70](https://github.com/AIGNE-io/aigne-framework/commit/352ac70400fb7e28cc36c4f6dc9c591b0d64e546))
+
+
+### Bug Fixes
+
+* **docs:** should parse inline code inside markdown links ([#257](https://github.com/AIGNE-io/aigne-framework/issues/257)) ([b91f34e](https://github.com/AIGNE-io/aigne-framework/commit/b91f34e09378d3b506fa03ae61e2cede4e08943f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.3.1
+
 ## [1.39.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.3...aigne-framework-v1.39.0) (2025-07-15)
 
 

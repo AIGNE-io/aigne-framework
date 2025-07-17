@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.1](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.0...open-router-v0.7.1) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.1
+  * devDependencies
+    * @aigne/core bumped to 1.35.0
+    * @aigne/test-utils bumped to 0.5.9
+
 ## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.6.5...open-router-v0.7.0) (2025-07-15)
 
 

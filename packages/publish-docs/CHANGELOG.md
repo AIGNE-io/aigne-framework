@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.3.0...publish-docs-v0.3.1) (2025-07-17)
+
+
+### Bug Fixes
+
+* **docs:** should parse inline code inside markdown links ([#257](https://github.com/AIGNE-io/aigne-framework/issues/257)) ([b91f34e](https://github.com/AIGNE-io/aigne-framework/commit/b91f34e09378d3b506fa03ae61e2cede4e08943f))
+
 ## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.2.1...publish-docs-v0.3.0) (2025-07-15)
 
 

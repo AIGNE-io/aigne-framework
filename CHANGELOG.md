@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.41.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.40.0...aigne-framework-v1.41.0) (2025-07-17)
+
+
+### Features
+
+* **core:** support define hooks for agent in yaml ([#260](https://github.com/AIGNE-io/aigne-framework/issues/260)) ([c388e82](https://github.com/AIGNE-io/aigne-framework/commit/c388e8216134271af4d9c7def70862ea3c354c7f))
+
 ## [1.40.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.39.0...aigne-framework-v1.40.0) (2025-07-17)
 
 

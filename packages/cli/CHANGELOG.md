@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.24.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.23.1...cli-v1.24.0) (2025-07-17)
+
+
+### Features
+
+* **core:** support define hooks for agent in yaml ([#260](https://github.com/AIGNE-io/aigne-framework/issues/260)) ([c388e82](https://github.com/AIGNE-io/aigne-framework/commit/c388e8216134271af4d9c7def70862ea3c354c7f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.2
+    * @aigne/agentic-memory bumped to 1.0.2
+    * @aigne/anthropic bumped to 0.9.2
+    * @aigne/bedrock bumped to 0.8.2
+    * @aigne/core bumped to 1.36.0
+    * @aigne/deepseek bumped to 0.7.2
+    * @aigne/default-memory bumped to 1.0.2
+    * @aigne/gemini bumped to 0.8.2
+    * @aigne/ollama bumped to 0.7.2
+    * @aigne/open-router bumped to 0.7.2
+    * @aigne/openai bumped to 0.10.2
+    * @aigne/xai bumped to 0.7.2
+    * @aigne/aigne-hub bumped to 0.1.2
+
 ## [1.23.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.23.0...cli-v1.23.1) (2025-07-17)
 
 

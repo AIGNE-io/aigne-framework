@@ -1,4 +1,3 @@
-import assert from "node:assert";
 import { fstat } from "node:fs";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
@@ -325,8 +324,7 @@ export async function runAgentWithAIGNE(
     outputKey,
   });
 
-  assert(options.input);
-  const { result } = await tracer.run(agent, options.input);
+  const { result } = await tracer.run(agent, options.input ?? {});
 
   if (options.output) {
     const message = result[outputKey || DEFAULT_OUTPUT_KEY];

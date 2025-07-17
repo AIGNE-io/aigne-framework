@@ -7,16 +7,29 @@ import { ProcessMode } from "../agents/team-agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { camelizeSchema, defaultInputSchema, inputOutputSchema, optionalize } from "./schema.js";
 
+export interface HooksSchema {
+  onStart?: NestAgentSchema;
+  onSuccess?: NestAgentSchema;
+  onError?: NestAgentSchema;
+  onEnd?: NestAgentSchema;
+  onSkillStart?: NestAgentSchema;
+  onSkillEnd?: NestAgentSchema;
+  onHandoff?: NestAgentSchema;
+}
+
+export type NestAgentSchema =
+  | string
+  | { url: string; defaultInput?: Record<string, any>; hooks?: HooksSchema | HooksSchema[] }
+  | AgentSchema;
+
 interface BaseAgentSchema {
   name?: string;
   description?: string;
   inputSchema?: ZodType<Record<string, any>>;
+  defaultInput?: Record<string, any>;
   outputSchema?: ZodType<Record<string, any>>;
-  skills?: (
-    | string
-    | { url: string; defaultInput?: Record<string, any> }
-    | (AgentSchema & { defaultInput?: Record<string, any> })
-  )[];
+  skills?: NestAgentSchema[];
+  hooks?: HooksSchema | HooksSchema[];
   memory?:
     | boolean
     | {
@@ -33,7 +46,7 @@ interface AIAgentSchema extends BaseAgentSchema {
   toolChoice?: AIAgentToolChoice;
 }
 
-interface MCPAgentSchema {
+interface MCPAgentSchema extends BaseAgentSchema {
   type: "mcp";
   url?: string;
   command?: string;
@@ -55,6 +68,32 @@ type AgentSchema = AIAgentSchema | MCPAgentSchema | TeamAgentSchema | TransformA
 
 export async function loadAgentFromYamlFile(path: string) {
   const agentSchema: ZodType<AgentSchema> = z.lazy(() => {
+    const nestAgentSchema: ZodType<NestAgentSchema> = z.lazy(() =>
+      z.union([
+        agentSchema,
+        z.string(),
+        camelizeSchema(
+          z.object({
+            url: z.string(),
+            defaultInput: optionalize(defaultInputSchema),
+            hooks: optionalize(z.union([hooksSchema, z.array(hooksSchema)])),
+          }),
+        ),
+      ]),
+    );
+
+    const hooksSchema: ZodType<HooksSchema> = camelizeSchema(
+      z.object({
+        onStart: optionalize(nestAgentSchema),
+        onSuccess: optionalize(nestAgentSchema),
+        onError: optionalize(nestAgentSchema),
+        onEnd: optionalize(nestAgentSchema),
+        onSkillStart: optionalize(nestAgentSchema),
+        onSkillEnd: optionalize(nestAgentSchema),
+        onHandoff: optionalize(nestAgentSchema),
+      }),
+    );
+
     const baseAgentSchema = z.object({
       name: optionalize(z.string()),
       description: optionalize(z.string()),
@@ -65,20 +104,8 @@ export async function loadAgentFromYamlFile(path: string) {
       outputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["outputSchema"]>,
-      skills: optionalize(
-        z.array(
-          z.union([
-            agentSchema,
-            z.string(),
-            camelizeSchema(
-              z.object({
-                url: z.string(),
-                defaultInput: optionalize(defaultInputSchema),
-              }),
-            ),
-          ]),
-        ),
-      ),
+      hooks: optionalize(z.union([hooksSchema, z.array(hooksSchema)])),
+      skills: optionalize(z.array(nestAgentSchema)),
       memory: optionalize(
         z.union([
           z.boolean(),
@@ -115,12 +142,14 @@ export async function loadAgentFromYamlFile(path: string) {
             toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
           })
           .extend(baseAgentSchema.shape),
-        z.object({
-          type: z.literal("mcp"),
-          url: optionalize(z.string()),
-          command: optionalize(z.string()),
-          args: optionalize(z.array(z.string())),
-        }),
+        z
+          .object({
+            type: z.literal("mcp"),
+            url: optionalize(z.string()),
+            command: optionalize(z.string()),
+            args: optionalize(z.array(z.string())),
+          })
+          .extend(baseAgentSchema.shape),
         z
           .object({
             type: z.literal("team"),

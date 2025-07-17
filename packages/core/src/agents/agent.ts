@@ -156,8 +156,16 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   maxRetrieveMemoryCount?: number;
 
-  hooks?: AgentHooks<I, O>;
+  hooks?: AgentHooks<I, O> | AgentHooks<I, O>[];
 }
+
+const hooksSchema = z.object({
+  onStart: z.custom<AgentHooks["onStart"]>().optional(),
+  onEnd: z.custom<AgentHooks["onEnd"]>().optional(),
+  onSkillStart: z.custom<AgentHooks["onSkillStart"]>().optional(),
+  onSkillEnd: z.custom<AgentHooks["onSkillEnd"]>().optional(),
+  onHandoff: z.custom<AgentHooks["onHandoff"]>().optional(),
+});
 
 export const agentOptionsSchema: ZodObject<{
   [key in keyof AgentOptions]: ZodType<AgentOptions[key]>;
@@ -176,15 +184,7 @@ export const agentOptionsSchema: ZodObject<{
   disableEvents: z.boolean().optional(),
   memory: z.union([z.custom<MemoryAgent>(), z.array(z.custom<MemoryAgent>())]).optional(),
   maxRetrieveMemoryCount: z.number().optional(),
-  hooks: z
-    .object({
-      onStart: z.custom<AgentHooks["onStart"]>().optional(),
-      onEnd: z.custom<AgentHooks["onEnd"]>().optional(),
-      onSkillStart: z.custom<AgentHooks["onSkillStart"]>().optional(),
-      onSkillEnd: z.custom<AgentHooks["onSkillEnd"]>().optional(),
-      onHandoff: z.custom<AgentHooks["onHandoff"]>().optional(),
-    })
-    .optional(),
+  hooks: z.union([z.array(hooksSchema), hooksSchema]).optional(),
   guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
 });
 
@@ -215,6 +215,11 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
    * and returns the final JSON result
    */
   streaming?: boolean;
+
+  /**
+   * Optional hooks for agent invocation
+   */
+  hooks?: AgentHooks<any, any>;
 }
 
 /**
@@ -265,7 +270,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
 
-    this.hooks = options.hooks ?? {};
+    this.hooks = flat(options.hooks);
     this.guideRails = options.guideRails;
   }
 
@@ -291,7 +296,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    * Here's an example of using hooks:
    * {@includeCode ../../test/agents/agent.test.ts#example-agent-hooks}
    */
-  readonly hooks: AgentHooks<I, O>;
+  readonly hooks: AgentHooks<I, O>[];
 
   /**
    * List of GuideRail agents applied to this agent
@@ -585,7 +590,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });
 
     try {
-      input = ((await this.hooks.onStart?.({ context: opts.context, input }))?.input as I) ?? input;
+      let response: AgentProcessResult<O> | undefined;
+
+      const s = await this.callHooks("onStart", { input }, opts);
+      if (s?.input) input = s.input as I;
 
       input = checkArguments(`Agent ${this.name} input`, this.inputSchema, input);
 
@@ -593,9 +601,11 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
       this.checkContextStatus(opts);
 
-      let response = await this.process(input, opts);
-      if (response instanceof Agent) {
-        response = transferToAgentOutput(response);
+      if (!response) {
+        response = await this.process(input, opts);
+        if (response instanceof Agent) {
+          response = transferToAgentOutput(response);
+        }
       }
 
       if (opts.streaming) {
@@ -628,6 +638,29 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     } catch (error) {
       throw await this.processAgentError(input, error, opts);
     }
+  }
+
+  private async callHooks<Hook extends keyof AgentHooks>(
+    hook: Hook,
+    input: AgentHookInput<Hook>,
+    options: AgentInvokeOptions,
+  ): Promise<AgentHookOutput<Hook>> {
+    const { context } = options;
+
+    const result = {};
+
+    for (const hooks of flat(options.hooks, this.hooks)) {
+      const h = hooks[hook];
+      if (!h) continue;
+
+      if (typeof h === "function") {
+        Object.assign(result, await h({ ...input, context } as any));
+      } else {
+        Object.assign(result, await context.invoke<any, any>(h, input));
+      }
+    }
+
+    return result as AgentHookOutput<Hook>;
   }
 
   private mergeDefaultInput(input: I & Message): I & Message {
@@ -663,13 +696,17 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
   ): Promise<O> {
     const { context } = options;
 
-    await this.hooks.onSkillStart?.({ context, skill, input });
+    await this.callHooks("onSkillStart", { skill, input }, options);
+
     try {
       const output = await context.invoke(skill, input);
-      await this.hooks.onSkillEnd?.({ context, skill, input, output });
+
+      await this.callHooks("onSkillEnd", { skill, input, output }, options);
+
       return output;
     } catch (error) {
-      await this.hooks.onSkillEnd?.({ context, skill, input, error });
+      await this.callHooks("onSkillEnd", { skill, input, error }, options);
+
       throw error;
     }
   }
@@ -703,15 +740,18 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       output,
     ) as O;
 
-    const finalOutput = this.includeInputInOutput ? { ...input, ...parsedOutput } : parsedOutput;
+    let finalOutput = this.includeInputInOutput ? { ...input, ...parsedOutput } : parsedOutput;
 
     await this.postprocess(input, finalOutput, options);
 
     logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
-    const o = (await this.hooks.onEnd?.({ context, input, output: finalOutput }))?.output;
-    if (o) return o as O;
+    let o = await this.callHooks("onSuccess", { input, output: finalOutput }, options);
+    if (o?.output) finalOutput = o.output as O;
+
+    o = await this.callHooks("onEnd", { input, output: finalOutput }, options);
+    if (o?.output) finalOutput = o.output as O;
 
     return finalOutput;
   }
@@ -732,9 +772,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
     if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
 
-    const { context } = options;
-
-    await this.hooks.onEnd?.({ context, input, error });
+    await this.callHooks("onError", { input, error }, options);
+    await this.callHooks("onEnd", { input, error }, options);
 
     return error;
   }
@@ -975,7 +1014,9 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the input message
    */
-  onStart?: (event: { context: Context; input: I }) => PromiseOrValue<void | { input?: I }>;
+  onStart?:
+    | ((event: { context: Context; input: I }) => PromiseOrValue<void | { input?: I }>)
+    | Agent<{ input: I }, { input?: I }>;
 
   /**
    * Called when agent processing completes or fails
@@ -986,9 +1027,19 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the input message and either output or error
    */
-  onEnd?: (
-    event: XOr<{ context: Context; input: I; output: O; error: Error }, "output", "error">,
-  ) => PromiseOrValue<void | { output?: O }>;
+  onEnd?:
+    | ((
+        event: XOr<{ context: Context; input: I; output: O; error: Error }, "output", "error">,
+      ) => PromiseOrValue<void | { output?: O }>)
+    | Agent<XOr<{ input: I; output: O; error: Error }, "output", "error">, { output?: O }>;
+
+  onSuccess?:
+    | ((event: { context: Context; input: I; output: O }) => PromiseOrValue<void | { output?: O }>)
+    | Agent<{ input: I; output: O }, { output?: O }>;
+
+  onError?:
+    | ((event: { context: Context; input: I; error: Error }) => void)
+    | Agent<{ input: I; error: Error }>;
 
   /**
    * Called before a skill (sub-agent) is invoked
@@ -998,11 +1049,9 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the skill being used and input message
    */
-  onSkillStart?: (event: {
-    context: Context;
-    skill: Agent;
-    input: Message;
-  }) => PromiseOrValue<void>;
+  onSkillStart?:
+    | ((event: { context: Context; skill: Agent; input: Message }) => PromiseOrValue<void>)
+    | Agent<{ skill: Agent; input: Message }>;
 
   /**
    * Called after a skill (sub-agent) completes or fails
@@ -1013,13 +1062,17 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the skill used, input message, and either output or error
    */
-  onSkillEnd?: (
-    event: XOr<
-      { context: Context; skill: Agent; input: Message; output: Message; error: Error },
-      "output",
-      "error"
-    >,
-  ) => PromiseOrValue<void>;
+  onSkillEnd?:
+    | ((
+        event: XOr<
+          { context: Context; skill: Agent; input: Message; output: Message; error: Error },
+          "output",
+          "error"
+        >,
+      ) => PromiseOrValue<void>)
+    | Agent<
+        XOr<{ skill: Agent; input: Message; output: Message; error: Error }, "output", "error">
+      >;
 
   /**
    * Called when an agent hands off processing to another agent
@@ -1030,13 +1083,27 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    *
    * @param event Object containing the source agent, target agent, and input message
    */
-  onHandoff?: (event: {
-    context: Context;
-    source: Agent;
-    target: Agent;
-    input: I;
-  }) => PromiseOrValue<void>;
+  onHandoff?:
+    | ((event: {
+        context: Context;
+        source: Agent;
+        target: Agent;
+        input: I;
+      }) => PromiseOrValue<void>)
+    | Agent<{ source: Agent; target: Agent; input: I }>;
 }
+
+export type AgentHookInput<
+  H extends keyof AgentHooks,
+  Hook extends AgentHooks[H] = AgentHooks[H],
+> = Hook extends (input: infer I) => any ? Omit<I, "context"> : never;
+
+export type AgentHookOutput<
+  H extends keyof AgentHooks,
+  Hook extends AgentHooks[H] = AgentHooks[H],
+> = Hook extends (...args: any[]) => any
+  ? Exclude<Awaited<ReturnType<Hook>>, void> | undefined
+  : never;
 
 /**
  * Response type for an agent, can be:

@@ -198,3 +198,13 @@ test("AIGNEContext.invoke should check output is a record type", async () => {
     "expect to return a record type such as {result: ...}, but got (number): 16",
   );
 });
+
+test("AIGNEContext.newContext with reset should share events/messageQueue", async () => {
+  const aigne = new AIGNE({});
+
+  const context = aigne.newContext();
+  const newContext = context.newContext({ reset: true });
+
+  expect(context.messageQueue).toBe(newContext.messageQueue);
+  expect(context["internal"].events).toBe(newContext["internal"].events);
+});

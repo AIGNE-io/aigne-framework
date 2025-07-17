@@ -991,3 +991,50 @@ exports[`loadAgentFromYaml should support default input 1`] = `
   ],
 }
 `;
+
+exports[`loadAgentFromYaml should support hooks 1`] = `
+{
+  "hooks": [
+    {
+      "onEnd": "test_hooks",
+      "onError": "test_hooks",
+      "onHandoff": "test_hooks",
+      "onSkillEnd": "test_hooks",
+      "onSkillStart": "test_hooks",
+      "onStart": "test_hooks_inline",
+      "onSuccess": "test_hooks",
+    },
+  ],
+  "name": "test_agent_with_default_input",
+  "skills": [
+    {
+      "hooks": [
+        {
+          "onEnd": "test_hooks",
+          "onError": "test_hooks",
+          "onHandoff": "test_hooks",
+          "onSkillEnd": "test_hooks",
+          "onSkillStart": "test_hooks",
+          "onStart": "test_hooks_inline",
+          "onSuccess": "test_hooks",
+        },
+      ],
+      "name": "test_agent_input_naming_skill",
+    },
+    {
+      "hooks": [
+        {
+          "onEnd": "test_hooks",
+          "onError": "test_hooks",
+          "onHandoff": "test_hooks",
+          "onSkillEnd": "test_hooks",
+          "onSkillStart": "test_hooks",
+          "onStart": "test_hooks_inline",
+          "onSuccess": "test_hooks",
+        },
+      ],
+      "name": "test_agent_with_default_input_skill2.yaml",
+    },
+  ],
+}
+`;

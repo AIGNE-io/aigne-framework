@@ -246,3 +246,22 @@ test("loadAgentFromYaml should support default input", async () => {
     })),
   }).toMatchSnapshot();
 });
+
+test("loadAgentFromYaml should support hooks", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/test-agent-with-hooks.yaml"),
+  );
+
+  expect({
+    name: agent.name,
+    hooks: agent.hooks.map((i) =>
+      Object.fromEntries(Object.entries(i).map(([k, v]) => [k, v?.name])),
+    ),
+    skills: agent.skills.map((i) => ({
+      name: i.name,
+      hooks: agent.hooks.map((i) =>
+        Object.fromEntries(Object.entries(i).map(([k, v]) => [k, v?.name])),
+      ),
+    })),
+  }).toMatchSnapshot();
+});

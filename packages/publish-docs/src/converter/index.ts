@@ -73,7 +73,7 @@ export class Converter {
         const [relPathWithoutAnchor, anchor] = normalizedRelPath.split("#");
         const slug = slugify(relPathWithoutAnchor as string);
         usedSlugs[slug] = [...(usedSlugs[slug] ?? []), filePath];
-        return `<a href="${slugPrefix ? `${slugPrefix}-${slug}${anchor ? `#${anchor}` : ""}` : slug}${anchor ? `#${anchor}` : ""}">${text}</a>`;
+        return `<a href="${slugPrefix ? `${slugPrefix}-${slug}${anchor ? `#${anchor}` : ""}` : slug}${anchor ? `#${anchor}` : ""}">${marked.parseInline(text)}</a>`;
       },
     };
 

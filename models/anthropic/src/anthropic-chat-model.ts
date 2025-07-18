@@ -106,6 +106,8 @@ export class AnthropicChatModel extends ChatModel {
     super();
   }
 
+  protected apiKeyEnvName = "ANTHROPIC_API_KEY";
+
   /**
    * @hidden
    */
@@ -113,7 +115,7 @@ export class AnthropicChatModel extends ChatModel {
 
   get client() {
     const apiKey =
-      this.options?.apiKey || process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
+      this.options?.apiKey || process.env[this.apiKeyEnvName] || process.env.CLAUDE_API_KEY;
     if (!apiKey)
       throw new Error(
         "AnthropicChatModel requires an API key. Please provide it via `options.apiKey`, or set the `ANTHROPIC_API_KEY` or `CLAUDE_API_KEY` environment variable",

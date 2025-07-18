@@ -36,14 +36,17 @@ export function availableModels(): LoadableModel[] {
   return [
     {
       name: OpenAIChatModel.name,
+      apiKeyEnvName: "OPENAI_API_KEY",
       create: (params) => new OpenAIChatModel({ ...params, clientOptions }),
     },
     {
       name: AnthropicChatModel.name,
+      apiKeyEnvName: "ANTHROPIC_API_KEY",
       create: (params) => new AnthropicChatModel({ ...params, clientOptions }),
     },
     {
       name: BedrockChatModel.name,
+      apiKeyEnvName: "AWS_ACCESS_KEY_ID",
       create: (params) =>
         new BedrockChatModel({
           ...params,
@@ -55,26 +58,32 @@ export function availableModels(): LoadableModel[] {
     },
     {
       name: DeepSeekChatModel.name,
+      apiKeyEnvName: "DEEPSEEK_API_KEY",
       create: (params) => new DeepSeekChatModel({ ...params, clientOptions }),
     },
     {
       name: GeminiChatModel.name,
+      apiKeyEnvName: "GEMINI_API_KEY",
       create: (params) => new GeminiChatModel({ ...params, clientOptions }),
     },
     {
       name: OllamaChatModel.name,
+      apiKeyEnvName: "OLLAMA_API_KEY",
       create: (params) => new OllamaChatModel({ ...params, clientOptions }),
     },
     {
       name: OpenRouterChatModel.name,
+      apiKeyEnvName: "OPEN_ROUTER_API_KEY",
       create: (params) => new OpenRouterChatModel({ ...params, clientOptions }),
     },
     {
       name: XAIChatModel.name,
+      apiKeyEnvName: "XAI_API_KEY",
       create: (params) => new XAIChatModel({ ...params, clientOptions }),
     },
     {
       name: AIGNEHubChatModel.name,
+      apiKeyEnvName: "AIGNE_HUB_API_KEY",
       create: (params) => new AIGNEHubChatModel({ ...params, clientOptions }),
     },
   ];

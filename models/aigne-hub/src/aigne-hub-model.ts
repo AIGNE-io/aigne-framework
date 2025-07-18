@@ -9,10 +9,11 @@ import {
 import { checkArguments, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { BaseClient } from "@aigne/transport/http-client/base-client.js";
+import { joinURL } from "ufo";
 import { z } from "zod";
 
 const DEFAULT_CHAT_MODEL = "openai/gpt-4o";
-const DEFAULT_URL = "https://www.aikit.rocks/ai-kit/api/v2/chat";
+const DEFAULT_URL = "https://www.aikit.rocks/ai-kit/";
 
 const aigneHubChatModelOptionsSchema = z.object({
   url: z.string().optional(),
@@ -31,7 +32,7 @@ const aigneHubChatModelOptionsSchema = z.object({
   clientOptions: z.object({}).optional(),
 });
 
-interface AIGNEHubChatModelOptions {
+export interface AIGNEHubChatModelOptions {
   url?: string;
   accessKey?: string;
   model?: string;
@@ -48,9 +49,9 @@ export class AIGNEHubChatModel extends ChatModel {
     super();
     this.client = new BaseClient({
       ...options,
-      url: options.url ?? process.env.AIGNE_HUB_BASE_URL ?? DEFAULT_URL,
+      url: joinURL(options.url ?? process.env.AIGNE_HUB_BASE_URL ?? DEFAULT_URL, "/api/v2/chat"),
       model: options.model ?? DEFAULT_CHAT_MODEL,
-      accessKey: options.accessKey ?? process.env.AIGNE_HUB_ACCESS_KEY,
+      accessKey: options.accessKey ?? process.env.AIGNE_HUB_API_KEY,
     });
   }
 

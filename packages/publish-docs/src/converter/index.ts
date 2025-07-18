@@ -1,5 +1,5 @@
 import path from "node:path";
-import { CodeHighlightNode, CodeNode } from "@lexical/code";
+import { $isCodeNode, CodeHighlightNode, CodeNode } from "@lexical/code";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { LinkNode } from "@lexical/link";
@@ -11,6 +11,8 @@ import { JSDOM } from "jsdom";
 import {
   $getRoot,
   $insertNodes,
+  $isLineBreakNode,
+  type LexicalNode,
   LineBreakNode,
   type SerializedEditorState,
   TextNode,
@@ -108,6 +110,7 @@ export class Converter {
         const nodes = $generateNodesFromDOM(editor, htmlDocument);
         $getRoot().select();
         $insertNodes(nodes);
+        nodes.forEach(this.trimTrailingLineBreak.bind(this));
       },
       { discrete: true },
     );
@@ -126,5 +129,16 @@ export class Converter {
     });
 
     return { title, labels, content };
+  }
+
+  private trimTrailingLineBreak(node: LexicalNode | null) {
+    if ($isCodeNode(node)) {
+      const lastChild = node.getLastChild();
+      if ($isLineBreakNode(lastChild)) {
+        lastChild.remove();
+      } else {
+        this.trimTrailingLineBreak(lastChild);
+      }
+    }
   }
 }

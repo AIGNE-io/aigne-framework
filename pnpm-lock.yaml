@@ -649,19 +649,46 @@ importers:
 
   models/aigne-hub:
     dependencies:
+      '@aigne/aigne-hub':
+        specifier: workspace:^
+        version: 'link:'
+      '@aigne/anthropic':
+        specifier: workspace:^
+        version: link:../anthropic
+      '@aigne/bedrock':
+        specifier: workspace:^
+        version: link:../bedrock
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/deepseek':
+        specifier: workspace:^
+        version: link:../deepseek
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
+      '@aigne/gemini':
+        specifier: workspace:^
+        version: link:../gemini
+      '@aigne/ollama':
+        specifier: workspace:^
+        version: link:../ollama
+      '@aigne/open-router':
+        specifier: workspace:^
+        version: link:../open-router
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
       '@aigne/transport':
         specifier: workspace:^
         version: link:../../packages/transport
+      '@aigne/xai':
+        specifier: workspace:^
+        version: link:../xai
       zod:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../openai
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../../packages/test-utils
@@ -1337,6 +1364,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@abtnode/util':
+        specifier: ^1.16.46
+        version: 1.16.46
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../agent-library
@@ -1385,6 +1415,12 @@ importers:
       '@aigne/xai':
         specifier: workspace:^
         version: link:../../models/xai
+      '@inquirer/prompts':
+        specifier: ^7.6.0
+        version: 7.6.0(@types/node@24.0.12)
+      '@listr2/prompt-adapter-inquirer':
+        specifier: ^3.0.1
+        version: 3.0.1(@inquirer/prompts@7.6.0(@types/node@24.0.12))(@types/node@24.0.12)(listr2@9.0.1)
       '@modelcontextprotocol/sdk':
         specifier: ^1.15.0
         version: 1.15.0
@@ -1421,6 +1457,9 @@ importers:
       marked:
         specifier: ^16.0.0
         version: 16.0.0
+      open:
+        specifier: 10.1.2
+        version: 10.1.2
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -3098,6 +3137,13 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@listr2/prompt-adapter-inquirer@3.0.1':
+    resolution: {integrity: sha512-3XFmGwm3u6ioREG+ynAQB7FoxfajgQnMhIu8wC5eo/Lsih4aKDg0VuIMGaOsYn7hJSJagSeaD4K8yfpkEoDEmA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@inquirer/prompts': '>= 3 < 8'
+      listr2: 9.0.1
+
   '@microsoft/fetch-event-source@2.0.1':
     resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
 
@@ -3939,6 +3985,7 @@ packages:
   '@smithy/middleware-endpoint@4.1.14':
     resolution: {integrity: sha512-+BGLpK5D93gCcSEceaaYhUD/+OCGXM1IDaq/jKUQ+ujB0PTWlWN85noodKw/IPFZhIKFCNEe19PGd/reUMeLSQ==}
     engines: {node: '>=18.0.0'}
+    deprecated: Please upgrade to @smithy/middleware-endpoint@4.1.15 or higher to fix a bug preventing the resolution of ENV and config file custom endpoints https://github.com/smithy-lang/smithy-typescript/issues/1645
 
   '@smithy/middleware-retry@4.1.15':
     resolution: {integrity: sha512-iKYUJpiyTQ33U2KlOZeUb0GwtzWR3C0soYcKuCnTmJrvt6XwTPQZhMfsjJZNw7PpQ3TU4Ati1qLSrkSJxnnSMQ==}
@@ -7203,6 +7250,10 @@ packages:
 
   linkify-it@5.0.0:
     resolution: {integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==}
+
+  listr2@9.0.1:
+    resolution: {integrity: sha512-SL0JY3DaxylDuo/MecFeiC+7pedM0zia33zl0vcjgwcq1q1FWWF1To9EIauPbl8GbMCU0R2e0uJ8bZunhYKD2g==}
+    engines: {node: '>=20.0.0'}
 
   load-json-file@4.0.0:
     resolution: {integrity: sha512-Kx8hMakjX03tiGTLAIdJ+lL0htKnXjEZN6hk/tozf/WOuYGdZBJrZ+rCJRbVCugsjB3jMLn9746NsQIf5VjBMw==}
@@ -12539,6 +12590,14 @@ snapshots:
   '@libsql/win32-x64-msvc@0.5.13':
     optional: true
 
+  '@listr2/prompt-adapter-inquirer@3.0.1(@inquirer/prompts@7.6.0(@types/node@24.0.12))(@types/node@24.0.12)(listr2@9.0.1)':
+    dependencies:
+      '@inquirer/prompts': 7.6.0(@types/node@24.0.12)
+      '@inquirer/type': 3.0.7(@types/node@24.0.12)
+      listr2: 9.0.1
+    transitivePeerDependencies:
+      - '@types/node'
+
   '@microsoft/fetch-event-source@2.0.1': {}
 
   '@modelcontextprotocol/sdk@1.15.0':
@@ -17347,6 +17406,15 @@ snapshots:
   linkify-it@5.0.0:
     dependencies:
       uc.micro: 2.1.0
+
+  listr2@9.0.1:
+    dependencies:
+      cli-truncate: 4.0.0
+      colorette: 2.0.20
+      eventemitter3: 5.0.1
+      log-update: 6.1.0
+      rfdc: 1.4.1
+      wrap-ansi: 9.0.0
 
   load-json-file@4.0.0:
     dependencies:

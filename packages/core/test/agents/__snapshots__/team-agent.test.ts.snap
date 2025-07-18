@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://goo.gl/fbAQLP
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`TeamAgent should return streaming response with sequential process method (multiple agent with different output keys) 1`] = `
 [

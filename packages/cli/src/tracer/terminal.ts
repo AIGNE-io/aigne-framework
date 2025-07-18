@@ -9,6 +9,7 @@ import {
   type ContextEventMap,
   type ContextUsage,
   DEFAULT_OUTPUT_KEY,
+  type InvokeOptions,
   type Message,
 } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
@@ -35,7 +36,7 @@ export class TerminalTracer {
 
   private tasks: { [callId: string]: Task } = {};
 
-  async run(agent: Agent, input: Message) {
+  async run(agent: Agent, input: Message, options?: InvokeOptions) {
     await this.context.observer?.serve();
 
     const context = this.context.newContext({ reset: true });
@@ -143,7 +144,7 @@ export class TerminalTracer {
 
     try {
       const result = await listr.run(() =>
-        context.invoke(agent, input, { streaming: true, newContext: false }),
+        context.invoke(agent, input, { ...options, streaming: true, newContext: false }),
       );
 
       return { result, context };

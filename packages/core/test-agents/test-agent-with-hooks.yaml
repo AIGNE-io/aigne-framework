@@ -1,0 +1,20 @@
+type: team
+name: test_agent_with_default_input
+hooks:
+  on_start:
+    type: ai
+    name: test_hooks_inline
+  on_success: test-hooks.yaml
+  on_error: test-hooks.yaml
+  on_end: test-hooks.yaml
+  on_skill_start: test-hooks.yaml
+  on_skill_end: test-hooks.yaml
+  on_handoff: test-hooks.yaml
+skills:
+  - url: ./test-agent-with-default-input-skill.yaml
+    hooks:
+      on_start: test-hooks.yaml
+  - type: ai
+    name: test_agent_with_default_input_skill2.yaml
+    hooks:
+      on_start: test-hooks.yaml

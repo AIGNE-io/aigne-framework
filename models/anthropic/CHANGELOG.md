@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.9.2](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.9.1...anthropic-v0.9.2) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.36.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.10
+
+## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.9.0...anthropic-v0.9.1) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.35.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.9
+
+## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.8.2...anthropic-v0.9.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.34.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.8
+
 ## [0.8.2](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.8.1...anthropic-v0.8.2) (2025-07-14)
 
 

@@ -21,6 +21,7 @@ export interface DocNode {
 export interface GeneratorOptions {
   sidebarPath: string;
   slugPrefix?: string;
+  slugWithoutExt?: boolean;
 }
 
 export class Generator {
@@ -28,17 +29,22 @@ export class Generator {
   private slugPrefix?: string;
   private sidebarPath: string;
   private converter: Converter;
+  private slugWithoutExt: boolean;
 
   constructor(options: GeneratorOptions) {
     this.sidebarPath = options.sidebarPath;
     this.slugs = new Set<string>();
     this.slugPrefix = options.slugPrefix;
-    this.converter = new Converter({ slugPrefix: options.slugPrefix });
+    this.converter = new Converter({
+      slugPrefix: options.slugPrefix,
+      slugWithoutExt: options.slugWithoutExt,
+    });
+    this.slugWithoutExt = options.slugWithoutExt ?? true;
   }
 
   private resolveLinkFilePath(link: string): string {
     const rel = link.replace(/^\//, "");
-    return path.join(process.cwd(), "docs", rel);
+    return path.join(process.cwd(), process.env.DOC_ROOT_DIR || "docs", rel);
   }
 
   private async getInfoFromFile(filePath: string) {
@@ -79,7 +85,7 @@ export class Generator {
   }
 
   private uniqueSlugify(str: string): string {
-    const slug = slugify(str);
+    const slug = slugify(str, this.slugWithoutExt);
     if (this.slugs.has(slug)) {
       throw new Error(`Duplicate slug: ${slug}`);
     }

@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://goo.gl/fbAQLP
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`loadAgentFromYaml should load AIAgent with prompt file correctly 1`] = `
 "You are a helper agent to answer everything about chat prompt in AIGNE.
@@ -871,5 +871,170 @@ exports[`loadAgentFromYaml should load nested external schema agent correctly 2`
     "array",
   ],
   "type": "object",
+}
+`;
+
+exports[`loadAgentFromYaml should support various styles of naming 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "PascalCase": {
+      "description": "Pascal case property",
+      "type": "string",
+    },
+    "SCREAM_CASE": {
+      "description": "Scream case property",
+      "type": "string",
+    },
+    "camelCase": {
+      "description": "Camel case property",
+      "type": "string",
+    },
+    "kebab-case": {
+      "description": "Kebab case property",
+      "type": "string",
+    },
+    "snake_case": {
+      "description": "Snake case property",
+      "type": "string",
+    },
+  },
+  "required": [
+    "snake_case",
+    "camelCase",
+    "kebab-case",
+    "SCREAM_CASE",
+    "PascalCase",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`loadAgentFromYaml should support various styles of naming 2`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "response": {
+      "description": "Response from the agent",
+      "type": "string",
+    },
+  },
+  "required": [
+    "response",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`loadAgentFromYaml should support default input 1`] = `
+{
+  "name": "test_agent_with_default_input",
+  "skills": [
+    {
+      "default_input": {
+        "description": {
+          "$get": "title",
+        },
+        "title": "Default Title",
+      },
+      "input_schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": true,
+        "properties": {
+          "description": {
+            "description": "Description of the input",
+            "type": "string",
+          },
+          "title": {
+            "description": "Title of the input",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "description",
+        ],
+        "type": "object",
+      },
+      "name": "test_agent_input_naming_skill",
+    },
+    {
+      "default_input": {
+        "description": {
+          "$get": "title",
+        },
+        "title": "Another Default Title",
+      },
+      "input_schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": true,
+        "properties": {
+          "description": {
+            "description": "Description of the input",
+            "type": "string",
+          },
+          "title": {
+            "description": "Title of the input",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "description",
+        ],
+        "type": "object",
+      },
+      "name": "test_agent_with_default_input_skill2.yaml",
+    },
+  ],
+}
+`;
+
+exports[`loadAgentFromYaml should support hooks 1`] = `
+{
+  "hooks": [
+    {
+      "onEnd": "test_hooks",
+      "onError": "test_hooks",
+      "onHandoff": "test_hooks",
+      "onSkillEnd": "test_hooks",
+      "onSkillStart": "test_hooks",
+      "onStart": "test_hooks_inline",
+      "onSuccess": "test_hooks",
+    },
+  ],
+  "name": "test_agent_with_default_input",
+  "skills": [
+    {
+      "hooks": [
+        {
+          "onEnd": "test_hooks",
+          "onError": "test_hooks",
+          "onHandoff": "test_hooks",
+          "onSkillEnd": "test_hooks",
+          "onSkillStart": "test_hooks",
+          "onStart": "test_hooks_inline",
+          "onSuccess": "test_hooks",
+        },
+      ],
+      "name": "test_agent_input_naming_skill",
+    },
+    {
+      "hooks": [
+        {
+          "onEnd": "test_hooks",
+          "onError": "test_hooks",
+          "onHandoff": "test_hooks",
+          "onSkillEnd": "test_hooks",
+          "onSkillStart": "test_hooks",
+          "onStart": "test_hooks_inline",
+          "onSuccess": "test_hooks",
+        },
+      ],
+      "name": "test_agent_with_default_input_skill2.yaml",
+    },
+  ],
 }
 `;

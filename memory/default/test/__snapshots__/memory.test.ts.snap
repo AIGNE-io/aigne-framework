@@ -1,0 +1,76 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DefaultMemory should remember memories for AIAgent correctly 1`] = `
+[
+  {
+    "content": 
+"You are a helpful assistant.
+Please answer in zh."
+,
+    "name": undefined,
+    "role": "system",
+  },
+  {
+    "content": "I like blue color",
+    "role": "user",
+  },
+]
+`;
+
+exports[`DefaultMemory should remember memories for AIAgent correctly 2`] = `
+[
+  {
+    "content": 
+"You are a helpful assistant.
+Please answer in zh."
+,
+    "name": undefined,
+    "role": "system",
+  },
+  {
+    "content": "I like blue color",
+    "role": "user",
+  },
+  {
+    "content": "Great, the blue color is nice!",
+    "role": "agent",
+  },
+  {
+    "content": "I also like red color",
+    "role": "user",
+  },
+]
+`;
+
+exports[`DefaultMemory should remember memories for AIAgent correctly 3`] = `
+[
+  {
+    "content": {
+      "input": {
+        "message": "I also like red color",
+      },
+      "output": {
+        "message": "Red is also a nice color!",
+      },
+      "source": "TestAgent",
+    },
+    "createdAt": Any<String>,
+    "id": Any<String>,
+    "sessionId": null,
+  },
+  {
+    "content": {
+      "input": {
+        "message": "I like blue color",
+      },
+      "output": {
+        "message": "Great, the blue color is nice!",
+      },
+      "source": "TestAgent",
+    },
+    "createdAt": Any<String>,
+    "id": Any<String>,
+    "sessionId": null,
+  },
+]
+`;

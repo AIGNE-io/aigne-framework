@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.7.2...observability-api-v0.8.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.0
+
 ## [0.7.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.7.1...observability-api-v0.7.2) (2025-07-14)
 
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env bunwrapper
 
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, AIAgentToolChoice } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory";
 
 const productSupport = AIAgent.from({
   name: "product_support",

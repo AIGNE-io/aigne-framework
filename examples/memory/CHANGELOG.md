@@ -1,5 +1,55 @@
 # Changelog
 
+## [0.10.2](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.1...example-memory-v0.10.2) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.2
+    * @aigne/cli bumped to 1.24.0
+    * @aigne/core bumped to 1.36.0
+    * @aigne/default-memory bumped to 1.0.2
+    * @aigne/fs-memory bumped to 1.0.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.10
+
+## [0.10.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.0...example-memory-v0.10.1) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.1
+    * @aigne/cli bumped to 1.23.1
+    * @aigne/core bumped to 1.35.0
+    * @aigne/default-memory bumped to 1.0.1
+    * @aigne/fs-memory bumped to 1.0.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.9
+
+## [0.10.0](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.9...example-memory-v0.10.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.0
+    * @aigne/cli bumped to 1.23.0
+    * @aigne/core bumped to 1.34.0
+    * @aigne/default-memory bumped to 1.0.0
+    * @aigne/fs-memory bumped to 1.0.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.8
+
 ## [0.9.9](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.9.8...example-memory-v0.9.9) (2025-07-14)
 
 

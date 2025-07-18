@@ -2,7 +2,6 @@
 
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import {
   AIAgent,
   AIAgentToolChoice,
@@ -11,6 +10,7 @@ import {
   PromptTemplate,
   UserAgent,
 } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 import inquirer from "inquirer";
 import { z } from "zod";
@@ -122,7 +122,8 @@ const manager = AIAgent.from({
   subscribeTopic: DEFAULT_TOPIC,
   publishTopic: (output) => output.role,
   memory: new DefaultMemory({ subscribeTopic: DEFAULT_TOPIC }),
-  instructions: await PromptTemplate.from(`\
+  instructions: await PromptTemplate.from(
+    `\
   You are participating in a role-playing game. The available roles are:
 
   <roles>
@@ -135,7 +136,8 @@ const manager = AIAgent.from({
   3. If the last role is **not** "user," respond as "user" to approve and continue.
   4. Otherwise, select the next role **logically** based on the context of the conversation (do not repeat the same role unless necessary).
   5. Make sure responses align with the role’s personality and purpose in the game.
-  `).format({
+  `,
+  ).format({
     roles: roles.map((i) => `${i.topic}: ${i.description}`).join("\n"),
   }),
   outputSchema: z.object({

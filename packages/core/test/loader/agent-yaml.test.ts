@@ -222,3 +222,46 @@ test("loadAgentFromYaml should load nested external schema agent correctly", asy
   expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
   expect(zodToJsonSchema(agent.outputSchema)).toMatchSnapshot();
 });
+
+test("loadAgentFromYaml should support various styles of naming", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/test-agent-input-naming.yaml"),
+  );
+
+  expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
+  expect(zodToJsonSchema(agent.outputSchema)).toMatchSnapshot();
+});
+
+test("loadAgentFromYaml should support default input", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/test-agent-with-default-input.yaml"),
+  );
+
+  expect({
+    name: agent.name,
+    skills: agent.skills.map((i) => ({
+      name: i.name,
+      input_schema: zodToJsonSchema(i.inputSchema),
+      default_input: i.defaultInput,
+    })),
+  }).toMatchSnapshot();
+});
+
+test("loadAgentFromYaml should support hooks", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/test-agent-with-hooks.yaml"),
+  );
+
+  expect({
+    name: agent.name,
+    hooks: agent.hooks.map((i) =>
+      Object.fromEntries(Object.entries(i).map(([k, v]) => [k, v?.name])),
+    ),
+    skills: agent.skills.map((i) => ({
+      name: i.name,
+      hooks: agent.hooks.map((i) =>
+        Object.fromEntries(Object.entries(i).map(([k, v]) => [k, v?.name])),
+      ),
+    })),
+  }).toMatchSnapshot();
+});

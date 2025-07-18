@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.16.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.16.1...example-workflow-group-chat-v1.16.2) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.2
+    * @aigne/cli bumped to 1.24.0
+    * @aigne/core bumped to 1.36.0
+    * @aigne/openai bumped to 0.10.2
+    * @aigne/default-memory bumped to 1.0.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.10
+
+## [1.16.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.16.0...example-workflow-group-chat-v1.16.1) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.1
+    * @aigne/cli bumped to 1.23.1
+    * @aigne/core bumped to 1.35.0
+    * @aigne/openai bumped to 0.10.1
+    * @aigne/default-memory bumped to 1.0.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.9
+
+## [1.16.0](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.15.7...example-workflow-group-chat-v1.16.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.0
+    * @aigne/cli bumped to 1.23.0
+    * @aigne/core bumped to 1.34.0
+    * @aigne/openai bumped to 0.10.0
+    * @aigne/default-memory bumped to 1.0.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.8
+
 ## [1.15.7](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.15.6...example-workflow-group-chat-v1.15.7) (2025-07-14)
 
 

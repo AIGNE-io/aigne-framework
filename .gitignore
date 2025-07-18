@@ -12,6 +12,7 @@
 node_modules
 packages/*/lib
 models/*/lib
+memory/*/lib
 
 # docs
 docs-ai-*

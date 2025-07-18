@@ -1,5 +1,46 @@
 # Changelog
 
+## [0.8.2](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.8.1...gemini-v0.8.2) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.2
+  * devDependencies
+    * @aigne/core bumped to 1.36.0
+    * @aigne/test-utils bumped to 0.5.10
+
+## [0.8.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.8.0...gemini-v0.8.1) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.1
+  * devDependencies
+    * @aigne/core bumped to 1.35.0
+    * @aigne/test-utils bumped to 0.5.9
+
+## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.7.2...gemini-v0.8.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.0
+  * devDependencies
+    * @aigne/core bumped to 1.34.0
+    * @aigne/test-utils bumped to 0.5.8
+
 ## [0.7.2](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.7.1...gemini-v0.7.2) (2025-07-14)
 
 

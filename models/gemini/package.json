@@ -1,6 +1,6 @@
 {
   "name": "@aigne/gemini",
-  "version": "0.7.2",
+  "version": "0.8.2",
   "description": "AIGNE Gemini SDK for integrating with Google's Gemini AI models",
   "publishConfig": {
     "access": "public"
@@ -38,7 +38,7 @@
     "prepublishOnly": "run-s clean build",
     "test": "bun test",
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
-    "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
+    "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
     "@aigne/openai": "workspace:^"

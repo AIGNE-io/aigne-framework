@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-handoff",
-  "version": "1.15.9",
+  "version": "1.16.2",
   "description": "A demonstration of using AIGNE Framework to build a handoff workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-handoff",
@@ -24,6 +24,7 @@
     "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
     "@aigne/openai": "workspace:^",
     "zod": "^3.25.67"
   },

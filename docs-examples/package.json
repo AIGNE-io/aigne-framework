@@ -22,6 +22,7 @@
     "@aigne/bedrock": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/deepseek": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
     "@aigne/gemini": "workspace:^",
     "@aigne/ollama": "workspace:^",
     "@aigne/open-router": "workspace:^",

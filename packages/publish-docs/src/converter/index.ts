@@ -1,5 +1,5 @@
 import path from "node:path";
-import { CodeHighlightNode, CodeNode } from "@lexical/code";
+import { $isCodeNode, CodeHighlightNode, CodeNode } from "@lexical/code";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { LinkNode } from "@lexical/link";
@@ -11,6 +11,8 @@ import { JSDOM } from "jsdom";
 import {
   $getRoot,
   $insertNodes,
+  $isLineBreakNode,
+  type LexicalNode,
   LineBreakNode,
   type SerializedEditorState,
   TextNode,
@@ -24,9 +26,11 @@ export class Converter {
   private slugPrefix?: string;
   public usedSlugs: Record<string, string[]>;
   public blankFilePaths: string[];
+  private slugWithoutExt: boolean;
 
-  constructor(options: { slugPrefix?: string } = {}) {
+  constructor(options: { slugPrefix?: string; slugWithoutExt?: boolean } = {}) {
     this.slugPrefix = options.slugPrefix;
+    this.slugWithoutExt = options.slugWithoutExt ?? true;
     this.usedSlugs = {};
     this.blankFilePaths = [];
   }
@@ -58,6 +62,8 @@ export class Converter {
 
     const slugPrefix = this.slugPrefix;
     const usedSlugs = this.usedSlugs;
+    const slugWithoutExt = this.slugWithoutExt;
+
     const renderer: RendererObject = {
       code({ text, lang }) {
         if (lang === "mermaid") return `<pre class="mermaid">${text}</pre>`;
@@ -67,13 +73,13 @@ export class Converter {
         if (/^(http|https|\/|#)/.test(href)) return false;
 
         const absPath = path.resolve(path.dirname(filePath), href);
-        const docsRoot = path.resolve(process.cwd(), "docs");
+        const docsRoot = path.resolve(process.cwd(), process.env.DOC_ROOT_DIR ?? "docs");
         const relPath = path.relative(docsRoot, absPath);
         const normalizedRelPath = relPath.replace(/\.([a-zA-Z-]+)\.md$/, ".md");
         const [relPathWithoutAnchor, anchor] = normalizedRelPath.split("#");
-        const slug = slugify(relPathWithoutAnchor as string);
+        const slug = slugify(relPathWithoutAnchor as string, slugWithoutExt);
         usedSlugs[slug] = [...(usedSlugs[slug] ?? []), filePath];
-        return `<a href="${slugPrefix ? `${slugPrefix}-${slug}${anchor ? `#${anchor}` : ""}` : slug}${anchor ? `#${anchor}` : ""}">${text}</a>`;
+        return `<a href="${slugPrefix ? `${slugPrefix}-${slug}${anchor ? `#${anchor}` : ""}` : slug}${anchor ? `#${anchor}` : ""}">${marked.parseInline(text)}</a>`;
       },
     };
 
@@ -108,6 +114,7 @@ export class Converter {
         const nodes = $generateNodesFromDOM(editor, htmlDocument);
         $getRoot().select();
         $insertNodes(nodes);
+        nodes.forEach(this.trimTrailingLineBreak.bind(this));
       },
       { discrete: true },
     );
@@ -126,5 +133,16 @@ export class Converter {
     });
 
     return { title, labels, content };
+  }
+
+  private trimTrailingLineBreak(node: LexicalNode | null) {
+    if ($isCodeNode(node)) {
+      const lastChild = node.getLastChild();
+      if ($isLineBreakNode(lastChild)) {
+        lastChild.remove();
+      } else {
+        this.trimTrailingLineBreak(lastChild);
+      }
+    }
   }
 }

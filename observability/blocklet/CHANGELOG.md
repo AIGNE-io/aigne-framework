@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.10.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.9.1...blocklet-observability-v1.10.0) (2025-07-18)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Bug Fixes
+
+* **deps:** update deps to latest version ([#247](https://github.com/AIGNE-io/aigne-framework/issues/247)) ([3972f88](https://github.com/AIGNE-io/aigne-framework/commit/3972f887a9abff20c26da6b51c1071cbd54c0bf1))
+* **observability:** load model metadata from api instead of js bundles ([#217](https://github.com/AIGNE-io/aigne-framework/issues/217)) ([4418126](https://github.com/AIGNE-io/aigne-framework/commit/44181263d3a8d8eca794d7e485679fcf80f0abad))
+* remove useless package ([#202](https://github.com/AIGNE-io/aigne-framework/issues/202)) ([6189433](https://github.com/AIGNE-io/aigne-framework/commit/6189433aa439813304b6b5ff36b3cbd6d552c53d))
+
+## [1.9.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.8.6...blocklet-observability-v1.9.0) (2025-07-17)
+
+
+### Features
+
+* **core:** add standard userId/sessionId in userContext ([#219](https://github.com/AIGNE-io/aigne-framework/issues/219)) ([58e5804](https://github.com/AIGNE-io/aigne-framework/commit/58e5804cf08b1d2fa6e232646fadd70b5db2e007))
+* upgrade dependencies and adapt code to breaking changes ([#216](https://github.com/AIGNE-io/aigne-framework/issues/216)) ([f215ced](https://github.com/AIGNE-io/aigne-framework/commit/f215cedc1a57e321164064c33316e496eae8d25f))
+
+
+### Bug Fixes
+
+* **deps:** update deps to latest version ([#247](https://github.com/AIGNE-io/aigne-framework/issues/247)) ([3972f88](https://github.com/AIGNE-io/aigne-framework/commit/3972f887a9abff20c26da6b51c1071cbd54c0bf1))
+* **observability:** load model metadata from api instead of js bundles ([#217](https://github.com/AIGNE-io/aigne-framework/issues/217)) ([4418126](https://github.com/AIGNE-io/aigne-framework/commit/44181263d3a8d8eca794d7e485679fcf80f0abad))
+* remove useless package ([#202](https://github.com/AIGNE-io/aigne-framework/issues/202)) ([6189433](https://github.com/AIGNE-io/aigne-framework/commit/6189433aa439813304b6b5ff36b3cbd6d552c53d))
+
+## [1.8.5](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.8.4...blocklet-observability-v1.8.5) (2025-07-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.8.0
+    * @aigne/sqlite bumped to 0.4.0
+
 ## [1.8.4](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.8.3...blocklet-observability-v1.8.4) (2025-07-14)
 
 

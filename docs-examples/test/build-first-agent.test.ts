@@ -4,8 +4,8 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import { AIAgent, AIGNE, FunctionAgent, MCPAgent } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
@@ -92,7 +92,10 @@ test("Build first agent: MCP server as Agent", async () => {
   });
 
   // #region example-mcp-server-as-agent-invoke-skill
-  const result = await getTicker.invoke({ exchange: "coinbase", symbol: "ABT/USD" });
+  const result = await getTicker.invoke({
+    exchange: "coinbase",
+    symbol: "ABT/USD",
+  });
   console.log(result);
   // Output: { content: [ { type: 'text', text: '{\n  "symbol": "ABT/USD",\n  "timestamp": 1747789089514,\n  "datetime": "2025-05-21T00:58:09.514083Z",\n  "bid": 0.9336,\n  "ask": 0.935,\n  "last": 0.9338,\n  "close": 0.9338,\n  "info": {\n    "trade_id": "5572965",\n    "product_id": "ABT-USD",\n    "price": "0.9338",\n    "size": "17",\n    "time": "2025-05-21T00:58:09.514083Z",\n    "side": "BUY",\n    "bid": "",\n    "ask": "",\n    "exchange": "coinbase"\n  }\n}' } ] }
   expect(result).toEqual({
@@ -154,7 +157,9 @@ test("Build first agent: add skills to agent", async () => {
   });
   console.log(result);
   // Output: { message:"The current price of ABT/USD on Coinbase is $0.9684." }
-  expect(result).toEqual({ message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  expect(result).toEqual({
+    message: "The current price of ABT/USD on Coinbase is $0.9684.",
+  });
   // #endregion example-add-skills-to-agent-invoke-agent
 
   // #endregion example-add-skills-to-agent
@@ -211,14 +216,20 @@ test("Build first agent: enable memory for agent", async () => {
   // #endregion example-enable-memory-for-agent-invoke-agent-1
 
   // #region example-enable-memory-for-agent-invoke-agent-2
-  const result2 = await aigne.invoke(agent, { message: "What is my favorite cryptocurrency?" });
+  const result2 = await aigne.invoke(agent, {
+    message: "What is my favorite cryptocurrency?",
+  });
   console.log(result2);
   // Output: { message: "Your favorite cryptocurrency is Bitcoin." }
-  expect(result2).toEqual({ message: "Your favorite cryptocurrency is Bitcoin." });
+  expect(result2).toEqual({
+    message: "Your favorite cryptocurrency is Bitcoin.",
+  });
   // #endregion example-enable-memory-for-agent-invoke-agent-2
 
   // #region example-enable-memory-for-agent-invoke-agent-3
-  const result3 = await aigne.invoke(agent, { message: "I've invested $5000 in Ethereum." });
+  const result3 = await aigne.invoke(agent, {
+    message: "I've invested $5000 in Ethereum.",
+  });
   console.log(result3);
   // Output: { message: "Got it, you've invested $5000 in Ethereum! That's a good investment. If there's anything else you'd like to share about your crypto portfolio or have questions, feel free!" }
   expect(result3).toEqual({
@@ -228,7 +239,9 @@ test("Build first agent: enable memory for agent", async () => {
   // #endregion example-enable-memory-for-agent-invoke-agent-3
 
   // #region example-enable-memory-for-agent-invoke-agent-4
-  const result4 = await aigne.invoke(agent, { message: "How much have I invested in Ethereum?" });
+  const result4 = await aigne.invoke(agent, {
+    message: "How much have I invested in Ethereum?",
+  });
   console.log(result4);
   // Output: { message: "You've invested $5000 in Ethereum." }
   expect(result4).toEqual({ message: "You've invested $5000 in Ethereum." });
@@ -338,7 +351,9 @@ test("Build first agent: serve agent as API service", async () => {
   // #region example-aigne-http-client-usage
 
   // #region example-aigne-http-client-create-client
-  const client = new AIGNEHTTPClient({ url: `http://localhost:${port}/api/chat` });
+  const client = new AIGNEHTTPClient({
+    url: `http://localhost:${port}/api/chat`,
+  });
   // #endregion example-aigne-http-client-create-client
 
   spyOn(aigne.model, "process").mockReturnValueOnce({
@@ -352,7 +367,9 @@ test("Build first agent: serve agent as API service", async () => {
   });
   console.log(result);
   // Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
-  expect(result).toEqual({ message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  expect(result).toEqual({
+    message: "The current price of ABT/USD on Coinbase is $0.9684.",
+  });
   // #endregion example-aigne-http-client-invoke-agent
 
   // #endregion example-aigne-http-client-usage
@@ -403,7 +420,9 @@ test("Build first agent: setup memory for client agent", async () => {
   // #endregion example-client-agent-memory-create-server
 
   // #region example-client-agent-memory-create-client
-  const client = new AIGNEHTTPClient({ url: `http://localhost:${port}/api/chat` });
+  const client = new AIGNEHTTPClient({
+    url: `http://localhost:${port}/api/chat`,
+  });
   // #endregion example-client-agent-memory-create-client
 
   spyOn(aigne.model, "process").mockReturnValueOnce({
@@ -433,14 +452,18 @@ test("Build first agent: setup memory for client agent", async () => {
   });
   console.log(result);
   // Output: { message: "The current price of ABT/USD on Coinbase is $0.9684." }
-  expect(result).toEqual({ message: "The current price of ABT/USD on Coinbase is $0.9684." });
+  expect(result).toEqual({
+    message: "The current price of ABT/USD on Coinbase is $0.9684.",
+  });
   // #endregion example-client-agent-memory-invoke-agent
 
   // #region example-client-agent-memory-invoke-agent-1
   const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce({
     text: "You just asked about the crypto price of ABT/USD on Coinbase.",
   });
-  const result1 = await chatbot.invoke({ message: "What question did I just ask?" });
+  const result1 = await chatbot.invoke({
+    message: "What question did I just ask?",
+  });
   console.log(result1);
   // Output: { message: "You just asked about the crypto price of ABT/USD on Coinbase." }
   expect(result1).toEqual({

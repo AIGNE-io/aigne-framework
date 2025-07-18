@@ -1,6 +1,6 @@
 {
   "name": "@aigne/xai",
-  "version": "0.6.6",
+  "version": "0.7.2",
   "description": "AIGNE XAI SDK for integrating with XAI language models and API services",
   "publishConfig": {
     "access": "public"
@@ -38,7 +38,7 @@
     "prepublishOnly": "run-s clean build",
     "test": "bun test",
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
-    "postbuild": "echo '{\"type\": \"module\"}' > lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json"
+    "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
     "@aigne/openai": "workspace:^"

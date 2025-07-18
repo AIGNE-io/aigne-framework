@@ -1,6 +1,6 @@
 {
   "name": "@blocklet/observability",
-  "version": "1.8.4",
+  "version": "1.10.0",
   "description": "Blocklet Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -31,9 +31,9 @@
     "@aigne/sqlite": "workspace:^",
     "@arcblock/did-connect": "^3.0.24",
     "@arcblock/ux": "^3.0.24",
-    "@biomejs/biome": "^2.1.1",
+    "@biomejs/biome": "^2.1.2",
     "@biomejs/js-api": "^2.0.3",
-    "@biomejs/wasm-nodejs": "^2.1.1",
+    "@biomejs/wasm-nodejs": "^2.1.2",
     "@blocklet/sdk": "^1.16.46",
     "@blocklet/ui-react": "^3.0.24",
     "@mui/material": "^7.2.0",

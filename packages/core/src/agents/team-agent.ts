@@ -257,26 +257,18 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
   ): PromiseOrValue<AgentProcessResult<O>> {
     const output: Message = {};
 
-    // Clone the agents to run, so that we can update the agents list during the loop
-    const agents = [...this.skills];
-    const newAgents: Agent[] = [];
-
-    for (const agent of agents) {
-      const [o, transferToAgent] = await options.context.invoke(
+    for (const agent of this.skills) {
+      const o = await options.context.invoke(
         agent,
         { ...input, ...output },
-        { returnActiveAgent: true, streaming: true },
+        { ...options, streaming: true },
       );
 
       for await (const chunk of o) {
         yield chunk as AgentResponseChunk<O>;
         mergeAgentResponseChunk(output, chunk);
       }
-      newAgents.push(await transferToAgent);
     }
-
-    this.skills.splice(0);
-    this.skills.push(...newAgents);
   }
 
   /**
@@ -297,13 +289,11 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     input: Message,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<O>> {
-    const result = await Promise.all(
+    const streams = await Promise.all(
       this.skills.map((agent) =>
-        options.context.invoke(agent, input, { returnActiveAgent: true, streaming: true }),
+        options.context.invoke(agent, input, { ...options, streaming: true }),
       ),
     );
-
-    const streams = result.map((i) => i[0]);
 
     type Reader = ReadableStreamDefaultReader<AgentResponseChunk<Message>>;
     type ReaderResult = ReadableStreamReadResult<AgentResponseChunk<Message>>;
@@ -352,9 +342,5 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
           yield { delta: { ...delta, text } } as AgentResponseChunk<O>;
       }
     }
-
-    const agents = await Promise.all(result.map((i) => i[1]));
-    this.skills.splice(0);
-    this.skills.push(...agents);
   }
 }

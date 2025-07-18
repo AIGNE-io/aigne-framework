@@ -12,6 +12,35 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.36.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.35.0...core-v1.36.0) (2025-07-17)
+
+
+### Features
+
+* **core:** support define hooks for agent in yaml ([#260](https://github.com/AIGNE-io/aigne-framework/issues/260)) ([c388e82](https://github.com/AIGNE-io/aigne-framework/commit/c388e8216134271af4d9c7def70862ea3c354c7f))
+
+## [1.35.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.34.0...core-v1.35.0) (2025-07-17)
+
+
+### Features
+
+* **core:** support custom default input value for agent ([#258](https://github.com/AIGNE-io/aigne-framework/issues/258)) ([352ac70](https://github.com/AIGNE-io/aigne-framework/commit/352ac70400fb7e28cc36c4f6dc9c591b0d64e546))
+
+## [1.34.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.33.2...core-v1.34.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.8.0
+    * @aigne/platform-helpers bumped to 0.4.0
+
 ## [1.33.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.33.1...core-v1.33.2) (2025-07-14)
 
 

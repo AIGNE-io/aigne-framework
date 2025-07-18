@@ -1,5 +1,5 @@
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import * as core from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory";
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

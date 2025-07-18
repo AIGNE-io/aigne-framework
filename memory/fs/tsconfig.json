@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@aigne/fs-memory": ["./src"]
+    }
+  },
+  "exclude": ["node_modules", "lib"],
+  "include": ["src", "test"]
+}

@@ -1,6 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { DefaultMemory } from "@aigne/agent-library/default-memory/index.js";
 import {
   Agent,
   type AgentInvokeOptions,
@@ -14,6 +13,7 @@ import {
 } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+import { DefaultMemory } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 import { ZodObject, z } from "zod";
 
@@ -61,7 +61,9 @@ test("Example Agent: basic input/output schema", async () => {
     };
   });
 
-  const result = await textAnalyzer.invoke({ text: "The new AIGNE framework offers ..." });
+  const result = await textAnalyzer.invoke({
+    text: "The new AIGNE framework offers ...",
+  });
   console.log(result);
   // Output: { summary: "AIGNE is a framework for building AI agents.", points: ["AIGNE", "framework", "AI agents"], sentiment: "positive" }
   expect(result).toEqual({
@@ -190,10 +192,14 @@ test("Example Agent: enable memory for agent", async () => {
   });
 
   // #region example-agent-enable-memory-invoke-1
-  const result2 = await aigne.invoke(agent, { message: "What is my favorite cryptocurrency?" });
+  const result2 = await aigne.invoke(agent, {
+    message: "What is my favorite cryptocurrency?",
+  });
   console.log(result2);
   // Output: { message: "Your favorite cryptocurrency is Bitcoin." }
-  expect(result2).toEqual({ message: "Your favorite cryptocurrency is Bitcoin." });
+  expect(result2).toEqual({
+    message: "Your favorite cryptocurrency is Bitcoin.",
+  });
   // #endregion example-agent-enable-memory-invoke-1
 
   // #endregion example-agent-enable-memory
@@ -232,9 +238,13 @@ test("Example Agent: skills", async () => {
   });
   // #endregion example-agent-add-skills
 
-  spyOn(aigne.model, "process").mockReturnValueOnce({ text: "ABT is currently priced at $1000." });
+  spyOn(aigne.model, "process").mockReturnValueOnce({
+    text: "ABT is currently priced at $1000.",
+  });
 
-  const result = await aigne.invoke(agent, { message: "What is the price of ABT?" });
+  const result = await aigne.invoke(agent, {
+    message: "What is the price of ABT?",
+  });
   console.log(result);
   // Output: { message: "ABT is currently priced at $1000." }
   expect(result).toEqual({ message: "ABT is currently priced at $1000." });
@@ -298,7 +308,9 @@ test("Example Agent: custom agent", async () => {
   const result = await agent.invoke({ message: "What is the price of ABT?" });
   console.log(result);
   // Output: { message: "AIGNE is a platform for building AI agents." }
-  expect(result).toEqual({ message: "AIGNE is a platform for building AI agents." });
+  expect(result).toEqual({
+    message: "AIGNE is a platform for building AI agents.",
+  });
   // #endregion example-agent-custom-process
 });
 

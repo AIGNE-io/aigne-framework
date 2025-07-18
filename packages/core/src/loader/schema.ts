@@ -1,6 +1,9 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+import camelize from "camelize-ts";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
+import { DEFAULT_INPUT_ACTION_GET } from "../agents/agent.js";
+import { isRecord } from "../utils/type-utils.js";
 
 export const inputOutputSchema = ({ path }: { path: string }) => {
   const includeExternalSchema = async (schema: any): Promise<typeof schema> => {
@@ -61,6 +64,23 @@ export const inputOutputSchema = ({ path }: { path: string }) => {
   ]);
 };
 
+export const defaultInputSchema = z.record(
+  z.string(),
+  z.union([
+    z.object({
+      [DEFAULT_INPUT_ACTION_GET]: z.string(),
+    }),
+    z.unknown(),
+  ]),
+);
+
 export function optionalize<T>(schema: ZodType<T>): ZodType<T | undefined> {
   return schema.nullish().transform((v) => v ?? undefined) as ZodType<T | undefined>;
+}
+
+export function camelizeSchema<T>(
+  schema: ZodType<T>,
+  { shallow = true }: { shallow?: boolean } = {},
+): ZodType<T> {
+  return z.preprocess((v) => (isRecord(v) ? camelize(v, shallow) : v), schema) as ZodType<T>;
 }

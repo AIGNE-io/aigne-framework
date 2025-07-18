@@ -9,6 +9,7 @@ const withTokenSchema = z.object({
   boardId: z.string(),
   appUrl: z.string().url(),
   accessToken: z.string(),
+  slugWithoutExt: z.boolean().optional(),
 });
 
 const withAuthSchema = z.object({
@@ -20,6 +21,7 @@ const withAuthSchema = z.object({
   clientId: z.string(),
   clientSecret: z.string(),
   redirectUri: z.string().url(),
+  slugWithoutExt: z.boolean().optional(),
 });
 
 const optionsSchema = z.union([withTokenSchema, withAuthSchema]);
@@ -47,6 +49,7 @@ export async function publishDocs(options: PublishDocsOptions): Promise<PublishR
   const docs = await new Generator({
     sidebarPath: parsed.sidebarPath,
     slugPrefix: parsed.boardId,
+    slugWithoutExt: parsed.slugWithoutExt ?? true,
   }).generate();
 
   const published = await publisher({

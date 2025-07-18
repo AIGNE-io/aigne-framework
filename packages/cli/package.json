@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.22.8",
+  "version": "1.24.0",
   "description": "cli for AIGNE framework",
   "publishConfig": {
     "access": "public"
@@ -48,10 +48,13 @@
   },
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
+    "@aigne/agentic-memory": "workspace:^",
+    "@aigne/aigne-hub": "workspace:^",
     "@aigne/anthropic": "workspace:^",
     "@aigne/bedrock": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/deepseek": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
     "@aigne/gemini": "workspace:^",
     "@aigne/listr2": "^1.0.10",
     "@aigne/marked-terminal": "^7.3.2",

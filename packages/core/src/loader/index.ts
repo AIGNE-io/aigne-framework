@@ -3,7 +3,7 @@ import type { Camelize } from "camelize-ts";
 import camelize from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
-import { Agent, FunctionAgent } from "../agents/agent.js";
+import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
@@ -12,9 +12,9 @@ import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
-import { tryOrThrow } from "../utils/type-utils.js";
+import { isNonNullable, tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
-import { loadAgentFromYamlFile } from "./agent-yaml.js";
+import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
 import { optionalize } from "./schema.js";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
@@ -63,7 +63,11 @@ export async function load(options: LoadOptions): Promise<AIGNEOptions> {
   };
 }
 
-export async function loadAgent(path: string, options?: LoadOptions): Promise<Agent> {
+export async function loadAgent(
+  path: string,
+  options?: LoadOptions,
+  agentOptions?: AgentOptions,
+): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromJsFile(path);
     if (agent instanceof Agent) return agent;
@@ -73,27 +77,66 @@ export async function loadAgent(path: string, options?: LoadOptions): Promise<Ag
   if ([".yml", ".yaml"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromYamlFile(path);
 
-    return parseAgent(path, agent, options);
+    return parseAgent(path, agent, options, agentOptions);
   }
 
   throw new Error(`Unsupported agent file type: ${path}`);
+}
+
+async function loadNestAgent(
+  path: string,
+  agent: NestAgentSchema,
+  options?: LoadOptions,
+): Promise<Agent> {
+  return typeof agent === "object" && "type" in agent
+    ? parseAgent(path, agent, options)
+    : typeof agent === "string"
+      ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), agent), options)
+      : loadAgent(nodejs.path.join(nodejs.path.dirname(path), agent.url), options, {
+          defaultInput: agent.defaultInput,
+          hooks: await parseHooks(path, agent.hooks, options),
+        });
+}
+
+async function parseHooks(
+  path: string,
+  hooks?: HooksSchema | HooksSchema[],
+  options?: LoadOptions,
+): Promise<AgentHooks[] | undefined> {
+  hooks = [hooks].flat().filter(isNonNullable);
+  if (!hooks.length) return undefined;
+
+  type AllHooks = Required<AgentHooks>;
+
+  return await Promise.all(
+    hooks.map(
+      async (hook): Promise<{ [key in keyof AllHooks]: AllHooks[key] | undefined }> => ({
+        onStart: hook.onStart ? await loadNestAgent(path, hook.onStart, options) : undefined,
+        onSuccess: hook.onSuccess ? await loadNestAgent(path, hook.onSuccess, options) : undefined,
+        onError: hook.onError ? await loadNestAgent(path, hook.onError, options) : undefined,
+        onEnd: hook.onEnd ? await loadNestAgent(path, hook.onEnd, options) : undefined,
+        onSkillStart: hook.onSkillStart
+          ? await loadNestAgent(path, hook.onSkillStart, options)
+          : undefined,
+        onSkillEnd: hook.onSkillEnd
+          ? await loadNestAgent(path, hook.onSkillEnd, options)
+          : undefined,
+        onHandoff: hook.onHandoff ? await loadNestAgent(path, hook.onHandoff, options) : undefined,
+      }),
+    ),
+  );
 }
 
 async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
   options?: LoadOptions,
+  agentOptions?: AgentOptions,
 ): Promise<Agent> {
   const skills =
     "skills" in agent
       ? agent.skills &&
-        (await Promise.all(
-          agent.skills.map((skill) =>
-            typeof skill === "string"
-              ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), skill), options)
-              : parseAgent(path, skill, options),
-          ),
-        ))
+        (await Promise.all(agent.skills.map((skill) => loadNestAgent(path, skill, options))))
       : undefined;
 
   const memory =
@@ -105,25 +148,36 @@ async function parseAgent(
         )
       : undefined;
 
+  const baseOptions: AgentOptions = {
+    ...agentOptions,
+    ...agent,
+    skills,
+    memory,
+    hooks: [
+      ...((await parseHooks(path, agent.hooks, options)) ?? []),
+      ...[agentOptions?.hooks].flat().filter(isNonNullable),
+    ],
+  };
+
   switch (agent.type) {
     case "ai": {
       return AIAgent.from({
-        ...agent,
+        ...baseOptions,
         instructions:
           agent.instructions &&
           PromptBuilder.from(agent.instructions, { workingDir: nodejs.path.dirname(path) }),
-        memory,
-        skills,
       });
     }
     case "mcp": {
       if (agent.url) {
         return MCPAgent.from({
+          ...baseOptions,
           url: agent.url,
         });
       }
       if (agent.command) {
         return MCPAgent.from({
+          ...baseOptions,
           command: agent.command,
           args: agent.args,
         });
@@ -132,16 +186,13 @@ async function parseAgent(
     }
     case "team": {
       return TeamAgent.from({
-        ...agent,
-        memory,
-        skills,
+        ...baseOptions,
       });
     }
     case "transform": {
       return TransformAgent.from({
-        ...agent,
-        memory,
-        skills,
+        ...baseOptions,
+        jsonata: agent.jsonata,
       });
     }
   }

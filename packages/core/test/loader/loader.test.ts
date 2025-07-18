@@ -231,9 +231,11 @@ url: http://localhost:3000/sse
   );
 
   expect(await loadAgent("./remote-mcp.yaml")).toBe(testMcp);
-  expect(from).toHaveBeenLastCalledWith({
-    url: "http://localhost:3000/sse",
-  });
+  expect(from).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      url: "http://localhost:3000/sse",
+    }),
+  );
 
   readFile.mockRestore();
 });
@@ -254,10 +256,12 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
   );
 
   expect(await loadAgent("./local-mcp.yaml")).toBe(fsMcp);
-  expect(from).toHaveBeenLastCalledWith({
-    command: "npx",
-    args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
-  });
+  expect(from).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      command: "npx",
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
+    }),
+  );
 
   readFile.mockRestore();
 });

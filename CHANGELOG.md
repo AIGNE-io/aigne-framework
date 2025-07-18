@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.42.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.41.0...aigne-framework-v1.42.0) (2025-07-18)
+
+
+### Features
+
+* publish docs option add slug without ext parameter ([#266](https://github.com/AIGNE-io/aigne-framework/issues/266)) ([f815750](https://github.com/AIGNE-io/aigne-framework/commit/f815750e0359e18ad9686713be9279e8a5819960))
+
+
+### Bug Fixes
+
+* **docs:** remove trailing line breaks from code blocks ([#265](https://github.com/AIGNE-io/aigne-framework/issues/265)) ([ca56c9d](https://github.com/AIGNE-io/aigne-framework/commit/ca56c9d3061fb8b3a655dd5e89e4b06d9a90c53e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.4.0
+
+## [1.41.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.40.0...aigne-framework-v1.41.0) (2025-07-17)
+
+
+### Features
+
+* **core:** support define hooks for agent in yaml ([#260](https://github.com/AIGNE-io/aigne-framework/issues/260)) ([c388e82](https://github.com/AIGNE-io/aigne-framework/commit/c388e8216134271af4d9c7def70862ea3c354c7f))
+
+## [1.40.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.39.0...aigne-framework-v1.40.0) (2025-07-17)
+
+
+### Features
+
+* **core:** support custom default input value for agent ([#258](https://github.com/AIGNE-io/aigne-framework/issues/258)) ([352ac70](https://github.com/AIGNE-io/aigne-framework/commit/352ac70400fb7e28cc36c4f6dc9c591b0d64e546))
+
+
+### Bug Fixes
+
+* **docs:** should parse inline code inside markdown links ([#257](https://github.com/AIGNE-io/aigne-framework/issues/257)) ([b91f34e](https://github.com/AIGNE-io/aigne-framework/commit/b91f34e09378d3b506fa03ae61e2cede4e08943f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.3.1
+
+## [1.39.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.3...aigne-framework-v1.39.0) (2025-07-15)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+* **model:** support aigne-hub model adapter ([#253](https://github.com/AIGNE-io/aigne-framework/issues/253)) ([4b33f8d](https://github.com/AIGNE-io/aigne-framework/commit/4b33f8d1a819f52357db81d502c56b55eaa0669f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.3.0
+
 ## [1.38.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.38.2...aigne-framework-v1.38.3) (2025-07-14)
 
 

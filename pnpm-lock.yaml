@@ -649,9 +649,6 @@ importers:
 
   models/aigne-hub:
     dependencies:
-      '@aigne/aigne-hub':
-        specifier: workspace:^
-        version: 'link:'
       '@aigne/anthropic':
         specifier: workspace:^
         version: link:../anthropic
@@ -1364,9 +1361,6 @@ importers:
 
   packages/cli:
     dependencies:
-      '@abtnode/util':
-        specifier: ^1.16.46
-        version: 1.16.46
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../agent-library
@@ -1424,6 +1418,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.15.0
         version: 1.15.0
+      '@ocap/mcrypto':
+        specifier: ^1.21.0
+        version: 1.21.0
       '@smithy/node-http-handler':
         specifier: ^4.1.0
         version: 4.1.0
@@ -1433,6 +1430,9 @@ importers:
       commander:
         specifier: ^14.0.0
         version: 14.0.0
+      crypto:
+        specifier: ^1.0.1
+        version: 1.0.1
       detect-port:
         specifier: ^2.1.0
         version: 2.1.0
@@ -3431,6 +3431,9 @@ packages:
   '@ocap/mcrypto@1.20.15':
     resolution: {integrity: sha512-0rTlUHryfUldTsFsSKJDB2+/HQQe67nqcfpYbl4wPqrStqzfDiaNIzs8RwU9Xyny4zuLFpO+S4pSOdeQ4mfuew==}
 
+  '@ocap/mcrypto@1.21.0':
+    resolution: {integrity: sha512-up+r1GtRAZ6su086yT1M7NxF7PQqzruvFO7M30RjgbIKKtPb7Q4QyRNIi7KaQXBgPkYTNS7khqQZo91m1CLHyw==}
+
   '@ocap/merkle-tree@1.20.15':
     resolution: {integrity: sha512-PZ8ecsPyAt54yextNSYJMPw9iPlxqB3OD3QXMs6q0pOhLCmW9BEwDDhndi3wVOj8A8REXFTXAa7YVX2nXA6wnw==}
 
@@ -3457,6 +3460,9 @@ packages:
 
   '@ocap/util@1.20.15':
     resolution: {integrity: sha512-s1N6vXZ4ZXjC2pdaeHnioRQ2+IPlPC11TEy0VGZ13OpX2tfENzmm9oMHq2z7DqjkB+Z6mueC/iPYuX0eCyq3pw==}
+
+  '@ocap/util@1.21.0':
+    resolution: {integrity: sha512-SmSI/ktbjK22g7rMnw6INn66yAG81Qsz0SYK+HODeqqzJBIyZLL7ejAbZrAobGLKCAss4BmDbmOtU1/hhRuHKQ==}
 
   '@ocap/wallet@1.20.15':
     resolution: {integrity: sha512-8bIDgG0PLbRqnmvsgk/BGlkxK0OvDhOZOMXFsfkLsfyHnRgOkAqGIXiNLbvgWXSNLHXn4DE0VasKCR008yZF8A==}
@@ -5390,6 +5396,10 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+
+  crypto@1.0.1:
+    resolution: {integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==}
+    deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
 
   css-in-js-utils@3.1.0:
     resolution: {integrity: sha512-fJAcud6B3rRu+KHYk+Bwf+WFL2MDCJJ1XG9x137tJQ0xYxor7XziQtuGFbWNdqrvF4Tk26O3H73nfVqXt/fW1A==}
@@ -12995,6 +13005,20 @@ snapshots:
       randombytes: 2.1.0
       tweetnacl: 1.0.3
 
+  '@ocap/mcrypto@1.21.0':
+    dependencies:
+      '@ocap/util': 1.21.0
+      '@simplewebauthn/server': 13.1.1
+      bn.js: 5.2.1
+      crypto-js: 4.2.0
+      elliptic: 6.6.1
+      eth-lib: 0.2.8
+      hash.js: 1.1.7
+      interface: 1.2.1
+      js-sha3: 0.8.0
+      randombytes: 2.1.0
+      tweetnacl: 1.0.3
+
   '@ocap/merkle-tree@1.20.15':
     dependencies:
       '@ocap/mcrypto': 1.20.15
@@ -13089,6 +13113,14 @@ snapshots:
       google-protobuf: 3.21.0
 
   '@ocap/util@1.20.15':
+    dependencies:
+      base64-url: 2.3.3
+      bn.js: 5.2.1
+      bs58: 5.0.0
+      lodash: 4.17.21
+      utf8: 3.0.0
+
+  '@ocap/util@1.21.0':
     dependencies:
       base64-url: 2.3.3
       bn.js: 5.2.1
@@ -15422,6 +15454,8 @@ snapshots:
       randomfill: 1.0.4
 
   crypto-js@4.2.0: {}
+
+  crypto@1.0.1: {}
 
   css-in-js-utils@3.1.0:
     dependencies:

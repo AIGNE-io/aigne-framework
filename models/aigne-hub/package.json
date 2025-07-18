@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "@aigne/transport": "workspace:^",
-    "@aigne/aigne-hub": "workspace:^",
     "@aigne/anthropic": "workspace:^",
     "@aigne/bedrock": "workspace:^",
     "@aigne/core": "workspace:^",

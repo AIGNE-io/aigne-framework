@@ -2,11 +2,12 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { decrypt, encodeEncryptionKey } from "@abtnode/util/lib/security";
 import { AIGNE } from "@aigne/core";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { loadModel } from "@aigne/core/loader/index.js";
+import aes from "@ocap/mcrypto/lib/crypter/aes-legacy";
 import axios from "axios";
+import crypto from "crypto";
 import inquirer from "inquirer";
 import open from "open";
 import pWaitFor from "p-wait-for";
@@ -14,6 +15,17 @@ import { joinURL, withQuery } from "ufo";
 import { parse, stringify } from "yaml";
 import { availableMemories, availableModels } from "../constants.js";
 import { parseModelOption, type RunAIGNECommandOptions } from "./run-with-aigne.js";
+
+const AES = { default: aes }.default;
+
+export const encrypt = (m: string, s: string, i: string) =>
+  AES.encrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
+export const decrypt = (m: string, s: string, i: string) =>
+  AES.decrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
+
+const escapeFn = (str: string) => str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+const encodeEncryptionKey = (key: string) => escapeFn(Buffer.from(key).toString("base64"));
+
 export interface RunOptions extends RunAIGNECommandOptions {
   path: string;
   entryAgent?: string;

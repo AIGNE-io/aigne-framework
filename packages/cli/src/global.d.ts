@@ -3,5 +3,3 @@ declare module "@aigne/marked-terminal" {
 
   export function markedTerminal(options?: object, highlightOptions?: object): MarkedExtension;
 }
-
-declare module "@abtnode/util/*";

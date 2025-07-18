@@ -13,6 +13,9 @@ node_modules
 packages/*/lib
 models/*/lib
 
+# docs
+docs-ai-*
+
 # testing
 coverage
 packages/agent-library/src/content-generator/output-tmp

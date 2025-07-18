@@ -12,10 +12,11 @@ if (!process.env.DOC_DISCUSS_KIT_BOARD_ID) {
 }
 
 const { success, error } = await publishDocs({
-  sidebarPath: path.join(process.cwd(), "docs/_sidebar.md"),
+  sidebarPath: path.join(process.cwd(), `${process.env.DOC_ROOT_DIR || "docs"}/_sidebar.md`),
   accessToken: process.env.DOC_DISCUSS_KIT_ACCESS_TOKEN,
   appUrl: process.env.DOC_DISCUSS_KIT_URL,
   boardId: process.env.DOC_DISCUSS_KIT_BOARD_ID,
+  slugWithoutExt: false,
 });
 
 if (!success) {

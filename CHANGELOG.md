@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.42.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.41.0...aigne-framework-v1.42.0) (2025-07-18)
+
+
+### Features
+
+* publish docs option add slug without ext parameter ([#266](https://github.com/AIGNE-io/aigne-framework/issues/266)) ([f815750](https://github.com/AIGNE-io/aigne-framework/commit/f815750e0359e18ad9686713be9279e8a5819960))
+
+
+### Bug Fixes
+
+* **docs:** remove trailing line breaks from code blocks ([#265](https://github.com/AIGNE-io/aigne-framework/issues/265)) ([ca56c9d](https://github.com/AIGNE-io/aigne-framework/commit/ca56c9d3061fb8b3a655dd5e89e4b06d9a90c53e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.4.0
+
 ## [1.41.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.40.0...aigne-framework-v1.41.0) (2025-07-17)
 
 

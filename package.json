@@ -27,9 +27,9 @@
   },
   "devDependencies": {
     "@aigne/publish-docs": "workspace:^",
-    "@biomejs/biome": "^2.1.1",
+    "@biomejs/biome": "^2.1.2",
     "@biomejs/js-api": "^2.0.3",
-    "@biomejs/wasm-nodejs": "^2.1.1",
+    "@biomejs/wasm-nodejs": "^2.1.2",
     "fenceparser": "^2.2.0",
     "mdast": "^3.0.0",
     "remark-cli": "^12.0.1",

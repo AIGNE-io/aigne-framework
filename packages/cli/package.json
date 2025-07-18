@@ -49,6 +49,7 @@
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
     "@aigne/agentic-memory": "workspace:^",
+    "@aigne/aigne-hub": "workspace:^",
     "@aigne/anthropic": "workspace:^",
     "@aigne/bedrock": "workspace:^",
     "@aigne/core": "workspace:^",
@@ -62,7 +63,6 @@
     "@aigne/open-router": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/xai": "workspace:^",
-    "@aigne/aigne-hub": "workspace:^",
     "@modelcontextprotocol/sdk": "^1.15.0",
     "@smithy/node-http-handler": "^4.1.0",
     "chalk": "^5.4.1",

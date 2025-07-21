@@ -9,6 +9,6 @@ input_schema:
     datasources:
       type: string
       description: 结构规划的上下文，用于辅助结构规划
-    structurePlan: ./schema/structure-plan.yaml
+    structurePlanResult: ./schema/structure-plan-result.yaml
 iterate_on: structurePlanResult
 mode: sequential

@@ -8,22 +8,7 @@ input_schema:
     evaluationDimensions:
       type: string
       description: 评估维度
-    structurePlan:
-      type: array
-      description: 待评估内容
-      items:
-        type: object
-        properties:
-          title:
-            type: string
-          description:
-            type: string
-          path:
-            type: string
-        required:
-          - title
-          - description
-          - path
+    structurePlan: ./schema/structure-plan.yaml
     datasources:
       type: string
       description: 评估内容的上下文

@@ -1,6 +1,5 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { saveDocWithTranslations } from "./utils.mjs";
 
 /**
  * @param {Object} params
@@ -10,21 +9,8 @@ import { saveDocWithTranslations } from "./utils.mjs";
  */
 export default async function saveDocs({ structurePlanResult: structurePlan, docsDir }) {
   const results = [];
-  // 1. 保存每个 markdown 文件
-  for (const item of structurePlan) {
-    if (item.detailGenerated) {
-      continue;
-    }
-    const saveResults = await saveDocWithTranslations({
-      path: item.path,
-      content: item.content,
-      docsDir,
-      translates: item.translates || [],
-    });
-    results.push(...saveResults);
-  }
 
-  // 2. 生成 _sidebar.md
+  // 生成 _sidebar.md
   try {
     const sidebar = generateSidebar(structurePlan);
     const sidebarPath = join(docsDir, "_sidebar.md");

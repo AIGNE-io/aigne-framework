@@ -11,42 +11,6 @@ input_schema:
     datasources:
       type: string
       description: 结构规划的上下文，用于辅助结构规划
-    structurePlan:
-      type: array
-      items:
-        type: object
-        properties:
-          title:
-            type: string
-          description:
-            type: string
-          path:
-            type: string
-            description: 路径，以 RUL 的格式返回，不能为空, 必须以 / 开头，不需要包含语言层级，比如 /zh/about 直接返回 /about
-          parentId:
-            type:
-              - string
-              - 'null'
-        required:
-          - title
-          - description
-          - path
-output_schema:
-  type: object
-  properties:
-    contentDetails:
-      type: array
-      description: 内容详情
-      items:
-        type: object
-        properties:
-          title:
-            type: string
-          description:
-            type: string
-          path:
-            type: string
-          content:
-            type: string
+    structurePlan: ./schema/structure-plan.yaml
 iterate_on: structurePlan
 mode: sequential

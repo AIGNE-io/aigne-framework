@@ -13,6 +13,14 @@ items:
       type:
         - string
         - 'null'
+    translates:
+      type: array
+      items:
+        type: object
+        properties:
+          language:
+            type: string
+            description: 语言代码，比如 zh, en, ja 等
     metadata:
       type: object
       properties:

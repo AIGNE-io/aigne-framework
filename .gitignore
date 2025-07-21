@@ -19,7 +19,10 @@ docs-ai-*
 
 # testing
 coverage
+
+# mock inputs
 packages/agent-library/src/content-generator/output-tmp
+packages/agent-library/src/content-generator/mock-inputs
 
 # production
 build

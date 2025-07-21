@@ -1,0 +1,85 @@
+rules: |
+  请帮助我生成一个跟 ArcBlock 内容相关的站点
+  ## 站点受众
+  这个站点的受众是开发者，帮助用户简化应用开发流程，需要确保结构清晰，易于理解，符合普通用户的认知习惯。
+
+  ## 结构规划
+  对于结构规划需要生成完整的站点结构，用于开发团队编写页面代码，另外在设计结构时，需要考虑 SEO 优化要求，确保每个页面能在 google 搜索结果中排名靠前。
+
+  ## 结构规划规则
+  1. 需要确保结构清晰，易于理解，符合普通用户的认知习惯。
+  2. 需要确保每个页面的标题中都有 SEO 关键词，且能够满足 SEO 优化要求。
+  3. 需要确保每个页面都有唯一的 URL。
+  4. 页面结构可以尽可能复杂，因为会涉及不同页面层级
+
+locale: zh
+targetAudience: 开发者
+nodeName: 页面
+
+datasources: |
+  ArcBlock 作为区块链3.0平台，其核心功能可以细化为以下几个方面，便于用于站点内容生成：
+
+  1. 开放链访问协议（OCAP）
+  ArcBlock 提供开放链访问协议，允许开发者跨多个区块链网络调用和交互，支持多链互操作，避免被单一公链锁定，提升应用的灵活性和扩展性。
+
+  2. 基石程序（Blocklet）
+  Blocklet 是 ArcBlock 的模块化微服务组件，类似于云端无服务器架构，开发者可以通过组合和定制这些组件快速构建去中心化应用，无需从零开发，极大降低开发复杂度。
+
+  3. 去中心化订阅网关
+  ArcBlock 设计了去中心化的消息通信网关，支持多种网络协议（如WebSocket、MQTT等），实现节点和应用间的安全实时通信，提升用户体验和应用响应速度。
+
+  4. 代币与身份服务组件
+  平台内置了高度可重用的代币服务、用户身份管理（去中心化身份DID）、钱包和消息服务等组件，支持安全的数字身份认证和代币经济体系，保障用户隐私和资产安全。
+
+  5. Forge Framework 框架
+  Forge 是 ArcBlock 的底层区块链框架，类似于 Cosmos SDK，支持开发者定制专属区块链，提供RPC接口调用共识、状态和存储引擎，帮助实现高性能共识和分布式存储。
+
+  6. 云原生架构与生态系统
+  ArcBlock 采用云原生设计，支持在主流云平台（如AWS、Azure）自动扩展和分布式部署，配合应用市场和激励机制，形成完整的生态体系，推动区块链应用普及。
+
+  7. 用户体验与开发者支持
+  平台注重提升用户综合体验，通过模块化设计和最佳实践指导，帮助开发者将非链上逻辑合理转移，提升整体性能和响应速度。同时提供丰富的SDK、文档和社区支持，降低开发门槛。
+
+  总结来说，ArcBlock 是一个集开放协议、模块化组件、去中心化通信、身份与代币服务、定制区块链框架及云原生生态于一体的区块链应用开发平台，旨在简化开发流程，提升性能和用户体验，推动区块链技术的广泛应用。
+
+structurePlan:
+  - title: "首页"
+    description: "ArcBlock 平台概览与核心功能介绍，帮助用户快速了解平台的主要优势和功能。引导用户了解平台核心功能"
+    path: "/"
+    parentId: null
+  - title: "ArcBlock 核心功能"
+    description: "简要介绍ArcBlock 的主要功能，包括开放链访问协议(OCAP)、模块化组件(Blocklet)、身份服务组件、Forge 框架、去中心化订阅网关、云原生框架,引导用户进入详情页了解具体内容"
+    path: "/core-functions"
+    parentId: "/"
+  - title: "ArcBlock 开放链访问协议(OCAP)"
+    description: "介绍开放链访问协议(OCAP)，展示跨多个区块链调用、交互的特性"
+    path: "/core-functions/ocap"
+    parentId: "/core-functions"
+  - title: "ArcBlock 模块化组件(Blocklet)"
+    description: "介绍的模块化组件(Blocklet)，介绍如何使用模块化组件快速开发应用"
+    path: "/core-functions/blocklet"
+    parentId: "/core-functions"
+  - title: "ArcBlock 身份服务组件"
+    description: "介绍身份服务组件，介绍如何使用身份服务组件进行身份认证、身份管理，和相关的代币经济体系"
+    path: "/core-functions/identity"
+    parentId: "/core-functions"
+  - title: "ArcBlock Forge 框架"
+    description: "介绍Forge 框架，介绍如何使用Forge 框架进行定制专属区块链"
+    path: "/core-functions/forge"
+    parentId: "/core-functions"
+  - title: "ArcBlock 去中心化订阅网关"
+    description: "介绍去中心化订阅网关，介绍如何使用去中心化订阅网关进行消息通信"
+    path: "/core-functions/gateway"
+    parentId: "/core-functions"
+  - title: "ArcBlock 云原生框架"
+    description: "介绍云原生框架，介绍如何使用云原生框架进行分布式部署,配合应用市场和激励机制，形成完整的生态体系，推动区块链应用普及"
+    path: "/core-functions/cloud-native"
+    parentId: "/core-functions"
+  - title: "ArcBlock 开发者支持"
+    description: "介绍 ArcBlock 的开发者支持资源，包括 SDK、文档和社区，帮助降低开发门槛"
+    path: "/developer-support"
+    parentId: "/"
+  - title: "关于 ArcBlock"
+    description: "介绍 ArcBlock 的愿景、使命及其在区块链行业的定位。"
+    path: "/about"
+    parentId: "/" 

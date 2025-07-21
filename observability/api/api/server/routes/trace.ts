@@ -173,24 +173,72 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     res.json({ code: 0, data: { lastTraceChanged } });
   });
 
-  router.get("/tree/:id", async (req: Request, res: Response) => {
+  router.get("/tree/children/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) {
-      throw new Error("id is required");
-    }
+    if (!id) throw new Error("id is required");
 
     const db = req.app.locals.db as LibSQLDatabase;
     const rootCalls = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
-    if (rootCalls.length === 0) {
-      throw new Error(`Not found trace: ${id}`);
-    }
+    if (rootCalls.length === 0) throw new Error(`Not found trace: ${id}`);
+
+    const all = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
+    res.json({ data: all[0] });
+  });
+
+  router.get("/tree/:id", async (req: Request, res: Response) => {
+    const id = req.params.id;
+    if (!id) throw new Error("id is required");
+
+    const db = req.app.locals.db as LibSQLDatabase;
+    const rootCalls = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
+    if (rootCalls.length === 0) throw new Error(`Not found trace: ${id}`);
 
     const rootCallIds = rootCalls.map((r) => r.rootId).filter((id): id is string => !!id);
 
-    const all = await db.select().from(Trace).where(inArray(Trace.rootId, rootCallIds)).execute();
+    const all = await db
+      .select({
+        id: Trace.id,
+        rootId: Trace.rootId,
+        parentId: Trace.parentId,
+        name: Trace.name,
+        startTime: Trace.startTime,
+        endTime: Trace.endTime,
+        status: Trace.status,
+        attributes: sql`
+          CASE
+            WHEN JSON_EXTRACT(${Trace.attributes}, '$.output.usage') IS NOT NULL THEN
+              JSON_OBJECT(
+                'output', JSON_OBJECT(
+                  'usage', JSON_EXTRACT(${Trace.attributes}, '$.output.usage'),
+                  'model', JSON_EXTRACT(${Trace.attributes}, '$.output.model')
+                )
+              )
+            ELSE JSON_OBJECT(
+              'output', JSON_OBJECT()
+            )
+          END
+        `,
+        userId: Trace.userId,
+        componentId: Trace.componentId,
+      })
+      .from(Trace)
+      .where(inArray(Trace.rootId, rootCallIds))
+      .execute();
 
     const calls = new Map();
-    all.forEach((call) => calls.set(call.id, { ...call, children: [] }));
+    all.forEach((call) => {
+      const { attributes } = call;
+      let _attributes = {};
+      if (attributes) {
+        try {
+          _attributes = JSON.parse(attributes as string);
+        } catch (err) {
+          console.error(`parse attributes failed for trace ${call.id}:`, err);
+        }
+      }
+
+      calls.set(call.id, { ...call, children: [], attributes: _attributes });
+    });
     all.forEach((call) => {
       if (call.parentId) {
         const parent = calls.get(call.parentId);

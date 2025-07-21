@@ -11,7 +11,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Decimal from "decimal.js";
 import { isUndefined, omitBy } from "lodash";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { joinURL } from "ufo";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import useSwitchView from "../../hooks/switch-view.tsx";
 import { parseDuration } from "../../utils/latency.ts";
@@ -22,11 +23,12 @@ import YamlView from "../yaml-view.tsx";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
 
-export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }) {
+export default function TraceDetailPanel({ trace: originalTrace }: { trace?: TraceData | null }) {
   const [tab, setTab] = useState("input");
   const { t } = useLocaleContext();
   const getPrices = useGetTokenPrice();
   const { view, renderView } = useSwitchView();
+  const [trace, setTrace] = useState<TraceData | undefined | null>(originalTrace);
   const isMobile = useMediaQuery("(max-width: 1440px)");
 
   const hasError = trace?.status?.code === 2;
@@ -34,6 +36,21 @@ export default function TraceDetailPanel({ trace }: { trace?: TraceData | null }
     trace?.attributes?.userContext && Object.keys(trace?.attributes?.userContext).length > 0;
   const hasMemories = trace?.attributes?.memories && trace?.attributes?.memories.length > 0;
   const model = trace?.attributes?.output?.model;
+
+  const init = async () => {
+    fetch(joinURL(origin, `/api/trace/tree/children/${originalTrace?.id}`))
+      .then((res) => res.json() as Promise<{ data: TraceData }>)
+      .then(({ data }) => setTrace(data));
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
+  useEffect(() => {
+    if (originalTrace?.id) {
+      init();
+    }
+
+    setTrace(originalTrace);
+  }, [originalTrace]);
 
   const value = useMemo(() => {
     if (tab === "input") {

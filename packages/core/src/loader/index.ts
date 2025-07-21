@@ -71,7 +71,7 @@ export async function loadAgent(
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromJsFile(path);
     if (agent instanceof Agent) return agent;
-    return FunctionAgent.from(agent);
+    return parseAgent(path, agent, options, agentOptions);
   }
 
   if ([".yml", ".yaml"].includes(nodejs.path.extname(path))) {
@@ -193,6 +193,12 @@ async function parseAgent(
       return TransformAgent.from({
         ...baseOptions,
         jsonata: agent.jsonata,
+      });
+    }
+    case "function": {
+      return FunctionAgent.from({
+        ...baseOptions,
+        process: agent.process,
       });
     }
   }

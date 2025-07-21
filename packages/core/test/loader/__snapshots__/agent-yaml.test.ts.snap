@@ -965,6 +965,32 @@ exports[`loadAgentFromYaml should support default input 1`] = `
         "description": {
           "$get": "title",
         },
+        "title": "Default Title JS",
+      },
+      "input_schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": true,
+        "properties": {
+          "description": {
+            "type": "string",
+          },
+          "title": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "description",
+        ],
+        "type": "object",
+      },
+      "name": "testAgentWithDefaultInputSkillJS",
+    },
+    {
+      "default_input": {
+        "description": {
+          "$get": "title",
+        },
         "title": "Another Default Title",
       },
       "input_schema": {

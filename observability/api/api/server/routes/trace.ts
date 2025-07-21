@@ -211,14 +211,17 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
                 'output', JSON_OBJECT(
                   'usage', JSON_EXTRACT(${Trace.attributes}, '$.output.usage'),
                   'model', JSON_EXTRACT(${Trace.attributes}, '$.output.model')
-                )
+                ),
+                'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag')
               )
             ELSE JSON_OBJECT(
-              'output', JSON_OBJECT()
+              'output', JSON_OBJECT(),
+              'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag')
             )
           END
         `,
         userId: Trace.userId,
+        sessionId: Trace.sessionId,
         componentId: Trace.componentId,
       })
       .from(Trace)

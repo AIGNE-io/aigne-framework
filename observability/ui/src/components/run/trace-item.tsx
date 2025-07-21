@@ -1,7 +1,7 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { Box, Card, LinearProgress, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import type { ReactElement } from "react";
-import { parseDurationMs } from "../../utils/latency.ts";
+import { parseDurationMs, parseDurationTime } from "../../utils/latency.ts";
 import Status from "../status.tsx";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
@@ -68,6 +68,7 @@ function TraceItem({
       onClick={() => onSelect?.()}
     >
       <Box
+        data-percent={widthPercent}
         sx={{
           display: "flex",
           alignItems: "center",
@@ -91,7 +92,7 @@ function TraceItem({
         )}
 
         <Typography variant="caption" sx={{ minWidth: 60, flexShrink: 0, ml: "auto", mr: 1 }}>
-          {duration}s
+          {parseDurationTime(duration * 1000)}
         </Typography>
 
         <Box

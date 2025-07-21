@@ -33,7 +33,7 @@ export interface RunOptions extends RunAIGNECommandOptions {
 }
 
 const WELLKNOWN_SERVICE_PATH_PREFIX = "/.well-known/service";
-const CLI_PREFIX = "/api/cli";
+const ACCESS_KEY_PREFIX = "/api/access-key";
 
 type FetchResult = { accessKeyId: string; accessKeySecret: string };
 
@@ -48,8 +48,12 @@ const fetchConfigs = async ({
   fetchInterval: number;
   fetchTimeout: number;
 }) => {
-  const getSessionURL = withQuery(joinURL(connectUrl, CLI_PREFIX, "get-session"), { sessionId });
-  const endSessionURL = withQuery(joinURL(connectUrl, CLI_PREFIX, "end-session"), { sessionId });
+  const getSessionURL = withQuery(joinURL(connectUrl, ACCESS_KEY_PREFIX, "get-session"), {
+    sessionId,
+  });
+  const endSessionURL = withQuery(joinURL(connectUrl, ACCESS_KEY_PREFIX, "end-session"), {
+    sessionId,
+  });
 
   const condition = async () => {
     const { data: session } = await axios({ url: getSessionURL });
@@ -102,7 +106,7 @@ async function createConnect({
   intervalFetchConfig,
 }: CreateConnectOptions) {
   try {
-    const startSessionURL = joinURL(connectUrl, CLI_PREFIX, "start-session");
+    const startSessionURL = joinURL(connectUrl, ACCESS_KEY_PREFIX, "start-session");
     const { data: session } = await axios({ url: startSessionURL, method: "POST" });
     const token = session.id;
 
@@ -232,7 +236,7 @@ export async function loadAIGNE(
 
       // 检查 accessKey 是否有效?
       // try {
-      //   const result = await fetch(joinURL(connectUrl, CLI_PREFIX, "health"), {
+      //   const result = await fetch(joinURL(connectUrl, ACCESS_KEY_PREFIX, "health"), {
       //     headers: { Authorization: `Bearer ${env.AIGNE_HUB_API_KEY}` },
       //   });
 

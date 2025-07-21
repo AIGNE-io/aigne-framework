@@ -10,7 +10,7 @@ import { join } from "node:path";
 export default async function saveDocs({ structurePlanResult: structurePlan, docsDir }) {
   const results = [];
 
-  // 生成 _sidebar.md
+  // Generate _sidebar.md
   try {
     const sidebar = generateSidebar(structurePlan);
     const sidebarPath = join(docsDir, "_sidebar.md");
@@ -23,9 +23,9 @@ export default async function saveDocs({ structurePlanResult: structurePlan, doc
   return { saveDocsResult: results };
 }
 
-// 生成 sidebar 内容，支持多级嵌套，顺序与 structurePlan 一致
+// Generate sidebar content, support nested structure, and the order is consistent with structurePlan
 function generateSidebar(structurePlan) {
-  // 构建树结构
+  // Build tree structure
   const root = {};
   for (const { path, title, parentId } of structurePlan) {
     const relPath = path.replace(/^\//, "");
@@ -44,7 +44,7 @@ function generateSidebar(structurePlan) {
       node = node[seg].__children;
     }
   }
-  // 递归生成 sidebar 文本，link 路径为拉平后的文件名
+  // Recursively generate sidebar text, the link path is the flattened file name
   function walk(node, parentSegments = [], indent = "") {
     let out = "";
     for (const key of Object.keys(node)) {

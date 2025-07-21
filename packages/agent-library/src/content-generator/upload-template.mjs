@@ -1,10 +1,10 @@
-// Agent 函数：上传 pageTemplate 到 Pages Kit
+// Agent function: upload pageTemplate to Pages Kit
 export default async function Agent({ pageTemplate, locale, projectId }) {
-  // 构建请求头
+  // Build request headers
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
-  // 构建请求体
+  // Build request body
   const raw = JSON.stringify({
     projectId,
     lang: locale,
@@ -19,12 +19,11 @@ export default async function Agent({ pageTemplate, locale, projectId }) {
   };
 
   try {
-    // 发送请求到 Pages Kit 接口
+    // Send request to Pages Kit interface
     const response = await fetch(
-      "https://bbqawfllzdt3pahkdsrsone6p3wpxcwp62vlabtawfu.did.abtnet.io/pages-kit/api/sdk/upload-page",
+      `${process.env.PAGES_KIT_API_URL}/api/sdk/upload-page`,
       requestOptions,
     );
-    // 尝试解析为 JSON，失败则返回文本
     try {
       const data = await response.json();
       return { uploadPageResult: data };
@@ -33,12 +32,10 @@ export default async function Agent({ pageTemplate, locale, projectId }) {
       return { uploadPageResult: text };
     }
   } catch (error) {
-    // 捕获并返回错误信息
     return { error: error.message };
   }
 }
 
-// 定义输出 schema
 Agent.output_schema = {
   type: "object",
   properties: {
@@ -47,5 +44,4 @@ Agent.output_schema = {
   },
 };
 
-// 函数描述
-Agent.description = "上传 pageTemplate 到 Pages Kit，返回接口响应内容";
+Agent.description = "Upload pageTemplate to Pages Kit and return the API response";

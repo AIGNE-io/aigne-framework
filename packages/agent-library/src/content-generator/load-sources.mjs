@@ -217,7 +217,7 @@ export default async function loadSources({
     }),
   );
 
-  // 获取上次结构规划结果
+  // Get the last structure plan result
   let originalStructurePlan;
   const structurePlanPath = path.join(outputDir, "structure-plan.json");
   try {
@@ -231,10 +231,10 @@ export default async function loadSources({
       }
     }
   } catch {
-    // 文件不存在，originalStructurePlan 保持 undefined
+    // The file does not exist, originalStructurePlan remains undefined
   }
 
-  // 获取指定 path 上次输出结果
+  // Get the last output result of the specified path
   let content;
   if (currentPath) {
     const flatName = currentPath.replace(/^\//, "").replace(/\//g, "-");
@@ -244,7 +244,7 @@ export default async function loadSources({
       await access(filePath);
       content = await readFile(filePath, "utf8");
     } catch {
-      // 文件不存在，content 保持 undefined
+      // The file does not exist, content remains undefined
     }
   }
 

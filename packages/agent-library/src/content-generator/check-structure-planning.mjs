@@ -5,7 +5,7 @@ import { AIGNE } from "@aigne/core";
 import { GeminiChatModel } from "@aigne/gemini";
 import { OpenAIChatModel } from "@aigne/openai";
 
-// 获取当前脚本所在目录
+// Get current script directory
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default async function checkStructurePlanning(

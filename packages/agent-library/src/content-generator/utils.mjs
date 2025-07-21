@@ -2,18 +2,18 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 export function processContent({ content }) {
-  // 匹配 markdown 普通链接 [text](link)，排除图片 ![text](link)
+  // Match markdown regular links [text](link), exclude images ![text](link)
   return content.replace(/(?<!!)\[([^\]]+)\]\(([^)]+)\)/g, (match, text, link) => {
     const trimLink = link.trim();
-    // 排除外部链接和 mailto
+    // Exclude external links and mailto
     if (/^(https?:\/\/|mailto:)/.test(trimLink)) return match;
-    // 保留锚点
+    // Preserve anchors
     const [path, hash] = trimLink.split("#");
-    // 已有扩展名则跳过
+    // Skip if already has extension
     if (/\.[a-zA-Z0-9]+$/.test(path)) return match;
-    // 只处理相对路径或以 / 开头的路径
+    // Only process relative paths or paths starting with /
     if (!path) return match;
-    // 拉平成 ./xxx-yyy.md
+    // Flatten to ./xxx-yyy.md
     let finalPath = path;
     if (path.startsWith(".")) {
       finalPath = path.replace(/^\./, "");
@@ -26,12 +26,12 @@ export function processContent({ content }) {
 }
 
 /**
- * 保存单个文档及其翻译内容到文件
+ * Save a single document and its translations to files
  * @param {Object} params
- * @param {string} params.path - 相对路径（不带扩展名）
- * @param {string} params.content - 主文档内容
- * @param {string} params.docsDir - 根目录
- * @param {Array<{language: string, translation: string}>} [params.translates] - 翻译内容
+ * @param {string} params.path - Relative path (without extension)
+ * @param {string} params.content - Main document content
+ * @param {string} params.docsDir - Root directory
+ * @param {Array<{language: string, translation: string}>} [params.translates] - Translation content
  * @returns {Promise<Array<{ path: string, success: boolean, error?: string }>>}
  */
 export async function saveDocWithTranslations({
@@ -42,7 +42,7 @@ export async function saveDocWithTranslations({
 }) {
   const results = [];
   try {
-    // 拉平路径：去除前导 /，将所有 / 替换为 -
+    // Flatten path: remove leading /, replace all / with -
     const flatName = docPath.replace(/^\//, "").replace(/\//g, "-");
     const fileFullName = `${flatName}.md`;
     const filePath = path.join(docsDir, fileFullName);

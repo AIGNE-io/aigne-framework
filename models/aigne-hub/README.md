@@ -59,7 +59,7 @@ import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubChatModel({
   url: "https://your-aigne-hub-instance/ai-kit/api/v2/chat",
-  accessKey: "your-access-key-id",
+  accessKey: "your-access-key-secret",
   model: "openai/gpt-4o-mini",
 });
 
@@ -85,7 +85,7 @@ import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubChatModel({
   url: "https://your-aigne-hub-instance/ai-kit/api/v2/chat",
-  accessKey: "your-access-key-id",
+  accessKey: "your-access-key-secret",
   model: "openai/gpt-4o-mini",
 });
 

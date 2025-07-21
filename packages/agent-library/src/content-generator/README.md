@@ -121,6 +121,10 @@ aigne run --entry-agent "docs-generator" --input "@mock-inputs/did-spaces-sdk-do
 aigne run --entry-agent "docs-generator" --input "@mock-inputs/blockchain-sdk-docs-input.yaml" --input-glossary "@mock-inputs/arcblock-glossary.md" --format yaml 
 
 
+## MCP Go
+
+aigne run --entry-agent "docs-generator" --input "@mock-inputs/mcp-go-docs-input.yaml" --format yaml
+
 ```
 
 ### 使用 observability 查看执行记录

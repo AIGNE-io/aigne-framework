@@ -1,0 +1,15 @@
+rules: |
+  请帮助我生成一个 MCP Go 相关的文档
+
+  ## 文档详情生成规则
+  文档要详细，特别是命令的用法、参数，确保包含了所有的命令和参数的说明。
+
+targetAudience: 开发者
+nodeName: 部分
+locale: en
+translateLanguages:
+  - zh
+docsDir: ../../../../docs-ai-mcp-go
+outputDir: ../../../../docs-ai-mcp-go/output
+sourcesPath:
+  - /Users/lban/dev/code/mcp-go

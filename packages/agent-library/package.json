@@ -48,13 +48,14 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/core": "workspace:^",
-    "@aigne/openai": "workspace:^",
     "@aigne/anthropic": "workspace:^",
+    "@aigne/core": "workspace:^",
     "@aigne/gemini": "workspace:^",
+    "@aigne/openai": "workspace:^",
     "@aigne/sqlite": "workspace:^",
     "drizzle-orm": "^0.44.2",
     "fastq": "^1.19.1",
+    "glob": "^11.0.3",
     "jsonata": "^2.0.6",
     "jsonschema": "^1.5.0",
     "uuid": "^11.1.0",

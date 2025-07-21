@@ -48,9 +48,9 @@ export class AIGNEHubChatModel extends ChatModel {
     super();
     this.client = new BaseClient({
       ...options,
-      url: options.url ?? process.env.AIGNE_HUB_BASE_URL ?? DEFAULT_URL,
-      model: options.model ?? DEFAULT_CHAT_MODEL,
-      accessKey: options.accessKey ?? process.env.AIGNE_HUB_ACCESS_KEY,
+      url: options.url || process.env.AIGNE_HUB_BASE_URL || DEFAULT_URL,
+      model: options.model || DEFAULT_CHAT_MODEL,
+      accessKey: options.accessKey || process.env.AIGNE_HUB_ACCESS_KEY,
     });
   }
 

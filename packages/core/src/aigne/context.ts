@@ -509,7 +509,7 @@ export class AIGNEContext implements Context {
 
           span.setStatus({ code: SpanStatusCode.OK });
 
-          span.end();
+          setTimeout(() => span.end(), 0);
 
           break;
         }
@@ -517,7 +517,7 @@ export class AIGNEContext implements Context {
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
 
-          span.end();
+          setTimeout(() => span.end(), 0);
 
           break;
         }

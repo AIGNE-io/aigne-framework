@@ -76,7 +76,9 @@ export type HubChatModelOptions =
 export class HubChatModel extends ChatModel {
   private client: ChatModel;
 
-  constructor(public options: HubChatModelOptions) {
+  constructor(
+    public options: HubChatModelOptions & { apiKey?: string; baseURL?: string; url?: string },
+  ) {
     super();
 
     const models = availableModels();

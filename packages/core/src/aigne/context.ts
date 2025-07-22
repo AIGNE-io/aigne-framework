@@ -247,10 +247,12 @@ export class AIGNEContext implements Context {
         }
       }
     } else {
+      this.span = tracer?.startSpan("AIGNEContext");
+
       this.internal = new AIGNEContextShared(
         parent instanceof AIGNEContext ? parent.internal : parent,
+        this.span,
       );
-      this.span = tracer?.startSpan("AIGNEContext");
 
       // 修改了 rootId 是否会之前的有影响？，之前为 this.id
       this.rootId = this.span?.spanContext?.().traceId ?? v7();
@@ -339,19 +341,27 @@ export class AIGNEContext implements Context {
     }
 
     const newContext = options?.newContext === false ? this : this.newContext();
+    const span = this.span;
 
     return Promise.resolve(newContext.internal.invoke(agent, message, newContext, options)).then(
       async (response) => {
         if (!options?.streaming) {
-          let { __activeAgent__: activeAgent, ...output } =
-            await agentResponseStreamToObject(response);
-          output = await this.onInvocationResult(output, options);
+          try {
+            let { __activeAgent__: activeAgent, ...output } =
+              await agentResponseStreamToObject(response);
+            output = await this.onInvocationResult(output, options);
 
-          if (options?.returnActiveAgent) {
-            return [output, activeAgent];
+            if (options?.returnActiveAgent) {
+              return [output, activeAgent];
+            }
+
+            return output;
+          } catch (error) {
+            this.internal.span?.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+            this.internal.span?.end();
+            logger.error("====================1", agent.name, error);
+            throw error;
           }
-
-          return output;
         }
 
         const activeAgentPromise = promiseWithResolvers<Agent>();
@@ -374,6 +384,14 @@ export class AIGNEContext implements Context {
           onResult: async (output) => {
             activeAgentPromise.resolve(output.__activeAgent__);
             return await this.onInvocationResult(output, options);
+          },
+          onError: (error) => {
+            this.internal.span?.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+            this.internal.span?.end();
+            logger.info("111111", {
+              span: this.internal.span,
+            });
+            return error;
           },
         });
 
@@ -489,6 +507,7 @@ export class AIGNEContext implements Context {
             span.setAttribute("memories", JSON.stringify([]));
           }
 
+          // flush span to db
           await this.observer?.traceExporter
             ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
             .catch((err) => {
@@ -508,16 +527,14 @@ export class AIGNEContext implements Context {
           }
 
           span.setStatus({ code: SpanStatusCode.OK });
-
-          setTimeout(() => span.end(), 0);
+          span.end();
 
           break;
         }
         case "agentFailed": {
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-
-          setTimeout(() => span.end(), 0);
+          span.end();
 
           break;
         }
@@ -554,9 +571,11 @@ class AIGNEContextShared {
       messageQueue?: MessageQueue;
       events?: Emitter<any>;
     },
+    span?: Span,
   ) {
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
     this.events = this.parent?.events ?? new Emitter<any>();
+    this.span = span;
   }
 
   readonly messageQueue: MessageQueue;

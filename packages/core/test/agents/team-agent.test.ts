@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, FunctionAgent, type Message } from "@aigne/core";
-import { ProcessMode, TeamAgent } from "@aigne/core/agents/team-agent.js";
+import { ProcessMode, type ReflectionMode, TeamAgent } from "@aigne/core/agents/team-agent.js";
 import {
   readableStreamToArray,
   stringToAgentResponseStream,
@@ -251,4 +251,176 @@ test("TeamAgent should throw an error if skills is empty", async () => {
   expect(aigne.invoke(teamAgent, {})).rejects.toThrow(
     "TeamAgent must have at least one skill defined.",
   );
+});
+
+const teamAgentWithReflection = (options?: Partial<ReflectionMode>) =>
+  TeamAgent.from({
+    inputSchema: z.object({
+      topic: z.string(),
+    }),
+    skills: [
+      AIAgent.from({
+        instructions: `\
+Write a article about {{topic}}
+
+<previous-content>
+{{content}}
+</previous-content>
+
+<feedback>
+{{feedback}}
+</feedback>
+`,
+        outputKey: "content",
+      }),
+    ],
+    reflection: {
+      reviewer: AIAgent.from({
+        instructions: `\
+You are a reviewer. Please review the following article and provide feedback.
+
+topic: {{topic}}
+
+generated content:
+{{content}}
+`,
+        outputSchema: z.object({
+          approved: z.boolean(),
+          feedback: z.string().optional(),
+        }),
+      }),
+      isApproved: (o) => o.approved,
+      maxIterations: 3,
+      ...options,
+    },
+  });
+
+test("TeamAgent should process reflection mode correctly", async () => {
+  const model = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  const modelProcess = spyOn(model, "process")
+    .mockReturnValueOnce(
+      stringToAgentResponseStream("AIGNE in 2025 is a framework for building AI agents."),
+    )
+    .mockReturnValueOnce({
+      json: {
+        approved: false,
+        feedback:
+          "The article is well-written and informative. However, it could use more examples.",
+      },
+    })
+    .mockReturnValueOnce(
+      stringToAgentResponseStream(
+        "AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.",
+      ),
+    )
+    .mockReturnValueOnce({
+      json: {
+        approved: true,
+      },
+    });
+
+  const result = await aigne.invoke(teamAgentWithReflection(), { topic: "AIGNE in 2025" });
+
+  expect(result).toEqual({
+    content:
+      "AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.",
+  });
+
+  expect(modelProcess.mock.calls.map((i) => i.at(0))).toMatchSnapshot();
+});
+
+test("TeamAgent should raise error if max iterations exceeded", async () => {
+  const model = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  spyOn(model, "process")
+    .mockReturnValueOnce(
+      stringToAgentResponseStream("AIGNE in 2025 is a framework for building AI agents."),
+    )
+    .mockReturnValueOnce({
+      json: {
+        approved: false,
+        feedback:
+          "The article is well-written and informative. However, it could use more examples.",
+      },
+    })
+    .mockReturnValueOnce(
+      stringToAgentResponseStream(
+        "AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.",
+      ),
+    )
+    .mockReturnValueOnce({
+      json: {
+        approved: false,
+        feedback: "The article is good, but it could be improved with more details.",
+      },
+    })
+    .mockReturnValueOnce(
+      stringToAgentResponseStream(
+        "AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.",
+      ),
+    )
+    .mockReturnValueOnce({
+      json: {
+        approved: false,
+        feedback: "The article is good, but it could be improved with more examples.",
+      },
+    });
+
+  expect(aigne.invoke(teamAgentWithReflection(), { topic: "AIGNE in 2025" })).rejects.toThrow(
+    "Reflection mode exceeded max iterations 3. Please review the feedback and try again.",
+  );
+});
+
+test("TeamAgent should use last output if max iterations exceeded", async () => {
+  const model = new OpenAIChatModel();
+
+  const aigne = new AIGNE({ model });
+
+  spyOn(model, "process")
+    .mockReturnValueOnce(
+      stringToAgentResponseStream("AIGNE in 2025 is a framework for building AI agents."),
+    )
+    .mockReturnValueOnce({
+      json: {
+        approved: false,
+        feedback:
+          "The article is well-written and informative. However, it could use more examples.",
+      },
+    })
+    .mockReturnValueOnce(
+      stringToAgentResponseStream(
+        "AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.",
+      ),
+    )
+    .mockReturnValueOnce({
+      json: {
+        approved: false,
+        feedback: "The article is good, but it could be improved with more details.",
+      },
+    })
+    .mockReturnValueOnce(
+      stringToAgentResponseStream(
+        "AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques. This framework enables developers to build agents that can understand and respond to user queries effectively.",
+      ),
+    )
+    .mockReturnValueOnce({
+      json: {
+        approved: false,
+        feedback: "The article is good, but it could be improved with more examples.",
+      },
+    });
+
+  const result = await aigne.invoke(teamAgentWithReflection({ returnLastOnMaxIterations: true }), {
+    topic: "AIGNE in 2025",
+  });
+
+  expect(result).toEqual({
+    content:
+      "AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques. This framework enables developers to build agents that can understand and respond to user queries effectively.",
+  });
 });

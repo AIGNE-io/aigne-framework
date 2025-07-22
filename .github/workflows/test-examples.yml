@@ -11,6 +11,9 @@ concurrency:
 
 jobs:
   test-examples:
+    if: github.event.pull_request.head.ref == 'release-please--branches--main'
+    environment: release-test
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

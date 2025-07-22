@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.24.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.24.0...cli-v1.24.1) (2025-07-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.3
+    * @aigne/agentic-memory bumped to 1.0.3
+    * @aigne/aigne-hub bumped to 0.1.3
+    * @aigne/anthropic bumped to 0.9.3
+    * @aigne/bedrock bumped to 0.8.3
+    * @aigne/core bumped to 1.37.0
+    * @aigne/deepseek bumped to 0.7.3
+    * @aigne/default-memory bumped to 1.0.3
+    * @aigne/gemini bumped to 0.8.3
+    * @aigne/ollama bumped to 0.7.3
+    * @aigne/open-router bumped to 0.7.3
+    * @aigne/openai bumped to 0.10.3
+    * @aigne/xai bumped to 0.7.3
+
 ## [1.24.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.23.1...cli-v1.24.0) (2025-07-17)
 
 

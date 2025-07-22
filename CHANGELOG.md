@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.43.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.42.0...aigne-framework-v1.43.0) (2025-07-22)
+
+
+### Features
+
+* **core:** add reflection mode support to TeamAgent ([#273](https://github.com/AIGNE-io/aigne-framework/issues/273)) ([4e2dad6](https://github.com/AIGNE-io/aigne-framework/commit/4e2dad687c1caefa231c7a7620651d060f8c8b9d))
+
+
+### Bug Fixes
+
+* **core:** function agent should use common schema from yaml definition ([#270](https://github.com/AIGNE-io/aigne-framework/issues/270)) ([076a489](https://github.com/AIGNE-io/aigne-framework/commit/076a4896948c397518e99df46c1a443ea43daa64))
+
 ## [1.42.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.41.0...aigne-framework-v1.42.0) (2025-07-18)
 
 

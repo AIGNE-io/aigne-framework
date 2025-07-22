@@ -26,6 +26,6 @@ export class AIGNEHubChatModel extends ChatModel {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this.client.invoke(input, options);
+    return this.client.process(input, options);
   }
 }

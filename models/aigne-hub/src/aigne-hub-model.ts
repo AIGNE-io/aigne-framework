@@ -13,7 +13,7 @@ import { joinURL } from "ufo";
 import { z } from "zod";
 
 const DEFAULT_CHAT_MODEL = "openai/gpt-4o";
-const DEFAULT_URL = "http://hub.aigne.io/ai-kit/";
+const DEFAULT_URL = "https://hub.aigne.io/ai-kit/";
 
 const aigneHubChatModelOptionsSchema = z.object({
   url: z.string().optional(),
@@ -49,9 +49,9 @@ export class AIGNEHubChatModel extends ChatModel {
     super();
     this.client = new BaseClient({
       ...options,
-      url: joinURL(options.url ?? process.env.AIGNE_HUB_BASE_URL ?? DEFAULT_URL, "/api/v2/chat"),
-      model: options.model ?? DEFAULT_CHAT_MODEL,
-      accessKey: options.accessKey ?? process.env.AIGNE_HUB_API_KEY,
+      url: joinURL(options.url || process.env.AIGNE_HUB_API_URL || DEFAULT_URL, "/api/v2/chat"),
+      model: options.model || DEFAULT_CHAT_MODEL,
+      accessKey: options.accessKey || process.env.AIGNE_HUB_API_KEY,
     });
   }
 

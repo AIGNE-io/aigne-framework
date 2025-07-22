@@ -1,12 +1,11 @@
 import { existsSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
+import { appendFile, readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { AIGNE } from "@aigne/core";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { loadModel } from "@aigne/core/loader/index.js";
 import aes from "@ocap/mcrypto/lib/crypter/aes-legacy";
-import axios from "axios";
 import crypto from "crypto";
 import inquirer from "inquirer";
 import open from "open";
@@ -18,13 +17,22 @@ import { parseModelOption, type RunAIGNECommandOptions } from "./run-with-aigne.
 
 const AES = { default: aes }.default;
 
-export const encrypt = (m: string, s: string, i: string) =>
-  AES.encrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
-export const decrypt = (m: string, s: string, i: string) =>
+const decrypt = (m: string, s: string, i: string) =>
   AES.decrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
 
 const escapeFn = (str: string) => str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 const encodeEncryptionKey = (key: string) => escapeFn(Buffer.from(key).toString("base64"));
+
+const axios = async (config: { url: string; method?: string }) => {
+  const response = await fetch(config.url, { method: config.method || "GET" });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return { data };
+};
 
 export interface RunOptions extends RunAIGNECommandOptions {
   path: string;
@@ -102,7 +110,6 @@ async function createConnect({
   connectAction = "connect-cli",
   wrapSpinner = baseWrapSpinner,
   closeOnSuccess,
-  prettyUrl,
   intervalFetchConfig,
 }: CreateConnectOptions) {
   try {
@@ -115,14 +122,9 @@ async function createConnect({
       source,
       closeOnSuccess,
       cli: true,
-      appName: "@aigne/cli",
+      appName: " AIGNE CLI",
+      appLogo: "https://www.aigne.io/favicon.ico?imageFilter=resize&w=32",
     });
-
-    // eslint-disable-next-line no-console
-    console.info(
-      "If browser does not open automatically, please open the following link in your browser: ",
-      prettyUrl?.(pageUrl) || pageUrl,
-    );
 
     openPage?.(pageUrl);
 
@@ -147,7 +149,7 @@ async function createConnect({
 const AGENT_HUB_PROVIDER = "aignehub";
 const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-4o";
 const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_HUB_MODEL}`;
-const DEFAULT_URL = "http://hub.aigne.io/ai-kit/";
+const DEFAULT_URL = "https://hub.aigne.io/";
 
 const formatModelName = async (
   models: LoadableModel[],
@@ -178,11 +180,14 @@ const formatModelName = async (
   const result = await inquirerPrompt({
     type: "list",
     name: "useAigneHub",
-    message: `The API key for ${provider}/${name} is not configured. Please select how you want to proceed:`,
+    message: `Seems no API Key configured for ${provider}/${name}, select your preferred way to continue:`,
     choices: [
-      { name: `Use AIGNE Hub for ${provider}/${name} (free credits available)`, value: true },
       {
-        name: `Continue with ${provider}/${name} (you need to set the API_KEY manually)`,
+        name: `Connect to AIGNE Hub to use ${name} (Recommended since free credits available)`,
+        value: true,
+      },
+      {
+        name: `Exit and bring my owner API Key by set ${m.apiKeyEnvName}`,
         value: false,
       },
     ],
@@ -208,11 +213,13 @@ export async function loadAIGNE(
   },
 ) {
   const models = availableModels();
-  const AIGNE_ENV_FILE = join(homedir(), ".aigne", ".env");
-  const AIGNE_HUB_URL = process.env.AIGNE_HUB_BASE_URL || DEFAULT_URL;
+  const AIGNE_ENV_FILE = join(homedir(), ".aigne", "aigne-hub-connected.yaml");
+  const AIGNE_HUB_URL = process.env.AIGNE_HUB_API_URL || DEFAULT_URL;
   const connectUrl = joinURL(new URL(AIGNE_HUB_URL).origin, WELLKNOWN_SERVICE_PATH_PREFIX);
   const inquirerPrompt = (checkAuthorizeOptions?.inquirerPromptFn ??
     inquirer.prompt) as typeof inquirer.prompt;
+
+  const { origin, host } = new URL(AIGNE_HUB_URL);
 
   let accessKeyOptions: { accessKey?: string; url?: string } = {};
   const modelName = await formatModelName(models, options?.model || "", inquirerPrompt);
@@ -229,7 +236,12 @@ export async function loadAIGNE(
         throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
       }
 
-      const env = parse(data);
+      const envs = parse(data);
+      if (!envs[host]) {
+        throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
+      }
+
+      const env = envs[host];
       if (!env.AIGNE_HUB_API_KEY) {
         throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
       }
@@ -260,7 +272,7 @@ export async function loadAIGNE(
 
       accessKeyOptions = {
         accessKey: env.AIGNE_HUB_API_KEY,
-        url: joinURL(env.AIGNE_HUB_BASE_URL ?? AIGNE_HUB_URL),
+        url: joinURL(env.AIGNE_HUB_API_URL),
       };
     } catch (error) {
       if (error instanceof Error && error.message.includes("login first")) {
@@ -269,13 +281,13 @@ export async function loadAIGNE(
           type: "list",
           name: "subscribe",
           message:
-            "You don't have an AIGNE Hub connect yet. Please select the operation you want to perform：",
+            "No LLM API Keys or AIGNE Hub connections found, select your preferred way to continue:",
           choices: [
             {
-              name: "Go to connect to use the AIGNE Hub, You will get some free credits",
+              name: "Connect to AIGNE Hub with just a few clicks, free credits eligible for new users (Recommended)",
               value: true,
             },
-            { name: "exit", value: false },
+            { name: "Exit and configure my own LLM API Keys", value: false },
           ],
           default: true,
         });
@@ -284,6 +296,13 @@ export async function loadAIGNE(
           console.warn("The AIGNE Hub connection has been cancelled");
           process.exit(0);
         }
+
+        const BLOCKLET_JSON_PATH = "__blocklet__.js?type=json";
+        const blockletInfo = await fetch(joinURL(origin, BLOCKLET_JSON_PATH));
+        const blocklet = await blockletInfo.json();
+        const aigneHubMount = (blocklet?.componentMountPoints || []).find(
+          (m: { did: string }) => m.did === "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
+        );
 
         try {
           const result = await createConnect({
@@ -296,15 +315,17 @@ export async function loadAIGNE(
 
           accessKeyOptions = {
             accessKey: result.accessKeySecret,
-            url: joinURL(AIGNE_HUB_URL),
+            url: joinURL(origin, aigneHubMount?.mountPoint || ""),
           };
 
           // 跳转完成写入 aigne-hub access token
-          await writeFile(
+          await appendFile(
             AIGNE_ENV_FILE,
             stringify({
-              AIGNE_HUB_API_KEY: result.accessKeySecret,
-              AIGNE_HUB_BASE_URL: AIGNE_HUB_URL,
+              [host]: {
+                AIGNE_HUB_API_KEY: accessKeyOptions.accessKey,
+                AIGNE_HUB_API_URL: accessKeyOptions.url,
+              },
             }),
           );
         } catch (error) {

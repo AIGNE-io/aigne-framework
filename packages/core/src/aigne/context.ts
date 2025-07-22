@@ -341,7 +341,6 @@ export class AIGNEContext implements Context {
     }
 
     const newContext = options?.newContext === false ? this : this.newContext();
-    const span = this.span;
 
     return Promise.resolve(newContext.internal.invoke(agent, message, newContext, options)).then(
       async (response) => {
@@ -359,7 +358,6 @@ export class AIGNEContext implements Context {
           } catch (error) {
             this.internal.span?.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
             this.internal.span?.end();
-            logger.error("====================1", agent.name, error);
             throw error;
           }
         }
@@ -388,9 +386,6 @@ export class AIGNEContext implements Context {
           onError: (error) => {
             this.internal.span?.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
             this.internal.span?.end();
-            logger.info("111111", {
-              span: this.internal.span,
-            });
             return error;
           },
         });

@@ -156,6 +156,7 @@ const formatModelName = async (
   model: string,
   inquirerPrompt: typeof inquirer.prompt,
 ) => {
+  if (process.env.NODE_ENV === "test") return model;
   if (!model) return DEFAULT_AIGNE_HUB_PROVIDER_MODEL;
 
   const { provider, name } = parseModelOption(model);
@@ -222,114 +223,116 @@ export async function loadAIGNE(
   let accessKeyOptions: { accessKey?: string; url?: string } = {};
   const modelName = await formatModelName(models, options?.model || "", inquirerPrompt);
 
-  if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
-    const { origin, host } = new URL(AIGNE_HUB_URL);
+  if (process.env.NODE_ENV !== "test") {
+    if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
+      const { origin, host } = new URL(AIGNE_HUB_URL);
 
-    try {
-      // 检查 aigne-hub access token
-      if (!existsSync(AIGNE_ENV_FILE)) {
-        throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
-      }
-
-      const data = await readFile(AIGNE_ENV_FILE, "utf8");
-      if (!data.includes("AIGNE_HUB_API_KEY")) {
-        throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
-      }
-
-      const envs = parse(data);
-      if (!envs[host]) {
-        throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
-      }
-
-      const env = envs[host];
-      if (!env.AIGNE_HUB_API_KEY) {
-        throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
-      }
-
-      // 检查 accessKey 是否有效?
-      // try {
-      //   const result = await fetch(joinURL(connectUrl, ACCESS_KEY_PREFIX, "health"), {
-      //     headers: { Authorization: `Bearer ${env.AIGNE_HUB_API_KEY}` },
-      //   });
-
-      //   if (result.status === 401) {
-      //     throw new Error("AIGNE_HUB_API_KEY is not valid, need to login first");
-      //   }
-
-      //   await result.json();
-      // } catch (error) {
-      //   console.error(error);
-
-      //   if (
-      //     error instanceof Error &&
-      //     (error.message?.toLowerCase() || "").includes("unauthorized")
-      //   ) {
-      //     throw new Error("AIGNE_HUB_API_KEY is not valid, need to login first");
-      //   }
-
-      //   throw error;
-      // }
-
-      accessKeyOptions = {
-        accessKey: env.AIGNE_HUB_API_KEY,
-        url: joinURL(env.AIGNE_HUB_API_URL),
-      };
-    } catch (error) {
-      if (error instanceof Error && error.message.includes("login first")) {
-        // 如果没有或者无效，让用户跳转
-        const subscribePrompt = await inquirerPrompt({
-          type: "list",
-          name: "subscribe",
-          message:
-            "No LLM API Keys or AIGNE Hub connections found, select your preferred way to continue:",
-          choices: [
-            {
-              name: "Connect to AIGNE Hub with just a few clicks, free credits eligible for new users (Recommended)",
-              value: true,
-            },
-            { name: "Exit and configure my own LLM API Keys", value: false },
-          ],
-          default: true,
-        });
-
-        if (!subscribePrompt.subscribe) {
-          console.warn("The AIGNE Hub connection has been cancelled");
-          process.exit(0);
+      try {
+        // 检查 aigne-hub access token
+        if (!existsSync(AIGNE_ENV_FILE)) {
+          throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
         }
 
-        const BLOCKLET_JSON_PATH = "__blocklet__.js?type=json";
-        const blockletInfo = await fetch(joinURL(origin, BLOCKLET_JSON_PATH));
-        const blocklet = await blockletInfo.json();
-        const aigneHubMount = (blocklet?.componentMountPoints || []).find(
-          (m: { did: string }) => m.did === "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
-        );
+        const data = await readFile(AIGNE_ENV_FILE, "utf8");
+        if (!data.includes("AIGNE_HUB_API_KEY")) {
+          throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
+        }
 
-        try {
-          const result = await createConnect({
-            connectUrl: connectUrl,
-            connectAction: "gen-simple-access-key",
-            source: `@aigne/cli connect to AIGNE hub`,
-            closeOnSuccess: true,
-            openPage: (pageUrl) => open(pageUrl),
+        const envs = parse(data);
+        if (!envs[host]) {
+          throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
+        }
+
+        const env = envs[host];
+        if (!env.AIGNE_HUB_API_KEY) {
+          throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
+        }
+
+        // 检查 accessKey 是否有效?
+        // try {
+        //   const result = await fetch(joinURL(connectUrl, ACCESS_KEY_PREFIX, "health"), {
+        //     headers: { Authorization: `Bearer ${env.AIGNE_HUB_API_KEY}` },
+        //   });
+
+        //   if (result.status === 401) {
+        //     throw new Error("AIGNE_HUB_API_KEY is not valid, need to login first");
+        //   }
+
+        //   await result.json();
+        // } catch (error) {
+        //   console.error(error);
+
+        //   if (
+        //     error instanceof Error &&
+        //     (error.message?.toLowerCase() || "").includes("unauthorized")
+        //   ) {
+        //     throw new Error("AIGNE_HUB_API_KEY is not valid, need to login first");
+        //   }
+
+        //   throw error;
+        // }
+
+        accessKeyOptions = {
+          accessKey: env.AIGNE_HUB_API_KEY,
+          url: joinURL(env.AIGNE_HUB_API_URL),
+        };
+      } catch (error) {
+        if (error instanceof Error && error.message.includes("login first")) {
+          // 如果没有或者无效，让用户跳转
+          const subscribePrompt = await inquirerPrompt({
+            type: "list",
+            name: "subscribe",
+            message:
+              "No LLM API Keys or AIGNE Hub connections found, select your preferred way to continue:",
+            choices: [
+              {
+                name: "Connect to AIGNE Hub with just a few clicks, free credits eligible for new users (Recommended)",
+                value: true,
+              },
+              { name: "Exit and configure my own LLM API Keys", value: false },
+            ],
+            default: true,
           });
 
-          accessKeyOptions = {
-            accessKey: result.accessKeySecret,
-            url: joinURL(origin, aigneHubMount?.mountPoint || ""),
-          };
+          if (!subscribePrompt.subscribe) {
+            console.warn("The AIGNE Hub connection has been cancelled");
+            process.exit(0);
+          }
 
-          // 跳转完成写入 aigne-hub access token
-          await appendFile(
-            AIGNE_ENV_FILE,
-            stringify({
-              [host]: {
-                AIGNE_HUB_API_KEY: accessKeyOptions.accessKey,
-                AIGNE_HUB_API_URL: accessKeyOptions.url,
-              },
-            }),
+          const BLOCKLET_JSON_PATH = "__blocklet__.js?type=json";
+          const blockletInfo = await fetch(joinURL(origin, BLOCKLET_JSON_PATH));
+          const blocklet = await blockletInfo.json();
+          const aigneHubMount = (blocklet?.componentMountPoints || []).find(
+            (m: { did: string }) => m.did === "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
           );
-        } catch (error) {
-          console.error(error);
+
+          try {
+            const result = await createConnect({
+              connectUrl: connectUrl,
+              connectAction: "gen-simple-access-key",
+              source: `@aigne/cli connect to AIGNE hub`,
+              closeOnSuccess: true,
+              openPage: (pageUrl) => open(pageUrl),
+            });
+
+            accessKeyOptions = {
+              accessKey: result.accessKeySecret,
+              url: joinURL(origin, aigneHubMount?.mountPoint || ""),
+            };
+
+            // 跳转完成写入 aigne-hub access token
+            await appendFile(
+              AIGNE_ENV_FILE,
+              stringify({
+                [host]: {
+                  AIGNE_HUB_API_KEY: accessKeyOptions.accessKey,
+                  AIGNE_HUB_API_URL: accessKeyOptions.url,
+                },
+              }),
+            );
+          } catch (error) {
+            console.error(error);
+          }
         }
       }
     }

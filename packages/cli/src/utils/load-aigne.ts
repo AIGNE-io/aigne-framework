@@ -147,7 +147,7 @@ async function createConnect({
 const AGENT_HUB_PROVIDER = "aignehub";
 const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-4o";
 const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_HUB_MODEL}`;
-const DEFAULT_URL = "https://www.aikit.rocks/ai-kit/";
+const DEFAULT_URL = "http://hub.aigne.io/ai-kit/";
 
 const formatModelName = async (
   models: LoadableModel[],

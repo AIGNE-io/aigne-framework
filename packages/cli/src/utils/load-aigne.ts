@@ -219,12 +219,12 @@ export async function loadAIGNE(
   const inquirerPrompt = (checkAuthorizeOptions?.inquirerPromptFn ??
     inquirer.prompt) as typeof inquirer.prompt;
 
-  const { origin, host } = new URL(AIGNE_HUB_URL);
-
   let accessKeyOptions: { accessKey?: string; url?: string } = {};
   const modelName = await formatModelName(models, options?.model || "", inquirerPrompt);
 
   if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
+    const { origin, host } = new URL(AIGNE_HUB_URL);
+
     try {
       // 检查 aigne-hub access token
       if (!existsSync(AIGNE_ENV_FILE)) {

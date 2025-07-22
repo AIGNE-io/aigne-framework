@@ -86,6 +86,27 @@ export interface ReflectionMode {
    * @default 3
    */
   maxIterations?: number;
+
+  /**
+   * Controls the behavior when maximum iterations are reached without approval.
+   *
+   * When set to `true`, the TeamAgent will return the last generated output
+   * instead of throwing an error when the maximum number of reflection iterations
+   * is reached without the reviewer's approval.
+   *
+   * When set to `false` or undefined, the TeamAgent will throw an error
+   * indicating that the reflection process failed to converge within the
+   * maximum iteration limit.
+   *
+   * This option is useful for scenarios where:
+   * - You want to get the best available result even if it's not perfect
+   * - The approval criteria might be too strict for the given context
+   * - You prefer graceful degradation over complete failure
+   * - You want to implement custom error handling based on the returned result
+   *
+   * @default false
+   */
+  returnLastOnMaxIterations?: boolean;
 }
 
 /**
@@ -283,7 +304,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     let iterations = 0;
     const previousOutput = { ...input };
 
-    do {
+    for (;;) {
       const output = await agentProcessResultToObject(
         await this._processNonReflection(previousOutput, options),
       );
@@ -295,7 +316,13 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
       const approved = await this.reflection.isApproved(reviewOutput);
 
       if (approved) return output;
-    } while (++iterations < this.reflection.maxIterations);
+
+      if (++iterations >= this.reflection.maxIterations) {
+        if (this.reflection.returnLastOnMaxIterations) return output;
+
+        break;
+      }
+    }
 
     throw new Error(
       `Reflection mode exceeded max iterations ${this.reflection.maxIterations}. Please review the feedback and try again.`,

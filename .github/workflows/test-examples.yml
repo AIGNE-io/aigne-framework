@@ -1,16 +1,42 @@
 name: Test Examples
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.check.outputs.released }}
+    steps:
+      - name: Download release-created artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          name: release-created
+          workflow: release.yml
+          path: ./artifacts
+          if_no_artifact_found: ignore
+
+      - name: Check artifact
+        id: check
+        run: |
+          if [ -f ./artifacts/release-created.txt ]; then
+            echo "released=true" >> $GITHUB_OUTPUT
+          else
+            echo "released=false" >> $GITHUB_OUTPUT
+          fi
+
   test-examples:
+    needs: check-release
+    if: needs.check-release.outputs.released == 'true'
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

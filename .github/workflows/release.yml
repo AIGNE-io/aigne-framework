@@ -1,4 +1,4 @@
-name: Release Packages And Blocklet
+name: Release
 
 env:
   NODE_OPTIONS: "--max_old_space_size=6144"
@@ -106,6 +106,17 @@ jobs:
           store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
           store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release artifact
+        if: ${{ steps.release.outputs.release_created }}
+        run: echo "Release created at $(date)" > release-created.txt
+
+      - name: Upload artifact
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-created
+          path: release-created.txt
 
       - name: Publish Docs
         if: ${{ steps.release.outputs.release_created }}

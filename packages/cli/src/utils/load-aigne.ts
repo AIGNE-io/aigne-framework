@@ -41,6 +41,7 @@ export interface RunOptions extends RunAIGNECommandOptions {
 
 const WELLKNOWN_SERVICE_PATH_PREFIX = "/.well-known/service";
 const ACCESS_KEY_PREFIX = "/api/access-key";
+const ACCESS_KEY_SESSION_API = `${ACCESS_KEY_PREFIX}/session`;
 
 type FetchResult = { accessKeyId: string; accessKeySecret: string };
 
@@ -55,22 +56,17 @@ const fetchConfigs = async ({
   fetchInterval: number;
   fetchTimeout: number;
 }) => {
-  const getSessionURL = withQuery(joinURL(connectUrl, ACCESS_KEY_PREFIX, "get-session"), {
-    sessionId,
-  });
-  const endSessionURL = withQuery(joinURL(connectUrl, ACCESS_KEY_PREFIX, "end-session"), {
-    sessionId,
-  });
+  const sessionURL = withQuery(joinURL(connectUrl, ACCESS_KEY_SESSION_API), { sid: sessionId });
 
   const condition = async () => {
-    const { data: session } = await request({ url: getSessionURL });
+    const { data: session } = await request({ url: sessionURL });
     return Boolean(session.accessKeyId && session.accessKeySecret);
   };
 
   await pWaitFor(condition, { interval: fetchInterval, timeout: fetchTimeout });
 
-  const { data: session } = await request({ url: getSessionURL });
-  await request({ url: endSessionURL, method: "DELETE" });
+  const { data: session } = await request({ url: sessionURL });
+  await request({ url: sessionURL, method: "DELETE" });
 
   return {
     ...session,
@@ -112,7 +108,7 @@ async function createConnect({
   intervalFetchConfig,
 }: CreateConnectOptions) {
   try {
-    const startSessionURL = joinURL(connectUrl, ACCESS_KEY_PREFIX, "start-session");
+    const startSessionURL = joinURL(connectUrl, ACCESS_KEY_SESSION_API);
     const { data: session } = await request({ url: startSessionURL, method: "POST" });
     const token = session.id;
 

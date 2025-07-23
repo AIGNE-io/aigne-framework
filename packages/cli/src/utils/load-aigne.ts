@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { AIGNE } from "@aigne/core";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { loadModel } from "@aigne/core/loader/index.js";
-import * as aes from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
+import { AesCrypter } from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
 import crypto from "crypto";
 import inquirer from "inquirer";
 import open from "open";
@@ -15,8 +15,9 @@ import { parse, stringify } from "yaml";
 import { availableMemories, availableModels } from "../constants.js";
 import { parseModelOption, type RunAIGNECommandOptions } from "./run-with-aigne.js";
 
+const aes = new AesCrypter();
 const decrypt = (m: string, s: string, i: string) =>
-  aes.default.decrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
+  aes.decrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
 
 const escapeFn = (str: string) => str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 const encodeEncryptionKey = (key: string) => escapeFn(Buffer.from(key).toString("base64"));

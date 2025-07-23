@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { AIGNE } from "@aigne/core";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { loadModel } from "@aigne/core/loader/index.js";
-import aes from "@ocap/mcrypto/lib/crypter/aes-legacy";
+import aes from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
 import crypto from "crypto";
 import inquirer from "inquirer";
 import open from "open";
@@ -23,7 +23,7 @@ const decrypt = (m: string, s: string, i: string) =>
 const escapeFn = (str: string) => str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 const encodeEncryptionKey = (key: string) => escapeFn(Buffer.from(key).toString("base64"));
 
-const axios = async (config: { url: string; method?: string }) => {
+const request = async (config: { url: string; method?: string }) => {
   const response = await fetch(config.url, { method: config.method || "GET" });
 
   if (!response.ok) {
@@ -64,14 +64,14 @@ const fetchConfigs = async ({
   });
 
   const condition = async () => {
-    const { data: session } = await axios({ url: getSessionURL });
+    const { data: session } = await request({ url: getSessionURL });
     return Boolean(session.accessKeyId && session.accessKeySecret);
   };
 
   await pWaitFor(condition, { interval: fetchInterval, timeout: fetchTimeout });
 
-  const { data: session } = await axios({ url: getSessionURL });
-  await axios({ url: endSessionURL, method: "DELETE" });
+  const { data: session } = await request({ url: getSessionURL });
+  await request({ url: endSessionURL, method: "DELETE" });
 
   return {
     ...session,
@@ -114,7 +114,7 @@ async function createConnect({
 }: CreateConnectOptions) {
   try {
     const startSessionURL = joinURL(connectUrl, ACCESS_KEY_PREFIX, "start-session");
-    const { data: session } = await axios({ url: startSessionURL, method: "POST" });
+    const { data: session } = await request({ url: startSessionURL, method: "POST" });
     const token = session.id;
 
     const pageUrl = withQuery(joinURL(connectUrl, connectAction), {
@@ -170,9 +170,7 @@ const formatModelName = async (
   }
 
   const m = models.find((m) => m.name.toLowerCase().includes(providerName.toLowerCase()));
-  if (!m) {
-    if (!m) throw new Error(`Unsupported model: ${provider} ${name}`);
-  }
+  if (!m) throw new Error(`Unsupported model: ${provider} ${name}`);
 
   if (m.apiKeyEnvName && process.env[m.apiKeyEnvName]) {
     return model;
@@ -230,47 +228,23 @@ export async function loadAIGNE(
       try {
         // 检查 aigne-hub access token
         if (!existsSync(AIGNE_ENV_FILE)) {
-          throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
+          throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");
         }
 
         const data = await readFile(AIGNE_ENV_FILE, "utf8");
         if (!data.includes("AIGNE_HUB_API_KEY")) {
-          throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
+          throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
         }
 
         const envs = parse(data);
         if (!envs[host]) {
-          throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
+          throw new Error("AIGNE_HUB_API_KEY host not found, need to login first");
         }
 
         const env = envs[host];
         if (!env.AIGNE_HUB_API_KEY) {
-          throw new Error("AIGNE_HUB_API_KEY is not set, need to login first");
+          throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
         }
-
-        // 检查 accessKey 是否有效?
-        // try {
-        //   const result = await fetch(joinURL(connectUrl, ACCESS_KEY_PREFIX, "health"), {
-        //     headers: { Authorization: `Bearer ${env.AIGNE_HUB_API_KEY}` },
-        //   });
-
-        //   if (result.status === 401) {
-        //     throw new Error("AIGNE_HUB_API_KEY is not valid, need to login first");
-        //   }
-
-        //   await result.json();
-        // } catch (error) {
-        //   console.error(error);
-
-        //   if (
-        //     error instanceof Error &&
-        //     (error.message?.toLowerCase() || "").includes("unauthorized")
-        //   ) {
-        //     throw new Error("AIGNE_HUB_API_KEY is not valid, need to login first");
-        //   }
-
-        //   throw error;
-        // }
 
         accessKeyOptions = {
           accessKey: env.AIGNE_HUB_API_KEY,
@@ -278,7 +252,7 @@ export async function loadAIGNE(
         };
       } catch (error) {
         if (error instanceof Error && error.message.includes("login first")) {
-          // 如果没有或者无效，让用户跳转
+          // If none or invalid, prompt the user to proceed
           const subscribePrompt = await inquirerPrompt({
             type: "list",
             name: "subscribe",
@@ -320,7 +294,7 @@ export async function loadAIGNE(
               url: joinURL(origin, aigneHubMount?.mountPoint || ""),
             };
 
-            // 跳转完成写入 aigne-hub access token
+            // After redirection, write the AIGNE Hub access token
             await appendFile(
               AIGNE_ENV_FILE,
               stringify({

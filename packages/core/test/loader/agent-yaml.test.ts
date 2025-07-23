@@ -265,3 +265,45 @@ test("loadAgentFromYaml should support hooks", async () => {
     })),
   }).toMatchSnapshot();
 });
+
+test("loadAgentFromYaml should support reflection for TeamAgent", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/team-agent-with-reflection.yaml"),
+  );
+
+  assert(agent instanceof TeamAgent, "agent should be an instance of TeamAgent");
+
+  expect({
+    name: agent.name,
+    skills: agent.skills.map((i) => ({
+      name: i.name,
+    })),
+    reflection: agent.reflection && {
+      ...agent.reflection,
+      reviewer: {
+        name: agent.reflection.reviewer.name,
+      },
+    },
+  }).toMatchSnapshot();
+});
+
+test("loadAgentFromYaml should support reflection for TeamAgent with inline reviewer", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/team-agent-with-reflection-inline.yaml"),
+  );
+
+  assert(agent instanceof TeamAgent, "agent should be an instance of TeamAgent");
+
+  expect({
+    name: agent.name,
+    skills: agent.skills.map((i) => ({
+      name: i.name,
+    })),
+    reflection: agent.reflection && {
+      ...agent.reflection,
+      reviewer: {
+        name: agent.reflection.reviewer.name,
+      },
+    },
+  }).toMatchSnapshot();
+});

@@ -1064,3 +1064,41 @@ exports[`loadAgentFromYaml should support hooks 1`] = `
   ],
 }
 `;
+
+exports[`loadAgentFromYaml should support reflection for TeamAgent 1`] = `
+{
+  "name": "test-team-agent-with-reflection",
+  "reflection": {
+    "isApproved": "approved",
+    "maxIterations": 5,
+    "returnLastOnMaxIterations": true,
+    "reviewer": {
+      "name": "test-team-agent-reviewer",
+    },
+  },
+  "skills": [
+    {
+      "name": "chat",
+    },
+  ],
+}
+`;
+
+exports[`loadAgentFromYaml should support reflection for TeamAgent with inline reviewer 1`] = `
+{
+  "name": "test-team-agent-with-reflection-inline",
+  "reflection": {
+    "isApproved": "approved",
+    "maxIterations": 5,
+    "returnLastOnMaxIterations": true,
+    "reviewer": {
+      "name": "test-team-agent-reviewer",
+    },
+  },
+  "skills": [
+    {
+      "name": "chat",
+    },
+  ],
+}
+`;

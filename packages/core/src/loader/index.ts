@@ -187,6 +187,12 @@ async function parseAgent(
     case "team": {
       return TeamAgent.from({
         ...baseOptions,
+        mode: agent.mode,
+        iterateOn: agent.iterateOn,
+        reflection: agent.reflection && {
+          ...agent.reflection,
+          reviewer: await loadNestAgent(path, agent.reflection.reviewer, options),
+        },
       });
     }
     case "transform": {

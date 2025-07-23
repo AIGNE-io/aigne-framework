@@ -62,19 +62,24 @@ export interface ReflectionMode {
   reviewer: Agent;
 
   /**
-   * Function that determines whether the reviewer's output indicates approval.
+   * Function or field name that determines whether the reviewer's output indicates approval.
    *
-   * This function receives the reviewer agent's output message and should return:
-   * - `true` or truthy value: The output is approved and processing should stop
-   * - `false` or falsy value: The output needs improvement and another iteration should run
+   * This can be either:
+   * - A function that receives the reviewer agent's output message and should return:
+   *   - `true` or truthy value: The output is approved and processing should stop
+   *   - `false` or falsy value: The output needs improvement and another iteration should run
+   * - A string representing a field name in the reviewer's output message to check for approval
    *
-   * The function can be synchronous or asynchronous, allowing for complex approval logic
+   * When using a function, it can be synchronous or asynchronous, allowing for complex approval logic
    * including external validation, scoring systems, or human-in-the-loop approval.
    *
-   * @param output - The message output from the reviewer agent
-   * @returns A boolean or truthy/falsy value indicating approval status
+   * When using a string, the specified field in the reviewer's output will be evaluated for truthiness
+   * to determine approval status.
+   *
+   * @param output - The message output from the reviewer agent (when using function form)
+   * @returns A boolean or truthy/falsy value indicating approval status (when using function form)
    */
-  isApproved: (output: Message) => PromiseOrValue<boolean | unknown>;
+  isApproved: ((output: Message) => PromiseOrValue<boolean | unknown>) | string;
 
   /**
    * Maximum number of reflection iterations before giving up.
@@ -313,7 +318,10 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
       const reviewOutput = await options.context.invoke(this.reflection.reviewer, previousOutput);
       Object.assign(previousOutput, reviewOutput);
 
-      const approved = await this.reflection.isApproved(reviewOutput);
+      const { isApproved } = this.reflection;
+
+      const approved =
+        typeof isApproved === "string" ? reviewOutput[isApproved] : await isApproved(reviewOutput);
 
       if (approved) return output;
 

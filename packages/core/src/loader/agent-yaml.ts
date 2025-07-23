@@ -4,7 +4,7 @@ import { parse } from "yaml";
 import { type ZodType, z } from "zod";
 import type { FunctionAgentFn } from "../agents/agent.js";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
-import { ProcessMode } from "../agents/team-agent.js";
+import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { camelizeSchema, defaultInputSchema, inputOutputSchema, optionalize } from "./schema.js";
 
@@ -58,6 +58,7 @@ export interface TeamAgentSchema extends BaseAgentSchema {
   type: "team";
   mode?: ProcessMode;
   iterateOn?: string;
+  reflection?: Omit<ReflectionMode, "reviewer"> & { reviewer: NestAgentSchema };
 }
 
 export interface TransformAgentSchema extends BaseAgentSchema {
@@ -166,6 +167,16 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
             type: z.literal("team"),
             mode: optionalize(z.nativeEnum(ProcessMode)),
             iterateOn: optionalize(z.string()),
+            reflection: camelizeSchema(
+              optionalize(
+                z.object({
+                  reviewer: nestAgentSchema,
+                  isApproved: z.string(),
+                  maxIterations: optionalize(z.number().int().min(1)),
+                  returnLastOnMaxIterations: optionalize(z.boolean()),
+                }),
+              ),
+            ),
           })
           .extend(baseAgentSchema.shape),
         z

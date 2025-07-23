@@ -744,6 +744,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     await this.postprocess(input, finalOutput, options);
 
+    await new Promise((resolve) => setTimeout(resolve, 300));
     logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
@@ -770,6 +771,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     options: AgentInvokeOptions,
   ): Promise<Error> {
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
+    await new Promise((resolve) => setTimeout(resolve, 300));
     if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
 
     await this.callHooks("onError", { input, error }, options);

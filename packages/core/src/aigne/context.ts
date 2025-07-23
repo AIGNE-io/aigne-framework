@@ -1,7 +1,6 @@
 import type { AIGNEObserver } from "@aigne/observability-api";
 import type { Span } from "@opentelemetry/api";
 import { context, SpanStatusCode, trace } from "@opentelemetry/api";
-import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";
 import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
@@ -503,11 +502,7 @@ export class AIGNEContext implements Context {
           }
 
           // flush span to db
-          await this.observer?.traceExporter
-            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
-            .catch((err) => {
-              logger.error("upsertInitialSpan error", err?.message || err);
-            });
+          await this.observer?.flush(span);
 
           break;
         }

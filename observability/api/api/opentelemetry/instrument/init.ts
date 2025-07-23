@@ -30,5 +30,5 @@ export async function initOpenTelemetry({
     );
   }
 
-  return traceExporter;
+  return spanProcessor;
 }

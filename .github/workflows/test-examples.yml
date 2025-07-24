@@ -1,17 +1,25 @@
 name: Test Examples
 
 on:
-  workflow_run:
-    workflows: ["release-test"]
-    types: [completed]
+  pull_request:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  approval-gate:
+    if: github.event.pull_request.head.ref == 'release-please--branches--main'
+    environment: release-test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Approval received."
+
   test-examples:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: approval-gate
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

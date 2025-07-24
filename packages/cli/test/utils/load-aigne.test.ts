@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, mock, test } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, mock, test } from "bun:test";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import { Hono } from "hono";
@@ -254,6 +254,15 @@ describe("Encryption Functions", () => {
 });
 
 describe("formatModelName", () => {
+  const originalEnv = process.env.NODE_ENV;
+  beforeAll(() => {
+    process.env.NODE_ENV = "dev";
+  });
+
+  afterAll(() => {
+    process.env.NODE_ENV = originalEnv;
+  });
+
   const mockInquirerPrompt: any = mock(async () => ({ useAigneHub: true }));
 
   const createMockModel = (name: string, apiKeyEnvName?: string) => ({

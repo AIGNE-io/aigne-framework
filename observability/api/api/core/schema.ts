@@ -14,6 +14,7 @@ export const recordTraceSchema = z.object({
   userId: z.string().optional(),
   sessionId: z.string().optional(),
   componentId: z.string().optional(),
+  action: z.number().optional(),
 });
 
 export const createTraceSchema = recordTraceSchema.omit({});

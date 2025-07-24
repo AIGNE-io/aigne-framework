@@ -274,20 +274,49 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const db = req.app.locals.db as LibSQLDatabase;
 
     for (const trace of validatedTraces) {
-      const whereClause = and(
-        eq(Trace.id, trace.id),
-        eq(Trace.rootId, trace.rootId),
-        !trace.parentId ? isNull(Trace.parentId) : eq(Trace.parentId, trace.parentId),
-      );
-
       try {
-        const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();
+        const insertSql = sql`
+          INSERT INTO Trace (
+            id,
+            rootId,
+            parentId,
+            name,
+            startTime,
+            endTime,
+            attributes,
+            status,
+            userId,
+            sessionId,
+            componentId,
+            action
+          ) VALUES (
+            ${trace.id},
+            ${trace.rootId},
+            ${trace.parentId || null},
+            ${trace.name},
+            ${trace.startTime},
+            ${trace.endTime},
+            ${JSON.stringify(trace.attributes)},
+            ${JSON.stringify(trace.status)},
+            ${trace.userId || null},
+            ${trace.sessionId || null},
+            ${trace.componentId || null},
+            ${trace.action || null}
+          )
+          ON CONFLICT(id)
+          DO UPDATE SET
+            name = excluded.name,
+            startTime = excluded.startTime,
+            endTime = excluded.endTime,
+            attributes = excluded.attributes,
+            status = excluded.status,
+            userId = excluded.userId,
+            sessionId = excluded.sessionId,
+            componentId = excluded.componentId,
+            action = excluded.action;
+        `;
 
-        if (existing.length > 0) {
-          await db.update(Trace).set(trace).where(whereClause).execute();
-        } else {
-          await db.insert(Trace).values(trace).execute();
-        }
+        await db.run(insertSql);
       } catch (err) {
         console.error(`upsert spans failed for trace ${trace.id}:`, err);
       }

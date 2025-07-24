@@ -216,7 +216,7 @@ export async function loadAIGNE(
   let accessKeyOptions: { accessKey?: string; url?: string } = {};
   const modelName = await formatModelName(models, options?.model || "", inquirerPrompt);
 
-  if (process.env.NODE_ENV !== "test") {
+  if (!process.env.CI) {
     if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
       const { origin, host } = new URL(AIGNE_HUB_URL);
 

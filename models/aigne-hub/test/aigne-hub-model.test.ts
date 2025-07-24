@@ -67,14 +67,14 @@ test("AIGNEHubChatModel example with streaming", async () => {
 
 async function createHonoServer() {
   const port = await detect();
-  const url = `http://localhost:${port}/aigne/invoke`;
+  const url = `http://localhost:${port}/`;
 
   const honoApp = new Hono();
 
   const aigne = await createAIGNE();
   const aigneServer = new AIGNEHTTPServer(aigne);
 
-  honoApp.post("/aigne/invoke", async (c) => {
+  honoApp.post("/api/v2/chat", async (c) => {
     return aigneServer.invoke(c.req.raw);
   });
 

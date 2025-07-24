@@ -6,6 +6,11 @@ skills:
       title: Default Title
       description:
         $get: title
+  - url: ./test-agent-with-default-input-skill-js.js
+    default_input:
+      title: Default Title JS
+      description:
+        $get: title
   - type: ai
     name: test_agent_with_default_input_skill2.yaml
     input_schema:

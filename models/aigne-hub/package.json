@@ -1,6 +1,6 @@
 {
   "name": "@aigne/aigne-hub",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "AIGNE Hub SDK for integrating with Hub AI models",
   "publishConfig": {
     "access": "public"
@@ -34,8 +34,17 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/core": "workspace:^",
     "@aigne/transport": "workspace:^",
+    "@aigne/anthropic": "workspace:^",
+    "@aigne/bedrock": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/deepseek": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
+    "@aigne/gemini": "workspace:^",
+    "@aigne/ollama": "workspace:^",
+    "@aigne/open-router": "workspace:^",
+    "@aigne/openai": "workspace:^",
+    "@aigne/xai": "workspace:^",
     "zod": "^3.25.67"
   },
   "devDependencies": {

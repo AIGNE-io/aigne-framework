@@ -965,6 +965,32 @@ exports[`loadAgentFromYaml should support default input 1`] = `
         "description": {
           "$get": "title",
         },
+        "title": "Default Title JS",
+      },
+      "input_schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": true,
+        "properties": {
+          "description": {
+            "type": "string",
+          },
+          "title": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "description",
+        ],
+        "type": "object",
+      },
+      "name": "testAgentWithDefaultInputSkillJS",
+    },
+    {
+      "default_input": {
+        "description": {
+          "$get": "title",
+        },
         "title": "Another Default Title",
       },
       "input_schema": {
@@ -1034,6 +1060,44 @@ exports[`loadAgentFromYaml should support hooks 1`] = `
         },
       ],
       "name": "test_agent_with_default_input_skill2.yaml",
+    },
+  ],
+}
+`;
+
+exports[`loadAgentFromYaml should support reflection for TeamAgent 1`] = `
+{
+  "name": "test-team-agent-with-reflection",
+  "reflection": {
+    "isApproved": "approved",
+    "maxIterations": 5,
+    "returnLastOnMaxIterations": true,
+    "reviewer": {
+      "name": "test-team-agent-reviewer",
+    },
+  },
+  "skills": [
+    {
+      "name": "chat",
+    },
+  ],
+}
+`;
+
+exports[`loadAgentFromYaml should support reflection for TeamAgent with inline reviewer 1`] = `
+{
+  "name": "test-team-agent-with-reflection-inline",
+  "reflection": {
+    "isApproved": "approved",
+    "maxIterations": 5,
+    "returnLastOnMaxIterations": true,
+    "reviewer": {
+      "name": "test-team-agent-reviewer",
+    },
+  },
+  "skills": [
+    {
+      "name": "chat",
     },
   ],
 }

@@ -233,7 +233,7 @@ export async function loadAIGNE(
       const { origin, host } = new URL(AIGNE_HUB_URL);
 
       try {
-        // 检查 aigne-hub access token
+        // aigne-hub access token
         if (!existsSync(AIGNE_ENV_FILE)) {
           throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");
         }

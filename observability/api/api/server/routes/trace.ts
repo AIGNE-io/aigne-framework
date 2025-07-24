@@ -5,24 +5,45 @@ import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import express, { type Request, type Response } from "express";
 import type SSE from "express-sse";
 import { parse, stringify } from "yaml";
-
+import { z } from "zod";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
 
 const router = express.Router();
+
+const traceTreeQuerySchema = z.object({
+  page: z
+    .string()
+    .optional()
+    .transform((val) => parseInt(val || "0") || 0),
+  pageSize: z
+    .string()
+    .optional()
+    .transform((val) => parseInt(val || "10") || 10),
+  searchText: z.string().optional().default(""),
+  componentId: z.string().optional().default(""),
+  startDate: z.string().optional().default(""),
+  endDate: z.string().optional().default(""),
+});
 
 import { createTraceBatchSchema } from "../../core/schema.js";
 
 export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHandler[] }) => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
-    const page = Number(req.query.page) || 0;
-    const pageSize = Number(req.query.pageSize) || 10;
+
+    const queryResult = traceTreeQuerySchema.safeParse(req.query);
+
+    if (!queryResult.success) {
+      res.status(400).json({
+        error: "Invalid query parameters",
+        details: queryResult.error.errors,
+      });
+      return;
+    }
+
+    const { page, pageSize, searchText, componentId, startDate, endDate } = queryResult.data;
     const offset = page * pageSize;
-    const searchText = req.query.searchText as string;
-    const componentId = req.query.componentId as string;
-    const startDate = req.query.startDate as string;
-    const endDate = req.query.endDate as string;
 
     const rootFilter = and(
       or(isNull(Trace.parentId), eq(Trace.parentId, "")),

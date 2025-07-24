@@ -102,6 +102,7 @@ describe("HttpExporter", () => {
           }),
         }),
       }),
+      run: () => ({}),
     };
     const exporter = new HttpExporter({});
     exporter._db = db;

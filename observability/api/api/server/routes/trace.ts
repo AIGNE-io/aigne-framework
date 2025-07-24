@@ -316,7 +316,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
             action = excluded.action;
         `;
 
-        await db.run(insertSql);
+        await db?.run?.(insertSql);
       } catch (err) {
         console.error(`upsert spans failed for trace ${trace.id}:`, err);
       }

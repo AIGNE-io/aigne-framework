@@ -91,7 +91,7 @@ class HttpExporter implements HttpExporterInterface {
           action = excluded.action;
       `;
 
-      await db.run(insertSql);
+      await db?.run?.(insertSql);
     }
   }
 

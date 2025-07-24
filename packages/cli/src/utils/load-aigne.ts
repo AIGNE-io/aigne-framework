@@ -48,7 +48,7 @@ const ACCESS_KEY_SESSION_API = `${ACCESS_KEY_PREFIX}/session`;
 
 type FetchResult = { accessKeyId: string; accessKeySecret: string };
 
-const fetchConfigs = async ({
+export const fetchConfigs = async ({
   connectUrl,
   sessionId,
   fetchInterval,

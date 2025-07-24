@@ -250,11 +250,14 @@ export class AIGNEContext implements Context {
 
       this.internal = new AIGNEContextShared(
         parent instanceof AIGNEContext ? parent.internal : parent,
-        this.span,
       );
 
       // 修改了 rootId 是否会之前的有影响？，之前为 this.id
       this.rootId = this.span?.spanContext?.().traceId ?? v7();
+    }
+
+    if (this.span) {
+      this.internal.addSpan(this.span);
     }
 
     this.id = this.span?.spanContext()?.spanId ?? v7();
@@ -292,6 +295,10 @@ export class AIGNEContext implements Context {
 
   get status() {
     return this.internal.status;
+  }
+
+  get spans() {
+    return this.internal.spans;
   }
 
   get usage() {
@@ -355,8 +362,10 @@ export class AIGNEContext implements Context {
 
             return output;
           } catch (error) {
-            this.internal.span?.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-            this.internal.span?.end();
+            this.spans.forEach((span) => {
+              span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+              span.end();
+            });
             throw error;
           }
         }
@@ -383,8 +392,11 @@ export class AIGNEContext implements Context {
             return await this.onInvocationResult(output, options);
           },
           onError: (error) => {
-            this.internal.span?.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-            this.internal.span?.end();
+            this.spans.forEach((span) => {
+              span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+              span.end();
+            });
+
             return error;
           },
         });
@@ -554,18 +566,16 @@ export class AIGNEContext implements Context {
 }
 
 class AIGNEContextShared {
-  span?: Span;
+  spans: Span[] = [];
 
   constructor(
     private readonly parent?: Pick<Context, "model" | "skills" | "limits" | "observer"> & {
       messageQueue?: MessageQueue;
       events?: Emitter<any>;
     },
-    span?: Span,
   ) {
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
     this.events = this.parent?.events ?? new Emitter<any>();
-    this.span = span;
   }
 
   readonly messageQueue: MessageQueue;
@@ -586,6 +596,10 @@ class AIGNEContextShared {
 
   get limits() {
     return this.parent?.limits;
+  }
+
+  addSpan(span: Span) {
+    this.spans.push(span);
   }
 
   usage: ContextUsage = newEmptyContextUsage();

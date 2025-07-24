@@ -16,18 +16,21 @@ import { availableMemories, availableModels } from "../constants.js";
 import { parseModelOption, type RunAIGNECommandOptions } from "./run-with-aigne.js";
 
 const aes = new AesCrypter();
-const decrypt = (m: string, s: string, i: string) =>
+export const decrypt = (m: string, s: string, i: string) =>
   aes.decrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
+export const encrypt = (m: string, s: string, i: string) =>
+  aes.encrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
 
 const escapeFn = (str: string) => str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-const encodeEncryptionKey = (key: string) => escapeFn(Buffer.from(key).toString("base64"));
+const unescapeFn = (str: string) =>
+  (str + "===".slice((str.length + 3) % 4)).replace(/-/g, "+").replace(/_/g, "/");
+export const encodeEncryptionKey = (key: string) => escapeFn(Buffer.from(key).toString("base64"));
+export const decodeEncryptionKey = (str: string) =>
+  new Uint8Array(Buffer.from(unescapeFn(str), "base64"));
 
 const request = async (config: { url: string; method?: string }) => {
   const response = await fetch(config.url, { method: config.method || "GET" });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
   const data = await response.json();
   return { data };
@@ -146,12 +149,11 @@ const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-4o";
 const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_HUB_MODEL}`;
 const DEFAULT_URL = "https://hub.aigne.io/";
 
-const formatModelName = async (
+export const formatModelName = async (
   models: LoadableModel[],
   model: string,
   inquirerPrompt: typeof inquirer.prompt,
 ) => {
-  if (process.env.NODE_ENV === "test") return model;
   if (!model) return DEFAULT_AIGNE_HUB_PROVIDER_MODEL;
 
   const { provider, name } = parseModelOption(model);

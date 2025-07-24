@@ -1,11 +1,10 @@
 import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
-import { and, eq, isNull } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import type { TraceFormatSpans } from "../../core/type.js";
 import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
-import { Trace } from "../../server/models/trace.js";
 import { validateTraceSpans } from "./util.js";
 export interface HttpExporterInterface extends SpanExporter {
   export(
@@ -14,8 +13,6 @@ export interface HttpExporterInterface extends SpanExporter {
   ): Promise<void>;
 
   shutdown(): Promise<void>;
-
-  upsertInitialSpan(span: ReadableSpan): Promise<void>;
 }
 
 class HttpExporter implements HttpExporterInterface {
@@ -53,23 +50,48 @@ class HttpExporter implements HttpExporterInterface {
     if (!db) throw new Error("Database not initialized");
 
     for (const trace of validatedData) {
-      const whereClause = and(
-        eq(Trace.id, trace.id),
-        eq(Trace.rootId, trace.rootId),
-        !trace.parentId ? isNull(Trace.parentId) : eq(Trace.parentId, trace.parentId),
-      );
+      const insertSql = sql`
+        INSERT INTO Trace (
+          id,
+          rootId,
+          parentId,
+          name,
+          startTime,
+          endTime,
+          attributes,
+          status,
+          userId,
+          sessionId,
+          componentId,
+          action
+        ) VALUES (
+          ${trace.id},
+          ${trace.rootId},
+          ${trace.parentId || null},
+          ${trace.name},
+          ${trace.startTime},
+          ${trace.endTime},
+          ${JSON.stringify(trace.attributes)},
+          ${JSON.stringify(trace.status)},
+          ${trace.userId || null},
+          ${trace.sessionId || null},
+          ${trace.componentId || null},
+          ${trace.action || null}
+        )
+        ON CONFLICT(id)
+        DO UPDATE SET
+          name = excluded.name,
+          startTime = excluded.startTime,
+          endTime = excluded.endTime,
+          attributes = excluded.attributes,
+          status = excluded.status,
+          userId = excluded.userId,
+          sessionId = excluded.sessionId,
+          componentId = excluded.componentId,
+          action = excluded.action;
+      `;
 
-      try {
-        const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();
-
-        if (existing.length > 0) {
-          await db.update(Trace).set(trace).where(whereClause).execute();
-        } else {
-          await db.insert(Trace).values(trace).execute();
-        }
-      } catch (err) {
-        console.error(`upsert spans failed for trace ${trace.id}:`, err);
-      }
+      await db.run(insertSql);
     }
   }
 
@@ -89,10 +111,6 @@ class HttpExporter implements HttpExporterInterface {
 
   shutdown() {
     return Promise.resolve();
-  }
-
-  async upsertInitialSpan(span: ReadableSpan) {
-    await this.upsert(validateTraceSpans([span]));
   }
 }
 

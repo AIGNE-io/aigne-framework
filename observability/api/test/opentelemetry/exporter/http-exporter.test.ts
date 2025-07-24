@@ -141,10 +141,4 @@ describe("HttpExporter", () => {
     expect(spy).toHaveBeenCalled();
     spy.mockRestore();
   });
-
-  it("should call upsertInitialSpan", async () => {
-    const exporter = new HttpExporter({ exportFn: mockExportFn });
-    await exporter.upsertInitialSpan(createMockSpan("abc123"));
-    expect(mockExportFn).toHaveBeenCalled();
-  });
 });

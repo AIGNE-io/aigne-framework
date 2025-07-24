@@ -1,5 +1,5 @@
-import { existsSync } from "node:fs";
-import { appendFile, readFile } from "node:fs/promises";
+import { existsSync, mkdirSync } from "node:fs";
+import { readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { AIGNE } from "@aigne/core";
@@ -302,7 +302,12 @@ export async function loadAIGNE(
             };
 
             // After redirection, write the AIGNE Hub access token
-            await appendFile(
+            const aigneDir = join(homedir(), ".aigne");
+            if (!existsSync(aigneDir)) {
+              mkdirSync(aigneDir, { recursive: true });
+            }
+
+            await writeFile(
               AIGNE_ENV_FILE,
               stringify({
                 [host]: {

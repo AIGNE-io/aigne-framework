@@ -354,7 +354,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     columns.unshift({
       field: "component",
       headerName: t("component"),
-      minWidth: 300,
+      minWidth: 180,
       sortable: false,
       renderCell: ({ row }) => {
         if (!row.componentId) return "";

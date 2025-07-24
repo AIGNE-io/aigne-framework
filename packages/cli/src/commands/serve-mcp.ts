@@ -1,8 +1,7 @@
 import { isAbsolute, resolve } from "node:path";
-import { AIGNE } from "@aigne/core";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { Command, type OptionValues } from "commander";
-import { availableMemories, availableModels } from "../constants.js";
+import { loadAIGNE } from "../utils/load-aigne.js";
 import { serveMCPServer } from "../utils/serve-mcp.js";
 
 interface ServeMCPOptions extends OptionValues {
@@ -44,10 +43,7 @@ export function createServeMCPCommand({ aigneFilePath }: { aigneFilePath?: strin
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
       const port = options.port || DEFAULT_PORT();
 
-      const aigne = await AIGNE.load(absolutePath, {
-        models: availableModels(),
-        memories: availableMemories,
-      });
+      const aigne = await loadAIGNE(absolutePath);
 
       await serveMCPServer({
         aigne,

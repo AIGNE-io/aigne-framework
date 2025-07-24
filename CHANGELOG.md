@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.44.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.44.0...aigne-framework-v1.44.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* add missing dependencies ([#280](https://github.com/AIGNE-io/aigne-framework/issues/280)) ([5da315e](https://github.com/AIGNE-io/aigne-framework/commit/5da315e29dc02818293e74ad159294f137e2c7f7))
+
 ## [1.44.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.43.0...aigne-framework-v1.44.0) (2025-07-24)
 
 

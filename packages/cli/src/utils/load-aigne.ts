@@ -28,8 +28,16 @@ export const encodeEncryptionKey = (key: string) => escapeFn(Buffer.from(key).to
 export const decodeEncryptionKey = (str: string) =>
   new Uint8Array(Buffer.from(unescapeFn(str), "base64"));
 
-const request = async (config: { url: string; method?: string }) => {
-  const response = await fetch(config.url, { method: config.method || "GET" });
+const request = async (config: { url: string; method?: string; requestCount?: number }) => {
+  const headers: Record<string, string> = {};
+  if (config.requestCount !== undefined) {
+    headers["X-Request-Count"] = config.requestCount.toString();
+  }
+
+  const response = await fetch(config.url, {
+    method: config.method || "GET",
+    headers,
+  });
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
   const data = await response.json();
@@ -61,14 +69,16 @@ export const fetchConfigs = async ({
 }) => {
   const sessionURL = withQuery(joinURL(connectUrl, ACCESS_KEY_SESSION_API), { sid: sessionId });
 
+  let requestCount = 0;
   const condition = async () => {
-    const { data: session } = await request({ url: sessionURL });
+    const { data: session } = await request({ url: sessionURL, requestCount });
+    requestCount++;
     return Boolean(session.accessKeyId && session.accessKeySecret);
   };
 
   await pWaitFor(condition, { interval: fetchInterval, timeout: fetchTimeout });
 
-  const { data: session } = await request({ url: sessionURL });
+  const { data: session } = await request({ url: sessionURL, requestCount });
   await request({ url: sessionURL, method: "DELETE" });
 
   return {
@@ -99,7 +109,7 @@ interface CreateConnectOptions {
   }) => Promise<FetchResult>;
 }
 
-async function createConnect({
+export async function createConnect({
   connectUrl,
   openPage,
   fetchInterval = 3 * 1000,

@@ -1,11 +1,56 @@
 import { afterEach, describe, expect, mock, test } from "bun:test";
+import { serve } from "bun";
+import { detect } from "detect-port";
+import { Hono } from "hono";
 import {
+  createConnect,
   decodeEncryptionKey,
   decrypt,
   encodeEncryptionKey,
   encrypt,
+  fetchConfigs,
   formatModelName,
 } from "../../src/utils/load-aigne.js";
+
+async function createHonoServer() {
+  const port = await detect();
+  const url = `http://localhost:${port}/`;
+
+  const honoApp = new Hono();
+  honoApp.post("/api/access-key/session", async (c) => {
+    return c.json({
+      challenge: "test",
+      accessKeyId: "test",
+      accessKeySecret: "test",
+      id: "test",
+    });
+  });
+
+  honoApp.get("/api/access-key/session", async (c) => {
+    const requestCount = parseInt(c.req.header("X-Request-Count") || "0");
+    if (requestCount === 0) {
+      return c.json({});
+    } else {
+      return c.json({
+        challenge: "test",
+        accessKeyId: "test",
+        accessKeySecret: encrypt("test", "test", "test"),
+      });
+    }
+  });
+
+  honoApp.delete("/api/access-key/session", async (c) => {
+    const body = {};
+    return c.json(body);
+  });
+
+  const server = serve({ port, fetch: honoApp.fetch });
+
+  return {
+    url,
+    close: () => server.stop(true),
+  };
+}
 
 describe("Encryption Functions", () => {
   describe("encodeEncryptionKey", () => {
@@ -324,5 +369,45 @@ describe("formatModelName", () => {
     );
 
     expect(result).toBe("aignehub:openai/gpt-4-turbo-preview");
+  });
+});
+
+describe("fetchConfigs", () => {
+  test("should fetch configs successfully", async () => {
+    const { url, close } = await createHonoServer();
+    const configs = await fetchConfigs({
+      connectUrl: url,
+      sessionId: "test",
+      fetchInterval: 1000,
+      fetchTimeout: 5000,
+    });
+
+    expect(configs).toBeDefined();
+    expect(configs.accessKeyId).toBe("test");
+    expect(configs.accessKeySecret).toBe("test");
+    expect(configs.challenge).toBe("test");
+    close();
+  });
+});
+
+describe("createConnect", () => {
+  test("should create connection successfully", async () => {
+    const { url, close } = await createHonoServer();
+    const mockOpenPage = mock(() => {});
+
+    const result = await createConnect({
+      connectUrl: url,
+      openPage: mockOpenPage,
+    });
+
+    expect(result).toBeDefined();
+    expect(result.accessKeyId).toBe("test");
+    expect(result.accessKeySecret).toBe("test");
+
+    expect(mockOpenPage).toHaveBeenCalledWith(
+      expect.stringContaining(`${url}connect-cli?__token__=`),
+    );
+
+    close();
   });
 });

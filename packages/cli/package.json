@@ -76,6 +76,7 @@
     "express": "^5.1.0",
     "glob": "^11.0.3",
     "gradient-string": "^3.0.0",
+    "hono": "^4.8.4",
     "https-proxy-agent": "^7.0.6",
     "inquirer": "^12.7.0",
     "marked": "^16.0.0",

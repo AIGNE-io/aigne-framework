@@ -1448,6 +1448,9 @@ importers:
       gradient-string:
         specifier: ^3.0.0
         version: 3.0.0
+      hono:
+        specifier: ^4.8.4
+        version: 4.8.4
       https-proxy-agent:
         specifier: ^7.0.6
         version: 7.0.6

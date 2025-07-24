@@ -104,7 +104,7 @@ export class HubChatModel extends ChatModel {
       ...options,
       model: options.model ?? process.env.BLOCKLET_AIGNE_API_MODEL,
       modelOptions: options.modelOptions,
-      baseURL: options.baseURL ?? options.url ?? process.env.BLOCKLET_AIGNE_API_BASE_URL,
+      baseURL: options.baseURL ?? options.url ?? process.env.BLOCKLET_AIGNE_API_URL,
       apiKey: options.apiKey ?? apiKey,
       ...rest,
     });

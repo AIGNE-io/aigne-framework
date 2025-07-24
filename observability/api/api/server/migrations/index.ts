@@ -1,4 +1,14 @@
+import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { sql } from "drizzle-orm/sql";
+import type { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
+
+type DB = LibSQLDatabase | SqliteRemoteDatabase;
+
+function columnExists(db: DB, table: string, column: string): Promise<boolean> {
+  return db.all(sql.raw(`PRAGMA table_info(${table});`)).then((rows: any[]) => {
+    return rows.some((row) => row.name === column);
+  });
+}
 
 const migrations = [
   {
@@ -25,17 +35,24 @@ const migrations = [
   },
   {
     hash: "20250707_add_componentId",
-    sql: sql`\
-      ALTER TABLE Trace ADD COLUMN componentId TEXT;
+    async sql(db: DB) {
+      const hasColumn = await columnExists(db, "Trace", "componentId");
 
-      CREATE INDEX IF NOT EXISTS idx_trace_componentId ON Trace (componentId);
-    `,
+      if (!hasColumn) {
+        await db.run(sql`ALTER TABLE Trace ADD COLUMN componentId TEXT;`);
+        await db.run(sql`CREATE INDEX IF NOT EXISTS idx_trace_componentId ON Trace (componentId);`);
+      }
+    },
   },
   {
     hash: "20250707_add_action",
-    sql: sql`\
-      ALTER TABLE Trace ADD COLUMN action INTEGER;
-    `,
+    async sql(db: DB) {
+      const hasColumn = await columnExists(db, "Trace", "action");
+
+      if (!hasColumn) {
+        await db.run(sql`ALTER TABLE Trace ADD COLUMN action INTEGER;`);
+      }
+    },
   },
 ];
 

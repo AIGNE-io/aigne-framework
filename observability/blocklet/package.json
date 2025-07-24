@@ -1,6 +1,6 @@
 {
   "name": "@blocklet/observability",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "Blocklet Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -46,6 +46,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-json-view": "^1.21.3",
+    "react-router-dom": "^7.6.3",
     "vite-plugin-blocklet": "^0.10.1"
   },
   "devDependencies": {

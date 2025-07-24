@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-group-chat",
-  "version": "1.16.4",
+  "version": "1.16.5",
   "description": "A demonstration of using AIGNE Framework to build a group chat workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-group-chat",
@@ -25,6 +25,7 @@
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
     "@aigne/openai": "workspace:^",
+    "inquirer": "^12.7.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

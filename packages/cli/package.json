@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "description": "cli for AIGNE framework",
   "publishConfig": {
     "access": "public"
@@ -79,8 +79,11 @@
     "hono": "^4.8.4",
     "https-proxy-agent": "^7.0.6",
     "inquirer": "^12.7.0",
+    "log-update": "^6.1.0",
     "marked": "^16.0.0",
     "open": "10.1.2",
+    "openai": "^5.8.3",
+    "p-wait-for": "^5.0.2",
     "prettier": "^3.6.2",
     "tar": "^7.4.3",
     "wrap-ansi": "^9.0.0",

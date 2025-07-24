@@ -12,6 +12,20 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.38.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.38.0...core-v1.38.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* add missing dependencies ([#280](https://github.com/AIGNE-io/aigne-framework/issues/280)) ([5da315e](https://github.com/AIGNE-io/aigne-framework/commit/5da315e29dc02818293e74ad159294f137e2c7f7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.8.1
+
 ## [1.38.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.37.0...core-v1.38.0) (2025-07-24)
 
 

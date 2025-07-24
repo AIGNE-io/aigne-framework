@@ -1,6 +1,6 @@
 {
   "name": "@aigne/observability-ui",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -50,6 +50,7 @@
     "@arcblock/ux": "^3.0.24",
     "@blocklet/sdk": "^1.16.46",
     "@microsoft/fetch-event-source": "^2.0.1",
+    "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@mui/x-data-grid": "^8.7.0",
     "ahooks": "^3.9.0",

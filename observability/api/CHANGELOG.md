@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.8.0...observability-api-v0.8.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* add missing dependencies ([#280](https://github.com/AIGNE-io/aigne-framework/issues/280)) ([5da315e](https://github.com/AIGNE-io/aigne-framework/commit/5da315e29dc02818293e74ad159294f137e2c7f7))
+
 ## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.7.2...observability-api-v0.8.0) (2025-07-15)
 
 

@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.25.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.24.1...cli-v1.25.0) (2025-07-24)
+
+
+### Features
+
+* **cli:** support aigne hub connect and model use ([#267](https://github.com/AIGNE-io/aigne-framework/issues/267)) ([8e5a32a](https://github.com/AIGNE-io/aigne-framework/commit/8e5a32afc64593137153d7407bde13837312ac70))
+
+
+### Bug Fixes
+
+* ci lint ([#278](https://github.com/AIGNE-io/aigne-framework/issues/278)) ([b23dea9](https://github.com/AIGNE-io/aigne-framework/commit/b23dea98bf91082ce7429b766dff28cfa5163cd9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.4
+    * @aigne/agentic-memory bumped to 1.0.4
+    * @aigne/aigne-hub bumped to 0.2.0
+    * @aigne/anthropic bumped to 0.10.0
+    * @aigne/bedrock bumped to 0.8.4
+    * @aigne/core bumped to 1.38.0
+    * @aigne/deepseek bumped to 0.7.4
+    * @aigne/default-memory bumped to 1.0.4
+    * @aigne/gemini bumped to 0.8.4
+    * @aigne/ollama bumped to 0.7.4
+    * @aigne/open-router bumped to 0.7.4
+    * @aigne/openai bumped to 0.10.4
+    * @aigne/xai bumped to 0.7.4
+
 ## [1.24.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.24.0...cli-v1.24.1) (2025-07-22)
 
 

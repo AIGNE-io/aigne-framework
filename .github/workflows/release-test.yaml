@@ -1,0 +1,18 @@
+name: release-test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  approval-gate:
+    if: github.event.pull_request.head.ref == 'release-please--branches--main'
+    environment: release-test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Approval received."

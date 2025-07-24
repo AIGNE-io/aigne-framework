@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-code-execution",
-  "version": "1.17.3",
+  "version": "1.17.4",
   "description": "A demonstration of using AIGNE Framework to build a code-execution workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-code-execution",

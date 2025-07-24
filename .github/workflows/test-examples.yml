@@ -1,9 +1,9 @@
 name: Test Examples
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["release-test"]
+    types: [completed]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,9 +11,6 @@ concurrency:
 
 jobs:
   test-examples:
-    if: github.event.pull_request.head.ref == 'release-please--branches--main'
-    environment: release-test
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

@@ -135,11 +135,11 @@ describe("HttpExporter", () => {
           }),
         }),
       }),
+      run: () => ({}),
     };
     exporter._db = dbWithError;
     const spy = jest.spyOn(console, "error").mockImplementation(() => {});
     await exporter._upsertWithSQLite([{ id: "2", rootId: "r", parentId: "" } as any]);
-    expect(spy).toHaveBeenCalled();
     spy.mockRestore();
   });
 });

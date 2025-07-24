@@ -43,6 +43,8 @@
     "typedoc-plugin-no-inherit": "^1.6.1",
     "typescript": "^5.8.3",
     "unist-util-visit": "^5.0.0",
+    "vfile": "^6.0.3",
+    "zod": "^3.25.67",
     "zx": "^8.6.2"
   },
   "simple-git-hooks": {

@@ -23,7 +23,8 @@
         "noUnusedVariables": "error",
         "noUnusedImports": "error",
         "noUnusedFunctionParameters": "error",
-        "noUnusedPrivateClassMembers": "error"
+        "noUnusedPrivateClassMembers": "error",
+        "noUndeclaredDependencies": "error"
       },
       "suspicious": {
         "noConfusingVoidType": "off",

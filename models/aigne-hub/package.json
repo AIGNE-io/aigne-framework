@@ -34,7 +34,6 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/transport": "workspace:^",
     "@aigne/anthropic": "workspace:^",
     "@aigne/bedrock": "workspace:^",
     "@aigne/core": "workspace:^",
@@ -44,7 +43,9 @@
     "@aigne/ollama": "workspace:^",
     "@aigne/open-router": "workspace:^",
     "@aigne/openai": "workspace:^",
+    "@aigne/transport": "workspace:^",
     "@aigne/xai": "workspace:^",
+    "ufo": "^1.6.1",
     "zod": "^3.25.67"
   },
   "devDependencies": {

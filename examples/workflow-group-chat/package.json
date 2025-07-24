@@ -25,6 +25,7 @@
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
     "@aigne/openai": "workspace:^",
+    "inquirer": "^12.7.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

@@ -12,6 +12,5 @@ export * from "./memory/index.js";
 export * from "./prompt/prompt-builder.js";
 export * from "./prompt/template.js";
 export * from "./utils/json-utils.js";
-export * from "./utils/message-utils.js";
 export * from "./utils/role-utils.js";
 export * from "./utils/stream-utils.js";

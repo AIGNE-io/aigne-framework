@@ -1,0 +1,16 @@
+type: team
+name: batch-content-detail-generator
+description: 批量生成内容详情
+skills:
+  - content-detail-generator.yaml
+  - page-template-generator.yaml
+  - upload-template.mjs
+input_schema:
+  type: object
+  properties:
+    datasources:
+      type: string
+      description: 结构规划的上下文，用于辅助结构规划
+    structurePlan: ./schema/structure-plan.yaml
+iterate_on: structurePlan
+mode: sequential

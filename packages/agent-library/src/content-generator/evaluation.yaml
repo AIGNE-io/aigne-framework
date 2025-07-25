@@ -1,0 +1,28 @@
+name: evaluation
+description: 评估另一个 Agent 输出结果的好坏
+instructions:
+  url: ./prompts/evaluation-prompt.md
+input_schema:
+  type: object
+  properties:
+    evaluationDimensions:
+      type: string
+      description: 评估维度
+    structurePlan: ./schema/structure-plan.yaml
+    datasources:
+      type: string
+      description: 评估内容的上下文
+    rules:
+      type: string
+      description: 用户的输入
+  required:
+    - evaluationDimensions
+    - structurePlan
+    - rules
+    - datasources
+output_schema:
+  type: object
+  properties:
+    evaluationResult:
+      type: string
+      description: 评估结果

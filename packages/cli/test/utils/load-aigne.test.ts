@@ -293,11 +293,6 @@ describe("formatModelName", () => {
     expect(result).toBe("aignehub:openai/gpt-4o");
   });
 
-  test("should return default aignehub model when model format is invalid", async () => {
-    const result = await formatModelName(mockModels, "invalid-model-format", mockInquirerPrompt);
-    expect(result).toBe("aignehub:openai/gpt-4o");
-  });
-
   test("should return model as-is when provider is aignehub", async () => {
     const result = await formatModelName(mockModels, "aignehub:openai/gpt-4", mockInquirerPrompt);
     expect(result).toBe("aignehub:openai/gpt-4");

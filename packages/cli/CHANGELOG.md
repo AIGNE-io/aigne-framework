@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.25.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.25.1...cli-v1.25.2) (2025-07-25)
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.6
+    * @aigne/agentic-memory bumped to 1.0.6
+    * @aigne/aigne-hub bumped to 0.2.2
+    * @aigne/anthropic bumped to 0.10.2
+    * @aigne/bedrock bumped to 0.8.6
+    * @aigne/core bumped to 1.38.2
+    * @aigne/deepseek bumped to 0.7.6
+    * @aigne/default-memory bumped to 1.0.6
+    * @aigne/gemini bumped to 0.8.6
+    * @aigne/observability-api bumped to 0.8.2
+    * @aigne/ollama bumped to 0.7.6
+    * @aigne/open-router bumped to 0.7.6
+    * @aigne/openai bumped to 0.10.6
+    * @aigne/xai bumped to 0.7.6
+
 ## [1.25.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.25.0...cli-v1.25.1) (2025-07-24)
 
 

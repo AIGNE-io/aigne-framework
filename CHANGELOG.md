@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.44.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.44.1...aigne-framework-v1.44.2) (2025-07-25)
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
 ## [1.44.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.44.0...aigne-framework-v1.44.1) (2025-07-24)
 
 

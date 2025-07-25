@@ -12,6 +12,20 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.38.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.38.1...core-v1.38.2) (2025-07-25)
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.8.2
+
 ## [1.38.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.38.0...core-v1.38.1) (2025-07-24)
 
 

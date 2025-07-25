@@ -12,6 +12,40 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.38.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.38.0...core-v1.38.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* add missing dependencies ([#280](https://github.com/AIGNE-io/aigne-framework/issues/280)) ([5da315e](https://github.com/AIGNE-io/aigne-framework/commit/5da315e29dc02818293e74ad159294f137e2c7f7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.8.1
+
+## [1.38.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.37.0...core-v1.38.0) (2025-07-24)
+
+
+### Features
+
+* **cli:** support aigne hub connect and model use ([#267](https://github.com/AIGNE-io/aigne-framework/issues/267)) ([8e5a32a](https://github.com/AIGNE-io/aigne-framework/commit/8e5a32afc64593137153d7407bde13837312ac70))
+* **core:** support config reflection for TeamAgent in yaml file ([#276](https://github.com/AIGNE-io/aigne-framework/issues/276)) ([e6296a8](https://github.com/AIGNE-io/aigne-framework/commit/e6296a8aff313e8209c4fbb2878e7869cc672576))
+
+## [1.37.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.36.0...core-v1.37.0) (2025-07-22)
+
+
+### Features
+
+* **core:** add reflection mode support to TeamAgent ([#273](https://github.com/AIGNE-io/aigne-framework/issues/273)) ([4e2dad6](https://github.com/AIGNE-io/aigne-framework/commit/4e2dad687c1caefa231c7a7620651d060f8c8b9d))
+
+
+### Bug Fixes
+
+* **core:** function agent should use common schema from yaml definition ([#270](https://github.com/AIGNE-io/aigne-framework/issues/270)) ([076a489](https://github.com/AIGNE-io/aigne-framework/commit/076a4896948c397518e99df46c1a443ea43daa64))
+
 ## [1.36.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.35.0...core-v1.36.0) (2025-07-17)
 
 

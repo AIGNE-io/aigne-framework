@@ -415,3 +415,142 @@ exports[`TeamAgent with iterateOn should iterate with previous step's output 2`]
   },
 ]
 `;
+
+exports[`TeamAgent should process reflection mode correctly 1`] = `
+[
+  {
+    "messages": [
+      {
+        "content": 
+"Write a article about AIGNE in 2025
+
+<previous-content>
+
+</previous-content>
+
+<feedback>
+
+</feedback>
+"
+,
+        "name": undefined,
+        "role": "system",
+      },
+    ],
+    "modelOptions": undefined,
+    "responseFormat": undefined,
+    "toolChoice": undefined,
+    "tools": undefined,
+  },
+  {
+    "messages": [
+      {
+        "content": 
+"You are a reviewer. Please review the following article and provide feedback.
+
+topic: AIGNE in 2025
+
+generated content:
+AIGNE in 2025 is a framework for building AI agents.
+"
+,
+        "name": undefined,
+        "role": "system",
+      },
+    ],
+    "modelOptions": undefined,
+    "responseFormat": {
+      "jsonSchema": {
+        "name": "output",
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": false,
+          "properties": {
+            "approved": {
+              "type": "boolean",
+            },
+            "feedback": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "approved",
+          ],
+          "type": "object",
+        },
+        "strict": true,
+      },
+      "type": "json_schema",
+    },
+    "toolChoice": undefined,
+    "tools": undefined,
+  },
+  {
+    "messages": [
+      {
+        "content": 
+"Write a article about AIGNE in 2025
+
+<previous-content>
+AIGNE in 2025 is a framework for building AI agents.
+</previous-content>
+
+<feedback>
+The article is well-written and informative. However, it could use more examples.
+</feedback>
+"
+,
+        "name": undefined,
+        "role": "system",
+      },
+    ],
+    "modelOptions": undefined,
+    "responseFormat": undefined,
+    "toolChoice": undefined,
+    "tools": undefined,
+  },
+  {
+    "messages": [
+      {
+        "content": 
+"You are a reviewer. Please review the following article and provide feedback.
+
+topic: AIGNE in 2025
+
+generated content:
+AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.
+"
+,
+        "name": undefined,
+        "role": "system",
+      },
+    ],
+    "modelOptions": undefined,
+    "responseFormat": {
+      "jsonSchema": {
+        "name": "output",
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": false,
+          "properties": {
+            "approved": {
+              "type": "boolean",
+            },
+            "feedback": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "approved",
+          ],
+          "type": "object",
+        },
+        "strict": true,
+      },
+      "type": "json_schema",
+    },
+    "toolChoice": undefined,
+    "tools": undefined,
+  },
+]
+`;

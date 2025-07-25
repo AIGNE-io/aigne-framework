@@ -1,6 +1,6 @@
 {
   "name": "aigne-framework",
-  "version": "1.42.0",
+  "version": "1.44.1",
   "description": "AIGNE framework is a collection of libraries and tools for building AI-powered applications",
   "private": true,
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
@@ -43,6 +43,8 @@
     "typedoc-plugin-no-inherit": "^1.6.1",
     "typescript": "^5.8.3",
     "unist-util-visit": "^5.0.0",
+    "vfile": "^6.0.3",
+    "zod": "^3.25.67",
     "zx": "^8.6.2"
   },
   "simple-git-hooks": {

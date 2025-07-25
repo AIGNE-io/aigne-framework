@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.44.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.44.0...aigne-framework-v1.44.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* add missing dependencies ([#280](https://github.com/AIGNE-io/aigne-framework/issues/280)) ([5da315e](https://github.com/AIGNE-io/aigne-framework/commit/5da315e29dc02818293e74ad159294f137e2c7f7))
+
+## [1.44.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.43.0...aigne-framework-v1.44.0) (2025-07-24)
+
+
+### Features
+
+* **cli:** support aigne hub connect and model use ([#267](https://github.com/AIGNE-io/aigne-framework/issues/267)) ([8e5a32a](https://github.com/AIGNE-io/aigne-framework/commit/8e5a32afc64593137153d7407bde13837312ac70))
+* **core:** support config reflection for TeamAgent in yaml file ([#276](https://github.com/AIGNE-io/aigne-framework/issues/276)) ([e6296a8](https://github.com/AIGNE-io/aigne-framework/commit/e6296a8aff313e8209c4fbb2878e7869cc672576))
+
+
+### Bug Fixes
+
+* ci lint ([#278](https://github.com/AIGNE-io/aigne-framework/issues/278)) ([b23dea9](https://github.com/AIGNE-io/aigne-framework/commit/b23dea98bf91082ce7429b766dff28cfa5163cd9))
+* update blocklet key name ([#279](https://github.com/AIGNE-io/aigne-framework/issues/279)) ([210ef61](https://github.com/AIGNE-io/aigne-framework/commit/210ef612f9d1dcbbb9cbe10635b056114bfd10b7))
+
+## [1.43.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.42.0...aigne-framework-v1.43.0) (2025-07-22)
+
+
+### Features
+
+* **core:** add reflection mode support to TeamAgent ([#273](https://github.com/AIGNE-io/aigne-framework/issues/273)) ([4e2dad6](https://github.com/AIGNE-io/aigne-framework/commit/4e2dad687c1caefa231c7a7620651d060f8c8b9d))
+
+
+### Bug Fixes
+
+* **core:** function agent should use common schema from yaml definition ([#270](https://github.com/AIGNE-io/aigne-framework/issues/270)) ([076a489](https://github.com/AIGNE-io/aigne-framework/commit/076a4896948c397518e99df46c1a443ea43daa64))
+
 ## [1.42.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.41.0...aigne-framework-v1.42.0) (2025-07-18)
 
 

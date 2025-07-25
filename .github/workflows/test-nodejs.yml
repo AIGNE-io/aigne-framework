@@ -1,9 +1,6 @@
 name: Test Node.js
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -13,7 +10,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  approval-gate:
+    if: github.event.pull_request.head.ref == 'release-please--branches--main'
+    environment: release-test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Approval received."
+
   test-nodejs:
+    needs: approval-gate
+
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

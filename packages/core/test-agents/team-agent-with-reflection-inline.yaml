@@ -1,0 +1,29 @@
+type: team
+name: test-team-agent-with-reflection-inline
+description: Test team agent with reflection inline
+skills:
+  - chat.yaml
+reflection:
+  reviewer:
+    type: ai
+    name: test-team-agent-reviewer
+    description: Test team agent reviewer
+    instruction: |
+      You are a reviewer agent for a team agent.
+      Your task is to review the output of the team agent and provide feedback.
+      The output should include an approval status and any feedback.
+    output_schema:
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: Whether the output is approved or not
+        feedback:
+          type: string
+          description: Feedback on the output
+      required:
+        - approved
+        - feedback
+  is_approved: approved
+  max_iterations: 5
+  return_last_on_max_iterations: true

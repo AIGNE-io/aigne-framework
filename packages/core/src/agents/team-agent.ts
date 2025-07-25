@@ -37,6 +37,83 @@ export enum ProcessMode {
   parallel = "parallel",
 }
 
+export const DEFAULT_REFLECTION_MAX_ITERATIONS = 3;
+
+/**
+ * Configuration for reflection mode processing in TeamAgent.
+ *
+ * Reflection mode enables iterative refinement of agent outputs through a review process.
+ * The team agent will repeatedly process the input and have a reviewer agent evaluate
+ * the output until it meets approval criteria or reaches the maximum iteration limit.
+ *
+ * This is particularly useful for:
+ * - Quality assurance workflows where outputs need validation
+ * - Iterative improvement processes where initial results can be refined
+ * - Self-correcting agent systems that learn from feedback
+ */
+export interface ReflectionMode {
+  /**
+   * The agent responsible for reviewing and providing feedback on the team's output.
+   *
+   * The reviewer agent receives the combined output from the team's processing
+   * and should provide feedback or evaluation that can be used to determine
+   * whether the output meets the required standards.
+   */
+  reviewer: Agent;
+
+  /**
+   * Function or field name that determines whether the reviewer's output indicates approval.
+   *
+   * This can be either:
+   * - A function that receives the reviewer agent's output message and should return:
+   *   - `true` or truthy value: The output is approved and processing should stop
+   *   - `false` or falsy value: The output needs improvement and another iteration should run
+   * - A string representing a field name in the reviewer's output message to check for approval
+   *
+   * When using a function, it can be synchronous or asynchronous, allowing for complex approval logic
+   * including external validation, scoring systems, or human-in-the-loop approval.
+   *
+   * When using a string, the specified field in the reviewer's output will be evaluated for truthiness
+   * to determine approval status.
+   *
+   * @param output - The message output from the reviewer agent (when using function form)
+   * @returns A boolean or truthy/falsy value indicating approval status (when using function form)
+   */
+  isApproved: ((output: Message) => PromiseOrValue<boolean | unknown>) | string;
+
+  /**
+   * Maximum number of reflection iterations before giving up.
+   *
+   * This prevents infinite loops when the approval criteria cannot be met.
+   * If the maximum iterations are reached without approval, the process will
+   * throw an error indicating the reflection failed to converge.
+   *
+   * @default 3
+   */
+  maxIterations?: number;
+
+  /**
+   * Controls the behavior when maximum iterations are reached without approval.
+   *
+   * When set to `true`, the TeamAgent will return the last generated output
+   * instead of throwing an error when the maximum number of reflection iterations
+   * is reached without the reviewer's approval.
+   *
+   * When set to `false` or undefined, the TeamAgent will throw an error
+   * indicating that the reflection process failed to converge within the
+   * maximum iteration limit.
+   *
+   * This option is useful for scenarios where:
+   * - You want to get the best available result even if it's not perfect
+   * - The approval criteria might be too strict for the given context
+   * - You prefer graceful degradation over complete failure
+   * - You want to implement custom error handling based on the returned result
+   *
+   * @default false
+   */
+  returnLastOnMaxIterations?: boolean;
+}
+
 /**
  * Configuration options for creating a TeamAgent.
  *
@@ -48,6 +125,22 @@ export interface TeamAgentOptions<I extends Message, O extends Message> extends 
    * @default {ProcessMode.sequential}
    */
   mode?: ProcessMode;
+
+  /**
+   * Configuration for reflection mode processing.
+   *
+   * When enabled, the TeamAgent will use an iterative refinement process where:
+   * 1. The team processes the input normally
+   * 2. A reviewer agent evaluates the output
+   * 3. If not approved, the process repeats with the previous output as context
+   * 4. This continues until approval or maximum iterations are reached
+   *
+   * This enables self-improving agent workflows that can iteratively refine
+   * their outputs based on feedback from a specialized reviewer agent.
+   *
+   * @see ReflectionMode for detailed configuration options
+   */
+  reflection?: ReflectionMode;
 
   /**
    * Specifies which input field should be treated as an array for iterative processing.
@@ -134,6 +227,10 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
   constructor(options: TeamAgentOptions<I, O>) {
     super(options);
     this.mode = options.mode ?? ProcessMode.sequential;
+    this.reflection = options.reflection && {
+      ...options.reflection,
+      maxIterations: options.reflection.maxIterations ?? DEFAULT_REFLECTION_MAX_ITERATIONS,
+    };
     this.iterateOn = options.iterateOn;
     this.iterateWithPreviousOutput = options.iterateWithPreviousOutput;
   }
@@ -144,6 +241,15 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * This can be either sequential (one after another) or parallel (all at once).
    */
   mode: ProcessMode;
+
+  /**
+   * The reflection mode configuration with guaranteed maxIterations value.
+   *
+   * This is the internal representation after processing the user-provided
+   * reflection configuration, ensuring that maxIterations always has a value
+   * (defaulting to DEFAULT_REFLECTION_MAX_ITERATIONS if not specified).
+   */
+  reflection?: ReflectionMode & Required<Pick<ReflectionMode, "maxIterations">>;
 
   /**
    * The input field key to iterate over when processing array inputs.
@@ -181,11 +287,54 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
   process(input: I, options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>> {
     if (!this.skills.length) throw new Error("TeamAgent must have at least one skill defined.");
 
+    if (this.reflection) return this._processReflection(input, options);
+
+    return this._processNonReflection(input, options);
+  }
+
+  private _processNonReflection(
+    input: I,
+    options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<O>> {
     if (this.iterateOn) {
       return this._processIterator(this.iterateOn, input, options);
     }
 
-    return this._process(input, options);
+    return this._processNonIterator(input, options);
+  }
+
+  private async _processReflection(input: I, options: AgentInvokeOptions): Promise<O> {
+    assert(this.reflection, "Reflection mode must be defined for reflection processing");
+
+    let iterations = 0;
+    const previousOutput = { ...input };
+
+    for (;;) {
+      const output = await agentProcessResultToObject(
+        await this._processNonReflection(previousOutput, options),
+      );
+      Object.assign(previousOutput, output);
+
+      const reviewOutput = await options.context.invoke(this.reflection.reviewer, previousOutput);
+      Object.assign(previousOutput, reviewOutput);
+
+      const { isApproved } = this.reflection;
+
+      const approved =
+        typeof isApproved === "string" ? reviewOutput[isApproved] : await isApproved(reviewOutput);
+
+      if (approved) return output;
+
+      if (++iterations >= this.reflection.maxIterations) {
+        if (this.reflection.returnLastOnMaxIterations) return output;
+
+        break;
+      }
+    }
+
+    throw new Error(
+      `Reflection mode exceeded max iterations ${this.reflection.maxIterations}. Please review the feedback and try again.`,
+    );
   }
 
   private async *_processIterator(
@@ -206,7 +355,10 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
         throw new TypeError(`Expected ${String(key)} to be an object, got ${typeof item}`);
 
       const res = await agentProcessResultToObject(
-        await this._process({ ...input, [key]: arr, ...item }, { ...options, streaming: false }),
+        await this._processNonIterator(
+          { ...input, [key]: arr, ...item },
+          { ...options, streaming: false },
+        ),
       );
 
       // Merge the item result with the original item used for next iteration
@@ -224,7 +376,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     }
   }
 
-  private _process(
+  private _processNonIterator(
     input: Message,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<O>> {

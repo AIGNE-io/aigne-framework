@@ -1,0 +1,10 @@
+type: team
+name: test-team-agent-with-reflection
+description: Test team agent with reflection
+skills:
+  - chat.yaml
+reflection:
+  reviewer: team-agent-reviewer.yaml
+  is_approved: approved
+  max_iterations: 5
+  return_last_on_max_iterations: true

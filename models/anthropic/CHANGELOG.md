@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.10.1](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.10.0...anthropic-v0.10.1) (2025-07-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.38.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.13
+
+## [0.10.0](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.9.3...anthropic-v0.10.0) (2025-07-24)
+
+
+### Features
+
+* **cli:** support aigne hub connect and model use ([#267](https://github.com/AIGNE-io/aigne-framework/issues/267)) ([8e5a32a](https://github.com/AIGNE-io/aigne-framework/commit/8e5a32afc64593137153d7407bde13837312ac70))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.38.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.12
+
+## [0.9.3](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.9.2...anthropic-v0.9.3) (2025-07-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.37.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.11
+
 ## [0.9.2](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.9.1...anthropic-v0.9.2) (2025-07-17)
 
 

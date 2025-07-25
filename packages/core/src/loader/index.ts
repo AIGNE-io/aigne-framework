@@ -25,7 +25,13 @@ interface LoadableModelClass {
 
 export interface LoadableModel {
   name: string;
-  create: (options: { model?: string; modelOptions?: ChatModelOptions }) => ChatModel;
+  apiKeyEnvName?: string;
+  create: (options: {
+    model?: string;
+    modelOptions?: ChatModelOptions;
+    accessKey?: string;
+    url?: string;
+  }) => ChatModel;
 }
 
 export interface LoadOptions {
@@ -71,7 +77,7 @@ export async function loadAgent(
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
     const agent = await loadAgentFromJsFile(path);
     if (agent instanceof Agent) return agent;
-    return FunctionAgent.from(agent);
+    return parseAgent(path, agent, options, agentOptions);
   }
 
   if ([".yml", ".yaml"].includes(nodejs.path.extname(path))) {
@@ -187,12 +193,24 @@ async function parseAgent(
     case "team": {
       return TeamAgent.from({
         ...baseOptions,
+        mode: agent.mode,
+        iterateOn: agent.iterateOn,
+        reflection: agent.reflection && {
+          ...agent.reflection,
+          reviewer: await loadNestAgent(path, agent.reflection.reviewer, options),
+        },
       });
     }
     case "transform": {
       return TransformAgent.from({
         ...baseOptions,
         jsonata: agent.jsonata,
+      });
+    }
+    case "function": {
+      return FunctionAgent.from({
+        ...baseOptions,
+        process: agent.process,
       });
     }
   }
@@ -218,6 +236,7 @@ export async function loadModel(
   models: LoadableModel[],
   model?: Camelize<z.infer<typeof aigneFileSchema>["model"]>,
   modelOptions?: ChatModelOptions,
+  accessKeyOptions?: { accessKey?: string; url?: string },
 ): Promise<ChatModel | undefined> {
   const params = {
     model: MODEL_NAME ?? model?.name ?? undefined,
@@ -227,13 +246,14 @@ export async function loadModel(
     presencePenalty: model?.presencePenalty ?? undefined,
   };
 
-  const m = models.find((m) =>
-    m.name
-      .toLowerCase()
-      .includes((MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER).toLowerCase()),
-  );
+  const providerName = MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER;
+  const provider = providerName.replace(/-/g, "");
+
+  const m = models.find((m) => m.name.toLowerCase().includes(provider.toLowerCase()));
   if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
+
   return m.create({
+    ...(accessKeyOptions || {}),
     model: params.model,
     modelOptions: { ...params, ...modelOptions },
   });

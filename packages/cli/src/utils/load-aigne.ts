@@ -183,7 +183,9 @@ export const formatModelName = async (
     return model;
   }
 
-  if (process.env.CI || process.env.NODE_ENV === "test") return model;
+  if (process.env.CI || process.env.NODE_ENV === "test") {
+    return `${AGENT_HUB_PROVIDER}:${provider}/${name}`;
+  }
 
   const result = await inquirerPrompt({
     type: "list",

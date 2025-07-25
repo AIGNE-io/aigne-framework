@@ -94,7 +94,7 @@
   "scripts": {
     "clean": "node scripts/build-clean.mjs",
     "lint": "tsc --build scripts/tsconfig.build.json --noEmit",
-    "build": "run-p build:ui build:api build:copy",
+    "build": "run-p build:ui build:api && npm run build:copy",
     "build:ui": "node scripts/build-ui.mjs",
     "build:api": "tsc --build scripts/tsconfig.build.json",
     "build:copy": "zx --quiet scripts/download-json.mjs",

@@ -267,10 +267,10 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
                       },
                     }}
                     title={
-                      (window as any)._modelPricesAndContextWindow?.[model] ? (
+                      (window as any).modelPrices?.[model] ? (
                         <ModelInfoTip
                           modelInfo={{
-                            ...(window as any)._modelPricesAndContextWindow?.[model],
+                            ...(window as any).modelPrices?.[model],
                             model,
                           }}
                         />

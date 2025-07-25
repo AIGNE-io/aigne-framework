@@ -18,9 +18,10 @@
     "clean": "node scripts/build-clean.mjs",
     "dev": "blocklet dev",
     "start": "cross-env NODE_ENV=development nodemon --exec tsx api/dev.ts -w api",
-    "bundle": "tsc --noEmit && npm run bundle:client && npm run bundle:api",
+    "bundle": "tsc --noEmit && npm run build:copy && npm run bundle:client && npm run bundle:api",
     "bundle:client": "vite build",
     "bundle:api": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release --external @aigne/sqlite",
+    "build:copy": "zx --quiet scripts/download-json.mjs",
     "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
     "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json",
     "bump-version": "zx --quiet scripts/bump-version.mjs"
@@ -47,6 +48,7 @@
     "react-dom": "^19.1.0",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^7.6.3",
+    "ufo": "^1.6.1",
     "vite-plugin-blocklet": "^0.10.1"
   },
   "devDependencies": {

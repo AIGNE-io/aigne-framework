@@ -188,6 +188,15 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     [page.pageSize],
   );
 
+  useEffect(() => {
+    fetch(joinURL(origin, "/model-prices.json"))
+      .then((res) => res.json())
+      .then((data) => {
+        // @ts-ignore
+        window.modelPrices = data;
+      });
+  }, []);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
     const abortController = new AbortController();

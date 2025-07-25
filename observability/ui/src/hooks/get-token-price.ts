@@ -19,7 +19,7 @@ export default function useGetTokenPrice() {
         };
       }
 
-      const price = (window as any)._modelPricesAndContextWindow?.[model];
+      const price = (window as any).modelPrices?.[model];
       if (!price) {
         return {
           inputCost: new Decimal(0),

@@ -9,5 +9,5 @@
     }
   },
   "exclude": ["node_modules", "lib"],
-  "include": ["src", "test"]
+  "include": ["src", "test", "../core/src/types/global.d.ts"]
 }

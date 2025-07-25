@@ -9,6 +9,7 @@ import {
   type ChatModelOutput,
   type ChatModelOutputUsage,
   type Message,
+  safeParseJSON,
 } from "@aigne/core";
 import { parseJSON } from "@aigne/core/utils/json-schema.js";
 import { logger } from "@aigne/core/utils/logger.js";
@@ -30,7 +31,6 @@ import type {
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources/index.js";
 import { Ajv } from "ajv";
-import jaison from "jaison";
 import { z } from "zod";
 
 const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
@@ -475,12 +475,4 @@ function convertTools({
   };
 }
 
-function safeParseJSON(text: string): any {
-  if (!text) return null;
-
-  try {
-    return jaison(text);
-  } catch {
-    return null;
-  }
-}
+// safeParseJSON is now imported from @aigne/core

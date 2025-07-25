@@ -8,7 +8,9 @@ import {
   type ChatModelInputTool,
   type ChatModelOptions,
   type ChatModelOutput,
-  type Role,
+  createRoleMapper,
+  STANDARD_ROLE_MAP,
+  safeParseJSON,
 } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
@@ -20,7 +22,6 @@ import {
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import { Ajv } from "ajv";
-import jaison from "jaison";
 import { nanoid } from "nanoid";
 import OpenAI, { type APIError, type ClientOptions } from "openai";
 import type {
@@ -226,7 +227,9 @@ export class OpenAIChatModel extends ChatModel {
     }
     logger.warn(
       `${this.name}: Text response does not match JSON schema, trying to use tool to extract json `,
-      { text: result.text },
+      {
+        text: result.text,
+      },
     );
 
     const output = await this.requestStructuredOutput(body, input.responseFormat);
@@ -426,15 +429,8 @@ export class OpenAIChatModel extends ChatModel {
   }
 }
 
-/**
- * @hidden
- */
-export const ROLE_MAP: { [key in Role]: ChatCompletionMessageParam["role"] } = {
-  system: "system",
-  user: "user",
-  agent: "assistant",
-  tool: "tool",
-} as const;
+// Create role mapper for OpenAI (uses standard mapping)
+const mapRole = createRoleMapper(STANDARD_ROLE_MAP);
 
 /**
  * @hidden
@@ -445,7 +441,7 @@ export async function contentsFromInputMessages(
   return messages.map(
     (i) =>
       ({
-        role: ROLE_MAP[i.role],
+        role: mapRole(i.role),
         content:
           typeof i.content === "string"
             ? i.content
@@ -597,12 +593,4 @@ class CustomOpenAI extends OpenAI {
   }
 }
 
-function safeParseJSON(text: string): any {
-  if (!text) return null;
-
-  try {
-    return jaison(text);
-  } catch {
-    return null;
-  }
-}
+// safeParseJSON is now imported from @aigne/core

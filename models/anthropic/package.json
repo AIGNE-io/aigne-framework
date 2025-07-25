@@ -44,7 +44,6 @@
     "@aigne/core": "workspace:^",
     "@anthropic-ai/sdk": "^0.56.0",
     "ajv": "^8.17.1",
-    "jaison": "^2.0.2",
     "zod": "^3.25.67"
   },
   "devDependencies": {

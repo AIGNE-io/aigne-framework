@@ -8,5 +8,5 @@
     }
   },
   "exclude": ["node_modules", "dist"],
-  "include": ["src", "test"]
+  "include": ["src", "test", "../core/src/types/global.d.ts"]
 }

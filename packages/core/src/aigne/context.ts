@@ -362,10 +362,7 @@ export class AIGNEContext implements Context {
 
             return output;
           } catch (error) {
-            this.spans.forEach((span) => {
-              span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-              span.end();
-            });
+            this.endAllSpans(error);
             throw error;
           }
         }
@@ -392,10 +389,7 @@ export class AIGNEContext implements Context {
             return await this.onInvocationResult(output, options);
           },
           onError: (error) => {
-            this.spans.forEach((span) => {
-              span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-              span.end();
-            });
+            this.endAllSpans(error);
 
             return error;
           },
@@ -474,6 +468,13 @@ export class AIGNEContext implements Context {
     return this.internal.events.emit(eventName, ...newArgs);
   }
 
+  private async endAllSpans(error?: Error) {
+    this.spans.forEach((span) => {
+      span.setStatus({ code: SpanStatusCode.ERROR, message: error?.message });
+      span.end();
+    });
+  }
+
   private async trace<K extends keyof ContextEmitEventMap>(
     eventName: K,
     args: Args<K, ContextEmitEventMap>,
@@ -513,7 +514,6 @@ export class AIGNEContext implements Context {
             span.setAttribute("memories", JSON.stringify([]));
           }
 
-          // flush span to db
           await this.observer?.flush(span);
 
           break;

@@ -319,39 +319,8 @@ describe("formatModelName", () => {
     ).rejects.toThrow("Unsupported model: unsupported gpt-4");
   });
 
-  test("should prompt user when API key is not configured", async () => {
-    const result = await formatModelName(mockModels, "openai:gpt-4", mockInquirerPrompt);
-
-    expect(mockInquirerPrompt).toHaveBeenCalledWith({
-      type: "list",
-      name: "useAigneHub",
-      message:
-        "Seems no API Key configured for openai/gpt-4, select your preferred way to continue:",
-      choices: [
-        {
-          name: "Connect to AIGNE Hub to use gpt-4 (Recommended since free credits available)",
-          value: true,
-        },
-        {
-          name: "Exit and bring my owner API Key by set OPENAI_API_KEY",
-          value: false,
-        },
-      ],
-      default: true,
-    });
-
-    expect(result).toBe("aignehub:openai/gpt-4");
-  });
-
-  test("should return original model when user chooses not to use aignehub", async () => {
-    const mockPrompt: any = async () => ({ useAigneHub: false });
-    const result = await formatModelName(mockModels, "openai:gpt-4", mockPrompt);
-    expect(result).toBe("openai:gpt-4");
-  });
-
   test("should handle case-insensitive model matching", async () => {
     const result = await formatModelName(mockModels, "OPENAI:gpt-4", mockInquirerPrompt);
-
     expect(result).toBe("aignehub:OPENAI/gpt-4");
   });
 

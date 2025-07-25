@@ -230,7 +230,6 @@ export async function loadAIGNE(
     inquirer.prompt) as typeof inquirer.prompt;
 
   let accessKeyOptions: { accessKey?: string; url?: string } = {};
-  console.log("options?.model", options?.model);
   const modelName = await formatModelName(models, options?.model || "", inquirerPrompt);
 
   if (process.env.CI || process.env.NODE_ENV === "test") {

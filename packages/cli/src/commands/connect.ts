@@ -60,7 +60,6 @@ function displayStatus(statusList: StatusInfo[]) {
 
     console.log(`${statusIcon} ${chalk.bold(status.host)}`);
     console.log(`   Status: ${statusText}`);
-    // TODO 需要小芳提供接口
     // console.log(`   Payment URL: ${status.apiUrl}/payment`);
     // console.log(`   Billing URL: ${status.apiUrl}/billing`);
 

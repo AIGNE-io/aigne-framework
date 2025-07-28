@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
+import { getUserInfo } from "@blocklet/aigne-hub/api/user";
 import chalk from "chalk";
 import { Command, type OptionValues } from "commander";
 import { parse } from "yaml";
@@ -12,6 +13,7 @@ interface ConnectOptions extends OptionValues {
 interface StatusInfo {
   host: string;
   apiUrl?: string;
+  apiKey?: string;
 }
 
 interface AIGNEEnv {
@@ -36,6 +38,7 @@ async function getConnectionStatus(): Promise<StatusInfo[]> {
       statusList.push({
         host,
         apiUrl: config.AIGNE_HUB_API_URL,
+        apiKey: config.AIGNE_HUB_API_KEY,
       });
     }
 
@@ -45,7 +48,7 @@ async function getConnectionStatus(): Promise<StatusInfo[]> {
   }
 }
 
-function displayStatus(statusList: StatusInfo[]) {
+async function displayStatus(statusList: StatusInfo[]) {
   if (statusList.length === 0) {
     console.log(chalk.yellow("No AIGNE Hub connections found."));
     console.log("Use 'aigne connect <url>' to connect to a hub.");
@@ -55,13 +58,29 @@ function displayStatus(statusList: StatusInfo[]) {
   console.log(chalk.blue("AIGNE Hub Connection Status:\n"));
 
   for (const status of statusList) {
-    const statusIcon = status.apiUrl ? chalk.green("✓") : chalk.red("✗");
-    const statusText = status.apiUrl ? "Connected" : "Disconnected";
+    const userInfo = await getUserInfo({
+      baseUrl: status.apiUrl!,
+      accessKey: status.apiKey!,
+    }).catch((e) => {
+      console.error(e);
+      return null;
+    });
+
+    const statusIcon = userInfo ? chalk.green("✓") : chalk.red("✗");
+    const statusText = userInfo ? "Connected" : "Disconnected";
 
     console.log(`${statusIcon} ${chalk.bold(status.host)}`);
     console.log(`   Status: ${statusText}`);
-    // console.log(`   Payment URL: ${status.apiUrl}/payment`);
-    // console.log(`   Billing URL: ${status.apiUrl}/billing`);
+    if (userInfo) {
+      console.log(`   User: ${userInfo?.user.fullName}`);
+      console.log(`   Email: ${userInfo?.user.email}`);
+      if (userInfo?.creditBalance) {
+        console.log(
+          `   Plan: ${userInfo?.creditBalance?.balance}/${userInfo?.creditBalance?.total}`,
+        );
+      }
+      console.log(`   Billing URL: ${userInfo?.paymentLink}`);
+    }
 
     console.log("");
   }
@@ -78,7 +97,7 @@ export function createConnectCommand(): Command {
     .description("Show current connection status")
     .action(async () => {
       const statusList = await getConnectionStatus();
-      displayStatus(statusList);
+      await displayStatus(statusList);
     });
 
   connectCommand

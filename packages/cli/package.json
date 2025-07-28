@@ -70,6 +70,7 @@
     "@aigne/open-router": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/xai": "workspace:^",
+    "@blocklet/aigne-hub": "^0.2.17",
     "@inquirer/prompts": "^7.6.0",
     "@inquirer/type": "^3.0.8",
     "@listr2/prompt-adapter-inquirer": "^3.0.1",

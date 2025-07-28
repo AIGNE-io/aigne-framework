@@ -334,7 +334,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     {
       field: "startTime",
       headerName: t("startedAt"),
-      minWidth: 160,
+      minWidth: 180,
       align: "right",
       headerAlign: "right",
       renderCell: ({ row }) =>
@@ -347,7 +347,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     {
       field: "endTime",
       headerName: t("endedAt"),
-      minWidth: 160,
+      minWidth: 180,
       align: "right",
       headerAlign: "right",
       renderCell: ({ row }) =>
@@ -392,7 +392,15 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           },
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: 1,
+            mb: 0.5,
+          }}
+        >
           <TableSearch
             options={{
               searchPlaceholder: t("search"),

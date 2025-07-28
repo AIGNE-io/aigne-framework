@@ -3,8 +3,8 @@
   "compilerOptions": {
     "paths": {
       "@aigne/core": ["../core/src"],
-      "@aigne/core/*": ["../core/src/*"],
-      "@aigne/aigne-hub": ["./src"]
+      "@aigne/core/*": ["../core/src/*"]
+      // "@aigne/aigne-hub": ["./src"]
     }
   },
   "exclude": ["node_modules", "lib"],

@@ -6,11 +6,8 @@ import {
   type ChatModelOutput,
 } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import {
-  AIGNEHubChatModel as _AIGNEHubChatModel,
-  type AIGNEHubChatModelOptions,
-} from "./aigne-hub-model.js";
-import { HubChatModel, type HubChatModelOptions } from "./hub-model.js";
+import { BlockletAIGNEHubChatModel, type HubChatModelOptions } from "./blocklet-aigne-hub-model.js";
+import { type AIGNEHubChatModelOptions, CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
 
 export class AIGNEHubChatModel extends ChatModel {
   private client: ChatModel;
@@ -18,8 +15,8 @@ export class AIGNEHubChatModel extends ChatModel {
   constructor(public options: HubChatModelOptions) {
     super();
     this.client = process.env.BLOCKLET_AIGNE_API_PROVIDER
-      ? new HubChatModel(options)
-      : new _AIGNEHubChatModel(options as AIGNEHubChatModelOptions);
+      ? new BlockletAIGNEHubChatModel(options)
+      : new CliAIGNEHubChatModel(options as AIGNEHubChatModelOptions);
   }
 
   override process(

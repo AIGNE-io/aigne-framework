@@ -7,7 +7,7 @@ import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import { Hono } from "hono";
-import { AIGNEHubChatModel } from "../src/aigne-hub-model.js";
+import { AIGNEHubChatModel } from "../src/cli-aigne-hub-model.js";
 
 test("AIGNEHubChatModel example simple", async () => {
   const { url, aigne, close } = await createHonoServer();

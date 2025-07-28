@@ -165,7 +165,7 @@ export class AIGNEListrRenderer extends DefaultRenderer {
       this._logger.toStdout(logs.join(EOL));
     }
 
-    let tasks = super.create(options);
+    let tasks = super.create({ ...options, prompt: false });
 
     const bottomBar = this._options.aigne?.getBottomBarLogs?.({ running });
     if (bottomBar?.length) {
@@ -185,6 +185,11 @@ export class AIGNEListrRenderer extends DefaultRenderer {
         const lines = rows - tasks.split(EOL).length - 2;
         tasks += output.split(EOL).slice(-Math.max(4, lines)).join(EOL);
       }
+    }
+
+    const prompt: string[] = super["renderPrompt"]();
+    if (prompt.length) {
+      tasks += `${EOL.repeat(2)}${prompt.join(EOL)}`;
     }
 
     return tasks;

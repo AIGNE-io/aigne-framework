@@ -185,7 +185,7 @@ describe("Encryption Functions", () => {
     });
 
     test("should handle large messages", () => {
-      const message = "A".repeat(1000) + "Large message with repeated characters";
+      const message = `${"A".repeat(1000)} Large message with repeated characters`;
       const salt = "test-salt";
       const iv = "test-iv";
 
@@ -284,11 +284,13 @@ describe("formatModelName", () => {
   });
 
   test("should return model as-is when NODE_ENV is test", async () => {
+    process.env["OPENAI_API_KEY"] = undefined;
     const result = await formatModelName(mockModels, "openai:gpt-4", mockInquirerPrompt);
     expect(result).toBe("aignehub:openai/gpt-4");
   });
 
   test("should return default aignehub model when no model provided", async () => {
+    process.env["OPENAI_API_KEY"] = undefined;
     const result = await formatModelName(mockModels, "", mockInquirerPrompt);
     expect(result).toBe("aignehub:openai/gpt-4o");
   });
@@ -309,9 +311,9 @@ describe("formatModelName", () => {
   });
 
   test("should throw error for unsupported model", async () => {
-    await expect(
-      formatModelName(mockModels, "unsupported:gpt-4", mockInquirerPrompt),
-    ).rejects.toThrow("Unsupported model: unsupported gpt-4");
+    expect(formatModelName(mockModels, "unsupported:gpt-4", mockInquirerPrompt)).rejects.toThrow(
+      "Unsupported model: unsupported gpt-4",
+    );
   });
 
   test("should handle case-insensitive model matching", async () => {
@@ -325,6 +327,7 @@ describe("formatModelName", () => {
   });
 
   test("should handle complex model names", async () => {
+    process.env["ANTHROPIC_API_KEY"] = undefined;
     const result = await formatModelName(
       mockModels,
       "anthropic:claude-3-sonnet",

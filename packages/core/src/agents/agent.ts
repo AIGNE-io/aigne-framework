@@ -1,4 +1,5 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+import type * as prompts from "@inquirer/prompts";
 import { ZodObject, type ZodType, z } from "zod";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
@@ -219,7 +220,14 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
   /**
    * Optional hooks for agent invocation
    */
-  hooks?: AgentHooks<any, any>;
+  hooks?: AgentHooks<any, any> | AgentHooks<any, any>[];
+
+  /**
+   * @inquirer/prompts used for collecting user input during agent execution
+   *
+   * This property only exists in the CLI context by command `aigne run`
+   */
+  prompts?: typeof prompts;
 }
 
 /**
@@ -594,6 +602,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
       const s = await this.callHooks("onStart", { input }, opts);
       if (s?.input) input = s.input as I;
+      if (s?.options) Object.assign(opts, s.options);
 
       input = checkArguments(`Agent ${this.name} input`, this.inputSchema, input);
 
@@ -654,9 +663,9 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       if (!h) continue;
 
       if (typeof h === "function") {
-        Object.assign(result, await h({ ...input, context } as any));
+        Object.assign(result, await h({ ...input, context, agent: this } as any));
       } else {
-        Object.assign(result, await context.invoke<any, any>(h, input));
+        Object.assign(result, await context.invoke<any, any>(h, { ...input, agent: this }));
       }
     }
 
@@ -1015,8 +1024,12 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    * @param event Object containing the input message
    */
   onStart?:
-    | ((event: { context: Context; input: I }) => PromiseOrValue<void | { input?: I }>)
-    | Agent<{ input: I }, { input?: I }>;
+    | ((event: {
+        context: Context;
+        agent: Agent;
+        input: I;
+      }) => PromiseOrValue<void | { input?: I; options?: any }>)
+    | Agent<{ input: I }, { input?: I; options?: any }>;
 
   /**
    * Called when agent processing completes or fails
@@ -1029,16 +1042,25 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    */
   onEnd?:
     | ((
-        event: XOr<{ context: Context; input: I; output: O; error: Error }, "output", "error">,
+        event: XOr<
+          { context: Context; agent: Agent; input: I; output: O; error: Error },
+          "output",
+          "error"
+        >,
       ) => PromiseOrValue<void | { output?: O }>)
     | Agent<XOr<{ input: I; output: O; error: Error }, "output", "error">, { output?: O }>;
 
   onSuccess?:
-    | ((event: { context: Context; input: I; output: O }) => PromiseOrValue<void | { output?: O }>)
+    | ((event: {
+        context: Context;
+        agent: Agent;
+        input: I;
+        output: O;
+      }) => PromiseOrValue<void | { output?: O }>)
     | Agent<{ input: I; output: O }, { output?: O }>;
 
   onError?:
-    | ((event: { context: Context; input: I; error: Error }) => void)
+    | ((event: { context: Context; agent: Agent; input: I; error: Error }) => void)
     | Agent<{ input: I; error: Error }>;
 
   /**
@@ -1050,7 +1072,12 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
    * @param event Object containing the skill being used and input message
    */
   onSkillStart?:
-    | ((event: { context: Context; skill: Agent; input: Message }) => PromiseOrValue<void>)
+    | ((event: {
+        context: Context;
+        agent: Agent;
+        skill: Agent;
+        input: Message;
+      }) => PromiseOrValue<void>)
     | Agent<{ skill: Agent; input: Message }>;
 
   /**
@@ -1065,7 +1092,14 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
   onSkillEnd?:
     | ((
         event: XOr<
-          { context: Context; skill: Agent; input: Message; output: Message; error: Error },
+          {
+            context: Context;
+            agent: Agent;
+            skill: Agent;
+            input: Message;
+            output: Message;
+            error: Error;
+          },
           "output",
           "error"
         >,
@@ -1096,7 +1130,7 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
 export type AgentHookInput<
   H extends keyof AgentHooks,
   Hook extends AgentHooks[H] = AgentHooks[H],
-> = Hook extends (input: infer I) => any ? Omit<I, "context"> : never;
+> = Hook extends (input: infer I) => any ? Omit<I, "context" | "agent"> : never;
 
 export type AgentHookOutput<
   H extends keyof AgentHooks,

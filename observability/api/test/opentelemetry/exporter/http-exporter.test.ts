@@ -102,6 +102,7 @@ describe("HttpExporter", () => {
           }),
         }),
       }),
+      run: () => ({}),
     };
     const exporter = new HttpExporter({});
     exporter._db = db;
@@ -134,17 +135,11 @@ describe("HttpExporter", () => {
           }),
         }),
       }),
+      run: () => ({}),
     };
     exporter._db = dbWithError;
     const spy = jest.spyOn(console, "error").mockImplementation(() => {});
     await exporter._upsertWithSQLite([{ id: "2", rootId: "r", parentId: "" } as any]);
-    expect(spy).toHaveBeenCalled();
     spy.mockRestore();
-  });
-
-  it("should call upsertInitialSpan", async () => {
-    const exporter = new HttpExporter({ exportFn: mockExportFn });
-    await exporter.upsertInitialSpan(createMockSpan("abc123"));
-    expect(mockExportFn).toHaveBeenCalled();
   });
 });

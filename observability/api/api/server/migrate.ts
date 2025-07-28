@@ -22,7 +22,12 @@ export async function migrate(db: LibSQLDatabase | SqliteRemoteDatabase) {
 
   for (const migration of migrations) {
     if (!executedHashes.has(migration.hash)) {
-      await db.run(migration.sql).execute();
+      if (typeof migration.sql === "function") {
+        await migration.sql(db);
+      } else {
+        await db.run(migration.sql).execute();
+      }
+
       await db
         .run(sql`INSERT INTO ${sql.identifier(migrationsTable)} (hash) VALUES (${migration.hash})`)
         .execute();

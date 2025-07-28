@@ -31,7 +31,7 @@ const startServer = async () => {
   const BLOCKLET_APP_DIR = process.env.BLOCKLET_APP_DIR;
   if (isProduction && BLOCKLET_APP_DIR) {
     const staticDir = path.resolve(BLOCKLET_APP_DIR, "dist");
-    app.use(express.static(staticDir, { maxAge: "30d", index: false }));
+    app.use(express.static(staticDir, { maxAge: "1d", index: false }));
     app.use(fallback("index.html", { root: staticDir }));
   }
 

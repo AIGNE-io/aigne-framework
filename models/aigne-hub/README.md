@@ -58,8 +58,8 @@ pnpm add @aigne/aigne-hub @aigne/core
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubChatModel({
-  url: "https://your-aigne-hub-instance/ai-kit/",
-  accessKey: "your-access-key-id",
+  url: "https://your-aigne-hub-instance/ai-kit",
+  accessKey: "your-access-key-secret",
   model: "openai/gpt-4o-mini",
 });
 
@@ -84,8 +84,8 @@ console.log(result);
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubChatModel({
-  url: "https://your-aigne-hub-instance/ai-kit/",
-  accessKey: "your-access-key-id",
+  url: "https://your-aigne-hub-instance/ai-kit",
+  accessKey: "your-access-key-secret",
   model: "openai/gpt-4o-mini",
 });
 

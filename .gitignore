@@ -66,4 +66,4 @@ lerna-debug.log*
 /docs/LICENSE
 /docs/CONTRIBUTING.md
 /docs/RELEASING.md
-**/*/modelPricesAndContextWindow.json
+**/*/model-prices.json

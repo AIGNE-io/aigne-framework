@@ -1,7 +1,6 @@
 import type { AIGNEObserver } from "@aigne/observability-api";
 import type { Span } from "@opentelemetry/api";
 import { context, SpanStatusCode, trace } from "@opentelemetry/api";
-import type { ReadableSpan } from "@opentelemetry/sdk-trace-base";
 import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
@@ -247,13 +246,18 @@ export class AIGNEContext implements Context {
         }
       }
     } else {
+      this.span = tracer?.startSpan("AIGNEContext");
+
       this.internal = new AIGNEContextShared(
         parent instanceof AIGNEContext ? parent.internal : parent,
       );
-      this.span = tracer?.startSpan("AIGNEContext");
 
       // 修改了 rootId 是否会之前的有影响？，之前为 this.id
       this.rootId = this.span?.spanContext?.().traceId ?? v7();
+    }
+
+    if (this.span) {
+      this.internal.addSpan(this.span);
     }
 
     this.id = this.span?.spanContext()?.spanId ?? v7();
@@ -291,6 +295,10 @@ export class AIGNEContext implements Context {
 
   get status() {
     return this.internal.status;
+  }
+
+  get spans() {
+    return this.internal.spans;
   }
 
   get usage() {
@@ -343,15 +351,20 @@ export class AIGNEContext implements Context {
     return Promise.resolve(newContext.internal.invoke(agent, message, newContext, options)).then(
       async (response) => {
         if (!options?.streaming) {
-          let { __activeAgent__: activeAgent, ...output } =
-            await agentResponseStreamToObject(response);
-          output = await this.onInvocationResult(output, options);
+          try {
+            let { __activeAgent__: activeAgent, ...output } =
+              await agentResponseStreamToObject(response);
+            output = await this.onInvocationResult(output, options);
 
-          if (options?.returnActiveAgent) {
-            return [output, activeAgent];
+            if (options?.returnActiveAgent) {
+              return [output, activeAgent];
+            }
+
+            return output;
+          } catch (error) {
+            this.endAllSpans(error);
+            throw error;
           }
-
-          return output;
         }
 
         const activeAgentPromise = promiseWithResolvers<Agent>();
@@ -374,6 +387,11 @@ export class AIGNEContext implements Context {
           onResult: async (output) => {
             activeAgentPromise.resolve(output.__activeAgent__);
             return await this.onInvocationResult(output, options);
+          },
+          onError: (error) => {
+            this.endAllSpans(error);
+
+            return error;
           },
         });
 
@@ -450,6 +468,13 @@ export class AIGNEContext implements Context {
     return this.internal.events.emit(eventName, ...newArgs);
   }
 
+  private async endAllSpans(error?: Error) {
+    this.spans.forEach((span) => {
+      span.setStatus({ code: SpanStatusCode.ERROR, message: error?.message });
+      span.end();
+    });
+  }
+
   private async trace<K extends keyof ContextEmitEventMap>(
     eventName: K,
     args: Args<K, ContextEmitEventMap>,
@@ -489,11 +514,7 @@ export class AIGNEContext implements Context {
             span.setAttribute("memories", JSON.stringify([]));
           }
 
-          await this.observer?.traceExporter
-            ?.upsertInitialSpan?.(span as unknown as ReadableSpan)
-            .catch((err) => {
-              logger.error("upsertInitialSpan error", err?.message || err);
-            });
+          await this.observer?.flush(span);
 
           break;
         }
@@ -508,7 +529,6 @@ export class AIGNEContext implements Context {
           }
 
           span.setStatus({ code: SpanStatusCode.OK });
-
           span.end();
 
           break;
@@ -516,7 +536,6 @@ export class AIGNEContext implements Context {
         case "agentFailed": {
           const { error } = args[0] as ContextEventMap["agentFailed"][0];
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-
           span.end();
 
           break;
@@ -547,7 +566,7 @@ export class AIGNEContext implements Context {
 }
 
 class AIGNEContextShared {
-  span?: Span;
+  spans: Span[] = [];
 
   constructor(
     private readonly parent?: Pick<Context, "model" | "skills" | "limits" | "observer"> & {
@@ -577,6 +596,10 @@ class AIGNEContextShared {
 
   get limits() {
     return this.parent?.limits;
+  }
+
+  addSpan(span: Span) {
+    this.spans.push(span);
   }
 
   usage: ContextUsage = newEmptyContextUsage();

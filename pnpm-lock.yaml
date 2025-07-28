@@ -1142,6 +1142,9 @@ importers:
       react-router-dom:
         specifier: ^7.6.3
         version: 7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      ufo:
+        specifier: ^1.6.1
+        version: 1.6.1
       vite-plugin-blocklet:
         specifier: ^0.10.1
         version: 0.10.1(rollup@4.41.1)(vite@7.0.4(@types/node@24.0.12)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))
@@ -1539,6 +1542,9 @@ importers:
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
+      hono:
+        specifier: 4.8.4
+        version: 4.8.4
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5

@@ -5,24 +5,45 @@ import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import express, { type Request, type Response } from "express";
 import type SSE from "express-sse";
 import { parse, stringify } from "yaml";
-
+import { z } from "zod";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
 
 const router = express.Router();
+
+const traceTreeQuerySchema = z.object({
+  page: z
+    .string()
+    .optional()
+    .transform((val) => parseInt(val || "0") || 0),
+  pageSize: z
+    .string()
+    .optional()
+    .transform((val) => parseInt(val || "10") || 10),
+  searchText: z.string().optional().default(""),
+  componentId: z.string().optional().default(""),
+  startDate: z.string().optional().default(""),
+  endDate: z.string().optional().default(""),
+});
 
 import { createTraceBatchSchema } from "../../core/schema.js";
 
 export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHandler[] }) => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
-    const page = Number(req.query.page) || 0;
-    const pageSize = Number(req.query.pageSize) || 10;
+
+    const queryResult = traceTreeQuerySchema.safeParse(req.query);
+
+    if (!queryResult.success) {
+      res.status(400).json({
+        error: "Invalid query parameters",
+        details: queryResult.error.errors,
+      });
+      return;
+    }
+
+    const { page, pageSize, searchText, componentId, startDate, endDate } = queryResult.data;
     const offset = page * pageSize;
-    const searchText = req.query.searchText as string;
-    const componentId = req.query.componentId as string;
-    const startDate = req.query.startDate as string;
-    const endDate = req.query.endDate as string;
 
     const rootFilter = and(
       or(isNull(Trace.parentId), eq(Trace.parentId, "")),
@@ -173,24 +194,75 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     res.json({ code: 0, data: { lastTraceChanged } });
   });
 
-  router.get("/tree/:id", async (req: Request, res: Response) => {
+  router.get("/tree/children/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) {
-      throw new Error("id is required");
-    }
+    if (!id) throw new Error("id is required");
 
     const db = req.app.locals.db as LibSQLDatabase;
     const rootCalls = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
-    if (rootCalls.length === 0) {
-      throw new Error(`Not found trace: ${id}`);
-    }
+    if (rootCalls.length === 0) throw new Error(`Not found trace: ${id}`);
+
+    const all = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
+    res.json({ data: all[0] });
+  });
+
+  router.get("/tree/:id", async (req: Request, res: Response) => {
+    const id = req.params.id;
+    if (!id) throw new Error("id is required");
+
+    const db = req.app.locals.db as LibSQLDatabase;
+    const rootCalls = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
+    if (rootCalls.length === 0) throw new Error(`Not found trace: ${id}`);
 
     const rootCallIds = rootCalls.map((r) => r.rootId).filter((id): id is string => !!id);
 
-    const all = await db.select().from(Trace).where(inArray(Trace.rootId, rootCallIds)).execute();
+    const all = await db
+      .select({
+        id: Trace.id,
+        rootId: Trace.rootId,
+        parentId: Trace.parentId,
+        name: Trace.name,
+        startTime: Trace.startTime,
+        endTime: Trace.endTime,
+        status: Trace.status,
+        attributes: sql`
+          CASE
+            WHEN JSON_EXTRACT(${Trace.attributes}, '$.output.usage') IS NOT NULL THEN
+              JSON_OBJECT(
+                'output', JSON_OBJECT(
+                  'usage', JSON_EXTRACT(${Trace.attributes}, '$.output.usage'),
+                  'model', JSON_EXTRACT(${Trace.attributes}, '$.output.model')
+                ),
+                'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag')
+              )
+            ELSE JSON_OBJECT(
+              'output', JSON_OBJECT(),
+              'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag')
+            )
+          END
+        `,
+        userId: Trace.userId,
+        sessionId: Trace.sessionId,
+        componentId: Trace.componentId,
+      })
+      .from(Trace)
+      .where(inArray(Trace.rootId, rootCallIds))
+      .execute();
 
     const calls = new Map();
-    all.forEach((call) => calls.set(call.id, { ...call, children: [] }));
+    all.forEach((call) => {
+      const { attributes } = call;
+      let _attributes = {};
+      if (attributes) {
+        try {
+          _attributes = JSON.parse(attributes as string);
+        } catch (err) {
+          console.error(`parse attributes failed for trace ${call.id}:`, err);
+        }
+      }
+
+      calls.set(call.id, { ...call, children: [], attributes: _attributes });
+    });
     all.forEach((call) => {
       if (call.parentId) {
         const parent = calls.get(call.parentId);
@@ -223,20 +295,49 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const db = req.app.locals.db as LibSQLDatabase;
 
     for (const trace of validatedTraces) {
-      const whereClause = and(
-        eq(Trace.id, trace.id),
-        eq(Trace.rootId, trace.rootId),
-        !trace.parentId ? isNull(Trace.parentId) : eq(Trace.parentId, trace.parentId),
-      );
-
       try {
-        const existing = await db.select().from(Trace).where(whereClause).limit(1).execute();
+        const insertSql = sql`
+          INSERT INTO Trace (
+            id,
+            rootId,
+            parentId,
+            name,
+            startTime,
+            endTime,
+            attributes,
+            status,
+            userId,
+            sessionId,
+            componentId,
+            action
+          ) VALUES (
+            ${trace.id},
+            ${trace.rootId},
+            ${trace.parentId || null},
+            ${trace.name},
+            ${trace.startTime},
+            ${trace.endTime},
+            ${JSON.stringify(trace.attributes)},
+            ${JSON.stringify(trace.status)},
+            ${trace.userId || null},
+            ${trace.sessionId || null},
+            ${trace.componentId || null},
+            ${trace.action || null}
+          )
+          ON CONFLICT(id)
+          DO UPDATE SET
+            name = excluded.name,
+            startTime = excluded.startTime,
+            endTime = excluded.endTime,
+            attributes = excluded.attributes,
+            status = excluded.status,
+            userId = excluded.userId,
+            sessionId = excluded.sessionId,
+            componentId = excluded.componentId,
+            action = excluded.action;
+        `;
 
-        if (existing.length > 0) {
-          await db.update(Trace).set(trace).where(whereClause).execute();
-        } else {
-          await db.insert(Trace).values(trace).execute();
-        }
+        await db?.run?.(insertSql);
       } catch (err) {
         console.error(`upsert spans failed for trace ${trace.id}:`, err);
       }

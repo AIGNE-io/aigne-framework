@@ -197,7 +197,7 @@ export async function parseAgentInputByCommander(
 
 export const parseModelOption = (model?: string) => {
   const { provider, name } =
-    (model || process.env.MODEL)?.match(/(?<provider>[^:]+)(:(?<name>(\S+)))?/)?.groups ?? {};
+    (model || process.env.MODEL)?.match(/(?<provider>[^:]*)(:(?<name>(\S+)))?/)?.groups ?? {};
 
   return { provider, name };
 };

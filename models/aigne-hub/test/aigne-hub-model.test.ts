@@ -7,7 +7,8 @@ import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import { Hono } from "hono";
-import { AIGNEHubChatModel } from "../src/aigne-hub-model.js";
+import { BlockletAIGNEHubChatModel } from "../src/blocklet-aigne-hub-model.js";
+import { AIGNEHubChatModel } from "../src/index.js";
 
 test("AIGNEHubChatModel example simple", async () => {
   const { url, aigne, close } = await createHonoServer();
@@ -61,6 +62,29 @@ test("AIGNEHubChatModel example with streaming", async () => {
   expect(text).toEqual("Hello world!");
 
   // #endregion example-aigne-client-streaming
+
+  await close();
+});
+
+test("BlockletAIGNEHubChatModel example simple", async () => {
+  const { url, aigne, close } = await createHonoServer();
+  process.env.BLOCKLET_AIGNE_API_PROVIDER = "aignehub";
+  process.env.BLOCKLET_AIGNE_API_MODEL = "openai/gpt-4o-mini";
+  process.env.BLOCKLET_AIGNE_API_URL = url;
+  process.env.BLOCKLET_AIGNE_API_CREDENTIAL = JSON.stringify({ apiKey: "123" });
+  assert(aigne.model instanceof ChatModel);
+
+  spyOn(aigne.model, "process").mockReturnValueOnce(
+    Promise.resolve(stringToAgentResponseStream("Hello world!")),
+  );
+
+  const client = new BlockletAIGNEHubChatModel({
+    url,
+  });
+
+  const response = await client.invoke({ messages: [{ role: "user", content: "hello" }] });
+
+  expect(response).toEqual({ text: "Hello world!" });
 
   await close();
 });

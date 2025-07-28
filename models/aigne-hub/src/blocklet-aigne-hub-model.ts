@@ -15,7 +15,7 @@ import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
 import { XAIChatModel } from "@aigne/xai";
-import { AIGNEHubChatModel, type AIGNEHubChatModelOptions } from "./aigne-hub-model.js";
+import { type AIGNEHubChatModelOptions, CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
 
 function availableModels(): LoadableModel[] {
   return [
@@ -60,9 +60,9 @@ function availableModels(): LoadableModel[] {
       create: (params) => new XAIChatModel({ ...params }),
     },
     {
-      name: AIGNEHubChatModel.name,
+      name: CliAIGNEHubChatModel.name,
       apiKeyEnvName: "AIGNE_HUB_API_KEY",
-      create: (params) => new AIGNEHubChatModel({ ...params }),
+      create: (params) => new CliAIGNEHubChatModel({ ...params }),
     },
   ];
 }
@@ -73,7 +73,7 @@ export type HubChatModelOptions =
   | BedrockChatModelOptions
   | OpenAIChatModelOptions;
 
-export class HubChatModel extends ChatModel {
+export class BlockletAIGNEHubChatModel extends ChatModel {
   private client: ChatModel;
 
   constructor(

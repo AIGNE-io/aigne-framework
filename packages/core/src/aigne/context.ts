@@ -36,6 +36,7 @@ import {
 } from "../utils/stream-utils.js";
 import {
   checkArguments,
+  flat,
   isEmpty,
   isNil,
   type OmitPropertiesFromArrayFirstElement,
@@ -654,7 +655,7 @@ class AIGNEContextShared {
         const result: Message = {};
 
         if (options?.sourceAgent && activeAgent !== options.sourceAgent) {
-          for (const { onHandoff } of [options.hooks ?? {}, ...options.sourceAgent.hooks]) {
+          for (const { onHandoff } of flat(options.hooks, options.sourceAgent.hooks)) {
             if (!onHandoff) continue;
             await (typeof onHandoff === "function"
               ? onHandoff({

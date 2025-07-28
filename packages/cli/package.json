@@ -24,11 +24,18 @@
     "bunwrapper": "dist/bunwrapper.js"
   },
   "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    ".": "./dist/index.js",
     "./*": "./dist/*"
   },
   "typesVersions": {
     "*": {
+      ".": [
+        "./lib/dts/index.d.ts"
+      ],
       "*": [
         "./dist/*"
       ]
@@ -64,6 +71,7 @@
     "@aigne/openai": "workspace:^",
     "@aigne/xai": "workspace:^",
     "@inquirer/prompts": "^7.6.0",
+    "@inquirer/type": "^3.0.8",
     "@listr2/prompt-adapter-inquirer": "^3.0.1",
     "@modelcontextprotocol/sdk": "^1.15.0",
     "@ocap/mcrypto": "^1.21.0",

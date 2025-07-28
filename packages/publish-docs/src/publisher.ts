@@ -41,7 +41,7 @@ export async function publisher(input: {
     }
 
     const result = await response.json();
-    return { success: true, docs: result.docs };
+    return { success: true, docs: result.docs, boardId: data.boardId };
   } catch (error) {
     console.error("Error publishing docs post:", error);
     return {

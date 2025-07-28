@@ -1,4 +1,5 @@
 import { joinURL } from "ufo";
+import { DISCUSS_KIT_DID } from "./constants.js";
 import { getComponentMountPoint } from "./utils/get-component-mount-point.js";
 
 // Base board interface with common fields
@@ -44,7 +45,7 @@ export async function createBoard(input: {
   const { appUrl, accessToken, boardName } = input;
 
   const url = new URL(appUrl);
-  const mountPoint = await getComponentMountPoint(appUrl, "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu");
+  const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
   console.log(`Found Discuss Kit mount point: ${mountPoint}`);
 
   // Create new board

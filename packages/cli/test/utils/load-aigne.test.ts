@@ -212,7 +212,7 @@ describe("load aigne", () => {
       });
 
       test("should handle large messages", () => {
-        const message = "A".repeat(1000) + "Large message with repeated characters";
+        const message = `${"A".repeat(1000)}Large·message·with·repeated·characters`;
         const salt = "test-salt";
         const iv = "test-iv";
 

@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.26.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.25.1...cli-v1.26.0) (2025-07-28)
+
+
+### Features
+
+* **cli:** add inquirer/prompts integrations for cli ([#286](https://github.com/AIGNE-io/aigne-framework/issues/286)) ([33af756](https://github.com/AIGNE-io/aigne-framework/commit/33af7567fe2e7f9fb4b1633127e1d54fd65cb2a8))
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.6
+    * @aigne/agentic-memory bumped to 1.0.6
+    * @aigne/aigne-hub bumped to 0.2.2
+    * @aigne/anthropic bumped to 0.10.2
+    * @aigne/bedrock bumped to 0.8.6
+    * @aigne/core bumped to 1.39.0
+    * @aigne/deepseek bumped to 0.7.6
+    * @aigne/default-memory bumped to 1.0.6
+    * @aigne/gemini bumped to 0.8.6
+    * @aigne/observability-api bumped to 0.8.2
+    * @aigne/ollama bumped to 0.7.6
+    * @aigne/open-router bumped to 0.7.6
+    * @aigne/openai bumped to 0.10.6
+    * @aigne/xai bumped to 0.7.6
+
 ## [1.25.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.25.0...cli-v1.25.1) (2025-07-24)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.3...observability-ui-v0.7.4) (2025-07-28)
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
 ## [0.7.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.2...observability-ui-v0.7.3) (2025-07-24)
 
 

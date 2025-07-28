@@ -1,8 +1,9 @@
 import { expect, spyOn, test } from "bun:test";
 import { TerminalTracer } from "@aigne/cli/tracer/terminal.js";
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import { OpenAIChatModel } from "@aigne/openai";
+import * as prompts from "@inquirer/prompts";
 
 test("TerminalTracer should work correctly", async () => {
   const model = new OpenAIChatModel({});
@@ -104,4 +105,34 @@ function test() {
 ${"```"}
 `),
   ).toMatchSnapshot();
+});
+
+test("TerminalTracer should", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const agent = FunctionAgent.from(async (_, options) => {
+    const name = await options.prompts?.input({ message: "What is your name?" });
+    const age = await options.prompts?.number({ message: "What is your age?" });
+    const color = await options.prompts?.select({
+      message: "What is your favorite color?",
+      choices: ["red", "green", "blue"],
+    });
+
+    return { name, age, color };
+  });
+
+  const tracer = new TerminalTracer(context);
+
+  spyOn(prompts, "input").mockReturnValueOnce(Promise.resolve("John Doe") as any);
+  spyOn(prompts, "number").mockReturnValueOnce(Promise.resolve(18) as any);
+  spyOn(prompts, "select").mockReturnValueOnce(Promise.resolve("red") as any);
+
+  const { result } = await tracer.run(agent, {});
+
+  expect(result).toEqual({
+    name: "John Doe",
+    age: 18,
+    color: "red",
+  });
 });

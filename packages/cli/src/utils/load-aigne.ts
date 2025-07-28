@@ -171,7 +171,7 @@ export const formatModelName = async (
 
   const { provider, name } = parseModelOption(model);
 
-  if (!provider || provider === "undefined") {
+  if (!provider) {
     return DEFAULT_AIGNE_HUB_PROVIDER_MODEL;
   }
 
@@ -260,6 +260,7 @@ export async function connectToAIGNEHub(url: string) {
         "Failed to write AIGNE Hub access token to .aigne/aigne-hub-connected.yaml",
         err.message,
       );
+      throw err;
     });
 
     return accessKeyOptions;
@@ -294,7 +295,7 @@ export async function loadAIGNE(
   let accessKeyOptions: { accessKey?: string; url?: string } = {};
   const modelName = await formatModelName(
     models,
-    options?.model || `${aigne?.model?.provider}:${aigne?.model?.name}`,
+    options?.model || `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`,
     inquirerPrompt,
   );
 

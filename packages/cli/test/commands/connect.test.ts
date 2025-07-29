@@ -90,6 +90,7 @@ describe("load aigne", () => {
       const command = createConnectCommand();
       await command.parseAsync(["", "connect", "status"]);
       await rm(AIGNE_ENV_FILE, { force: true });
+      await command.parseAsync(["", "connect", "status"]);
     });
   });
 });

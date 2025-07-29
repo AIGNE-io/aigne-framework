@@ -1,4 +1,5 @@
 import { joinURL } from "ufo";
+import { DISCUSS_KIT_DID } from "./constants.js";
 import type { DocNode } from "./generator.js";
 import type { PublishResult } from "./types.js";
 import { getComponentMountPoint } from "./utils/get-component-mount-point.js";
@@ -15,10 +16,7 @@ export async function publisher(input: {
     const { data, appUrl, accessToken } = input;
 
     const url = new URL(appUrl);
-    const mountPoint = await getComponentMountPoint(
-      appUrl,
-      "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
-    );
+    const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
     console.log(`Found Discuss Kit mount point: ${mountPoint}`);
 
     const publishUrl = joinURL(url.origin, mountPoint, "/api/docs/create-docs-collection");
@@ -41,7 +39,7 @@ export async function publisher(input: {
     }
 
     const result = await response.json();
-    return { success: true, docs: result.docs };
+    return { success: true, docs: result.docs, boardId: data.boardId };
   } catch (error) {
     console.error("Error publishing docs post:", error);
     return {

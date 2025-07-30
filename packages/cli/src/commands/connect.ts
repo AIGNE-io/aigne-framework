@@ -1,9 +1,9 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { getUserInfo } from "@blocklet/aigne-hub/api/user";
 import chalk from "chalk";
 import { Command, type OptionValues } from "commander";
 import { parse } from "yaml";
+import { getUserInfo } from "../utils/aigne-hub-user.js";
 import { AIGNE_ENV_FILE, connectToAIGNEHub } from "../utils/load-aigne.js";
 
 interface ConnectOptions extends OptionValues {
@@ -12,8 +12,8 @@ interface ConnectOptions extends OptionValues {
 
 interface StatusInfo {
   host: string;
-  apiUrl?: string;
-  apiKey?: string;
+  apiUrl: string;
+  apiKey: string;
 }
 
 interface AIGNEEnv {
@@ -59,8 +59,8 @@ async function displayStatus(statusList: StatusInfo[]) {
 
   for (const status of statusList) {
     const userInfo = await getUserInfo({
-      baseUrl: status.apiUrl!,
-      accessKey: status.apiKey!,
+      baseUrl: status.apiUrl,
+      accessKey: status.apiKey,
     }).catch((e) => {
       console.error(e);
       return null;

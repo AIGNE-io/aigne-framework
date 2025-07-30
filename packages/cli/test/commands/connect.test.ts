@@ -62,7 +62,7 @@ async function createHonoServer() {
 describe("load aigne", () => {
   const mockOpen = mock(() => {});
   mock.module("open", () => ({ default: mockOpen }));
-  mock.module("@blocklet/aigne-hub/api/user", () => ({
+  mock.module("../../src/utils/aigne-hub-user.ts", () => ({
     getUserInfo: async () => ({
       user: { fullName: "test", email: "test@test.com" },
       creditBalance: { balance: 100, total: 100 },

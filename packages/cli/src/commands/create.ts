@@ -8,7 +8,7 @@ interface CreateOptions {
   path: string;
 }
 
-export function createCreateCommand(): CommandModule<{}, CreateOptions> {
+export function createCreateCommand(): CommandModule<unknown, CreateOptions> {
   return {
     command: "create [path]",
     describe: "Create a new aigne project with agent config files",

@@ -19,7 +19,7 @@ function getAIGNEFilePath() {
 
 const aigneFilePath = getAIGNEFilePath();
 
-createAIGNECommand({ aigneFilePath })
+export default createAIGNECommand({ aigneFilePath })
   .parseAsync(hideBin([...process.argv.slice(0, 2), ...process.argv.slice(aigneFilePath ? 3 : 2)]))
   .catch((error) => {
     console.log(""); // Add an empty line for better readability

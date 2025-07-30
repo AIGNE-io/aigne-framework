@@ -46,6 +46,7 @@ test("runWithAIGNE should run agent correctly", async () => {
 test("runWithAIGNE should exit with error code when run --chat in non-tty environment", async () => {
   const error = spyOn(console, "error").mockReturnValueOnce(undefined as never);
   const exit = spyOn(process, "exit").mockReturnValueOnce(undefined as never);
+  spyOn(process, "exit").mockReturnValueOnce(undefined as never);
 
   await using _ = await mockModule("node:tty", () => ({
     isatty: () => false,
@@ -58,7 +59,7 @@ test("runWithAIGNE should exit with error code when run --chat in non-tty enviro
       return agent;
     },
     {
-      argv: ["", "", "--chat"],
+      argv: ["aigne", "run", "--chat"],
     },
   );
 
@@ -164,7 +165,7 @@ test("parseAgentInputByCommander should parse input correctly", async () => {
     }),
   ).resolves.toEqual({
     name: testInputContent,
-    age: "30",
+    age: 30,
     message: "Hello!",
   });
 

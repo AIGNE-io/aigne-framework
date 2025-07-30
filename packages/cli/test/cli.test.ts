@@ -1,12 +1,12 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import { randomUUID } from "node:crypto";
 import { join } from "node:path";
-import { Command } from "commander";
 import { withQuery } from "ufo";
+import yargs from "yargs";
 import { mockModule } from "./_mocks_/mock-module.js";
 
 test("CLI imports and loads correctly", async () => {
-  const createAIGNECommand = mock(() => new Command());
+  const createAIGNECommand = mock(() => yargs());
 
   await using _ = await mockModule("@aigne/cli/commands/aigne.js", () => ({
     createAIGNECommand,
@@ -18,7 +18,7 @@ test("CLI imports and loads correctly", async () => {
 });
 
 test("CLI imports and loads with shebang mode correctly", async () => {
-  const createAIGNECommand = mock(() => new Command());
+  const createAIGNECommand = mock(() => yargs());
 
   await using _ = await mockModule("@aigne/cli/commands/aigne.js", () => ({
     createAIGNECommand,
@@ -47,12 +47,12 @@ test("aigne cli should print error message", async () => {
 
   await using _ = await mockModule("@aigne/cli/commands/aigne.js", () => ({
     createAIGNECommand: () =>
-      new Command().action(async () => {
+      yargs().command("$0", "test", async () => {
         throw new Error("test error");
       }),
   }));
 
-  await import(withQuery("@aigne/cli/cli.js", { key: randomUUID() }));
+  await import(withQuery("@aigne/cli/cli.js", { key: randomUUID() })).then((m) => m.default);
 
   expect(exit).toHaveBeenCalledWith(1);
   expect(error).toHaveBeenCalledWith(expect.stringContaining("test error"));

@@ -1,6 +1,7 @@
 import yargs from "yargs";
 import { AIGNE_CLI_VERSION } from "../constants.js";
 import { asciiLogo } from "../utils/ascii-logo.js";
+import { createAppCommands } from "./app.js";
 import { createConnectCommand } from "./connect.js";
 import { createCreateCommand } from "./create.js";
 import { createObservabilityCommand } from "./observe.js";
@@ -21,6 +22,7 @@ export function createAIGNECommand(options?: { aigneFilePath?: string }) {
     .command(createServeMCPCommand(options))
     .command(createObservabilityCommand())
     .command(createConnectCommand())
+    .command(createAppCommands())
     .help()
     .alias("help", "h")
     .alias("version", "v")

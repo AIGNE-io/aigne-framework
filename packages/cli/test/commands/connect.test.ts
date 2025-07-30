@@ -6,6 +6,7 @@ import { detect } from "detect-port";
 import { Hono } from "hono";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
+import yargs from "yargs";
 import { AIGNE_ENV_FILE, encrypt } from "../../src/utils/load-aigne.js";
 
 async function createHonoServer() {
@@ -73,8 +74,8 @@ describe("load aigne", () => {
   describe("loadAIGNE", () => {
     test("should connect to aigne hub successfully", async () => {
       const { url, close } = await createHonoServer();
-      const command = createConnectCommand();
-      await command.parseAsync(["", "connect", "--url", url]);
+      const command = yargs().command(createConnectCommand());
+      await command.parseAsync(["connect", "--url", url]);
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
       const env = envs[new URL(url).host];
@@ -87,7 +88,7 @@ describe("load aigne", () => {
     });
 
     test("should connect to aigne hub successfully", async () => {
-      const command = createConnectCommand();
+      const command = yargs().command(createConnectCommand());
       await command.parseAsync(["", "connect", "status"]);
       await rm(AIGNE_ENV_FILE, { force: true });
       await command.parseAsync(["", "connect", "status"]);

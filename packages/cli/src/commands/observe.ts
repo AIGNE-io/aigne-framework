@@ -22,7 +22,7 @@ const DEFAULT_PORT = () =>
     (error) => new Error(`parse PORT error ${error.message}`),
   );
 
-export function createObservabilityCommand(): CommandModule<{}, ServeMCPOptions> {
+export function createObservabilityCommand(): CommandModule<unknown, ServeMCPOptions> {
   return {
     command: "observe",
     describe: "Start the observability server",

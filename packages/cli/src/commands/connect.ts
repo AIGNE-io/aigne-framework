@@ -2,8 +2,8 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import chalk from "chalk";
 import { parse } from "yaml";
-import { getUserInfo } from "../utils/aigne-hub-user.js";
 import type { CommandModule } from "yargs";
+import { getUserInfo } from "../utils/aigne-hub-user.js";
 import { AIGNE_ENV_FILE, connectToAIGNEHub } from "../utils/load-aigne.js";
 
 interface ConnectOptions {
@@ -86,7 +86,7 @@ async function displayStatus(statusList: StatusInfo[]) {
   }
 }
 
-export function createConnectCommand(): CommandModule<{}, ConnectOptions> {
+export function createConnectCommand(): CommandModule<unknown, ConnectOptions> {
   return {
     command: "connect [url]",
     describe: "Manage AIGNE Hub connections",

@@ -27,7 +27,7 @@ export function createServeMCPCommand({
   aigneFilePath,
 }: {
   aigneFilePath?: string;
-} = {}): CommandModule<{}, ServeMCPOptions> {
+} = {}): CommandModule<unknown, ServeMCPOptions> {
   return {
     command: "serve-mcp",
     describe: "Serve the agents in the specified directory as a MCP server (streamable http)",

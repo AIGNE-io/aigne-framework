@@ -12,7 +12,7 @@ export function createTestCommand({
   aigneFilePath,
 }: {
   aigneFilePath?: string;
-} = {}): CommandModule<{}, TestOptions> {
+} = {}): CommandModule<unknown, TestOptions> {
   return {
     command: "test",
     describe: "Run tests in the specified agents directory",

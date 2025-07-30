@@ -16,17 +16,12 @@ import {
 } from "@aigne/core";
 import { loadModel } from "@aigne/core/loader/index.js";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
-import {
-  flat,
-  isEmpty,
-  isNonNullable,
-  type PromiseOrValue,
-  tryOrThrow,
-} from "@aigne/core/utils/type-utils.js";
+import { flat, isEmpty, type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import { parse } from "yaml";
 import type { Argv } from "yargs";
 import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { ZodError, ZodObject, z } from "zod";
 import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
@@ -264,7 +259,7 @@ export async function runWithAIGNE(
     )
     .alias("h", "help")
     .alias("v", "version")
-    .parseAsync(argv)
+    .parseAsync(hideBin(argv))
     .catch((error) => {
       console.error(`${chalk.red("Error:")} ${error.message}`);
       process.exit(1);

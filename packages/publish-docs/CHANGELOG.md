@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.4.0...publish-docs-v0.5.0) (2025-07-30)
+
+
+### Features
+
+* add auto create docs board ([#287](https://github.com/AIGNE-io/aigne-framework/issues/287)) ([11013cb](https://github.com/AIGNE-io/aigne-framework/commit/11013cb857b54b89077afbcd76339eb15fdcc666))
+
 ## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.3.1...publish-docs-v0.4.0) (2025-07-18)
 
 

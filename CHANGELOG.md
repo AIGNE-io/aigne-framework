@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.46.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.45.0...aigne-framework-v1.46.0) (2025-07-30)
+
+
+### Features
+
+* add auto create docs board ([#287](https://github.com/AIGNE-io/aigne-framework/issues/287)) ([11013cb](https://github.com/AIGNE-io/aigne-framework/commit/11013cb857b54b89077afbcd76339eb15fdcc666))
+* **models:** support doubao llm adapter ([#289](https://github.com/AIGNE-io/aigne-framework/issues/289)) ([0f68887](https://github.com/AIGNE-io/aigne-framework/commit/0f688871d232e7a42613f4921491de8974b31b81))
+* support aigne connect command and add test ([#283](https://github.com/AIGNE-io/aigne-framework/issues/283)) ([387d22d](https://github.com/AIGNE-io/aigne-framework/commit/387d22d5cacf20abe02a13deaca1f36987d48ba5))
+
+
+### Bug Fixes
+
+* **cli:** replace external dependency with built-in user subscription API ([#292](https://github.com/AIGNE-io/aigne-framework/issues/292)) ([67de7fa](https://github.com/AIGNE-io/aigne-framework/commit/67de7fa521626ee7266c6c527e4eafc227bafa48))
+* support aigne connect status more info ([#290](https://github.com/AIGNE-io/aigne-framework/issues/290)) ([04c5a06](https://github.com/AIGNE-io/aigne-framework/commit/04c5a0625938a7c1ca1d6fd997f6e9047d425ea0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.0
+
 ## [1.45.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.44.1...aigne-framework-v1.45.0) (2025-07-28)
 
 

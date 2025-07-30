@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.16.16](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.15...example-workflow-concurrency-v1.16.16) (2025-07-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.27.0
+
 ## [1.16.15](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.14...example-workflow-concurrency-v1.16.15) (2025-07-28)
 
 

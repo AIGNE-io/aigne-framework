@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.2.2...aigne-hub-v0.3.0) (2025-07-30)
+
+
+### Features
+
+* support aigne connect command and add test ([#283](https://github.com/AIGNE-io/aigne-framework/issues/283)) ([387d22d](https://github.com/AIGNE-io/aigne-framework/commit/387d22d5cacf20abe02a13deaca1f36987d48ba5))
+
 ## [0.2.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.2.1...aigne-hub-v0.2.2) (2025-07-28)
 
 

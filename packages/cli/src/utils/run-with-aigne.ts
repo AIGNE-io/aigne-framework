@@ -338,7 +338,7 @@ export async function runAgentWithAIGNE(
   return { result };
 }
 
-async function stdinHasData(): Promise<boolean> {
+export async function stdinHasData(): Promise<boolean> {
   const stats = await promisify(fstat)(0);
   return stats.isFIFO() || stats.isFile();
 }

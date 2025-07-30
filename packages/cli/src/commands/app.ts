@@ -2,17 +2,19 @@ import assert from "node:assert";
 import { spawnSync } from "node:child_process";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { join } from "node:path";
-import { AIGNE } from "@aigne/core";
+import { extname, join } from "node:path";
+import { isatty } from "node:tty";
+import { AIAgent, AIGNE, readAllString } from "@aigne/core";
 import { pick } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
+import { parse } from "yaml";
 import type { CommandModule } from "yargs";
 import { ZodObject, type ZodType } from "zod";
 import { availableModels } from "../constants.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
-import { runAgentWithAIGNE } from "../utils/run-with-aigne.js";
+import { runAgentWithAIGNE, stdinHasData } from "../utils/run-with-aigne.js";
 
 const NPM_PACKAGE_CACHE_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
 
@@ -37,7 +39,7 @@ export function createAppCommands(): CommandModule[] {
           agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {},
         );
 
-        yargs.command(
+        yargs.command<{ input?: string[]; format?: "json" | "yaml" }>(
           agent.name,
           agent.description || "",
           (yargs) => {
@@ -52,6 +54,18 @@ export function createAppCommands(): CommandModule[] {
                 yargs.demandOption(option);
               }
             }
+
+            yargs
+              .option("input", {
+                type: "array",
+                description: "Input to the agent, use @<file> to read from a file",
+                alias: ["i"],
+              })
+              .option("format", {
+                type: "string",
+                description: 'Input format, can be "json" or "yaml"',
+                choices: ["json", "yaml"],
+              });
           },
           async (argv) => {
             try {
@@ -63,6 +77,37 @@ export function createAppCommands(): CommandModule[] {
                 argv,
                 inputSchema.map(([key]) => key),
               );
+
+              const rawInput =
+                argv.input ||
+                (isatty(process.stdin.fd) || !(await stdinHasData())
+                  ? null
+                  : [await readAllString(process.stdin)].filter(Boolean));
+
+              if (rawInput) {
+                for (let raw of rawInput) {
+                  let format = argv.format;
+
+                  if (raw.startsWith("@")) {
+                    raw = await readFile(raw.slice(1), "utf8");
+                    if (!format) {
+                      const ext = extname(raw);
+                      if (ext === ".json") format = "json";
+                      else if (ext === ".yaml" || ext === ".yml") format = "yaml";
+                    }
+                  }
+
+                  const inputKey = agent instanceof AIAgent ? agent.inputKey : undefined;
+
+                  if (format === "json") {
+                    Object.assign(input, JSON.parse(raw));
+                  } else if (format === "yaml") {
+                    Object.assign(input, parse(raw));
+                  } else if (inputKey) {
+                    Object.assign(input, { [inputKey]: raw });
+                  }
+                }
+              }
 
               await runAgentWithAIGNE(aigne, _agent, { input });
             } finally {

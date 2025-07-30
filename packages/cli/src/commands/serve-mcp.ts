@@ -1,10 +1,10 @@
 import { isAbsolute, resolve } from "node:path";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
-import { Command, type OptionValues } from "commander";
+import type { CommandModule } from "yargs";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { serveMCPServer } from "../utils/serve-mcp.js";
 
-interface ServeMCPOptions extends OptionValues {
+interface ServeMCPOptions {
   path: string;
   host: string;
   port?: number;
@@ -23,22 +23,38 @@ const DEFAULT_PORT = () =>
     (error) => new Error(`parse PORT error ${error.message}`),
   );
 
-export function createServeMCPCommand({ aigneFilePath }: { aigneFilePath?: string } = {}): Command {
-  return new Command("serve-mcp")
-    .description("Serve the agents in the specified directory as a MCP server (streamable http)")
-    .option(
-      "--url, --path <path_or_url>",
-      "Path to the agents directory or URL to aigne project",
-      ".",
-    )
-    .option(
-      "--host <host>",
-      "Host to run the MCP server on, use 0.0.0.0 to publicly expose the server",
-      "localhost",
-    )
-    .option("--port <port>", "Port to run the MCP server on", (s) => Number.parseInt(s))
-    .option("--pathname <pathname>", "Pathname to the service", "/mcp")
-    .action(async (options: ServeMCPOptions) => {
+export function createServeMCPCommand({
+  aigneFilePath,
+}: {
+  aigneFilePath?: string;
+} = {}): CommandModule<{}, ServeMCPOptions> {
+  return {
+    command: "serve-mcp",
+    describe: "Serve the agents in the specified directory as a MCP server (streamable http)",
+    builder: (yargs) => {
+      return yargs
+        .option("path", {
+          describe: "Path to the agents directory or URL to aigne project",
+          type: "string",
+          default: ".",
+          alias: ["url"],
+        })
+        .option("host", {
+          describe: "Host to run the MCP server on, use 0.0.0.0 to publicly expose the server",
+          type: "string",
+          default: "localhost",
+        })
+        .option("port", {
+          describe: "Port to run the MCP server on",
+          type: "number",
+        })
+        .option("pathname", {
+          describe: "Pathname to the service",
+          type: "string",
+          default: "/mcp",
+        });
+    },
+    handler: async (options) => {
       const path = aigneFilePath || options.path;
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
       const port = options.port || DEFAULT_PORT();
@@ -53,7 +69,6 @@ export function createServeMCPCommand({ aigneFilePath }: { aigneFilePath?: strin
       });
 
       console.log(`MCP server is running on http://${options.host}:${port}${options.pathname}`);
-    })
-    .showHelpAfterError(true)
-    .showSuggestionAfterError(true);
+    },
+  };
 }

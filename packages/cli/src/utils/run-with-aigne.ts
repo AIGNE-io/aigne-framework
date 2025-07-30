@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import { exists } from "@aigne/agent-library/utils/fs.js";
 import {
   type Agent,
+  AIAgent,
   AIGNE,
   type ChatModelOptions,
   DEFAULT_OUTPUT_KEY,
@@ -16,14 +17,16 @@ import {
 import { loadModel } from "@aigne/core/loader/index.js";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
 import {
+  flat,
   isEmpty,
   isNonNullable,
   type PromiseOrValue,
   tryOrThrow,
 } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
-import { Command } from "commander";
 import { parse } from "yaml";
+import type { Argv } from "yargs";
+import yargs from "yargs";
 import { ZodError, ZodObject, z } from "zod";
 import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
@@ -48,60 +51,78 @@ export interface RunAIGNECommandOptions {
   force?: boolean;
 }
 
-export const createRunAIGNECommand = (name = "run") =>
-  new Command(name)
-    .allowUnknownOption(true)
-    .allowExcessArguments(true)
-    .description("Run agent with AIGNE in terminal")
-    .option("--chat", "Run chat loop in terminal", false)
-    .option(
-      "--model <provider[:model]>",
-      `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
+export const createRunAIGNECommand = (yargs: Argv) =>
+  yargs
+    .option("chat", {
+      describe: "Run chat loop in terminal",
+      type: "boolean",
+      default: false,
+    })
+    .option("model", {
+      describe: `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
         .map((i) => i.name.toLowerCase().replace(/ChatModel$/i, ""))
         .join(", ")} (default: openai)`,
-    )
-    .option(
-      "--temperature <temperature>",
-      "Temperature for the model (controls randomness, higher values produce more random outputs). Range: 0.0-2.0",
-      customZodError("--temperature", (s) => z.coerce.number().min(0).max(2).parse(s)),
-    )
-    .option(
-      "--top-p <top-p>",
-      "Top P (nucleus sampling) parameter for the model (controls diversity). Range: 0.0-1.0",
-      customZodError("--top-p", (s) => z.coerce.number().min(0).max(1).parse(s)),
-    )
-    .option(
-      "--presence-penalty <presence-penalty>",
-      "Presence penalty for the model (penalizes repeating the same tokens). Range: -2.0 to 2.0",
-      customZodError("--presence-penalty", (s) => z.coerce.number().min(-2).max(2).parse(s)),
-    )
-    .option(
-      "--frequency-penalty <frequency-penalty>",
-      "Frequency penalty for the model (penalizes frequency of token usage). Range: -2.0 to 2.0",
-      customZodError("--frequency-penalty", (s) => z.coerce.number().min(-2).max(2).parse(s)),
-    )
-    .option("--input -i <input...>", "Input to the agent, use @<file> to read from a file")
-    .option(
-      "--format <format>",
-      "Input format for the agent (available: text, json, yaml default: text)",
-    )
-    .option("--output -o <output>", "Output file to save the result (default: stdout)")
-    .option(
-      "--output-key <output-key>",
-      "Key in the result to save to the output file",
-      DEFAULT_OUTPUT_KEY,
-    )
-    .option(
-      "--force",
-      "Truncate the output file if it exists, and create directory if the output path is not exists",
-      false,
-    )
-    .option(
-      "--log-level <level>",
-      `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
-      customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
-      getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
-    );
+      type: "string",
+    })
+    .option("temperature", {
+      describe:
+        "Temperature for the model (controls randomness, higher values produce more random outputs). Range: 0.0-2.0",
+      type: "number",
+      coerce: customZodError("--temperature", (s) => z.coerce.number().min(0).max(2).parse(s)),
+    })
+    .option("top-p", {
+      describe:
+        "Top P (nucleus sampling) parameter for the model (controls diversity). Range: 0.0-1.0",
+      type: "number",
+      coerce: customZodError("--top-p", (s) => z.coerce.number().min(0).max(1).parse(s)),
+    })
+    .option("presence-penalty", {
+      describe:
+        "Presence penalty for the model (penalizes repeating the same tokens). Range: -2.0 to 2.0",
+      type: "number",
+      coerce: customZodError("--presence-penalty", (s) =>
+        z.coerce.number().min(-2).max(2).parse(s),
+      ),
+    })
+    .option("frequency-penalty", {
+      describe:
+        "Frequency penalty for the model (penalizes frequency of token usage). Range: -2.0 to 2.0",
+      type: "number",
+      coerce: customZodError("--frequency-penalty", (s) =>
+        z.coerce.number().min(-2).max(2).parse(s),
+      ),
+    })
+    .option("input", {
+      describe: "Input to the agent, use @<file> to read from a file",
+      type: "array",
+      alias: "i",
+    })
+    .option("format", {
+      describe: "Input format for the agent (available: text, json, yaml default: text)",
+      type: "string",
+    })
+    .option("output", {
+      describe: "Output file to save the result (default: stdout)",
+      type: "string",
+      alias: "o",
+    })
+    .option("output-key", {
+      describe: "Key in the result to save to the output file",
+      type: "string",
+      default: DEFAULT_OUTPUT_KEY,
+    })
+    .option("force", {
+      describe:
+        "Truncate the output file if it exists, and create directory if the output path is not exists",
+      type: "boolean",
+      default: false,
+    })
+    .option("log-level", {
+      describe: `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
+      type: "string",
+      default: getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
+      coerce: customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
+    });
 
 export async function parseAgentInputByCommander(
   agent: Agent,
@@ -111,48 +132,27 @@ export async function parseAgentInputByCommander(
     defaultInput?: string | Message;
   } = {},
 ): Promise<Message> {
-  const cmd = new Command()
-    .description(`Run agent ${agent.name} with AIGNE`)
-    .allowUnknownOption(true)
-    .allowExcessArguments(true);
+  const inputSchemaShape = flat(
+    agent instanceof AIAgent ? agent.inputKey : undefined,
+    agent.inputSchema instanceof ZodObject ? Object.keys(agent.inputSchema.shape) : [],
+  );
 
-  const inputSchemaShape =
-    agent.inputSchema instanceof ZodObject ? Object.keys(agent.inputSchema.shape) : [];
+  const parsedInput = await yargs().parseAsync(options.argv ?? process.argv);
 
-  for (const option of inputSchemaShape) {
-    cmd.option(`--input-${option} <${option}>`);
-  }
+  const input = Object.fromEntries(
+    await Promise.all(
+      inputSchemaShape.map(async (key) => {
+        const k = `input${key.charAt(0).toUpperCase()}${key.slice(1)}`;
+        let value = parsedInput[k];
 
-  const input = await new Promise<Message>((resolve, reject) => {
-    cmd
-      .action(async (agentInputOptions) => {
-        try {
-          const input = Object.fromEntries(
-            (
-              await Promise.all(
-                Object.entries(agentInputOptions).map(async ([key, value]) => {
-                  let k = key.replace(/^input/, "");
-                  k = k.charAt(0).toLowerCase() + k.slice(1);
-                  if (!k) return null;
-
-                  if (typeof value === "string" && value.startsWith("@")) {
-                    value = await readFile(value.slice(1), "utf8");
-                  }
-
-                  return [k, value];
-                }),
-              )
-            ).filter(isNonNullable),
-          );
-
-          resolve(input);
-        } catch (error) {
-          reject(error);
+        if (typeof value === "string" && value.startsWith("@")) {
+          value = await readFile(value.slice(1), "utf8");
         }
-      })
-      .parseAsync(options.argv ?? process.argv)
-      .catch((error) => reject(error));
-  });
+
+        return [key, value];
+      }),
+    ),
+  );
 
   const rawInput =
     options.input ||
@@ -216,48 +216,54 @@ export async function runWithAIGNE(
     outputKey?: string;
   } = {},
 ) {
-  await createRunAIGNECommand()
-    .showHelpAfterError(true)
-    .showSuggestionAfterError(true)
-    .action(async (options: RunAIGNECommandOptions) => {
-      if (options.logLevel) {
-        logger.level = options.logLevel;
-      }
+  await yargs()
+    .command<RunAIGNECommandOptions>(
+      "$0",
+      "Run an agent with AIGNE",
+      (yargs) => createRunAIGNECommand(yargs),
+      async (options) => {
+        if (options.logLevel) {
+          logger.level = options.logLevel;
+        }
 
-      const model = await loadModel(
-        availableModels(),
-        {
-          ...parseModelOption(options.model),
-          temperature: options.temperature,
-          topP: options.topP,
-          presencePenalty: options.presencePenalty,
-          frequencyPenalty: options.frequencyPenalty,
-        },
-        modelOptions,
-      );
-
-      const aigne = new AIGNE({ model });
-
-      try {
-        const agent = typeof agentCreator === "function" ? await agentCreator(aigne) : agentCreator;
-
-        const input = await parseAgentInputByCommander(agent, {
-          ...options,
-          inputKey: chatLoopOptions?.inputKey,
-          defaultInput: chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion,
-        });
-
-        await runAgentWithAIGNE(aigne, agent, {
-          ...options,
-          outputKey: outputKey || options.outputKey,
-          chatLoopOptions,
+        const model = await loadModel(
+          availableModels(),
+          {
+            ...parseModelOption(options.model),
+            temperature: options.temperature,
+            topP: options.topP,
+            presencePenalty: options.presencePenalty,
+            frequencyPenalty: options.frequencyPenalty,
+          },
           modelOptions,
-          input,
-        });
-      } finally {
-        await aigne.shutdown();
-      }
-    })
+        );
+
+        const aigne = new AIGNE({ model });
+
+        try {
+          const agent =
+            typeof agentCreator === "function" ? await agentCreator(aigne) : agentCreator;
+
+          const input = await parseAgentInputByCommander(agent, {
+            ...options,
+            inputKey: chatLoopOptions?.inputKey,
+            defaultInput: chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion,
+          });
+
+          await runAgentWithAIGNE(aigne, agent, {
+            ...options,
+            outputKey: outputKey || options.outputKey,
+            chatLoopOptions,
+            modelOptions,
+            input,
+          });
+        } finally {
+          await aigne.shutdown();
+        }
+      },
+    )
+    .alias("h", "help")
+    .alias("v", "version")
     .parseAsync(argv)
     .catch((error) => {
       console.error(`${chalk.red("Error:")} ${error.message}`);

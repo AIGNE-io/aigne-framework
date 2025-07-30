@@ -1,13 +1,13 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import chalk from "chalk";
-import { Command, type OptionValues } from "commander";
 import { parse } from "yaml";
 import { getUserInfo } from "../utils/aigne-hub-user.js";
+import type { CommandModule } from "yargs";
 import { AIGNE_ENV_FILE, connectToAIGNEHub } from "../utils/load-aigne.js";
 
-interface ConnectOptions extends OptionValues {
-  url: string;
+interface ConnectOptions {
+  url?: string;
 }
 
 interface StatusInfo {
@@ -86,24 +86,28 @@ async function displayStatus(statusList: StatusInfo[]) {
   }
 }
 
-export function createConnectCommand(): Command {
-  const connectCommand = new Command("connect")
-    .description("Manage AIGNE Hub connections")
-    .showHelpAfterError(true)
-    .showSuggestionAfterError(true);
-
-  connectCommand
-    .command("status")
-    .description("Show current connection status")
-    .action(async () => {
-      const statusList = await getConnectionStatus();
-      await displayStatus(statusList);
-    });
-
-  connectCommand
-    .option("--url <url>", "URL to the AIGNE Hub server")
-    .action(async (options: ConnectOptions) => {
-      const url = options.url || "https://hub.aigne.io/";
+export function createConnectCommand(): CommandModule<{}, ConnectOptions> {
+  return {
+    command: "connect [url]",
+    describe: "Manage AIGNE Hub connections",
+    builder: (yargs) => {
+      return yargs
+        .positional("url", {
+          describe: "URL to the AIGNE Hub server",
+          type: "string",
+          default: "https://hub.aigne.io/",
+        })
+        .command({
+          command: "status",
+          describe: "Show current connection status",
+          handler: async () => {
+            const statusList = await getConnectionStatus();
+            await displayStatus(statusList);
+          },
+        });
+    },
+    handler: async (argv) => {
+      const url = argv.url || "https://hub.aigne.io/";
 
       console.log(chalk.blue(`Connecting to AIGNE Hub: ${url}`));
 
@@ -114,7 +118,6 @@ export function createConnectCommand(): Command {
         console.error(chalk.red("✗ Failed to connect to AIGNE Hub:"), error.message);
         process.exit(1);
       }
-    });
-
-  return connectCommand;
+    },
+  };
 }

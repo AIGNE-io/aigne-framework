@@ -11,7 +11,7 @@ interface ServeMCPOptions {
   pathname: string;
 }
 
-const DEFAULT_PORT = () =>
+export const DEFAULT_PORT = () =>
   tryOrThrow(
     () => {
       const { PORT } = process.env;

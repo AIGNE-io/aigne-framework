@@ -15,6 +15,8 @@ import { availableModels } from "../constants.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { runAgentWithAIGNE, stdinHasData } from "../utils/run-with-aigne.js";
+import { serveMCPServer } from "../utils/serve-mcp.js";
+import { DEFAULT_PORT } from "./serve-mcp.js";
 
 const NPM_PACKAGE_CACHE_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
 
@@ -34,7 +36,47 @@ export function createAppCommands(): CommandModule[] {
     builder: async (yargs) => {
       const { aigne, dir, version } = await loadApplication({ name: "doc-smith" });
 
-      for (const agent of aigne.agents) {
+      yargs.command<{
+        host: string;
+        port?: number;
+        pathname: string;
+      }>(
+        "serve-mcp",
+        `Serve ${app.name} a MCP server (streamable http)`,
+        (yargs) => {
+          return yargs
+            .option("host", {
+              describe: "Host to run the MCP server on, use 0.0.0.0 to publicly expose the server",
+              type: "string",
+              default: "localhost",
+            })
+            .option("port", {
+              describe: "Port to run the MCP server on",
+              type: "number",
+            })
+            .option("pathname", {
+              describe: "Pathname to the service",
+              type: "string",
+              default: "/mcp",
+            });
+        },
+        async (options) => {
+          const port = options.port || DEFAULT_PORT();
+
+          const aigne = await loadAIGNE(dir);
+
+          await serveMCPServer({
+            aigne,
+            host: options.host,
+            port,
+            pathname: options.pathname,
+          });
+
+          console.log(`MCP server is running on http://${options.host}:${port}${options.pathname}`);
+        },
+      );
+
+      for (const agent of aigne.cli?.agents ?? []) {
         const inputSchema: { [key: string]: ZodType } =
           agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
 

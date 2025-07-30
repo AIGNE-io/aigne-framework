@@ -5,7 +5,6 @@ import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { nanoid } from "nanoid";
 import { ClaudeChatModel, OpenAIChatModel, XAIChatModel } from "../_mocks/mock-models.js";
 
 test("AIGNE.load should load agents correctly", async () => {
@@ -36,22 +35,28 @@ test("AIGNE.load should load agents correctly", async () => {
   expect(aigne.model).toBeInstanceOf(ChatModel);
   assert(aigne.model, "model should be defined");
 
-  spyOn(aigne.model, "process")
-    .mockReturnValueOnce(
-      Promise.resolve({
-        toolCalls: [
-          {
-            id: nanoid(),
-            type: "function",
-            function: { name: "evaluateJs", arguments: { code: "1 + 1" } },
-          },
-        ],
-      }),
-    )
-    .mockReturnValueOnce(Promise.resolve({ text: "1 + 2 = 3" }));
-
-  const result = await aigne.invoke(chat, { message: "1 + 2 = ?" });
-  expect(result).toEqual(expect.objectContaining({ message: "1 + 2 = 3" }));
+  expect({
+    agents: aigne.agents.map((agent) => ({
+      name: agent.name,
+      description: agent.description,
+    })),
+    skills: aigne.skills.map((skill) => ({
+      name: skill.name,
+      description: skill.description,
+    })),
+    mcpServer: {
+      agents: aigne.mcpServer?.agents.map((agent) => ({
+        name: agent.name,
+        description: agent.description,
+      })),
+    },
+    cli: {
+      agents: aigne.cli?.agents.map((agent) => ({
+        name: agent.name,
+        description: agent.description,
+      })),
+    },
+  }).toMatchSnapshot();
 });
 
 test("loader should use override options", async () => {
@@ -243,7 +248,7 @@ url: http://localhost:3000/sse
 test("loadAgent should load MCP agent from command correctly", async () => {
   const fsMcp = MCPAgent.from({
     name: "filesystem",
-    client: new Client({ name: "test-mcp-cleint", version: "0.0.1" }),
+    client: new Client({ name: "test-mcp-client", version: "0.0.1" }),
   });
   const from = spyOn(MCPAgent, "from").mockReturnValueOnce(fsMcp);
 

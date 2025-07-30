@@ -10,7 +10,7 @@ import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
 import { parse } from "yaml";
 import type { CommandModule } from "yargs";
-import { ZodObject, type ZodType } from "zod";
+import { ZodObject, ZodString, type ZodType } from "zod";
 import { availableModels } from "../constants.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
@@ -35,15 +35,14 @@ export function createAppCommands(): CommandModule[] {
       const { aigne, dir, version } = await loadApplication({ name: "doc-smith" });
 
       for (const agent of aigne.agents) {
-        const inputSchema: [string, ZodType][] = Object.entries(
-          agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {},
-        );
+        const inputSchema: { [key: string]: ZodType } =
+          agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
 
         yargs.command<{ input?: string[]; format?: "json" | "yaml" }>(
           agent.name,
           agent.description || "",
           (yargs) => {
-            for (const [option, config] of inputSchema) {
+            for (const [option, config] of Object.entries(inputSchema)) {
               yargs.option(option, {
                 // TODO: support more types
                 type: "string",
@@ -73,9 +72,20 @@ export function createAppCommands(): CommandModule[] {
               const _agent = aigne.agents[agent.name];
               assert(_agent, `Agent ${agent.name} not found in ${app.name}`);
 
-              const input = pick(
-                argv,
-                inputSchema.map(([key]) => key),
+              const input = Object.fromEntries(
+                await Promise.all(
+                  Object.entries(pick(argv, Object.keys(inputSchema))).map(async ([key, val]) => {
+                    if (typeof val === "string" && val.startsWith("@")) {
+                      const schema = inputSchema[key];
+
+                      val = await readFileAsInput(val, {
+                        format: schema instanceof ZodString ? "raw" : undefined,
+                      });
+                    }
+
+                    return [key, val];
+                  }),
+                ),
               );
 
               const rawInput =
@@ -85,26 +95,18 @@ export function createAppCommands(): CommandModule[] {
                   : [await readAllString(process.stdin)].filter(Boolean));
 
               if (rawInput) {
-                for (let raw of rawInput) {
-                  let format = argv.format;
+                for (const raw of rawInput) {
+                  const parsed = raw.startsWith("@")
+                    ? await readFileAsInput(raw, { format: argv.format })
+                    : raw;
 
-                  if (raw.startsWith("@")) {
-                    raw = await readFile(raw.slice(1), "utf8");
-                    if (!format) {
-                      const ext = extname(raw);
-                      if (ext === ".json") format = "json";
-                      else if (ext === ".yaml" || ext === ".yml") format = "yaml";
+                  if (typeof parsed !== "string") {
+                    Object.assign(input, parsed);
+                  } else {
+                    const inputKey = agent instanceof AIAgent ? agent.inputKey : undefined;
+                    if (inputKey) {
+                      Object.assign(input, { [inputKey]: parsed });
                     }
-                  }
-
-                  const inputKey = agent instanceof AIAgent ? agent.inputKey : undefined;
-
-                  if (format === "json") {
-                    Object.assign(input, JSON.parse(raw));
-                  } else if (format === "yaml") {
-                    Object.assign(input, parse(raw));
-                  } else if (inputKey) {
-                    Object.assign(input, { [inputKey]: raw });
                   }
                 }
               }
@@ -123,6 +125,29 @@ export function createAppCommands(): CommandModule[] {
     },
     handler: () => {},
   }));
+}
+
+async function readFileAsInput(
+  value: string,
+  { format }: { format?: "raw" | "json" | "yaml" } = {},
+): Promise<unknown> {
+  if (value.startsWith("@")) {
+    value = await readFile(value.slice(1), "utf8");
+
+    if (!format) {
+      const ext = extname(value);
+      if (ext === ".json") format = "json";
+      else if (ext === ".yaml" || ext === ".yml") format = "yaml";
+    }
+  }
+
+  if (format === "json") {
+    return JSON.parse(value);
+  } else if (format === "yaml") {
+    return parse(value);
+  }
+
+  return value;
 }
 
 async function loadApplication({

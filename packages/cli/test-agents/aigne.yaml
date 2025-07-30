@@ -7,3 +7,9 @@ agents:
   - chat.yaml
 skills:
   - sandbox.js
+mcp_server:
+  agents:
+    - chat.yaml
+cli:
+  agents:
+    - chat.yaml

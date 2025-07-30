@@ -1,3 +1,4 @@
+import { mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { finished } from "node:stream/promises";
 import type { ReadableStream } from "node:stream/web";
@@ -21,6 +22,8 @@ export async function downloadAndExtract(
   }
 
   try {
+    await mkdir(dir, { recursive: true });
+
     await finished(
       Readable.fromWeb(response.body as unknown as ReadableStream).pipe(x({ C: dir, ...options })),
     );

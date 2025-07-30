@@ -57,18 +57,28 @@ export function createServeMCPCommand({
     handler: async (options) => {
       const path = aigneFilePath || options.path;
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
-      const port = options.port || DEFAULT_PORT();
 
-      const aigne = await loadAIGNE(absolutePath);
-
-      await serveMCPServer({
-        aigne,
-        host: options.host,
-        port,
-        pathname: options.pathname,
-      });
-
-      console.log(`MCP server is running on http://${options.host}:${port}${options.pathname}`);
+      await serveMCPServerFromDir({ ...options, dir: absolutePath });
     },
   };
+}
+
+export async function serveMCPServerFromDir(options: {
+  dir: string;
+  host: string;
+  port?: number;
+  pathname: string;
+}) {
+  const port = options.port || DEFAULT_PORT();
+
+  const aigne = await loadAIGNE(options.dir);
+
+  await serveMCPServer({
+    aigne,
+    host: options.host,
+    port,
+    pathname: options.pathname,
+  });
+
+  console.log(`MCP server is running on http://${options.host}:${port}${options.pathname}`);
 }

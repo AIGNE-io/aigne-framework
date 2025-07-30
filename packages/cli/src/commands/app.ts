@@ -1,10 +1,10 @@
 import assert from "node:assert";
 import { spawnSync } from "node:child_process";
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { readFile, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { extname, join } from "node:path";
 import { isatty } from "node:tty";
-import { AIAgent, AIGNE, readAllString } from "@aigne/core";
+import { type Agent, AIAgent, AIGNE, type Message, readAllString } from "@aigne/core";
 import { pick } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
@@ -15,8 +15,7 @@ import { availableModels } from "../constants.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { runAgentWithAIGNE, stdinHasData } from "../utils/run-with-aigne.js";
-import { serveMCPServer } from "../utils/serve-mcp.js";
-import { DEFAULT_PORT } from "./serve-mcp.js";
+import { serveMCPServerFromDir } from "./serve-mcp.js";
 
 const NPM_PACKAGE_CACHE_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
 
@@ -36,129 +35,10 @@ export function createAppCommands(): CommandModule[] {
     builder: async (yargs) => {
       const { aigne, dir, version } = await loadApplication({ name: "doc-smith" });
 
-      yargs.command<{
-        host: string;
-        port?: number;
-        pathname: string;
-      }>(
-        "serve-mcp",
-        `Serve ${app.name} a MCP server (streamable http)`,
-        (yargs) => {
-          return yargs
-            .option("host", {
-              describe: "Host to run the MCP server on, use 0.0.0.0 to publicly expose the server",
-              type: "string",
-              default: "localhost",
-            })
-            .option("port", {
-              describe: "Port to run the MCP server on",
-              type: "number",
-            })
-            .option("pathname", {
-              describe: "Pathname to the service",
-              type: "string",
-              default: "/mcp",
-            });
-        },
-        async (options) => {
-          const port = options.port || DEFAULT_PORT();
-
-          const aigne = await loadAIGNE(dir);
-
-          await serveMCPServer({
-            aigne,
-            host: options.host,
-            port,
-            pathname: options.pathname,
-          });
-
-          console.log(`MCP server is running on http://${options.host}:${port}${options.pathname}`);
-        },
-      );
+      yargs.command(serveMcpCommandModule({ name: app.name, dir }));
 
       for (const agent of aigne.cli?.agents ?? []) {
-        const inputSchema: { [key: string]: ZodType } =
-          agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
-
-        yargs.command<{ input?: string[]; format?: "json" | "yaml" }>(
-          agent.name,
-          agent.description || "",
-          (yargs) => {
-            for (const [option, config] of Object.entries(inputSchema)) {
-              yargs.option(option, {
-                // TODO: support more types
-                type: "string",
-                description: config.description,
-              });
-
-              if (!(config.isNullable() || config.isOptional())) {
-                yargs.demandOption(option);
-              }
-            }
-
-            yargs
-              .option("input", {
-                type: "array",
-                description: "Input to the agent, use @<file> to read from a file",
-                alias: ["i"],
-              })
-              .option("format", {
-                type: "string",
-                description: 'Input format, can be "json" or "yaml"',
-                choices: ["json", "yaml"],
-              });
-          },
-          async (argv) => {
-            try {
-              const aigne = await loadAIGNE(dir);
-              const _agent = aigne.agents[agent.name];
-              assert(_agent, `Agent ${agent.name} not found in ${app.name}`);
-
-              const input = Object.fromEntries(
-                await Promise.all(
-                  Object.entries(pick(argv, Object.keys(inputSchema))).map(async ([key, val]) => {
-                    if (typeof val === "string" && val.startsWith("@")) {
-                      const schema = inputSchema[key];
-
-                      val = await readFileAsInput(val, {
-                        format: schema instanceof ZodString ? "raw" : undefined,
-                      });
-                    }
-
-                    return [key, val];
-                  }),
-                ),
-              );
-
-              const rawInput =
-                argv.input ||
-                (isatty(process.stdin.fd) || !(await stdinHasData())
-                  ? null
-                  : [await readAllString(process.stdin)].filter(Boolean));
-
-              if (rawInput) {
-                for (const raw of rawInput) {
-                  const parsed = raw.startsWith("@")
-                    ? await readFileAsInput(raw, { format: argv.format })
-                    : raw;
-
-                  if (typeof parsed !== "string") {
-                    Object.assign(input, parsed);
-                  } else {
-                    const inputKey = agent instanceof AIAgent ? agent.inputKey : undefined;
-                    if (inputKey) {
-                      Object.assign(input, { [inputKey]: parsed });
-                    }
-                  }
-                }
-              }
-
-              await runAgentWithAIGNE(aigne, _agent, { input });
-            } finally {
-              await aigne.shutdown();
-            }
-          },
-        );
+        yargs.command(agentCommandModule({ dir, agent }));
       }
 
       yargs.version(`${app.name} v${version}`);
@@ -169,15 +49,150 @@ export function createAppCommands(): CommandModule[] {
   }));
 }
 
+const serveMcpCommandModule = ({
+  name,
+  dir,
+}: {
+  name: string;
+  dir: string;
+}): CommandModule<unknown, { host: string; port?: number; pathname: string }> => ({
+  command: "serve-mcp",
+  describe: `Serve ${name} a MCP server (streamable http)`,
+  builder: (yargs) => {
+    return yargs
+      .option("host", {
+        describe: "Host to run the MCP server on, use 0.0.0.0 to publicly expose the server",
+        type: "string",
+        default: "localhost",
+      })
+      .option("port", {
+        describe: "Port to run the MCP server on",
+        type: "number",
+      })
+      .option("pathname", {
+        describe: "Pathname to the service",
+        type: "string",
+        default: "/mcp",
+      });
+  },
+  handler: async (options) => {
+    await serveMCPServerFromDir({ ...options, dir });
+  },
+});
+
+const agentCommandModule = ({
+  dir,
+  agent,
+}: {
+  dir: string;
+  agent: Agent;
+}): CommandModule<unknown, { input?: string[]; format?: "json" | "yaml" }> => {
+  const inputSchema: { [key: string]: ZodType } =
+    agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
+
+  return {
+    command: agent.name,
+    describe: agent.description || "",
+    builder: (yargs) => {
+      for (const [option, config] of Object.entries(inputSchema)) {
+        yargs.option(option, {
+          // TODO: support more types
+          type: "string",
+          description: config.description,
+        });
+
+        if (!(config.isNullable() || config.isOptional())) {
+          yargs.demandOption(option);
+        }
+      }
+
+      return yargs
+        .option("input", {
+          type: "array",
+          description: "Input to the agent, use @<file> to read from a file",
+          alias: ["i"],
+        })
+        .option("format", {
+          type: "string",
+          description: 'Input format, can be "json" or "yaml"',
+          choices: ["json", "yaml"],
+        }) as any;
+    },
+    handler: async (input) => {
+      await invokeCLIAgentFromDir({ dir, agent: agent.name, input });
+    },
+  };
+};
+
+export async function invokeCLIAgentFromDir(options: {
+  dir: string;
+  agent: string;
+  input: Message & { input?: string[]; format?: "yaml" | "json" };
+}) {
+  const aigne = await loadAIGNE(options.dir);
+
+  try {
+    const agent = aigne.cli.agents[options.agent];
+    assert(agent, `Agent ${options.agent} not found in ${options.dir}`);
+
+    const inputSchema: { [key: string]: ZodType } =
+      agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
+
+    const input = Object.fromEntries(
+      await Promise.all(
+        Object.entries(pick(options.input, Object.keys(inputSchema))).map(async ([key, val]) => {
+          if (typeof val === "string" && val.startsWith("@")) {
+            const schema = inputSchema[key];
+
+            val = await readFileAsInput(val, {
+              format: schema instanceof ZodString ? "raw" : undefined,
+            });
+          }
+
+          return [key, val];
+        }),
+      ),
+    );
+
+    const rawInput =
+      options.input.input ||
+      (isatty(process.stdin.fd) || !(await stdinHasData())
+        ? null
+        : [await readAllString(process.stdin)].filter(Boolean));
+
+    if (rawInput) {
+      for (const raw of rawInput) {
+        const parsed = raw.startsWith("@")
+          ? await readFileAsInput(raw, { format: options.input.format })
+          : raw;
+
+        if (typeof parsed !== "string") {
+          Object.assign(input, parsed);
+        } else {
+          const inputKey = agent instanceof AIAgent ? agent.inputKey : undefined;
+          if (inputKey) {
+            Object.assign(input, { [inputKey]: parsed });
+          }
+        }
+      }
+    }
+
+    await runAgentWithAIGNE(aigne, agent, { input });
+  } finally {
+    await aigne.shutdown();
+  }
+}
+
 async function readFileAsInput(
   value: string,
   { format }: { format?: "raw" | "json" | "yaml" } = {},
 ): Promise<unknown> {
   if (value.startsWith("@")) {
+    const ext = extname(value);
+
     value = await readFile(value.slice(1), "utf8");
 
     if (!format) {
-      const ext = extname(value);
       if (ext === ".json") format = "json";
       else if (ext === ".yaml" || ext === ".yml") format = "yaml";
     }
@@ -192,13 +207,15 @@ async function readFileAsInput(
   return value;
 }
 
-async function loadApplication({
+export async function loadApplication({
   name,
+  dir,
 }: {
   name: string;
+  dir?: string;
 }): Promise<{ aigne: AIGNE; dir: string; version: string }> {
   name = `@aigne/${name}`;
-  const dir = join(homedir(), ".aigne", "registry.npmjs.org", name);
+  dir ??= join(homedir(), ".aigne", "registry.npmjs.org", name);
 
   const check = await isInstallationAvailable(dir);
   if (check?.available) {
@@ -225,7 +242,7 @@ async function loadApplication({
         title: "Downloading application",
         skip: (ctx) => ctx.version === check?.version,
         task: async (ctx) => {
-          await downloadApplication({ url: ctx.url, dir });
+          await downloadAndExtract(ctx.url, dir, { strip: 1 });
         },
       },
       {
@@ -256,12 +273,7 @@ async function isInstallationAvailable(
   dir: string,
   { cacheTimeMs = NPM_PACKAGE_CACHE_TIME_MS }: { cacheTimeMs?: number } = {},
 ): Promise<{ version: string; available: boolean } | null> {
-  const s = await stat(join(dir, "package.json")).catch((error) => {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      return null;
-    }
-    throw error;
-  });
+  const s = await stat(join(dir, "package.json")).catch(() => null);
 
   if (!s) return null;
 
@@ -280,11 +292,6 @@ async function isInstallationAvailable(
   const available = installedAt ? now - installedAt < cacheTimeMs : false;
 
   return { version, available };
-}
-
-async function downloadApplication({ url, dir }: { url: string; dir: string }) {
-  await mkdir(dir, { recursive: true });
-  await downloadAndExtract(url, dir, { strip: 1 });
 }
 
 async function installDependencies(dir: string) {
@@ -316,10 +323,8 @@ async function getNpmTgzInfo(name: string) {
   };
 }
 
-function safeParseJSON<T>(raw: string): T | null {
+function safeParseJSON<T>(raw: string): T | undefined {
   try {
     return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  } catch {}
 }

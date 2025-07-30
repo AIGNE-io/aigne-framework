@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { joinURL } from "ufo";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import useSwitchView from "../../hooks/switch-view.tsx";
+import { origin } from "../../utils/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
 import JsonView from "../json-view.tsx";
 import ModelInfoTip from "../model-tip.tsx";

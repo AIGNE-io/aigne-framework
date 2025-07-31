@@ -1,6 +1,6 @@
 import { describe, expect, mock, test } from "bun:test";
-import { readFile, rm } from "node:fs/promises";
-import { createConnectCommand } from "@aigne/cli/commands/connect.js";
+import { readFile, rm, writeFile } from "node:fs/promises";
+import { createConnectCommand, getConnectionStatus } from "@aigne/cli/commands/connect.js";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import { Hono } from "hono";
@@ -94,65 +94,55 @@ describe("load aigne", () => {
       await command.parseAsync(["", "connect", "status"]);
     });
   });
+
+  describe("getConnectionStatus", () => {
+    test("should return empty array when env file does not exist", async () => {
+      await rm(AIGNE_ENV_FILE, { force: true });
+      const result = await getConnectionStatus();
+      expect(result).toEqual([]);
+    });
+
+    test("should return empty array when env file is invalid", async () => {
+      await writeFile(AIGNE_ENV_FILE, stringify({}));
+      const result = await getConnectionStatus();
+      expect(result).toEqual([]);
+    });
+
+    test("should return status list when env file is valid", async () => {
+      const mockExistsSync = mock(() => true);
+      mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
+
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          "hub.aigne.io": {
+            AIGNE_HUB_API_KEY: "test-key",
+            AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
+          },
+          "test.example.com": {
+            AIGNE_HUB_API_KEY: "another-key",
+            AIGNE_HUB_API_URL: "https://test.example.com/ai-kit",
+          },
+        }),
+      );
+
+      const result = await getConnectionStatus();
+
+      expect(result).toEqual([
+        {
+          host: "hub.aigne.io",
+          apiKey: "test-key",
+          apiUrl: "https://hub.aigne.io/ai-kit",
+        },
+        {
+          host: "test.example.com",
+          apiKey: "another-key",
+          apiUrl: "https://test.example.com/ai-kit",
+        },
+      ]);
+    });
+  });
 });
-
-// describe("getConnectionStatus", () => {
-//   test("should return empty array when env file does not exist", async () => {
-//     const { getConnectionStatus } = await import("../../src/commands/connect.js");
-
-//     const mockExistsSync = mock(() => false);
-//     mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
-
-//     const result = await getConnectionStatus();
-//     expect(result).toEqual([]);
-//   });
-
-//   test("should return empty array when env file is invalid", async () => {
-//     const { getConnectionStatus } = await import("../../src/commands/connect.js");
-
-//     const mockExistsSync = mock(() => true);
-//     mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
-
-//     const mockReadFile = mock(() => Promise.reject(new Error("File read error")));
-//     mock.module("node:fs/promises", () => ({ readFile: mockReadFile }));
-
-//     const result = await getConnectionStatus();
-//     expect(result).toEqual([]);
-//   });
-
-//   test("should return status list when env file is valid", async () => {
-//     const { getConnectionStatus } = await import("../../src/commands/connect.js");
-
-//     const mockExistsSync = mock(() => true);
-//     mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
-
-//     const mockReadFile = mock(() =>
-//       Promise.resolve(`
-// hub.aigne.io:
-//   AIGNE_HUB_API_KEY: "test-key"
-//   AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit"
-// test.example.com:
-//   AIGNE_HUB_API_KEY: "another-key"
-//   AIGNE_HUB_API_URL: "https://test.example.com/ai-kit"
-// `),
-//     );
-//     mock.module("node:fs/promises", () => ({ readFile: mockReadFile }));
-
-//     const result = await getConnectionStatus();
-//     expect(result).toEqual([
-//       {
-//         host: "hub.aigne.io",
-//         apiKey: "test-key",
-//         apiUrl: "https://hub.aigne.io/ai-kit",
-//       },
-//       {
-//         host: "test.example.com",
-//         apiKey: "another-key",
-//         apiUrl: "https://test.example.com/ai-kit",
-//       },
-//     ]);
-//   });
-// });
 
 // describe("displayStatus", () => {
 //   test("should display no connections message when status list is empty", async () => {

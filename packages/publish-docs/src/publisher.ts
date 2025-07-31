@@ -12,9 +12,10 @@ export async function publisher(input: {
   };
   appUrl: string;
   accessToken: string;
+  autoOpen?: boolean;
 }): Promise<PublishResult> {
   try {
-    const { data, appUrl, accessToken } = input;
+    const { data, appUrl, accessToken, autoOpen } = input;
 
     const url = new URL(appUrl);
     const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
@@ -46,13 +47,15 @@ export async function publisher(input: {
     console.log(`📖 Docs available at: ${docsUrl}`);
 
     // Auto open docs page in browser
-    try {
-      await open(docsUrl);
-      console.log(`✅ Opened docs in browser`);
-    } catch (openError) {
-      console.log(
-        `⚠️  Failed to open browser: ${openError instanceof Error ? openError.message : String(openError)}`,
-      );
+    if (autoOpen) {
+      try {
+        await open(docsUrl);
+        console.log(`✅ Opened docs in browser`);
+      } catch (openError) {
+        console.log(
+          `⚠️  Failed to open browser: ${openError instanceof Error ? openError.message : String(openError)}`,
+        );
+      }
     }
 
     return { success: true, docs: result.docs, boardId: data.boardId, docsUrl };

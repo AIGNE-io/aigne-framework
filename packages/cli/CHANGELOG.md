@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.29.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.28.0...cli-v1.29.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** add alias support for agent ([#297](https://github.com/AIGNE-io/aigne-framework/issues/297)) ([fa166ab](https://github.com/AIGNE-io/aigne-framework/commit/fa166ab66d19e89ddd32c34e1470450eb4fbdbbd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.8
+    * @aigne/agentic-memory bumped to 1.0.8
+    * @aigne/aigne-hub bumped to 0.3.2
+    * @aigne/anthropic bumped to 0.10.4
+    * @aigne/bedrock bumped to 0.8.8
+    * @aigne/core bumped to 1.41.0
+    * @aigne/deepseek bumped to 0.7.8
+    * @aigne/default-memory bumped to 1.0.8
+    * @aigne/gemini bumped to 0.8.8
+    * @aigne/ollama bumped to 0.7.8
+    * @aigne/open-router bumped to 0.7.8
+    * @aigne/openai bumped to 0.10.8
+    * @aigne/xai bumped to 0.7.8
+
 ## [1.28.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.27.0...cli-v1.28.0) (2025-07-31)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.48.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.47.0...aigne-framework-v1.48.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** add alias support for agent ([#297](https://github.com/AIGNE-io/aigne-framework/issues/297)) ([fa166ab](https://github.com/AIGNE-io/aigne-framework/commit/fa166ab66d19e89ddd32c34e1470450eb4fbdbbd))
+
 ## [1.47.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.46.0...aigne-framework-v1.47.0) (2025-07-31)
 
 

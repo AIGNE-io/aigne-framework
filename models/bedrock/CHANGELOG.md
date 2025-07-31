@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.8.8](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.8.7...bedrock-v0.8.8) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.41.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.16
+
 ## [0.8.7](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.8.6...bedrock-v0.8.7) (2025-07-31)
 
 

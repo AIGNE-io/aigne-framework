@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.10.8](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.10.7...transport-v0.10.8) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.8
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.8
+    * @aigne/core bumped to 1.41.0
+    * @aigne/default-memory bumped to 1.0.8
+    * @aigne/test-utils bumped to 0.5.16
+
 ## [0.10.7](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.10.6...transport-v0.10.7) (2025-07-31)
 
 

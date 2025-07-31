@@ -12,6 +12,13 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.41.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.40.0...core-v1.41.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** add alias support for agent ([#297](https://github.com/AIGNE-io/aigne-framework/issues/297)) ([fa166ab](https://github.com/AIGNE-io/aigne-framework/commit/fa166ab66d19e89ddd32c34e1470450eb4fbdbbd))
+
 ## [1.40.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.39.0...core-v1.40.0) (2025-07-31)
 
 

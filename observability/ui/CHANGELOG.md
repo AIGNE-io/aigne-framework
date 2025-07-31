@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.5...observability-ui-v0.7.6) (2025-07-31)
+
+
+### Bug Fixes
+
+* blocklet observability request without prefix ([#294](https://github.com/AIGNE-io/aigne-framework/issues/294)) ([c9c0b96](https://github.com/AIGNE-io/aigne-framework/commit/c9c0b966fef3ab5a54cd33a6f346b8f87cfc559b))
+
 ## [0.7.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.4...observability-ui-v0.7.5) (2025-07-30)
 
 

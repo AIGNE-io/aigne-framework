@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.0...publish-docs-v0.5.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* add auto open document url feature ([#296](https://github.com/AIGNE-io/aigne-framework/issues/296)) ([b6d2b56](https://github.com/AIGNE-io/aigne-framework/commit/b6d2b566cc7d209eefc2a7042453832c0f064e36))
+
 ## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.4.0...publish-docs-v0.5.0) (2025-07-30)
 
 

@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.28.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.27.0...cli-v1.28.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** support dynamic download and execution of doc-smith app ([#293](https://github.com/AIGNE-io/aigne-framework/issues/293)) ([4c40077](https://github.com/AIGNE-io/aigne-framework/commit/4c40077bacef076bc4b098879e948ef866218e39))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.7
+    * @aigne/agentic-memory bumped to 1.0.7
+    * @aigne/aigne-hub bumped to 0.3.1
+    * @aigne/anthropic bumped to 0.10.3
+    * @aigne/bedrock bumped to 0.8.7
+    * @aigne/core bumped to 1.40.0
+    * @aigne/deepseek bumped to 0.7.7
+    * @aigne/default-memory bumped to 1.0.7
+    * @aigne/gemini bumped to 0.8.7
+    * @aigne/ollama bumped to 0.7.7
+    * @aigne/open-router bumped to 0.7.7
+    * @aigne/openai bumped to 0.10.7
+    * @aigne/xai bumped to 0.7.7
+
 ## [1.27.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.26.0...cli-v1.27.0) (2025-07-30)
 
 

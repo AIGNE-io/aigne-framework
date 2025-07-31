@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.47.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.46.0...aigne-framework-v1.47.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** support dynamic download and execution of doc-smith app ([#293](https://github.com/AIGNE-io/aigne-framework/issues/293)) ([4c40077](https://github.com/AIGNE-io/aigne-framework/commit/4c40077bacef076bc4b098879e948ef866218e39))
+
+
+### Bug Fixes
+
+* add auto open document url feature ([#296](https://github.com/AIGNE-io/aigne-framework/issues/296)) ([b6d2b56](https://github.com/AIGNE-io/aigne-framework/commit/b6d2b566cc7d209eefc2a7042453832c0f064e36))
+* blocklet observability request without prefix ([#294](https://github.com/AIGNE-io/aigne-framework/issues/294)) ([c9c0b96](https://github.com/AIGNE-io/aigne-framework/commit/c9c0b966fef3ab5a54cd33a6f346b8f87cfc559b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.1
+
 ## [1.46.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.45.0...aigne-framework-v1.46.0) (2025-07-30)
 
 

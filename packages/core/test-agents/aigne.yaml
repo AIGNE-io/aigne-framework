@@ -7,5 +7,11 @@ agents:
   - chat.yaml
   - chat-with-prompt.yaml
   - team.yaml
-tools:
+skills:
   - sandbox.js
+mcp_server:
+  agents:
+    - chat.yaml
+cli:
+  agents:
+    - chat.yaml

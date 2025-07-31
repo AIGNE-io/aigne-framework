@@ -49,6 +49,14 @@ export interface AIGNEOptions {
    */
   agents?: Agent[];
 
+  mcpServer?: {
+    agents?: Agent[];
+  };
+
+  cli?: {
+    agents?: Agent[];
+  };
+
   /**
    * Limits for the AIGNE instance, such as timeout, max tokens, max invocations, etc.
    */
@@ -87,6 +95,7 @@ export class AIGNE<U extends UserContext = UserContext> {
   ): Promise<AIGNE> {
     const { model, agents = [], skills = [], ...aigne } = await load({ ...options, path });
     return new AIGNE({
+      ...aigne,
       ...options,
       rootDir: aigne.rootDir,
       model: options?.model || model,
@@ -116,6 +125,8 @@ export class AIGNE<U extends UserContext = UserContext> {
         : (options?.observer ?? new AIGNEObserver());
     if (options?.skills?.length) this.skills.push(...options.skills);
     if (options?.agents?.length) this.addAgent(...options.agents);
+    if (options?.mcpServer?.agents?.length) this.mcpServer.agents.push(...options.mcpServer.agents);
+    if (options?.cli?.agents?.length) this.cli.agents.push(...options.cli.agents);
 
     this.observer?.serve();
     this.initProcessExitHandler();
@@ -164,6 +175,14 @@ export class AIGNE<U extends UserContext = UserContext> {
    * Provides indexed access by agent name.
    */
   readonly agents = createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name));
+
+  readonly mcpServer = {
+    agents: createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name)),
+  };
+
+  readonly cli = {
+    agents: createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name)),
+  };
 
   /**
    * Observer for the AIGNE instance.

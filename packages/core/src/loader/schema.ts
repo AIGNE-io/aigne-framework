@@ -78,9 +78,9 @@ export function optionalize<T>(schema: ZodType<T>): ZodType<T | undefined> {
   return schema.nullish().transform((v) => v ?? undefined) as ZodType<T | undefined>;
 }
 
-export function camelizeSchema<T>(
-  schema: ZodType<T>,
+export function camelizeSchema<T extends ZodType>(
+  schema: T,
   { shallow = true }: { shallow?: boolean } = {},
-): ZodType<T> {
-  return z.preprocess((v) => (isRecord(v) ? camelize(v, shallow) : v), schema) as ZodType<T>;
+): T {
+  return z.preprocess((v) => (isRecord(v) ? camelize(v, shallow) : v), schema) as unknown as T;
 }

@@ -5,5 +5,11 @@ chat_model:
   temperature: 0.8
 agents:
   - chat.yaml
-tools:
+skills:
   - sandbox.js
+mcp_server:
+  agents:
+    - chat.yaml
+cli:
+  agents:
+    - chat.yaml

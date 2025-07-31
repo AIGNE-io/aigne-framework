@@ -1,23 +1,32 @@
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { cp } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve } from "node:path";
-import { Command } from "commander";
 import inquirer from "inquirer";
+import type { CommandModule } from "yargs";
 
-export function createCreateCommand(): Command {
-  return new Command("create")
-    .description("Create a new aigne project with agent config files")
-    .argument("[path]", "Path to create the project directory", ".")
-    .action(async (_path: string) => {
-      let path = _path;
+interface CreateOptions {
+  path: string;
+}
 
+export function createCreateCommand(): CommandModule<unknown, CreateOptions> {
+  return {
+    command: "create [path]",
+    describe: "Create a new aigne project with agent config files",
+    builder: (yargs) => {
+      return yargs.positional("path", {
+        describe: "Path to create the project directory",
+        type: "string",
+        default: ".",
+      });
+    },
+    handler: async ({ path }) => {
       if (path === ".") {
         const answers = await inquirer.prompt([
           {
             type: "input",
             name: "projectName",
             message: "Project name:",
-            default: _path !== "." ? _path : "my-aigne-project",
+            default: path !== "." ? path : "my-aigne-project",
             validate: (input) => {
               if (input.trim() === "") return "Project name cannot be empty.";
 
@@ -76,7 +85,6 @@ export function createCreateCommand(): Command {
       console.log(
         `\nTo use your new agent, run:\n  cd ${relative(process.cwd(), path)} && aigne run`,
       );
-    })
-    .showHelpAfterError(true)
-    .showSuggestionAfterError(true);
+    },
+  };
 }

@@ -8,8 +8,8 @@ import { isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { select } from "@inquirer/prompts";
 import { ListrInquirerPromptAdapter } from "@listr2/prompt-adapter-inquirer";
-import type { Command } from "commander";
 import { config } from "dotenv-flow";
+import type { CommandModule } from "yargs";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE, type RunOptions } from "../utils/load-aigne.js";
@@ -19,23 +19,34 @@ import {
   runAgentWithAIGNE,
 } from "../utils/run-with-aigne.js";
 
-export function createRunCommand({ aigneFilePath }: { aigneFilePath?: string } = {}): Command {
-  return createRunAIGNECommand()
-    .description("Run AIGNE from the specified agent")
-    .option(
-      "--url, --path <path_or_url>",
-      "Path to the agents directory or URL to aigne project",
-      ".",
-    )
-    .option(
-      "--entry-agent <entry-agent>",
-      "Name of the agent to run (defaults to the first agent found)",
-    )
-    .option(
-      "--cache-dir <dir>",
-      "Directory to download the package to (defaults to the ~/.aigne/xxx)",
-    )
-    .action(async (options: RunOptions) => {
+export function createRunCommand({
+  aigneFilePath,
+}: {
+  aigneFilePath?: string;
+} = {}): CommandModule {
+  return {
+    command: "run [path]",
+    describe: "Run AIGNE from the specified agent",
+    builder: (yargs) => {
+      return createRunAIGNECommand(yargs)
+        .positional("path", {
+          describe: "Path to the agents directory or URL to aigne project",
+          type: "string",
+          default: ".",
+          alias: ["url"],
+        })
+        .option("entry-agent", {
+          describe: "Name of the agent to run (defaults to the first agent found)",
+          type: "string",
+        })
+        .option("cache-dir", {
+          describe: "Directory to download the package to (defaults to the ~/.aigne/xxx)",
+          type: "string",
+        })
+        .strict(false);
+    },
+    handler: async (argv) => {
+      const options = argv as unknown as RunOptions;
       const path = aigneFilePath || options.path;
 
       if (options.logLevel) logger.level = options.logLevel;
@@ -131,9 +142,8 @@ ${aigne.agents.map((agent) => `  - ${agent.name}`).join("\n")}
       } finally {
         await aigne.shutdown();
       }
-    })
-    .showHelpAfterError(true)
-    .showSuggestionAfterError(true);
+    },
+  };
 }
 
 async function downloadPackage(url: string, cacheDir: string) {

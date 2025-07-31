@@ -5,7 +5,6 @@ import {
   type Agent,
   AIAgent,
   AIGNE,
-  FunctionAgent,
   ProcessMode,
   stringToAgentResponseStream,
   TeamAgent,
@@ -13,7 +12,6 @@ import {
 } from "@aigne/core";
 import { loadAgentFromYamlFile } from "@aigne/core/loader/agent-yaml.js";
 import { loadAgent } from "@aigne/core/loader/index.js";
-import { outputSchemaToResponseFormatSchema } from "@aigne/core/utils/json-schema.js";
 import { pick } from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { ZodType } from "zod";
@@ -26,49 +24,19 @@ test("loadAgentFromYaml should load AIAgent correctly", async () => {
   expect(agent).toBeInstanceOf(AIAgent);
   assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
 
-  expect(agent).toEqual(
-    expect.objectContaining({
-      name: "chat",
-      description: "Chat agent",
-    }),
-  );
-  expect(agent.instructions.instructions).toBe(`\
-You are a helpful assistant that can answer questions and provide information on a wide range of topics.
-Your goal is to assist users in finding the information they need and to engage in friendly conversation.
-`);
-
-  expect(agent.skills.length).toBe(1);
-  const tool = agent.skills[0];
-  expect(tool).toBeInstanceOf(FunctionAgent);
-  assert(tool instanceof FunctionAgent, "tool should be an instance of FunctionAgent");
-  expect(tool).toEqual(
-    expect.objectContaining({
-      name: "evaluateJs",
-      description: "This agent evaluates JavaScript code.",
-    }),
-  );
-  expect(outputSchemaToResponseFormatSchema(tool.inputSchema)).toEqual(
-    expect.objectContaining({
-      type: "object",
-      properties: {
-        code: {
-          type: "string",
-          description: "JavaScript code to evaluate",
-        },
-      },
-      required: ["code"],
-    }),
-  );
-  expect(outputSchemaToResponseFormatSchema(tool.outputSchema)).toEqual(
-    expect.objectContaining({
-      type: "object",
-      properties: {
-        result: {
-          description: "Result of the evaluated code",
-        },
-      },
-    }),
-  );
+  expect({
+    name: agent.name,
+    alias: agent.alias,
+    description: agent.description,
+    instructions: agent.instructions.instructions,
+    skills: agent.skills.map((skill) => ({
+      name: skill.name,
+      description: skill.description,
+      input_schema: zodToJsonSchema(skill.inputSchema),
+      output_schema: zodToJsonSchema(skill.outputSchema),
+      default_input: skill.defaultInput,
+    })),
+  }).toMatchSnapshot();
 });
 
 test("loadAgentFromYaml should error if agent.yaml file is invalid", async () => {

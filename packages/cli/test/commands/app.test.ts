@@ -50,6 +50,7 @@ test("app command should register doc-smith to yargs", async () => {
           agents: [
             FunctionAgent.from({
               name: "generate",
+              alias: ["gen", "g"],
               description: "Generate documents by doc-smith",
               inputSchema: z.object({
                 title: z.string().describe("Title of doc to generate"),
@@ -74,7 +75,7 @@ test("app command should register doc-smith to yargs", async () => {
 
     Commands:
       aigne doc-smith serve-mcp  Serve doc-smith a MCP server (streamable http)
-      aigne doc-smith generate   Generate documents by doc-smith
+      aigne doc-smith generate   Generate documents by doc-smith   [aliases: gen, g]
 
     Options:
       --help     Show help                                                 [boolean]

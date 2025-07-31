@@ -108,6 +108,7 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
 
     const baseAgentSchema = z.object({
       name: optionalize(z.string()),
+      alias: optionalize(z.array(z.string())),
       description: optionalize(z.string()),
       inputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,

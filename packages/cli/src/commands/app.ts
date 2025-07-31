@@ -92,6 +92,7 @@ const agentCommandModule = ({
 
   return {
     command: agent.name,
+    aliases: agent.alias || [],
     describe: agent.description || "",
     builder: (yargs) => {
       for (const [option, config] of Object.entries(inputSchema)) {

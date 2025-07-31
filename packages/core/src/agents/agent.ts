@@ -97,6 +97,11 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   name?: string;
 
   /**
+   * Alias for the agent, can be used to refer to the agent by multiple names, especially in AIGNE CLI
+   */
+  alias?: string[];
+
+  /**
    * Description of the agent
    *
    * A human-readable description of what the agent does, useful
@@ -257,6 +262,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     const { inputSchema, outputSchema } = options;
 
     this.name = options.name || this.constructor.name;
+    this.alias = options.alias;
     this.description = options.description;
 
     if (inputSchema) checkAgentInputOutputSchema(inputSchema);
@@ -331,6 +337,11 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    * Defaults to the class constructor name if not specified in options
    */
   readonly name: string;
+
+  /**
+   * Alias for the agent, can be used to refer to the agent by multiple names, especially in AIGNE CLI
+   */
+  readonly alias?: string[];
 
   /**
    * Default topic this agent subscribes to

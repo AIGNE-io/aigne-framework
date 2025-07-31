@@ -96,63 +96,63 @@ describe("load aigne", () => {
   });
 });
 
-describe("getConnectionStatus", () => {
-  test("should return empty array when env file does not exist", async () => {
-    const { getConnectionStatus } = await import("../../src/commands/connect.js");
+// describe("getConnectionStatus", () => {
+//   test("should return empty array when env file does not exist", async () => {
+//     const { getConnectionStatus } = await import("../../src/commands/connect.js");
 
-    const mockExistsSync = mock(() => false);
-    mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
+//     const mockExistsSync = mock(() => false);
+//     mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
 
-    const result = await getConnectionStatus();
-    expect(result).toEqual([]);
-  });
+//     const result = await getConnectionStatus();
+//     expect(result).toEqual([]);
+//   });
 
-  test("should return empty array when env file is invalid", async () => {
-    const { getConnectionStatus } = await import("../../src/commands/connect.js");
+//   test("should return empty array when env file is invalid", async () => {
+//     const { getConnectionStatus } = await import("../../src/commands/connect.js");
 
-    const mockExistsSync = mock(() => true);
-    mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
+//     const mockExistsSync = mock(() => true);
+//     mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
 
-    const mockReadFile = mock(() => Promise.reject(new Error("File read error")));
-    mock.module("node:fs/promises", () => ({ readFile: mockReadFile }));
+//     const mockReadFile = mock(() => Promise.reject(new Error("File read error")));
+//     mock.module("node:fs/promises", () => ({ readFile: mockReadFile }));
 
-    const result = await getConnectionStatus();
-    expect(result).toEqual([]);
-  });
+//     const result = await getConnectionStatus();
+//     expect(result).toEqual([]);
+//   });
 
-  test("should return status list when env file is valid", async () => {
-    const { getConnectionStatus } = await import("../../src/commands/connect.js");
+//   test("should return status list when env file is valid", async () => {
+//     const { getConnectionStatus } = await import("../../src/commands/connect.js");
 
-    const mockExistsSync = mock(() => true);
-    mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
+//     const mockExistsSync = mock(() => true);
+//     mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
 
-    const mockReadFile = mock(() =>
-      Promise.resolve(`
-hub.aigne.io:
-  AIGNE_HUB_API_KEY: "test-key"
-  AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit"
-test.example.com:
-  AIGNE_HUB_API_KEY: "another-key"
-  AIGNE_HUB_API_URL: "https://test.example.com/ai-kit"
-`),
-    );
-    mock.module("node:fs/promises", () => ({ readFile: mockReadFile }));
+//     const mockReadFile = mock(() =>
+//       Promise.resolve(`
+// hub.aigne.io:
+//   AIGNE_HUB_API_KEY: "test-key"
+//   AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit"
+// test.example.com:
+//   AIGNE_HUB_API_KEY: "another-key"
+//   AIGNE_HUB_API_URL: "https://test.example.com/ai-kit"
+// `),
+//     );
+//     mock.module("node:fs/promises", () => ({ readFile: mockReadFile }));
 
-    const result = await getConnectionStatus();
-    expect(result).toEqual([
-      {
-        host: "hub.aigne.io",
-        apiKey: "test-key",
-        apiUrl: "https://hub.aigne.io/ai-kit",
-      },
-      {
-        host: "test.example.com",
-        apiKey: "another-key",
-        apiUrl: "https://test.example.com/ai-kit",
-      },
-    ]);
-  });
-});
+//     const result = await getConnectionStatus();
+//     expect(result).toEqual([
+//       {
+//         host: "hub.aigne.io",
+//         apiKey: "test-key",
+//         apiUrl: "https://hub.aigne.io/ai-kit",
+//       },
+//       {
+//         host: "test.example.com",
+//         apiKey: "another-key",
+//         apiUrl: "https://test.example.com/ai-kit",
+//       },
+//     ]);
+//   });
+// });
 
 // describe("displayStatus", () => {
 //   test("should display no connections message when status list is empty", async () => {

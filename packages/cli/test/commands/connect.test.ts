@@ -113,9 +113,6 @@ describe("load aigne", () => {
     });
 
     test("should return status list when env file is valid", async () => {
-      const mockExistsSync = mock(() => true);
-      mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
-
       await writeFile(
         AIGNE_ENV_FILE,
         stringify({

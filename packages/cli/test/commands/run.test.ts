@@ -62,11 +62,14 @@ test("run command should call run chat loop correctly", async () => {
   );
 
   // should error if agent not found
-  spyOn(console, "error").mockReturnValueOnce(undefined);
-  spyOn(process, "exit").mockReturnValueOnce(undefined as never);
+  const error = spyOn(console, "error").mockReturnValueOnce(undefined);
+  const exit = spyOn(process, "exit").mockReturnValueOnce(undefined as never);
   expect(
     command.parseAsync(["run", "--path", testAgentsPath, "--entry-agent", "chat1"]),
   ).rejects.toThrow("not found");
+
+  error.mockRestore();
+  exit.mockRestore();
 });
 
 test("run command should download package and run correctly", async () => {

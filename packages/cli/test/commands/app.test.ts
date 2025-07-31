@@ -17,7 +17,7 @@ import { mockModule } from "../_mocks_/mock-module.js";
 test("app command should register applications to yargs", async () => {
   const command = yargs().scriptName("aigne").command(createAppCommands());
 
-  spyOn(process, "exit").mockReturnValueOnce(undefined as never);
+  const exit = spyOn(process, "exit").mockReturnValueOnce(undefined as never);
   const log = spyOn(console, "log").mockReturnValueOnce(undefined as never);
   await command.parseAsync(["--help"]);
 
@@ -33,6 +33,7 @@ test("app command should register applications to yargs", async () => {
       --version  Show version number                                       [boolean]"
   `);
 
+  exit.mockRestore();
   log.mockRestore();
 });
 
@@ -144,7 +145,7 @@ test("app command should register doc-smith to yargs", async () => {
 test("app command should support serve-mcp subcommand", async () => {
   const command = yargs().scriptName("aigne").command(createAppCommands());
 
-  spyOn(process, "exit").mockReturnValueOnce(undefined as never);
+  const exit = spyOn(process, "exit").mockReturnValueOnce(undefined as never);
   const log = spyOn(console, "log").mockReturnValueOnce(undefined as never);
 
   const mockServeMCPServerFromDir = mock();
@@ -187,6 +188,7 @@ test("app command should support serve-mcp subcommand", async () => {
     }
   `);
 
+  exit.mockRestore();
   log.mockRestore();
 });
 
@@ -215,7 +217,7 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
     ),
   );
 
-  spyOn(fs, "readFile")
+  const readFile = spyOn(fs, "readFile")
     .mockReturnValueOnce(Promise.resolve(JSON.stringify({ key3: "test field form json" })))
     .mockReturnValueOnce(Promise.resolve(stringify({ key1: "test field from yaml" })))
     .mockReturnValueOnce(Promise.resolve(JSON.stringify({ key2: "test field form json" })));
@@ -253,6 +255,8 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
     ]
   `,
   );
+
+  readFile.mockRestore();
 });
 
 test("loadApplication should load doc-smith correctly", async () => {
@@ -263,20 +267,14 @@ test("loadApplication should load doc-smith correctly", async () => {
   const tmp = join(tmpdir(), randomUUID());
   await app.loadApplication({ name: "doc-smith", dir: tmp });
 
-  expect(spawnSync.mock.lastCall).toMatchInlineSnapshot(`
-    [
-      "npm",
-      [
-        "install",
-        "--omit",
-        "dev",
-      ],
-      {
-        "cwd": "/var/folders/tp/46k4cvdn6mv9rzqgy8br5b9r0000gn/T/ecd43e9d-673a-4860-90cd-df208a42e1e1",
-        "stdio": "pipe",
-      },
-    ]
-  `);
+  expect(spawnSync.mock.lastCall).toEqual([
+    "npm",
+    ["install", "--omit", "dev"],
+    {
+      cwd: tmp,
+      stdio: "pipe",
+    },
+  ]);
 
   await app.loadApplication({ name: "doc-smith", dir: tmp });
 

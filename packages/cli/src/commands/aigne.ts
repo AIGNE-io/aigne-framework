@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import yargs from "yargs";
 import { AIGNE_CLI_VERSION } from "../constants.js";
 import { asciiLogo } from "../utils/ascii-logo.js";
@@ -11,6 +12,10 @@ import { createTestCommand } from "./test.js";
 
 export function createAIGNECommand(options?: { aigneFilePath?: string }) {
   console.log(asciiLogo);
+
+  console.log(
+    `${chalk.grey("TIPS:")} use ${chalk.greenBright("aigne observe")} to start the observability server.\n`,
+  );
 
   return yargs()
     .scriptName("aigne")

@@ -33,9 +33,11 @@ export function createAppCommands(): CommandModule[] {
     describe: app.describe,
     aliases: app.aliases,
     builder: async (yargs) => {
-      const { aigne, dir, version } = await loadApplication({ name: app.name });
+      const { aigne, dir, version, isCache } = await loadApplication({ name: app.name });
 
-      yargs.command(serveMcpCommandModule({ name: app.name, dir }));
+      yargs
+        .command(serveMcpCommandModule({ name: app.name, dir }))
+        .command(upgradeCommandModule({ name: app.name, dir, isLatest: !isCache, version }));
 
       for (const agent of aigne.cli?.agents ?? []) {
         yargs.command(agentCommandModule({ dir, agent }));
@@ -77,6 +79,33 @@ const serveMcpCommandModule = ({
   },
   handler: async (options) => {
     await serveMCPServerFromDir({ ...options, dir });
+  },
+});
+
+const upgradeCommandModule = ({
+  name,
+  dir,
+  isLatest,
+  version,
+}: {
+  name: string;
+  dir: string;
+  isLatest?: boolean;
+  version?: string;
+}): CommandModule => ({
+  command: "upgrade",
+  describe: `Upgrade ${name} to the latest version`,
+  handler: async () => {
+    if (!isLatest) {
+      const result = await loadApplication({ name, dir, forceUpgrade: true });
+
+      if (version !== result.version) {
+        console.log(`\n✅ Upgraded ${name} to version ${version}`);
+        return;
+      }
+    }
+
+    console.log(`\n✅ ${name} is already at the latest version (${version})`);
   },
 });
 
@@ -211,19 +240,22 @@ async function readFileAsInput(
 export async function loadApplication({
   name,
   dir,
+  forceUpgrade = false,
 }: {
   name: string;
   dir?: string;
-}): Promise<{ aigne: AIGNE; dir: string; version: string }> {
+  forceUpgrade?: boolean;
+}): Promise<{ aigne: AIGNE; dir: string; version: string; isCache?: boolean }> {
   name = `@aigne/${name}`;
   dir ??= join(homedir(), ".aigne", "registry.npmjs.org", name);
 
-  const check = await isInstallationAvailable(dir);
+  const check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
   if (check?.available) {
     return {
       aigne: await AIGNE.load(dir, { models: availableModels() }),
       dir,
       version: check.version,
+      isCache: true,
     };
   }
 
@@ -233,14 +265,14 @@ export async function loadApplication({
   }>(
     [
       {
-        title: "Fetching application metadata",
+        title: `Fetching ${name} metadata`,
         task: async (ctx) => {
           const info = await getNpmTgzInfo(name);
           Object.assign(ctx, info);
         },
       },
       {
-        title: "Downloading application",
+        title: `Downloading ${name}`,
         skip: (ctx) => ctx.version === check?.version,
         task: async (ctx) => {
           await downloadAndExtract(ctx.url, dir, { strip: 1 });

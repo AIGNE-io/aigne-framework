@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from "bun:test";
+import { afterEach, describe, expect, mock, test } from "bun:test";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { createConnectCommand, getConnectionStatus } from "@aigne/cli/commands/connect.js";
 import { serve } from "bun";
@@ -70,6 +70,10 @@ describe("load aigne", () => {
       paymentLink: "https://test.com",
     }),
   }));
+
+  afterEach(async () => {
+    await rm(AIGNE_ENV_FILE, { force: true });
+  });
 
   describe("loadAIGNE", () => {
     test("should connect to aigne hub successfully", async () => {

@@ -95,3 +95,224 @@ describe("load aigne", () => {
     });
   });
 });
+
+describe("getConnectionStatus", () => {
+  test("should return empty array when env file does not exist", async () => {
+    const { getConnectionStatus } = await import("../../src/commands/connect.js");
+
+    const mockExistsSync = mock(() => false);
+    mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
+
+    const result = await getConnectionStatus();
+    expect(result).toEqual([]);
+  });
+
+  test("should return empty array when env file is invalid", async () => {
+    const { getConnectionStatus } = await import("../../src/commands/connect.js");
+
+    const mockExistsSync = mock(() => true);
+    mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
+
+    const mockReadFile = mock(() => Promise.reject(new Error("File read error")));
+    mock.module("node:fs/promises", () => ({ readFile: mockReadFile }));
+
+    const result = await getConnectionStatus();
+    expect(result).toEqual([]);
+  });
+
+  test("should return status list when env file is valid", async () => {
+    const { getConnectionStatus } = await import("../../src/commands/connect.js");
+
+    const mockExistsSync = mock(() => true);
+    mock.module("node:fs", () => ({ existsSync: mockExistsSync }));
+
+    const mockReadFile = mock(() =>
+      Promise.resolve(`
+hub.aigne.io:
+  AIGNE_HUB_API_KEY: "test-key"
+  AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit"
+test.example.com:
+  AIGNE_HUB_API_KEY: "another-key"
+  AIGNE_HUB_API_URL: "https://test.example.com/ai-kit"
+`),
+    );
+    mock.module("node:fs/promises", () => ({ readFile: mockReadFile }));
+
+    const result = await getConnectionStatus();
+    expect(result).toEqual([
+      {
+        host: "hub.aigne.io",
+        apiKey: "test-key",
+        apiUrl: "https://hub.aigne.io/ai-kit",
+      },
+      {
+        host: "test.example.com",
+        apiKey: "another-key",
+        apiUrl: "https://test.example.com/ai-kit",
+      },
+    ]);
+  });
+});
+
+describe("displayStatus", () => {
+  test("should display no connections message when status list is empty", async () => {
+    const { displayStatus } = await import("../../src/commands/connect.js");
+
+    const mockConsoleLog = mock(() => {});
+    const originalConsoleLog = console.log;
+    console.log = mockConsoleLog;
+
+    try {
+      await displayStatus([]);
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining("No AIGNE Hub connections found"),
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining("Use 'aigne connect <url>' to connect to a hub"),
+      );
+    } finally {
+      console.log = originalConsoleLog;
+    }
+  });
+
+  test("should display connection status for valid connections", async () => {
+    const { displayStatus } = await import("../../src/commands/connect.js");
+
+    const mockGetUserInfo = mock(() =>
+      Promise.resolve({
+        user: {
+          fullName: "Test User",
+          did: "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
+          email: "test@example.com",
+        },
+        creditBalance: {
+          balance: "1000",
+          total: "2000",
+        },
+        paymentLink: "https://billing.example.com",
+      }),
+    );
+    mock.module("../../src/utils/aigne-hub-user.js", () => ({
+      getUserInfo: mockGetUserInfo,
+    }));
+
+    const mockConsoleLog = mock(() => {});
+    const originalConsoleLog = console.log;
+    console.log = mockConsoleLog;
+
+    try {
+      await displayStatus([
+        {
+          host: "hub.aigne.io",
+          apiKey: "test-key",
+          apiUrl: "https://hub.aigne.io/ai-kit",
+        },
+      ]);
+
+      const loggedCalls = mockConsoleLog.mock.calls.map((call: any) => call[0]);
+
+      expect(loggedCalls.some((call: any) => call.includes("AIGNE Hub Connection Status"))).toBe(
+        true,
+      );
+      expect(loggedCalls.some((call: any) => call.includes("hub.aigne.io"))).toBe(true);
+      expect(loggedCalls.some((call: any) => call.includes("Status: Connected"))).toBe(true);
+      expect(loggedCalls.some((call: any) => call.includes("User: Test User"))).toBe(true);
+      expect(
+        loggedCalls.some((call: any) =>
+          call.includes("User DID: z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ"),
+        ),
+      ).toBe(true);
+      expect(loggedCalls.some((call: any) => call.includes("Email: test@example.com"))).toBe(true);
+    } finally {
+      console.log = originalConsoleLog;
+    }
+  });
+
+  test("should display disconnected status when getUserInfo fails", async () => {
+    const { displayStatus } = await import("../../src/commands/connect.js");
+
+    const mockGetUserInfo = mock(() => Promise.reject(new Error("Connection failed")));
+    mock.module("../../src/utils/aigne-hub-user.js", () => ({
+      getUserInfo: mockGetUserInfo,
+    }));
+
+    const mockConsoleLog = mock(() => {});
+    const mockConsoleError = mock(() => {});
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+    console.log = mockConsoleLog;
+    console.error = mockConsoleError;
+
+    try {
+      await displayStatus([
+        {
+          host: "hub.aigne.io",
+          apiKey: "invalid-key",
+          apiUrl: "https://hub.aigne.io/ai-kit",
+        },
+      ]);
+
+      const loggedCalls = mockConsoleLog.mock.calls.map((call: any) => call[0]);
+
+      expect(loggedCalls.some((call: any) => call.includes("AIGNE Hub Connection Status"))).toBe(
+        true,
+      );
+      expect(loggedCalls.some((call: any) => call.includes("hub.aigne.io"))).toBe(true);
+      expect(loggedCalls.some((call: any) => call.includes("Status: Disconnected"))).toBe(true);
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.any(Error));
+    } finally {
+      console.log = originalConsoleLog;
+      console.error = originalConsoleError;
+    }
+  });
+
+  test("should handle missing optional fields gracefully", async () => {
+    const { displayStatus } = await import("../../src/commands/connect.js");
+
+    const mockGetUserInfo = mock(() =>
+      Promise.resolve({
+        user: {
+          fullName: "Test User",
+          did: "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
+        },
+        creditBalance: {
+          balance: "500",
+          total: "1000",
+        },
+      }),
+    );
+    mock.module("../../src/utils/aigne-hub-user.js", () => ({
+      getUserInfo: mockGetUserInfo,
+    }));
+
+    const mockConsoleLog = mock(() => {});
+    const originalConsoleLog = console.log;
+    console.log = mockConsoleLog;
+
+    try {
+      await displayStatus([
+        {
+          host: "hub.aigne.io",
+          apiKey: "test-key",
+          apiUrl: "https://hub.aigne.io/ai-kit",
+        },
+      ]);
+
+      const loggedCalls = mockConsoleLog.mock.calls.map((call: any) => call[0]);
+
+      expect(loggedCalls.some((call: any) => call.includes("hub.aigne.io"))).toBe(true);
+      expect(loggedCalls.some((call: any) => call.includes("User: Test User"))).toBe(true);
+      expect(
+        loggedCalls.some((call: any) =>
+          call.includes("User DID: z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ"),
+        ),
+      ).toBe(true);
+
+      const calls = mockConsoleLog.mock.calls.map((call: any) => call[0]);
+      expect(calls.some((call: any) => call.includes("Email:"))).toBe(false);
+    } finally {
+      console.log = originalConsoleLog;
+    }
+  });
+});

@@ -28,7 +28,7 @@ const formatNumber = (balance: string) => {
   return chalk.yellow((balanceNum || "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 };
 
-async function getConnectionStatus(): Promise<StatusInfo[]> {
+export async function getConnectionStatus(): Promise<StatusInfo[]> {
   if (!existsSync(AIGNE_ENV_FILE)) {
     return [];
   }
@@ -53,7 +53,7 @@ async function getConnectionStatus(): Promise<StatusInfo[]> {
   }
 }
 
-async function displayStatus(statusList: StatusInfo[]) {
+export async function displayStatus(statusList: StatusInfo[]) {
   if (statusList.length === 0) {
     console.log(chalk.yellow("No AIGNE Hub connections found."));
     console.log("Use 'aigne connect <url>' to connect to a hub.");

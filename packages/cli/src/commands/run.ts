@@ -42,7 +42,8 @@ export function createRunCommand({
         .option("cache-dir", {
           describe: "Directory to download the package to (defaults to the ~/.aigne/xxx)",
           type: "string",
-        });
+        })
+        .strict(false);
     },
     handler: async (argv) => {
       const options = argv as unknown as RunOptions;

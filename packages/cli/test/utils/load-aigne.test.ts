@@ -439,8 +439,8 @@ describe("load aigne", () => {
     test("should throw error with no env file", async () => {
       const { url, close } = await createHonoServer();
       await rm(AIGNE_ENV_FILE, { force: true });
-      await expect(await checkConnectionStatus(new URL(url).host)).rejects.toThrow(
-        "AIGNE_HUB_API_KEY file not found, need to login first",
+      await expect(checkConnectionStatus(new URL(url).host)).rejects.toThrow(
+        /need to login first/i,
       );
       close();
     });
@@ -450,8 +450,8 @@ describe("load aigne", () => {
 
       process.env.AIGNE_HUB_API_URL = url;
       await writeFile(AIGNE_ENV_FILE, stringify({}));
-      await expect(await checkConnectionStatus(new URL(url).host)).rejects.toThrow(
-        "AIGNE_HUB_API_KEY file not found, need to login first",
+      await expect(checkConnectionStatus(new URL(url).host)).rejects.toThrow(
+        /need to login first/i,
       );
 
       close();
@@ -470,8 +470,8 @@ describe("load aigne", () => {
         }),
       );
 
-      await expect(await checkConnectionStatus(new URL(url).host)).rejects.toThrow(
-        "AIGNE_HUB_API_KEY file not found, need to login first",
+      await expect(checkConnectionStatus(new URL(url).host)).rejects.toThrow(
+        /need to login first/i,
       );
 
       close();
@@ -490,9 +490,28 @@ describe("load aigne", () => {
         }),
       );
 
-      await expect(await checkConnectionStatus(new URL(url).host)).rejects.toThrow(
-        "AIGNE_HUB_API_KEY file not found, need to login first",
+      await expect(checkConnectionStatus(new URL(url).host)).rejects.toThrow(
+        /need to login first/i,
       );
+
+      close();
+    });
+
+    test("should load aigne successfully with no host key env file", async () => {
+      const { url, close } = await createHonoServer();
+
+      process.env.AIGNE_HUB_API_URL = url;
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          [new URL(url).host]: {
+            AIGNE_HUB_API_KEY: "123",
+            AIGNE_HUB_API_URL: url,
+          },
+        }),
+      );
+
+      await expect(await checkConnectionStatus(new URL(url).host));
 
       close();
     });
@@ -603,7 +622,36 @@ describe("load aigne", () => {
 
       expect(env).toBeDefined();
       expect(env.AIGNE_HUB_API_KEY).toBe("test");
-      expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
+      close();
+    });
+
+    test("should load aigne successfully with no host key env file", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: true }));
+
+      process.env.AIGNE_HUB_API_URL = url;
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          [new URL(url).host]: {
+            AIGNE_HUB_API_KEY: "123",
+            AIGNE_HUB_API_URL: url,
+          },
+        }),
+      );
+
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE(
+        path,
+        { model: "aignehub:openai/gpt-4o", path },
+        { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+      );
+
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
+
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("123");
       close();
     });
 

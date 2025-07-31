@@ -33,7 +33,7 @@ export function createAppCommands(): CommandModule[] {
     describe: app.describe,
     aliases: app.aliases,
     builder: async (yargs) => {
-      const { aigne, dir, version } = await loadApplication({ name: "doc-smith" });
+      const { aigne, dir, version } = await loadApplication({ name: app.name });
 
       yargs.command(serveMcpCommandModule({ name: app.name, dir }));
 

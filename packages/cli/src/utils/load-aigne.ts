@@ -270,6 +270,35 @@ export async function connectToAIGNEHub(url: string) {
   }
 }
 
+const checkConnectionStatus = async (host: string) => {
+  // aigne-hub access token
+  if (!existsSync(AIGNE_ENV_FILE)) {
+    throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");
+  }
+
+  const data = await readFile(AIGNE_ENV_FILE, "utf8");
+  if (!data.includes("AIGNE_HUB_API_KEY")) {
+    throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
+  }
+
+  const envs = parse(data);
+  if (!envs[host]) {
+    throw new Error("AIGNE_HUB_API_KEY host not found, need to login first");
+  }
+
+  const env = envs[host];
+  if (!env.AIGNE_HUB_API_KEY) {
+    throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
+  }
+
+  return {
+    accessKey: env.AIGNE_HUB_API_KEY,
+    url: joinURL(env.AIGNE_HUB_API_URL),
+  };
+};
+
+const mockInquirerPrompt = (() => Promise.resolve({ useAigneHub: true })) as any;
+
 export async function loadAIGNE(
   path: string,
   options?: RunOptions,
@@ -290,14 +319,18 @@ export async function loadAIGNE(
   const inquirerPrompt = (actionOptions?.inquirerPromptFn ??
     inquirer.prompt) as typeof inquirer.prompt;
 
+  const { host } = new URL(AIGNE_HUB_URL);
   const { aigne } = await loadAIGNEFile(path).catch(() => ({ aigne: null }));
 
-  let accessKeyOptions: { accessKey?: string; url?: string } = {};
+  const result = await checkConnectionStatus(host).catch(() => null);
+  const alreadyConnected = Boolean(result?.accessKey);
   const modelName = await formatModelName(
     models,
     options?.model || `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`,
-    inquirerPrompt,
+    alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
   );
+
+  let accessKeyOptions: { accessKey?: string; url?: string } = {};
 
   if (TEST_ENV && !actionOptions?.runTest) {
     const model = await loadModel(models, parseModelOption(modelName), undefined, accessKeyOptions);
@@ -305,33 +338,8 @@ export async function loadAIGNE(
   }
 
   if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
-    const { host } = new URL(AIGNE_HUB_URL);
-
     try {
-      // aigne-hub access token
-      if (!existsSync(AIGNE_ENV_FILE)) {
-        throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");
-      }
-
-      const data = await readFile(AIGNE_ENV_FILE, "utf8");
-      if (!data.includes("AIGNE_HUB_API_KEY")) {
-        throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
-      }
-
-      const envs = parse(data);
-      if (!envs[host]) {
-        throw new Error("AIGNE_HUB_API_KEY host not found, need to login first");
-      }
-
-      const env = envs[host];
-      if (!env.AIGNE_HUB_API_KEY) {
-        throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
-      }
-
-      accessKeyOptions = {
-        accessKey: env.AIGNE_HUB_API_KEY,
-        url: joinURL(env.AIGNE_HUB_API_URL),
-      };
+      accessKeyOptions = await checkConnectionStatus(host);
     } catch (error) {
       if (error instanceof Error && error.message.includes("login first")) {
         // If none or invalid, prompt the user to proceed

@@ -20,6 +20,8 @@ const require = createRequire(import.meta.url);
 
 export const AIGNE_CLI_VERSION = require("../package.json").version;
 
+const GOOGLE = "google";
+
 export function availableModels(): LoadableModel[] {
   const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
     .map((i) => process.env[i])
@@ -63,6 +65,11 @@ export function availableModels(): LoadableModel[] {
     },
     {
       name: GeminiChatModel.name,
+      apiKeyEnvName: "GEMINI_API_KEY",
+      create: (params) => new GeminiChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: GOOGLE,
       apiKeyEnvName: "GEMINI_API_KEY",
       create: (params) => new GeminiChatModel({ ...params, clientOptions }),
     },

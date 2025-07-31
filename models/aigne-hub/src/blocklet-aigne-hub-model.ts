@@ -17,6 +17,8 @@ import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
 import { XAIChatModel } from "@aigne/xai";
 import { type AIGNEHubChatModelOptions, CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
 
+const GOOGLE = "google";
+
 function availableModels(): LoadableModel[] {
   return [
     {
@@ -41,6 +43,11 @@ function availableModels(): LoadableModel[] {
     },
     {
       name: GeminiChatModel.name,
+      apiKeyEnvName: "GEMINI_API_KEY",
+      create: (params) => new GeminiChatModel({ ...params }),
+    },
+    {
+      name: GOOGLE,
       apiKeyEnvName: "GEMINI_API_KEY",
       create: (params) => new GeminiChatModel({ ...params }),
     },

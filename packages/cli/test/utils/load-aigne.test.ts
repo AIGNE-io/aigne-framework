@@ -8,6 +8,7 @@ import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import {
   AIGNE_ENV_FILE,
+  checkConnectionStatus,
   connectToAIGNEHub,
   createConnect,
   decodeEncryptionKey,
@@ -431,6 +432,73 @@ describe("load aigne", () => {
 
       await rm(AIGNE_ENV_FILE, { force: true });
       close();
+    });
+  });
+
+  describe("checkConnectionStatus", () => {
+    test("should throw error with no env file", async () => {
+      const { url, close } = await createHonoServer();
+      await rm(AIGNE_ENV_FILE, { force: true });
+      await expect(await checkConnectionStatus(new URL(url).host)).rejects.toThrow(
+        "AIGNE_HUB_API_KEY file not found, need to login first",
+      );
+      close();
+    });
+
+    test("should throw error with empty env file", async () => {
+      const { url, close } = await createHonoServer();
+
+      process.env.AIGNE_HUB_API_URL = url;
+      await writeFile(AIGNE_ENV_FILE, stringify({}));
+      await expect(await checkConnectionStatus(new URL(url).host)).rejects.toThrow(
+        "AIGNE_HUB_API_KEY file not found, need to login first",
+      );
+
+      close();
+    });
+
+    test("should load aigne successfully with no host env file", async () => {
+      const { url, close } = await createHonoServer();
+
+      process.env.AIGNE_HUB_API_URL = url;
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          test: {
+            AIGNE_HUB_API_KEY: "123",
+          },
+        }),
+      );
+
+      await expect(await checkConnectionStatus(new URL(url).host)).rejects.toThrow(
+        "AIGNE_HUB_API_KEY file not found, need to login first",
+      );
+
+      close();
+    });
+
+    test("should load aigne successfully with no host key env file", async () => {
+      const { url, close } = await createHonoServer();
+
+      process.env.AIGNE_HUB_API_URL = url;
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          [new URL(url).host]: {
+            AIGNE_HUB_API_KEY1: "123",
+          },
+        }),
+      );
+
+      await expect(await checkConnectionStatus(new URL(url).host)).rejects.toThrow(
+        "AIGNE_HUB_API_KEY file not found, need to login first",
+      );
+
+      close();
+    });
+
+    afterEach(async () => {
+      await rm(AIGNE_ENV_FILE, { force: true });
     });
   });
 

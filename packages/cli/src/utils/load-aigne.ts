@@ -270,7 +270,7 @@ export async function connectToAIGNEHub(url: string) {
   }
 }
 
-const checkConnectionStatus = async (host: string) => {
+export const checkConnectionStatus = async (host: string) => {
   // aigne-hub access token
   if (!existsSync(AIGNE_ENV_FILE)) {
     throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");

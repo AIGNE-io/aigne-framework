@@ -48,7 +48,6 @@ const request = async (config: { url: string; method?: string; requestCount?: nu
 };
 
 export interface RunOptions extends RunAIGNECommandOptions {
-  path: string;
   entryAgent?: string;
   cacheDir?: string;
 }

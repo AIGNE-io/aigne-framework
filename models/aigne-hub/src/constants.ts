@@ -87,9 +87,9 @@ export function availableModels(): LoadableModel[] {
 export function findModel(models: LoadableModel[], provider: string) {
   return models.find((m) => {
     if (typeof m.name === "string") {
-      return m.name.toLowerCase().includes(provider);
+      return m.name.toLowerCase().includes(provider.toLowerCase());
     }
-    return m.name.some((n) => n.toLowerCase().includes(provider));
+    return m.name.some((n) => n.toLowerCase().includes(provider.toLowerCase()));
   });
 }
 

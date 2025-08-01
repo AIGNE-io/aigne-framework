@@ -1455,6 +1455,9 @@ importers:
       '@aigne/observability-api':
         specifier: workspace:^
         version: link:../../observability/api
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../../models/openai
       '@inquirer/prompts':
         specifier: ^7.6.0
         version: 7.6.0(@types/node@24.0.12)

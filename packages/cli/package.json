@@ -57,6 +57,7 @@
     "@aigne/agent-library": "workspace:^",
     "@aigne/agentic-memory": "workspace:^",
     "@aigne/aigne-hub": "workspace:^",
+    "@aigne/openai": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
     "@aigne/listr2": "^1.0.10",

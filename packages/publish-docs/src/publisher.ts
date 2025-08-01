@@ -1,4 +1,5 @@
 import open from "open";
+import terminalLink from "terminal-link";
 import { joinURL } from "ufo";
 import { DISCUSS_KIT_DID } from "./constants.js";
 import type { DocNode } from "./generator.js";
@@ -43,7 +44,14 @@ export async function publisher(input: {
     const docsUrl = joinURL(url.origin, mountPoint, "/docs", data.boardId);
 
     console.log(`Publishing docs collection...`);
-    console.log(`📖 Docs available at: ${docsUrl}`);
+
+    let docsMessage: string;
+    if (terminalLink.isSupported) {
+      docsMessage = `📖 Docs available at: ${terminalLink(docsUrl, docsUrl)}`;
+    } else {
+      docsMessage = `📖 Docs available at: ${docsUrl}`;
+    }
+    console.log(docsMessage);
 
     // Auto open docs page in browser
     if (autoOpen) {

@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.3.2...aigne-hub-v0.4.0) (2025-08-01)
+
+
+### Features
+
+* support google model and skip check mode when connected to Hub ([#300](https://github.com/AIGNE-io/aigne-framework/issues/300)) ([e992c0f](https://github.com/AIGNE-io/aigne-framework/commit/e992c0f3335a7c512fa807d5b8ad10c9c3bf2351))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.10.5
+    * @aigne/bedrock bumped to 0.8.9
+    * @aigne/core bumped to 1.42.0
+    * @aigne/deepseek bumped to 0.7.9
+    * @aigne/default-memory bumped to 1.0.9
+    * @aigne/gemini bumped to 0.8.9
+    * @aigne/ollama bumped to 0.7.9
+    * @aigne/open-router bumped to 0.7.9
+    * @aigne/openai bumped to 0.10.9
+    * @aigne/platform-helpers bumped to 0.5.0
+    * @aigne/transport bumped to 0.11.0
+    * @aigne/xai bumped to 0.7.9
+  * devDependencies
+    * @aigne/openai bumped to 0.10.9
+    * @aigne/test-utils bumped to 0.5.17
+
 ## [0.3.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.3.1...aigne-hub-v0.3.2) (2025-07-31)
 
 

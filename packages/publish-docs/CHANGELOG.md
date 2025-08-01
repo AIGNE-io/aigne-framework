@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.1...publish-docs-v0.5.2) (2025-08-01)
+
+
+### Bug Fixes
+
+* polish publish docs log ([#303](https://github.com/AIGNE-io/aigne-framework/issues/303)) ([1a9f934](https://github.com/AIGNE-io/aigne-framework/commit/1a9f934b7ab01f38fdf945b52b0b3ba6fe508843))
+
 ## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.0...publish-docs-v0.5.1) (2025-07-31)
 
 

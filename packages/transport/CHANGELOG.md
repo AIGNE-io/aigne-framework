@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.10.8...transport-v0.11.0) (2025-08-01)
+
+
+### Features
+
+* support google model and skip check mode when connected to Hub ([#300](https://github.com/AIGNE-io/aigne-framework/issues/300)) ([e992c0f](https://github.com/AIGNE-io/aigne-framework/commit/e992c0f3335a7c512fa807d5b8ad10c9c3bf2351))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.9
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.9
+    * @aigne/core bumped to 1.42.0
+    * @aigne/default-memory bumped to 1.0.9
+    * @aigne/test-utils bumped to 0.5.17
+
 ## [0.10.8](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.10.7...transport-v0.10.8) (2025-07-31)
 
 

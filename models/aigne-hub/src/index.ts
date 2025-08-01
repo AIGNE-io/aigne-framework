@@ -26,3 +26,5 @@ export class AIGNEHubChatModel extends ChatModel {
     return this.client.process(input, options);
   }
 }
+
+export { availableModels } from "./constants.js";

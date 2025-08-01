@@ -1,5 +1,5 @@
-import { AnthropicChatModel, type AnthropicChatModelOptions } from "@aigne/anthropic";
-import { BedrockChatModel, type BedrockChatModelOptions } from "@aigne/bedrock";
+import type { AnthropicChatModelOptions } from "@aigne/anthropic";
+import type { BedrockChatModelOptions } from "@aigne/bedrock";
 import {
   type AgentInvokeOptions,
   type AgentProcessResult,
@@ -7,72 +7,10 @@ import {
   type ChatModelInput,
   type ChatModelOutput,
 } from "@aigne/core";
-import type { LoadableModel } from "@aigne/core/loader/index.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import { DeepSeekChatModel } from "@aigne/deepseek";
-import { GeminiChatModel } from "@aigne/gemini";
-import { OllamaChatModel } from "@aigne/ollama";
-import { OpenRouterChatModel } from "@aigne/open-router";
-import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
-import { XAIChatModel } from "@aigne/xai";
-import { type AIGNEHubChatModelOptions, CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
-
-const GOOGLE = "google";
-
-function availableModels(): LoadableModel[] {
-  return [
-    {
-      name: OpenAIChatModel.name,
-      apiKeyEnvName: "OPENAI_API_KEY",
-      create: (params) => new OpenAIChatModel({ ...params }),
-    },
-    {
-      name: AnthropicChatModel.name,
-      apiKeyEnvName: "ANTHROPIC_API_KEY",
-      create: (params) => new AnthropicChatModel({ ...params }),
-    },
-    {
-      name: BedrockChatModel.name,
-      apiKeyEnvName: "AWS_ACCESS_KEY_ID",
-      create: (params) => new BedrockChatModel({ ...params }),
-    },
-    {
-      name: DeepSeekChatModel.name,
-      apiKeyEnvName: "DEEPSEEK_API_KEY",
-      create: (params) => new DeepSeekChatModel({ ...params }),
-    },
-    {
-      name: GeminiChatModel.name,
-      apiKeyEnvName: "GEMINI_API_KEY",
-      create: (params) => new GeminiChatModel({ ...params }),
-    },
-    {
-      name: GOOGLE,
-      apiKeyEnvName: "GEMINI_API_KEY",
-      create: (params) => new GeminiChatModel({ ...params }),
-    },
-    {
-      name: OllamaChatModel.name,
-      apiKeyEnvName: "OLLAMA_API_KEY",
-      create: (params) => new OllamaChatModel({ ...params }),
-    },
-    {
-      name: OpenRouterChatModel.name,
-      apiKeyEnvName: "OPEN_ROUTER_API_KEY",
-      create: (params) => new OpenRouterChatModel({ ...params }),
-    },
-    {
-      name: XAIChatModel.name,
-      apiKeyEnvName: "XAI_API_KEY",
-      create: (params) => new XAIChatModel({ ...params }),
-    },
-    {
-      name: CliAIGNEHubChatModel.name,
-      apiKeyEnvName: "AIGNE_HUB_API_KEY",
-      create: (params) => new CliAIGNEHubChatModel({ ...params }),
-    },
-  ];
-}
+import type { OpenAIChatModelOptions } from "@aigne/openai";
+import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
+import { availableModels } from "./constants.js";
 
 export type HubChatModelOptions =
   | AIGNEHubChatModelOptions
@@ -91,7 +29,12 @@ export class BlockletAIGNEHubChatModel extends ChatModel {
     const models = availableModels();
     const PROVIDER = process.env.BLOCKLET_AIGNE_API_PROVIDER?.toLowerCase() ?? "";
     const provider = PROVIDER.replace(/-/g, "");
-    const m = models.find((m) => m.name.toLowerCase().includes(provider));
+    const m = models.find((m) => {
+      if (typeof m.name === "string") {
+        return m.name.toLowerCase().includes(provider);
+      }
+      return m.name.some((n) => n.toLowerCase().includes(provider));
+    });
 
     if (!m) {
       throw new Error(

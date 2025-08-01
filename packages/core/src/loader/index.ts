@@ -23,8 +23,8 @@ interface LoadableModelClass {
 }
 
 export interface LoadableModel {
-  name: string;
-  apiKeyEnvName?: string;
+  name: string | string[];
+  apiKeyEnvName?: string | string[];
   create: (options: {
     model?: string;
     modelOptions?: ChatModelOptions;
@@ -261,7 +261,12 @@ export async function loadModel(
   const providerName = MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER;
   const provider = providerName.replace(/-/g, "");
 
-  const m = models.find((m) => m.name.toLowerCase().includes(provider.toLowerCase()));
+  const m = models.find((m) => {
+    if (typeof m.name === "string") {
+      return m.name.toLowerCase().includes(provider.toLowerCase());
+    }
+    return m.name.some((n) => n.toLowerCase().includes(provider.toLowerCase()));
+  });
   if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
 
   return m.create({

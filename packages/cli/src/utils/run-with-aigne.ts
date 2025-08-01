@@ -55,7 +55,12 @@ export const createRunAIGNECommand = (yargs: Argv) =>
     })
     .option("model", {
       describe: `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
-        .map((i) => i.name.toLowerCase().replace(/ChatModel$/i, ""))
+        .map((i) => {
+          if (typeof i.name === "string") {
+            return i.name.toLowerCase().replace(/ChatModel$/i, "");
+          }
+          return i.name.map((n) => n.toLowerCase().replace(/ChatModel$/i, ""));
+        })
         .join(", ")} (default: openai)`,
       type: "string",
     })

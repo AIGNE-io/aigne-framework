@@ -24,6 +24,18 @@
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "types": "./lib/dts/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/dts/index.d.ts"
+    },
+    "./constants": {
+      "import": "./lib/esm/constants.js",
+      "require": "./lib/cjs/constants.js",
+      "types": "./lib/dts/constants.d.ts"
+    }
+  },
   "scripts": {
     "lint": "tsc --noEmit",
     "build": "tsc --build scripts/tsconfig.build.json",
@@ -45,6 +57,9 @@
     "@aigne/openai": "workspace:^",
     "@aigne/transport": "workspace:^",
     "@aigne/xai": "workspace:^",
+    "@smithy/node-http-handler": "^4.1.0",
+    "https-proxy-agent": "^7.0.6",
+    "openai": "^5.8.3",
     "ufo": "^1.6.1",
     "zod": "^3.25.67"
   },

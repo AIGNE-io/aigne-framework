@@ -180,10 +180,16 @@ export const formatModelName = async (
     return model;
   }
 
-  const m = models.find((m) => m.name.toLowerCase().includes(providerName.toLowerCase()));
+  const m = models.find((m) => {
+    if (typeof m.name === "string") {
+      return m.name.toLowerCase().includes(providerName.toLowerCase());
+    }
+    return m.name.some((n) => n.toLowerCase().includes(providerName.toLowerCase()));
+  });
   if (!m) throw new Error(`Unsupported model: ${provider} ${name}`);
 
-  if (m.apiKeyEnvName && process.env[m.apiKeyEnvName]) {
+  const apiKeyEnvName = Array.isArray(m.apiKeyEnvName) ? m.apiKeyEnvName : [m.apiKeyEnvName];
+  if (apiKeyEnvName.some((name) => name && process.env[name])) {
     return model;
   }
 
@@ -201,7 +207,7 @@ export const formatModelName = async (
         value: true,
       },
       {
-        name: `Exit and bring my owner API Key by set ${m.apiKeyEnvName}`,
+        name: `Exit and bring my owner API Key by set ${apiKeyEnvName.join(", ")}`,
         value: false,
       },
     ],

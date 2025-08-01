@@ -1,4 +1,5 @@
 import open from "open";
+import terminalLink from "terminal-link";
 import { joinURL } from "ufo";
 import { DISCUSS_KIT_DID } from "./constants.js";
 import type { DocNode } from "./generator.js";
@@ -19,7 +20,6 @@ export async function publisher(input: {
 
     const url = new URL(appUrl);
     const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
-    console.log(`Found Discuss Kit mount point: ${mountPoint}`);
 
     const publishUrl = joinURL(url.origin, mountPoint, "/api/docs/create-docs-collection");
 
@@ -44,7 +44,10 @@ export async function publisher(input: {
     const docsUrl = joinURL(url.origin, mountPoint, "/docs", data.boardId);
 
     console.log(`Publishing docs collection...`);
-    console.log(`📖 Docs available at: ${docsUrl}`);
+
+    const link = terminalLink.isSupported ? terminalLink(docsUrl, docsUrl) : docsUrl;
+    const docsMessage = `📖 Docs available at: ${link}`;
+    console.log(docsMessage);
 
     // Auto open docs page in browser
     if (autoOpen) {

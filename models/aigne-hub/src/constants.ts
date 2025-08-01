@@ -11,10 +11,8 @@ import { OpenAIChatModel } from "@aigne/openai";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
-import camelize from "camelize-ts";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import type { ClientOptions } from "openai";
-import { type ZodType, z } from "zod";
 import { CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
 
 export function availableModels(): LoadableModel[] {
@@ -98,38 +96,16 @@ export function findModel(models: LoadableModel[], provider: string) {
 const { MODEL_PROVIDER, MODEL_NAME } = nodejs.env;
 const DEFAULT_MODEL_PROVIDER = "openai";
 
-function optionalize<T>(schema: ZodType<T>): ZodType<T | undefined> {
-  return schema.nullish().transform((v) => v ?? undefined) as ZodType<T | undefined>;
-}
-
-function isRecord<T>(value: unknown): value is Record<string, T> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
-
-function camelizeSchema<T extends ZodType>(
-  schema: T,
-  { shallow = true }: { shallow?: boolean } = {},
-): T {
-  return z.preprocess((v) => (isRecord(v) ? camelize(v, shallow) : v), schema) as unknown as T;
-}
-
-const model = optionalize(
-  z.union([
-    z.string(),
-    camelizeSchema(
-      z.object({
-        provider: z.string().nullish(),
-        name: z.string().nullish(),
-        temperature: z.number().min(0).max(2).nullish(),
-        topP: z.number().min(0).nullish(),
-        frequencyPenalty: z.number().min(-2).max(2).nullish(),
-        presencePenalty: z.number().min(-2).max(2).nullish(),
-      }),
-    ),
-  ]),
-).transform((v) => (typeof v === "string" ? { name: v } : v));
-
-type Model = z.infer<typeof model>;
+type Model =
+  | {
+      provider?: string | null;
+      name?: string | null;
+      temperature?: number | null;
+      topP?: number | null;
+      frequencyPenalty?: number | null;
+      presencePenalty?: number | null;
+    }
+  | undefined;
 
 export async function loadModel(
   model?: Model,

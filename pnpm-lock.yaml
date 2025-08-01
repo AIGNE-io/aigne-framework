@@ -703,9 +703,6 @@ importers:
       '@smithy/node-http-handler':
         specifier: ^4.1.0
         version: 4.1.0
-      camelize-ts:
-        specifier: ^3.0.0
-        version: 3.0.0
       https-proxy-agent:
         specifier: ^7.0.6
         version: 7.0.6
@@ -1712,9 +1709,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
-      camelize-ts:
-        specifier: ^3.0.0
-        version: 3.0.0
       content-type:
         specifier: ^1.0.5
         version: 1.0.5

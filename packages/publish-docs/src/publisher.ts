@@ -19,7 +19,6 @@ export async function publisher(input: {
 
     const url = new URL(appUrl);
     const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
-    console.log(`Found Discuss Kit mount point: ${mountPoint}`);
 
     const publishUrl = joinURL(url.origin, mountPoint, "/api/docs/create-docs-collection");
 

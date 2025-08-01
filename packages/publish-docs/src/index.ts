@@ -59,12 +59,12 @@ export async function publishDocs(options: PublishDocsOptions): Promise<PublishR
       throw new Error("boardName is required when autoCreateBoard is true");
     }
 
-    console.log("Auto create board is enabled...");
     finalBoardId = await createBoard({
       appUrl: parsed.appUrl,
       accessToken,
       boardName: parsed.boardName,
     });
+    console.log(`✅ Board "${parsed.boardName}" created successfully`);
   }
 
   if (!finalBoardId) {

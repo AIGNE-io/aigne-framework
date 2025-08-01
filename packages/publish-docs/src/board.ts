@@ -46,7 +46,6 @@ export async function createBoard(input: {
 
   const url = new URL(appUrl);
   const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
-  console.log(`Found Discuss Kit mount point: ${mountPoint}`);
 
   // Create new board
   const createBoardUrl = joinURL(url.origin, mountPoint, "/api/boards");
@@ -79,6 +78,5 @@ export async function createBoard(input: {
   }
 
   const newBoard: CreateBoardResponse = await createBoardResponse.json();
-  console.log(`Created new board with id: ${newBoard.id}`);
   return newBoard.id;
 }

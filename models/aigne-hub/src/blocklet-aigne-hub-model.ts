@@ -10,7 +10,7 @@ import {
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
 import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
-import { availableModels } from "./constants.js";
+import { availableModels, findModel } from "./constants.js";
 
 export type HubChatModelOptions =
   | AIGNEHubChatModelOptions
@@ -29,12 +29,7 @@ export class BlockletAIGNEHubChatModel extends ChatModel {
     const models = availableModels();
     const PROVIDER = process.env.BLOCKLET_AIGNE_API_PROVIDER?.toLowerCase() ?? "";
     const provider = PROVIDER.replace(/-/g, "");
-    const m = models.find((m) => {
-      if (typeof m.name === "string") {
-        return m.name.toLowerCase().includes(provider);
-      }
-      return m.name.some((n) => n.toLowerCase().includes(provider));
-    });
+    const m = findModel(models, provider);
 
     if (!m) {
       throw new Error(

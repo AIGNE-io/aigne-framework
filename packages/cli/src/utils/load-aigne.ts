@@ -2,6 +2,7 @@ import { existsSync, mkdirSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { availableModels, findModel } from "@aigne/aigne-hub";
 import { AIGNE } from "@aigne/core";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { loadAIGNEFile, loadModel } from "@aigne/core/loader/index.js";
@@ -13,7 +14,7 @@ import open from "open";
 import pWaitFor from "p-wait-for";
 import { joinURL, withQuery } from "ufo";
 import { parse, stringify } from "yaml";
-import { availableMemories, availableModels } from "../constants.js";
+import { availableMemories } from "../constants.js";
 import { parseModelOption, type RunAIGNECommandOptions } from "./run-with-aigne.js";
 
 const aes = new AesCrypter();
@@ -180,12 +181,7 @@ export const formatModelName = async (
     return model;
   }
 
-  const m = models.find((m) => {
-    if (typeof m.name === "string") {
-      return m.name.toLowerCase().includes(providerName.toLowerCase());
-    }
-    return m.name.some((n) => n.toLowerCase().includes(providerName.toLowerCase()));
-  });
+  const m = findModel(models, providerName);
   if (!m) throw new Error(`Unsupported model: ${provider} ${name}`);
 
   const apiKeyEnvName = Array.isArray(m.apiKeyEnvName) ? m.apiKeyEnvName : [m.apiKeyEnvName];

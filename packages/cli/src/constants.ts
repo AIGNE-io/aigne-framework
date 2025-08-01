@@ -6,6 +6,4 @@ const require = createRequire(import.meta.url);
 
 export const AIGNE_CLI_VERSION = require("../package.json").version;
 
-export { availableModels } from "@aigne/aigne-hub";
-
 export const availableMemories = [DefaultMemory, AgenticMemory];

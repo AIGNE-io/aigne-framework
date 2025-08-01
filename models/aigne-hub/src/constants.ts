@@ -13,8 +13,6 @@ import { HttpsProxyAgent } from "https-proxy-agent";
 import type { ClientOptions } from "openai";
 import { CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
 
-const GOOGLE = "google";
-
 export function availableModels(): LoadableModel[] {
   const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
     .map((i) => process.env[i])
@@ -57,7 +55,7 @@ export function availableModels(): LoadableModel[] {
       create: (params) => new DeepSeekChatModel({ ...params, clientOptions }),
     },
     {
-      name: [GeminiChatModel.name, GOOGLE],
+      name: [GeminiChatModel.name, "google"],
       apiKeyEnvName: ["GEMINI_API_KEY", "GOOGLE_API_KEY"],
       create: (params) => new GeminiChatModel({ ...params, clientOptions }),
     },
@@ -82,4 +80,13 @@ export function availableModels(): LoadableModel[] {
       create: (params) => new CliAIGNEHubChatModel({ ...params, clientOptions }),
     },
   ];
+}
+
+export function findModel(models: LoadableModel[], provider: string) {
+  return models.find((m) => {
+    if (typeof m.name === "string") {
+      return m.name.toLowerCase().includes(provider);
+    }
+    return m.name.some((n) => n.toLowerCase().includes(provider));
+  });
 }

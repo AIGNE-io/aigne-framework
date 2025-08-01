@@ -4,6 +4,7 @@ import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
 import { exists } from "@aigne/agent-library/utils/fs.js";
+import { availableModels } from "@aigne/aigne-hub";
 import {
   type Agent,
   AIAgent,
@@ -23,7 +24,6 @@ import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { ZodError, ZodObject, z } from "zod";
-import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
 import {
   type ChatLoopOptions,

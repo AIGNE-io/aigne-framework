@@ -1,7 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIGNE_CLI_VERSION, availableModels } from "@aigne/cli/constants";
+import { availableModels } from "@aigne/aigne-hub";
+import { AIGNE_CLI_VERSION } from "@aigne/cli/constants";
 import { serveMCPServer } from "@aigne/cli/utils/serve-mcp.js";
 import { AIGNE } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";

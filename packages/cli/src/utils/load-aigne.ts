@@ -48,6 +48,7 @@ const request = async (config: { url: string; method?: string; requestCount?: nu
 };
 
 export interface RunOptions extends RunAIGNECommandOptions {
+  path: string;
   entryAgent?: string;
   cacheDir?: string;
 }
@@ -271,7 +272,7 @@ export async function connectToAIGNEHub(url: string) {
 
 export async function loadAIGNE(
   path: string,
-  options?: RunOptions,
+  options?: Pick<RunOptions, "model">,
   actionOptions?: {
     inquirerPromptFn?: (prompt: {
       type: string;

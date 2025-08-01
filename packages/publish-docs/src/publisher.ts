@@ -45,12 +45,8 @@ export async function publisher(input: {
 
     console.log(`Publishing docs collection...`);
 
-    let docsMessage: string;
-    if (terminalLink.isSupported) {
-      docsMessage = `📖 Docs available at: ${terminalLink(docsUrl, docsUrl)}`;
-    } else {
-      docsMessage = `📖 Docs available at: ${docsUrl}`;
-    }
+    const link = terminalLink.isSupported ? terminalLink(docsUrl, docsUrl) : docsUrl;
+    const docsMessage = `📖 Docs available at: ${link}`;
     console.log(docsMessage);
 
     // Auto open docs page in browser

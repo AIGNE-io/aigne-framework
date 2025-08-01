@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { readFile, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { extname, join } from "node:path";
@@ -333,14 +333,24 @@ async function isInstallationAvailable(
 }
 
 async function installDependencies(dir: string) {
-  const { stderr, status } = spawnSync("npm", ["install", "--omit", "dev"], {
-    cwd: dir,
-    stdio: "pipe",
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn("npm", ["install", "--omit", "dev"], { cwd: dir, stdio: "pipe" });
+
+    let stderr = "";
+    child.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    child.on("error", (error) => reject(error));
+
+    child.on("exit", (code) => {
+      if (code === 0) resolve();
+      else {
+        console.error(stderr);
+        reject(new Error(`npm install failed with code ${code}`));
+      }
+    });
   });
-  if (status !== 0) {
-    console.error(stderr.toString());
-    throw new Error(`Failed to install dependencies in ${dir}`);
-  }
 
   await writeFile(
     join(dir, ".aigne-cli.json"),

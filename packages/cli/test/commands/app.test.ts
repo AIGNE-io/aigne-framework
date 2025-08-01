@@ -1,6 +1,7 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import * as childProcess from "node:child_process";
 import { randomUUID } from "node:crypto";
+import EventEmitter from "node:events";
 import * as fs from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -333,14 +334,23 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
 });
 
 test("loadApplication should load doc-smith correctly", async () => {
-  const spawnSync = spyOn(childProcess, "spawnSync").mockReturnValue({ status: 0 } as any);
+  const spawn = spyOn(childProcess, "spawn").mockImplementationOnce(() => {
+    const result: any = new EventEmitter();
+    result.stderr = new EventEmitter();
+
+    setTimeout(() => {
+      result.emit("exit", 0);
+    });
+
+    return result;
+  });
 
   const load = spyOn(AIGNE, "load").mockReturnValue(Promise.resolve(new AIGNE({})));
 
   const tmp = join(tmpdir(), randomUUID());
   await app.loadApplication({ name: "doc-smith", dir: tmp });
 
-  expect(spawnSync.mock.lastCall).toEqual([
+  expect(spawn.mock.lastCall).toEqual([
     "npm",
     ["install", "--omit", "dev"],
     {
@@ -351,7 +361,7 @@ test("loadApplication should load doc-smith correctly", async () => {
 
   await app.loadApplication({ name: "doc-smith", dir: tmp });
 
-  spawnSync.mockRestore();
+  spawn.mockRestore();
   load.mockRestore();
 
   await fs.rm(tmp, { recursive: true, force: true });

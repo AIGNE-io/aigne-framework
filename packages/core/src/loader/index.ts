@@ -4,37 +4,24 @@ import { parse } from "yaml";
 import { z } from "zod";
 import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
-import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
+import type { ChatModel } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
 import { TeamAgent } from "../agents/team-agent.js";
 import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
-import { flat, isNonNullable, tryOrThrow } from "../utils/type-utils.js";
+import { flat, isNonNullable, type PromiseOrValue, tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
 import { camelizeSchema, optionalize } from "./schema.js";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
-export interface LoadableModel {
-  name: string | string[];
-  apiKeyEnvName?: string | string[];
-  create: (options: {
-    model?: string;
-    modelOptions?: ChatModelOptions;
-    accessKey?: string;
-    url?: string;
-  }) => ChatModel;
-}
-
 export interface LoadOptions {
   loadModel: (
     model?: Camelize<z.infer<typeof aigneFileSchema>["model"]>,
-    modelOptions?: ChatModelOptions,
-    accessKeyOptions?: { accessKey?: string; url?: string },
-  ) => Promise<ChatModel | undefined>;
+  ) => PromiseOrValue<ChatModel | undefined>;
   memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
   path: string;
 }

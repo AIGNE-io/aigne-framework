@@ -25,7 +25,7 @@ export interface BaseClientInvokeOptions extends InvokeOptions {
 
 export interface BaseClientOptions {
   url: string;
-  accessKey?: string;
+  apiKey?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
   clientOptions?: OpenAIChatModelOptions["clientOptions"];
@@ -113,8 +113,8 @@ export class BaseClient {
       ...options?.fetchOptions?.headers,
     };
 
-    if (this.options?.accessKey) {
-      headers["Authorization"] = `Bearer ${this.options.accessKey}`;
+    if (this.options?.apiKey) {
+      headers["Authorization"] = `Bearer ${this.options.apiKey}`;
     }
 
     const body: Record<string, any> = {

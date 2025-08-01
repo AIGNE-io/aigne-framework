@@ -4,7 +4,6 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { availableModels, findModel, loadModel } from "@aigne/aigne-hub";
 import { AIGNE } from "@aigne/core";
-import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { loadAIGNEFile } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { AesCrypter } from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
@@ -164,7 +163,7 @@ const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_
 const DEFAULT_URL = "https://hub.aigne.io/";
 
 export const formatModelName = async (
-  models: LoadableModel[],
+  models: ReturnType<typeof availableModels>,
   model: string,
   inquirerPrompt: typeof inquirer.prompt,
 ) => {
@@ -294,7 +293,7 @@ export const checkConnectionStatus = async (host: string) => {
   }
 
   return {
-    accessKey: env.AIGNE_HUB_API_KEY,
+    apiKey: env.AIGNE_HUB_API_KEY,
     url: joinURL(env.AIGNE_HUB_API_URL),
   };
 };
@@ -325,23 +324,23 @@ export async function loadAIGNE(
   const { aigne } = await loadAIGNEFile(path).catch(() => ({ aigne: null }));
 
   const result = await checkConnectionStatus(host).catch(() => null);
-  const alreadyConnected = Boolean(result?.accessKey);
+  const alreadyConnected = Boolean(result?.apiKey);
   const modelName = await formatModelName(
     models,
     options?.model || `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`,
     alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
   );
 
-  let accessKeyOptions: { accessKey?: string; url?: string } = {};
+  let credential: { apiKey?: string; url?: string } = {};
 
   if (TEST_ENV && !actionOptions?.runTest) {
-    const model = await loadModel(parseModelOption(modelName), undefined, accessKeyOptions);
+    const model = await loadModel(parseModelOption(modelName));
     return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
   }
 
   if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
     try {
-      accessKeyOptions = await checkConnectionStatus(host);
+      credential = await checkConnectionStatus(host);
     } catch (error) {
       if (error instanceof Error && error.message.includes("login first")) {
         // If none or invalid, prompt the user to proceed
@@ -365,11 +364,11 @@ export async function loadAIGNE(
           process.exit(0);
         }
 
-        accessKeyOptions = await connectToAIGNEHub(connectUrl);
+        credential = await connectToAIGNEHub(connectUrl);
       }
     }
   }
 
-  const model = await loadModel(parseModelOption(modelName), undefined, accessKeyOptions);
+  const model = await loadModel(parseModelOption(modelName), undefined, credential);
   return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
 }

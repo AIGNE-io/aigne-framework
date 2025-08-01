@@ -21,7 +21,7 @@ test("AIGNEHubChatModel example simple", async () => {
 
   const client = new AIGNEHubChatModel({
     url,
-    accessKey: "123",
+    apiKey: "123",
     model: "openai/gpt-4o-mini",
   });
 
@@ -43,7 +43,7 @@ test("AIGNEHubChatModel example with streaming", async () => {
 
   const client = new AIGNEHubChatModel({
     url,
-    accessKey: "123",
+    apiKey: "123",
     model: "openai/gpt-4o-mini",
   });
 

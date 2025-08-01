@@ -5,39 +5,9 @@ import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { ClaudeChatModel, OpenAIChatModel, XAIChatModel } from "../_mocks/mock-models.js";
+import { ClaudeChatModel, OpenAIChatModel } from "../_mocks/mock-models.js";
 
-const DEFAULT_MODEL_PROVIDER = "openai";
-
-async function loadModel(model?: any): Promise<ChatModel | undefined> {
-  const params = {
-    model: model?.name ?? undefined,
-    temperature: model?.temperature ?? undefined,
-    topP: model?.topP ?? undefined,
-    frequencyPenalty: model?.frequencyPenalty ?? undefined,
-    presencePenalty: model?.presencePenalty ?? undefined,
-  };
-
-  const providerName = model?.provider ?? DEFAULT_MODEL_PROVIDER;
-  const provider = providerName.replace(/-/g, "");
-
-  const models = [OpenAIChatModel, ClaudeChatModel, XAIChatModel].map((i) =>
-    typeof i === "function"
-      ? {
-          name: i.name,
-          // @ts-ignore
-          create: (options) => new i(options),
-        }
-      : i,
-  );
-  const m = models.find((m) => m.name.toLowerCase().includes(provider));
-  if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
-
-  return m.create({
-    model: params.model,
-    modelOptions: { ...params },
-  });
-}
+const loadModel = () => new OpenAIChatModel();
 
 test("AIGNE.load should load agents correctly", async () => {
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
@@ -189,46 +159,6 @@ test("load should process path correctly", async () => {
     }),
   );
   expect(readFile).toHaveBeenLastCalledWith("bar/aigne.yml", "utf8");
-
-  stat.mockRestore();
-  readFile.mockRestore();
-});
-
-test("load should load model correctly", async () => {
-  const stat = spyOn(nodejs.fs, "stat").mockReturnValue(
-    Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
-  );
-  const readFile = spyOn(nodejs.fs, "readFile");
-
-  readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o"));
-  expect((await load({ loadModel, path: "aigne.yaml" })).model).toBeInstanceOf(OpenAIChatModel);
-
-  readFile.mockReturnValueOnce(
-    Promise.resolve(`\
-chat_model:
-  provider: openai
-  name: gpt-4o
-`),
-  );
-  expect((await load({ loadModel, path: "aigne.yaml" })).model).toBeInstanceOf(OpenAIChatModel);
-
-  readFile.mockReturnValueOnce(
-    Promise.resolve(`\
-chat_model:
-  provider: claude
-  name: claude-3.5
-`),
-  );
-  expect((await load({ loadModel, path: "aigne.yaml" })).model).toBeInstanceOf(ClaudeChatModel);
-
-  readFile.mockReturnValueOnce(
-    Promise.resolve(`\
-chat_model:
-  provider: xai
-  name: grok-2-latest
-`),
-  );
-  expect((await load({ loadModel, path: "aigne.yaml" })).model).toBeInstanceOf(XAIChatModel);
 
   stat.mockRestore();
   readFile.mockRestore();

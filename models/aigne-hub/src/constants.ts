@@ -2,7 +2,6 @@ import type { Agent } from "node:https";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
 import type { ChatModel, ChatModelOptions } from "@aigne/core/agents/chat-model.js";
-import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { GeminiChatModel } from "@aigne/gemini";
 import { OllamaChatModel } from "@aigne/ollama";
@@ -84,6 +83,17 @@ export function availableModels(): LoadableModel[] {
   ];
 }
 
+export interface LoadableModel {
+  name: string | string[];
+  apiKeyEnvName?: string | string[];
+  create: (options: {
+    model?: string;
+    modelOptions?: ChatModelOptions;
+    apiKey?: string;
+    url?: string;
+  }) => ChatModel;
+}
+
 export function findModel(models: LoadableModel[], provider: string) {
   return models.find((m) => {
     if (typeof m.name === "string") {
@@ -110,7 +120,7 @@ type Model =
 export async function loadModel(
   model?: Model,
   modelOptions?: ChatModelOptions,
-  accessKeyOptions?: { accessKey?: string; url?: string },
+  credential?: { apiKey?: string; url?: string },
 ): Promise<ChatModel | undefined> {
   const params = {
     model: MODEL_NAME ?? model?.name ?? undefined,
@@ -120,14 +130,13 @@ export async function loadModel(
     presencePenalty: model?.presencePenalty ?? undefined,
   };
 
-  const providerName = MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER;
-  const provider = providerName.replace(/-/g, "");
+  const provider = (MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER).replace(/-/g, "");
 
   const m = findModel(availableModels(), provider);
   if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
 
   return m.create({
-    ...(accessKeyOptions || {}),
+    ...(credential || {}),
     model: params.model,
     modelOptions: { ...params, ...modelOptions },
   });

@@ -1,0 +1,83 @@
+type: team
+name: detail-generator-and-translate
+description: 生成文档详情并翻译
+skills:
+  - load-sources.mjs
+  - type: transform
+    jsonata: |
+      (
+        $array := originalStructurePlan;
+        $path := currentPath;
+        $foundItem := $array[path=$path][0];
+        $merge([
+            $foundItem,
+            { "originalStructurePlan": $array }
+            
+        ])
+      )
+  - transform-detail-datasources.mjs
+  - content-detail-generator.yaml
+  - batch-translate.yaml
+  - save-single-doc.mjs
+input_schema:
+  type: object
+  properties:
+    nodeName:
+      type: string
+      description: 节点名称
+    locale:
+      type: string
+      description: 语言
+    targetAudience:
+      type: string
+      description: 目标受众
+    glossary:
+      type: string
+      description: 术语表
+    currentPath:
+      type: string
+      description: 当前路径
+    feedback:
+      type: string
+      description: 反馈
+    sources:
+      type: array
+      items:
+        type: string
+        description: 源码路径
+    sourcesPath:
+      type: array
+      items:
+        type: string
+        description: 源码路径
+    includePatterns:
+      type: array
+      items:
+        type: string
+        description: 包含的文件名
+    excludePatterns:
+      type: array
+      items:
+        type: string
+        description: 排除的文件名
+    outputDir:
+      type: string
+      description: 输出目录
+    docsDir:
+      type: string
+      description: 文档目录
+    additionalInformation:
+      type: string
+      description: 额外补充信息
+output_schema:
+  type: object
+  properties:
+    title:
+      type: string
+    description:
+      type: string
+    path:
+      type: string
+    content:
+      type: string
+mode: sequential

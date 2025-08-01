@@ -1385,9 +1385,15 @@ importers:
 
   packages/agent-library:
     dependencies:
+      '@aigne/anthropic':
+        specifier: workspace:^
+        version: link:../../models/anthropic
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
+      '@aigne/gemini':
+        specifier: workspace:^
+        version: link:../../models/gemini
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -1400,6 +1406,9 @@ importers:
       fastq:
         specifier: ^1.19.1
         version: 1.19.1
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
       jsonata:
         specifier: ^2.0.6
         version: 2.0.6

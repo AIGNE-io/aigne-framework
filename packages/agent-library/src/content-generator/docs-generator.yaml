@@ -1,0 +1,68 @@
+type: team
+name: docs-generator
+description: 文档生成
+skills:
+  - load-sources.mjs
+  - check-structure-planning.mjs
+  - type: transform
+    jsonata: |
+      $merge([
+        $,
+        {
+          'originalStructurePlan': structurePlan,
+          'structurePlanResult': $map(structurePlan, function($item) {
+            $merge([
+              $item,
+              {
+                'translates': [$map(translateLanguages, function($lang) { {"language": $lang} })]
+              }
+            ])
+          })
+        }
+      ])
+  - type: transform
+    jsonata: |
+      $merge([$, {
+      "saveKey": "structurePlanResult",
+      "savePath": outputDir,
+      "fileName": "structure-plan.json"
+      }])
+  - save-output.mjs
+  - batch-docs-detail-generator.yaml
+  - save-docs.mjs
+  
+input_schema:
+  type: object
+  properties:
+    rules:
+      type: string
+      description: 用户的结构规划的要求和规则
+    locale:
+      type: string
+      description: 用户语言，如 zh、en
+    sources:
+      type: array
+      items:
+        type: string
+      description: 用户生成文档的源码文件
+    docsDir:
+      type: string
+      description: 文档保存目录
+    translateLanguages:
+      type: array
+      items:
+        type: string
+        description: 翻译语言，如 zh、en
+    glossary:
+      type: string
+      description: 术语表
+    outputDir:
+      type: string
+      description: 输出目录
+    additionalInformation:
+      type: string
+      description: 额外补充信息
+  required:
+    - rules
+    - docsDir
+mode: sequential

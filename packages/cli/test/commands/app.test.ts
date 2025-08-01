@@ -80,6 +80,8 @@ test("app command should register doc-smith to yargs", async () => {
 
     Options:
       --help     Show help                                                 [boolean]
+      --model    Model to use for the application, example: openai:gpt-4.1 or
+                 google:gemini-2.5-flash                                    [string]
       --version  Show version number                                       [boolean]"
   `);
 
@@ -92,6 +94,8 @@ test("app command should register doc-smith to yargs", async () => {
 
     Options:
           --help     Show help                                             [boolean]
+          --model    Model to use for the application, example: openai:gpt-4.1 or
+                     google:gemini-2.5-flash                                [string]
           --version  Show version number                                   [boolean]
           --title    Title of doc to generate                    [string] [required]
           --topic    Topic of doc to generate                               [string]

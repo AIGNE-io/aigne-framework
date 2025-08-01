@@ -1,6 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
+import { loadModel } from "@aigne/aigne-hub";
 import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { OpenAIChatModel } from "@aigne/openai";
@@ -76,7 +77,7 @@ test("Example AIGNE: load", async () => {
 
   const path = join(import.meta.dirname, "../../test-aigne"); // "/PATH/TO/AIGNE_PROJECT";
 
-  const aigne = await AIGNE.load(path, { models: [OpenAIChatModel] });
+  const aigne = await AIGNE.load(path, { loadModel });
 
   assert(aigne.model);
   expect(aigne.model).toBeInstanceOf(OpenAIChatModel);

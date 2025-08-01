@@ -4,6 +4,7 @@ import { readFile, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { extname, join } from "node:path";
 import { isatty } from "node:tty";
+import { loadModel } from "@aigne/aigne-hub";
 import { type Agent, AIAgent, AIGNE, type Message, readAllString } from "@aigne/core";
 import { pick } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
@@ -11,7 +12,6 @@ import { joinURL } from "ufo";
 import { parse } from "yaml";
 import type { CommandModule } from "yargs";
 import { ZodObject, ZodString, type ZodType } from "zod";
-import { availableModels } from "../constants.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { runAgentWithAIGNE, stdinHasData } from "../utils/run-with-aigne.js";
@@ -36,6 +36,11 @@ export function createAppCommands(): CommandModule[] {
       const { aigne, dir, version, isCache } = await loadApplication({ name: app.name });
 
       yargs
+        .option("model", {
+          type: "string",
+          description:
+            "Model to use for the application, example: openai:gpt-4.1 or google:gemini-2.5-flash",
+        })
         .command(serveMcpCommandModule({ name: app.name, dir }))
         .command(upgradeCommandModule({ name: app.name, dir, isLatest: !isCache, version }));
 
@@ -115,7 +120,7 @@ const agentCommandModule = ({
 }: {
   dir: string;
   agent: Agent;
-}): CommandModule<unknown, { input?: string[]; format?: "json" | "yaml" }> => {
+}): CommandModule<unknown, { input?: string[]; format?: "json" | "yaml"; model?: string }> => {
   const inputSchema: { [key: string]: ZodType } =
     agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
 
@@ -157,9 +162,9 @@ const agentCommandModule = ({
 export async function invokeCLIAgentFromDir(options: {
   dir: string;
   agent: string;
-  input: Message & { input?: string[]; format?: "yaml" | "json" };
+  input: Message & { input?: string[]; format?: "yaml" | "json"; model?: string };
 }) {
-  const aigne = await loadAIGNE(options.dir);
+  const aigne = await loadAIGNE(options.dir, { model: options.input.model });
 
   try {
     const agent = aigne.cli.agents[options.agent];
@@ -252,7 +257,7 @@ export async function loadApplication({
   const check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
   if (check?.available) {
     return {
-      aigne: await AIGNE.load(dir, { models: availableModels() }),
+      aigne: await AIGNE.load(dir, { loadModel }),
       dir,
       version: check.version,
       isCache: true,
@@ -296,7 +301,7 @@ export async function loadApplication({
   ).run();
 
   return {
-    aigne: await AIGNE.load(dir, { models: availableModels() }),
+    aigne: await AIGNE.load(dir, { loadModel }),
     dir,
     version: result.version,
   };

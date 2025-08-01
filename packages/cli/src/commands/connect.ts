@@ -23,7 +23,12 @@ interface AIGNEEnv {
   };
 }
 
-async function getConnectionStatus(): Promise<StatusInfo[]> {
+const formatNumber = (balance: string) => {
+  const balanceNum = String(balance).split(".")[0];
+  return chalk.yellow((balanceNum || "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+};
+
+export async function getConnectionStatus(): Promise<StatusInfo[]> {
   if (!existsSync(AIGNE_ENV_FILE)) {
     return [];
   }
@@ -48,7 +53,7 @@ async function getConnectionStatus(): Promise<StatusInfo[]> {
   }
 }
 
-async function displayStatus(statusList: StatusInfo[]) {
+export async function displayStatus(statusList: StatusInfo[]) {
   if (statusList.length === 0) {
     console.log(chalk.yellow("No AIGNE Hub connections found."));
     console.log("Use 'aigne connect <url>' to connect to a hub.");
@@ -73,13 +78,21 @@ async function displayStatus(statusList: StatusInfo[]) {
     console.log(`   Status: ${statusText}`);
     if (userInfo) {
       console.log(`   User: ${userInfo?.user.fullName}`);
-      console.log(`   Email: ${userInfo?.user.email}`);
-      if (userInfo?.creditBalance) {
-        console.log(
-          `   Plan: ${userInfo?.creditBalance?.balance}/${userInfo?.creditBalance?.total}`,
-        );
+      console.log(`   User DID: ${userInfo?.user.did}`);
+
+      if (userInfo?.user.email) {
+        console.log(`   Email: ${userInfo?.user.email}`);
       }
-      console.log(`   Billing URL: ${userInfo?.paymentLink}`);
+
+      if (userInfo?.creditBalance) {
+        const balance = formatNumber(userInfo?.creditBalance?.balance);
+        const total = formatNumber(userInfo?.creditBalance?.total);
+        console.log(`   Plan: ${balance} / ${total}`);
+      }
+
+      console.log(
+        `   Billing URL: ${userInfo?.paymentLink ? chalk.green(userInfo.paymentLink) : chalk.red("N/A")}`,
+      );
     }
 
     console.log("");

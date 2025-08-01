@@ -4,6 +4,7 @@ import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
 import { exists } from "@aigne/agent-library/utils/fs.js";
+import { availableModels, loadModel } from "@aigne/aigne-hub";
 import {
   type Agent,
   AIAgent,
@@ -14,7 +15,6 @@ import {
   readAllString,
   UserAgent,
 } from "@aigne/core";
-import { loadModel } from "@aigne/core/loader/index.js";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { flat, isEmpty, type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
@@ -23,7 +23,6 @@ import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { ZodError, ZodObject, z } from "zod";
-import { availableModels } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
 import {
   type ChatLoopOptions,
@@ -55,7 +54,12 @@ export const createRunAIGNECommand = (yargs: Argv) =>
     })
     .option("model", {
       describe: `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
-        .map((i) => i.name.toLowerCase().replace(/ChatModel$/i, ""))
+        .map((i) => {
+          if (typeof i.name === "string") {
+            return i.name.toLowerCase().replace(/ChatModel$/i, "");
+          }
+          return i.name.map((n) => n.toLowerCase().replace(/ChatModel$/i, ""));
+        })
         .join(", ")} (default: openai)`,
       type: "string",
     })
@@ -222,7 +226,6 @@ export async function runWithAIGNE(
         }
 
         const model = await loadModel(
-          availableModels(),
           {
             ...parseModelOption(options.model),
             temperature: options.temperature,

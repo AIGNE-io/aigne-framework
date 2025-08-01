@@ -59,7 +59,6 @@
     "@libsql/client": "^0.15.9",
     "@modelcontextprotocol/sdk": "^1.15.0",
     "@types/debug": "^4.1.12",
-    "camelize-ts": "^3.0.0",
     "content-type": "^1.0.5",
     "debug": "^4.4.1",
     "drizzle-orm": "^0.44.2",

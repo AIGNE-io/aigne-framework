@@ -4,37 +4,24 @@ import { parse } from "yaml";
 import { z } from "zod";
 import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
-import type { ChatModel, ChatModelOptions } from "../agents/chat-model.js";
+import type { ChatModel } from "../agents/chat-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
 import { TeamAgent } from "../agents/team-agent.js";
 import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
-import { flat, isNonNullable, tryOrThrow } from "../utils/type-utils.js";
+import { flat, isNonNullable, type PromiseOrValue, tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
 import { camelizeSchema, optionalize } from "./schema.js";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
-interface LoadableModelClass {
-  new (parameters: { model?: string; modelOptions?: ChatModelOptions }): ChatModel;
-}
-
-export interface LoadableModel {
-  name: string;
-  apiKeyEnvName?: string;
-  create: (options: {
-    model?: string;
-    modelOptions?: ChatModelOptions;
-    accessKey?: string;
-    url?: string;
-  }) => ChatModel;
-}
-
 export interface LoadOptions {
-  models: (LoadableModel | LoadableModelClass)[];
+  loadModel: (
+    model?: Camelize<z.infer<typeof aigneFileSchema>["model"]>,
+  ) => PromiseOrValue<ChatModel | undefined>;
   memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
   path: string;
 }
@@ -59,17 +46,7 @@ export async function load(options: LoadOptions): Promise<AIGNEOptions> {
   return {
     ...aigne,
     rootDir,
-    model: await loadModel(
-      options.models.map((i) =>
-        typeof i === "function"
-          ? {
-              name: i.name,
-              create: (options) => new i(options),
-            }
-          : i,
-      ),
-      aigne.model,
-    ),
+    model: await options.loadModel(aigne.model),
     agents: pickAgents(aigne.agents ?? []),
     skills: pickAgents(aigne.skills ?? []),
     mcpServer: {
@@ -239,36 +216,6 @@ async function loadMemory(
   if (!M) throw new Error(`Unsupported memory: ${provider}`);
 
   return new M(options);
-}
-
-const { MODEL_PROVIDER, MODEL_NAME } = nodejs.env;
-const DEFAULT_MODEL_PROVIDER = "openai";
-
-export async function loadModel(
-  models: LoadableModel[],
-  model?: Camelize<z.infer<typeof aigneFileSchema>["model"]>,
-  modelOptions?: ChatModelOptions,
-  accessKeyOptions?: { accessKey?: string; url?: string },
-): Promise<ChatModel | undefined> {
-  const params = {
-    model: MODEL_NAME ?? model?.name ?? undefined,
-    temperature: model?.temperature ?? undefined,
-    topP: model?.topP ?? undefined,
-    frequencyPenalty: model?.frequencyPenalty ?? undefined,
-    presencePenalty: model?.presencePenalty ?? undefined,
-  };
-
-  const providerName = MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER;
-  const provider = providerName.replace(/-/g, "");
-
-  const m = models.find((m) => m.name.toLowerCase().includes(provider.toLowerCase()));
-  if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
-
-  return m.create({
-    ...(accessKeyOptions || {}),
-    model: params.model,
-    modelOptions: { ...params, ...modelOptions },
-  });
 }
 
 const aigneFileSchema = camelizeSchema(

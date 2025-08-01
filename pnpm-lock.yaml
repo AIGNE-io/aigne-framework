@@ -74,6 +74,9 @@ importers:
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../packages/agent-library
+      '@aigne/aigne-hub':
+        specifier: workspace:^
+        version: link:../models/aigne-hub
       '@aigne/anthropic':
         specifier: workspace:^
         version: link:../models/anthropic
@@ -688,12 +691,24 @@ importers:
       '@aigne/openai':
         specifier: workspace:^
         version: link:../openai
+      '@aigne/platform-helpers':
+        specifier: workspace:^
+        version: link:../../packages/platform-helpers
       '@aigne/transport':
         specifier: workspace:^
         version: link:../../packages/transport
       '@aigne/xai':
         specifier: workspace:^
         version: link:../xai
+      '@smithy/node-http-handler':
+        specifier: ^4.1.0
+        version: 4.1.0
+      https-proxy-agent:
+        specifier: ^7.0.6
+        version: 7.0.6
+      openai:
+        specifier: ^5.8.3
+        version: 5.8.3(ws@8.18.2)(zod@3.25.67)
       ufo:
         specifier: ^1.6.1
         version: 1.6.1
@@ -1425,24 +1440,12 @@ importers:
       '@aigne/aigne-hub':
         specifier: workspace:^
         version: link:../../models/aigne-hub
-      '@aigne/anthropic':
-        specifier: workspace:^
-        version: link:../../models/anthropic
-      '@aigne/bedrock':
-        specifier: workspace:^
-        version: link:../../models/bedrock
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
-      '@aigne/deepseek':
-        specifier: workspace:^
-        version: link:../../models/deepseek
       '@aigne/default-memory':
         specifier: workspace:^
         version: link:../../memory/default
-      '@aigne/gemini':
-        specifier: workspace:^
-        version: link:../../models/gemini
       '@aigne/listr2':
         specifier: ^1.0.10
         version: 1.0.10
@@ -1452,18 +1455,9 @@ importers:
       '@aigne/observability-api':
         specifier: workspace:^
         version: link:../../observability/api
-      '@aigne/ollama':
-        specifier: workspace:^
-        version: link:../../models/ollama
-      '@aigne/open-router':
-        specifier: workspace:^
-        version: link:../../models/open-router
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
-      '@aigne/xai':
-        specifier: workspace:^
-        version: link:../../models/xai
       '@inquirer/prompts':
         specifier: ^7.6.0
         version: 7.6.0(@types/node@24.0.12)
@@ -1718,9 +1712,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
-      camelize-ts:
-        specifier: ^3.0.0
-        version: 3.0.0
       content-type:
         specifier: ^1.0.5
         version: 1.0.5

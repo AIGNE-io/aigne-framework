@@ -4,7 +4,7 @@ import { readFile, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { extname, join } from "node:path";
 import { isatty } from "node:tty";
-import { availableModels } from "@aigne/aigne-hub";
+import { loadModel } from "@aigne/aigne-hub";
 import { type Agent, AIAgent, AIGNE, type Message, readAllString } from "@aigne/core";
 import { pick } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
@@ -221,7 +221,7 @@ export async function loadApplication({
   const check = await isInstallationAvailable(dir);
   if (check?.available) {
     return {
-      aigne: await AIGNE.load(dir, { models: availableModels() }),
+      aigne: await AIGNE.load(dir, { loadModel }),
       dir,
       version: check.version,
     };
@@ -264,7 +264,7 @@ export async function loadApplication({
   ).run();
 
   return {
-    aigne: await AIGNE.load(dir, { models: availableModels() }),
+    aigne: await AIGNE.load(dir, { loadModel }),
     dir,
     version: result.version,
   };

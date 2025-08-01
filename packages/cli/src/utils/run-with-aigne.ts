@@ -4,7 +4,7 @@ import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
 import { exists } from "@aigne/agent-library/utils/fs.js";
-import { availableModels } from "@aigne/aigne-hub";
+import { availableModels, loadModel } from "@aigne/aigne-hub";
 import {
   type Agent,
   AIAgent,
@@ -15,7 +15,6 @@ import {
   readAllString,
   UserAgent,
 } from "@aigne/core";
-import { loadModel } from "@aigne/core/loader/index.js";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { flat, isEmpty, type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
@@ -227,7 +226,6 @@ export async function runWithAIGNE(
         }
 
         const model = await loadModel(
-          availableModels(),
           {
             ...parseModelOption(options.model),
             temperature: options.temperature,

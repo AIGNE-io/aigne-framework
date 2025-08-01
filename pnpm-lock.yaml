@@ -74,6 +74,9 @@ importers:
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../packages/agent-library
+      '@aigne/aigne-hub':
+        specifier: workspace:^
+        version: link:../models/aigne-hub
       '@aigne/anthropic':
         specifier: workspace:^
         version: link:../models/anthropic
@@ -688,6 +691,9 @@ importers:
       '@aigne/openai':
         specifier: workspace:^
         version: link:../openai
+      '@aigne/platform-helpers':
+        specifier: workspace:^
+        version: link:../../packages/platform-helpers
       '@aigne/transport':
         specifier: workspace:^
         version: link:../../packages/transport
@@ -697,6 +703,9 @@ importers:
       '@smithy/node-http-handler':
         specifier: ^4.1.0
         version: 4.1.0
+      camelize-ts:
+        specifier: ^3.0.0
+        version: 3.0.0
       https-proxy-agent:
         specifier: ^7.0.6
         version: 7.0.6

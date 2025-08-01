@@ -7,9 +7,41 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { ClaudeChatModel, OpenAIChatModel, XAIChatModel } from "../_mocks/mock-models.js";
 
+const DEFAULT_MODEL_PROVIDER = "openai";
+
+async function loadModel(model?: any): Promise<ChatModel | undefined> {
+  const params = {
+    model: model?.name ?? undefined,
+    temperature: model?.temperature ?? undefined,
+    topP: model?.topP ?? undefined,
+    frequencyPenalty: model?.frequencyPenalty ?? undefined,
+    presencePenalty: model?.presencePenalty ?? undefined,
+  };
+
+  const providerName = model?.provider ?? DEFAULT_MODEL_PROVIDER;
+  const provider = providerName.replace(/-/g, "");
+
+  const models = [OpenAIChatModel, ClaudeChatModel, XAIChatModel].map((i) =>
+    typeof i === "function"
+      ? {
+          name: i.name,
+          // @ts-ignore
+          create: (options) => new i(options),
+        }
+      : i,
+  );
+  const m = models.find((m) => m.name.toLowerCase().includes(provider));
+  if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
+
+  return m.create({
+    model: params.model,
+    modelOptions: { ...params },
+  });
+}
+
 test("AIGNE.load should load agents correctly", async () => {
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
-    models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
+    loadModel,
   });
 
   expect(aigne).toEqual(
@@ -65,7 +97,7 @@ test("loader should use override options", async () => {
   const testSkill = AIAgent.from({ name: "test-skill" });
 
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
-    models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
+    loadModel,
     model,
     agents: [testAgent],
     skills: [testSkill],
@@ -98,9 +130,7 @@ test("load should process path correctly", async () => {
 
   // mock a non-existing file
   stat.mockReturnValueOnce(Promise.reject(new Error("not found")));
-  expect(
-    load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }),
-  ).rejects.toThrow("not found");
+  expect(load({ loadModel, path: "aigne.yaml" })).rejects.toThrow("not found");
 
   // mock a yaml file with invalid content
   stat.mockReturnValueOnce(
@@ -109,7 +139,7 @@ test("load should process path correctly", async () => {
   readFile.mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"));
   expect(
     load({
-      models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
+      loadModel,
       path: "invalid-yaml/aigne.yaml",
     }),
   ).rejects.toThrow("Failed to parse aigne.yaml");
@@ -122,7 +152,7 @@ test("load should process path correctly", async () => {
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: 123"));
   expect(
     load({
-      models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
+      loadModel,
       path: "invalid-properties/aigne.yaml",
     }),
   ).rejects.toThrow("Failed to validate aigne.yaml");
@@ -133,9 +163,7 @@ test("load should process path correctly", async () => {
     Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
-  expect(
-    load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "foo" }),
-  ).resolves.toEqual(
+  expect(load({ loadModel, path: "foo" })).resolves.toEqual(
     expect.objectContaining({
       model: expect.anything(),
       agents: [],
@@ -153,9 +181,7 @@ test("load should process path correctly", async () => {
       Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
     );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
-  expect(
-    load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "bar" }),
-  ).resolves.toEqual(
+  expect(load({ loadModel, path: "bar" })).resolves.toEqual(
     expect.objectContaining({
       model: expect.anything(),
       agents: [],
@@ -175,10 +201,7 @@ test("load should load model correctly", async () => {
   const readFile = spyOn(nodejs.fs, "readFile");
 
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o"));
-  expect(
-    (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
-      .model,
-  ).toBeInstanceOf(OpenAIChatModel);
+  expect((await load({ loadModel, path: "aigne.yaml" })).model).toBeInstanceOf(OpenAIChatModel);
 
   readFile.mockReturnValueOnce(
     Promise.resolve(`\
@@ -187,10 +210,7 @@ chat_model:
   name: gpt-4o
 `),
   );
-  expect(
-    (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
-      .model,
-  ).toBeInstanceOf(OpenAIChatModel);
+  expect((await load({ loadModel, path: "aigne.yaml" })).model).toBeInstanceOf(OpenAIChatModel);
 
   readFile.mockReturnValueOnce(
     Promise.resolve(`\
@@ -199,10 +219,7 @@ chat_model:
   name: claude-3.5
 `),
   );
-  expect(
-    (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
-      .model,
-  ).toBeInstanceOf(ClaudeChatModel);
+  expect((await load({ loadModel, path: "aigne.yaml" })).model).toBeInstanceOf(ClaudeChatModel);
 
   readFile.mockReturnValueOnce(
     Promise.resolve(`\
@@ -211,10 +228,7 @@ chat_model:
   name: grok-2-latest
 `),
   );
-  expect(
-    (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
-      .model,
-  ).toBeInstanceOf(XAIChatModel);
+  expect((await load({ loadModel, path: "aigne.yaml" })).model).toBeInstanceOf(XAIChatModel);
 
   stat.mockRestore();
   readFile.mockRestore();

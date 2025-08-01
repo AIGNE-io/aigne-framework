@@ -2,10 +2,10 @@ import { existsSync, mkdirSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { availableModels, findModel } from "@aigne/aigne-hub";
+import { availableModels, findModel, loadModel } from "@aigne/aigne-hub";
 import { AIGNE } from "@aigne/core";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
-import { loadAIGNEFile, loadModel } from "@aigne/core/loader/index.js";
+import { loadAIGNEFile } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { AesCrypter } from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
 import crypto from "crypto";
@@ -335,8 +335,8 @@ export async function loadAIGNE(
   let accessKeyOptions: { accessKey?: string; url?: string } = {};
 
   if (TEST_ENV && !actionOptions?.runTest) {
-    const model = await loadModel(models, parseModelOption(modelName), undefined, accessKeyOptions);
-    return await AIGNE.load(path, { models, memories: availableMemories, model });
+    const model = await loadModel(parseModelOption(modelName), undefined, accessKeyOptions);
+    return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
   }
 
   if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
@@ -370,6 +370,6 @@ export async function loadAIGNE(
     }
   }
 
-  const model = await loadModel(models, parseModelOption(modelName), undefined, accessKeyOptions);
-  return await AIGNE.load(path, { models, memories: availableMemories, model });
+  const model = await loadModel(parseModelOption(modelName), undefined, accessKeyOptions);
+  return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
 }

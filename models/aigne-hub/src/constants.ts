@@ -1,16 +1,20 @@
 import type { Agent } from "node:https";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
+import type { ChatModel, ChatModelOptions } from "@aigne/core/agents/chat-model.js";
 import type { LoadableModel } from "@aigne/core/loader/index.js";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { GeminiChatModel } from "@aigne/gemini";
 import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";
 import { OpenAIChatModel } from "@aigne/openai";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
+import camelize from "camelize-ts";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import type { ClientOptions } from "openai";
+import { type ZodType, z } from "zod";
 import { CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
 
 export function availableModels(): LoadableModel[] {
@@ -88,5 +92,67 @@ export function findModel(models: LoadableModel[], provider: string) {
       return m.name.toLowerCase().includes(provider);
     }
     return m.name.some((n) => n.toLowerCase().includes(provider));
+  });
+}
+
+const { MODEL_PROVIDER, MODEL_NAME } = nodejs.env;
+const DEFAULT_MODEL_PROVIDER = "openai";
+
+function optionalize<T>(schema: ZodType<T>): ZodType<T | undefined> {
+  return schema.nullish().transform((v) => v ?? undefined) as ZodType<T | undefined>;
+}
+
+function isRecord<T>(value: unknown): value is Record<string, T> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function camelizeSchema<T extends ZodType>(
+  schema: T,
+  { shallow = true }: { shallow?: boolean } = {},
+): T {
+  return z.preprocess((v) => (isRecord(v) ? camelize(v, shallow) : v), schema) as unknown as T;
+}
+
+const model = optionalize(
+  z.union([
+    z.string(),
+    camelizeSchema(
+      z.object({
+        provider: z.string().nullish(),
+        name: z.string().nullish(),
+        temperature: z.number().min(0).max(2).nullish(),
+        topP: z.number().min(0).nullish(),
+        frequencyPenalty: z.number().min(-2).max(2).nullish(),
+        presencePenalty: z.number().min(-2).max(2).nullish(),
+      }),
+    ),
+  ]),
+).transform((v) => (typeof v === "string" ? { name: v } : v));
+
+type Model = z.infer<typeof model>;
+
+export async function loadModel(
+  model?: Model,
+  modelOptions?: ChatModelOptions,
+  accessKeyOptions?: { accessKey?: string; url?: string },
+): Promise<ChatModel | undefined> {
+  const params = {
+    model: MODEL_NAME ?? model?.name ?? undefined,
+    temperature: model?.temperature ?? undefined,
+    topP: model?.topP ?? undefined,
+    frequencyPenalty: model?.frequencyPenalty ?? undefined,
+    presencePenalty: model?.presencePenalty ?? undefined,
+  };
+
+  const providerName = MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER;
+  const provider = providerName.replace(/-/g, "");
+
+  const m = findModel(availableModels(), provider);
+  if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
+
+  return m.create({
+    ...(accessKeyOptions || {}),
+    model: params.model,
+    modelOptions: { ...params, ...modelOptions },
   });
 }

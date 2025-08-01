@@ -249,7 +249,7 @@ export async function loadModel(
   model?: Camelize<z.infer<typeof aigneFileSchema>["model"]>,
   modelOptions?: ChatModelOptions,
   accessKeyOptions?: { accessKey?: string; url?: string },
-): Promise<ChatModel | undefined> {
+): Promise<ChatModel> {
   const params = {
     model: MODEL_NAME ?? model?.name ?? undefined,
     temperature: model?.temperature ?? undefined,

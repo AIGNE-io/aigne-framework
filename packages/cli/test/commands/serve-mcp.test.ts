@@ -60,6 +60,8 @@ test("serve-mcp command should use process.env.PORT", async () => {
 
   process.env.PORT = port.toString();
 
+  const error = spyOn(console, "error").mockImplementation(() => {});
+
   await command.parseAsync(["serve-mcp", "--path", testAgentsPath]);
 
   expect(listen).toHaveBeenLastCalledWith(port, "localhost", expect.any(Function));
@@ -69,4 +71,6 @@ test("serve-mcp command should use process.env.PORT", async () => {
   expect(command.parseAsync(["serve-mcp", "--path", testAgentsPath])).rejects.toThrow(
     "parse PORT error",
   );
+
+  error.mockRestore();
 });

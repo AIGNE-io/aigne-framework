@@ -303,7 +303,7 @@ const mockInquirerPrompt = (() => Promise.resolve({ useAigneHub: true })) as any
 
 export async function loadAIGNE(
   path: string,
-  options?: RunOptions,
+  options?: Pick<RunOptions, "model">,
   actionOptions?: {
     inquirerPromptFn?: (prompt: {
       type: string;

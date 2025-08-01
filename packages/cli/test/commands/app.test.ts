@@ -75,10 +75,13 @@ test("app command should register doc-smith to yargs", async () => {
 
     Commands:
       aigne doc-smith serve-mcp  Serve doc-smith a MCP server (streamable http)
+      aigne doc-smith upgrade    Upgrade doc-smith to the latest version
       aigne doc-smith generate   Generate documents by doc-smith   [aliases: gen, g]
 
     Options:
       --help     Show help                                                 [boolean]
+      --model    Model to use for the application, example: openai:gpt-4.1 or
+                 google:gemini-2.5-flash                                    [string]
       --version  Show version number                                       [boolean]"
   `);
 
@@ -91,6 +94,8 @@ test("app command should register doc-smith to yargs", async () => {
 
     Options:
           --help     Show help                                             [boolean]
+          --model    Model to use for the application, example: openai:gpt-4.1 or
+                     google:gemini-2.5-flash                                [string]
           --version  Show version number                                   [boolean]
           --title    Title of doc to generate                    [string] [required]
           --topic    Topic of doc to generate                               [string]
@@ -155,7 +160,7 @@ test("app command should support serve-mcp subcommand", async () => {
     serveMCPServerFromDir: mockServeMCPServerFromDir,
   }));
 
-  spyOn(app, "loadApplication").mockReturnValueOnce(
+  const loadApplication = spyOn(app, "loadApplication").mockReturnValueOnce(
     Promise.resolve({
       aigne: new AIGNE({
         cli: {
@@ -189,6 +194,73 @@ test("app command should support serve-mcp subcommand", async () => {
     }
   `);
 
+  loadApplication.mockRestore();
+  exit.mockRestore();
+  log.mockRestore();
+});
+
+test("app command should support upgrade subcommand", async () => {
+  const command = yargs().scriptName("aigne").command(createAppCommands());
+
+  const exit = spyOn(process, "exit").mockReturnValueOnce(undefined as never);
+  const log = spyOn(console, "log").mockReturnValueOnce(undefined as never);
+
+  const aigne = new AIGNE({
+    cli: {
+      agents: [
+        FunctionAgent.from({
+          name: "generate",
+          description: "Generate documents by doc-smith",
+          process: () => ({}),
+        }),
+      ],
+    },
+  });
+
+  // simulate for the first time upgrade
+  const loadApplication1 = spyOn(app, "loadApplication").mockReturnValue(
+    Promise.resolve({ aigne, dir: "", version: "1.1.1" }),
+  );
+
+  await command.parseAsync(["doc-smith", "upgrade"]);
+
+  expect(loadApplication1.mock.calls).toMatchInlineSnapshot(`
+    [
+      [
+        {
+          "name": "doc-smith",
+        },
+      ],
+    ]
+  `);
+
+  loadApplication1.mockRestore();
+
+  // simulate upgrade from cache to the latest version
+  const loadApplication2 = spyOn(app, "loadApplication")
+    .mockReturnValueOnce(Promise.resolve({ aigne, dir: "", version: "1.1.1", isCache: true }))
+    .mockReturnValueOnce(Promise.resolve({ aigne, dir: "", version: "1.2.1" }));
+
+  await command.parseAsync(["doc-smith", "upgrade"]);
+
+  expect(loadApplication2.mock.calls).toMatchInlineSnapshot(`
+    [
+      [
+        {
+          "name": "doc-smith",
+        },
+      ],
+      [
+        {
+          "dir": "",
+          "forceUpgrade": true,
+          "name": "doc-smith",
+        },
+      ],
+    ]
+  `);
+
+  loadApplication2.mockRestore();
   exit.mockRestore();
   log.mockRestore();
 });

@@ -128,6 +128,8 @@ export interface Context<U extends UserContext = UserContext>
 
   skills?: Agent[];
 
+  agents: Agent[];
+
   observer?: AIGNEObserver;
 
   span?: Span;
@@ -284,6 +286,10 @@ export class AIGNEContext implements Context {
 
   get skills() {
     return this.internal.skills;
+  }
+
+  get agents() {
+    return this.internal.agents;
   }
 
   get observer() {
@@ -570,7 +576,10 @@ class AIGNEContextShared {
   spans: Span[] = [];
 
   constructor(
-    private readonly parent?: Pick<Context, "model" | "skills" | "limits" | "observer"> & {
+    private readonly parent?: Pick<
+      Context,
+      "model" | "agents" | "skills" | "limits" | "observer"
+    > & {
       messageQueue?: MessageQueue;
       events?: Emitter<any>;
     },
@@ -589,6 +598,10 @@ class AIGNEContextShared {
 
   get skills() {
     return this.parent?.skills;
+  }
+
+  get agents() {
+    return this.parent?.agents ?? [];
   }
 
   get observer() {

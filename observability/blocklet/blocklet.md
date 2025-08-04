@@ -1,7 +1,7 @@
 # AIGNE Observability  
 **Trace, Debug, and Monitor LLM Agents—Visually and in Real Time**
 
-[AIGNE Observability](https://store.blocklet.dev) gives developers full visibility into their AI agents and applications with zero manual instrumentation. Built on open standards like OpenTelemetry, it captures and visualizes every decision, tool invocation, and token usage—so you can build smarter and ship with confidence.
+[AIGNE Observability](https://www.aigne.io/observability) gives developers full visibility into their AI agents and applications with zero manual instrumentation. Built on open standards like OpenTelemetry, it captures and visualizes every decision, tool invocation, and token usage—so you can build smarter and ship with confidence.
 
 ---
 
@@ -47,8 +47,8 @@ Observability is enabled by default in the AIGNE Framework.
 ## 🧑‍💻 Developer Resources
 
 - [📘 AIGNE Observability GitHub](https://github.com/AIGNE-io/aigne-framework/tree/main/observability)  
-- [🧑‍💻 AIGNE SDK & CLI Docs](https://www.arcblock.io/docs/aigne-framework/en/aigne-framework-cli-observe-md)  
-- [💬 Join the Community](https://www.aigne.io/en/observability')
+- [🧑‍💻 AIGNE SDK & CLI Docs](https://www.arcblock.io/docs/aigne-framework)  
+- [💬 Join the Community](https://www.aigne.io/observability')
 
 ---
 

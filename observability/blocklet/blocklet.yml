@@ -33,8 +33,8 @@ scripts:
   dev: npm run start
 logo: logo.svg
 community: https://community.arcblock.io/discussions/boards/aigne
-documentation: https://www.arcblock.io/docs/aigne-framework/en/aigne-framework-cli-observe-md
-homepage: https://www.aigne.io/en/observability
+documentation: https://www.arcblock.io/docs/aigne-framework
+homepage: https://www.aigne.io/observability
 license: ''
 payment:
   price: []

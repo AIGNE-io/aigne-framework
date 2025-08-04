@@ -3,25 +3,30 @@
 Combine AI agents with MCP servers to access external systems and data sources.
 
 ```typescript
-import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
+import { AIAgent, MCPAgent } from "@aigne/core";
+import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 
-const aigne = new AIGNE({
-  model: new OpenAIChatModel(),
-});
+await runWithAIGNE(
+  async () => {
+    const filesystemMCP = await MCPAgent.from({
+      command: "npx",
+      args: ["-y", "@modelcontextprotocol/server-filesystem"],
+    });
 
-const filesystemMCP = await MCPAgent.from({
-  command: "npx",
-  args: ["-y", "@modelcontextprotocol/server-filesystem"]
-});
+    const agent = AIAgent.from({
+      instructions: "You can access and manage files",
+      skills: [filesystemMCP],
+      inputKey: "message",
+    });
 
-const agent = AIAgent.from({
-  instructions: "You can access and manage files",
-  skills: [filesystemMCP],
-  inputKey: "message",
-});
-
-const result = await aigne.invoke(agent, { message: "List files in the current directory" });
+    return agent;
+  },
+  {
+    chatLoopOptions: {
+      initialCall: { message: "List files in the current directory" },
+    },
+  },
+);
 ```
 
 ## Twitter Post #1
@@ -50,6 +55,4 @@ AI that actually does things! 🚀
 
 ## Twitter Post #3
 
-⭐ https://github.com/aigne-io/aigne-framework
-
-#AIGNE #ArcBlock #MCP
+Check out the full framework: https://github.com/aigne-io/aigne-framework

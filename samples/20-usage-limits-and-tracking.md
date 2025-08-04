@@ -10,7 +10,7 @@ const aigne = new AIGNE({
   model: new OpenAIChatModel(),
   limits: {
     maxAgentInvokes: 10,    // Limit agent calls per session
-    maxDuration: 30000,     // 30 second timeout
+    timeout: 30000,         // 30 second timeout
     maxTokens: 1000,        // Token usage limit
   },
 });
@@ -25,7 +25,6 @@ const agent = AIAgent.from({
         agentCalls: usage.agentCalls,
         inputTokens: usage.inputTokens,
         outputTokens: usage.outputTokens,
-        totalCost: usage.totalCost,
         duration: usage.duration,
       });
 
@@ -37,19 +36,11 @@ const agent = AIAgent.from({
   }
 });
 
-try {
-  const result = await aigne.invoke(agent, {
-    message: "What are the benefits of renewable energy?"
-  });
+const result = await aigne.invoke(agent, {
+  message: "What are the benefits of renewable energy?"
+});
 
-  // Access usage information
-  console.log("Current usage:", aigne.usage);
-
-} catch (error) {
-  if (error.message.includes("Exceeded max")) {
-    console.error("💸 Usage limit exceeded:", error.message);
-  }
-}
+console.info("Result:", result);
 ```
 
 ## Twitter Post #1
@@ -62,9 +53,7 @@ Built-in resource management:
 ⏰ Timeout protection
 💸 Cost monitoring
 
-Never exceed your AI budget again! Perfect for production deployments. 🚀
-
-What's your biggest AI cost concern? 🤔
+Never exceed your AI budget again! 🚀
 
 #AIGNE #ArcBlock #Tracking
 
@@ -81,6 +70,4 @@ Production-ready cost control! 💰
 
 ## Twitter Post #3
 
-🤝 https://github.com/aigne-io/aigne-framework
-
-#AIGNE #ArcBlock #Tracking
+Take control of your AI costs with the AIGNE Framework: https://github.com/aigne-io/aigne-framework 🤝

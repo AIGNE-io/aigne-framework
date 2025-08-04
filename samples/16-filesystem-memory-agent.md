@@ -5,7 +5,7 @@ Store and retrieve agent memories from the file system for persistent knowledge.
 ```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
-import { FSMemory } from "@aigne/agent-library/fs-memory";
+import { FSMemory } from "@aigne/fs-memory";
 
 const aigne = new AIGNE({
   model: new OpenAIChatModel(),
@@ -49,6 +49,4 @@ Human-readable AI memory! 📁
 
 ## Twitter Post #3
 
-🤝 https://github.com/aigne-io/aigne-framework
-
-#AIGNE #ArcBlock #Memory
+Try it yourself with the AIGNE Framework: https://github.com/aigne-io/aigne-framework 🤝

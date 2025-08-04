@@ -285,7 +285,6 @@ export async function loadApplication({
       },
       {
         title: "Installing dependencies",
-        skip: (ctx) => ctx.version === check?.version,
         task: async () => {
           await installDependencies(dir);
         },

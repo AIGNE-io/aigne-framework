@@ -100,9 +100,13 @@ export class TerminalTracer {
                 if (!method) return undefined;
                 return async (config: any) => {
                   const { taskWrapper } = await task.listr.promise;
-                  return taskWrapper
+                  const result = await taskWrapper
                     .prompt(ListrInquirerPromptAdapter as any)
                     .run(method as any, config);
+
+                  console.log(`${chalk.blue("✔")} ${chalk.bold(config.message)} ${result}`);
+
+                  return result;
                 };
               },
             },

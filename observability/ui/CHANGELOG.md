@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.7.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.5...observability-ui-v0.7.6) (2025-07-31)
+
+
+### Bug Fixes
+
+* blocklet observability request without prefix ([#294](https://github.com/AIGNE-io/aigne-framework/issues/294)) ([c9c0b96](https://github.com/AIGNE-io/aigne-framework/commit/c9c0b966fef3ab5a54cd33a6f346b8f87cfc559b))
+
+## [0.7.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.4...observability-ui-v0.7.5) (2025-07-30)
+
+
+### Bug Fixes
+
+* support aigne connect status more info ([#290](https://github.com/AIGNE-io/aigne-framework/issues/290)) ([04c5a06](https://github.com/AIGNE-io/aigne-framework/commit/04c5a0625938a7c1ca1d6fd997f6e9047d425ea0))
+
+## [0.7.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.3...observability-ui-v0.7.4) (2025-07-28)
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
 ## [0.7.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.2...observability-ui-v0.7.3) (2025-07-24)
 
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.5.2](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.1...publish-docs-v0.5.2) (2025-08-01)
+
+
+### Bug Fixes
+
+* polish publish docs log ([#303](https://github.com/AIGNE-io/aigne-framework/issues/303)) ([1a9f934](https://github.com/AIGNE-io/aigne-framework/commit/1a9f934b7ab01f38fdf945b52b0b3ba6fe508843))
+
+## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.0...publish-docs-v0.5.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* add auto open document url feature ([#296](https://github.com/AIGNE-io/aigne-framework/issues/296)) ([b6d2b56](https://github.com/AIGNE-io/aigne-framework/commit/b6d2b566cc7d209eefc2a7042453832c0f064e36))
+
+## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.4.0...publish-docs-v0.5.0) (2025-07-30)
+
+
+### Features
+
+* add auto create docs board ([#287](https://github.com/AIGNE-io/aigne-framework/issues/287)) ([11013cb](https://github.com/AIGNE-io/aigne-framework/commit/11013cb857b54b89077afbcd76339eb15fdcc666))
+
 ## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.3.1...publish-docs-v0.4.0) (2025-07-18)
 
 

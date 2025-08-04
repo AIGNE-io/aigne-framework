@@ -1,5 +1,84 @@
 # Changelog
 
+## [1.17.20](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.19...example-workflow-sequential-v1.17.20) (2025-08-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.10
+    * @aigne/cli bumped to 1.30.1
+    * @aigne/core bumped to 1.43.0
+    * @aigne/openai bumped to 0.10.10
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.18
+
+## [1.17.19](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.18...example-workflow-sequential-v1.17.19) (2025-08-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.9
+    * @aigne/cli bumped to 1.30.0
+    * @aigne/core bumped to 1.42.0
+    * @aigne/openai bumped to 0.10.9
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.17
+
+## [1.17.18](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.17...example-workflow-sequential-v1.17.18) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.8
+    * @aigne/cli bumped to 1.29.0
+    * @aigne/core bumped to 1.41.0
+    * @aigne/openai bumped to 0.10.8
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.16
+
+## [1.17.17](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.16...example-workflow-sequential-v1.17.17) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.7
+    * @aigne/cli bumped to 1.28.0
+    * @aigne/core bumped to 1.40.0
+    * @aigne/openai bumped to 0.10.7
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.15
+
+## [1.17.16](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.15...example-workflow-sequential-v1.17.16) (2025-07-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.27.0
+
+## [1.17.15](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.14...example-workflow-sequential-v1.17.15) (2025-07-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.6
+    * @aigne/cli bumped to 1.26.0
+    * @aigne/core bumped to 1.39.0
+    * @aigne/openai bumped to 0.10.6
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.14
+
 ## [1.17.14](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.13...example-workflow-sequential-v1.17.14) (2025-07-24)
 
 

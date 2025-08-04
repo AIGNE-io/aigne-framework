@@ -79,12 +79,10 @@ export async function startServer(
     const url = `http://localhost:${port}`;
     const renderedMessage = (message: string) => `Running observability server on ${message}`;
 
-    let msg: string;
-    if (terminalLink.isSupported) {
-      msg = renderedMessage(terminalLink(chalk.greenBright(url), url));
-    } else {
-      msg = renderedMessage(chalk.greenBright(url));
-    }
+    const message = terminalLink.isSupported
+      ? terminalLink(chalk.greenBright(url), url)
+      : chalk.greenBright(url);
+    const msg = renderedMessage(message);
 
     console.log(msg);
   });

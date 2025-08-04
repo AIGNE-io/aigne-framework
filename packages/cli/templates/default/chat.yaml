@@ -5,5 +5,5 @@ instructions: |
   Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 input_key: message
 memory: true
-tools:
+skills:
   - sandbox.js

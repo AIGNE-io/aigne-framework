@@ -1,13 +1,15 @@
 name: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
-title: Observability
-description: General observability for recording and viewing traces
+title: AIGNE Observability
+description: >-
+  See Inside Your AI Agents—in Real Time, Trace, debug, and monitor every
+  agent's decision. Built for developers to ship with confidence
 group: dapp
 main: api/dist/index.js
 author:
   name: Arcblock
   email: blocklet@arcblock.io
 specVersion: 1.2.8
-version: 1.10.1
+version: 1.11.0
 repository:
   type: git
   url: git+https://github.com/AIGNE-io/aigne-framework.git
@@ -15,9 +17,9 @@ files:
   - blocklet.md
   - screenshots
   - dist
-  - logo.png
   - screenshots
   - api/dist
+  - logo.svg
 interfaces:
   - type: web
     name: publicUrl
@@ -29,10 +31,10 @@ interfaces:
 did: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
 scripts:
   dev: npm run start
-logo: logo.png
-community: ''
-documentation: ''
-homepage: ''
+logo: logo.svg
+community: https://community.arcblock.io/discussions/boards/aigne
+documentation: https://www.arcblock.io/docs/aigne-framework
+homepage: https://www.aigne.io/observability
 license: ''
 payment:
   price: []

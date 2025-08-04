@@ -14,6 +14,7 @@
     "models/anthropic": {},
     "models/bedrock": {},
     "models/deepseek": {},
+    "models/doubao": {},
     "models/gemini": {},
     "models/ollama": {},
     "models/open-router": {},

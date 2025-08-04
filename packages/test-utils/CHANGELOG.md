@@ -1,5 +1,50 @@
 # Changelog
 
+## [0.5.18](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.17...test-utils-v0.5.18) (2025-08-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.43.0
+
+## [0.5.17](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.16...test-utils-v0.5.17) (2025-08-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.42.0
+
+## [0.5.16](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.15...test-utils-v0.5.16) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.41.0
+
+## [0.5.15](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.14...test-utils-v0.5.15) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.40.0
+
+## [0.5.14](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.13...test-utils-v0.5.14) (2025-07-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.39.0
+
 ## [0.5.13](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.12...test-utils-v0.5.13) (2025-07-24)
 
 

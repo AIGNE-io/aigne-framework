@@ -199,12 +199,24 @@ test("AIGNEContext.invoke should check output is a record type", async () => {
   );
 });
 
-test("AIGNEContext.newContext with reset should share events/messageQueue", async () => {
-  const aigne = new AIGNE({});
+test("AIGNEContext.newContext with reset should share events/messageQueue/skills/agents", async () => {
+  const agent = FunctionAgent.from(() => ({}));
+  const skill = FunctionAgent.from(() => ({}));
+
+  const aigne = new AIGNE({
+    agents: [agent],
+    skills: [skill],
+  });
 
   const context = aigne.newContext();
+
+  expect(context.agents).toEqual([agent]);
+  expect(context.skills).toEqual([skill]);
+
   const newContext = context.newContext({ reset: true });
 
+  expect(newContext.agents).toEqual([agent]);
+  expect(newContext.skills).toEqual([skill]);
   expect(context.messageQueue).toBe(newContext.messageQueue);
   expect(context["internal"].events).toBe(newContext["internal"].events);
 });

@@ -70,7 +70,7 @@ export class Converter {
         return false;
       },
       link({ href, text }) {
-        if (/^(http|https|\/|#)/.test(href)) return false;
+        if (/^(http|https|\/|#|mailto:)/.test(href)) return false;
 
         const absPath = path.resolve(path.dirname(filePath), href);
         const docsRoot = path.resolve(process.cwd(), process.env.DOC_ROOT_DIR ?? "docs");

@@ -179,6 +179,14 @@ export interface TeamAgentOptions<I extends Message, O extends Message> extends 
    * @default false
    */
   iterateWithPreviousOutput?: boolean;
+
+  /**
+   * Controls whether to include output from all intermediate steps in sequential processing.
+   *
+   * @see TeamAgent.includeAllStepsOutput for detailed documentation
+   * @default false
+   */
+  includeAllStepsOutput?: boolean;
 }
 
 /**
@@ -233,6 +241,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     };
     this.iterateOn = options.iterateOn;
     this.iterateWithPreviousOutput = options.iterateWithPreviousOutput;
+    this.includeAllStepsOutput = options.includeAllStepsOutput;
   }
 
   /**
@@ -271,6 +280,19 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * @default false
    */
   iterateWithPreviousOutput?: boolean;
+
+  /**
+   * Controls whether to include output from all intermediate steps in sequential processing.
+   *
+   * When `true`, yields output chunks from every agent in the sequential chain.
+   * When `false`, only yields output from the final agent.
+   *
+   * Only affects sequential processing mode. Useful for debugging and monitoring
+   * multi-step agent workflows.
+   *
+   * @default false
+   */
+  includeAllStepsOutput?: boolean;
 
   /**
    * Process an input message by routing it through the team's agents.
@@ -416,8 +438,14 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
         { ...options, streaming: true },
       );
 
+      const isLast = agent === this.skills[this.skills.length - 1];
+
       for await (const chunk of o) {
-        yield chunk as AgentResponseChunk<O>;
+        // Only yield the chunk if it is the last agent in the sequence
+        if (this.includeAllStepsOutput || isLast) {
+          yield chunk as AgentResponseChunk<O>;
+        }
+
         mergeAgentResponseChunk(output, chunk);
       }
     }

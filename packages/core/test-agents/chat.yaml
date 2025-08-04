@@ -1,9 +1,12 @@
 name: chat
+alias:
+  - chat-bot
+  - bot
 description: Chat agent
 instructions: |
   You are a helpful assistant that can answer questions and provide information on a wide range of topics.
   Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 input_key: message
 memory: true
-tools:
+skills:
   - sandbox.js

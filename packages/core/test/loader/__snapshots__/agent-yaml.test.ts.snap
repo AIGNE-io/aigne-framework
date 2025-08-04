@@ -1,5 +1,52 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
+exports[`loadAgentFromYaml should load AIAgent correctly 1`] = `
+{
+  "alias": [
+    "chat-bot",
+    "bot",
+  ],
+  "description": "Chat agent",
+  "instructions": 
+"You are a helpful assistant that can answer questions and provide information on a wide range of topics.
+Your goal is to assist users in finding the information they need and to engage in friendly conversation.
+"
+,
+  "name": "chat",
+  "skills": [
+    {
+      "default_input": undefined,
+      "description": "This agent evaluates JavaScript code.",
+      "input_schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": true,
+        "properties": {
+          "code": {
+            "description": "JavaScript code to evaluate",
+            "type": "string",
+          },
+        },
+        "required": [
+          "code",
+        ],
+        "type": "object",
+      },
+      "name": "evaluateJs",
+      "output_schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": true,
+        "properties": {
+          "result": {
+            "description": "Result of the evaluated code",
+          },
+        },
+        "type": "object",
+      },
+    },
+  ],
+}
+`;
+
 exports[`loadAgentFromYaml should load AIAgent with prompt file correctly 1`] = `
 "You are a helper agent to answer everything about chat prompt in AIGNE.
 

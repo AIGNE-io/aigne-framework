@@ -88,16 +88,20 @@ export class AIGNEListr extends Listr<
 
   override async run(stream: () => PromiseOrValue<AgentResponseStream<Message>>): Promise<Message> {
     const originalLog = logger.logMessage;
+    const originalConsole = { ...console };
 
     try {
       this.ctx = {};
       this.spinner.start();
 
-      logger.logMessage = (...args) => this.logs.push(format(...args));
-
       if (logger.enabled(LogLevel.INFO)) {
         const request = this.myOptions.formatRequest();
         if (request) console.log(request);
+      }
+
+      logger.logMessage = (...args) => this.logs.push(format(...args));
+      for (const method of ["debug", "log", "info", "warn", "error"] as const) {
+        console[method] = (...args) => this.logs.push(format(...args));
       }
 
       const _stream = await stream();
@@ -107,6 +111,7 @@ export class AIGNEListr extends Listr<
       return await super.run().then(() => ({ ...this.result }));
     } finally {
       logger.logMessage = originalLog;
+      Object.assign(console, originalConsole);
 
       this.spinner.stop();
     }
@@ -155,6 +160,8 @@ export class AIGNEListrRenderer extends DefaultRenderer {
     this._updater(this.create({ running: true }));
   }
 
+  private isPreviousPrompt = false;
+
   override create({
     running = false,
     ...options
@@ -165,29 +172,41 @@ export class AIGNEListrRenderer extends DefaultRenderer {
       this._logger.toStdout(logs.join(EOL));
     }
 
-    let tasks = super.create(options);
+    let buffer = "";
 
-    const bottomBar = this._options.aigne?.getBottomBarLogs?.({ running });
-    if (bottomBar?.length) {
-      tasks += EOL.repeat(2);
+    const prompt: string[] = super["renderPrompt"]();
+    if (prompt.length) {
+      buffer += prompt.join(EOL);
+      this.isPreviousPrompt = true;
+    }
+    // Skip a frame if previous render was a prompt, and reset the flag
+    else if (this.isPreviousPrompt) {
+      this.isPreviousPrompt = false;
+    } else {
+      buffer += super.create({ ...options, prompt: false });
 
-      const output = [...bottomBar, running ? this._spinner.fetch() : ""]
-        .map((i) => this._wrap(i))
-        .join(EOL);
+      const bottomBar = this._options.aigne?.getBottomBarLogs?.({ running });
+      if (bottomBar?.length) {
+        buffer += EOL.repeat(2);
 
-      // If the task is not running, we show all lines
-      if (!running) {
-        tasks += output;
-      }
-      // For running tasks, we only show the last few lines
-      else {
-        const { rows } = process.stdout;
-        const lines = rows - tasks.split(EOL).length - 2;
-        tasks += output.split(EOL).slice(-Math.max(4, lines)).join(EOL);
+        const output = [...bottomBar, running ? this._spinner.fetch() : ""]
+          .map((i) => this._wrap(i))
+          .join(EOL);
+
+        // If the task is not running, we show all lines
+        if (!running) {
+          buffer += output;
+        }
+        // For running tasks, we only show the last few lines
+        else {
+          const { rows } = process.stdout;
+          const lines = rows - buffer.split(EOL).length - 2;
+          buffer += output.split(EOL).slice(-Math.max(4, lines)).join(EOL);
+        }
       }
     }
 
-    return tasks;
+    return buffer;
   }
 
   _wrap(str: string) {

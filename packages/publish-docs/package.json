@@ -1,6 +1,6 @@
 {
   "name": "@aigne/publish-docs",
-  "version": "0.4.0",
+  "version": "0.5.2",
   "description": "AIGNE Publish Docs for publishing docs to Discuss Kit",
   "publishConfig": {
     "access": "public"
@@ -55,6 +55,7 @@
     "lexical": "^0.33.0",
     "marked": "^16.0.0",
     "open": "^10.1.2",
+    "terminal-link": "^4.0.0",
     "ufo": "^1.6.1",
     "zod": "^3.25.67"
   },

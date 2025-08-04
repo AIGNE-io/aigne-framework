@@ -36,6 +36,7 @@ import {
 } from "../utils/stream-utils.js";
 import {
   checkArguments,
+  flat,
   isEmpty,
   isNil,
   type OmitPropertiesFromArrayFirstElement,
@@ -126,6 +127,8 @@ export interface Context<U extends UserContext = UserContext>
   model?: ChatModel;
 
   skills?: Agent[];
+
+  agents: Agent[];
 
   observer?: AIGNEObserver;
 
@@ -283,6 +286,10 @@ export class AIGNEContext implements Context {
 
   get skills() {
     return this.internal.skills;
+  }
+
+  get agents() {
+    return this.internal.agents;
   }
 
   get observer() {
@@ -569,7 +576,10 @@ class AIGNEContextShared {
   spans: Span[] = [];
 
   constructor(
-    private readonly parent?: Pick<Context, "model" | "skills" | "limits" | "observer"> & {
+    private readonly parent?: Pick<
+      Context,
+      "model" | "agents" | "skills" | "limits" | "observer"
+    > & {
       messageQueue?: MessageQueue;
       events?: Emitter<any>;
     },
@@ -588,6 +598,10 @@ class AIGNEContextShared {
 
   get skills() {
     return this.parent?.skills;
+  }
+
+  get agents() {
+    return this.parent?.agents ?? [];
   }
 
   get observer() {
@@ -654,7 +668,7 @@ class AIGNEContextShared {
         const result: Message = {};
 
         if (options?.sourceAgent && activeAgent !== options.sourceAgent) {
-          for (const { onHandoff } of [options.hooks ?? {}, ...options.sourceAgent.hooks]) {
+          for (const { onHandoff } of flat(options.hooks, options.sourceAgent.hooks)) {
             if (!onHandoff) continue;
             await (typeof onHandoff === "function"
               ? onHandoff({

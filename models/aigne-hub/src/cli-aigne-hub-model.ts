@@ -17,7 +17,7 @@ const DEFAULT_URL = "https://hub.aigne.io/ai-kit/";
 
 const aigneHubChatModelOptionsSchema = z.object({
   url: z.string().optional(),
-  accessKey: z.string().optional(),
+  apiKey: z.string().optional(),
   model: z.string().optional(),
   modelOptions: z
     .object({
@@ -34,13 +34,13 @@ const aigneHubChatModelOptionsSchema = z.object({
 
 export interface AIGNEHubChatModelOptions {
   url?: string;
-  accessKey?: string;
+  apiKey?: string;
   model?: string;
   modelOptions?: ChatModelOptions;
   clientOptions?: OpenAIChatModelOptions["clientOptions"];
 }
 
-export class AIGNEHubChatModel extends ChatModel {
+export class CliAIGNEHubChatModel extends ChatModel {
   private client: BaseClient;
 
   constructor(public options: AIGNEHubChatModelOptions) {
@@ -51,7 +51,7 @@ export class AIGNEHubChatModel extends ChatModel {
       ...options,
       url: joinURL(options.url || process.env.AIGNE_HUB_API_URL || DEFAULT_URL, "/api/v2/chat"),
       model: options.model || DEFAULT_CHAT_MODEL,
-      accessKey: options.accessKey || process.env.AIGNE_HUB_API_KEY,
+      apiKey: options.apiKey || process.env.AIGNE_HUB_API_KEY,
     });
   }
 

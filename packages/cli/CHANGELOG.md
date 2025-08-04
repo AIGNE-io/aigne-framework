@@ -1,5 +1,155 @@
 # Changelog
 
+## [1.30.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.0...cli-v1.30.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* **cli:** persist prompts log and improve terminal output ([#307](https://github.com/AIGNE-io/aigne-framework/issues/307)) ([ac8116f](https://github.com/AIGNE-io/aigne-framework/commit/ac8116fc46f26169e7619860c392fb9f66bc3fee))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.10
+    * @aigne/agentic-memory bumped to 1.0.10
+    * @aigne/aigne-hub bumped to 0.4.1
+    * @aigne/openai bumped to 0.10.10
+    * @aigne/core bumped to 1.43.0
+    * @aigne/default-memory bumped to 1.0.10
+
+## [1.30.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.29.0...cli-v1.30.0) (2025-08-01)
+
+
+### Features
+
+* **cli:** add `--model` option for aigne applications ([#302](https://github.com/AIGNE-io/aigne-framework/issues/302)) ([5d63743](https://github.com/AIGNE-io/aigne-framework/commit/5d63743b8a47be64fd49245983f4f2f9da3197a0))
+* **cli:** add `upgrade` command for aigne app ([#299](https://github.com/AIGNE-io/aigne-framework/issues/299)) ([1bf461a](https://github.com/AIGNE-io/aigne-framework/commit/1bf461ab644b2d810ef81cd3092475496dfc7ddc))
+* support google model and skip check mode when connected to Hub ([#300](https://github.com/AIGNE-io/aigne-framework/issues/300)) ([e992c0f](https://github.com/AIGNE-io/aigne-framework/commit/e992c0f3335a7c512fa807d5b8ad10c9c3bf2351))
+
+
+### Bug Fixes
+
+* **cli:** indicator not responsive in macos terminal ([#304](https://github.com/AIGNE-io/aigne-framework/issues/304)) ([336f75b](https://github.com/AIGNE-io/aigne-framework/commit/336f75b8a7dfaf28d78e9a4cfcb4ac8c6a29c469))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.9
+    * @aigne/agentic-memory bumped to 1.0.9
+    * @aigne/aigne-hub bumped to 0.4.0
+    * @aigne/openai bumped to 0.10.9
+    * @aigne/core bumped to 1.42.0
+    * @aigne/default-memory bumped to 1.0.9
+    * @aigne/observability-api bumped to 0.9.0
+
+## [1.29.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.28.0...cli-v1.29.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** add alias support for agent ([#297](https://github.com/AIGNE-io/aigne-framework/issues/297)) ([fa166ab](https://github.com/AIGNE-io/aigne-framework/commit/fa166ab66d19e89ddd32c34e1470450eb4fbdbbd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.8
+    * @aigne/agentic-memory bumped to 1.0.8
+    * @aigne/aigne-hub bumped to 0.3.2
+    * @aigne/anthropic bumped to 0.10.4
+    * @aigne/bedrock bumped to 0.8.8
+    * @aigne/core bumped to 1.41.0
+    * @aigne/deepseek bumped to 0.7.8
+    * @aigne/default-memory bumped to 1.0.8
+    * @aigne/gemini bumped to 0.8.8
+    * @aigne/ollama bumped to 0.7.8
+    * @aigne/open-router bumped to 0.7.8
+    * @aigne/openai bumped to 0.10.8
+    * @aigne/xai bumped to 0.7.8
+
+## [1.28.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.27.0...cli-v1.28.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** support dynamic download and execution of doc-smith app ([#293](https://github.com/AIGNE-io/aigne-framework/issues/293)) ([4c40077](https://github.com/AIGNE-io/aigne-framework/commit/4c40077bacef076bc4b098879e948ef866218e39))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.7
+    * @aigne/agentic-memory bumped to 1.0.7
+    * @aigne/aigne-hub bumped to 0.3.1
+    * @aigne/anthropic bumped to 0.10.3
+    * @aigne/bedrock bumped to 0.8.7
+    * @aigne/core bumped to 1.40.0
+    * @aigne/deepseek bumped to 0.7.7
+    * @aigne/default-memory bumped to 1.0.7
+    * @aigne/gemini bumped to 0.8.7
+    * @aigne/ollama bumped to 0.7.7
+    * @aigne/open-router bumped to 0.7.7
+    * @aigne/openai bumped to 0.10.7
+    * @aigne/xai bumped to 0.7.7
+
+## [1.27.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.26.0...cli-v1.27.0) (2025-07-30)
+
+
+### Features
+
+* support aigne connect command and add test ([#283](https://github.com/AIGNE-io/aigne-framework/issues/283)) ([387d22d](https://github.com/AIGNE-io/aigne-framework/commit/387d22d5cacf20abe02a13deaca1f36987d48ba5))
+
+
+### Bug Fixes
+
+* **cli:** replace external dependency with built-in user subscription API ([#292](https://github.com/AIGNE-io/aigne-framework/issues/292)) ([67de7fa](https://github.com/AIGNE-io/aigne-framework/commit/67de7fa521626ee7266c6c527e4eafc227bafa48))
+* support aigne connect status more info ([#290](https://github.com/AIGNE-io/aigne-framework/issues/290)) ([04c5a06](https://github.com/AIGNE-io/aigne-framework/commit/04c5a0625938a7c1ca1d6fd997f6e9047d425ea0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.3.0
+
+## [1.26.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.25.1...cli-v1.26.0) (2025-07-28)
+
+
+### Features
+
+* **cli:** add inquirer/prompts integrations for cli ([#286](https://github.com/AIGNE-io/aigne-framework/issues/286)) ([33af756](https://github.com/AIGNE-io/aigne-framework/commit/33af7567fe2e7f9fb4b1633127e1d54fd65cb2a8))
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.6
+    * @aigne/agentic-memory bumped to 1.0.6
+    * @aigne/aigne-hub bumped to 0.2.2
+    * @aigne/anthropic bumped to 0.10.2
+    * @aigne/bedrock bumped to 0.8.6
+    * @aigne/core bumped to 1.39.0
+    * @aigne/deepseek bumped to 0.7.6
+    * @aigne/default-memory bumped to 1.0.6
+    * @aigne/gemini bumped to 0.8.6
+    * @aigne/observability-api bumped to 0.8.2
+    * @aigne/ollama bumped to 0.7.6
+    * @aigne/open-router bumped to 0.7.6
+    * @aigne/openai bumped to 0.10.6
+    * @aigne/xai bumped to 0.7.6
+
 ## [1.25.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.25.0...cli-v1.25.1) (2025-07-24)
 
 

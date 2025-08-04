@@ -1,5 +1,54 @@
 # Changelog
 
+## [1.11.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.10.5...blocklet-observability-v1.11.0) (2025-08-04)
+
+
+### Features
+
+* update observability blocklet logo and readme ([#308](https://github.com/AIGNE-io/aigne-framework/issues/308)) ([79bb897](https://github.com/AIGNE-io/aigne-framework/commit/79bb897ed7a6d8fa51af617c3aaf9ded95d5ff4b))
+
+## [1.10.5](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.10.4...blocklet-observability-v1.10.5) (2025-08-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.9.0
+
+## [1.10.4](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.10.3...blocklet-observability-v1.10.4) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-ui bumped to 0.7.6
+
+## [1.10.3](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.10.2...blocklet-observability-v1.10.3) (2025-07-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-ui bumped to 0.7.5
+
+## [1.10.2](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.10.1...blocklet-observability-v1.10.2) (2025-07-28)
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.8.2
+    * @aigne/observability-ui bumped to 0.7.4
+
 ## [1.10.1](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.10.0...blocklet-observability-v1.10.1) (2025-07-24)
 
 

@@ -1,0 +1,42 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`AIGNE.load should load agents correctly 1`] = `
+{
+  "agents": [
+    {
+      "description": "Chat agent",
+      "name": "chat",
+    },
+    {
+      "description": "Chat agent",
+      "name": "chat-with-prompt",
+    },
+    {
+      "description": "Test team agent",
+      "name": "test-team-agent",
+    },
+  ],
+  "cli": {
+    "agents": [
+      {
+        "description": "Chat agent",
+        "name": "chat",
+      },
+    ],
+  },
+  "mcpServer": {
+    "agents": [
+      {
+        "description": "Chat agent",
+        "name": "chat",
+      },
+    ],
+  },
+  "skills": [
+    {
+      "description": "This agent evaluates JavaScript code.",
+      "name": "evaluateJs",
+    },
+  ],
+}
+`;

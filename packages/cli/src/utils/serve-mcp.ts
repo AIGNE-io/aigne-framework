@@ -104,7 +104,7 @@ export function createMcpServer(aigne: AIGNE) {
     },
   );
 
-  for (const agent of aigne.agents) {
+  for (const agent of aigne.mcpServer?.agents ?? []) {
     const schema = agent.inputSchema;
 
     if (!(schema instanceof ZodObject)) throw new Error("Agent input schema must be a ZodObject");

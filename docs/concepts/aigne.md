@@ -32,7 +32,7 @@ Before using AIGNE, you need to import the necessary modules. The following code
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-basic" only_imports
 import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
+import { loadModel } from "@aigne/aigne-hub";
 ```
 
 ### Creating an AIGNE Instance
@@ -53,9 +53,10 @@ const aigne = new AIGNE({
 For more complex applications, AIGNE supports loading instance configuration from configuration files. This approach is suitable for scenarios that need to manage multiple Agents and complex settings. The following code shows how to load AIGNE configuration from a specified path and provide available model types.
 
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-load" exclude_imports
+import { loadModel } from "@aigne/aigne-hub";
 const path = join(import.meta.dirname, "../../test-aigne"); // "/PATH/TO/AIGNE_PROJECT";
 
-const aigne = await AIGNE.load(path, { models: [OpenAIChatModel] });
+const aigne = await AIGNE.load(path, { loadModel });
 ```
 
 ### Adding Agents

@@ -2,9 +2,10 @@ import { existsSync, mkdirSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { availableModels, findModel, loadModel } from "@aigne/aigne-hub";
 import { AIGNE } from "@aigne/core";
-import type { LoadableModel } from "@aigne/core/loader/index.js";
-import { loadModel } from "@aigne/core/loader/index.js";
+import { loadAIGNEFile } from "@aigne/core/loader/index.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import { AesCrypter } from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
 import crypto from "crypto";
 import inquirer from "inquirer";
@@ -12,7 +13,7 @@ import open from "open";
 import pWaitFor from "p-wait-for";
 import { joinURL, withQuery } from "ufo";
 import { parse, stringify } from "yaml";
-import { availableMemories, availableModels } from "../constants.js";
+import { availableMemories } from "../constants.js";
 import { parseModelOption, type RunAIGNECommandOptions } from "./run-with-aigne.js";
 
 const aes = new AesCrypter();
@@ -28,16 +29,18 @@ export const encodeEncryptionKey = (key: string) => escapeFn(Buffer.from(key).to
 export const decodeEncryptionKey = (str: string) =>
   new Uint8Array(Buffer.from(unescapeFn(str), "base64"));
 
+const TEST_ENV = process.env.CI || process.env.NODE_ENV === "test";
+export const AIGNE_ENV_FILE = TEST_ENV
+  ? join(homedir(), ".aigne", "test-aigne-hub-connected.yaml")
+  : join(homedir(), ".aigne", "aigne-hub-connected.yaml");
+
 const request = async (config: { url: string; method?: string; requestCount?: number }) => {
   const headers: Record<string, string> = {};
   if (config.requestCount !== undefined) {
     headers["X-Request-Count"] = config.requestCount.toString();
   }
 
-  const response = await fetch(config.url, {
-    method: config.method || "GET",
-    headers,
-  });
+  const response = await fetch(config.url, { method: config.method || "GET", headers });
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
   const data = await response.json();
@@ -160,13 +163,14 @@ const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_
 const DEFAULT_URL = "https://hub.aigne.io/";
 
 export const formatModelName = async (
-  models: LoadableModel[],
+  models: ReturnType<typeof availableModels>,
   model: string,
   inquirerPrompt: typeof inquirer.prompt,
 ) => {
   if (!model) return DEFAULT_AIGNE_HUB_PROVIDER_MODEL;
 
   const { provider, name } = parseModelOption(model);
+
   if (!provider) {
     return DEFAULT_AIGNE_HUB_PROVIDER_MODEL;
   }
@@ -176,14 +180,15 @@ export const formatModelName = async (
     return model;
   }
 
-  const m = models.find((m) => m.name.toLowerCase().includes(providerName.toLowerCase()));
+  const m = findModel(models, providerName);
   if (!m) throw new Error(`Unsupported model: ${provider} ${name}`);
 
-  if (m.apiKeyEnvName && process.env[m.apiKeyEnvName]) {
+  const apiKeyEnvName = Array.isArray(m.apiKeyEnvName) ? m.apiKeyEnvName : [m.apiKeyEnvName];
+  if (apiKeyEnvName.some((name) => name && process.env[name])) {
     return model;
   }
 
-  if (process.env.CI || process.env.NODE_ENV === "test") {
+  if (TEST_ENV) {
     return `${AGENT_HUB_PROVIDER}:${provider}/${name}`;
   }
 
@@ -197,7 +202,7 @@ export const formatModelName = async (
         value: true,
       },
       {
-        name: `Exit and bring my owner API Key by set ${m.apiKeyEnvName}`,
+        name: `Exit and bring my owner API Key by set ${apiKeyEnvName.join(", ")}`,
         value: false,
       },
     ],
@@ -209,10 +214,96 @@ export const formatModelName = async (
   return `${AGENT_HUB_PROVIDER}:${provider}/${name}`;
 };
 
+export async function connectToAIGNEHub(url: string) {
+  const { origin, host } = new URL(url);
+  const connectUrl = joinURL(origin, WELLKNOWN_SERVICE_PATH_PREFIX);
+
+  const BLOCKLET_JSON_PATH = "__blocklet__.js?type=json";
+  const blockletInfo = await fetch(joinURL(origin, BLOCKLET_JSON_PATH));
+  const blocklet = await blockletInfo.json();
+  const aigneHubMount = (blocklet?.componentMountPoints || []).find(
+    (m: { did: string }) => m.did === "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
+  );
+
+  try {
+    const result = await createConnect({
+      connectUrl: connectUrl,
+      connectAction: "gen-simple-access-key",
+      source: `@aigne/cli connect to AIGNE hub`,
+      closeOnSuccess: true,
+      openPage: (pageUrl) => open(pageUrl),
+    });
+
+    const accessKeyOptions = {
+      accessKey: result.accessKeySecret,
+      url: joinURL(origin, aigneHubMount?.mountPoint || ""),
+    };
+
+    // After redirection, write the AIGNE Hub access token
+    const aigneDir = join(homedir(), ".aigne");
+    if (!existsSync(aigneDir)) {
+      mkdirSync(aigneDir, { recursive: true });
+    }
+
+    const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+
+    await writeFile(
+      AIGNE_ENV_FILE,
+      stringify({
+        ...envs,
+        [host]: {
+          AIGNE_HUB_API_KEY: accessKeyOptions.accessKey,
+          AIGNE_HUB_API_URL: accessKeyOptions.url,
+        },
+      }),
+    ).catch((err) => {
+      logger.error(
+        "Failed to write AIGNE Hub access token to .aigne/aigne-hub-connected.yaml",
+        err.message,
+      );
+      throw err;
+    });
+
+    return accessKeyOptions;
+  } catch (error) {
+    logger.error("Failed to connect to AIGNE Hub", error.message);
+    return { accessKey: undefined, url: undefined };
+  }
+}
+
+export const checkConnectionStatus = async (host: string) => {
+  // aigne-hub access token
+  if (!existsSync(AIGNE_ENV_FILE)) {
+    throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");
+  }
+
+  const data = await readFile(AIGNE_ENV_FILE, "utf8");
+  if (!data.includes("AIGNE_HUB_API_KEY")) {
+    throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
+  }
+
+  const envs = parse(data);
+  if (!envs[host]) {
+    throw new Error("AIGNE_HUB_API_KEY host not found, need to login first");
+  }
+
+  const env = envs[host];
+  if (!env.AIGNE_HUB_API_KEY) {
+    throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
+  }
+
+  return {
+    apiKey: env.AIGNE_HUB_API_KEY,
+    url: joinURL(env.AIGNE_HUB_API_URL),
+  };
+};
+
+const mockInquirerPrompt = (() => Promise.resolve({ useAigneHub: true })) as any;
+
 export async function loadAIGNE(
   path: string,
-  options?: RunOptions,
-  checkAuthorizeOptions?: {
+  options?: Pick<RunOptions, "model">,
+  actionOptions?: {
     inquirerPromptFn?: (prompt: {
       type: string;
       name: string;
@@ -220,51 +311,36 @@ export async function loadAIGNE(
       choices: { name: string; value: any }[];
       default: any;
     }) => Promise<any>;
+    runTest?: boolean;
   },
 ) {
   const models = availableModels();
-  const AIGNE_ENV_FILE = join(homedir(), ".aigne", "aigne-hub-connected.yaml");
   const AIGNE_HUB_URL = process.env.AIGNE_HUB_API_URL || DEFAULT_URL;
   const connectUrl = joinURL(new URL(AIGNE_HUB_URL).origin, WELLKNOWN_SERVICE_PATH_PREFIX);
-  const inquirerPrompt = (checkAuthorizeOptions?.inquirerPromptFn ??
+  const inquirerPrompt = (actionOptions?.inquirerPromptFn ??
     inquirer.prompt) as typeof inquirer.prompt;
 
-  let accessKeyOptions: { accessKey?: string; url?: string } = {};
-  const modelName = await formatModelName(models, options?.model || "", inquirerPrompt);
+  const { host } = new URL(AIGNE_HUB_URL);
+  const { aigne } = await loadAIGNEFile(path).catch(() => ({ aigne: null }));
 
-  if (process.env.CI || process.env.NODE_ENV === "test") {
-    const model = await loadModel(models, parseModelOption(modelName), undefined, accessKeyOptions);
-    return await AIGNE.load(path, { models, memories: availableMemories, model });
+  const result = await checkConnectionStatus(host).catch(() => null);
+  const alreadyConnected = Boolean(result?.apiKey);
+  const modelName = await formatModelName(
+    models,
+    options?.model || `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`,
+    alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
+  );
+
+  let credential: { apiKey?: string; url?: string } = {};
+
+  if (TEST_ENV && !actionOptions?.runTest) {
+    const model = await loadModel(parseModelOption(modelName));
+    return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
   }
 
   if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
-    const { origin, host } = new URL(AIGNE_HUB_URL);
-
     try {
-      // aigne-hub access token
-      if (!existsSync(AIGNE_ENV_FILE)) {
-        throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");
-      }
-
-      const data = await readFile(AIGNE_ENV_FILE, "utf8");
-      if (!data.includes("AIGNE_HUB_API_KEY")) {
-        throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
-      }
-
-      const envs = parse(data);
-      if (!envs[host]) {
-        throw new Error("AIGNE_HUB_API_KEY host not found, need to login first");
-      }
-
-      const env = envs[host];
-      if (!env.AIGNE_HUB_API_KEY) {
-        throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
-      }
-
-      accessKeyOptions = {
-        accessKey: env.AIGNE_HUB_API_KEY,
-        url: joinURL(env.AIGNE_HUB_API_URL),
-      };
+      credential = await checkConnectionStatus(host);
     } catch (error) {
       if (error instanceof Error && error.message.includes("login first")) {
         // If none or invalid, prompt the user to proceed
@@ -288,48 +364,11 @@ export async function loadAIGNE(
           process.exit(0);
         }
 
-        const BLOCKLET_JSON_PATH = "__blocklet__.js?type=json";
-        const blockletInfo = await fetch(joinURL(origin, BLOCKLET_JSON_PATH));
-        const blocklet = await blockletInfo.json();
-        const aigneHubMount = (blocklet?.componentMountPoints || []).find(
-          (m: { did: string }) => m.did === "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
-        );
-
-        try {
-          const result = await createConnect({
-            connectUrl: connectUrl,
-            connectAction: "gen-simple-access-key",
-            source: `@aigne/cli connect to AIGNE hub`,
-            closeOnSuccess: true,
-            openPage: (pageUrl) => open(pageUrl),
-          });
-
-          accessKeyOptions = {
-            accessKey: result.accessKeySecret,
-            url: joinURL(origin, aigneHubMount?.mountPoint || ""),
-          };
-
-          // After redirection, write the AIGNE Hub access token
-          const aigneDir = join(homedir(), ".aigne");
-          if (!existsSync(aigneDir)) {
-            mkdirSync(aigneDir, { recursive: true });
-          }
-
-          await writeFile(
-            AIGNE_ENV_FILE,
-            stringify({
-              [host]: {
-                AIGNE_HUB_API_KEY: accessKeyOptions.accessKey,
-                AIGNE_HUB_API_URL: accessKeyOptions.url,
-              },
-            }),
-          );
-        } catch (error) {
-          console.error(error);
-        }
+        credential = await connectToAIGNEHub(connectUrl);
       }
     }
   }
-  const model = await loadModel(models, parseModelOption(modelName), undefined, accessKeyOptions);
-  return await AIGNE.load(path, { models, memories: availableMemories, model });
+
+  const model = await loadModel(parseModelOption(modelName), undefined, credential);
+  return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
 }

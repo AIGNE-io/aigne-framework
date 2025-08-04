@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { joinURL } from "ufo";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import useSwitchView from "../../hooks/switch-view.tsx";
+import { origin } from "../../utils/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
 import JsonView from "../json-view.tsx";
 import ModelInfoTip from "../model-tip.tsx";
@@ -152,14 +153,14 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", flex: 1 }}>
-            <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={90} name="ID">
+            <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={110} name="ID">
               <Box sx={{ textAlign: "right" }}>{trace?.id}</Box>
             </InfoRowBox>
 
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={90}
+              nameWidth={110}
               name={t("startTime")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -176,7 +177,7 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={90}
+              nameWidth={110}
               name={t("endTime")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -193,7 +194,7 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
             <InfoRowBox
               valueComponent="div"
               nameFormatter={(v) => v}
-              nameWidth={90}
+              nameWidth={110}
               name={t("duration")}
             >
               <Box sx={{ textAlign: "right" }}>
@@ -209,7 +210,7 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={90}
+                nameWidth={110}
                 name={t("inputTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -222,7 +223,7 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={90}
+                nameWidth={110}
                 name={t("outputTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -235,7 +236,7 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={90}
+                nameWidth={110}
                 name={t("totalTokens")}
               >
                 <Box sx={{ textAlign: "right" }}>
@@ -248,7 +249,7 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
               <InfoRowBox
                 valueComponent="div"
                 nameFormatter={(v) => v}
-                nameWidth={90}
+                nameWidth={110}
                 name={t("model")}
               >
                 <Box

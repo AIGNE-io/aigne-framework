@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.4.0...platform-helpers-v0.5.0) (2025-08-01)
+
+
+### Features
+
+* support google model and skip check mode when connected to Hub ([#300](https://github.com/AIGNE-io/aigne-framework/issues/300)) ([e992c0f](https://github.com/AIGNE-io/aigne-framework/commit/e992c0f3335a7c512fa807d5b8ad10c9c3bf2351))
+
 ## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.3.1...platform-helpers-v0.4.0) (2025-07-15)
 
 

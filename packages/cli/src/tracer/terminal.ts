@@ -2,11 +2,11 @@ import { EOL } from "node:os";
 import { type InspectOptions, inspect } from "node:util";
 import {
   type Agent,
+  type AgentHooks,
   AIAgent,
   ChatModel,
   type ChatModelOutput,
   type Context,
-  type ContextEventMap,
   type ContextUsage,
   DEFAULT_OUTPUT_KEY,
   type InvokeOptions,
@@ -14,10 +14,11 @@ import {
 } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
-import { omit } from "@aigne/core/utils/type-utils.js";
-import type { Listener } from "@aigne/core/utils/typed-event-emitter.js";
+import { flat, omit } from "@aigne/core/utils/type-utils.js";
 import { figures, type Listr } from "@aigne/listr2";
 import { markedTerminal } from "@aigne/marked-terminal";
+import * as prompts from "@inquirer/prompts";
+import { ListrInquirerPromptAdapter } from "@listr2/prompt-adapter-inquirer";
 import chalk from "chalk";
 import { Marked } from "marked";
 import { AIGNEListr, type AIGNEListrTaskWrapper } from "../utils/listr.js";
@@ -54,16 +55,14 @@ export class TerminalTracer {
       { concurrent: true },
     );
 
-    const onAgentStarted: Listener<"agentStarted", ContextEventMap> = async ({
-      contextId,
-      parentContextId,
-      agent,
-      timestamp,
-    }) => {
+    const onStart: AgentHooks["onStart"] = async ({ context, agent }) => {
+      const contextId = context.id;
+      const parentContextId = context.parentId;
+
       const task: Task = {
         ...promiseWithResolvers(),
         listr: promiseWithResolvers(),
-        startTime: timestamp,
+        startTime: Date.now(),
       };
       this.tasks[contextId] = task;
 
@@ -89,19 +88,41 @@ export class TerminalTracer {
       } else {
         listr.add(listrTask);
       }
+
+      return {
+        options: {
+          prompts: new Proxy(
+            {},
+            {
+              get: (_target, prop) => {
+                // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
+                const method = prompts[prop as keyof typeof prompts];
+                if (!method) return undefined;
+                return async (config: any) => {
+                  const { taskWrapper } = await task.listr.promise;
+                  const result = await taskWrapper
+                    .prompt(ListrInquirerPromptAdapter as any)
+                    .run(method as any, config);
+
+                  console.log(`${chalk.blue("✔")} ${chalk.bold(config.message)} ${result}`);
+
+                  return result;
+                };
+              },
+            },
+          ),
+        },
+      };
     };
 
-    const onAgentSucceed: Listener<"agentSucceed", ContextEventMap> = async ({
-      agent,
-      contextId,
-      parentContextId,
-      output,
-      timestamp,
-    }) => {
+    const onSuccess: AgentHooks["onSuccess"] = async ({ context, agent, output }) => {
+      const contextId = context.id;
+      const parentContextId = context.parentId;
+
       const task = this.tasks[contextId];
       if (!task) return;
 
-      task.endTime = timestamp;
+      task.endTime = Date.now();
 
       const { taskWrapper, ctx } = await task.listr.promise;
 
@@ -121,16 +142,13 @@ export class TerminalTracer {
       task.resolve();
     };
 
-    const onAgentFailed: Listener<"agentFailed", ContextEventMap> = async ({
-      agent,
-      contextId,
-      error,
-      timestamp,
-    }) => {
+    const onError: AgentHooks["onError"] = async ({ context, agent, error }) => {
+      const contextId = context.id;
+
       const task = this.tasks[contextId];
       if (!task) return;
 
-      task.endTime = timestamp;
+      task.endTime = Date.now();
 
       const { taskWrapper } = await task.listr.promise;
       taskWrapper.title = this.formatTaskTitle(agent, { task, usage: true, time: true });
@@ -138,21 +156,23 @@ export class TerminalTracer {
       task.reject(error);
     };
 
-    context.on("agentStarted", onAgentStarted);
-    context.on("agentSucceed", onAgentSucceed);
-    context.on("agentFailed", onAgentFailed);
+    const result = await listr.run(() =>
+      context.invoke(agent, input, {
+        ...options,
+        hooks: flat(
+          {
+            onStart,
+            onSuccess,
+            onError,
+          },
+          options?.hooks,
+        ),
+        streaming: true,
+        newContext: false,
+      }),
+    );
 
-    try {
-      const result = await listr.run(() =>
-        context.invoke(agent, input, { ...options, streaming: true, newContext: false }),
-      );
-
-      return { result, context };
-    } finally {
-      context.off("agentStarted", onAgentStarted);
-      context.off("agentSucceed", onAgentSucceed);
-      context.off("agentFailed", onAgentFailed);
-    }
+    return { result, context };
   }
 
   formatTokenUsage(usage: Partial<ContextUsage>, extra?: { [key: string]: string }) {

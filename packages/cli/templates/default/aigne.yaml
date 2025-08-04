@@ -4,6 +4,6 @@ chat_model:
   temperature: 0.8
 agents:
   - chat.yaml
-tools:
+skills:
   - sandbox.js
   - filesystem.yaml

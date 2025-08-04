@@ -1,5 +1,65 @@
 # Changelog
 
+## [0.8.10](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.8.9...gemini-v0.8.10) (2025-08-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.10
+  * devDependencies
+    * @aigne/core bumped to 1.43.0
+    * @aigne/test-utils bumped to 0.5.18
+
+## [0.8.9](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.8.8...gemini-v0.8.9) (2025-08-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.9
+  * devDependencies
+    * @aigne/core bumped to 1.42.0
+    * @aigne/test-utils bumped to 0.5.17
+
+## [0.8.8](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.8.7...gemini-v0.8.8) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.8
+  * devDependencies
+    * @aigne/core bumped to 1.41.0
+    * @aigne/test-utils bumped to 0.5.16
+
+## [0.8.7](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.8.6...gemini-v0.8.7) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.7
+  * devDependencies
+    * @aigne/core bumped to 1.40.0
+    * @aigne/test-utils bumped to 0.5.15
+
+## [0.8.6](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.8.5...gemini-v0.8.6) (2025-07-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.6
+  * devDependencies
+    * @aigne/core bumped to 1.39.0
+    * @aigne/test-utils bumped to 0.5.14
+
 ## [0.8.5](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.8.4...gemini-v0.8.5) (2025-07-24)
 
 

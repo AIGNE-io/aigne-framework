@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.8.2...observability-api-v0.9.0) (2025-08-01)
+
+
+### Features
+
+* **cli:** add `upgrade` command for aigne app ([#299](https://github.com/AIGNE-io/aigne-framework/issues/299)) ([1bf461a](https://github.com/AIGNE-io/aigne-framework/commit/1bf461ab644b2d810ef81cd3092475496dfc7ddc))
+
+
+### Bug Fixes
+
+* polish publish docs log ([#303](https://github.com/AIGNE-io/aigne-framework/issues/303)) ([1a9f934](https://github.com/AIGNE-io/aigne-framework/commit/1a9f934b7ab01f38fdf945b52b0b3ba6fe508843))
+
+## [0.8.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.8.1...observability-api-v0.8.2) (2025-07-28)
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
 ## [0.8.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.8.0...observability-api-v0.8.1) (2025-07-24)
 
 

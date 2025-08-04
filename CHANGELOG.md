@@ -1,5 +1,102 @@
 # Changelog
 
+## [1.50.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.49.0...aigne-framework-v1.50.0) (2025-08-04)
+
+
+### Features
+
+* add includeAllStepsOutput option to control TeamAgent sequential streaming behavior ([#305](https://github.com/AIGNE-io/aigne-framework/issues/305)) ([0817475](https://github.com/AIGNE-io/aigne-framework/commit/08174751316b940a70463e71971a19a18b92667b))
+* update observability blocklet logo and readme ([#308](https://github.com/AIGNE-io/aigne-framework/issues/308)) ([79bb897](https://github.com/AIGNE-io/aigne-framework/commit/79bb897ed7a6d8fa51af617c3aaf9ded95d5ff4b))
+
+
+### Bug Fixes
+
+* **cli:** persist prompts log and improve terminal output ([#307](https://github.com/AIGNE-io/aigne-framework/issues/307)) ([ac8116f](https://github.com/AIGNE-io/aigne-framework/commit/ac8116fc46f26169e7619860c392fb9f66bc3fee))
+* **core:** share skills/agents from context ([#309](https://github.com/AIGNE-io/aigne-framework/issues/309)) ([88dd849](https://github.com/AIGNE-io/aigne-framework/commit/88dd849954c6f3fb68df238be22be3371c734e6e))
+
+## [1.49.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.48.0...aigne-framework-v1.49.0) (2025-08-01)
+
+
+### Features
+
+* **cli:** add `--model` option for aigne applications ([#302](https://github.com/AIGNE-io/aigne-framework/issues/302)) ([5d63743](https://github.com/AIGNE-io/aigne-framework/commit/5d63743b8a47be64fd49245983f4f2f9da3197a0))
+* **cli:** add `upgrade` command for aigne app ([#299](https://github.com/AIGNE-io/aigne-framework/issues/299)) ([1bf461a](https://github.com/AIGNE-io/aigne-framework/commit/1bf461ab644b2d810ef81cd3092475496dfc7ddc))
+* support google model and skip check mode when connected to Hub ([#300](https://github.com/AIGNE-io/aigne-framework/issues/300)) ([e992c0f](https://github.com/AIGNE-io/aigne-framework/commit/e992c0f3335a7c512fa807d5b8ad10c9c3bf2351))
+
+
+### Bug Fixes
+
+* **cli:** indicator not responsive in macos terminal ([#304](https://github.com/AIGNE-io/aigne-framework/issues/304)) ([336f75b](https://github.com/AIGNE-io/aigne-framework/commit/336f75b8a7dfaf28d78e9a4cfcb4ac8c6a29c469))
+* polish publish docs log ([#303](https://github.com/AIGNE-io/aigne-framework/issues/303)) ([1a9f934](https://github.com/AIGNE-io/aigne-framework/commit/1a9f934b7ab01f38fdf945b52b0b3ba6fe508843))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.2
+
+## [1.48.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.47.0...aigne-framework-v1.48.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** add alias support for agent ([#297](https://github.com/AIGNE-io/aigne-framework/issues/297)) ([fa166ab](https://github.com/AIGNE-io/aigne-framework/commit/fa166ab66d19e89ddd32c34e1470450eb4fbdbbd))
+
+## [1.47.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.46.0...aigne-framework-v1.47.0) (2025-07-31)
+
+
+### Features
+
+* **cli:** support dynamic download and execution of doc-smith app ([#293](https://github.com/AIGNE-io/aigne-framework/issues/293)) ([4c40077](https://github.com/AIGNE-io/aigne-framework/commit/4c40077bacef076bc4b098879e948ef866218e39))
+
+
+### Bug Fixes
+
+* add auto open document url feature ([#296](https://github.com/AIGNE-io/aigne-framework/issues/296)) ([b6d2b56](https://github.com/AIGNE-io/aigne-framework/commit/b6d2b566cc7d209eefc2a7042453832c0f064e36))
+* blocklet observability request without prefix ([#294](https://github.com/AIGNE-io/aigne-framework/issues/294)) ([c9c0b96](https://github.com/AIGNE-io/aigne-framework/commit/c9c0b966fef3ab5a54cd33a6f346b8f87cfc559b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.1
+
+## [1.46.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.45.0...aigne-framework-v1.46.0) (2025-07-30)
+
+
+### Features
+
+* add auto create docs board ([#287](https://github.com/AIGNE-io/aigne-framework/issues/287)) ([11013cb](https://github.com/AIGNE-io/aigne-framework/commit/11013cb857b54b89077afbcd76339eb15fdcc666))
+* **models:** support doubao llm adapter ([#289](https://github.com/AIGNE-io/aigne-framework/issues/289)) ([0f68887](https://github.com/AIGNE-io/aigne-framework/commit/0f688871d232e7a42613f4921491de8974b31b81))
+* support aigne connect command and add test ([#283](https://github.com/AIGNE-io/aigne-framework/issues/283)) ([387d22d](https://github.com/AIGNE-io/aigne-framework/commit/387d22d5cacf20abe02a13deaca1f36987d48ba5))
+
+
+### Bug Fixes
+
+* **cli:** replace external dependency with built-in user subscription API ([#292](https://github.com/AIGNE-io/aigne-framework/issues/292)) ([67de7fa](https://github.com/AIGNE-io/aigne-framework/commit/67de7fa521626ee7266c6c527e4eafc227bafa48))
+* support aigne connect status more info ([#290](https://github.com/AIGNE-io/aigne-framework/issues/290)) ([04c5a06](https://github.com/AIGNE-io/aigne-framework/commit/04c5a0625938a7c1ca1d6fd997f6e9047d425ea0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.0
+
+## [1.45.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.44.1...aigne-framework-v1.45.0) (2025-07-28)
+
+
+### Features
+
+* **cli:** add inquirer/prompts integrations for cli ([#286](https://github.com/AIGNE-io/aigne-framework/issues/286)) ([33af756](https://github.com/AIGNE-io/aigne-framework/commit/33af7567fe2e7f9fb4b1633127e1d54fd65cb2a8))
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
 ## [1.44.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.44.0...aigne-framework-v1.44.1) (2025-07-24)
 
 

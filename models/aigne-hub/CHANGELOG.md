@@ -1,5 +1,133 @@
 # Changelog
 
+## [0.4.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.4.0...aigne-hub-v0.4.1) (2025-08-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.10.6
+    * @aigne/bedrock bumped to 0.8.10
+    * @aigne/core bumped to 1.43.0
+    * @aigne/deepseek bumped to 0.7.10
+    * @aigne/default-memory bumped to 1.0.10
+    * @aigne/gemini bumped to 0.8.10
+    * @aigne/ollama bumped to 0.7.10
+    * @aigne/open-router bumped to 0.7.10
+    * @aigne/openai bumped to 0.10.10
+    * @aigne/transport bumped to 0.11.1
+    * @aigne/xai bumped to 0.7.10
+  * devDependencies
+    * @aigne/openai bumped to 0.10.10
+    * @aigne/test-utils bumped to 0.5.18
+
+## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.3.2...aigne-hub-v0.4.0) (2025-08-01)
+
+
+### Features
+
+* support google model and skip check mode when connected to Hub ([#300](https://github.com/AIGNE-io/aigne-framework/issues/300)) ([e992c0f](https://github.com/AIGNE-io/aigne-framework/commit/e992c0f3335a7c512fa807d5b8ad10c9c3bf2351))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.10.5
+    * @aigne/bedrock bumped to 0.8.9
+    * @aigne/core bumped to 1.42.0
+    * @aigne/deepseek bumped to 0.7.9
+    * @aigne/default-memory bumped to 1.0.9
+    * @aigne/gemini bumped to 0.8.9
+    * @aigne/ollama bumped to 0.7.9
+    * @aigne/open-router bumped to 0.7.9
+    * @aigne/openai bumped to 0.10.9
+    * @aigne/platform-helpers bumped to 0.5.0
+    * @aigne/transport bumped to 0.11.0
+    * @aigne/xai bumped to 0.7.9
+  * devDependencies
+    * @aigne/openai bumped to 0.10.9
+    * @aigne/test-utils bumped to 0.5.17
+
+## [0.3.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.3.1...aigne-hub-v0.3.2) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.10.4
+    * @aigne/bedrock bumped to 0.8.8
+    * @aigne/core bumped to 1.41.0
+    * @aigne/deepseek bumped to 0.7.8
+    * @aigne/default-memory bumped to 1.0.8
+    * @aigne/gemini bumped to 0.8.8
+    * @aigne/ollama bumped to 0.7.8
+    * @aigne/open-router bumped to 0.7.8
+    * @aigne/openai bumped to 0.10.8
+    * @aigne/transport bumped to 0.10.8
+    * @aigne/xai bumped to 0.7.8
+  * devDependencies
+    * @aigne/openai bumped to 0.10.8
+    * @aigne/test-utils bumped to 0.5.16
+
+## [0.3.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.3.0...aigne-hub-v0.3.1) (2025-07-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.10.3
+    * @aigne/bedrock bumped to 0.8.7
+    * @aigne/core bumped to 1.40.0
+    * @aigne/deepseek bumped to 0.7.7
+    * @aigne/default-memory bumped to 1.0.7
+    * @aigne/gemini bumped to 0.8.7
+    * @aigne/ollama bumped to 0.7.7
+    * @aigne/open-router bumped to 0.7.7
+    * @aigne/openai bumped to 0.10.7
+    * @aigne/transport bumped to 0.10.7
+    * @aigne/xai bumped to 0.7.7
+  * devDependencies
+    * @aigne/openai bumped to 0.10.7
+    * @aigne/test-utils bumped to 0.5.15
+
+## [0.3.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.2.2...aigne-hub-v0.3.0) (2025-07-30)
+
+
+### Features
+
+* support aigne connect command and add test ([#283](https://github.com/AIGNE-io/aigne-framework/issues/283)) ([387d22d](https://github.com/AIGNE-io/aigne-framework/commit/387d22d5cacf20abe02a13deaca1f36987d48ba5))
+
+## [0.2.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.2.1...aigne-hub-v0.2.2) (2025-07-28)
+
+
+### Bug Fixes
+
+* **observability:** uniq index on insert and perf on trace query ([#268](https://github.com/AIGNE-io/aigne-framework/issues/268)) ([bd02d2e](https://github.com/AIGNE-io/aigne-framework/commit/bd02d2ef4dadc3df7e4806746fede2faa5cc50bb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.10.2
+    * @aigne/bedrock bumped to 0.8.6
+    * @aigne/core bumped to 1.39.0
+    * @aigne/deepseek bumped to 0.7.6
+    * @aigne/default-memory bumped to 1.0.6
+    * @aigne/gemini bumped to 0.8.6
+    * @aigne/ollama bumped to 0.7.6
+    * @aigne/open-router bumped to 0.7.6
+    * @aigne/openai bumped to 0.10.6
+    * @aigne/transport bumped to 0.10.6
+    * @aigne/xai bumped to 0.7.6
+  * devDependencies
+    * @aigne/openai bumped to 0.10.6
+    * @aigne/test-utils bumped to 0.5.14
+
 ## [0.2.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.2.0...aigne-hub-v0.2.1) (2025-07-24)
 
 

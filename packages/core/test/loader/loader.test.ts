@@ -5,12 +5,13 @@ import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { nanoid } from "nanoid";
-import { ClaudeChatModel, OpenAIChatModel, XAIChatModel } from "../_mocks/mock-models.js";
+import { ClaudeChatModel, OpenAIChatModel } from "../_mocks/mock-models.js";
+
+const loadModel = () => new OpenAIChatModel();
 
 test("AIGNE.load should load agents correctly", async () => {
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
-    models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
+    loadModel,
   });
 
   expect(aigne).toEqual(
@@ -36,22 +37,28 @@ test("AIGNE.load should load agents correctly", async () => {
   expect(aigne.model).toBeInstanceOf(ChatModel);
   assert(aigne.model, "model should be defined");
 
-  spyOn(aigne.model, "process")
-    .mockReturnValueOnce(
-      Promise.resolve({
-        toolCalls: [
-          {
-            id: nanoid(),
-            type: "function",
-            function: { name: "evaluateJs", arguments: { code: "1 + 1" } },
-          },
-        ],
-      }),
-    )
-    .mockReturnValueOnce(Promise.resolve({ text: "1 + 2 = 3" }));
-
-  const result = await aigne.invoke(chat, { message: "1 + 2 = ?" });
-  expect(result).toEqual(expect.objectContaining({ message: "1 + 2 = 3" }));
+  expect({
+    agents: aigne.agents.map((agent) => ({
+      name: agent.name,
+      description: agent.description,
+    })),
+    skills: aigne.skills.map((skill) => ({
+      name: skill.name,
+      description: skill.description,
+    })),
+    mcpServer: {
+      agents: aigne.mcpServer?.agents.map((agent) => ({
+        name: agent.name,
+        description: agent.description,
+      })),
+    },
+    cli: {
+      agents: aigne.cli?.agents.map((agent) => ({
+        name: agent.name,
+        description: agent.description,
+      })),
+    },
+  }).toMatchSnapshot();
 });
 
 test("loader should use override options", async () => {
@@ -60,7 +67,7 @@ test("loader should use override options", async () => {
   const testSkill = AIAgent.from({ name: "test-skill" });
 
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
-    models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
+    loadModel,
     model,
     agents: [testAgent],
     skills: [testSkill],
@@ -93,9 +100,7 @@ test("load should process path correctly", async () => {
 
   // mock a non-existing file
   stat.mockReturnValueOnce(Promise.reject(new Error("not found")));
-  expect(
-    load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }),
-  ).rejects.toThrow("not found");
+  expect(load({ loadModel, path: "aigne.yaml" })).rejects.toThrow("not found");
 
   // mock a yaml file with invalid content
   stat.mockReturnValueOnce(
@@ -104,7 +109,7 @@ test("load should process path correctly", async () => {
   readFile.mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"));
   expect(
     load({
-      models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
+      loadModel,
       path: "invalid-yaml/aigne.yaml",
     }),
   ).rejects.toThrow("Failed to parse aigne.yaml");
@@ -117,7 +122,7 @@ test("load should process path correctly", async () => {
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: 123"));
   expect(
     load({
-      models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel],
+      loadModel,
       path: "invalid-properties/aigne.yaml",
     }),
   ).rejects.toThrow("Failed to validate aigne.yaml");
@@ -128,9 +133,7 @@ test("load should process path correctly", async () => {
     Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
-  expect(
-    load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "foo" }),
-  ).resolves.toEqual(
+  expect(load({ loadModel, path: "foo" })).resolves.toEqual(
     expect.objectContaining({
       model: expect.anything(),
       agents: [],
@@ -148,9 +151,7 @@ test("load should process path correctly", async () => {
       Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
     );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
-  expect(
-    load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "bar" }),
-  ).resolves.toEqual(
+  expect(load({ loadModel, path: "bar" })).resolves.toEqual(
     expect.objectContaining({
       model: expect.anything(),
       agents: [],
@@ -158,58 +159,6 @@ test("load should process path correctly", async () => {
     }),
   );
   expect(readFile).toHaveBeenLastCalledWith("bar/aigne.yml", "utf8");
-
-  stat.mockRestore();
-  readFile.mockRestore();
-});
-
-test("load should load model correctly", async () => {
-  const stat = spyOn(nodejs.fs, "stat").mockReturnValue(
-    Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
-  );
-  const readFile = spyOn(nodejs.fs, "readFile");
-
-  readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o"));
-  expect(
-    (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
-      .model,
-  ).toBeInstanceOf(OpenAIChatModel);
-
-  readFile.mockReturnValueOnce(
-    Promise.resolve(`\
-chat_model:
-  provider: openai
-  name: gpt-4o
-`),
-  );
-  expect(
-    (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
-      .model,
-  ).toBeInstanceOf(OpenAIChatModel);
-
-  readFile.mockReturnValueOnce(
-    Promise.resolve(`\
-chat_model:
-  provider: claude
-  name: claude-3.5
-`),
-  );
-  expect(
-    (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
-      .model,
-  ).toBeInstanceOf(ClaudeChatModel);
-
-  readFile.mockReturnValueOnce(
-    Promise.resolve(`\
-chat_model:
-  provider: xai
-  name: grok-2-latest
-`),
-  );
-  expect(
-    (await load({ models: [OpenAIChatModel, ClaudeChatModel, XAIChatModel], path: "aigne.yaml" }))
-      .model,
-  ).toBeInstanceOf(XAIChatModel);
 
   stat.mockRestore();
   readFile.mockRestore();
@@ -243,7 +192,7 @@ url: http://localhost:3000/sse
 test("loadAgent should load MCP agent from command correctly", async () => {
   const fsMcp = MCPAgent.from({
     name: "filesystem",
-    client: new Client({ name: "test-mcp-cleint", version: "0.0.1" }),
+    client: new Client({ name: "test-mcp-client", version: "0.0.1" }),
   });
   const from = spyOn(MCPAgent, "from").mockReturnValueOnce(fsMcp);
 

@@ -1,16 +1,19 @@
 {
   "name": "@aigne/cli",
   "version": "1.30.1",
-  "description": "cli for AIGNE framework",
+  "description": "Command-line interface for AIGNE Framework - A functional AI application development framework for building scalable AI-powered applications with workflow patterns, MCP protocol integration, and multi-model support",
   "publishConfig": {
     "access": "public"
   },
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
-  "homepage": "https://github.com/AIGNE-io/aigne-framework",
+  "homepage": "https://www.aigne.io/cli",
   "license": "Elastic-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bugs": {
+    "url": "https://github.com/AIGNE-io/aigne-framework/issues"
   },
   "files": [
     "dist",

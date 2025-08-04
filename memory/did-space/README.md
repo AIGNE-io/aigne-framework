@@ -1,5 +1,13 @@
 # @aigne/did-space-memory
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
@@ -110,7 +118,7 @@ const memory = new DIDSpacesMemory({
   },
   // Custom memory recorder agent configuration
   recorderOptions: {
-    name: "CustomRecorder", 
+    name: "CustomRecorder",
     instructions: "Custom recording instructions",
   },
   // Other agent configurations
@@ -121,7 +129,6 @@ const memory = new DIDSpacesMemory({
 ### Using Different Authentication Methods
 
 ```typescript
-// Using access token authentication
 const memory1 = new DIDSpacesMemory({
   url: "https://your-did-spaces-url.com",
   auth: {
@@ -141,7 +148,6 @@ const memory2 = new DIDSpacesMemory({
 ## Memory Management Features
 
 ```typescript
-// Get memory storage client
 const client = memory.client;
 
 // List all memory files

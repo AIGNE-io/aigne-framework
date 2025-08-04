@@ -16,8 +16,8 @@ Let's understand the implementation details of each step:
 ### Create Agent with Memory Functionality
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent-enable-memory"
-import { DefaultMemory } from '@aigne/default-memory';
 import { AIAgent } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory";
 
 const agent = AIAgent.from({
   instructions: "You are a helpful assistant for Crypto market analysis",
@@ -113,8 +113,8 @@ console.log(result4);
 The following example shows how to create an Agent with memory functionality and test its memory capability in continuous conversations:
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-enable-memory-for-agent"
-import { DefaultMemory } from '@aigne/default-memory';
 import { AIAgent, AIGNE } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 
 const aigne = new AIGNE({

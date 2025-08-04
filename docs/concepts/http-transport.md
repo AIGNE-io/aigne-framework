@@ -13,8 +13,8 @@ AIGNEHTTPServer allows developers to expose AIGNE instances and their agents thr
 First, we need to create a named agent and AIGNE instance:
 
 ```ts file="../../docs-examples/test/concepts/http-transport.test.ts" region="example-http-transport-create-named-agent"
-import { DefaultMemory } from '@aigne/default-memory';
 import { AIAgent } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory";
 
 const agent = AIAgent.from({
   name: "chatbot",

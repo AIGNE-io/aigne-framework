@@ -98,8 +98,8 @@ const httpServer = app.listen(port);
 The following example shows how to create an API server to provide Agent services:
 
 ```ts file="../../docs-examples/test/build-first-agent.test.ts" region="example-serve-agent-as-api-service"
-import { DefaultMemory } from '@aigne/default-memory';
 import { AIAgent, AIGNE } from "@aigne/core";
+import { DefaultMemory } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import express from "express";

@@ -1,5 +1,13 @@
 # @aigne/doubao
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
@@ -46,6 +54,7 @@ pnpm add @aigne/doubao @aigne/core
 ## Basic Usage
 
 // todo
+
 ```typescript file="test/doubao-chat-model.test.ts" region="example-doubao-chat-model"
 import { DoubaoChatModel } from "@aigne/doubao";
 
@@ -66,9 +75,12 @@ const result = await model.invoke({
 console.log(result);
 /* Output:
   {
-    text: "Hello! I'm Doubao, an AI developed by ByteDance. My main goal is to assist you with a wide range of tasks—whether you have questions to ask, need help brainstorming ideas, want explanations on topics, or just feel like chatting. I’m here to provide helpful, clear, and friendly responses. Feel free to let me know what you need—I’m happy to help! 😊",
-    usage: { inputTokens: 87, outputTokens: 219 },
-    model: 'doubao-seed-1-6-250615'
+    text: "Hello! I'm an AI assistant powered by Doubao's language model.",
+    model: "doubao-seed-1-6-250615",
+    usage: {
+      inputTokens: 7,
+      outputTokens: 12
+    }
   }
   */
 ```
@@ -76,7 +88,8 @@ console.log(result);
 ## Streaming Responses
 
 // todo
-```typescript file="test/doubao-seed-1-6-250615-model.test.ts" region="example-doubao-seed-1-6-250615-model-streaming"
+
+```typescript file="test/doubao-chat-model.test.ts" region="example-doubao-chat-model-streaming"
 import { isAgentResponseDelta } from "@aigne/core";
 import { DoubaoChatModel } from "@aigne/doubao";
 

@@ -49,6 +49,10 @@
   * [Chat Model](/concepts/chat-model.md)
   * [HTTP Transport](/concepts/http-transport.md)
 
+* FAQ
+
+  * [Bundling Blocklet with AIGNE](/faq/bundling-blocklet-with-aigne.md)
+
 <!-- api reference -->
 
 * Contributing

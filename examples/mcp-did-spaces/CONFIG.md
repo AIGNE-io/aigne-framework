@@ -47,18 +47,18 @@ You can use different AI models by uncommenting and configuring any of these:
 
 For this example to work, you **must** provide the DID Spaces MCP configuration:
 
-- `DID_SPACES_URL`: The URL to your DID Spaces MCP endpoint (usually ends with `/mcp`)
-- `DID_SPACES_AUTHORIZATION`: The authorization token for accessing your DID Spaces MCP server
+* `DID_SPACES_URL`: The URL to your DID Spaces MCP endpoint (usually ends with `/mcp`)
+* `DID_SPACES_AUTHORIZATION`: The authorization token for accessing your DID Spaces MCP server
 
 ## Getting API Keys
 
-- **OpenAI**: Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
-- **Anthropic**: Get your API key from [Anthropic Console](https://console.anthropic.com/)
-- **Google Gemini**: Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-- **DeepSeek**: Get your API key from [DeepSeek Platform](https://platform.deepseek.com/)
-- **OpenRouter**: Get your API key from [OpenRouter](https://openrouter.ai/keys)
-- **xAI**: Get your API key from [xAI Console](https://console.x.ai/)
-- **Ollama**: Install locally from [Ollama Website](https://ollama.ai/)
+* **OpenAI**: Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+* **Anthropic**: Get your API key from [Anthropic Console](https://console.anthropic.com/)
+* **Google Gemini**: Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+* **DeepSeek**: Get your API key from [DeepSeek Platform](https://platform.deepseek.com/)
+* **OpenRouter**: Get your API key from [OpenRouter](https://openrouter.ai/keys)
+* **xAI**: Get your API key from [xAI Console](https://console.x.ai/)
+* **Ollama**: Install locally from [Ollama Website](https://ollama.ai/)
 
 ## MCP Server Setup
 
@@ -67,4 +67,4 @@ This example connects to a DID Spaces MCP server. Make sure you have:
 1. A running DID Spaces instance
 2. MCP server enabled on your DID Spaces instance
 3. Proper authentication tokens
-4. Network access to the MCP endpoint 
+4. Network access to the MCP endpoint

@@ -71,6 +71,8 @@ export class AIGNEHTTPClient<U extends UserContext = UserContext>
 
   model = new ClientChatModel(this);
 
+  agents = [];
+
   invoke<I extends Message, O extends Message>(agent: Agent<I, O> | string): UserAgent<I, O>;
   invoke<I extends Message, O extends Message>(
     agent: Agent<I, O> | string,

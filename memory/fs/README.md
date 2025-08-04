@@ -1,5 +1,13 @@
 # @aigne/fs-memory
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
@@ -93,8 +101,8 @@ console.log(response2.message);
 ### Custom Memory Directory
 
 ```typescript
+import { join } from "node:path";
 import { FSMemory } from "@aigne/fs-memory";
-import { join } from "path";
 
 // Using absolute path
 const memory1 = new FSMemory({
@@ -184,7 +192,7 @@ Each memory file contains YAML-formatted memory data:
   timestamp: 2024-01-01T10:00:00Z
   metadata:
     type: "preference"
-    
+
 - id: memory-id-2
   content: "User is a software developer"
   timestamp: 2024-01-01T10:05:00Z

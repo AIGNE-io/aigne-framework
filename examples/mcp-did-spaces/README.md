@@ -1,5 +1,13 @@
 # MCP DID Spaces Example
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 This example demonstrates how to create a chatbot with MCP (Model Context Protocol) DID Spaces integration using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes MCP to provide access to DID Spaces functionality through skills.
 
 ## Prerequisites
@@ -41,6 +49,7 @@ pnpm install
 Create a `.env.local` file and configure the required environment variables. See [CONFIG.md](CONFIG.md) for detailed configuration instructions.
 
 **Quick Setup:**
+
 ```bash
 # Copy the example configuration
 cp CONFIG.md .env.local
@@ -73,6 +82,7 @@ pnpm start
 ```
 
 The example will:
+
 1. Test MCP DID Spaces with 3 simple operations (check metadata, list objects, write file)
 2. Display all results in the console with proper markdown formatting
 3. Automatically save a complete markdown report file
@@ -142,7 +152,8 @@ pnpm test:llm
 ```
 
 The test will:
+
 1. Connect to the MCP server
 2. List available skills
 3. Test basic DID Spaces operations
-4. Verify the integration is working correctly 
+4. Verify the integration is working correctly

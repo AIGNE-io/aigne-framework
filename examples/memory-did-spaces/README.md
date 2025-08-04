@@ -1,5 +1,13 @@
 # Memory DID Spaces Example
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 This example demonstrates how to create a chatbot with DID Spaces memory capabilities using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes the `DIDSpacesMemory` plugin to provide persistence across chat sessions using DID Spaces.
 
 ## Prerequisites
@@ -41,6 +49,7 @@ pnpm install
 Create a `.env.local` file and configure the required environment variables. See [CONFIG.md](CONFIG.md) for detailed configuration instructions.
 
 **Quick Setup:**
+
 ```bash
 # Copy the example configuration
 cp CONFIG.md .env.local
@@ -73,6 +82,7 @@ pnpm start
 ```
 
 The example will:
+
 1. Test DID Spaces memory with 3 simple tests (store profile, recall preferences, create portfolio)
 2. Display all results in the console with proper markdown formatting
 3. Automatically save a complete markdown report file
@@ -113,5 +123,5 @@ memory: new DIDSpacesMemory({
   auth: {
     authorization: "Bearer YOUR_TOKEN",
   },
-})
-``` 
+});
+```

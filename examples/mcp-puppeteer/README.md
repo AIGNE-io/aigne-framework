@@ -1,5 +1,13 @@
 # Puppeteer MCP Server Demo
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [Puppeteer MCP Server](https://github.com/modelcontextprotocol/servers/tree/8bd41eb0b3cf48aea0d1fe5b6c7029736092dcb1/src/puppeteer) to extract content from websites using Puppeteer. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
 
 ```mermaid

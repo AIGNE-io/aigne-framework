@@ -1,5 +1,13 @@
 # MCP Server Example
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 This example demonstrates how to use the [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md) to run agents from the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) as an [MCP (Model Context Protocol) Server](https://modelcontextprotocol.io). The MCP server can be consumed by Claude Desktop, Claude Code, or other clients that support the MCP protocol.
 
 ## What is MCP?

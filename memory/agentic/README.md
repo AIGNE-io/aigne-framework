@@ -1,5 +1,13 @@
 # @aigne/agentic-memory
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
@@ -43,8 +51,8 @@ pnpm add @aigne/agentic-memory
 ## Basic Usage
 
 ```typescript
-import { AIAgent, AIGNE } from "@aigne/core";
 import { AgenticMemory } from "@aigne/agentic-memory";
+import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
 // Create AI model instance
@@ -64,7 +72,8 @@ const memory = new AgenticMemory({
 // Create AI agent with intelligent memory
 const agent = AIAgent.from({
   name: "SmartAssistant",
-  instructions: "You are a helpful assistant with intelligent memory capabilities.",
+  instructions:
+    "You are a helpful assistant with intelligent memory capabilities.",
   memory: memory,
   inputKey: "message",
 });

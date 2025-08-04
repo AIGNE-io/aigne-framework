@@ -21,7 +21,8 @@
     "README.md",
     "CHANGELOG.md",
     "screenshots",
-    "logo.svg"
+    "logo.svg",
+    "logo-dark.svg"
   ],
   "type": "module",
   "main": "./lib/cjs/index.js",

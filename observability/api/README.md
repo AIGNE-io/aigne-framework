@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="./logo.svg" alt="AIGNE Logo" width="400"/>
+  <picture>
+    <source srcset="./logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="./logo.svg" media="(prefers-color-scheme: light)">
+    <img src="./logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
 </p>
 
 

@@ -47,15 +47,15 @@ You can use different AI models by uncommenting and configuring any of these:
 
 The example will use default DID Spaces settings if the environment variables are not provided. For production use, you should set your own:
 
-- `DID_SPACES_URL`: The URL to your DID Spaces instance
-- `DID_SPACES_AUTHORIZATION`: The authorization token for accessing your DID Spaces
+* `DID_SPACES_URL`: The URL to your DID Spaces instance
+* `DID_SPACES_AUTHORIZATION`: The authorization token for accessing your DID Spaces
 
 ## Getting API Keys
 
-- **OpenAI**: Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
-- **Anthropic**: Get your API key from [Anthropic Console](https://console.anthropic.com/)
-- **Google Gemini**: Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-- **DeepSeek**: Get your API key from [DeepSeek Platform](https://platform.deepseek.com/)
-- **OpenRouter**: Get your API key from [OpenRouter](https://openrouter.ai/keys)
-- **xAI**: Get your API key from [xAI Console](https://console.x.ai/)
-- **Ollama**: Install locally from [Ollama Website](https://ollama.ai/) 
+* **OpenAI**: Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+* **Anthropic**: Get your API key from [Anthropic Console](https://console.anthropic.com/)
+* **Google Gemini**: Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+* **DeepSeek**: Get your API key from [DeepSeek Platform](https://platform.deepseek.com/)
+* **OpenRouter**: Get your API key from [OpenRouter](https://openrouter.ai/keys)
+* **xAI**: Get your API key from [xAI Console](https://console.x.ai/)
+* **Ollama**: Install locally from [Ollama Website](https://ollama.ai/)

@@ -1,5 +1,13 @@
 # @aigne/aigne-hub
 
+<p align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
+</p>
+
 [![GitHub stars](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
 [![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
@@ -19,41 +27,58 @@ It enables you to switch providers without changing your client-side logic.
 The AIGNE Hub backend supports the following AI providers via a single, unified API:
 
 ```ts
-type AIProvider = 'openai' | 'anthropic' | 'bedrock' | 'deepseek' | 'google' | 'ollama' | 'openRouter' | 'xai';
+type AIProvider =
+  | "openai"
+  | "anthropic"
+  | "bedrock"
+  | "deepseek"
+  | "google"
+  | "ollama"
+  | "openRouter"
+  | "xai";
 ```
+
 ## Example models:
-- openai/gpt-4o-mini
-- anthropic/claude-3-sonnet
-- bedrock/us.amazon.titan-text-lite-v1
-- google/gemini-pro
-- xai/grok-1
-- openRouter/mistralai/mistral-7b-instruct
-- ollama/llama3
+
+* openai/gpt-4o-mini
+* anthropic/claude-3-sonnet
+* bedrock/us.amazon.titan-text-lite-v1
+* google/gemini-pro
+* xai/grok-1
+* openRouter/mistralai/mistral-7b-instruct
+* ollama/llama3
 
 ## Features
-- 🔌 Unified LLM Access: Route all requests through one endpoint
-- 🧠 Multi-provider Support: Choose from any supported vendor via the model name
-- 🔐 API Key Security: Use accessKey to manage authentication and authorization
-- 💬 Chat Completions: Works with standard messages format ({ role, content })
-- 🌊 Streaming Support: Enable streaming: true for real-time token-level responses
-- 🧱 Framework Compatible: Seamless integration with the AIGNE Framework
+
+* 🔌 Unified LLM Access: Route all requests through one endpoint
+* 🧠 Multi-provider Support: Choose from any supported vendor via the model name
+* 🔐 API Key Security: Use accessKey to manage authentication and authorization
+* 💬 Chat Completions: Works with standard messages format ({ role, content })
+* 🌊 Streaming Support: Enable streaming: true for real-time token-level responses
+* 🧱 Framework Compatible: Seamless integration with the AIGNE Framework
 
 ## Installation
+
 ### Using npm
 
 ```
 npm install @aigne/aigne-hub @aigne/core
 ```
+
 ### Using yarn
+
 ```
 yarn add @aigne/aigne-hub @aigne/core
 ```
+
 ### Using pnpm
+
 ```
 pnpm add @aigne/aigne-hub @aigne/core
 ```
 
 ## Basic Usage
+
 ```typescript
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
@@ -79,7 +104,9 @@ console.log(result);
   }
 */
 ```
+
 ## Streaming Usage
+
 ```typescript
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
@@ -110,13 +137,15 @@ for await (const chunk of stream) {
 console.log(fullText); // Output: "Hello! How can I assist you today?"
 console.log(json); // { model: "gpt-4o", usage: { inputTokens: 10, outputTokens: 9 } }
 ```
+
 ## Configuration Options
+
 ```typescript
 interface ClientChatModelOptions {
-  url: string;              // Your AIGNE Hub endpoint
-  accessKey: string;      // API access key
-  model: string;            // Model name with provider prefix (e.g. openai/gpt-4o-mini)
-  modelOptions?: object;    // Optional model-specific parameters
+  url: string; // Your AIGNE Hub endpoint
+  accessKey: string; // API access key
+  model: string; // Model name with provider prefix (e.g. openai/gpt-4o-mini)
+  modelOptions?: object; // Optional model-specific parameters
 }
 ```
 

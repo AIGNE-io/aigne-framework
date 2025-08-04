@@ -37,12 +37,10 @@ test("TeamAgent.from with sequential mode", async () => {
   const result = await teamAgent.invoke({ text: "Hello world" });
 
   expect(result).toEqual({
-    translation: "Hello world (translation)",
     formatted: "[formatted] Hello world (translation)",
   });
   console.log(result);
   // Expected output: {
-  //   translation: "Hello world (translation)",
   //   formatted: "[formatted] Hello world (translation)"
   // }
 
@@ -460,4 +458,37 @@ test("TeamAgent should support isApproved as string", async () => {
     content:
       "AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.",
   });
+});
+
+test("TeamAgent with includeAllStepsOutput should yield all intermediate steps", async () => {
+  const teamAgent = TeamAgent.from({
+    name: "sequential-team-with-all-steps",
+    mode: ProcessMode.sequential,
+    includeAllStepsOutput: true,
+    skills: [
+      FunctionAgent.from({
+        name: "step1",
+        process: ({ input }: Message) => ({
+          step1Result: `Step 1 processed: ${input}`,
+        }),
+      }),
+      FunctionAgent.from({
+        name: "step2",
+        process: ({ step1Result }: Message) => ({
+          step2Result: `Step 2 processed: ${step1Result}`,
+        }),
+      }),
+      FunctionAgent.from({
+        name: "step3",
+        process: ({ step2Result }: Message) => ({
+          finalResult: `Step 3 final: ${step2Result}`,
+        }),
+      }),
+    ],
+  });
+
+  const aigne = new AIGNE({});
+
+  const stream = await aigne.invoke(teamAgent, { input: "test data" }, { streaming: true });
+  expect(await readableStreamToArray(stream)).toMatchSnapshot();
 });

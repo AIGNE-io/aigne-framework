@@ -48,7 +48,7 @@ Observability is enabled by default in the AIGNE Framework.
 
 - [📘 AIGNE Observability GitHub](https://github.com/AIGNE-io/aigne-framework/tree/main/observability)  
 - [🧑‍💻 AIGNE SDK & CLI Docs](https://www.arcblock.io/docs/aigne-framework)  
-- [💬 Join the Community](https://www.aigne.io/observability')
+- [💬 Join the Community](https://www.aigne.io/observability)
 
 ---
 

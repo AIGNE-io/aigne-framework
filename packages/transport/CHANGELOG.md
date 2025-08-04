@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.11.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.11.0...transport-v0.11.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* **core:** share skills/agents from context ([#309](https://github.com/AIGNE-io/aigne-framework/issues/309)) ([88dd849](https://github.com/AIGNE-io/aigne-framework/commit/88dd849954c6f3fb68df238be22be3371c734e6e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.10
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.10
+    * @aigne/core bumped to 1.43.0
+    * @aigne/default-memory bumped to 1.0.10
+    * @aigne/test-utils bumped to 0.5.18
+
 ## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.10.8...transport-v0.11.0) (2025-08-01)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.10.5...blocklet-observability-v1.11.0) (2025-08-04)
+
+
+### Features
+
+* update observability blocklet logo and readme ([#308](https://github.com/AIGNE-io/aigne-framework/issues/308)) ([79bb897](https://github.com/AIGNE-io/aigne-framework/commit/79bb897ed7a6d8fa51af617c3aaf9ded95d5ff4b))
+
 ## [1.10.5](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.10.4...blocklet-observability-v1.10.5) (2025-08-01)
 
 

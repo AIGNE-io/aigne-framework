@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.50.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.49.0...aigne-framework-v1.50.0) (2025-08-04)
+
+
+### Features
+
+* add includeAllStepsOutput option to control TeamAgent sequential streaming behavior ([#305](https://github.com/AIGNE-io/aigne-framework/issues/305)) ([0817475](https://github.com/AIGNE-io/aigne-framework/commit/08174751316b940a70463e71971a19a18b92667b))
+* update observability blocklet logo and readme ([#308](https://github.com/AIGNE-io/aigne-framework/issues/308)) ([79bb897](https://github.com/AIGNE-io/aigne-framework/commit/79bb897ed7a6d8fa51af617c3aaf9ded95d5ff4b))
+
+
+### Bug Fixes
+
+* **cli:** persist prompts log and improve terminal output ([#307](https://github.com/AIGNE-io/aigne-framework/issues/307)) ([ac8116f](https://github.com/AIGNE-io/aigne-framework/commit/ac8116fc46f26169e7619860c392fb9f66bc3fee))
+* **core:** share skills/agents from context ([#309](https://github.com/AIGNE-io/aigne-framework/issues/309)) ([88dd849](https://github.com/AIGNE-io/aigne-framework/commit/88dd849954c6f3fb68df238be22be3371c734e6e))
+
 ## [1.49.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.48.0...aigne-framework-v1.49.0) (2025-08-01)
 
 

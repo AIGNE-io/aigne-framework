@@ -1,6 +1,6 @@
 {
   "name": "@aigne/xai",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "description": "AIGNE XAI SDK for integrating with XAI language models and API services",
   "publishConfig": {
     "access": "public"

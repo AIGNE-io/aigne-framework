@@ -12,6 +12,18 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.43.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.42.0...core-v1.43.0) (2025-08-04)
+
+
+### Features
+
+* add includeAllStepsOutput option to control TeamAgent sequential streaming behavior ([#305](https://github.com/AIGNE-io/aigne-framework/issues/305)) ([0817475](https://github.com/AIGNE-io/aigne-framework/commit/08174751316b940a70463e71971a19a18b92667b))
+
+
+### Bug Fixes
+
+* **core:** share skills/agents from context ([#309](https://github.com/AIGNE-io/aigne-framework/issues/309)) ([88dd849](https://github.com/AIGNE-io/aigne-framework/commit/88dd849954c6f3fb68df238be22be3371c734e6e))
+
 ## [1.42.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.41.0...core-v1.42.0) (2025-08-01)
 
 

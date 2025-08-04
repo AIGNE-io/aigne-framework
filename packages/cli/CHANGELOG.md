@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.30.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.0...cli-v1.30.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* **cli:** persist prompts log and improve terminal output ([#307](https://github.com/AIGNE-io/aigne-framework/issues/307)) ([ac8116f](https://github.com/AIGNE-io/aigne-framework/commit/ac8116fc46f26169e7619860c392fb9f66bc3fee))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.10
+    * @aigne/agentic-memory bumped to 1.0.10
+    * @aigne/aigne-hub bumped to 0.4.1
+    * @aigne/openai bumped to 0.10.10
+    * @aigne/core bumped to 1.43.0
+    * @aigne/default-memory bumped to 1.0.10
+
 ## [1.30.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.29.0...cli-v1.30.0) (2025-08-01)
 
 

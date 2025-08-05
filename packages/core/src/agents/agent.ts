@@ -765,13 +765,14 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     await this.postprocess(input, finalOutput, options);
 
     logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
-    if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
     let o = await this.callHooks("onSuccess", { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
 
     o = await this.callHooks("onEnd", { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
+
+    if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
     return finalOutput;
   }

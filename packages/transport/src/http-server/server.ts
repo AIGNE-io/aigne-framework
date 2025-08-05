@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import type { AIGNE, InvokeOptions, UserContext } from "@aigne/core";
+import type { AIGNE, ChatModelOutput, InvokeOptions, UserContext } from "@aigne/core";
 import { AgentResponseStreamSSE } from "@aigne/core/utils/event-stream.js";
 import { onAgentResponseStreamEnd } from "@aigne/core/utils/stream-utils.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
@@ -69,7 +69,7 @@ export interface AIGNEHTTPServerOptions {
 
 export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext>
   extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories"> {
-  callback?: (result: Record<string, unknown>) => PromiseOrValue<void>;
+  callback?: (result: ChatModelOutput) => PromiseOrValue<{ aigneHubCredits?: number }>;
 }
 
 /**
@@ -194,12 +194,21 @@ export class AIGNEHTTPServer {
         returnProgressChunks: opts.returnProgressChunks,
         userContext: { ...opts.userContext, ...options.userContext },
         memories: [...(opts.memories ?? []), ...(options.memories ?? [])],
+        hooks: {
+          onEnd: async (data) => {
+            const info = await options.callback?.(data.output);
+
+            if (data.output.usage && info && typeof info === "object") {
+              data.output.usage = { ...data.output.usage, ...info };
+            }
+
+            return data;
+          },
+        },
       };
 
       if (!streaming) {
         const result = await aigne.invoke(agent, input, mergedOptions);
-        options.callback?.(result);
-
         return new Response(JSON.stringify(result), {
           headers: { "Content-Type": "application/json" },
         });
@@ -211,11 +220,7 @@ export class AIGNEHTTPServer {
         streaming: true,
       });
 
-      const newStream = onAgentResponseStreamEnd(stream, {
-        onResult: async (result) => {
-          options.callback?.(result);
-        },
-      });
+      const newStream = onAgentResponseStreamEnd(stream, {});
 
       return new Response(new AgentResponseStreamSSE(newStream), {
         headers: {

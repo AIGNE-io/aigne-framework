@@ -579,11 +579,17 @@ export interface ChatModelOutputUsage {
    * Number of output tokens
    */
   outputTokens: number;
+
+  /**
+   * Aigne usage
+   */
+  aigneHubCredits?: number;
 }
 
 const chatModelOutputUsageSchema = z.object({
   inputTokens: z.number(),
   outputTokens: z.number(),
+  aigneHubCredits: z.number().optional(),
 });
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({

@@ -196,10 +196,12 @@ export class AIGNEHTTPServer {
         memories: [...(opts.memories ?? []), ...(options.memories ?? [])],
         hooks: {
           onEnd: async (data) => {
-            const info = await options.callback?.(data.output);
+            if (data.output) {
+              const info = await options.callback?.(data.output);
 
-            if (data.output.usage && info && typeof info === "object") {
-              data.output.usage = { ...data.output.usage, ...info };
+              if (data.output.usage && info && typeof info === "object") {
+                data.output.usage = { ...data.output.usage, ...info };
+              }
             }
 
             return data;

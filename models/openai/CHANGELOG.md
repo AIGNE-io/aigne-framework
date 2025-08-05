@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.11](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.10.10...openai-v0.10.11) (2025-08-05)
+
+
+### Bug Fixes
+
+* call tools args is null ([#313](https://github.com/AIGNE-io/aigne-framework/issues/313)) ([2cf9487](https://github.com/AIGNE-io/aigne-framework/commit/2cf9487b606cb7884086938def834f89a3c3a775))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.43.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.19
+
 ## [0.10.10](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.10.9...openai-v0.10.10) (2025-08-04)
 
 

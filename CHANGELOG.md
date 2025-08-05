@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.51.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.50.0...aigne-framework-v1.51.0) (2025-08-05)
+
+
+### Features
+
+* **ci:** using aigne codesmith as reviewer ([7aaca1c](https://github.com/AIGNE-io/aigne-framework/commit/7aaca1cf6505acf715ce927af283415a5c69266e))
+
+
+### Bug Fixes
+
+* call tools args is null ([#313](https://github.com/AIGNE-io/aigne-framework/issues/313)) ([2cf9487](https://github.com/AIGNE-io/aigne-framework/commit/2cf9487b606cb7884086938def834f89a3c3a775))
+* **core:** filter empty memory content ([#312](https://github.com/AIGNE-io/aigne-framework/issues/312)) ([39dd77a](https://github.com/AIGNE-io/aigne-framework/commit/39dd77a68154d51c7a132adccd9f21b8bc461be0))
+
 ## [1.50.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.49.0...aigne-framework-v1.50.0) (2025-08-04)
 
 

@@ -207,9 +207,7 @@ export class AIGNEHTTPServer {
         streaming: true,
       });
 
-      const newStream = onAgentResponseStreamEnd(stream, {});
-
-      return new Response(new AgentResponseStreamSSE(newStream), {
+      return new Response(new AgentResponseStreamSSE(stream), {
         headers: {
           "Content-Type": "text/event-stream",
           "Cache-Control": "no-cache",

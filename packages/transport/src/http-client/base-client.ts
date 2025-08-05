@@ -9,7 +9,6 @@ import type {
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
 import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
-import chalk from "chalk";
 import { ChatModelName } from "../constants.js";
 
 /**
@@ -172,20 +171,21 @@ export class BaseClient {
 
     if (!result.ok) {
       let message: string | undefined;
+      let text: string | undefined;
 
       try {
-        const text = await result.text();
-        const json = tryOrThrow(() => JSON.parse(text) as { error?: { message: string } });
-        message = (json?.error?.message || text).replace(/[\r\n]+/g, " ");
+        text = await result.text();
+        const json = tryOrThrow(() => JSON.parse(text!) as { error?: { message: string } });
+        message = json?.error?.message;
       } catch {
         // ignore
       }
 
-      if (result.status === 402) {
-        throw new Error(message?.replace(/(https?:\/\/[^\s]+)/g, `${chalk.red("$1")}`));
+      if (message) {
+        throw new Error(message);
       }
 
-      throw new Error(`Failed to fetch url ${args[0]} with status ${result.status}: ${message}`);
+      throw new Error(`Failed to fetch url ${args[0]} with status ${result.status}: ${text}`);
     }
 
     return result;

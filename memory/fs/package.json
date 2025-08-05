@@ -24,6 +24,13 @@
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "types": "./lib/dts/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/dts/index.d.ts"
+    }
+  },
   "scripts": {
     "lint": "tsc --noEmit",
     "build": "tsc --build scripts/tsconfig.build.json",

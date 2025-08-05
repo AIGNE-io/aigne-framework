@@ -157,7 +157,32 @@ export class AIGNEListrRenderer extends DefaultRenderer {
   }
 
   override update(): void {
+    if (this.paused || this.ended) {
+      return;
+    }
     this._updater(this.create({ running: true }));
+  }
+
+  private paused = false;
+
+  private ended = false;
+
+  override end(): void {
+    this.ended = true;
+    super.end();
+  }
+
+  async pause() {
+    this.paused = true;
+    this._updater?.clear();
+    this._updater?.done();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    this._logger.process.release();
+  }
+
+  async resume() {
+    this._logger.process.hijack();
+    this.paused = false;
   }
 
   private isPreviousPrompt = false;

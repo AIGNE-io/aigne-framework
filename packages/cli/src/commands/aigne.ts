@@ -28,9 +28,7 @@ export function createAIGNECommand(options?: { aigneFilePath?: string }) {
     .command(createObservabilityCommand())
     .command(createConnectCommand())
     .command(createAppCommands())
-    .help()
     .alias("help", "h")
     .alias("version", "v")
-    .showHelpOnFail(true)
     .strict();
 }

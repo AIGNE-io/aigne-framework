@@ -18,10 +18,9 @@ import { flat, omit } from "@aigne/core/utils/type-utils.js";
 import { figures, type Listr } from "@aigne/listr2";
 import { markedTerminal } from "@aigne/marked-terminal";
 import * as prompts from "@inquirer/prompts";
-import { ListrInquirerPromptAdapter } from "@listr2/prompt-adapter-inquirer";
 import chalk from "chalk";
 import { Marked } from "marked";
-import { AIGNEListr, type AIGNEListrTaskWrapper } from "../utils/listr.js";
+import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
 import { parseDuration } from "../utils/time.js";
 
 export interface TerminalTracerOptions {
@@ -96,17 +95,22 @@ export class TerminalTracer {
             {
               get: (_target, prop) => {
                 // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
-                const method = prompts[prop as keyof typeof prompts];
-                if (!method) return undefined;
+                const method = prompts[prop as keyof typeof prompts] as (...args: any[]) => any;
+                if (typeof method !== "function") return undefined;
+
                 return async (config: any) => {
-                  const { taskWrapper } = await task.listr.promise;
-                  const result = await taskWrapper
-                    .prompt(ListrInquirerPromptAdapter as any)
-                    .run(method as any, config);
+                  const renderer =
+                    listr["renderer"] instanceof AIGNEListrRenderer ? listr["renderer"] : undefined;
+                  await renderer?.pause();
 
-                  console.log(`${chalk.blue("✔")} ${chalk.bold(config.message)} ${result}`);
+                  try {
+                    const result = await method({ ...config });
+                    console.log(`${chalk.blue("✔")} ${chalk.bold(config.message)} ${result}`);
 
-                  return result;
+                    return result;
+                  } finally {
+                    await renderer?.resume();
+                  }
                 };
               },
             },

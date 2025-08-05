@@ -412,7 +412,7 @@ export class OpenAIChatModel extends ChatModel {
                 json: {
                   toolCalls: toolCalls.map(({ args, ...c }) => ({
                     ...c,
-                    function: { ...c.function, arguments: safeParseJSON(args) },
+                    function: { ...c.function, arguments: args ? safeParseJSON(args) : {} },
                   })),
                 },
               },

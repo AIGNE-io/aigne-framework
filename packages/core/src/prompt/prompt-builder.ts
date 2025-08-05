@@ -16,7 +16,7 @@ import type {
 } from "../agents/chat-model.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { isRecord, unique } from "../utils/type-utils.js";
+import { isNil, isRecord, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import {
@@ -177,10 +177,12 @@ export class PromptBuilder {
 
     for (const { content } of memories) {
       if (isRecord(content) && "input" in content && "output" in content) {
-        messages.push(
-          { role: "user", content: stringOrStringify(content.input) },
-          { role: "agent", content: stringOrStringify(content.output) },
-        );
+        if (!isNil(content.input) && content.input !== "") {
+          messages.push({ role: "user", content: stringOrStringify(content.input) });
+        }
+        if (!isNil(content.output) && content.output !== "") {
+          messages.push({ role: "agent", content: stringOrStringify(content.output) });
+        }
       } else {
         other.push(content);
       }

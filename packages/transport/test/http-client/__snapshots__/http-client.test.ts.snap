@@ -130,6 +130,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -141,16 +151,6 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
-      },
     },
   },
 ]
@@ -294,6 +294,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -305,16 +315,6 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
-      },
     },
   },
 ]
@@ -458,6 +458,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -469,16 +479,6 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
-      },
     },
   },
 ]
@@ -622,6 +622,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -633,16 +643,6 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
-      },
     },
   },
 ]
@@ -786,6 +786,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -797,16 +807,6 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
-      },
     },
   },
 ]

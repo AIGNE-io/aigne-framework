@@ -581,7 +581,7 @@ export interface ChatModelOutputUsage {
   outputTokens: number;
 
   /**
-   * Aigne usage
+   * AIGNE Hub credit usage
    */
   aigneHubCredits?: number;
 }

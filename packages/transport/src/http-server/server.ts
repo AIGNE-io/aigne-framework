@@ -1,8 +1,7 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import type { AIGNE, ChatModelOutput, InvokeOptions, UserContext } from "@aigne/core";
+import type { AIGNE, InvokeOptions, UserContext } from "@aigne/core";
 import { AgentResponseStreamSSE } from "@aigne/core/utils/event-stream.js";
 import { onAgentResponseStreamEnd } from "@aigne/core/utils/stream-utils.js";
-import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { checkArguments, isRecord, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import contentType from "content-type";
 import getRawBody from "raw-body";
@@ -68,9 +67,7 @@ export interface AIGNEHTTPServerOptions {
 }
 
 export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext>
-  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories"> {
-  callback?: (result: ChatModelOutput) => PromiseOrValue<{ aigneHubCredits?: number }>;
-}
+  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories" | "hooks"> {}
 
 /**
  * AIGNEHTTPServer provides HTTP API access to AIGNE capabilities.
@@ -148,7 +145,7 @@ export class AIGNEHTTPServer {
     const result = await this._invoke(request, {
       userContext: opts?.userContext,
       memories: opts?.memories,
-      callback: opts?.callback,
+      hooks: opts?.hooks,
     });
 
     if (response instanceof ServerResponse) {
@@ -194,19 +191,7 @@ export class AIGNEHTTPServer {
         returnProgressChunks: opts.returnProgressChunks,
         userContext: { ...opts.userContext, ...options.userContext },
         memories: [...(opts.memories ?? []), ...(options.memories ?? [])],
-        hooks: {
-          onEnd: async (data) => {
-            if (data.output) {
-              const info = await options.callback?.(data.output);
-
-              if (data.output.usage && info && typeof info === "object") {
-                data.output.usage = { ...data.output.usage, ...info };
-              }
-            }
-
-            return data;
-          },
-        },
+        hooks: options.hooks,
       };
 
       if (!streaming) {

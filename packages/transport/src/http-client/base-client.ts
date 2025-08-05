@@ -171,11 +171,12 @@ export class BaseClient {
 
     if (!result.ok) {
       let message: string | undefined;
-      let text: string | undefined;
+      let resultText: string | undefined;
 
       try {
-        text = await result.text();
-        const json = tryOrThrow(() => JSON.parse(text!) as { error?: { message: string } });
+        const text = await result.text();
+        const json = tryOrThrow(() => JSON.parse(text) as { error?: { message: string } });
+        resultText = text;
         message = json?.error?.message;
       } catch {
         // ignore
@@ -185,7 +186,7 @@ export class BaseClient {
         throw new Error(message);
       }
 
-      throw new Error(`Failed to fetch url ${args[0]} with status ${result.status}: ${text}`);
+      throw new Error(`Failed to fetch url ${args[0]} with status ${result.status}: ${resultText}`);
     }
 
     return result;

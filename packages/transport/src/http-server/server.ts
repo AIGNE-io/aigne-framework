@@ -1,7 +1,6 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import type { AIGNE, InvokeOptions, UserContext } from "@aigne/core";
 import { AgentResponseStreamSSE } from "@aigne/core/utils/event-stream.js";
-import { onAgentResponseStreamEnd } from "@aigne/core/utils/stream-utils.js";
 import { checkArguments, isRecord, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import contentType from "content-type";
 import getRawBody from "raw-body";

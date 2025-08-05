@@ -9,6 +9,7 @@ import type {
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
 import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
+import chalk from "chalk";
 import { ChatModelName } from "../constants.js";
 
 /**
@@ -175,9 +176,13 @@ export class BaseClient {
       try {
         const text = await result.text();
         const json = tryOrThrow(() => JSON.parse(text) as { error?: { message: string } });
-        message = json?.error?.message || text;
+        message = (json?.error?.message || text).replace(/[\r\n]+/g, " ");
       } catch {
         // ignore
+      }
+
+      if (result.status === 402) {
+        throw new Error(message?.replace(/(https?:\/\/[^\s]+)/g, `${chalk.red("$1")}`));
       }
 
       throw new Error(`Failed to fetch url ${args[0]} with status ${result.status}: ${message}`);

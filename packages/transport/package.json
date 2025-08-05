@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@aigne/openai": "workspace:^",
+    "chalk": "^5.4.1",
     "content-type": "^1.0.5",
     "raw-body": "^3.0.0",
     "zod": "^3.25.67"

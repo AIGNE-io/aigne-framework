@@ -1920,6 +1920,9 @@ importers:
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
+      chalk:
+        specifier: ^5.4.1
+        version: 5.4.1
       content-type:
         specifier: ^1.0.5
         version: 1.0.5

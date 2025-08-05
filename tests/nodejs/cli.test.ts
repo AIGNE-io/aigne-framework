@@ -1,9 +1,11 @@
+import { spawnSync } from "node:child_process";
+import { join } from "node:path";
 import { runAgentWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 import { assert, expect, test, vi } from "vitest";
 
-test("AIGNE cli should work in Node.js", async () => {
+test("runAgentWithAIGNE should work in Node.js", async () => {
   const agent = AIAgent.from({
     name: "memory_example",
     instructions: "You are a friendly chatbot",
@@ -27,4 +29,17 @@ test("AIGNE cli should work in Node.js", async () => {
   expect(result?.result).toEqual({
     message: "Hello, I am a chatbot!",
   });
+});
+
+test("AIGNE cli should work in Node.js", async () => {
+  const { status, stdout } = spawnSync("aigne", ["--version"], {
+    stdio: "pipe",
+    env: {
+      ...process.env,
+      PATH: `${join(import.meta.dirname, "node_modules/.bin")}:${process.env.PATH}`,
+    },
+  });
+
+  expect(stdout.toString()).toMatch(/\d+\.\d+\.\d+/);
+  expect(status).toBe(0);
 });

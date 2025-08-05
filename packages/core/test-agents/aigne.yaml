@@ -15,3 +15,6 @@ mcp_server:
 cli:
   agents:
     - chat.yaml
+  init_agent:
+    agent: chat.yaml
+    output_path: ./output/chat.yaml

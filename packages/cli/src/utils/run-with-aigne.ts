@@ -1,6 +1,6 @@
 import { fstat } from "node:fs";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, join } from "node:path";
+import { dirname, extname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
 import { exists } from "@aigne/agent-library/utils/fs.js";
@@ -18,7 +18,7 @@ import {
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { flat, isEmpty, type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
-import { parse } from "yaml";
+import { parse, stringify } from "yaml";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -292,6 +292,8 @@ export async function runAgentWithAIGNE(
     input?: Message;
   } & Omit<RunAIGNECommandOptions, "input"> = {},
 ) {
+  const initResult = aigne.cli.initAgent ? await runInitAgentForCLI(aigne) : undefined;
+
   if (options.output) {
     const outputPath = isAbsolute(options.output)
       ? options.output
@@ -318,6 +320,7 @@ export async function runAgentWithAIGNE(
     await runChatLoopInTerminal(userAgent, {
       ...chatLoopOptions,
       outputKey,
+      input: initResult,
     });
 
     return;
@@ -328,7 +331,7 @@ export async function runAgentWithAIGNE(
     outputKey,
   });
 
-  const { result } = await tracer.run(agent, options.input ?? {});
+  const { result } = await tracer.run(agent, { ...initResult, ...options.input });
 
   if (options.output) {
     const message = result[outputKey || DEFAULT_OUTPUT_KEY];
@@ -344,4 +347,48 @@ export async function runAgentWithAIGNE(
 export async function stdinHasData(): Promise<boolean> {
   const stats = await promisify(fstat)(0);
   return stats.isFIFO() || stats.isFile();
+}
+
+export async function runInitAgentForCLI(aigne: AIGNE): Promise<Message> {
+  if (!aigne.cli?.initAgent) {
+    throw new Error("No init agent configured in AIGNE CLI");
+  }
+
+  const { agent, outputPath } = aigne.cli.initAgent;
+
+  const outputFilepath = isAbsolute(outputPath) ? outputPath : join(process.cwd(), outputPath);
+  const format = extname(outputFilepath).slice(1) as "json" | "yaml";
+  if (!["json", "yaml"].includes(format)) {
+    throw new Error(`Unsupported output format: ${format}. Supported formats: json, yaml`);
+  }
+  let output = await readFile(outputFilepath, "utf8")
+    .catch((error) => {
+      if (error.code !== "ENOENT") {
+        throw new Error(`Failed to read output file ${outputFilepath}: ${error.message}`);
+      }
+      return null;
+    })
+    .then((raw) => {
+      if (!raw) return null;
+      const obj = format === "json" ? JSON.parse(raw) : parse(raw);
+      const result = agent.outputSchema.safeParse(obj);
+      if (result.data) return result.data;
+    });
+
+  if (!output) {
+    const tracer = new TerminalTracer(aigne.newContext(), {
+      printRequest: logger.enabled(LogLevel.INFO),
+    });
+
+    output = (await tracer.run(agent, {})).result;
+  }
+
+  await mkdir(dirname(outputFilepath), { recursive: true });
+  await writeFile(
+    outputFilepath,
+    format === "json" ? JSON.stringify(output, null, 2) : stringify(output),
+    "utf8",
+  );
+
+  return output;
 }

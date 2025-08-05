@@ -1,16 +1,17 @@
 import { expect, mock, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { loadModel } from "@aigne/aigne-hub";
 import { DEFAULT_CHAT_INPUT_KEY } from "@aigne/cli/utils/run-chat-loop.js";
 import {
   parseAgentInputByCommander,
   runAgentWithAIGNE,
   runWithAIGNE,
 } from "@aigne/cli/utils/run-with-aigne.js";
-import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
+import { AIAgent, AIGNE, FunctionAgent, stringToAgentResponseStream } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { OpenAIChatModel } from "@aigne/openai";
 import { parse } from "yaml";
@@ -240,4 +241,54 @@ test("runAgentWithAIGNE should throw error if output file is not empty and force
   expect(runAgentWithAIGNE(aigne, agent, { input: {}, output: outputFile })).rejects.toThrow(
     "already exists. Use --force to overwrite.",
   );
+});
+
+test("runAgentWithAIGNE should support cli.initAgent", async () => {
+  const cwd = process.cwd();
+
+  const tmp = join(tmpdir(), randomUUID());
+  await mkdir(tmp, { recursive: true });
+  process.chdir(tmp);
+
+  try {
+    const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents/aigne.yaml"), {
+      loadModel,
+    });
+
+    const chat = aigne.agents["chat"];
+    assert(chat, "Chat agent should be loaded");
+
+    assert(aigne.model, "Model should be loaded");
+    spyOn(aigne.model, "process").mockReturnValueOnce(
+      stringToAgentResponseStream("Hello! How can I assist you today?"),
+    );
+
+    const chatProcess = spyOn(chat, "process");
+
+    const result = await runAgentWithAIGNE(aigne, chat, {
+      input: { message: "hello" },
+    });
+
+    expect(result?.result).toEqual({ message: "Hello! How can I assist you today?" });
+
+    assert(aigne.cli.initAgent, "Init agent should be defined");
+    const initOutputPath = join(tmp, aigne.cli.initAgent.outputPath);
+
+    const initResult = await readFile(initOutputPath, "utf-8").then((raw) => parse(raw));
+    expect(initResult).toMatchInlineSnapshot(`
+      {
+        "initialized": true,
+      }
+    `);
+
+    expect(chatProcess.mock.lastCall?.[0]).toMatchInlineSnapshot(`
+      {
+        "initialized": true,
+        "message": "hello",
+      }
+    `);
+  } finally {
+    process.chdir(cwd);
+    await rm(tmp, { recursive: true, force: true });
+  }
 });

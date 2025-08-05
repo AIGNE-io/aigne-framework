@@ -10,6 +10,7 @@ export interface ChatLoopOptions {
   defaultQuestion?: string;
   inputKey?: string;
   outputKey?: string;
+  input?: Message;
 }
 
 export async function runChatLoopInTerminal(
@@ -22,8 +23,14 @@ export async function runChatLoopInTerminal(
 
   if (options?.welcome) console.log(options.welcome);
 
+  const inputKey = options.inputKey || DEFAULT_CHAT_INPUT_KEY;
+
   if (initialCall) {
-    await callAgent(userAgent, initialCall, { ...options });
+    await callAgent(
+      userAgent,
+      typeof initialCall === "string" ? { ...options.input, [inputKey]: initialCall } : initialCall,
+      { ...options },
+    );
   }
 
   for (let i = 0; ; i++) {
@@ -53,17 +60,21 @@ export async function runChatLoopInTerminal(
       continue;
     }
 
-    await callAgent(userAgent, question, { ...options });
+    await callAgent(
+      userAgent,
+      {
+        ...options.input,
+        [inputKey]: question,
+      },
+      { ...options },
+    );
   }
 }
 
-async function callAgent(userAgent: UserAgent, input: Message | string, options: ChatLoopOptions) {
+async function callAgent(userAgent: UserAgent, input: Message, options: ChatLoopOptions) {
   const tracer = new TerminalTracer(userAgent.context, options);
 
-  await tracer.run(
-    userAgent,
-    typeof input === "string" ? { [options.inputKey || DEFAULT_CHAT_INPUT_KEY]: input } : input,
-  );
+  await tracer.run(userAgent, input);
 }
 
 const COMMANDS: { [key: string]: () => { exit?: boolean; message?: string } } = {

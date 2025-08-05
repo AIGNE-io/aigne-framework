@@ -13,3 +13,6 @@ mcp_server:
 cli:
   agents:
     - chat.yaml
+  init_agent:
+    agent: init.js
+    output_path: init-result.yaml

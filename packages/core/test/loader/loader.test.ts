@@ -57,6 +57,12 @@ test("AIGNE.load should load agents correctly", async () => {
         name: agent.name,
         description: agent.description,
       })),
+      initAgent: aigne.cli.initAgent && {
+        agent: {
+          name: aigne.cli.initAgent.agent.name,
+        },
+        outputPath: aigne.cli.initAgent.outputPath,
+      },
     },
   }).toMatchSnapshot();
 });

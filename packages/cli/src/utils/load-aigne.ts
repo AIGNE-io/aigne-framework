@@ -4,7 +4,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { availableModels, findModel, loadModel } from "@aigne/aigne-hub";
 import { AIGNE } from "@aigne/core";
-import { loadAIGNEFile } from "@aigne/core/loader/index.js";
+import { loadAIGNEFile } from "@aigne/core/loader/aigne-yaml.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { AesCrypter } from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
 import crypto from "crypto";

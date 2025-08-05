@@ -55,6 +55,8 @@ export interface AIGNEOptions {
 
   cli?: {
     agents?: Agent[];
+
+    initAgent?: AIGNE["cli"]["initAgent"];
   };
 
   /**
@@ -127,6 +129,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     if (options?.agents?.length) this.addAgent(...options.agents);
     if (options?.mcpServer?.agents?.length) this.mcpServer.agents.push(...options.mcpServer.agents);
     if (options?.cli?.agents?.length) this.cli.agents.push(...options.cli.agents);
+    this.cli.initAgent = options?.cli?.initAgent;
 
     this.observer?.serve();
     this.initProcessExitHandler();
@@ -180,7 +183,28 @@ export class AIGNE<U extends UserContext = UserContext> {
     agents: createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name)),
   };
 
-  readonly cli = {
+  readonly cli: {
+    agents: ReturnType<typeof createAccessorArray<Agent>>;
+
+    /**
+     * Optional initialization configuration for this AIGNE instance.
+     * When specified, the init agent will be executed before any other agents to set up the environment.
+     */
+    initAgent?: {
+      /**
+       * The agent to execute for initialization before running any other agents.
+       * This agent is responsible for setting up the environment, loading configurations,
+       * or performing any necessary preparation tasks.
+       */
+      agent: Agent;
+
+      /**
+       * The file path where the initialization agent's output will be saved.
+       * This allows other agents to access the initialization results if needed.
+       */
+      outputPath: string;
+    };
+  } = {
     agents: createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name)),
   };
 

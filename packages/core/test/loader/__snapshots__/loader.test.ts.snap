@@ -23,6 +23,12 @@ exports[`AIGNE.load should load agents correctly 1`] = `
         "name": "chat",
       },
     ],
+    "initAgent": {
+      "agent": {
+        "name": "chat",
+      },
+      "outputPath": "./output/chat.yaml",
+    },
   },
   "mcpServer": {
     "agents": [

@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -46,7 +47,7 @@ jobs:
         run: pnpm install
 
       - name: Build project
-        run: pnpm build
+        run: pnpm --filter='!test-browser' build # @aigne/test-browser deps vite that is not support node 20.0, skip it
 
       - name: Run Node.js tests
         working-directory: tests/nodejs

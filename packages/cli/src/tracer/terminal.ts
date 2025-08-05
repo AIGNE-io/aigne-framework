@@ -104,10 +104,7 @@ export class TerminalTracer {
                   await renderer?.pause();
 
                   try {
-                    const result = await method({ ...config });
-                    console.log(`${chalk.blue("✔")} ${chalk.bold(config.message)} ${result}`);
-
-                    return result;
+                    return await method({ ...config });
                   } finally {
                     await renderer?.resume();
                   }

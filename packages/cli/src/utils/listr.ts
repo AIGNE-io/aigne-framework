@@ -101,7 +101,13 @@ export class AIGNEListr extends Listr<
 
       logger.logMessage = (...args) => this.logs.push(format(...args));
       for (const method of ["debug", "log", "info", "warn", "error"] as const) {
-        console[method] = (...args) => this.logs.push(format(...args));
+        console[method] = (...args) => {
+          const renderer =
+            this["renderer"] instanceof AIGNEListrRenderer ? this["renderer"] : undefined;
+          const msg = format(...args);
+
+          renderer ? renderer.log(msg) : this.logs.push(msg);
+        };
       }
 
       const _stream = await stream();
@@ -183,6 +189,11 @@ export class AIGNEListrRenderer extends DefaultRenderer {
   async resume() {
     this._logger.process.hijack();
     this.paused = false;
+  }
+
+  log(message: string) {
+    this._updater?.clear();
+    this._logger.toStdout(message);
   }
 
   private isPreviousPrompt = false;

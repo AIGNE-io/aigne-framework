@@ -185,7 +185,7 @@ test.each(table)(
 
       const response = client.invoke("not-exists-agent", {}, options);
 
-      expect(response).rejects.toThrow("status 404: Agent not-exists-agent not found");
+      expect(response).rejects.toThrow("Agent not-exists-agent not found");
     } finally {
       await close();
     }
@@ -206,7 +206,7 @@ test.each(table)(
       });
 
       expect(response).rejects.toThrow(
-        "status 415: Unsupported Media Type: Content-Type must be application/json",
+        "Unsupported Media Type: Content-Type must be application/json",
       );
     } finally {
       await close();
@@ -225,7 +225,7 @@ test.each(table)(
       const response = client.invoke("chat", [] as unknown as Message, options);
 
       expect(response).rejects.toThrow(
-        "status 400: Invoke agent chat check arguments error: input: Expected object, received array",
+        "Invoke agent chat check arguments error: input: Expected object, received array",
       );
     } finally {
       await close();

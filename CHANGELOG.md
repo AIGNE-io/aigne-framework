@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.52.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.51.0...aigne-framework-v1.52.0) (2025-08-05)
+
+
+### Features
+
+* allow inserting agent-hub credits manually ([#315](https://github.com/AIGNE-io/aigne-framework/issues/315)) ([e3e4d1f](https://github.com/AIGNE-io/aigne-framework/commit/e3e4d1ff0d9d3fef33bb41d85e99735d4dd76cb7))
+
+
+### Bug Fixes
+
+* **cli:** ensure aigne cli works in node.js v20+ ([#316](https://github.com/AIGNE-io/aigne-framework/issues/316)) ([9c9c3d2](https://github.com/AIGNE-io/aigne-framework/commit/9c9c3d2e57d6a8e1afb33ef903c3703283d73db7))
+* **cli:** improve CLI prompts and output handling ([#318](https://github.com/AIGNE-io/aigne-framework/issues/318)) ([681ee79](https://github.com/AIGNE-io/aigne-framework/commit/681ee79e9b18aed5a977a0a418c2d9df20a7297c))
+
 ## [1.51.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.50.0...aigne-framework-v1.51.0) (2025-08-05)
 
 

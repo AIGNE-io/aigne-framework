@@ -12,6 +12,18 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.44.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.43.1...core-v1.44.0) (2025-08-05)
+
+
+### Features
+
+* allow inserting agent-hub credits manually ([#315](https://github.com/AIGNE-io/aigne-framework/issues/315)) ([e3e4d1f](https://github.com/AIGNE-io/aigne-framework/commit/e3e4d1ff0d9d3fef33bb41d85e99735d4dd76cb7))
+
+
+### Bug Fixes
+
+* **cli:** improve CLI prompts and output handling ([#318](https://github.com/AIGNE-io/aigne-framework/issues/318)) ([681ee79](https://github.com/AIGNE-io/aigne-framework/commit/681ee79e9b18aed5a977a0a418c2d9df20a7297c))
+
 ## [1.43.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.43.0...core-v1.43.1) (2025-08-05)
 
 

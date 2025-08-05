@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.30.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.2...cli-v1.30.3) (2025-08-05)
+
+
+### Bug Fixes
+
+* **cli:** improve CLI prompts and output handling ([#318](https://github.com/AIGNE-io/aigne-framework/issues/318)) ([681ee79](https://github.com/AIGNE-io/aigne-framework/commit/681ee79e9b18aed5a977a0a418c2d9df20a7297c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.12
+    * @aigne/agentic-memory bumped to 1.0.12
+    * @aigne/aigne-hub bumped to 0.4.3
+    * @aigne/openai bumped to 0.10.12
+    * @aigne/core bumped to 1.44.0
+    * @aigne/default-memory bumped to 1.0.12
+
 ## [1.30.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.1...cli-v1.30.2) (2025-08-05)
 
 

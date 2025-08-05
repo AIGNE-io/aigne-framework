@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.12](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.0.11...default-memory-v1.0.12) (2025-08-05)
+
+
+### Bug Fixes
+
+* **cli:** ensure aigne cli works in node.js v20+ ([#316](https://github.com/AIGNE-io/aigne-framework/issues/316)) ([9c9c3d2](https://github.com/AIGNE-io/aigne-framework/commit/9c9c3d2e57d6a8e1afb33ef903c3703283d73db7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.44.0
+  * devDependencies
+    * @aigne/openai bumped to 0.10.12
+
 ## [1.0.11](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.0.10...default-memory-v1.0.11) (2025-08-05)
 
 

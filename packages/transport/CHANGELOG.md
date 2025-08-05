@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.12.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.11.2...transport-v0.12.0) (2025-08-05)
+
+
+### Features
+
+* allow inserting agent-hub credits manually ([#315](https://github.com/AIGNE-io/aigne-framework/issues/315)) ([e3e4d1f](https://github.com/AIGNE-io/aigne-framework/commit/e3e4d1ff0d9d3fef33bb41d85e99735d4dd76cb7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.10.12
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.12
+    * @aigne/core bumped to 1.44.0
+    * @aigne/default-memory bumped to 1.0.12
+    * @aigne/test-utils bumped to 0.5.20
+
 ## [0.11.2](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.11.1...transport-v0.11.2) (2025-08-05)
 
 

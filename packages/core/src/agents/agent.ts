@@ -109,6 +109,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   description?: string;
 
+  taskTitle?: string;
+
   /**
    * Zod schema defining the input message structure
    *
@@ -264,6 +266,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     this.name = options.name || this.constructor.name;
     this.alias = options.alias;
     this.description = options.description;
+    this.taskTitle = options.taskTitle;
 
     if (inputSchema) checkAgentInputOutputSchema(inputSchema);
     if (outputSchema) checkAgentInputOutputSchema(outputSchema);
@@ -362,6 +365,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    * each other's roles in a multi-agent system
    */
   readonly description?: string;
+
+  taskTitle?: string;
 
   private readonly _inputSchema?: AgentInputOutputSchema<I>;
 
@@ -669,7 +674,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     const result = {};
 
-    for (const hooks of flat(options.hooks, this.hooks)) {
+    for (const hooks of flat(options.hooks, options.context.hooks, this.hooks)) {
       const h = hooks[hook];
       if (!h) continue;
 

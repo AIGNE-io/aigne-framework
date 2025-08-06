@@ -26,6 +26,7 @@ export type NestAgentSchema =
 export interface BaseAgentSchema {
   name?: string;
   description?: string;
+  taskTitle?: string;
   inputSchema?: ZodType<Record<string, any>>;
   defaultInput?: Record<string, any>;
   outputSchema?: ZodType<Record<string, any>>;
@@ -113,6 +114,7 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
       name: optionalize(z.string()),
       alias: optionalize(z.array(z.string())),
       description: optionalize(z.string()),
+      taskTitle: optionalize(z.string()),
       inputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["inputSchema"]>,

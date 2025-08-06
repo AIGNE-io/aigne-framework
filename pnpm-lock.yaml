@@ -1743,6 +1743,9 @@ importers:
       '@lexical/table':
         specifier: ^0.33.0
         version: 0.33.0
+      chalk:
+        specifier: ^5.4.1
+        version: 5.4.1
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3

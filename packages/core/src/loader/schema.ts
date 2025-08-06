@@ -1,26 +1,9 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
-import { camelCase, isArray, isPlainObject, mapKeys, mapValues } from "lodash";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
 import { DEFAULT_INPUT_ACTION_GET } from "../agents/agent.js";
+import { camelize } from "../utils/camelize.js";
 import { isRecord } from "../utils/type-utils.js";
-
-function camelize<T extends Record<string, unknown>>(obj: T, shallow: boolean = false): T {
-  if (isArray(obj)) {
-    return (shallow ? obj : obj.map((item) => camelize(item, false))) as unknown as T;
-  }
-
-  if (isPlainObject(obj)) {
-    const camelized = mapKeys(obj, (_value, key) => camelCase(key));
-    if (shallow) {
-      return camelized as T;
-    } else {
-      return mapValues(camelized, (value) => camelize(value as T, false)) as T;
-    }
-  }
-
-  return obj;
-}
 
 export const inputOutputSchema = ({ path }: { path: string }) => {
   const includeExternalSchema = async (schema: any): Promise<typeof schema> => {

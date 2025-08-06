@@ -32,3 +32,6 @@ output_schema:
           description:
             type: string
 iterate_on: sections
+concurrency: 2
+iterate-with-previous-output: false
+include-all-steps-output: true

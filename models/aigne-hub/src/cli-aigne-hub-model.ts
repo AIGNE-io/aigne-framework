@@ -11,9 +11,9 @@ import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { BaseClient } from "@aigne/transport/http-client/base-client.js";
 import { joinURL } from "ufo";
 import { z } from "zod";
+import { AIGNE_HUB_URL } from "./constants.js";
 
 const DEFAULT_CHAT_MODEL = "openai/gpt-4o";
-const DEFAULT_URL = "https://hub.aigne.io/ai-kit/";
 
 const aigneHubChatModelOptionsSchema = z.object({
   url: z.string().optional(),
@@ -47,12 +47,17 @@ export class CliAIGNEHubChatModel extends ChatModel {
     checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
 
     super();
-    this.client = new BaseClient({
+
+    const url = options.url || process.env.AIGNE_HUB_API_URL || AIGNE_HUB_URL;
+    const path = "/api/v2/chat";
+
+    const params = {
       ...options,
-      url: joinURL(options.url || process.env.AIGNE_HUB_API_URL || DEFAULT_URL, "/api/v2/chat"),
+      url: url.endsWith(path) ? url : joinURL(url, path),
       model: options.model || DEFAULT_CHAT_MODEL,
       apiKey: options.apiKey || process.env.AIGNE_HUB_API_KEY,
-    });
+    };
+    this.client = new BaseClient(params);
   }
 
   override process(

@@ -10,7 +10,7 @@ import {
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
 import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
-import { availableModels, findModel } from "./constants.js";
+import { AIGNE_HUB_URL, availableModels, findModel } from "./constants.js";
 
 export type HubChatModelOptions =
   | AIGNEHubChatModelOptions
@@ -27,32 +27,39 @@ export class BlockletAIGNEHubChatModel extends ChatModel {
     super();
 
     const models = availableModels();
-    const PROVIDER = process.env.BLOCKLET_AIGNE_API_PROVIDER?.toLowerCase() ?? "";
-    const provider = PROVIDER.replace(/-/g, "");
-    const m = findModel(models, provider);
 
-    if (!m) {
+    const rawProvider = process.env.BLOCKLET_AIGNE_API_PROVIDER ?? "";
+    const providerKey = rawProvider.toLowerCase().replace(/-/g, "");
+    const modelEntry = findModel(models, providerKey);
+
+    if (!modelEntry) {
+      const available = models.map((m) => m.name).join(", ");
       throw new Error(
-        `Unsupported model: ${process.env.BLOCKLET_AIGNE_API_PROVIDER} ${process.env.BLOCKLET_AIGNE_API_MODEL}`,
+        `Unsupported model provider: ${rawProvider} ${process.env.BLOCKLET_AIGNE_API_MODEL}. Available providers: ${available}`,
       );
     }
 
-    const credential = process.env.BLOCKLET_AIGNE_API_CREDENTIAL;
-    const credentialOptions = credential
-      ? typeof credential === "string"
-        ? JSON.parse(credential)
-        : credential
-      : {};
-    const { apiKey, ...rest } = credentialOptions;
+    const rawCredential = process.env.BLOCKLET_AIGNE_API_CREDENTIAL;
+    let credentialOptions: Record<string, any> = {};
+    try {
+      credentialOptions =
+        typeof rawCredential === "string" ? JSON.parse(rawCredential) : (rawCredential ?? {});
+    } catch (err) {
+      console.error(err);
+    }
 
-    this.client = m.create({
+    const { apiKey, ...extraCredentialOptions } = credentialOptions;
+
+    const params = {
       ...options,
       model: options.model ?? process.env.BLOCKLET_AIGNE_API_MODEL,
       modelOptions: options.modelOptions,
-      baseURL: options.baseURL ?? options.url ?? process.env.BLOCKLET_AIGNE_API_URL,
+      url: options.url ?? process.env.BLOCKLET_AIGNE_API_URL ?? AIGNE_HUB_URL,
       apiKey: options.apiKey ?? apiKey,
-      ...rest,
-    });
+      ...extraCredentialOptions,
+    };
+
+    this.client = modelEntry.create(params);
   }
 
   override process(

@@ -8,17 +8,32 @@ import {
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { BlockletAIGNEHubChatModel, type HubChatModelOptions } from "./blocklet-aigne-hub-model.js";
 import { type AIGNEHubChatModelOptions, CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
+import { AIGNE_HUB_URL, getAIGNEHubMountPoint } from "./constants.js";
 
 export * from "./constants.js";
 
 export class AIGNEHubChatModel extends ChatModel {
   private client: ChatModel;
 
+  static async load(options: AIGNEHubChatModelOptions) {
+    const u = process.env.BLOCKLET_AIGNE_API_URL ?? process.env.AIGNE_HUB_API_URL ?? AIGNE_HUB_URL;
+    let url = options.url ?? u;
+
+    if ((process.env.BLOCKLET_AIGNE_API_PROVIDER || "").toLocaleLowerCase().includes("aignehub")) {
+      url = await getAIGNEHubMountPoint(url);
+    }
+
+    return new AIGNEHubChatModel({ ...options, url });
+  }
+
   constructor(public options: HubChatModelOptions) {
     super();
-    this.client = process.env.BLOCKLET_AIGNE_API_PROVIDER
-      ? new BlockletAIGNEHubChatModel(options)
-      : new CliAIGNEHubChatModel(options as AIGNEHubChatModelOptions);
+
+    const isBlocklet =
+      process.env.BLOCKLET_AIGNE_API_URL && process.env.BLOCKLET_AIGNE_API_PROVIDER;
+    const AIGNEHubModel = isBlocklet ? BlockletAIGNEHubChatModel : CliAIGNEHubChatModel;
+
+    this.client = new AIGNEHubModel(options as AIGNEHubChatModelOptions);
   }
 
   override process(

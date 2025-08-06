@@ -12,7 +12,11 @@ import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import type { ClientOptions } from "openai";
+import { joinURL } from "ufo";
 import { CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
+
+const AIGNE_HUB_DID = "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ";
+export const AIGNE_HUB_URL = "https://hub.aigne.io/ai-kit/";
 
 export function availableModels(): LoadableModel[] {
   const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
@@ -140,4 +144,16 @@ export async function loadModel(
     model: params.model,
     modelOptions: { ...params, ...modelOptions },
   });
+}
+
+export async function getAIGNEHubMountPoint(url: string) {
+  const { origin } = new URL(url);
+  const BLOCKLET_JSON_PATH = "__blocklet__.js?type=json";
+  const blockletInfo = await fetch(joinURL(origin, BLOCKLET_JSON_PATH));
+  const blocklet = await blockletInfo.json();
+  const aigneHubMount = (blocklet?.componentMountPoints || []).find(
+    (m: { did: string }) => m.did === AIGNE_HUB_DID,
+  );
+
+  return joinURL(origin, aigneHubMount?.mountPoint || "");
 }

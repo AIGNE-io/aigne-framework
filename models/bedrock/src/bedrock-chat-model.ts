@@ -33,7 +33,7 @@ import {
   type ToolConfiguration,
   type ToolInputSchema,
 } from "@aws-sdk/client-bedrock-runtime";
-import { nanoid } from "nanoid";
+import { v7 } from "uuid";
 import { z } from "zod";
 
 /**
@@ -185,7 +185,7 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
 
               toolCalls[chunk.contentBlockStart.contentBlockIndex] = {
                 type: "function",
-                id: toolUse.toolUseId || nanoid(),
+                id: toolUse.toolUseId || v7(),
                 function: {
                   name: toolUse.name,
                   arguments: {},

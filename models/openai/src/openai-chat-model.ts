@@ -22,7 +22,6 @@ import {
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import { Ajv } from "ajv";
-import { nanoid } from "nanoid";
 import OpenAI, { type APIError, type ClientOptions } from "openai";
 import type {
   ChatCompletionMessageParam,
@@ -30,6 +29,7 @@ import type {
   ResponseFormatJSONSchema,
 } from "openai/resources";
 import type { Stream } from "openai/streaming.js";
+import { v7 } from "uuid";
 import { z } from "zod";
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
@@ -546,7 +546,7 @@ function handleToolCallDelta(
   },
 ) {
   toolCalls[call.index] ??= {
-    id: call.id || nanoid(),
+    id: call.id || v7(),
     type: "function" as const,
     function: { name: "", arguments: {} },
     args: "",
@@ -567,7 +567,7 @@ function handleCompleteToolCall(
   call: OpenAI.Chat.Completions.ChatCompletionChunk.Choice.Delta.ToolCall,
 ) {
   toolCalls.push({
-    id: call.id || nanoid(),
+    id: call.id || v7(),
     type: "function" as const,
     function: {
       name: call.function?.name || "",

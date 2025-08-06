@@ -20,7 +20,6 @@ import type {
   ReadResourceResult,
   Request,
 } from "@modelcontextprotocol/sdk/types.js";
-import pRetry from "p-retry";
 import { type ZodType, z } from "zod";
 import { logger } from "../utils/logger.js";
 import {
@@ -383,7 +382,8 @@ class ClientWithReconnect extends Client {
     const transportCreator = this.reconnectOptions?.transportCreator;
     if (!transportCreator) throw new Error("reconnect requires a transportCreator");
 
-    await pRetry(
+    const retry = await import("p-retry");
+    await retry.default(
       async () => {
         await this.close();
         await this.connect(await transportCreator(), {

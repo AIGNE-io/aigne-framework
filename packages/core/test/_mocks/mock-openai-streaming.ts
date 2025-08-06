@@ -1,4 +1,4 @@
-import { nanoid } from "nanoid";
+import { v7 } from "uuid";
 import { createMockEventStream } from "../_utils/event-stream.js";
 
 export function mockOpenAIStreaming<T>({
@@ -10,7 +10,7 @@ export function mockOpenAIStreaming<T>({
   inputTokens?: number;
   outputTokens?: number;
 }): T {
-  const id = nanoid();
+  const id = v7();
   const segments = Array.from(new Intl.Segmenter(undefined, { granularity: "word" }).segment(text));
   const events: unknown[] = [];
 

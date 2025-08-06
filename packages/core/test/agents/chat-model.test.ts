@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { nanoid } from "nanoid";
+import { v7 } from "uuid";
 import {
   type AgentProcessResult,
   type AgentResponseStream,
@@ -231,7 +231,7 @@ test("ChatModel should return capabilities", async () => {
       return {
         toolCalls: [
           {
-            id: nanoid(),
+            id: v7(),
             type: "function",
             function: { name: tool.function.name, arguments: {} },
           },
@@ -258,7 +258,7 @@ test("ChatModel should auto convert tool name to valid function name", async () 
       return {
         toolCalls: [
           {
-            id: nanoid(),
+            id: v7(),
             type: "function",
             function: { name: tool.function.name, arguments: {} },
           },

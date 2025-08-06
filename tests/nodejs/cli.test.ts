@@ -39,7 +39,7 @@ test("AIGNE cli should work in Node.js", async () => {
 
   console.error(stderr);
 
-  expect({ status, stdout, stderr }).toEqual({
+  expect({ status, stdout }).toEqual({
     status: 0,
     stdout: expect.stringMatching(/\d+\.\d+\.\d+/),
   });

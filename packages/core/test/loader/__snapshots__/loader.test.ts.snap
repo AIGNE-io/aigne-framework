@@ -6,14 +6,17 @@ exports[`AIGNE.load should load agents correctly 1`] = `
     {
       "description": "Chat agent",
       "name": "chat",
+      "taskTitle": "process: {{message}}",
     },
     {
       "description": "Chat agent",
       "name": "chat-with-prompt",
+      "taskTitle": undefined,
     },
     {
       "description": "Test team agent",
       "name": "test-team-agent",
+      "taskTitle": undefined,
     },
   ],
   "cli": {

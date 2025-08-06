@@ -1503,6 +1503,9 @@ importers:
       marked:
         specifier: ^16.0.0
         version: 16.0.0
+      nunjucks:
+        specifier: ^3.2.4
+        version: 3.2.4(chokidar@3.6.0)
       open:
         specifier: 10.1.2
         version: 10.1.2
@@ -1549,6 +1552,9 @@ importers:
       '@types/node':
         specifier: ^24.0.12
         version: 24.0.12
+      '@types/nunjucks':
+        specifier: ^3.2.6
+        version: 3.2.6
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.33
@@ -1624,9 +1630,6 @@ importers:
       jsonata:
         specifier: ^2.0.6
         version: 2.0.6
-      mustache:
-        specifier: ^4.2.0
-        version: 4.2.0
       nunjucks:
         specifier: ^3.2.4
         version: 3.2.4(chokidar@3.6.0)
@@ -1667,9 +1670,6 @@ importers:
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.3
-      '@types/mustache':
-        specifier: ^4.2.6
-        version: 4.2.6
       '@types/node':
         specifier: ^24.0.12
         version: 24.0.12
@@ -1697,94 +1697,16 @@ importers:
 
   packages/platform-helpers:
     dependencies:
-      '@aigne/json-schema-to-zod':
-        specifier: ^1.3.3
-        version: 1.3.3(zod@3.25.67)
-      '@libsql/client':
-        specifier: ^0.15.9
-        version: 0.15.9
       '@modelcontextprotocol/sdk':
         specifier: ^1.15.0
         version: 1.15.0
-      '@types/debug':
-        specifier: ^4.1.12
-        version: 4.1.12
-      content-type:
-        specifier: ^1.0.5
-        version: 1.0.5
-      debug:
-        specifier: ^4.4.1
-        version: 4.4.1(supports-color@5.5.0)
-      drizzle-orm:
-        specifier: ^0.44.2
-        version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.18(@types/react@19.1.8))(sqlite3@5.1.7)
-      eventsource-parser:
-        specifier: ^3.0.3
-        version: 3.0.3
-      fast-deep-equal:
-        specifier: ^3.1.3
-        version: 3.1.3
-      immer:
-        specifier: ^10.1.1
-        version: 10.1.1
-      mustache:
-        specifier: ^4.2.0
-        version: 4.2.0
-      p-retry:
-        specifier: ^6.2.1
-        version: 6.2.1
-      raw-body:
-        specifier: ^3.0.0
-        version: 3.0.0
-      sqlocal:
-        specifier: ^0.14.1
-        version: 0.14.1(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(bun-types@1.2.18(@types/react@19.1.8))(sqlite3@5.1.7))
-      strict-event-emitter:
-        specifier: ^0.5.1
-        version: 0.5.1
-      ufo:
-        specifier: ^1.6.1
-        version: 1.6.1
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      yaml:
-        specifier: ^2.8.0
-        version: 2.8.0
-      zod:
-        specifier: ^3.25.67
-        version: 3.25.67
-      zod-to-json-schema:
-        specifier: ^3.24.6
-        version: 3.24.6(zod@3.25.67)
     devDependencies:
       '@types/bun':
         specifier: ^1.2.18
         version: 1.2.18(@types/react@19.1.8)
-      '@types/compression':
-        specifier: ^1.8.1
-        version: 1.8.1
-      '@types/content-type':
-        specifier: ^1.1.9
-        version: 1.1.9
-      '@types/express':
-        specifier: ^5.0.3
-        version: 5.0.3
-      '@types/mustache':
-        specifier: ^4.2.6
-        version: 4.2.6
       '@types/node':
         specifier: ^24.0.12
         version: 24.0.12
-      compression:
-        specifier: ^1.8.0
-        version: 1.8.0
-      detect-port:
-        specifier: ^2.1.0
-        version: 2.1.0
-      express:
-        specifier: ^5.1.0
-        version: 5.1.0
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -4438,9 +4360,6 @@ packages:
 
   '@types/mui-datatables@4.3.12':
     resolution: {integrity: sha512-Xz7My6kOi7Q3LK0lNEKVF/XU0jMawIRMpROaXQxn2E8Ccmiguh19MHi/v7I8Qae8AAj/fuDx9EAHGBmvluRf3A==}
-
-  '@types/mustache@4.2.6':
-    resolution: {integrity: sha512-t+8/QWTAhOFlrF1IVZqKnMRJi84EgkIK5Kh0p2JV4OLywUvCwJPFxbJAl7XAow7DVIHsF+xW9f1MVzg0L6Szjw==}
 
   '@types/node@17.0.45':
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
@@ -14314,8 +14233,6 @@ snapshots:
       - react
       - react-dom
       - supports-color
-
-  '@types/mustache@4.2.6': {}
 
   '@types/node@17.0.45': {}
 

@@ -154,7 +154,7 @@ test("AIGNEContext should get/set userContext correctly", async () => {
   expect(context.userContext).toEqual({ userId: "new_user_id" });
 });
 
-test("AIGNEContext.invoke should update userContext/memories correctly", async () => {
+test("AIGNEContext.invoke should update userContext/memories/hooks correctly", async () => {
   const aigne = new AIGNE({});
 
   const agent = FunctionAgent.from(() => ({}));
@@ -164,7 +164,11 @@ test("AIGNEContext.invoke should update userContext/memories correctly", async (
   await aigne.invoke(
     agent,
     { message: "hello" },
-    { userContext: { userId: "test_user_id" }, memories: [{ content: "test memory content" }] },
+    {
+      userContext: { userId: "test_user_id" },
+      memories: [{ content: "test memory content" }],
+      hooks: { onStart: () => {} },
+    },
   );
 
   expect(agentProcess).toHaveBeenLastCalledWith(
@@ -173,6 +177,7 @@ test("AIGNEContext.invoke should update userContext/memories correctly", async (
       context: expect.objectContaining({
         userContext: { userId: "test_user_id" },
         memories: [{ content: "test memory content" }],
+        hooks: [expect.objectContaining({ onStart: expect.any(Function) })],
       }),
     }),
   );

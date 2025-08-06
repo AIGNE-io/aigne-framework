@@ -14,6 +14,17 @@ interface BaseBoard {
   updatedAt: string;
 }
 
+// Board list response interface
+interface BoardListResponse {
+  boards: BaseBoard[];
+  defaults: {
+    discussion: string;
+    blog: string;
+    doc: string;
+    bookmark: string;
+  };
+}
+
 // Create board request interface
 interface CreateBoardRequest {
   title: string;
@@ -37,12 +48,81 @@ interface CreateBoardResponse extends BaseBoard {
   cover: string;
 }
 
+export async function getBoards(input: {
+  appUrl: string;
+  accessToken: string;
+}): Promise<BoardListResponse> {
+  const { appUrl, accessToken } = input;
+
+  const url = new URL(appUrl);
+  const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
+
+  // Get boards list
+  const getBoardsUrl = joinURL(url.origin, mountPoint, "/api/boards");
+
+  const getBoardsResponse = await fetch(getBoardsUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!getBoardsResponse.ok) {
+    const errorText = await getBoardsResponse.text();
+    throw new Error(
+      `Failed to get boards: ${getBoardsResponse.status} ${getBoardsResponse.statusText} - ${errorText}`,
+    );
+  }
+
+  return await getBoardsResponse.json();
+}
+
+export async function findOrCreateBoard(input: {
+  appUrl: string;
+  accessToken: string;
+  boardId: string;
+  boardName?: string;
+  desc?: string;
+  cover?: string;
+}): Promise<string> {
+  const { appUrl, accessToken, boardId, boardName, desc = "", cover = "" } = input;
+
+  // First, try to get existing boards
+  try {
+    const boardsResponse = await getBoards({ appUrl, accessToken });
+    const existingBoard = boardsResponse.boards.find((board) => board.id === boardId);
+
+    if (existingBoard) {
+      return existingBoard.id;
+    }
+  } catch (error) {
+    console.warn(`Failed to get boards list: ${error}`);
+    // Continue to create board if we can't get the list
+  }
+
+  // Board doesn't exist, create it
+  if (!boardName) {
+    throw new Error("boardName is required when creating a new board");
+  }
+
+  return await createBoard({
+    appUrl,
+    accessToken,
+    boardName,
+    desc,
+    cover,
+  });
+}
+
 export async function createBoard(input: {
   appUrl: string;
   accessToken: string;
   boardName: string;
+  desc?: string;
+  cover?: string;
 }): Promise<string> {
-  const { appUrl, accessToken, boardName } = input;
+  const { appUrl, accessToken, boardName, desc = "", cover = "" } = input;
 
   const url = new URL(appUrl);
   const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
@@ -51,9 +131,9 @@ export async function createBoard(input: {
   const createBoardUrl = joinURL(url.origin, mountPoint, "/api/boards");
   const createBoardData: CreateBoardRequest = {
     title: boardName,
-    desc: "",
+    desc,
     passports: [],
-    cover: "",
+    cover,
     type: "doc",
     translation: {
       title: {},

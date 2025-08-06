@@ -229,7 +229,6 @@ describe("camelize", () => {
         is_active: true,
       };
       const result = camelize(input);
-      console.log(result);
       expect(typeof result.userName).toBe("string");
       expect(typeof result.age).toBe("number");
       expect(typeof result.isActive).toBe("boolean");

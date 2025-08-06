@@ -18,7 +18,7 @@ export function camelize<T>(obj: T, shallow: boolean = false): any {
 }
 
 function camelCase(key: string): string {
-  key = key.replace(/[-_#@$\s]+(.)?/g, (g) => g[1]?.toUpperCase() || "");
+  key = key.replace(/[-_#@$\s]+(.)?/g, (_, char) => char.toUpperCase());
   key = key.charAt(0).toLowerCase() + key.slice(1);
   return key;
 }

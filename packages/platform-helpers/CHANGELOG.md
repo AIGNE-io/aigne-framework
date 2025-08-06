@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.5.1...platform-helpers-v0.6.0) (2025-08-06)
+
+
+### Features
+
+* **cli:** support custom task title of agent in cli ([#328](https://github.com/AIGNE-io/aigne-framework/issues/328)) ([128d75f](https://github.com/AIGNE-io/aigne-framework/commit/128d75fb42ca470b47a2793d79c92d7bb64cfedb))
+
 ## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.5.0...platform-helpers-v0.5.1) (2025-08-06)
 
 

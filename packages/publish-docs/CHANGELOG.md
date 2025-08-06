@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.2...publish-docs-v0.5.3) (2025-08-06)
+
+
+### Bug Fixes
+
+* polish create board ([#326](https://github.com/AIGNE-io/aigne-framework/issues/326)) ([6e5dad4](https://github.com/AIGNE-io/aigne-framework/commit/6e5dad4fdd270bb88a4af1f74fc37acd2bf0f2f3))
+
 ## [0.5.2](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.1...publish-docs-v0.5.2) (2025-08-01)
 
 

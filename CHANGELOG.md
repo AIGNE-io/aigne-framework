@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.54.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.53.0...aigne-framework-v1.54.0) (2025-08-06)
+
+
+### Features
+
+* **cli:** support custom task title of agent in cli ([#328](https://github.com/AIGNE-io/aigne-framework/issues/328)) ([128d75f](https://github.com/AIGNE-io/aigne-framework/commit/128d75fb42ca470b47a2793d79c92d7bb64cfedb))
+
+
+### Bug Fixes
+
+* **cli:** nunjucks should import as cjs module ([432b9e1](https://github.com/AIGNE-io/aigne-framework/commit/432b9e1e436bd5b02427a5effea907be1f589c31))
+* **core:** improve hook handling in agent and context ([#325](https://github.com/AIGNE-io/aigne-framework/issues/325)) ([c858fec](https://github.com/AIGNE-io/aigne-framework/commit/c858fecb08453c2daca9708f4b8a9c135fac40b0))
+* **models:** improve aigne-model chat logic and fix incorrect input in blocklet usage ([#329](https://github.com/AIGNE-io/aigne-framework/issues/329)) ([f50a9b8](https://github.com/AIGNE-io/aigne-framework/commit/f50a9b84e12f129396006784e810be25a3fa15fc))
+* polish create board ([#326](https://github.com/AIGNE-io/aigne-framework/issues/326)) ([6e5dad4](https://github.com/AIGNE-io/aigne-framework/commit/6e5dad4fdd270bb88a4af1f74fc37acd2bf0f2f3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.3
+
 ## [1.53.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.52.0...aigne-framework-v1.53.0) (2025-08-06)
 
 

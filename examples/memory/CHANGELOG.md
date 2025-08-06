@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.10.15](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.14...example-memory-v0.10.15) (2025-08-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.14
+    * @aigne/cli bumped to 1.31.0
+    * @aigne/core bumped to 1.46.0
+    * @aigne/default-memory bumped to 1.0.14
+    * @aigne/fs-memory bumped to 1.0.14
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.22
+
 ## [0.10.14](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.13...example-memory-v0.10.14) (2025-08-06)
 
 

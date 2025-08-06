@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.4.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.4.4...aigne-hub-v0.4.5) (2025-08-06)
+
+
+### Bug Fixes
+
+* **models:** improve aigne-model chat logic and fix incorrect input in blocklet usage ([#329](https://github.com/AIGNE-io/aigne-framework/issues/329)) ([f50a9b8](https://github.com/AIGNE-io/aigne-framework/commit/f50a9b84e12f129396006784e810be25a3fa15fc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.10.10
+    * @aigne/bedrock bumped to 0.8.14
+    * @aigne/core bumped to 1.46.0
+    * @aigne/deepseek bumped to 0.7.14
+    * @aigne/default-memory bumped to 1.0.14
+    * @aigne/gemini bumped to 0.8.14
+    * @aigne/ollama bumped to 0.7.14
+    * @aigne/open-router bumped to 0.7.14
+    * @aigne/openai bumped to 0.10.14
+    * @aigne/platform-helpers bumped to 0.6.0
+    * @aigne/transport bumped to 0.12.2
+    * @aigne/xai bumped to 0.7.14
+  * devDependencies
+    * @aigne/openai bumped to 0.10.14
+    * @aigne/test-utils bumped to 0.5.22
+
 ## [0.4.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.4.3...aigne-hub-v0.4.4) (2025-08-06)
 
 

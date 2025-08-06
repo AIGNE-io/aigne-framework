@@ -12,6 +12,25 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.46.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.45.0...core-v1.46.0) (2025-08-06)
+
+
+### Features
+
+* **cli:** support custom task title of agent in cli ([#328](https://github.com/AIGNE-io/aigne-framework/issues/328)) ([128d75f](https://github.com/AIGNE-io/aigne-framework/commit/128d75fb42ca470b47a2793d79c92d7bb64cfedb))
+
+
+### Bug Fixes
+
+* **core:** improve hook handling in agent and context ([#325](https://github.com/AIGNE-io/aigne-framework/issues/325)) ([c858fec](https://github.com/AIGNE-io/aigne-framework/commit/c858fecb08453c2daca9708f4b8a9c135fac40b0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/platform-helpers bumped to 0.6.0
+
 ## [1.45.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.44.0...core-v1.45.0) (2025-08-06)
 
 

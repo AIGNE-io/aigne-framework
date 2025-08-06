@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.31.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.4...cli-v1.31.0) (2025-08-06)
+
+
+### Features
+
+* **cli:** support custom task title of agent in cli ([#328](https://github.com/AIGNE-io/aigne-framework/issues/328)) ([128d75f](https://github.com/AIGNE-io/aigne-framework/commit/128d75fb42ca470b47a2793d79c92d7bb64cfedb))
+
+
+### Bug Fixes
+
+* **cli:** nunjucks should import as cjs module ([432b9e1](https://github.com/AIGNE-io/aigne-framework/commit/432b9e1e436bd5b02427a5effea907be1f589c31))
+* **core:** improve hook handling in agent and context ([#325](https://github.com/AIGNE-io/aigne-framework/issues/325)) ([c858fec](https://github.com/AIGNE-io/aigne-framework/commit/c858fecb08453c2daca9708f4b8a9c135fac40b0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.14
+    * @aigne/agentic-memory bumped to 1.0.14
+    * @aigne/aigne-hub bumped to 0.4.5
+    * @aigne/core bumped to 1.46.0
+    * @aigne/default-memory bumped to 1.0.14
+    * @aigne/openai bumped to 0.10.14
+
 ## [1.30.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.3...cli-v1.30.4) (2025-08-06)
 
 

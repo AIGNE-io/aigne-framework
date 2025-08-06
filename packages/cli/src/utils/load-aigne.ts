@@ -102,6 +102,8 @@ interface CreateConnectOptions {
   retry?: number;
   source?: string;
   connectAction?: string;
+  appName?: string;
+  appLogo?: string;
   wrapSpinner?: typeof baseWrapSpinner;
   prettyUrl?: (url: string) => string;
   closeOnSuccess?: boolean;
@@ -122,6 +124,8 @@ export async function createConnect({
   wrapSpinner = baseWrapSpinner,
   closeOnSuccess,
   intervalFetchConfig,
+  appName = "AIGNE CLI",
+  appLogo = "https://www.aigne.io/favicon.ico?imageFilter=resize&w=32",
 }: CreateConnectOptions) {
   try {
     const startSessionURL = joinURL(connectUrl, ACCESS_KEY_SESSION_API);
@@ -133,8 +137,8 @@ export async function createConnect({
       source,
       closeOnSuccess,
       cli: true,
-      appName: " AIGNE CLI",
-      appLogo: "https://www.aigne.io/favicon.ico?imageFilter=resize&w=32",
+      appName: ` ${appName}`,
+      appLogo,
     });
 
     openPage?.(pageUrl);

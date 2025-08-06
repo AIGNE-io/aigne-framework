@@ -16,7 +16,7 @@ import { joinURL } from "ufo";
 import { CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
 
 const AIGNE_HUB_DID = "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ";
-export const AIGNE_HUB_URL = "https://hub.aigne.io/ai-kit/";
+export const AIGNE_HUB_URL = "https://hub.aigne.io/";
 
 export function availableModels(): LoadableModel[] {
   const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]

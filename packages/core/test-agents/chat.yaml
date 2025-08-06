@@ -1,4 +1,5 @@
 name: chat
+task_title: "process: {{message}}"
 alias:
   - chat-bot
   - bot

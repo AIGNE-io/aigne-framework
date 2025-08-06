@@ -41,6 +41,7 @@ test("AIGNE.load should load agents correctly", async () => {
     agents: aigne.agents.map((agent) => ({
       name: agent.name,
       description: agent.description,
+      taskTitle: agent.taskTitle,
     })),
     skills: aigne.skills.map((skill) => ({
       name: skill.name,

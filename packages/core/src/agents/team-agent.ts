@@ -404,7 +404,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     let arr = input[this.iterateOn] as unknown[];
     arr = Array.isArray(arr) ? [...arr] : isNil(arr) ? [arr] : [];
 
-    const results: Message[] = [];
+    const results: Message[] = new Array(arr.length);
 
     const queue = fastq.promise<unknown, { item: unknown; index: number }>(
       async ({ item, index }) => {
@@ -438,7 +438,6 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
       queue.push({ index, item: arr[index] });
     }
 
-    // result.push(omit(res, key as any) as Message);
     await queue.drained();
 
     yield { delta: { json: { [key]: results } } } as AgentResponseChunk<O>;

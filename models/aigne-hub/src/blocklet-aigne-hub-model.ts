@@ -52,10 +52,10 @@ export class BlockletAIGNEHubChatModel extends ChatModel {
 
     const params = {
       ...options,
-      model: options.model ?? process.env.BLOCKLET_AIGNE_API_MODEL,
+      model: options.model || process.env.BLOCKLET_AIGNE_API_MODEL,
       modelOptions: options.modelOptions,
-      url: options.url ?? process.env.BLOCKLET_AIGNE_API_URL ?? AIGNE_HUB_URL,
-      apiKey: options.apiKey ?? apiKey,
+      url: options.url || process.env.BLOCKLET_AIGNE_API_URL || AIGNE_HUB_URL,
+      apiKey: options.apiKey || apiKey,
       ...extraCredentialOptions,
     };
 

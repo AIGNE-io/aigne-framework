@@ -23,34 +23,7 @@ test("aigne command should print help if no any subcommand", async () => {
 
   await command.parseAsync([]);
 
-  expect(log.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-
-    "CLI for AIGNE framework
-
-    Commands:
-      aigne run [path]     Run AIGNE from the specified agent
-      aigne test           Run tests in the specified agents directory
-      aigne create [path]  Create a new aigne project with agent config files
-      aigne serve-mcp      Serve the agents in the specified directory as a MCP
-                           server (streamable http)
-      aigne observe        Start the observability server
-      aigne connect [url]  Manage AIGNE Hub connections
-      aigne doc-smith      Generate professional documents by doc-smith
-                                                            [aliases: docsmith, doc]
-
-    Options:
-      -h, --help     Show help                                             [boolean]
-      -v, --version  Show version number                                   [boolean]"
-    ,
-      ],
-      [],
-      [
-        "Not enough non-option arguments: got 0, need at least 1",
-      ],
-    ]
-  `);
+  expect(log.mock.calls).toMatchSnapshot();
 
   exit.mockRestore();
   log.mockRestore();

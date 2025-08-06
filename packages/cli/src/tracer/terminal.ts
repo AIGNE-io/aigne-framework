@@ -11,6 +11,7 @@ import {
   DEFAULT_OUTPUT_KEY,
   type InvokeOptions,
   type Message,
+  UserAgent,
 } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
@@ -20,6 +21,7 @@ import { markedTerminal } from "@aigne/marked-terminal";
 import * as prompts from "@inquirer/prompts";
 import chalk from "chalk";
 import { Marked } from "marked";
+import { renderString } from "nunjucks";
 import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
 import { parseDuration } from "../utils/time.js";
 
@@ -54,7 +56,9 @@ export class TerminalTracer {
       { concurrent: true },
     );
 
-    const onStart: AgentHooks["onStart"] = async ({ context, agent }) => {
+    const onStart: AgentHooks["onStart"] = async ({ context, agent, ...event }) => {
+      if (agent instanceof UserAgent) return;
+
       const contextId = context.id;
       const parentContextId = context.parentId;
 
@@ -66,7 +70,7 @@ export class TerminalTracer {
       this.tasks[contextId] = task;
 
       const listrTask: Parameters<typeof listr.add>[0] = {
-        title: this.formatTaskTitle(agent),
+        title: this.formatTaskTitle(agent, { ...event }),
         task: (ctx, taskWrapper) => {
           const subtask = taskWrapper.newListr([{ task: () => task.promise }]);
           task.listr.resolve({ subtask, taskWrapper, ctx });
@@ -116,7 +120,7 @@ export class TerminalTracer {
       };
     };
 
-    const onSuccess: AgentHooks["onSuccess"] = async ({ context, agent, output }) => {
+    const onSuccess: AgentHooks["onSuccess"] = async ({ context, agent, output, ...event }) => {
       const contextId = context.id;
       const parentContextId = context.parentId;
 
@@ -134,7 +138,7 @@ export class TerminalTracer {
         if (model) task.extraTitleMetadata.model = model;
       }
 
-      taskWrapper.title = this.formatTaskTitle(agent, { task, usage: true, time: true });
+      taskWrapper.title = this.formatTaskTitle(agent, { ...event, task, usage: true, time: true });
 
       if (!parentContextId || !this.tasks[parentContextId]) {
         Object.assign(ctx, output);
@@ -143,7 +147,7 @@ export class TerminalTracer {
       task.resolve();
     };
 
-    const onError: AgentHooks["onError"] = async ({ context, agent, error }) => {
+    const onError: AgentHooks["onError"] = async ({ context, agent, error, ...event }) => {
       const contextId = context.id;
 
       const task = this.tasks[contextId];
@@ -152,7 +156,7 @@ export class TerminalTracer {
       task.endTime = Date.now();
 
       const { taskWrapper } = await task.listr.promise;
-      taskWrapper.title = this.formatTaskTitle(agent, { task, usage: true, time: true });
+      taskWrapper.title = this.formatTaskTitle(agent, { ...event, task, usage: true, time: true });
 
       task.reject(error);
     };
@@ -203,9 +207,13 @@ export class TerminalTracer {
 
   formatTaskTitle(
     agent: Agent,
-    { task, usage, time }: { task?: Task; usage?: boolean; time?: boolean } = {},
+    { task, usage, time, input }: { task?: Task; usage?: boolean; time?: boolean; input: Message },
   ) {
-    let title = `invoke agent ${agent.name}`;
+    let title = agent.name;
+
+    if (agent.taskTitle) {
+      title += ` ${chalk.cyan(renderString(agent.taskTitle, { ...input }))}`;
+    }
 
     if (usage && task?.usage)
       title += ` ${this.formatTokenUsage(task.usage, task.extraTitleMetadata)}`;

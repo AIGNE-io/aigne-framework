@@ -6,6 +6,7 @@ import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
+import fastq from "fastq";
 import { z } from "zod";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
@@ -186,31 +187,39 @@ test("TeamAgent with sequential mode should yield output chunks correctly", asyn
   expect(await readableStreamToArray(stream)).toMatchSnapshot();
 });
 
-test("TeamAgent with iterateOn should process array input correctly", async () => {
-  const skill = FunctionAgent.from((input: { title: string }) => {
-    return {
-      description: `Description for ${input.title}`,
-    };
-  });
-  const skillProcess = spyOn(skill, "process");
+test.each([{ concurrency: 1 }, { concurrency: 2 }])(
+  "TeamAgent with iterateOn should process array input correctly %p",
+  async ({ concurrency }) => {
+    const skill = FunctionAgent.from((input: { title: string }) => {
+      return {
+        description: `Description for ${input.title}`,
+      };
+    });
+    const skillProcess = spyOn(skill, "process");
 
-  const teamAgent = TeamAgent.from({
-    mode: ProcessMode.sequential,
-    inputSchema: z.object({
-      sections: z.array(z.object({ title: z.string() })),
-    }),
-    iterateOn: "sections",
-    skills: [skill],
-  });
+    const q = spyOn(fastq, "promise");
 
-  const aigne = new AIGNE({});
+    const teamAgent = TeamAgent.from({
+      mode: ProcessMode.sequential,
+      inputSchema: z.object({
+        sections: z.array(z.object({ title: z.string() })),
+      }),
+      iterateOn: "sections",
+      concurrency,
+      skills: [skill],
+    });
 
-  const response = await aigne.invoke(teamAgent, {
-    sections: new Array(3).fill(0).map((_, index) => ({ title: `Test title ${index}` })),
-  });
-  expect(response).toMatchSnapshot();
-  expect(skillProcess.mock.calls.map((i) => i[0])).toMatchSnapshot();
-});
+    const aigne = new AIGNE({});
+
+    const response = await aigne.invoke(teamAgent, {
+      sections: new Array(3).fill(0).map((_, index) => ({ title: `Test title ${index}` })),
+    });
+    expect(response).toMatchSnapshot();
+    expect(skillProcess.mock.calls.map((i) => i[0])).toMatchSnapshot();
+
+    expect(q).toHaveBeenLastCalledWith(expect.anything(), concurrency);
+  },
+);
 
 test("TeamAgent with iterateOn should iterate with previous step's output", async () => {
   const skill = FunctionAgent.from((input: { title: string }) => {
@@ -237,6 +246,27 @@ test("TeamAgent with iterateOn should iterate with previous step's output", asyn
   });
   expect(response).toMatchSnapshot();
   expect(skillProcess.mock.calls.map((i) => i[0])).toMatchSnapshot();
+});
+
+test("TeamAgent with iterateOn should error if iterateWithPreviousOutput enabled and concurrency is not 1", async () => {
+  const skill = FunctionAgent.from((input: { title: string }) => {
+    return {
+      description: `Description for ${input.title}`,
+    };
+  });
+
+  expect(() =>
+    TeamAgent.from({
+      mode: ProcessMode.sequential,
+      inputSchema: z.object({
+        sections: z.array(z.object({ title: z.string() })),
+      }),
+      iterateOn: "sections",
+      iterateWithPreviousOutput: true,
+      concurrency: 2,
+      skills: [skill],
+    }),
+  ).toThrow("iterateWithPreviousOutput cannot be used with concurrency > 1, concurrency: 2");
 });
 
 test("TeamAgent should throw an error if skills is empty", async () => {

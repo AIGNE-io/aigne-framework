@@ -14,7 +14,7 @@ export function createAIGNECommand(options?: { aigneFilePath?: string }) {
   console.log(asciiLogo);
 
   console.log(
-    `${chalk.grey("TIPS:")} use ${chalk.greenBright("aigne observe")} to start the observability server.\n`,
+    `${chalk.grey("TIPS:")} run ${chalk.blue("aigne observe")} to start the observability server.\n`,
   );
 
   return yargs()
@@ -28,6 +28,7 @@ export function createAIGNECommand(options?: { aigneFilePath?: string }) {
     .command(createObservabilityCommand())
     .command(createConnectCommand())
     .command(createAppCommands())
+    .demandCommand()
     .alias("help", "h")
     .alias("version", "v")
     .strict();

@@ -80,10 +80,10 @@ test("app command should register doc-smith to yargs", async () => {
       aigne doc-smith generate   Generate documents by doc-smith   [aliases: gen, g]
 
     Options:
-      --help     Show help                                                 [boolean]
-      --model    Model to use for the application, example: openai:gpt-4.1 or
-                 google:gemini-2.5-flash                                    [string]
-      --version  Show version number                                       [boolean]"
+          --help     Show help                                             [boolean]
+          --model    Model to use for the application, example: openai:gpt-4.1 or
+                     google:gemini-2.5-flash                                [string]
+      -v, --version  Show version number                                   [boolean]"
   `);
 
   await command.parseAsync(["doc-smith", "generate", "--help"]);
@@ -97,7 +97,7 @@ test("app command should register doc-smith to yargs", async () => {
           --help     Show help                                             [boolean]
           --model    Model to use for the application, example: openai:gpt-4.1 or
                      google:gemini-2.5-flash                                [string]
-          --version  Show version number                                   [boolean]
+      -v, --version  Show version number                                   [boolean]
           --title    Title of doc to generate                    [string] [required]
           --topic    Topic of doc to generate                               [string]
       -i, --input    Input to the agent, use @<file> to read from a file     [array]

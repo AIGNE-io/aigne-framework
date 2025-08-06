@@ -48,7 +48,7 @@ export function createAppCommands(): CommandModule[] {
         yargs.command(agentCommandModule({ dir, agent }));
       }
 
-      yargs.version(`${app.name} v${version}`);
+      yargs.version(`${app.name} v${version}`).alias("version", "v");
 
       return yargs.demandCommand();
     },
@@ -105,7 +105,7 @@ const upgradeCommandModule = ({
       const result = await loadApplication({ name, dir, forceUpgrade: true });
 
       if (version !== result.version) {
-        console.log(`\n✅ Upgraded ${name} to version ${version}`);
+        console.log(`\n✅ Upgraded ${name} to version ${result.version}`);
         return;
       }
     }

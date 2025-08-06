@@ -14,3 +14,17 @@ test("aigne command should parse --version correctly", async () => {
     }),
   );
 });
+
+test("aigne command should print help if no any subcommand", async () => {
+  const command = createAIGNECommand();
+
+  const exit = spyOn(process, "exit").mockReturnValue(undefined as never);
+  const log = spyOn(console, "error").mockReturnValue(undefined as never);
+
+  await command.parseAsync([]);
+
+  expect(log.mock.calls).toMatchSnapshot();
+
+  exit.mockRestore();
+  log.mockRestore();
+});

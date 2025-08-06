@@ -58,6 +58,9 @@ export interface TeamAgentSchema extends BaseAgentSchema {
   type: "team";
   mode?: ProcessMode;
   iterateOn?: string;
+  concurrency?: number;
+  iterateWithPreviousOutput?: boolean;
+  includeAllStepsOutput?: boolean;
   reflection?: Omit<ReflectionMode, "reviewer"> & { reviewer: NestAgentSchema };
 }
 
@@ -168,6 +171,9 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
             type: z.literal("team"),
             mode: optionalize(z.nativeEnum(ProcessMode)),
             iterateOn: optionalize(z.string()),
+            concurrency: optionalize(z.number().int().min(1)),
+            iterateWithPreviousOutput: optionalize(z.boolean()),
+            includeAllStepsOutput: optionalize(z.boolean()),
             reflection: camelizeSchema(
               optionalize(
                 z.object({

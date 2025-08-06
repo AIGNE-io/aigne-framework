@@ -20,7 +20,14 @@ function getAIGNEFilePath() {
 const aigneFilePath = getAIGNEFilePath();
 
 export default createAIGNECommand({ aigneFilePath })
-  .fail(() => {})
+  .fail((message, error, yargs) => {
+    // We catch all errors below, here just print the help message non-error case like demandCommand
+    if (!error) {
+      yargs.showHelp();
+
+      console.error(`\n${message}`);
+    }
+  })
   .parseAsync(hideBin([...process.argv.slice(0, 2), ...process.argv.slice(aigneFilePath ? 3 : 2)]))
   .catch((error) => {
     console.log(""); // Add an empty line for better readability

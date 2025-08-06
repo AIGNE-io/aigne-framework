@@ -7,6 +7,7 @@ import { v7 } from "uuid";
 import { z } from "zod";
 import {
   type Agent,
+  type AgentHooks,
   type AgentInvokeOptions,
   type AgentProcessAsyncGenerator,
   type AgentResponse,
@@ -141,6 +142,8 @@ export interface Context<U extends UserContext = UserContext>
   status?: "normal" | "timeout";
 
   userContext: U;
+
+  hooks?: AgentHooks[];
 
   memories: Pick<Memory, "content">[];
 
@@ -326,6 +329,13 @@ export class AIGNEContext implements Context {
     this.internal.memories = memories;
   }
 
+  get hooks() {
+    return this.internal.hooks;
+  }
+  set hooks(hooks: AgentHooks[]) {
+    this.internal.hooks = hooks;
+  }
+
   newContext({ reset }: { reset?: boolean } = {}) {
     return new AIGNEContext(this, { reset });
   }
@@ -337,14 +347,7 @@ export class AIGNEContext implements Context {
       options,
     });
 
-    if (options?.userContext) {
-      Object.assign(this.userContext, options.userContext);
-      options.userContext = undefined;
-    }
-    if (options?.memories?.length) {
-      this.memories.push(...options.memories);
-      options.memories = undefined;
-    }
+    this.processOptions(options);
 
     if (isNil(message)) {
       return UserAgent.from({
@@ -432,7 +435,7 @@ export class AIGNEContext implements Context {
     };
   }
 
-  publish = ((topic, payload, options) => {
+  private processOptions(options?: InvokeOptions) {
     if (options?.userContext) {
       Object.assign(this.userContext, options.userContext);
       options.userContext = undefined;
@@ -441,6 +444,14 @@ export class AIGNEContext implements Context {
       this.memories.push(...options.memories);
       options.memories = undefined;
     }
+    if (options?.hooks) {
+      this.hooks.push(...flat(options.hooks));
+      options.hooks = undefined;
+    }
+  }
+
+  publish = ((topic, payload, options) => {
+    this.processOptions(options);
 
     const newContext = options?.newContext === false ? this : this.newContext();
 
@@ -621,6 +632,8 @@ class AIGNEContextShared {
   userContext: Context["userContext"] = {};
 
   memories: Context["memories"] = [];
+
+  hooks: AgentHooks[] = [];
 
   private abortController = new AbortController();
 

@@ -669,7 +669,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     const result = {};
 
-    for (const hooks of flat(options.hooks, this.hooks)) {
+    for (const hooks of flat(options.hooks, options.context.hooks, this.hooks)) {
       const h = hooks[hook];
       if (!h) continue;
 

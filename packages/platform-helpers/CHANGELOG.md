@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.5.0...platform-helpers-v0.5.1) (2025-08-06)
+
+
+### Bug Fixes
+
+* **models:** aigne-hub adapter not working in node.js v21 ([#320](https://github.com/AIGNE-io/aigne-framework/issues/320)) ([2884d00](https://github.com/AIGNE-io/aigne-framework/commit/2884d00b83e153ae7465ef1369fcd22d7c6d43e0))
+
 ## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.4.0...platform-helpers-v0.5.0) (2025-08-01)
 
 

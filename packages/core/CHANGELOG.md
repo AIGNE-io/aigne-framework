@@ -12,6 +12,26 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.45.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.44.0...core-v1.45.0) (2025-08-06)
+
+
+### Features
+
+* **core:** add concurrency support for team agent ([#323](https://github.com/AIGNE-io/aigne-framework/issues/323)) ([5743260](https://github.com/AIGNE-io/aigne-framework/commit/57432603a45208ad3503b9fc4c64f07c8151f9ee))
+
+
+### Bug Fixes
+
+* **core:** remove lodash dependency ensure core support both esm and cjs ([#324](https://github.com/AIGNE-io/aigne-framework/issues/324)) ([d6c2452](https://github.com/AIGNE-io/aigne-framework/commit/d6c2452b660a163c73f2c628ffdc2a12949360b0))
+* **models:** aigne-hub adapter not working in node.js v21 ([#320](https://github.com/AIGNE-io/aigne-framework/issues/320)) ([2884d00](https://github.com/AIGNE-io/aigne-framework/commit/2884d00b83e153ae7465ef1369fcd22d7c6d43e0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/platform-helpers bumped to 0.5.1
+
 ## [1.44.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.43.1...core-v1.44.0) (2025-08-05)
 
 

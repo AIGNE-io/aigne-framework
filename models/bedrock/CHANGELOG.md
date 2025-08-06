@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.13](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.8.12...bedrock-v0.8.13) (2025-08-06)
+
+
+### Bug Fixes
+
+* **models:** aigne-hub adapter not working in node.js v21 ([#320](https://github.com/AIGNE-io/aigne-framework/issues/320)) ([2884d00](https://github.com/AIGNE-io/aigne-framework/commit/2884d00b83e153ae7465ef1369fcd22d7c6d43e0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.45.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.21
+
 ## [0.8.12](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.8.11...bedrock-v0.8.12) (2025-08-05)
 
 

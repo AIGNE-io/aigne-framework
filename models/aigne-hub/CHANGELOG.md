@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.4.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.4.3...aigne-hub-v0.4.4) (2025-08-06)
+
+
+### Bug Fixes
+
+* **models:** aigne-hub adapter not working in node.js v21 ([#320](https://github.com/AIGNE-io/aigne-framework/issues/320)) ([2884d00](https://github.com/AIGNE-io/aigne-framework/commit/2884d00b83e153ae7465ef1369fcd22d7c6d43e0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.10.9
+    * @aigne/bedrock bumped to 0.8.13
+    * @aigne/core bumped to 1.45.0
+    * @aigne/deepseek bumped to 0.7.13
+    * @aigne/default-memory bumped to 1.0.13
+    * @aigne/gemini bumped to 0.8.13
+    * @aigne/ollama bumped to 0.7.13
+    * @aigne/open-router bumped to 0.7.13
+    * @aigne/openai bumped to 0.10.13
+    * @aigne/platform-helpers bumped to 0.5.1
+    * @aigne/transport bumped to 0.12.1
+    * @aigne/xai bumped to 0.7.13
+  * devDependencies
+    * @aigne/openai bumped to 0.10.13
+    * @aigne/test-utils bumped to 0.5.21
+
 ## [0.4.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.4.2...aigne-hub-v0.4.3) (2025-08-05)
 
 

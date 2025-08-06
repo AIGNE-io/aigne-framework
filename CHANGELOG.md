@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.53.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.52.0...aigne-framework-v1.53.0) (2025-08-06)
+
+
+### Features
+
+* **core:** add concurrency support for team agent ([#323](https://github.com/AIGNE-io/aigne-framework/issues/323)) ([5743260](https://github.com/AIGNE-io/aigne-framework/commit/57432603a45208ad3503b9fc4c64f07c8151f9ee))
+
+
+### Bug Fixes
+
+* **cli:** improve help display and command handling ([#319](https://github.com/AIGNE-io/aigne-framework/issues/319)) ([306ca5f](https://github.com/AIGNE-io/aigne-framework/commit/306ca5f251d6de356131b11909293be3904d0675))
+* **core:** remove lodash dependency ensure core support both esm and cjs ([#324](https://github.com/AIGNE-io/aigne-framework/issues/324)) ([d6c2452](https://github.com/AIGNE-io/aigne-framework/commit/d6c2452b660a163c73f2c628ffdc2a12949360b0))
+* create connect add app info ([#321](https://github.com/AIGNE-io/aigne-framework/issues/321)) ([f0094a3](https://github.com/AIGNE-io/aigne-framework/commit/f0094a3f891617a9822df90918445639cd8c1a90))
+* **models:** aigne-hub adapter not working in node.js v21 ([#320](https://github.com/AIGNE-io/aigne-framework/issues/320)) ([2884d00](https://github.com/AIGNE-io/aigne-framework/commit/2884d00b83e153ae7465ef1369fcd22d7c6d43e0))
+
 ## [1.52.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.51.0...aigne-framework-v1.52.0) (2025-08-05)
 
 

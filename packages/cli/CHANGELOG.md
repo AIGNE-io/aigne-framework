@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.30.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.3...cli-v1.30.4) (2025-08-06)
+
+
+### Bug Fixes
+
+* **cli:** improve help display and command handling ([#319](https://github.com/AIGNE-io/aigne-framework/issues/319)) ([306ca5f](https://github.com/AIGNE-io/aigne-framework/commit/306ca5f251d6de356131b11909293be3904d0675))
+* create connect add app info ([#321](https://github.com/AIGNE-io/aigne-framework/issues/321)) ([f0094a3](https://github.com/AIGNE-io/aigne-framework/commit/f0094a3f891617a9822df90918445639cd8c1a90))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.13
+    * @aigne/agentic-memory bumped to 1.0.13
+    * @aigne/aigne-hub bumped to 0.4.4
+    * @aigne/openai bumped to 0.10.13
+    * @aigne/core bumped to 1.45.0
+    * @aigne/default-memory bumped to 1.0.13
+
 ## [1.30.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.2...cli-v1.30.3) (2025-08-05)
 
 

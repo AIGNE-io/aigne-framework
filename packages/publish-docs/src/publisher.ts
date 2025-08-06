@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import open from "open";
 import terminalLink from "terminal-link";
 import { joinURL } from "ufo";
@@ -46,7 +47,7 @@ export async function publisher(input: {
     console.log(`Publishing docs collection...`);
 
     const link = terminalLink.isSupported ? terminalLink(docsUrl, docsUrl) : docsUrl;
-    const docsMessage = `📖 Docs available at: ${link}`;
+    const docsMessage = `📖 Docs available at: ${chalk.cyan(link)}`;
     console.log(docsMessage);
 
     // Auto open docs page in browser

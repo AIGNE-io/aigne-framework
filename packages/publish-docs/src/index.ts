@@ -1,6 +1,7 @@
+import chalk from "chalk";
 import { z } from "zod";
 import { authenticator } from "./authenticator.js";
-import { createBoard } from "./board.js";
+import { findOrCreateBoard } from "./board.js";
 import { Generator } from "./generator.js";
 import { publisher } from "./publisher.js";
 import type { PublishResult } from "./types.js";
@@ -13,6 +14,8 @@ const withTokenSchema = z.object({
   slugWithoutExt: z.boolean().optional(),
   autoCreateBoard: z.boolean().optional(),
   boardName: z.string().optional(),
+  boardDesc: z.string().optional(),
+  boardCover: z.string().optional(),
 });
 
 const withAuthSchema = z.object({
@@ -27,6 +30,8 @@ const withAuthSchema = z.object({
   slugWithoutExt: z.boolean().optional(),
   autoCreateBoard: z.boolean().optional(),
   boardName: z.string().optional(),
+  boardDesc: z.string().optional(),
+  boardCover: z.string().optional(),
 });
 
 const optionsSchema = z.union([withTokenSchema, withAuthSchema]);
@@ -54,17 +59,23 @@ export async function publishDocs(options: PublishDocsOptions): Promise<PublishR
   // Handle board creation if needed
   let finalBoardId = parsed.boardId;
 
-  if (parsed.autoCreateBoard && !parsed.boardId) {
+  if (parsed.autoCreateBoard) {
     if (!parsed.boardName) {
       throw new Error("boardName is required when autoCreateBoard is true");
     }
 
-    finalBoardId = await createBoard({
+    finalBoardId = await findOrCreateBoard({
       appUrl: parsed.appUrl,
       accessToken,
+      boardId: parsed.boardId ?? "",
       boardName: parsed.boardName,
+      desc: parsed.boardDesc,
+      cover: parsed.boardCover,
     });
-    console.log(`✅ Board "${parsed.boardName}" created successfully`);
+
+    if (finalBoardId !== parsed.boardId) {
+      console.log(`✅ Board ${chalk.cyan(parsed.boardName)} created successfully`);
+    }
   }
 
   if (!finalBoardId) {

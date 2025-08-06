@@ -1,4 +1,5 @@
 import assert from "node:assert";
+import fastq from "fastq";
 import { produce } from "immer";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { isEmpty, isNil, isRecord, omit, type PromiseOrValue } from "../utils/type-utils.js";
@@ -161,6 +162,23 @@ export interface TeamAgentOptions<I extends Message, O extends Message> extends 
   iterateOn?: keyof I;
 
   /**
+   * The maximum number of concurrent operations when processing array items with `iterateOn`.
+   *
+   * This property controls how many array elements are processed simultaneously when
+   * iterating over an array field. A higher concurrency value allows for faster
+   * parallel processing but may consume more resources.
+   *
+   * @remarks
+   * - Only applies when `iterateOn` is specified
+   * - Cannot be used together with `iterateWithPreviousOutput` (concurrency > 1)
+   * - Uses a queue-based approach to limit concurrent operations
+   * - Each concurrent operation processes one array element through the entire agent workflow
+   *
+   * @default 1
+   */
+  concurrency?: number;
+
+  /**
    * Controls whether to merge the output from each iteration back into the array items
    * for subsequent iterations when using `iterateOn`.
    *
@@ -240,8 +258,15 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
       maxIterations: options.reflection.maxIterations ?? DEFAULT_REFLECTION_MAX_ITERATIONS,
     };
     this.iterateOn = options.iterateOn;
+    this.concurrency = options.concurrency ?? 1;
     this.iterateWithPreviousOutput = options.iterateWithPreviousOutput;
     this.includeAllStepsOutput = options.includeAllStepsOutput;
+
+    if (this.concurrency !== 1 && this.iterateWithPreviousOutput) {
+      throw new Error(
+        `iterateWithPreviousOutput cannot be used with concurrency > 1, concurrency: ${this.concurrency}`,
+      );
+    }
   }
 
   /**
@@ -270,6 +295,17 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
    * @see TeamAgentOptions.iterateOn for detailed documentation
    */
   iterateOn?: keyof I;
+
+  /**
+   * The maximum number of concurrent operations when processing array items.
+   *
+   * This property controls the concurrency level for iterative processing when `iterateOn`
+   * is used. It determines how many array elements are processed simultaneously.
+   *
+   * @see TeamAgentOptions.concurrency for detailed documentation
+   * @default 1
+   */
+  concurrency: number;
 
   /**
    * Controls whether to merge the output from each iteration back into the array items
@@ -368,34 +404,44 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     let arr = input[this.iterateOn] as unknown[];
     arr = Array.isArray(arr) ? [...arr] : isNil(arr) ? [arr] : [];
 
-    const result: Message[] = [];
+    const results: Message[] = [];
 
-    for (let i = 0; i < arr.length; i++) {
-      const item = arr[i];
+    const queue = fastq.promise<unknown, { item: unknown; index: number }>(
+      async ({ item, index }) => {
+        if (!isRecord(item))
+          throw new TypeError(`Expected ${String(key)} to be an object, got ${typeof item}`);
 
-      if (!isRecord(item))
-        throw new TypeError(`Expected ${String(key)} to be an object, got ${typeof item}`);
+        const o = await agentProcessResultToObject(
+          await this._processNonIterator(
+            { ...input, [key]: arr, ...item },
+            { ...options, streaming: false },
+          ),
+        );
 
-      const res = await agentProcessResultToObject(
-        await this._processNonIterator(
-          { ...input, [key]: arr, ...item },
-          { ...options, streaming: false },
-        ),
-      );
+        const res = omit(o, key as any);
 
-      // Merge the item result with the original item used for next iteration
-      if (this.iterateWithPreviousOutput) {
-        arr = produce(arr, (draft) => {
-          const item = draft[i];
-          assert(item);
-          Object.assign(item, res);
-        });
-      }
+        // Merge the item result with the original item used for next iteration
+        if (this.iterateWithPreviousOutput) {
+          arr = produce(arr, (draft) => {
+            const item = draft[index];
+            assert(item);
+            Object.assign(item, res);
+          });
+        }
 
-      result.push(omit(res, key as any) as Message);
+        results[index] = res;
+      },
+      this.concurrency,
+    );
 
-      yield { delta: { json: { [key]: result } } } as AgentResponseChunk<O>;
+    for (let index = 0; index < arr.length; index++) {
+      queue.push({ index, item: arr[index] });
     }
+
+    // result.push(omit(res, key as any) as Message);
+    await queue.drained();
+
+    yield { delta: { json: { [key]: results } } } as AgentResponseChunk<O>;
   }
 
   private _processNonIterator(

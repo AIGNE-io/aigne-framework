@@ -1,7 +1,7 @@
 {
   "name": "@aigne/core",
   "version": "1.46.0",
-  "description": "AIGNE core library for building AI-powered applications",
+  "description": "The functional core of agentic AI",
   "publishConfig": {
     "access": "public"
   },

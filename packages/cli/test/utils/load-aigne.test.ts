@@ -8,7 +8,6 @@ import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import {
   AIGNE_ENV_FILE,
-  checkConnectionStatus,
   connectToAIGNEHub,
   createConnect,
   decodeEncryptionKey,

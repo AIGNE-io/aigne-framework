@@ -15,14 +15,14 @@ export interface UserInfoResult {
 
 export async function getUserInfo({
   baseUrl,
-  accessKey,
+  apiKey,
 }: {
   baseUrl: string;
-  accessKey: string;
+  apiKey: string;
 }): Promise<UserInfoResult> {
   const response = await fetch(joinURL(baseUrl, "/api/user/info"), {
     headers: {
-      Authorization: `Bearer ${accessKey}`,
+      Authorization: `Bearer ${apiKey}`,
     },
   });
 

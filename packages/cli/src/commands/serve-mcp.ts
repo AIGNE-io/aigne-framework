@@ -52,6 +52,11 @@ export function createServeMCPCommand({
           describe: "Pathname to the service",
           type: "string",
           default: "/mcp",
+        })
+        .option("aigne-hub-url", {
+          describe:
+            "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models. ",
+          type: "string",
         });
     },
     handler: async (options) => {
@@ -68,10 +73,11 @@ export async function serveMCPServerFromDir(options: {
   host: string;
   port?: number;
   pathname: string;
+  aigneHubUrl?: string;
 }) {
   const port = options.port || DEFAULT_PORT();
 
-  const aigne = await loadAIGNE(options.dir);
+  const aigne = await loadAIGNE(options.dir, { aigneHubUrl: options.aigneHubUrl });
 
   await serveMCPServer({
     aigne,

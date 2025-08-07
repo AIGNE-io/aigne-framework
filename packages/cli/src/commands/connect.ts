@@ -4,7 +4,7 @@ import chalk from "chalk";
 import { parse } from "yaml";
 import type { CommandModule } from "yargs";
 import { getUserInfo } from "../utils/aigne-hub-user.js";
-import { AIGNE_ENV_FILE, connectToAIGNEHub } from "../utils/load-aigne.js";
+import { AIGNE_ENV_FILE, connectToAIGNEHub, DEFAULT_URL } from "../utils/load-aigne.js";
 
 interface ConnectOptions {
   url?: string;
@@ -61,18 +61,20 @@ export async function displayStatus(statusList: StatusInfo[]) {
   }
 
   console.log(chalk.blue("AIGNE Hub Connection Status:\n"));
+  const defaultStatus =
+    statusList.find((status) => status.host === "default")?.apiUrl || DEFAULT_URL;
 
-  for (const status of statusList) {
-    const userInfo = await getUserInfo({
-      baseUrl: status.apiUrl,
-      accessKey: status.apiKey,
-    }).catch((e) => {
-      console.error(e);
-      return null;
-    });
+  for (const status of statusList.filter((status) => status.host !== "default")) {
+    const userInfo = await getUserInfo({ baseUrl: status.apiUrl, apiKey: status.apiKey }).catch(
+      (e) => {
+        console.error(e);
+        return null;
+      },
+    );
 
-    const statusIcon = userInfo ? chalk.green("✓") : chalk.red("✗");
-    const statusText = userInfo ? "Connected" : "Disconnected";
+    const isConnected = new URL(status.apiUrl).origin === new URL(defaultStatus).origin;
+    const statusIcon = isConnected ? chalk.green("✓") : chalk.red("✗");
+    const statusText = isConnected ? "Connected" : "Disconnected";
 
     console.log(`${statusIcon} ${chalk.bold(status.host)}`);
     console.log(`   Status: ${statusText}`);

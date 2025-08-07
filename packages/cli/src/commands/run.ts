@@ -6,7 +6,7 @@ import type { Agent, AIGNE } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
-import { select } from "@inquirer/prompts";
+import { input as inputInquirer, select as selectInquirer } from "@inquirer/prompts";
 import { ListrInquirerPromptAdapter } from "@listr2/prompt-adapter-inquirer";
 import { config } from "dotenv-flow";
 import type { CommandModule } from "yargs";
@@ -41,6 +41,11 @@ export function createRunCommand({
         })
         .option("cache-dir", {
           describe: "Directory to download the package to (defaults to the ~/.aigne/xxx)",
+          type: "string",
+        })
+        .option("aigne-hub-url", {
+          describe:
+            "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models. ",
           type: "string",
         })
         .strict(false);
@@ -83,12 +88,23 @@ export function createRunCommand({
 
               const aigne = await loadAIGNE(
                 dir,
-                { ...options, model: options.model || process.env.MODEL },
+                {
+                  ...options,
+                  model: options.model || process.env.MODEL,
+                  aigneHubUrl: options?.aigneHubUrl,
+                },
                 {
                   inquirerPromptFn: (prompt) => {
+                    if (prompt.type === "input") {
+                      return task
+                        .prompt(ListrInquirerPromptAdapter as any)
+                        .run(inputInquirer, prompt)
+                        .then((res: boolean) => ({ [prompt.name]: res }));
+                    }
+
                     return task
                       .prompt(ListrInquirerPromptAdapter as any)
-                      .run(select, prompt)
+                      .run(selectInquirer, prompt)
                       .then((res: boolean) => ({ [prompt.name]: res }));
                   },
                 },

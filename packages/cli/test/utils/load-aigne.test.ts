@@ -457,6 +457,33 @@ describe("load aigne", () => {
       close();
     });
 
+    test("should load aigne successfully with default env file with custom url", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async (data) => {
+        if (data.type === "input") {
+          return { customUrl: url };
+        }
+        return { subscribe: "custom" };
+      });
+
+      await writeFile(AIGNE_ENV_FILE, stringify({ default: { AIGNE_HUB_API_URL: url } }));
+
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE(
+        path,
+        { model: "aignehub:openai/gpt-4o" },
+        { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+      );
+
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
+
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
+      close();
+    });
+
     test("should load aigne successfully with no env file", async () => {
       const { url, close } = await createHonoServer();
       const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));

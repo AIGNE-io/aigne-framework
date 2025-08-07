@@ -570,7 +570,6 @@ describe("load aigne", () => {
       const { url, close } = await createHonoServer();
       const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
-      process.env.AIGNE_HUB_API_URL = url;
       await writeFile(AIGNE_ENV_FILE, stringify({ default: { AIGNE_HUB_API_URL: url } }));
 
       const path = join(import.meta.dirname, "../_mocks_");

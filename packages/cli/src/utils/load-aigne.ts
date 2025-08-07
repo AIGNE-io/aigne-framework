@@ -275,7 +275,7 @@ export async function connectToAIGNEHub(url: string) {
     return accessKeyOptions;
   } catch (error) {
     logger.error("Failed to connect to AIGNE Hub", error.message);
-    return { accessKey: undefined, url: undefined };
+    return { apiKey: undefined, url: undefined };
   }
 }
 

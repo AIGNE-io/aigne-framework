@@ -14,7 +14,7 @@ Commands:
                        server (streamable http)
   aigne observe        Start the observability server
   aigne connect [url]  Manage AIGNE Hub connections
-  aigne doc-smith      Generate professional documents by doc-smith
+  aigne doc-smith      Generate and maintain project docs — powered by agents.
                                                         [aliases: docsmith, doc]
 
 Options:

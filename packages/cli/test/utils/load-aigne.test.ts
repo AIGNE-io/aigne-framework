@@ -655,6 +655,35 @@ describe("load aigne", () => {
       close();
     });
 
+    test("should load aigne successfully with aigneHubUrl", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: true }));
+
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          [new URL(url).host]: {
+            AIGNE_HUB_API_KEY: "123",
+            AIGNE_HUB_API_URL: url,
+          },
+        }),
+      );
+
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE(
+        path,
+        { model: "aignehub:openai/gpt-4o", aigneHubUrl: url },
+        { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+      );
+
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
+
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("123");
+      close();
+    });
+
     afterEach(async () => {
       await rm(AIGNE_ENV_FILE, { force: true });
     });

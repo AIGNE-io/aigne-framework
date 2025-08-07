@@ -17,11 +17,10 @@
 AIGNE Framework is a functional AI application development framework designed to simplify and accelerate the process of building modern applications. It combines functional programming features, powerful artificial intelligence capabilities, and modular design principles to help developers easily create scalable solutions. AIGNE Framework is also deeply integrated with the Blocklet ecosystem, providing developers with a wealth of tools and resources.
 
 📛 AIGNE Name & Meaning
-[ ˈei dʒən ] — like “agent” without the t
-
+\[ ˈei dʒən ] — like “agent” without the t
 
 🔤 Pronunciation
-It’s pronounced **[ ˈei dʒən ]** — like *“agent” without the “t.”*
+It’s pronounced **\[ ˈei dʒən ]** — like *“agent” without the “t.”*
 
 🏞️ Origin
 *Aigne* is a small medieval village in southern France.
@@ -34,9 +33,9 @@ An open framework for building real AI agents that live across cloud, browser, a
 ## Architecture diagram
 
 <picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/chore-readme-arch/assets/aigne-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/chore-readme-arch/assets/aigne.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/chore-readme-arch/aigne.png" alt="AIGNE Arch" />
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/assets/aigne-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/assets/aigne.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/aigne.png" alt="AIGNE Arch" />
 </picture>
 
 ## Key Features

@@ -20,6 +20,12 @@ AIGNE OpenAI SDK for integrating with OpenAI's GPT models and API services withi
 
 `@aigne/openai` provides a seamless integration between the AIGNE Framework and OpenAI's powerful language models and APIs. This package enables developers to easily leverage OpenAI's GPT models in their AIGNE applications, providing a consistent interface across the framework while taking advantage of OpenAI's advanced AI capabilities.
 
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/assets/aigne-openai-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/assets/aigne-openai.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/aigne-openai.png" alt="AIGNE Arch" />
+</picture>
+
 ## Features
 
 * **OpenAI API Integration**: Direct connection to OpenAI's API services using the official SDK

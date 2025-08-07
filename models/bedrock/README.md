@@ -20,6 +20,12 @@ AIGNE AWS Bedrock SDK for integrating with AWS foundation models within the [AIG
 
 `@aigne/bedrock` provides a seamless integration between the AIGNE Framework and AWS Bedrock foundation models. This package enables developers to easily leverage various AI models available through AWS Bedrock in their AIGNE applications, providing a consistent interface across the framework while taking advantage of AWS's secure and scalable infrastructure.
 
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/assets/aigne-bedrock-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/assets/aigne-bedrock.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/aigne-bedrock.png" alt="AIGNE Arch" />
+</picture>
+
 ## Features
 
 * **AWS Bedrock Integration**: Direct connection to AWS Bedrock services using the official AWS SDK

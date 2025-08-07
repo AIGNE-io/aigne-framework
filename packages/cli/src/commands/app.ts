@@ -151,6 +151,11 @@ const agentCommandModule = ({
           type: "string",
           description: 'Input format, can be "json" or "yaml"',
           choices: ["json", "yaml"],
+        })
+        .option("aigne-hub-url", {
+          describe:
+            "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models.",
+          type: "string",
         }) as any;
     },
     handler: async (input) => {
@@ -162,9 +167,17 @@ const agentCommandModule = ({
 export async function invokeCLIAgentFromDir(options: {
   dir: string;
   agent: string;
-  input: Message & { input?: string[]; format?: "yaml" | "json"; model?: string };
+  input: Message & {
+    input?: string[];
+    format?: "yaml" | "json";
+    model?: string;
+    aigneHubUrl?: string;
+  };
 }) {
-  const aigne = await loadAIGNE(options.dir, { model: options.input.model });
+  const aigne = await loadAIGNE(options.dir, {
+    model: options.input.model,
+    aigneHubUrl: options.input.aigneHubUrl,
+  });
 
   try {
     const agent = aigne.cli.agents[options.agent];

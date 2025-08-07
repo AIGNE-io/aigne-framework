@@ -51,6 +51,7 @@ export interface RunOptions extends RunAIGNECommandOptions {
   path: string;
   entryAgent?: string;
   cacheDir?: string;
+  aigneHubUrl?: string;
 }
 
 const WELLKNOWN_SERVICE_PATH_PREFIX = "/.well-known/service";
@@ -164,7 +165,7 @@ export async function createConnect({
 const AGENT_HUB_PROVIDER = "aignehub";
 const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-4o";
 const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_HUB_MODEL}`;
-const DEFAULT_URL = "https://hub.aigne.io/";
+export const DEFAULT_URL = "https://hub.aigne.io/";
 
 export const formatModelName = async (
   models: ReturnType<typeof availableModels>,
@@ -239,7 +240,7 @@ export async function connectToAIGNEHub(url: string) {
     });
 
     const accessKeyOptions = {
-      accessKey: result.accessKeySecret,
+      apiKey: result.accessKeySecret,
       url: joinURL(origin, aigneHubMount?.mountPoint || ""),
     };
 
@@ -256,7 +257,10 @@ export async function connectToAIGNEHub(url: string) {
       stringify({
         ...envs,
         [host]: {
-          AIGNE_HUB_API_KEY: accessKeyOptions.accessKey,
+          AIGNE_HUB_API_KEY: accessKeyOptions.apiKey,
+          AIGNE_HUB_API_URL: accessKeyOptions.url,
+        },
+        default: {
           AIGNE_HUB_API_URL: accessKeyOptions.url,
         },
       }),
@@ -306,7 +310,7 @@ const mockInquirerPrompt = (() => Promise.resolve({ useAigneHub: true })) as any
 
 export async function loadAIGNE(
   path: string,
-  options?: Pick<RunOptions, "model">,
+  options?: Pick<RunOptions, "model" | "aigneHubUrl">,
   actionOptions?: {
     inquirerPromptFn?: (prompt: {
       type: string;
@@ -318,11 +322,20 @@ export async function loadAIGNE(
     runTest?: boolean;
   },
 ) {
-  const models = availableModels();
-  const AIGNE_HUB_URL = process.env.AIGNE_HUB_API_URL || DEFAULT_URL;
-  const connectUrl = joinURL(new URL(AIGNE_HUB_URL).origin, WELLKNOWN_SERVICE_PATH_PREFIX);
+  const aigneDir = join(homedir(), ".aigne");
+  if (!existsSync(aigneDir)) {
+    mkdirSync(aigneDir, { recursive: true });
+  }
+
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
   const inquirerPrompt = (actionOptions?.inquirerPromptFn ??
     inquirer.prompt) as typeof inquirer.prompt;
+
+  const models = availableModels();
+  const configUrl = options?.aigneHubUrl || process.env.AIGNE_HUB_API_URL;
+  const AIGNE_HUB_URL = configUrl || envs?.default?.AIGNE_HUB_API_URL || DEFAULT_URL;
+
+  const connectUrl = joinURL(new URL(AIGNE_HUB_URL).origin, WELLKNOWN_SERVICE_PATH_PREFIX);
 
   const { host } = new URL(AIGNE_HUB_URL);
   const { aigne } = await loadAIGNEFile(path).catch(() => ({ aigne: null }));
@@ -347,28 +360,57 @@ export async function loadAIGNE(
       credential = await checkConnectionStatus(host);
     } catch (error) {
       if (error instanceof Error && error.message.includes("login first")) {
-        // If none or invalid, prompt the user to proceed
-        const subscribePrompt = await inquirerPrompt({
-          type: "list",
-          name: "subscribe",
-          message:
-            "No LLM API Keys or AIGNE Hub connections found, select your preferred way to continue:",
-          choices: [
-            {
-              name: "Connect to AIGNE Hub with just a few clicks, free credits eligible for new users (Recommended)",
-              value: true,
-            },
-            { name: "Exit and configure my own LLM API Keys", value: false },
-          ],
-          default: true,
-        });
+        let aigneHubUrl = connectUrl;
 
-        if (!subscribePrompt.subscribe) {
-          console.warn("The AIGNE Hub connection has been cancelled");
-          process.exit(0);
+        if (!configUrl) {
+          const { subscribe } = await inquirerPrompt({
+            type: "list",
+            name: "subscribe",
+            message:
+              "No LLM API Keys or AIGNE Hub connections found. How would you like to proceed?",
+            choices: [
+              {
+                name: "Connect to the Arcblock official AIGNE Hub (recommended, free credits for new users)",
+                value: "official",
+              },
+              connectUrl.includes(DEFAULT_URL)
+                ? {
+                    name: "Connect to your own AIGNE Hub instance (self-hosted)",
+                    value: "custom",
+                  }
+                : null,
+              {
+                name: "Exit and configure my own LLM API Keys",
+                value: "manual",
+              },
+            ].filter(Boolean) as { name: string; value: string }[],
+            default: "official",
+          });
+
+          if (subscribe === "custom") {
+            const { customUrl } = await inquirerPrompt({
+              type: "input",
+              name: "customUrl",
+              message: "Enter the URL of your AIGNE Hub:",
+              validate(input) {
+                try {
+                  const url = new URL(input);
+                  return url.protocol.startsWith("http")
+                    ? true
+                    : "Must be a valid URL with http or https";
+                } catch {
+                  return "Invalid URL";
+                }
+              },
+            });
+            aigneHubUrl = customUrl;
+          } else if (subscribe === "manual") {
+            console.log("You chose to configure your own LLM API Keys. Exiting...");
+            process.exit(0);
+          }
         }
 
-        credential = await connectToAIGNEHub(connectUrl);
+        credential = await connectToAIGNEHub(aigneHubUrl);
       }
     }
   }

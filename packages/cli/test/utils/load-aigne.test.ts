@@ -80,6 +80,41 @@ describe("load aigne", () => {
     default: mockOpen,
   }));
 
+  describe("loadAIGNE with process.env.AIGNE_HUB_API_URL", () => {
+    test("should load aigne successfully with default env file", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
+
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          [new URL(url).host]: {
+            AIGNE_HUB_API_KEY: "123",
+            AIGNE_HUB_API_URL: url,
+          },
+          default: {
+            AIGNE_HUB_API_URL: url,
+          },
+        }),
+      );
+
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE(
+        path,
+        { model: "aignehub:openai/gpt-4o" },
+        { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+      );
+
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
+      await rm(AIGNE_ENV_FILE, { force: true });
+
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("123");
+      close();
+    });
+  });
+
   describe("Encryption Functions", () => {
     describe("encodeEncryptionKey", () => {
       test("should encode encryption key correctly", () => {
@@ -524,7 +559,7 @@ describe("load aigne", () => {
   describe("loadAIGNE", () => {
     test("should load aigne successfully with no env file", async () => {
       const { url, close } = await createHonoServer();
-      const mockInquirerPrompt: any = mock(async () => ({ subscribe: true }));
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
       process.env.AIGNE_HUB_API_URL = url;
       const path = join(import.meta.dirname, "../_mocks_");
@@ -545,7 +580,7 @@ describe("load aigne", () => {
 
     test("should load aigne successfully with empty env file", async () => {
       const { url, close } = await createHonoServer();
-      const mockInquirerPrompt: any = mock(async () => ({ subscribe: true }));
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
       process.env.AIGNE_HUB_API_URL = url;
       await writeFile(AIGNE_ENV_FILE, stringify({}));
@@ -568,7 +603,7 @@ describe("load aigne", () => {
 
     test("should load aigne successfully with no host env file", async () => {
       const { url, close } = await createHonoServer();
-      const mockInquirerPrompt: any = mock(async () => ({ subscribe: true }));
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
       process.env.AIGNE_HUB_API_URL = url;
       await writeFile(
@@ -598,7 +633,7 @@ describe("load aigne", () => {
 
     test("should load aigne successfully with no host key env file", async () => {
       const { url, close } = await createHonoServer();
-      const mockInquirerPrompt: any = mock(async () => ({ subscribe: true }));
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
       process.env.AIGNE_HUB_API_URL = url;
       await writeFile(
@@ -627,7 +662,7 @@ describe("load aigne", () => {
 
     test("should load aigne successfully with no host key env file", async () => {
       const { url, close } = await createHonoServer();
-      const mockInquirerPrompt: any = mock(async () => ({ subscribe: true }));
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
       process.env.AIGNE_HUB_API_URL = url;
       await writeFile(
@@ -644,35 +679,6 @@ describe("load aigne", () => {
       await loadAIGNE(
         path,
         { model: "aignehub:openai/gpt-4o" },
-        { inquirerPromptFn: mockInquirerPrompt, runTest: true },
-      );
-
-      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-      const env = envs[new URL(url).host];
-
-      expect(env).toBeDefined();
-      expect(env.AIGNE_HUB_API_KEY).toBe("123");
-      close();
-    });
-
-    test("should load aigne successfully with aigneHubUrl", async () => {
-      const { url, close } = await createHonoServer();
-      const mockInquirerPrompt: any = mock(async () => ({ subscribe: true }));
-
-      await writeFile(
-        AIGNE_ENV_FILE,
-        stringify({
-          [new URL(url).host]: {
-            AIGNE_HUB_API_KEY: "123",
-            AIGNE_HUB_API_URL: url,
-          },
-        }),
-      );
-
-      const path = join(import.meta.dirname, "../_mocks_");
-      await loadAIGNE(
-        path,
-        { model: "aignehub:openai/gpt-4o", aigneHubUrl: url },
         { inquirerPromptFn: mockInquirerPrompt, runTest: true },
       );
 

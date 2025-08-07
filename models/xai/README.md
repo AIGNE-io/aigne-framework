@@ -20,6 +20,12 @@ AIGNE XAI SDK for integrating with XAI language models and API services within t
 
 `@aigne/xai` provides a seamless integration between the AIGNE Framework and XAI's language models and API services. This package enables developers to easily leverage XAI's models in their AIGNE applications, providing a consistent interface across the framework while taking advantage of XAI's advanced AI capabilities.
 
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/assets/aigne-xai-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/assets/aigne-xai.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/refs/heads/chore-readme-arch/aigne-xai.png" alt="AIGNE Arch" />
+</picture>
+
 ## Features
 
 * **XAI API Integration**: Direct connection to XAI's API services

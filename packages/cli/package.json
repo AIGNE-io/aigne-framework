@@ -1,7 +1,7 @@
 {
   "name": "@aigne/cli",
   "version": "1.32.0",
-  "description": "Command-line interface for AIGNE Framework - A functional AI application development framework for building scalable AI-powered applications with workflow patterns, MCP protocol integration, and multi-model support",
+  "description": "Your command center for agent development",
   "publishConfig": {
     "access": "public"
   },

@@ -26,7 +26,7 @@ test("app command should register applications to yargs", async () => {
     "aigne [command]
 
     Commands:
-      aigne doc-smith  Generate professional documents by doc-smith
+      aigne doc-smith  Generate and maintain project docs — powered by agents.
                                                             [aliases: docsmith, doc]
 
     Options:
@@ -72,7 +72,7 @@ test("app command should register doc-smith to yargs", async () => {
   expect(log.mock.lastCall?.[0]).toMatchInlineSnapshot(`
     "aigne doc-smith
 
-    Generate professional documents by doc-smith
+    Generate and maintain project docs — powered by agents.
 
     Commands:
       aigne doc-smith serve-mcp  Serve doc-smith a MCP server (streamable http)

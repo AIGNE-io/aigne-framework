@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.55.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.54.0...aigne-framework-v1.55.0) (2025-08-07)
+
+
+### Features
+
+* **cli:** support config custom AIGNE Hub service URL ([#330](https://github.com/AIGNE-io/aigne-framework/issues/330)) ([21d30c8](https://github.com/AIGNE-io/aigne-framework/commit/21d30c8c75d9f27cb257d92434ba63e38e06f468))
+
+
+### Bug Fixes
+
+* **cli:** properly handle boolean and number types in agent options ([#331](https://github.com/AIGNE-io/aigne-framework/issues/331)) ([c9f4209](https://github.com/AIGNE-io/aigne-framework/commit/c9f4209ec1b236bc54e8aaef0b960e10a380e375))
+
 ## [1.54.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.53.0...aigne-framework-v1.54.0) (2025-08-06)
 
 

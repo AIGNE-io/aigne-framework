@@ -11,7 +11,7 @@ import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
 import { parse } from "yaml";
 import type { CommandModule } from "yargs";
-import { ZodObject, ZodString, type ZodType } from "zod";
+import { ZodBoolean, ZodNumber, ZodObject, ZodString, ZodType } from "zod";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { runAgentWithAIGNE, stdinHasData } from "../utils/run-with-aigne.js";
@@ -130,9 +130,16 @@ const agentCommandModule = ({
     describe: agent.description || "",
     builder: (yargs) => {
       for (const [option, config] of Object.entries(inputSchema)) {
+        const innerType = innerZodType(config);
+
         yargs.option(option, {
           // TODO: support more types
-          type: "string",
+          type:
+            innerType instanceof ZodBoolean
+              ? "boolean"
+              : innerType instanceof ZodNumber
+                ? "number"
+                : "string",
           description: config.description,
         });
 
@@ -158,6 +165,14 @@ const agentCommandModule = ({
     },
   };
 };
+
+function innerZodType(type: ZodType): ZodType {
+  if ("innerType" in type._def && type._def.innerType instanceof ZodType) {
+    return innerZodType(type._def.innerType);
+  }
+
+  return type;
+}
 
 export async function invokeCLIAgentFromDir(options: {
   dir: string;

@@ -420,7 +420,7 @@ describe("load aigne", () => {
       const result = await connectToAIGNEHub(url);
 
       expect(result).toBeDefined();
-      expect(result.accessKey).toBe("test");
+      expect(result.apiKey).toBe("test");
       expect(result.url).toBe(joinURL(url, "ai-kit"));
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));

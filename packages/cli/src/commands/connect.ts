@@ -65,13 +65,12 @@ export async function displayStatus(statusList: StatusInfo[]) {
     statusList.find((status) => status.host === "default")?.apiUrl || DEFAULT_URL;
 
   for (const status of statusList.filter((status) => status.host !== "default")) {
-    const userInfo = await getUserInfo({
-      baseUrl: status.apiUrl,
-      accessKey: status.apiKey,
-    }).catch((e) => {
-      console.error(e);
-      return null;
-    });
+    const userInfo = await getUserInfo({ baseUrl: status.apiUrl, apiKey: status.apiKey }).catch(
+      (e) => {
+        console.error(e);
+        return null;
+      },
+    );
 
     const isConnected = new URL(status.apiUrl).origin === new URL(defaultStatus).origin;
     const statusIcon = isConnected ? chalk.green("✓") : chalk.red("✗");

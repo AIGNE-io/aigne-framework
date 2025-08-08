@@ -29,6 +29,29 @@ export interface RunOptions extends RunAIGNECommandOptions {
 
 const mockInquirerPrompt = (() => Promise.resolve({ useAigneHub: true })) as any;
 
+async function prepareAIGNEConfig(
+  options?: Pick<RunOptions, "model" | "aigneHubUrl"> & Partial<Model>,
+  inquirerPromptFn?: LoadCredentialOptions["inquirerPromptFn"],
+) {
+  const aigneDir = join(homedir(), ".aigne");
+  if (!existsSync(aigneDir)) {
+    mkdirSync(aigneDir, { recursive: true });
+  }
+
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+  const inquirerPrompt = (inquirerPromptFn ?? inquirer.prompt) as typeof inquirer.prompt;
+
+  // get aigne hub url
+  const configUrl = options?.aigneHubUrl || process.env.AIGNE_HUB_API_URL;
+  const AIGNE_HUB_URL = configUrl || envs?.default?.AIGNE_HUB_API_URL || DEFAULT_AIGNE_HUB_URL;
+
+  const { host } = new URL(AIGNE_HUB_URL);
+  const result = await checkConnectionStatus(host).catch(() => null);
+  const alreadyConnected = Boolean(result?.apiKey);
+
+  return { AIGNE_HUB_URL, inquirerPrompt: alreadyConnected ? mockInquirerPrompt : inquirerPrompt };
+}
+
 export async function loadAIGNEByOptions(
   options?: Model & Pick<RunOptions, "model" | "aigneHubUrl">,
   modelOptions?: ChatModelOptions,
@@ -37,40 +60,19 @@ export async function loadAIGNEByOptions(
     runTest?: boolean;
   },
 ) {
-  const aigneDir = join(homedir(), ".aigne");
-  if (!existsSync(aigneDir)) {
-    mkdirSync(aigneDir, { recursive: true });
-  }
-
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-  const inquirerPrompt = (actionOptions?.inquirerPromptFn ??
-    inquirer.prompt) as typeof inquirer.prompt;
-
-  // get aigne hub url from options or env
-  const configUrl = options?.aigneHubUrl || process.env.AIGNE_HUB_API_URL;
-  const AIGNE_HUB_URL = configUrl || envs?.default?.AIGNE_HUB_API_URL || DEFAULT_AIGNE_HUB_URL;
-
-  const { host } = new URL(AIGNE_HUB_URL);
-
-  const result = await checkConnectionStatus(host).catch(() => null);
-  const alreadyConnected = Boolean(result?.apiKey);
+  const { AIGNE_HUB_URL, inquirerPrompt } = await prepareAIGNEConfig(
+    options,
+    actionOptions?.inquirerPromptFn,
+  );
 
   // format model name
   const modelName = IsTest
     ? options?.model
-    : await formatModelName(
-        options?.model || "",
-        alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
-      );
+    : await formatModelName(options?.model || "", inquirerPrompt);
 
+  const { temperature, topP, presencePenalty, frequencyPenalty } = options || {};
   const model = await loadModel(
-    {
-      ...parseModelOption(modelName),
-      temperature: options?.temperature,
-      topP: options?.topP,
-      presencePenalty: options?.presencePenalty,
-      frequencyPenalty: options?.frequencyPenalty,
-    },
+    { ...parseModelOption(modelName), temperature, topP, presencePenalty, frequencyPenalty },
     modelOptions,
     { aigneHubUrl: AIGNE_HUB_URL, inquirerPromptFn: actionOptions?.inquirerPromptFn },
   );
@@ -86,32 +88,18 @@ export async function loadAIGNE(
     runTest?: boolean;
   },
 ) {
-  const aigneDir = join(homedir(), ".aigne");
-  if (!existsSync(aigneDir)) {
-    mkdirSync(aigneDir, { recursive: true });
-  }
+  const { AIGNE_HUB_URL, inquirerPrompt } = await prepareAIGNEConfig(
+    options,
+    actionOptions?.inquirerPromptFn,
+  );
 
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-  const inquirerPrompt = (actionOptions?.inquirerPromptFn ??
-    inquirer.prompt) as typeof inquirer.prompt;
-
-  // get aigne hub url from options or env
-  const configUrl = options?.aigneHubUrl || process.env.AIGNE_HUB_API_URL;
-  const AIGNE_HUB_URL = configUrl || envs?.default?.AIGNE_HUB_API_URL || DEFAULT_AIGNE_HUB_URL;
-
-  const { host } = new URL(AIGNE_HUB_URL);
   const { aigne } = await loadAIGNEFile(path).catch(() => ({ aigne: null }));
-
-  const result = await checkConnectionStatus(host).catch(() => null);
-  const alreadyConnected = Boolean(result?.apiKey);
+  const modelFromPath = `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`;
 
   // format model name
   const modelName = IsTest
     ? options?.model
-    : await formatModelName(
-        options?.model || `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`,
-        alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
-      );
+    : await formatModelName(options?.model || modelFromPath, inquirerPrompt);
 
   if (IsTest && !actionOptions?.runTest) {
     const model = await loadModel(parseModelOption(modelName));

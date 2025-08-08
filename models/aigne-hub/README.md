@@ -22,6 +22,12 @@ AIGNE SDK for accessing AI chat models via [AIGNE Hub](https://github.com/AIGNE-
 
 It enables you to switch providers without changing your client-side logic.
 
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-hub-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-hub.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-hub.png" alt="AIGNE Arch" />
+</picture>
+
 ## Supported Providers
 
 The AIGNE Hub backend supports the following AI providers via a single, unified API:

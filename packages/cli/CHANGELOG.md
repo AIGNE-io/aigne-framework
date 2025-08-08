@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.32.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.32.0...cli-v1.32.1) (2025-08-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.15
+    * @aigne/agentic-memory bumped to 1.0.15
+    * @aigne/aigne-hub bumped to 0.4.6
+    * @aigne/core bumped to 1.46.1
+    * @aigne/default-memory bumped to 1.0.15
+    * @aigne/openai bumped to 0.10.15
+
+## [1.32.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.31.0...cli-v1.32.0) (2025-08-07)
+
+
+### Features
+
+* **cli:** support config custom AIGNE Hub service URL ([#330](https://github.com/AIGNE-io/aigne-framework/issues/330)) ([21d30c8](https://github.com/AIGNE-io/aigne-framework/commit/21d30c8c75d9f27cb257d92434ba63e38e06f468))
+
+
+### Bug Fixes
+
+* **cli:** properly handle boolean and number types in agent options ([#331](https://github.com/AIGNE-io/aigne-framework/issues/331)) ([c9f4209](https://github.com/AIGNE-io/aigne-framework/commit/c9f4209ec1b236bc54e8aaef0b960e10a380e375))
+
 ## [1.31.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.30.4...cli-v1.31.0) (2025-08-06)
 
 

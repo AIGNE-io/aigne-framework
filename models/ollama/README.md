@@ -20,6 +20,12 @@ AIGNE Ollama SDK for integrating with locally hosted AI models via Ollama within
 
 `@aigne/ollama` provides a seamless integration between the AIGNE Framework and locally hosted AI models via Ollama. This package enables developers to easily leverage open-source language models running locally through Ollama in their AIGNE applications, providing a consistent interface across the framework while offering private, offline access to AI capabilities.
 
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-ollama-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-ollama.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-ollama.png" alt="AIGNE Arch" />
+</picture>
+
 ## Features
 
 * **Ollama Integration**: Direct connection to a local Ollama instance

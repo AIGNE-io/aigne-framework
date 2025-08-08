@@ -20,6 +20,12 @@ AIGNE OpenRouter SDK for accessing multiple AI models through a unified API with
 
 `@aigne/open-router` provides a seamless integration between the AIGNE Framework and OpenRouter's unified API for accessing a wide variety of AI models. This package enables developers to easily leverage models from multiple providers (including OpenAI, Anthropic, Google, and more) through a single consistent interface, allowing for flexible model selection and fallback options.
 
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-openrouter-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-openrouter.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-openrouter.png" alt="AIGNE Arch" />
+</picture>
+
 ## Features
 
 * **OpenRouter API Integration**: Direct connection to OpenRouter's API services

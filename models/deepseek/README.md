@@ -20,6 +20,12 @@ AIGNE Deepseek SDK for integrating with Deepseek AI models within the [AIGNE Fra
 
 `@aigne/deepseek` provides a seamless integration between the AIGNE Framework and Deepseek's powerful language models and API. This package enables developers to easily leverage Deepseek's AI models in their AIGNE applications, providing a consistent interface across the framework while taking advantage of Deepseek's advanced AI capabilities.
 
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-deepseek-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-deepseek.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-deepseek.png" alt="AIGNE Arch" />
+</picture>
+
 ## Features
 
 * **Deepseek API Integration**: Direct connection to Deepseek's API services

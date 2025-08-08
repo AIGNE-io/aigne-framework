@@ -19,84 +19,120 @@ exports[`ExtractMetadataTransform should extract metadata from structured stream
   {
     "delta": {
       "text": {
-        "text": " ",
+        "text": " How",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": "How",
+        "text": " can",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": " ",
+        "text": " I",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": "can",
+        "text": " help",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": " ",
+        "text": " you",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": "I",
+        "text": " today",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": " ",
+        "text": "?",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "json": {
+          "baz": 123,
+          "foo": "bar",
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`ExtractMetadataTransform should trim trailing whitespace 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "text": "Hello",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": "help",
+        "text": ",",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": " ",
+        "text": " How",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": "you",
+        "text": " can",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": " ",
+        "text": " I",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "text": "today",
+        "text": " help",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " you",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "text": " today",
       },
     },
   },

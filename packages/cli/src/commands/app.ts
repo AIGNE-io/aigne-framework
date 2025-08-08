@@ -22,7 +22,7 @@ const NPM_PACKAGE_CACHE_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
 const builtinApps = [
   {
     name: "doc-smith",
-    describe: "Generate professional documents by doc-smith",
+    describe: "Generate and maintain project docs — powered by agents.",
     aliases: ["docsmith", "doc"],
   },
 ];

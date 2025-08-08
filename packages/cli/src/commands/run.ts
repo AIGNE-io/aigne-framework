@@ -43,6 +43,11 @@ export function createRunCommand({
           describe: "Directory to download the package to (defaults to the ~/.aigne/xxx)",
           type: "string",
         })
+        .option("aigne-hub-url", {
+          describe:
+            "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models. ",
+          type: "string",
+        })
         .strict(false);
     },
     handler: async (argv) => {

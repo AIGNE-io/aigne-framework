@@ -18,7 +18,6 @@ import {
   AGENT_HUB_PROVIDER,
   DEFAULT_AIGNE_HUB_PROVIDER_MODEL,
   DEFAULT_MODEL_PROVIDER,
-  IsTest,
 } from "./constants.js";
 import { loadCredential } from "./credential.js";
 import type { LoadableModel, LoadCredentialOptions, Model } from "./type.js";
@@ -131,10 +130,6 @@ export const formatModelName = async (model: string, inquirerPrompt: typeof inqu
   const apiKeyEnvName = Array.isArray(m.apiKeyEnvName) ? m.apiKeyEnvName : [m.apiKeyEnvName];
   if (apiKeyEnvName.some((name) => name && process.env[name])) {
     return model;
-  }
-
-  if (IsTest) {
-    return `${AGENT_HUB_PROVIDER}:${provider}/${name}`;
   }
 
   const result = await inquirerPrompt({

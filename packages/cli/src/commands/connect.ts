@@ -1,10 +1,10 @@
 import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
+import { AIGNE_ENV_FILE, AIGNE_HUB_URL, connectToAIGNEHub } from "@aigne/aigne-hub";
 import chalk from "chalk";
-import { parse } from "yaml";
+import { parse, stringify } from "yaml";
 import type { CommandModule } from "yargs";
 import { getUserInfo } from "../utils/aigne-hub-user.js";
-import { AIGNE_ENV_FILE, connectToAIGNEHub, DEFAULT_URL } from "../utils/load-aigne.js";
 
 interface ConnectOptions {
   url?: string;
@@ -62,19 +62,16 @@ export async function displayStatus(statusList: StatusInfo[]) {
 
   console.log(chalk.blue("AIGNE Hub Connection Status:\n"));
   const defaultStatus =
-    statusList.find((status) => status.host === "default")?.apiUrl || DEFAULT_URL;
+    statusList.find((status) => status.host === "default")?.apiUrl || AIGNE_HUB_URL;
 
   for (const status of statusList.filter((status) => status.host !== "default")) {
     const userInfo = await getUserInfo({ baseUrl: status.apiUrl, apiKey: status.apiKey }).catch(
-      (e) => {
-        console.error(e);
-        return null;
-      },
+      () => null,
     );
 
     const isConnected = new URL(status.apiUrl).origin === new URL(defaultStatus).origin;
-    const statusIcon = isConnected ? chalk.green("✓") : chalk.red("✗");
-    const statusText = isConnected ? "Connected" : "Disconnected";
+    const statusIcon = isConnected ? chalk.green("✓") : "•";
+    const statusText = isConnected ? "Connected" : "Not connected";
 
     console.log(`${statusIcon} ${chalk.bold(status.host)}`);
     console.log(`   Status: ${statusText}`);
@@ -89,7 +86,7 @@ export async function displayStatus(statusList: StatusInfo[]) {
       if (userInfo?.creditBalance) {
         const balance = formatNumber(userInfo?.creditBalance?.balance);
         const total = formatNumber(userInfo?.creditBalance?.total);
-        console.log(`   Plan: ${balance} / ${total}`);
+        console.log(`   Credits: ${balance} / ${total}`);
       }
 
       console.log(
@@ -118,6 +115,42 @@ export function createConnectCommand(): CommandModule<unknown, ConnectOptions> {
           handler: async () => {
             const statusList = await getConnectionStatus();
             await displayStatus(statusList);
+          },
+        })
+        .command({
+          command: "switch",
+          describe: "Switch to a different AIGNE Hub",
+          handler: async (argv) => {
+            const url = argv.url;
+            console.log("Switching to AIGNE Hub: ", chalk.blue(url));
+
+            if (!url) {
+              console.error(chalk.red("✗ Please provide a URL to the AIGNE Hub server"));
+              process.exit(1);
+            }
+
+            const data = await readFile(AIGNE_ENV_FILE, "utf8");
+            const envs = parse(data) as AIGNEEnv;
+            let host = "";
+
+            try {
+              host = new URL(url).host;
+            } catch {
+              console.error(chalk.red("✗ Invalid URL"));
+              process.exit(1);
+            }
+
+            if (!envs[host]) {
+              console.error(chalk.red("✗ AIGNE Hub already connected"));
+              process.exit(1);
+            }
+
+            await writeFile(
+              AIGNE_ENV_FILE,
+              stringify({ ...envs, default: { AIGNE_HUB_API_URL: envs[host]?.AIGNE_HUB_API_URL } }),
+            );
+
+            console.log(chalk.green("✓ Successfully connected to AIGNE Hub"));
           },
         });
     },

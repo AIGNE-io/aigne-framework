@@ -152,7 +152,14 @@ export const formatModelName = async (model: string, inquirerPrompt: typeof inqu
     default: true,
   });
 
-  if (!result.useAigneHub) return model;
+  if (!result.useAigneHub) {
+    console.log(
+      chalk.yellow(
+        `You can use command "export ${apiKeyEnvName[0]}=xxx" to set API Key in your shell. Or you can set environment variables in .env file.`,
+      ),
+    );
+    process.exit(0);
+  }
 
   return `${AGENT_HUB_PROVIDER}:${provider}/${name}`;
 };

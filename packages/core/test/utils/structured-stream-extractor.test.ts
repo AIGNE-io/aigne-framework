@@ -19,3 +19,23 @@ Hello, How can I help you today?<metadata>
 
   expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
 });
+
+test("ExtractMetadataTransform should trim trailing whitespace", async () => {
+  const stream = stringToAgentResponseStream(`\
+Hello, How can I help you today?
+
+<metadata>
+{
+  "foo": "bar",
+  "baz": 123
+}
+</metadata>`).pipeThrough(
+    new ExtractMetadataTransform({
+      start: "<metadata>",
+      end: "</metadata>",
+      parse: JSON.parse,
+    }),
+  );
+
+  expect(readableStreamToArray(stream)).resolves.toMatchSnapshot();
+});

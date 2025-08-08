@@ -624,11 +624,7 @@ needMoreContext: false
   expect(response).toMatchInlineSnapshot(`
     {
       "confidence": 9,
-      "message": 
-    "Hello, How can I help you today?
-
-    "
-    ,
+      "message": "Hello, How can I help you today?",
       "needMoreContext": false,
     }
   `);
@@ -674,11 +670,7 @@ ${"```"}
   expect(response).toMatchInlineSnapshot(`
     {
       "confidence": 9,
-      "message": 
-    "Hello, How can I help you today?
-
-    "
-    ,
+      "message": "Hello, How can I help you today?",
       "needMoreContext": false,
     }
   `);

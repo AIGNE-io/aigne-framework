@@ -56,10 +56,12 @@ export async function loadAIGNEByOptions(
   const alreadyConnected = Boolean(result?.apiKey);
 
   // format model name
-  const modelName = await formatModelName(
-    options?.model || "",
-    alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
-  );
+  const modelName = IsTest
+    ? options?.model
+    : await formatModelName(
+        options?.model || "",
+        alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
+      );
 
   const model = await loadModel(
     {
@@ -104,10 +106,12 @@ export async function loadAIGNE(
   const alreadyConnected = Boolean(result?.apiKey);
 
   // format model name
-  const modelName = await formatModelName(
-    options?.model || `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`,
-    alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
-  );
+  const modelName = IsTest
+    ? options?.model
+    : await formatModelName(
+        options?.model || `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`,
+        alreadyConnected ? mockInquirerPrompt : inquirerPrompt,
+      );
 
   if (IsTest && !actionOptions?.runTest) {
     const model = await loadModel(parseModelOption(modelName));

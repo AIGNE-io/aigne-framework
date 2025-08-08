@@ -220,7 +220,10 @@ export async function loadCredential(options?: LoadCredentialOptions) {
   }
 
   const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-  const inquirerPrompt = (options?.inquirerPromptFn ?? inquirer.prompt) as typeof inquirer.prompt;
+  let inquirerPrompt = (options?.inquirerPromptFn ?? inquirer.prompt) as typeof inquirer.prompt;
+  if (IsTest) {
+    inquirerPrompt = (async () => ({ subscribe: "official" })) as any;
+  }
 
   const configUrl = options?.aigneHubUrl || process.env.AIGNE_HUB_API_URL;
   const AIGNE_HUB_URL = configUrl || envs?.default?.AIGNE_HUB_API_URL || DEFAULT_AIGNE_HUB_URL;

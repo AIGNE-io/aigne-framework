@@ -119,7 +119,11 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
 
       this.validateToolNames(tools);
 
-      Object.assign(input, { _toolsMap: toolsMap, tools });
+      Object.assign(input, { tools });
+      Object.defineProperty(input, "_toolsMap", {
+        value: toolsMap,
+        enumerable: false,
+      });
     }
   }
 

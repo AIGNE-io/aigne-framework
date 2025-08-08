@@ -57,10 +57,12 @@ export function createRunCommand({
       if (options.logLevel) logger.level = options.logLevel;
 
       const { cacheDir, dir } = prepareDirs(path, options);
+      const originalLog: Record<string, (...args: any[]) => void> = {};
 
       const { aigne, agent } = await new Listr<{
         aigne: AIGNE;
         agent: Agent;
+        logs: string[];
       }>(
         [
           {
@@ -86,6 +88,17 @@ export function createRunCommand({
               // Load env files in the aigne directory
               config({ path: dir, silent: true });
 
+              ctx.logs = [];
+
+              for (const method of ["debug", "log", "info", "warn", "error"] as const) {
+                originalLog[method] = console[method];
+
+                console[method] = (...args) => {
+                  ctx.logs.push(...args);
+                  task.output = args.join(" ");
+                };
+              }
+
               const aigne = await loadAIGNE(
                 dir,
                 {
@@ -109,6 +122,10 @@ export function createRunCommand({
                   },
                 },
               );
+
+              for (const method of ["debug", "log", "info", "warn", "error"] as const) {
+                console[method] = originalLog[method] ?? console[method];
+              }
 
               ctx.aigne = aigne;
             },
@@ -146,7 +163,12 @@ ${aigne.agents.map((agent) => `  - ${agent.name}`).join("\n")}
             timer: PRESET_TIMER,
           },
         },
-      ).run();
+      )
+        .run()
+        .then((ctx) => {
+          ctx.logs.forEach((log) => console.log(log));
+          return ctx;
+        });
 
       assert(aigne);
       assert(agent);

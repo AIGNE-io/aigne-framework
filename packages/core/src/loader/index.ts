@@ -24,6 +24,7 @@ export interface LoadOptions {
   ) => PromiseOrValue<ChatModel | undefined>;
   memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
   path: string;
+  model?: ChatModel;
 }
 
 export async function load(options: LoadOptions): Promise<AIGNEOptions> {
@@ -46,7 +47,7 @@ export async function load(options: LoadOptions): Promise<AIGNEOptions> {
   return {
     ...aigne,
     rootDir,
-    model: await options.loadModel(aigne.model),
+    model: options?.model || (await options.loadModel(aigne.model)),
     agents: pickAgents(aigne.agents ?? []),
     skills: pickAgents(aigne.skills ?? []),
     mcpServer: {

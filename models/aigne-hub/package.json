@@ -63,6 +63,8 @@
     "@aigne/xai": "workspace:^",
     "@ocap/mcrypto": "^1.21.0",
     "@smithy/node-http-handler": "^4.1.0",
+    "boxen": "^8.0.1",
+    "chalk": "^5.4.1",
     "https-proxy-agent": "^7.0.6",
     "inquirer": "^12.7.0",
     "open": "^10.2.0",

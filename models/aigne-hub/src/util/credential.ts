@@ -18,7 +18,7 @@ import {
   WELLKNOWN_SERVICE_PATH_PREFIX,
 } from "./constants.js";
 import { decrypt, encodeEncryptionKey } from "./crypto.js";
-import type { LoadCredentialOptions } from "./type.js";
+import type { CreateConnectOptions, FetchResult, LoadCredentialOptions } from "./type.js";
 
 const request = async (config: { url: string; method?: string; requestCount?: number }) => {
   const headers: Record<string, string> = {};
@@ -32,8 +32,6 @@ const request = async (config: { url: string; method?: string; requestCount?: nu
   const data = await response.json();
   return { data };
 };
-
-type FetchResult = { accessKeyId: string; accessKeySecret: string };
 
 export const fetchConfigs = async ({
   connectUrl,
@@ -69,25 +67,6 @@ export const fetchConfigs = async ({
 
 function baseWrapSpinner(_: string, waiting: () => Promise<FetchResult>) {
   return Promise.resolve(waiting());
-}
-
-interface CreateConnectOptions {
-  connectUrl: string;
-  openPage?: (url: string) => void;
-  fetchInterval?: number;
-  retry?: number;
-  source?: string;
-  connectAction?: string;
-  appName?: string;
-  appLogo?: string;
-  wrapSpinner?: typeof baseWrapSpinner;
-  prettyUrl?: (url: string) => string;
-  closeOnSuccess?: boolean;
-  intervalFetchConfig?: (options: {
-    sessionId: string;
-    fetchInterval: number;
-    fetchTimeout: number;
-  }) => Promise<FetchResult>;
 }
 
 export async function createConnect({
@@ -249,10 +228,11 @@ export async function loadCredential(options?: LoadCredentialOptions) {
   const { host } = new URL(AIGNE_HUB_URL);
 
   const modelName = options?.model || "";
+  const isAIGNEHubModel = (modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER);
 
   let credential: { apiKey?: string; url?: string } = {};
 
-  if ((modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER)) {
+  if (isAIGNEHubModel) {
     try {
       credential = await checkConnectionStatus(host);
     } catch (error) {

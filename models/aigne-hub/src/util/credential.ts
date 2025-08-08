@@ -1,8 +1,5 @@
-import { existsSync, mkdirSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { logger } from "@aigne/core/utils/logger.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import inquirer from "inquirer";
 import open from "open";
 import pWaitFor from "p-wait-for";
@@ -149,32 +146,34 @@ export async function connectToAIGNEHub(url: string) {
     };
 
     // After redirection, write the AIGNE Hub access token
-    const aigneDir = join(homedir(), ".aigne");
-    if (!existsSync(aigneDir)) {
-      mkdirSync(aigneDir, { recursive: true });
+    const aigneDir = nodejs.path.join(nodejs.os.homedir(), ".aigne");
+    if (!nodejs.fsSync.existsSync(aigneDir)) {
+      nodejs.fsSync.mkdirSync(aigneDir, { recursive: true });
     }
 
-    const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+    const envs = parse(await nodejs.fs.readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
 
-    await writeFile(
-      AIGNE_ENV_FILE,
-      stringify({
-        ...envs,
-        [host]: {
-          AIGNE_HUB_API_KEY: accessKeyOptions.apiKey,
-          AIGNE_HUB_API_URL: accessKeyOptions.url,
-        },
-        default: {
-          AIGNE_HUB_API_URL: accessKeyOptions.url,
-        },
-      }),
-    ).catch((err) => {
-      logger.error(
-        "Failed to write AIGNE Hub access token to .aigne/aigne-hub-connected.yaml",
-        err.message,
-      );
-      throw err;
-    });
+    await nodejs.fs
+      .writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          ...envs,
+          [host]: {
+            AIGNE_HUB_API_KEY: accessKeyOptions.apiKey,
+            AIGNE_HUB_API_URL: accessKeyOptions.url,
+          },
+          default: {
+            AIGNE_HUB_API_URL: accessKeyOptions.url,
+          },
+        }),
+      )
+      .catch((err) => {
+        logger.error(
+          "Failed to write AIGNE Hub access token to .aigne/aigne-hub-connected.yaml",
+          err.message,
+        );
+        throw err;
+      });
 
     return accessKeyOptions;
   } catch (error) {
@@ -185,11 +184,11 @@ export async function connectToAIGNEHub(url: string) {
 
 export const checkConnectionStatus = async (host: string) => {
   // aigne-hub access token
-  if (!existsSync(AIGNE_ENV_FILE)) {
+  if (!nodejs.fsSync.existsSync(AIGNE_ENV_FILE)) {
     throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");
   }
 
-  const data = await readFile(AIGNE_ENV_FILE, "utf8");
+  const data = await nodejs.fs.readFile(AIGNE_ENV_FILE, "utf8");
   if (!data.includes("AIGNE_HUB_API_KEY")) {
     throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
   }
@@ -214,12 +213,12 @@ export async function loadCredential(options?: LoadCredentialOptions) {
   const isBlocklet = process.env.BLOCKLET_AIGNE_API_URL && process.env.BLOCKLET_AIGNE_API_PROVIDER;
   if (isBlocklet) return undefined;
 
-  const aigneDir = join(homedir(), ".aigne");
-  if (!existsSync(aigneDir)) {
-    mkdirSync(aigneDir, { recursive: true });
+  const aigneDir = nodejs.path.join(nodejs.os.homedir(), ".aigne");
+  if (!nodejs.fsSync.existsSync(aigneDir)) {
+    nodejs.fsSync.mkdirSync(aigneDir, { recursive: true });
   }
 
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+  const envs = parse(await nodejs.fs.readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
   let inquirerPrompt = (options?.inquirerPromptFn ?? inquirer.prompt) as typeof inquirer.prompt;
   if (IsTest) {
     inquirerPrompt = (async () => ({ subscribe: "official" })) as any;

@@ -10,7 +10,8 @@ import {
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
 import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
-import { AIGNE_HUB_URL, availableModels, findModel } from "./constants.js";
+import { AIGNE_HUB_URL } from "./util/constants.js";
+import { availableModels, findModel } from "./util/model.js";
 
 export type HubChatModelOptions =
   | AIGNEHubChatModelOptions

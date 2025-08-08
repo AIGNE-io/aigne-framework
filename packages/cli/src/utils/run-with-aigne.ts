@@ -4,11 +4,11 @@ import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
 import { exists } from "@aigne/agent-library/utils/fs.js";
-import { availableModels, loadModel } from "@aigne/aigne-hub";
+import { availableModels, parseModelOption } from "@aigne/aigne-hub";
 import {
   type Agent,
   AIAgent,
-  AIGNE,
+  type AIGNE,
   type ChatModelOptions,
   DEFAULT_OUTPUT_KEY,
   type Message,
@@ -24,6 +24,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { ZodError, ZodObject, z } from "zod";
 import { TerminalTracer } from "../tracer/terminal.js";
+import { loadAIGNEByOptions } from "./load-aigne.js";
 import {
   type ChatLoopOptions,
   DEFAULT_CHAT_INPUT_KEY,
@@ -121,6 +122,10 @@ export const createRunAIGNECommand = (yargs: Argv) =>
       type: "string",
       default: getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
       coerce: customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
+    })
+    .option("aigne-hub-url", {
+      describe: "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models. ",
+      type: "string",
     });
 
 export async function parseAgentInputByCommander(
@@ -194,13 +199,6 @@ export async function parseAgentInputByCommander(
   return input;
 }
 
-export const parseModelOption = (model?: string) => {
-  const { provider, name } =
-    (model || process.env.MODEL)?.match(/(?<provider>[^:]*)(:(?<name>(\S+)))?/)?.groups ?? {};
-
-  return { provider, name };
-};
-
 export async function runWithAIGNE(
   agentCreator: ((aigne: AIGNE) => PromiseOrValue<Agent>) | Agent,
   {
@@ -225,7 +223,7 @@ export async function runWithAIGNE(
           logger.level = options.logLevel;
         }
 
-        const model = await loadModel(
+        const aigne = await loadAIGNEByOptions(
           {
             ...parseModelOption(options.model),
             temperature: options.temperature,
@@ -235,8 +233,6 @@ export async function runWithAIGNE(
           },
           modelOptions,
         );
-
-        const aigne = new AIGNE({ model });
 
         try {
           const agent =

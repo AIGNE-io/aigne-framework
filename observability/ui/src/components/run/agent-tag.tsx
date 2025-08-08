@@ -1,5 +1,4 @@
 import { Chip } from "@mui/material";
-import { capitalize } from "lodash";
 import tinycolor from "tinycolor2";
 
 const agentTagColors = {
@@ -83,7 +82,7 @@ export const AgentTag = ({ agentTag, model }: { agentTag?: string; model?: strin
 
   return (
     <Chip
-      label={capitalize(tag)}
+      label={tag}
       size="small"
       variant="outlined"
       sx={{

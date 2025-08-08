@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, mock, test } from "bun:test";
 import { readFile, rm, writeFile } from "node:fs/promises";
+import { AIGNE_ENV_FILE, encrypt } from "@aigne/aigne-hub";
 import {
   createConnectCommand,
   displayStatus,
@@ -11,7 +12,6 @@ import { Hono } from "hono";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import yargs from "yargs";
-import { AIGNE_ENV_FILE, encrypt } from "../../src/utils/load-aigne.js";
 
 async function createHonoServer() {
   const port = await detect();

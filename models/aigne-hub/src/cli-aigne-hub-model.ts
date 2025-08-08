@@ -11,7 +11,7 @@ import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { BaseClient } from "@aigne/transport/http-client/base-client.js";
 import { joinURL } from "ufo";
 import { z } from "zod";
-import { AIGNE_HUB_URL } from "./constants.js";
+import { AIGNE_HUB_URL } from "./util/constants.js";
 
 const DEFAULT_CHAT_MODEL = "openai/gpt-4o";
 

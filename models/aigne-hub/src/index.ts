@@ -8,9 +8,14 @@ import {
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { BlockletAIGNEHubChatModel, type HubChatModelOptions } from "./blocklet-aigne-hub-model.js";
 import { type AIGNEHubChatModelOptions, CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
-import { AIGNE_HUB_URL, getAIGNEHubMountPoint } from "./constants.js";
+import { AIGNE_HUB_URL } from "./util/constants.js";
+import { getAIGNEHubMountPoint } from "./util/credential.js";
 
-export * from "./constants.js";
+export * from "./util/constants.js";
+export * from "./util/credential.js";
+export * from "./util/crypto.js";
+export * from "./util/model.js";
+export * from "./util/type.js";
 
 export class AIGNEHubChatModel extends ChatModel {
   private client: ChatModel;

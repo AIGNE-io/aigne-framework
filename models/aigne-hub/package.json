@@ -61,10 +61,15 @@
     "@aigne/platform-helpers": "workspace:^",
     "@aigne/transport": "workspace:^",
     "@aigne/xai": "workspace:^",
+    "@ocap/mcrypto": "^1.21.0",
     "@smithy/node-http-handler": "^4.1.0",
     "https-proxy-agent": "^7.0.6",
+    "inquirer": "^12.7.0",
+    "open": "^10.2.0",
     "openai": "^5.8.3",
+    "p-wait-for": "^5.0.2",
     "ufo": "^1.6.1",
+    "yaml": "^2.8.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

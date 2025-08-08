@@ -90,7 +90,10 @@ export async function displayStatus(statusList: StatusInfo[]) {
       }
 
       console.log(
-        `   Billing URL: ${userInfo?.paymentLink ? chalk.green(userInfo.paymentLink) : chalk.red("N/A")}`,
+        `   Payment URL: ${userInfo?.paymentLink ? chalk.green(userInfo.paymentLink) : chalk.red("N/A")}`,
+      );
+      console.log(
+        `   Profile URL: ${userInfo?.profileLink ? chalk.green(userInfo.profileLink) : chalk.red("N/A")}`,
       );
     }
 

@@ -1,5 +1,4 @@
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 
 const WELLKNOWN_SERVICE_PATH_PREFIX = "/.well-known/service";
 const ACCESS_KEY_PREFIX = "/api/access-key";
@@ -13,8 +12,16 @@ const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_
 const DEFAULT_MODEL_PROVIDER = "openai";
 
 const IsTest = process.env.CI || process.env.NODE_ENV === "test";
-const TEST_AIGNE_ENV_FILE = join(homedir(), ".aigne", "test-aigne-hub-connected.yaml");
-const PROD_AIGNE_ENV_FILE = join(homedir(), ".aigne", "aigne-hub-connected.yaml");
+const TEST_AIGNE_ENV_FILE = nodejs.path.join(
+  nodejs.os.homedir(),
+  ".aigne",
+  "test-aigne-hub-connected.yaml",
+);
+const PROD_AIGNE_ENV_FILE = nodejs.path.join(
+  nodejs.os.homedir(),
+  ".aigne",
+  "aigne-hub-connected.yaml",
+);
 const AIGNE_ENV_FILE = IsTest ? TEST_AIGNE_ENV_FILE : PROD_AIGNE_ENV_FILE;
 
 export {

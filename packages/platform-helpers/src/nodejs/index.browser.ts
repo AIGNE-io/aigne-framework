@@ -20,4 +20,8 @@ export const nodejs = {
   get path(): typeof import("node:path") {
     throw new Error("This code must run in a Node.js environment.");
   },
+
+  get os(): typeof import("node:os") {
+    throw new Error("This code must run in a Node.js environment.");
+  },
 };

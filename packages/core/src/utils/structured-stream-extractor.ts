@@ -27,9 +27,19 @@ export class ExtractMetadataTransform extends TransformStream<
             if (this.state === "none") {
               const found = findMatchIndex(this.buffer, this.cursor, start);
               if (found.start > this.cursor) {
-                const text = this.buffer.slice(this.cursor, found.start);
+                let text = this.buffer.slice(this.cursor, found.start);
                 this.cursor = found.start;
-                controller.enqueue({ delta: { text: { text } } });
+
+                // Trim trailing whitespace from the text
+                const whitespace = text.match(/(?<whitespace>\s+)$/)?.groups?.whitespace;
+                if (whitespace) {
+                  text = text.slice(0, -whitespace.length);
+                  this.cursor -= whitespace.length;
+                }
+
+                if (text) {
+                  controller.enqueue({ delta: { text: { text } } });
+                }
               }
 
               if (found.end) {

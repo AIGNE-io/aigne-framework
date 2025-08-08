@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.55.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.55.0...aigne-framework-v1.55.1) (2025-08-08)
+
+
+### Bug Fixes
+
+* **core:** auto trim trailing whitespace for AIAgent with structuredStreamMode enabled ([#334](https://github.com/AIGNE-io/aigne-framework/issues/334)) ([342eb49](https://github.com/AIGNE-io/aigne-framework/commit/342eb493995809f01da02fca6975ea6e52ecbd3a))
+* **core:** hide internal prop toolsMap from trace logs ([#335](https://github.com/AIGNE-io/aigne-framework/issues/335)) ([bcec317](https://github.com/AIGNE-io/aigne-framework/commit/bcec317bf436988e5f43af05f649196bdbd6ac55))
+
 ## [1.55.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.54.0...aigne-framework-v1.55.0) (2025-08-07)
 
 

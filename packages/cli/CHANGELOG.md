@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.32.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.32.0...cli-v1.32.1) (2025-08-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.15
+    * @aigne/agentic-memory bumped to 1.0.15
+    * @aigne/aigne-hub bumped to 0.4.6
+    * @aigne/core bumped to 1.46.1
+    * @aigne/default-memory bumped to 1.0.15
+    * @aigne/openai bumped to 0.10.15
+
 ## [1.32.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.31.0...cli-v1.32.0) (2025-08-07)
 
 

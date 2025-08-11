@@ -12,6 +12,13 @@
   * dependencies
     * @aigne/observability bumped to 0.1.0
 
+## [1.47.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.46.1...core-v1.47.0) (2025-08-11)
+
+
+### Features
+
+* enhance AI agent streaming with thinking mode support ([#343](https://github.com/AIGNE-io/aigne-framework/issues/343)) ([bea2a39](https://github.com/AIGNE-io/aigne-framework/commit/bea2a39a2610c2fe58e46ad612b5103726159ab9))
+
 ## [1.46.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.46.0...core-v1.46.1) (2025-08-08)
 
 

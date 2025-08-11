@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.56.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.55.2...aigne-framework-v1.56.0) (2025-08-11)
+
+
+### Features
+
+* enhance AI agent streaming with thinking mode support ([#343](https://github.com/AIGNE-io/aigne-framework/issues/343)) ([bea2a39](https://github.com/AIGNE-io/aigne-framework/commit/bea2a39a2610c2fe58e46ad612b5103726159ab9))
+
 ## [1.55.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.55.1...aigne-framework-v1.55.2) (2025-08-11)
 
 

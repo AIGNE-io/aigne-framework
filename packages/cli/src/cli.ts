@@ -29,8 +29,10 @@ export default createAIGNECommand({ aigneFilePath })
     }
   })
   .parseAsync(hideBin([...process.argv.slice(0, 2), ...process.argv.slice(aigneFilePath ? 3 : 2)]))
-  .catch((error) => {
+  .catch((error: Error) => {
     console.log(""); // Add an empty line for better readability
-    console.error(`${chalk.red("Error:")} ${error.message}`);
+    console.error(
+      `${chalk.red("Error:")} ${error.message.replace(/https?:\/\/[^\s]+/g, (url) => chalk.blue(url))}`,
+    );
     process.exit(1);
   });

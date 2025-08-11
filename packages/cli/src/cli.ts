@@ -32,7 +32,7 @@ export default createAIGNECommand({ aigneFilePath })
   .catch((error: Error) => {
     console.log(""); // Add an empty line for better readability
     console.error(
-      `${chalk.red("Error:")} ${error.message.replace(/https?:\/\/[^\s]+/g, (url) => chalk.blue(url))}`,
+      `${chalk.red("Error:")} ${error.message.replace(/https?:\/\/[^\s]+/g, (url) => chalk.cyan(url))}`,
     );
     process.exit(1);
   });

@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.55.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.55.1...aigne-framework-v1.55.2) (2025-08-11)
+
+
+### Bug Fixes
+
+* add multilingual support for document publishing ([#342](https://github.com/AIGNE-io/aigne-framework/issues/342)) ([b1f9134](https://github.com/AIGNE-io/aigne-framework/commit/b1f913465d81ccf3e6b71997f0f92c86ee311cf2))
+* **cli:** highlight URLs in error messages ([#340](https://github.com/AIGNE-io/aigne-framework/issues/340)) ([74c233b](https://github.com/AIGNE-io/aigne-framework/commit/74c233b548c8054f1be91955c9f1420a53785739))
+* implement board name conflict resolution with ownership validation ([#339](https://github.com/AIGNE-io/aigne-framework/issues/339)) ([a5f91a4](https://github.com/AIGNE-io/aigne-framework/commit/a5f91a4d5b63c6f1cacc107c38c9aad58ae8100b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.4
+
 ## [1.55.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.55.0...aigne-framework-v1.55.1) (2025-08-08)
 
 

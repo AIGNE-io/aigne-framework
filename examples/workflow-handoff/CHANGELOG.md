@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.16.18](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.17...example-workflow-handoff-v1.16.18) (2025-08-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.32.2
+
 ## [1.16.17](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.16...example-workflow-handoff-v1.16.17) (2025-08-08)
 
 

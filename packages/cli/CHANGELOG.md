@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.32.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.32.1...cli-v1.32.2) (2025-08-11)
+
+
+### Bug Fixes
+
+* **cli:** highlight URLs in error messages ([#340](https://github.com/AIGNE-io/aigne-framework/issues/340)) ([74c233b](https://github.com/AIGNE-io/aigne-framework/commit/74c233b548c8054f1be91955c9f1420a53785739))
+
 ## [1.32.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.32.0...cli-v1.32.1) (2025-08-08)
 
 

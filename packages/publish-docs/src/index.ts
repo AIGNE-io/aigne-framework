@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { z } from "zod";
 import { authenticator } from "./authenticator.js";
 import { findOrCreateBoard } from "./board.js";
@@ -72,10 +71,6 @@ export async function publishDocs(options: PublishDocsOptions): Promise<PublishR
       desc: parsed.boardDesc,
       cover: parsed.boardCover,
     });
-
-    if (finalBoardId !== parsed.boardId) {
-      console.log(`✅ Board ${chalk.cyan(parsed.boardName)} created successfully`);
-    }
   }
 
   if (!finalBoardId) {
@@ -91,6 +86,7 @@ export async function publishDocs(options: PublishDocsOptions): Promise<PublishR
   const published = await publisher({
     data: {
       boardId: finalBoardId,
+      boardName: parsed.boardName,
       docs,
     },
     appUrl: parsed.appUrl,

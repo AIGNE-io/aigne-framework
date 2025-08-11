@@ -94,6 +94,8 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    */
   structuredStreamMode?: boolean;
 
+  ignoreTextOfStructuredStreamMode?: (output: O) => boolean;
+
   /**
    * Custom structured stream instructions configuration
    *
@@ -270,6 +272,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     if (typeof options.catchToolsError === "boolean")
       this.catchToolsError = options.catchToolsError;
     this.structuredStreamMode = options.structuredStreamMode;
+    this.ignoreTextOfStructuredStreamMode = options.ignoreTextOfStructuredStreamMode;
     this.customStructuredStreamInstructions = options.customStructuredStreamInstructions && {
       ...options.customStructuredStreamInstructions,
       instructions:
@@ -371,6 +374,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    */
   structuredStreamMode?: boolean;
 
+  ignoreTextOfStructuredStreamMode?: (output: O) => boolean;
+
   /**
    * Custom structured stream instructions configuration
    *
@@ -433,14 +438,22 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         );
       }
 
+      let isTextIgnored = false;
+
       for await (const value of stream) {
         if (isAgentResponseDelta(value)) {
-          if (value.delta.text?.text) {
+          if (!isTextIgnored && value.delta.text?.text) {
             yield { delta: { text: { [outputKey]: value.delta.text.text } } };
           }
 
           if (value.delta.json) {
             Object.assign(modelOutput, value.delta.json);
+            if (this.structuredStreamMode) {
+              yield { delta: { json: value.delta.json.json as Partial<O> } };
+              if (!isTextIgnored && modelOutput.json && this.ignoreTextOfStructuredStreamMode) {
+                isTextIgnored = this.ignoreTextOfStructuredStreamMode(modelOutput.json as O);
+              }
+            }
           }
         }
       }

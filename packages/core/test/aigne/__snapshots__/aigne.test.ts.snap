@@ -11,6 +11,7 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
       "input": {
         "message": "hello",
       },
+      "taskTitle": "Start process hello",
     },
   },
   {
@@ -31,6 +32,7 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
         "toolChoice": undefined,
         "tools": undefined,
       },
+      "taskTitle": undefined,
     },
   },
   {
@@ -174,6 +176,7 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       "input": {
         "message": "hello",
       },
+      "taskTitle": undefined,
     },
   },
   {
@@ -194,6 +197,7 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
         "toolChoice": undefined,
         "tools": undefined,
       },
+      "taskTitle": undefined,
     },
   },
   {

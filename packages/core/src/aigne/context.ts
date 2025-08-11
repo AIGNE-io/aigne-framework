@@ -67,7 +67,7 @@ export interface AgentEvent {
  * @hidden
  */
 export interface ContextEventMap {
-  agentStarted: [AgentEvent & { input: Message }];
+  agentStarted: [AgentEvent & { input: Message; taskTitle?: string }];
   agentSucceed: [AgentEvent & { output: Message }];
   agentFailed: [AgentEvent & { error: Error }];
 }

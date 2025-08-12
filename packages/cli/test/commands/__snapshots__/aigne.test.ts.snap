@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+// Bun Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`aigne command should print help if no any subcommand 1`] = `
 [
@@ -13,9 +13,9 @@ Commands:
   aigne serve-mcp      Serve the agents in the specified directory as a MCP
                        server (streamable http)
   aigne observe        Start the observability server
-  aigne hub            Manage AIGNE Hub connections
   aigne doc-smith      Generate and maintain project docs — powered by agents.
                                                         [aliases: docsmith, doc]
+  aigne hub <command>  Manage AIGNE Hub connections
 
 Options:
   -h, --help     Show help                                             [boolean]

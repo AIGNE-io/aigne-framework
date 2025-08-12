@@ -154,7 +154,7 @@ export async function connectToAIGNEHub(url: string) {
         ...envs,
         [host]: {
           AIGNE_HUB_API_KEY: accessKeyOptions.apiKey,
-          AIGNE_UB_API_URL: accessKeyOptions.url,
+          AIGNE_HUB_API_URL: accessKeyOptions.url,
         },
         default: {
           AIGNE_HUB_API_URL: accessKeyOptions.url,

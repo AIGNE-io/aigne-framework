@@ -86,11 +86,13 @@ async function getHubs(): Promise<StatusInfo[]> {
     const statusList: StatusInfo[] = [];
 
     for (const [host, config] of Object.entries(envs)) {
-      statusList.push({
-        host,
-        apiUrl: config.AIGNE_HUB_API_URL,
-        apiKey: config.AIGNE_HUB_API_KEY,
-      });
+      if (host !== "default") {
+        statusList.push({
+          host,
+          apiUrl: config.AIGNE_HUB_API_URL,
+          apiKey: config.AIGNE_HUB_API_KEY,
+        });
+      }
     }
 
     return statusList;
@@ -99,15 +101,19 @@ async function getHubs(): Promise<StatusInfo[]> {
   }
 }
 
+const getDefaultHub = async () => {
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8")) as AIGNEEnv;
+  return envs?.default?.AIGNE_HUB_API_URL || AIGNE_HUB_URL;
+};
+
 async function formatHubsList(statusList: StatusInfo[]) {
-  if (statusList.length === 0) {
+  if (statusList?.length === 0) {
     console.log(chalk.yellow("No AIGNE Hub configured."));
     console.log("Use 'aigne hub connect' to connect to a hub.");
     return;
   }
 
-  const defaultStatus =
-    statusList.find((status) => status.host === "default")?.apiUrl || AIGNE_HUB_URL;
+  const defaultHub = await getDefaultHub();
 
   const table = new Table({
     head: ["URL", "ACTIVE", "STATUS"],
@@ -120,9 +126,8 @@ async function formatHubsList(statusList: StatusInfo[]) {
 
   console.log(chalk.blue("AIGNE Hubs:\n"));
 
-  const list = statusList.filter((status) => status.host !== "default");
-  for (const status of list) {
-    const isConnected = new URL(status.apiUrl).origin === new URL(defaultStatus).origin;
+  for (const status of statusList) {
+    const isConnected = new URL(status.apiUrl).origin === new URL(defaultHub).origin;
 
     table.push([
       status.apiUrl,
@@ -184,7 +189,7 @@ async function connectHub() {
 }
 
 async function useHub() {
-  const hubs = (await getHubs()).filter((h) => h.host !== "default");
+  const hubs = await getHubs();
   if (!hubs.length) {
     console.log(chalk.yellow("No AIGNE Hub configured."));
     return;
@@ -204,7 +209,7 @@ async function useHub() {
 }
 
 async function showStatus() {
-  const active = (await getHubs()).find((h) => h.host === "default")?.apiUrl;
+  const active = await getDefaultHub();
   if (!active) {
     console.log(chalk.red("No active hub."));
     return;
@@ -213,7 +218,7 @@ async function showStatus() {
 }
 
 async function removeHub() {
-  const hubs = (await getHubs()).filter((h) => h.host !== "default");
+  const hubs = await getHubs();
   if (!hubs.length) {
     console.log(chalk.yellow("No AIGNE Hub configured."));
     return;
@@ -233,7 +238,7 @@ async function removeHub() {
 }
 
 async function showInfo() {
-  const hubs = (await getHubs()).filter((h) => h.host !== "default");
+  const hubs = await getHubs();
   if (!hubs.length) {
     console.log(chalk.yellow("No AIGNE Hub configured."));
     return;
@@ -299,6 +304,11 @@ async function deleteHub(url: string) {
   const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8")) as AIGNEEnv;
   const host = new URL(url).host;
   delete envs[host];
+
+  if (envs.default?.AIGNE_HUB_API_URL && new URL(envs.default?.AIGNE_HUB_API_URL).host === host) {
+    delete envs.default;
+  }
+
   await writeFile(AIGNE_ENV_FILE, stringify(envs));
   console.log(chalk.green(`✓ Hub ${url} removed`));
 }

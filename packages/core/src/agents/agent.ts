@@ -1,5 +1,6 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type * as prompts from "@inquirer/prompts";
+import equal from "fast-deep-equal";
 import nunjucks from "nunjucks";
 import { ZodObject, type ZodType, z } from "zod";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
@@ -13,6 +14,7 @@ import {
   agentResponseStreamToObject,
   asyncGeneratorToReadableStream,
   isAsyncGenerator,
+  mergeAgentResponseChunk,
   objectToAgentResponseStream,
   onAgentResponseStreamEnd,
 } from "../utils/stream-utils.js";
@@ -624,8 +626,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });
 
     try {
-      let response: AgentProcessResult<O> | undefined;
-
       const s = await this.callHooks("onStart", { input }, opts);
       if (s?.input) input = s.input as I;
       if (s?.options) Object.assign(opts, s.options);
@@ -636,42 +636,63 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
       this.checkContextStatus(opts);
 
-      if (!response) {
-        response = await this.process(input, opts);
-        if (response instanceof Agent) {
-          response = transferToAgentOutput(response);
-        }
-      }
-
-      if (opts.streaming) {
-        const stream =
-          response instanceof ReadableStream
-            ? response
-            : isAsyncGenerator(response)
-              ? asyncGeneratorToReadableStream(response)
-              : objectToAgentResponseStream(response as O);
-
-        return this.checkResponseByGuideRails(
-          input,
-          onAgentResponseStreamEnd(stream, {
-            onResult: async (result) => {
-              return await this.processAgentOutput(input, result, opts);
-            },
-            onError: async (error) => {
-              return await this.processAgentError(input, error, opts);
-            },
-          }),
-          opts,
-        );
-      }
+      const response = asyncGeneratorToReadableStream(this.processStreamingAndRetry(input, opts));
 
       return await this.checkResponseByGuideRails(
         input,
-        this.processAgentOutput(input, await agentProcessResultToObject(response), opts),
+        options.streaming ? response : await agentProcessResultToObject(response),
         opts,
       );
     } catch (error) {
-      throw await this.processAgentError(input, error, opts);
+      throw (await this.processAgentError(input, error, opts)).error ?? error;
+    }
+  }
+
+  private async *processStreamingAndRetry(
+    input: I,
+    options: AgentInvokeOptions,
+  ): AgentProcessAsyncGenerator<O> {
+    let output = {};
+
+    for (;;) {
+      // Reset output to avoid accumulating old data
+      const resetOutput = Object.fromEntries(
+        Object.entries(output).map(([key]) => [key, null]),
+      ) as Partial<O>;
+      if (!isEmpty(resetOutput)) {
+        yield { delta: { json: resetOutput } };
+        output = {};
+      }
+
+      let response = await this.process(input, options);
+      if (response instanceof Agent) response = transferToAgentOutput(response);
+
+      const stream =
+        response instanceof ReadableStream
+          ? response
+          : isAsyncGenerator(response)
+            ? asyncGeneratorToReadableStream(response)
+            : objectToAgentResponseStream(response);
+
+      try {
+        for await (const chunk of stream) {
+          mergeAgentResponseChunk(output, chunk);
+
+          yield chunk as AgentResponseChunk<O>;
+        }
+
+        const result = await this.processAgentOutput(input, output, options);
+
+        if (result && !equal(result, output)) {
+          yield { delta: { json: result } };
+        }
+
+        // Close the stream after processing
+        break;
+      } catch (error) {
+        const res = await this.processAgentError(input, error, options);
+        if (!res.retry) throw res.error ?? error;
+      }
     }
   }
 
@@ -804,14 +825,17 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     input: I,
     error: Error,
     options: AgentInvokeOptions,
-  ): Promise<Error> {
+  ): Promise<{ retry?: boolean; error?: Error }> {
+    if ("$error_has_been_processed" in error && error.$error_has_been_processed) return {};
+    Object.defineProperty(error, "$error_has_been_processed", { value: true, enumerable: false });
+
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
     if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
 
-    await this.callHooks("onError", { input, error }, options);
-    await this.callHooks("onEnd", { input, error }, options);
+    const res = (await this.callHooks("onError", { input, error }, options)) ?? {};
+    Object.assign(res, await this.callHooks("onEnd", { input, error }, options));
 
-    return error;
+    return { ...res };
   }
 
   /**
@@ -1074,8 +1098,11 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
           "output",
           "error"
         >,
-      ) => PromiseOrValue<void | { output?: O }>)
-    | Agent<XOr<{ input: I; output: O; error: Error }, "output", "error">, { output?: O }>;
+      ) => PromiseOrValue<void | { output?: O; retry?: boolean }>)
+    | Agent<
+        XOr<{ input: I; output: O; error: Error }, "output", "error">,
+        { output?: O; retry?: boolean }
+      >;
 
   onSuccess?:
     | ((event: {
@@ -1087,8 +1114,13 @@ export interface AgentHooks<I extends Message = Message, O extends Message = Mes
     | Agent<{ input: I; output: O }, { output?: O }>;
 
   onError?:
-    | ((event: { context: Context; agent: Agent; input: I; error: Error }) => void)
-    | Agent<{ input: I; error: Error }>;
+    | ((event: {
+        context: Context;
+        agent: Agent;
+        input: I;
+        error: Error;
+      }) => PromiseOrValue<void | { retry?: boolean }>)
+    | Agent<{ input: I; error: Error }, { retry?: boolean }>;
 
   /**
    * Called before a skill (sub-agent) is invoked

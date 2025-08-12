@@ -5,6 +5,7 @@ import chalk from "chalk";
 import { config } from "dotenv-flow";
 import { hideBin } from "yargs/helpers";
 import { createAIGNECommand } from "./commands/aigne.js";
+import { highlightUrl } from "./utils/string-utils.js";
 
 config({ silent: true });
 
@@ -31,8 +32,6 @@ export default createAIGNECommand({ aigneFilePath })
   .parseAsync(hideBin([...process.argv.slice(0, 2), ...process.argv.slice(aigneFilePath ? 3 : 2)]))
   .catch((error: Error) => {
     console.log(""); // Add an empty line for better readability
-    console.error(
-      `${chalk.red("Error:")} ${error.message.replace(/https?:\/\/[^\s]+/g, (url) => chalk.cyan(url))}`,
-    );
+    console.error(`${chalk.red("Error:")} ${highlightUrl(error.message)}`);
     process.exit(1);
   });

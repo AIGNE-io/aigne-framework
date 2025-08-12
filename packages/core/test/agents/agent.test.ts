@@ -18,7 +18,10 @@ import {
   textDelta,
 } from "@aigne/core";
 import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent";
-import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
+import {
+  readableStreamToArray,
+  stringToAgentResponseStream,
+} from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 import { expectType } from "../_utils/expect.js";
@@ -740,7 +743,7 @@ test("Agent must return a record type", async () => {
     "expect to return a record type such as {result: ...}, but got (number): 16",
   );
 
-  expect(agent.invoke({}, { streaming: true })).rejects.toThrow(
+  expect(readableStreamToArray(await agent.invoke({}, { streaming: true }))).rejects.toThrow(
     "expect to return a record type such as {result: ...}, but got (number): 16",
   );
 });

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.57.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.56.0...aigne-framework-v1.57.0) (2025-08-12)
+
+
+### Features
+
+* enhance task title functionality to support dynamic generation ([#346](https://github.com/AIGNE-io/aigne-framework/issues/346)) ([fff098c](https://github.com/AIGNE-io/aigne-framework/commit/fff098c9828beca9d99e4b2ebaebdf6b92efb84e))
+
 ## [1.56.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.55.2...aigne-framework-v1.56.0) (2025-08-11)
 
 

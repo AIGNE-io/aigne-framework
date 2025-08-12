@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.0.17...default-memory-v1.1.0) (2025-08-12)
+
+
+### Features
+
+* **cli:** add retry functionality and improve error handling for AIGNE Hub ([#348](https://github.com/AIGNE-io/aigne-framework/issues/348)) ([672c93a](https://github.com/AIGNE-io/aigne-framework/commit/672c93abbba8b4b234f6d810536ff4b603a97e1e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.49.0
+  * devDependencies
+    * @aigne/openai bumped to 0.11.0
+
 ## [1.0.17](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.0.16...default-memory-v1.0.17) (2025-08-12)
 
 

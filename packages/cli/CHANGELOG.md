@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.34.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.33.1...cli-v1.34.0) (2025-08-12)
+
+
+### Features
+
+* **cli:** add retry functionality and improve error handling for AIGNE Hub ([#348](https://github.com/AIGNE-io/aigne-framework/issues/348)) ([672c93a](https://github.com/AIGNE-io/aigne-framework/commit/672c93abbba8b4b234f6d810536ff4b603a97e1e))
+
+
+### Bug Fixes
+
+* **core:** examples cases that failed when using aigne-hub ([#337](https://github.com/AIGNE-io/aigne-framework/issues/337)) ([0d4a31c](https://github.com/AIGNE-io/aigne-framework/commit/0d4a31c24d9e7d26f00d1accb80719d9ad79a4c6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.18
+    * @aigne/agentic-memory bumped to 1.0.18
+    * @aigne/aigne-hub bumped to 0.4.9
+    * @aigne/core bumped to 1.49.0
+    * @aigne/default-memory bumped to 1.1.0
+    * @aigne/openai bumped to 0.11.0
+
 ## [1.33.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.33.0...cli-v1.33.1) (2025-08-12)
 
 

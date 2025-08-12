@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.49.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.48.0...core-v1.49.0) (2025-08-12)
+
+
+### Features
+
+* **cli:** add retry functionality and improve error handling for AIGNE Hub ([#348](https://github.com/AIGNE-io/aigne-framework/issues/348)) ([672c93a](https://github.com/AIGNE-io/aigne-framework/commit/672c93abbba8b4b234f6d810536ff4b603a97e1e))
+
+
+### Bug Fixes
+
+* **core:** examples cases that failed when using aigne-hub ([#337](https://github.com/AIGNE-io/aigne-framework/issues/337)) ([0d4a31c](https://github.com/AIGNE-io/aigne-framework/commit/0d4a31c24d9e7d26f00d1accb80719d9ad79a4c6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/platform-helpers bumped to 0.6.1
+
 ## [1.48.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.47.0...core-v1.48.0) (2025-08-12)
 
 

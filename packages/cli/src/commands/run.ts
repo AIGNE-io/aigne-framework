@@ -123,9 +123,7 @@ export function createRunCommand({
                 },
               );
 
-              for (const method of ["debug", "log", "info", "warn", "error"] as const) {
-                console[method] = originalLog[method] ?? console[method];
-              }
+              Object.assign(console, originalLog);
 
               ctx.aigne = aigne;
             },

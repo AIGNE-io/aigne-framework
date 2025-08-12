@@ -210,7 +210,7 @@ describe("model", () => {
   });
 
   describe("loadModel", async () => {
-    const { url, close } = await createHonoServer();
+    const { close } = await createHonoServer();
 
     beforeEach(async () => {
       await rm(AIGNE_ENV_FILE, { force: true });

@@ -1,5 +1,5 @@
+import crypto from "node:crypto";
 import { AesCrypter } from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
-import crypto from "crypto";
 
 const aes = new AesCrypter();
 export const decrypt = (m: string, s: string, i: string) =>

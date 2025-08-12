@@ -18,7 +18,10 @@ import {
   textDelta,
 } from "@aigne/core";
 import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent";
-import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
+import {
+  readableStreamToArray,
+  stringToAgentResponseStream,
+} from "@aigne/core/utils/stream-utils.js";
 import { z } from "zod";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 import { expectType } from "../_utils/expect.js";
@@ -740,7 +743,7 @@ test("Agent must return a record type", async () => {
     "expect to return a record type such as {result: ...}, but got (number): 16",
   );
 
-  expect(agent.invoke({}, { streaming: true })).rejects.toThrow(
+  expect(readableStreamToArray(await agent.invoke({}, { streaming: true }))).rejects.toThrow(
     "expect to return a record type such as {result: ...}, but got (number): 16",
   );
 });
@@ -791,4 +794,24 @@ test("Agent should prioritize direct input over default input", async () => {
     description: "Custom description",
     foo: "Custom Foo",
   });
+});
+
+test("Agent should render task title (string template) correctly", async () => {
+  const agent = AIAgent.from({
+    taskTitle: "Test Task for message: {{message}}",
+  });
+
+  expect(await agent.renderTaskTitle({ message: "Hello" })).toBe("Test Task for message: Hello");
+});
+
+test("Agent should render task title (function) correctly", async () => {
+  const agent = AIAgent.from({
+    taskTitle: (input) =>
+      input.lang === "zh" ? `测试任务: {{message}}` : `Test Task for message: {{message}}`,
+  });
+
+  expect(await agent.renderTaskTitle({ lang: "zh", message: "Hello" })).toBe("测试任务: Hello");
+  expect(await agent.renderTaskTitle({ lang: "en", message: "Hello" })).toBe(
+    "Test Task for message: Hello",
+  );
 });

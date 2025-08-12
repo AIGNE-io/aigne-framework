@@ -1,6 +1,15 @@
 import { joinURL } from "ufo";
 import { DISCUSS_KIT_DID } from "./constants.js";
+import { getCurrentUser } from "./user.js";
 import { getComponentMountPoint } from "./utils/get-component-mount-point.js";
+
+// Custom error class for board name conflicts
+export class BoardNameExistsError extends Error {
+  constructor(boardName: string) {
+    super(`Project name "${boardName}" already exists. Please modify the name and try again.`);
+    this.name = "BoardNameExistsError";
+  }
+}
 
 // Base board interface with common fields
 interface BaseBoard {
@@ -89,8 +98,9 @@ export async function findOrCreateBoard(input: {
   const { appUrl, accessToken, boardId, boardName, desc = "", cover = "" } = input;
 
   // First, try to get existing boards
+  let boardsResponse: BoardListResponse | undefined;
   try {
-    const boardsResponse = await getBoards({ appUrl, accessToken });
+    boardsResponse = await getBoards({ appUrl, accessToken });
     const existingBoard = boardsResponse.boards.find((board) => board.id === boardId);
 
     if (existingBoard) {
@@ -99,6 +109,32 @@ export async function findOrCreateBoard(input: {
   } catch (error) {
     console.warn(`Failed to get boards list: ${error}`);
     // Continue to create board if we can't get the list
+  }
+
+  // If boardId not found and boardName is provided, check by boardName
+  if (boardName) {
+    const boardWithSameName = boardsResponse?.boards?.find((board) => board.title === boardName);
+
+    if (boardWithSameName) {
+      // Get current user to check if they created this board
+      try {
+        const currentUser = await getCurrentUser({ appUrl, accessToken });
+
+        if (currentUser.user.did === boardWithSameName.createdBy) {
+          // Same board name and created by current user, return existing board
+          return boardWithSameName.id;
+        } else {
+          // Board name exists but created by different user, throw error
+          throw new BoardNameExistsError(boardName);
+        }
+      } catch (error) {
+        if (error instanceof BoardNameExistsError) {
+          throw new BoardNameExistsError(boardName);
+        }
+
+        console.warn(`Failed to get current user: ${error}`);
+      }
+    }
   }
 
   // Board doesn't exist, create it

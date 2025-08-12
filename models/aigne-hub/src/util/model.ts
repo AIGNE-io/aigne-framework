@@ -164,7 +164,7 @@ export const formatModelName = async (model: string, inquirerPrompt: typeof inqu
   return `${AGENT_HUB_PROVIDER}:${provider}/${name}`;
 };
 
-function maskApiKey(apiKey?: string) {
+export function maskApiKey(apiKey?: string) {
   if (!apiKey || apiKey.length <= 8) return apiKey;
   const start = apiKey.slice(0, 4);
   const end = apiKey.slice(-4);
@@ -202,13 +202,14 @@ function printChatModelInfoBox({
     }
   }
 
+  console.log("\n");
   console.log(
-    boxen(lines.join("\n"), {
+    boxen(lines.join("\n"), 
       padding: 1,
       borderStyle: "classic",
-      borderColor: "cyan",
-    }),
+      borderColor: "cyan",),
   );
+  console.log("\n");
 }
 
 export async function loadModel(

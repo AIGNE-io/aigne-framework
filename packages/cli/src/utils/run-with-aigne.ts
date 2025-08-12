@@ -24,7 +24,9 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { ZodError, ZodObject, z } from "zod";
 import { TerminalTracer } from "../tracer/terminal.js";
-import { loadAIGNEByOptions } from "./load-aigne.js";
+
+import { loadAIGNE } from "./load-aigne.js";
+
 import {
   type ChatLoopOptions,
   DEFAULT_CHAT_INPUT_KEY,
@@ -223,8 +225,8 @@ export async function runWithAIGNE(
           logger.level = options.logLevel;
         }
 
-        const aigne = await loadAIGNEByOptions(
-          {
+        const aigne = await loadAIGNE({
+          options: {
             ...parseModelOption(options.model),
             temperature: options.temperature,
             topP: options.topP,
@@ -232,7 +234,7 @@ export async function runWithAIGNE(
             frequencyPenalty: options.frequencyPenalty,
           },
           modelOptions,
-        );
+        });
 
         try {
           const agent =

@@ -179,7 +179,10 @@ export async function invokeCLIAgentFromDir(options: {
   agent: string;
   input: Message & { input?: string[]; format?: "yaml" | "json"; model?: string };
 }) {
-  const aigne = await loadAIGNE(options.dir, { model: options.input.model });
+  const aigne = await loadAIGNE({
+    path: options.dir,
+    options: { model: options.input.model },
+  });
 
   try {
     const agent = aigne.cli.agents[options.agent];

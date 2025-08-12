@@ -1,8 +1,5 @@
-import { afterAll, afterEach, beforeAll, describe, expect, mock, test } from "bun:test";
+import { afterAll, describe, expect, mock, test } from "bun:test";
 import { readFile, rm } from "node:fs/promises";
-import { serve } from "bun";
-import { detect } from "detect-port";
-import { Hono } from "hono";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import {
@@ -14,59 +11,8 @@ import {
   encodeEncryptionKey,
   encrypt,
   fetchConfigs,
-  formatModelName,
 } from "../src/index.js";
-
-async function createHonoServer() {
-  const port = await detect();
-  const url = `http://localhost:${port}/`;
-
-  const honoApp = new Hono();
-  honoApp.post("/api/access-key/session", async (c) => {
-    return c.json({
-      challenge: "test",
-      accessKeyId: "test",
-      accessKeySecret: "test",
-      id: "test",
-    });
-  });
-
-  honoApp.get("/api/access-key/session", async (c) => {
-    const requestCount = parseInt(c.req.header("X-Request-Count") || "0");
-    if (requestCount === 0) {
-      return c.json({});
-    } else {
-      return c.json({
-        challenge: "test",
-        accessKeyId: "test",
-        accessKeySecret: encrypt("test", "test", "test"),
-      });
-    }
-  });
-
-  honoApp.delete("/api/access-key/session", async (c) => {
-    const body = {};
-    return c.json(body);
-  });
-
-  const app = new Hono();
-  app.route("/.well-known/service", honoApp);
-  app.route("/", honoApp);
-  app.get("/__blocklet__.js", async (c) => {
-    return c.json({
-      componentMountPoints: [
-        { did: "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ", mountPoint: "/ai-kit" },
-      ],
-    });
-  });
-
-  const server = serve({ port, fetch: app.fetch });
-
-  return {
-    url,
-    close: () => server.stop(true),
-  };
-}
+import { createHonoServer } from "./_mocks_/utils.js";
 
 describe("load aigne", () => {
   describe("Encryption Functions", () => {
@@ -267,76 +213,6 @@ describe("load aigne", () => {
           currentMessage = encrypted; // Use encrypted as input for next cycle
         }
       });
-    });
-  });
-
-  describe("formatModelName", () => {
-    const originalEnv = process.env.NODE_ENV;
-    beforeAll(() => {
-      process.env.NODE_ENV = "dev";
-    });
-
-    afterAll(() => {
-      process.env.NODE_ENV = originalEnv;
-    });
-
-    const mockInquirerPrompt: any = mock(async () => ({ useAigneHub: true }));
-
-    afterEach(() => {
-      mockInquirerPrompt.mockClear();
-    });
-
-    test("should return model as-is when NODE_ENV is test", async () => {
-      process.env.OPENAI_API_KEY = undefined;
-
-      const result = await formatModelName("openai:gpt-4", mockInquirerPrompt);
-      expect(result).toBe("aignehub:openai/gpt-4");
-    });
-
-    test("should return default aignehub model when no model provided", async () => {
-      const result = await formatModelName("", mockInquirerPrompt);
-      expect(result).toBe("aignehub:openai/gpt-4o");
-    });
-
-    test("should return model as-is when provider is aignehub", async () => {
-      const result = await formatModelName("aignehub:openai/gpt-4", mockInquirerPrompt);
-      expect(result).toBe("aignehub:openai/gpt-4");
-    });
-
-    test("should return model as-is when provider contains aignehub", async () => {
-      const result = await formatModelName("my-aignehub:openai/gpt-4", mockInquirerPrompt);
-
-      expect(result).toBe("my-aignehub:openai/gpt-4");
-    });
-
-    test("should throw error for unsupported model", async () => {
-      await expect(formatModelName("unsupported:gpt-4", mockInquirerPrompt)).rejects.toThrow(
-        "Unsupported model: unsupported gpt-4",
-      );
-    });
-
-    test("should handle case-insensitive model matching", async () => {
-      const result = await formatModelName("OPENAI:gpt-4", mockInquirerPrompt);
-      expect(result).toBe("aignehub:OPENAI/gpt-4");
-    });
-
-    test("should handle providers with hyphens", async () => {
-      const result = await formatModelName("open-ai:gpt-4", mockInquirerPrompt);
-      expect(result).toBe("aignehub:open-ai/gpt-4");
-    });
-
-    test("should handle complex model names", async () => {
-      process.env.ANTHROPIC_API_KEY = undefined;
-
-      const result = await formatModelName("anthropic:claude-3-sonnet", mockInquirerPrompt);
-
-      expect(result).toBe("aignehub:anthropic/claude-3-sonnet");
-    });
-
-    test("should handle models with special characters", async () => {
-      const result = await formatModelName("openai:gpt-4-turbo-preview", mockInquirerPrompt);
-
-      expect(result).toBe("aignehub:openai/gpt-4-turbo-preview");
     });
   });
 

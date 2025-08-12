@@ -1,6 +1,6 @@
 {
   "name": "@aigne/bedrock",
-  "version": "0.8.15",
+  "version": "0.8.17",
   "description": "AIGNE AWS Bedrock SDK for integrating with AWS foundation models",
   "publishConfig": {
     "access": "public"

@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.33.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.33.0...cli-v1.33.1) (2025-08-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.17
+    * @aigne/agentic-memory bumped to 1.0.17
+    * @aigne/aigne-hub bumped to 0.4.8
+    * @aigne/core bumped to 1.48.0
+    * @aigne/default-memory bumped to 1.0.17
+    * @aigne/openai bumped to 0.10.17
+
+## [1.33.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.32.2...cli-v1.33.0) (2025-08-11)
+
+
+### Features
+
+* enhance AI agent streaming with thinking mode support ([#343](https://github.com/AIGNE-io/aigne-framework/issues/343)) ([bea2a39](https://github.com/AIGNE-io/aigne-framework/commit/bea2a39a2610c2fe58e46ad612b5103726159ab9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.16
+    * @aigne/agentic-memory bumped to 1.0.16
+    * @aigne/aigne-hub bumped to 0.4.7
+    * @aigne/core bumped to 1.47.0
+    * @aigne/default-memory bumped to 1.0.16
+    * @aigne/openai bumped to 0.10.16
+
+## [1.32.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.32.1...cli-v1.32.2) (2025-08-11)
+
+
+### Bug Fixes
+
+* **cli:** highlight URLs in error messages ([#340](https://github.com/AIGNE-io/aigne-framework/issues/340)) ([74c233b](https://github.com/AIGNE-io/aigne-framework/commit/74c233b548c8054f1be91955c9f1420a53785739))
+
 ## [1.32.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.32.0...cli-v1.32.1) (2025-08-08)
 
 

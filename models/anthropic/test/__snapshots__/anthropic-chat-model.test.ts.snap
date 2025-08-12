@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://goo.gl/fbAQLP
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`AnthropicChatModel.invoke 1`] = `
 {
@@ -28,7 +28,6 @@ exports[`AnthropicChatModel.invoke 2`] = `
     "text": "The current temperature in New York is 20 degrees.",
   },
   "model": "claude-3-7-sonnet-20250219",
-  "text": undefined,
   "usage": {
     "inputTokens": 486,
     "outputTokens": 20,

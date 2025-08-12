@@ -99,14 +99,14 @@ export function createRunCommand({
                 };
               }
 
-              const aigne = await loadAIGNE(
-                dir,
-                {
+              const aigne = await loadAIGNE({
+                path: dir,
+                options: {
                   ...options,
                   model: options.model || process.env.MODEL,
                   aigneHubUrl: options?.aigneHubUrl,
                 },
-                {
+                actionOptions: {
                   inquirerPromptFn: (prompt) => {
                     if (prompt.type === "input") {
                       return task
@@ -121,7 +121,8 @@ export function createRunCommand({
                       .then((res: boolean) => ({ [prompt.name]: res }));
                   },
                 },
-              );
+              });
+              Object.assign(console, originalLog);
 
               for (const method of ["debug", "log", "info", "warn", "error"] as const) {
                 console[method] = originalLog[method] ?? console[method];

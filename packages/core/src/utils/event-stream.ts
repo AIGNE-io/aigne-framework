@@ -156,8 +156,10 @@ export class AgentResponseProgressStream extends ReadableStream<AgentResponsePro
           controller.close();
         };
 
-        const onAgentStarted: Listener<"agentStarted", ContextEventMap> = (event) => {
-          writeEvent("agentStarted", event);
+        const onAgentStarted: Listener<"agentStarted", ContextEventMap> = async (event) => {
+          const taskTitle = await event.agent.renderTaskTitle(event.input);
+
+          writeEvent("agentStarted", { ...event, taskTitle });
         };
         const onAgentSucceed: Listener<"agentSucceed", ContextEventMap> = (event) => {
           writeEvent("agentSucceed", event);

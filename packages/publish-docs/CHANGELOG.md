@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.4](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.3...publish-docs-v0.5.4) (2025-08-11)
+
+
+### Bug Fixes
+
+* add multilingual support for document publishing ([#342](https://github.com/AIGNE-io/aigne-framework/issues/342)) ([b1f9134](https://github.com/AIGNE-io/aigne-framework/commit/b1f913465d81ccf3e6b71997f0f92c86ee311cf2))
+* implement board name conflict resolution with ownership validation ([#339](https://github.com/AIGNE-io/aigne-framework/issues/339)) ([a5f91a4](https://github.com/AIGNE-io/aigne-framework/commit/a5f91a4d5b63c6f1cacc107c38c9aad58ae8100b))
+
 ## [0.5.3](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.2...publish-docs-v0.5.3) (2025-08-06)
 
 

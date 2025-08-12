@@ -1,10 +1,4 @@
-## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.14.0...agent-library-v1.15.0) (2025-06-24)
-
-
-### Features
-
-* support observability for cli and blocklet ([#155](https://github.com/AIGNE-io/aigne-framework/issues/155)) ([5baa705](https://github.com/AIGNE-io/aigne-framework/commit/5baa705a33cfdba1efc5ccbe18674c27513ca97d))
-
+# Changelog
 
 ### Dependencies
 
@@ -12,6 +6,16 @@
   * dependencies
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
+
+## [1.21.16](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.15...agent-library-v1.21.16) (2025-08-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.47.0
+    * @aigne/openai bumped to 0.10.16
 
 ## [1.21.15](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.14...agent-library-v1.21.15) (2025-08-08)
 
@@ -426,6 +430,14 @@
   * dependencies
     * @aigne/core bumped to 1.23.0
     * @aigne/openai bumped to 0.3.5
+
+## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.14.0...agent-library-v1.15.0) (2025-06-24)
+
+
+### Features
+
+* support observability for cli and blocklet ([#155](https://github.com/AIGNE-io/aigne-framework/issues/155)) ([5baa705](https://github.com/AIGNE-io/aigne-framework/commit/5baa705a33cfdba1efc5ccbe18674c27513ca97d))
+
 
 ## [1.14.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.13.2...agent-library-v1.14.0) (2025-06-20)
 

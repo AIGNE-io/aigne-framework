@@ -68,7 +68,7 @@ export class Generator {
     filePath: string,
   ): Promise<Record<string, { h1?: string; content?: string }>> {
     const i18n: Record<string, { h1?: string; content?: string }> = {};
-    const langs = ["zh"];
+    const langs = ["zh", "zh-TW", "ja", "ko", "es", "fr", "de", "pt", "ru", "it", "ar"];
     for (const lang of langs) {
       const i18nPath = filePath.replace(/\.md$/, `.${lang}.md`);
       try {

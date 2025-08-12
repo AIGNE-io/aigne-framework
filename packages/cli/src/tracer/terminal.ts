@@ -21,7 +21,6 @@ import { markedTerminal } from "@aigne/marked-terminal";
 import * as prompts from "@inquirer/prompts";
 import chalk from "chalk";
 import { Marked } from "marked";
-import nunjucks from "nunjucks";
 import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
 import { parseDuration } from "../utils/time.js";
 
@@ -212,7 +211,7 @@ export class TerminalTracer {
     let title = agent.name;
 
     if (agent.taskTitle) {
-      title += ` ${chalk.cyan(nunjucks.renderString(agent.taskTitle, { ...input }))}`;
+      title += ` ${chalk.cyan(agent.renderTaskTitle(input))}`;
     }
 
     if (usage && task?.usage)

@@ -10,6 +10,7 @@ import { getComponentMountPoint } from "./utils/get-component-mount-point.js";
 export async function publisher(input: {
   data: {
     boardId: string;
+    boardName?: string;
     docs: DocNode[];
   };
   appUrl: string;
@@ -44,7 +45,8 @@ export async function publisher(input: {
 
     const docsUrl = joinURL(url.origin, mountPoint, "/docs", data.boardId);
 
-    console.log(`Publishing docs collection...`);
+    const boardDisplay = data.boardName || data.boardId;
+    console.log(`Publishing docs collection: ${chalk.cyan(boardDisplay)}`);
 
     const link = terminalLink.isSupported ? terminalLink(docsUrl, docsUrl) : docsUrl;
     const docsMessage = `📖 Docs available at: ${chalk.cyan(link)}`;

@@ -60,7 +60,7 @@ export async function displayStatus(statusList: StatusInfo[]) {
     return;
   }
 
-  console.log(chalk.blue("AIGNE Hub Connection Status:\n"));
+  console.log(chalk.cyan("AIGNE Hub Connection Status:\n"));
   const defaultStatus =
     statusList.find((status) => status.host === "default")?.apiUrl || AIGNE_HUB_URL;
 
@@ -160,7 +160,7 @@ export function createConnectCommand(): CommandModule<unknown, ConnectOptions> {
     handler: async (argv) => {
       const url = argv.url || "https://hub.aigne.io/";
 
-      console.log(chalk.blue(`Connecting to AIGNE Hub: ${url}`));
+      console.log(chalk.cyan(`Connecting to AIGNE Hub: ${url}`));
 
       try {
         await connectToAIGNEHub(url);

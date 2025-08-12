@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.32.1",
+  "version": "1.33.0",
   "description": "Your command center for agent development",
   "publishConfig": {
     "access": "public"
@@ -82,6 +82,7 @@
     "log-update": "^6.1.0",
     "marked": "^16.0.0",
     "nunjucks": "^3.2.4",
+    "open": "10.1.2",
     "openai": "^5.8.3",
     "prettier": "^3.6.2",
     "tar": "^7.4.3",
@@ -97,7 +98,6 @@
     "@types/glob": "^9.0.0",
     "@types/gradient-string": "^1.1.6",
     "@types/node": "^24.0.12",
-    "@types/nunjucks": "^3.2.6",
     "@types/yargs": "^17.0.33",
     "archiver": "^7.0.1",
     "hono": "4.8.4",

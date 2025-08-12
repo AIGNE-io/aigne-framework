@@ -7,7 +7,7 @@ import {
   isEmptyChunk,
   type Message,
 } from "../agents/agent.js";
-import { isRecord, omitBy, type PromiseOrValue } from "./type-utils.js";
+import { isNonNullable, isRecord, omitBy, type PromiseOrValue } from "./type-utils.js";
 import "./stream-polyfill.js";
 import type { ReadableStreamDefaultReadResult } from "bun";
 
@@ -269,8 +269,12 @@ export function mergeReadableStreams<T1, T2>(
   s1: ReadableStream<T1>,
   s2: ReadableStream<T2>,
 ): ReadableStream<T1 | T2>;
-export function mergeReadableStreams(...streams: ReadableStream<any>[]): ReadableStream<any>;
-export function mergeReadableStreams(...streams: ReadableStream<any>[]): ReadableStream<any> {
+export function mergeReadableStreams(
+  ...streams: (ReadableStream<any> | undefined)[]
+): ReadableStream<any>;
+export function mergeReadableStreams(
+  ...streams: (ReadableStream<any> | undefined)[]
+): ReadableStream<any> {
   type Reader = {
     reader: ReadableStreamDefaultReader;
     reading?: Promise<{
@@ -284,7 +288,7 @@ export function mergeReadableStreams(...streams: ReadableStream<any>[]): Readabl
   return new ReadableStream({
     async pull(controller) {
       try {
-        readers ??= streams.map((s) => ({ reader: s.getReader(), data: [] }));
+        readers ??= streams.filter(isNonNullable).map((s) => ({ reader: s.getReader(), data: [] }));
 
         while (readers.length) {
           const chunk: Awaited<NonNullable<Reader["reading"]>> = await Promise.race(

@@ -1,5 +1,6 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type * as prompts from "@inquirer/prompts";
+import nunjucks from "nunjucks";
 import { ZodObject, type ZodType, z } from "zod";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
@@ -109,7 +110,7 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   description?: string;
 
-  taskTitle?: string;
+  taskTitle?: string | ((input: I) => PromiseOrValue<string | undefined>);
 
   /**
    * Zod schema defining the input message structure
@@ -266,7 +267,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     this.name = options.name || this.constructor.name;
     this.alias = options.alias;
     this.description = options.description;
-    this.taskTitle = options.taskTitle;
+    this.taskTitle = options.taskTitle as Agent<I, O>["taskTitle"];
 
     if (inputSchema) checkAgentInputOutputSchema(inputSchema);
     if (outputSchema) checkAgentInputOutputSchema(outputSchema);
@@ -366,7 +367,16 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    */
   readonly description?: string;
 
-  taskTitle?: string;
+  taskTitle?: string | ((input: Message) => PromiseOrValue<string | undefined>);
+
+  async renderTaskTitle(input: I): Promise<string | undefined> {
+    if (!this.taskTitle) return;
+
+    const s = typeof this.taskTitle === "function" ? await this.taskTitle(input) : this.taskTitle;
+    if (!s) return;
+
+    return nunjucks.renderString(s, { ...input });
+  }
 
   private readonly _inputSchema?: AgentInputOutputSchema<I>;
 
@@ -1228,6 +1238,7 @@ export interface AgentResponseProgress {
     | {
         event: "agentStarted";
         input: Message;
+        taskTitle?: string;
       }
     | {
         event: "agentSucceed";

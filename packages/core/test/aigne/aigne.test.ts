@@ -471,6 +471,7 @@ test("AIGNE.invoke should respond progressing chunks correctly", async () => {
   const agent = AIAgent.from({
     name: "chat",
     inputKey: "message",
+    taskTitle: "Start process {{message}}",
   });
 
   const stream = await aigne.invoke(

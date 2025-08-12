@@ -792,3 +792,23 @@ test("Agent should prioritize direct input over default input", async () => {
     foo: "Custom Foo",
   });
 });
+
+test("Agent should render task title (string template) correctly", async () => {
+  const agent = AIAgent.from({
+    taskTitle: "Test Task for message: {{message}}",
+  });
+
+  expect(await agent.renderTaskTitle({ message: "Hello" })).toBe("Test Task for message: Hello");
+});
+
+test("Agent should render task title (function) correctly", async () => {
+  const agent = AIAgent.from({
+    taskTitle: (input) =>
+      input.lang === "zh" ? `测试任务: {{message}}` : `Test Task for message: {{message}}`,
+  });
+
+  expect(await agent.renderTaskTitle({ lang: "zh", message: "Hello" })).toBe("测试任务: Hello");
+  expect(await agent.renderTaskTitle({ lang: "en", message: "Hello" })).toBe(
+    "Test Task for message: Hello",
+  );
+});

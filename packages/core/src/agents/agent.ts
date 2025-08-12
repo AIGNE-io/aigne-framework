@@ -72,7 +72,7 @@ export type PublishTopic<O extends Message> =
  * @template O The agent output message type
  */
 export interface AgentOptions<I extends Message = Message, O extends Message = Message>
-  extends Partial<Pick<Agent, "guideRails">> {
+  extends Partial<Pick<Agent, "guideRails" | "taskTitle">> {
   /**
    * Topics the agent should subscribe to
    *
@@ -109,8 +109,6 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    * for documentation and debugging
    */
   description?: string;
-
-  taskTitle?: string;
 
   /**
    * Zod schema defining the input message structure
@@ -367,11 +365,15 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    */
   readonly description?: string;
 
-  taskTitle?: string;
+  taskTitle?: string | ((input: I) => PromiseOrValue<string | undefined>);
 
-  renderTaskTitle(input: I) {
+  async renderTaskTitle(input: I): Promise<string | undefined> {
     if (!this.taskTitle) return;
-    return nunjucks.renderString(this.taskTitle, { ...input });
+
+    const s = typeof this.taskTitle === "function" ? await this.taskTitle(input) : this.taskTitle;
+    if (!s) return;
+
+    return nunjucks.renderString(s, { ...input });
   }
 
   private readonly _inputSchema?: AgentInputOutputSchema<I>;

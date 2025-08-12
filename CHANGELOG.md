@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.58.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.58.0...aigne-framework-v1.58.1) (2025-08-12)
+
+
+### Bug Fixes
+
+* **core:** add optional memory context toggle for AI agent ([#350](https://github.com/AIGNE-io/aigne-framework/issues/350)) ([92322cc](https://github.com/AIGNE-io/aigne-framework/commit/92322ccaf6f2b6e4440d47a7631589061c351d64))
+
 ## [1.58.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.57.0...aigne-framework-v1.58.0) (2025-08-12)
 
 

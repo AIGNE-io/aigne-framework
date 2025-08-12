@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.49.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.49.0...core-v1.49.1) (2025-08-12)
+
+
+### Bug Fixes
+
+* **core:** add optional memory context toggle for AI agent ([#350](https://github.com/AIGNE-io/aigne-framework/issues/350)) ([92322cc](https://github.com/AIGNE-io/aigne-framework/commit/92322ccaf6f2b6e4440d47a7631589061c351d64))
+
 ## [1.49.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.48.0...core-v1.49.0) (2025-08-12)
 
 

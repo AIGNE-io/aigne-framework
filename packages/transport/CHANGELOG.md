@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.13.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.13.0...transport-v0.13.1) (2025-08-12)
+
+
+### Bug Fixes
+
+* **core:** add optional memory context toggle for AI agent ([#350](https://github.com/AIGNE-io/aigne-framework/issues/350)) ([92322cc](https://github.com/AIGNE-io/aigne-framework/commit/92322ccaf6f2b6e4440d47a7631589061c351d64))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.11.1
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.19
+    * @aigne/core bumped to 1.49.1
+    * @aigne/default-memory bumped to 1.1.1
+    * @aigne/test-utils bumped to 0.5.27
+
 ## [0.13.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.12.5...transport-v0.13.0) (2025-08-12)
 
 

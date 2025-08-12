@@ -102,7 +102,7 @@ async function getHubs(): Promise<StatusInfo[]> {
 }
 
 const getDefaultHub = async () => {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8")) as AIGNEEnv;
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
   return envs?.default?.AIGNE_HUB_API_URL || AIGNE_HUB_URL;
 };
 
@@ -268,7 +268,7 @@ function validateUrl(input: string) {
 }
 
 async function saveAndConnect(url: string) {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8")) as AIGNEEnv;
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
   const host = new URL(url).host;
 
   if (envs[host]) {
@@ -286,7 +286,7 @@ async function saveAndConnect(url: string) {
 }
 
 async function setDefaultHub(url: string) {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8")) as AIGNEEnv;
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
   const host = new URL(url).host;
 
   if (!envs[host]) {
@@ -302,7 +302,7 @@ async function setDefaultHub(url: string) {
 }
 
 async function deleteHub(url: string) {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8")) as AIGNEEnv;
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
   const host = new URL(url).host;
   delete envs[host];
 
@@ -315,7 +315,7 @@ async function deleteHub(url: string) {
 }
 
 async function printHubDetails(url: string) {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8")) as AIGNEEnv;
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
   const host = new URL(url).host;
 
   const userInfo = await getUserInfo({

@@ -1,64 +1,11 @@
 import { afterAll, afterEach, describe, expect, mock, test } from "bun:test";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { AIGNE_ENV_FILE, encrypt } from "@aigne/aigne-hub";
-import { serve } from "bun";
-import { detect } from "detect-port";
-import { Hono } from "hono";
+import { AIGNE_ENV_FILE } from "@aigne/aigne-hub";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import { loadAIGNE } from "../../src/utils/load-aigne.js";
-
-async function createHonoServer() {
-  const port = await detect();
-  const url = `http://localhost:${port}/`;
-
-  const honoApp = new Hono();
-  honoApp.post("/api/access-key/session", async (c) => {
-    return c.json({
-      challenge: "test",
-      accessKeyId: "test",
-      accessKeySecret: "test",
-      id: "test",
-    });
-  });
-
-  honoApp.get("/api/access-key/session", async (c) => {
-    const requestCount = parseInt(c.req.header("X-Request-Count") || "0");
-    if (requestCount === 0) {
-      return c.json({});
-    } else {
-      return c.json({
-        challenge: "test",
-        accessKeyId: "test",
-        accessKeySecret: encrypt("test", "test", "test"),
-      });
-    }
-  });
-
-  honoApp.delete("/api/access-key/session", async (c) => {
-    const body = {};
-    return c.json(body);
-  });
-
-  const app = new Hono();
-  app.route("/.well-known/service", honoApp);
-  app.route("/", honoApp);
-  app.get("/__blocklet__.js", async (c) => {
-    return c.json({
-      componentMountPoints: [
-        { did: "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ", mountPoint: "/ai-kit" },
-      ],
-    });
-  });
-
-  const server = serve({ port, fetch: app.fetch });
-
-  return {
-    url,
-    close: () => server.stop(true),
-  };
-}
+import { createHonoServer } from "../_mocks_/server.js";
 
 describe("load aigne", () => {
   describe("loadAIGNE", () => {

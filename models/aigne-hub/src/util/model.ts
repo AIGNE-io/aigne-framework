@@ -202,6 +202,7 @@ function printChatModelInfoBox({
     }
   }
 
+  console.log("\n");
   console.log(
     boxen(lines.join("\n"), {
       padding: 1,
@@ -209,6 +210,7 @@ function printChatModelInfoBox({
       borderColor: "cyan",
     }),
   );
+  console.log("\n");
 }
 
 export async function loadModel(

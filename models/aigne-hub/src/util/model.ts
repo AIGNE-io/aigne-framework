@@ -10,6 +10,8 @@ import { OpenAIChatModel } from "@aigne/openai";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
+import boxen from "boxen";
+import chalk from "chalk";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import type inquirer from "inquirer";
 import type { ClientOptions } from "openai";
@@ -98,6 +100,7 @@ export function findModel(models: LoadableModel[], provider: string) {
     if (typeof m.name === "string") {
       return m.name.toLowerCase().includes(provider.toLowerCase());
     }
+
     return m.name.some((n) => n.toLowerCase().includes(provider.toLowerCase()));
   });
 }
@@ -149,10 +152,66 @@ export const formatModelName = async (model: string, inquirerPrompt: typeof inqu
     default: true,
   });
 
-  if (!result.useAigneHub) return model;
+  if (!result.useAigneHub) {
+    console.log(
+      chalk.yellow(
+        `You can use command "export ${apiKeyEnvName[0]}=xxx" to set API Key in your shell. Or you can set environment variables in .env file.`,
+      ),
+    );
+    process.exit(0);
+  }
 
   return `${AGENT_HUB_PROVIDER}:${provider}/${name}`;
 };
+
+function maskApiKey(apiKey?: string) {
+  if (!apiKey || apiKey.length <= 8) return apiKey;
+  const start = apiKey.slice(0, 4);
+  const end = apiKey.slice(-4);
+  return `${start}${"*".repeat(8)}${end}`;
+}
+
+function printChatModelInfoBox({
+  provider,
+  model,
+  credential,
+  m,
+}: {
+  provider: string;
+  model: string;
+  credential?: { url?: string; apiKey?: string };
+  m: LoadableModel;
+}) {
+  const lines = [
+    `${chalk.cyan("Provider")}: ${chalk.green(provider)}`,
+    `${chalk.cyan("Model")}: ${chalk.green(model)}`,
+  ];
+
+  if (provider.includes(AGENT_HUB_PROVIDER)) {
+    lines.push(
+      `${chalk.cyan("API URL")}: ${chalk.green(credential?.url || "N/A")}`,
+      `${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(credential?.apiKey))}`,
+    );
+  } else {
+    const apiKeyEnvName = Array.isArray(m.apiKeyEnvName) ? m.apiKeyEnvName : [m.apiKeyEnvName];
+    const envKeyName = apiKeyEnvName.find((name) => name && process.env[name]);
+    if (envKeyName) {
+      lines.push(`${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(process.env[envKeyName]))}`);
+    } else {
+      lines.push(`${chalk.cyan("API Key")}: ${chalk.yellow("Not found")}`);
+    }
+  }
+
+  console.log("\n");
+  console.log(
+    boxen(lines.join("\n"), {
+      padding: 1,
+      borderStyle: "classic",
+      borderColor: "cyan",
+    }),
+  );
+  console.log("\n");
+}
 
 export async function loadModel(
   model?: Model,
@@ -174,6 +233,7 @@ export async function loadModel(
   if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
 
   const credential = await loadCredential({ ...options, model: `${provider}:${params.model}` });
+  printChatModelInfoBox({ provider, model: params.model || "", credential, m });
 
   return m.create({
     ...(credential || {}),

@@ -11,7 +11,7 @@ import {
   AIGNE_ENV_FILE,
   AIGNE_HUB_DID,
   AIGNE_HUB_URL as DEFAULT_AIGNE_HUB_URL,
-  IsTest,
+  isTest,
   WELLKNOWN_SERVICE_PATH_PREFIX,
 } from "./constants.js";
 import { decrypt, encodeEncryptionKey } from "./crypto.js";
@@ -126,7 +126,7 @@ export async function connectToAIGNEHub(url: string) {
   const urlWithAIGNEHubMountPoint = await getAIGNEHubMountPoint(url);
 
   try {
-    const openFn = IsTest ? () => {} : open;
+    const openFn = isTest ? () => {} : open;
     const result = await createConnect({
       connectUrl: connectUrl,
       connectAction: "gen-simple-access-key",

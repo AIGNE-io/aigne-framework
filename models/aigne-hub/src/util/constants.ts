@@ -11,7 +11,7 @@ const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-5-mini";
 const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_HUB_MODEL}`;
 const DEFAULT_MODEL_PROVIDER = "openai";
 
-const IsTest = process.env.CI || process.env.NODE_ENV === "test";
+const isTest = process.env.CI || process.env.NODE_ENV === "test";
 const TEST_AIGNE_ENV_FILE = nodejs.path.join(
   nodejs.os.homedir(),
   ".aigne",
@@ -22,14 +22,14 @@ const PROD_AIGNE_ENV_FILE = nodejs.path.join(
   ".aigne",
   "aigne-hub-connected.yaml",
 );
-const AIGNE_ENV_FILE = IsTest ? TEST_AIGNE_ENV_FILE : PROD_AIGNE_ENV_FILE;
+const AIGNE_ENV_FILE = isTest ? TEST_AIGNE_ENV_FILE : PROD_AIGNE_ENV_FILE;
 
 export {
   DEFAULT_AIGNE_HUB_PROVIDER_MODEL,
   DEFAULT_MODEL_PROVIDER,
   AIGNE_HUB_DID,
   AIGNE_HUB_URL,
-  IsTest,
+  isTest,
   WELLKNOWN_SERVICE_PATH_PREFIX,
   ACCESS_KEY_PREFIX,
   ACCESS_KEY_SESSION_API,

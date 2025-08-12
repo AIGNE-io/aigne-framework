@@ -18,7 +18,7 @@ import { parse, stringify } from "yaml";
 import { availableMemories } from "../constants.js";
 import type { RunAIGNECommandOptions } from "./run-with-aigne.js";
 
-const IsTest = process.env.CI || process.env.NODE_ENV === "test";
+const isTest = process.env.CI || process.env.NODE_ENV === "test";
 
 export interface RunOptions extends RunAIGNECommandOptions {
   path: string;
@@ -80,9 +80,9 @@ export async function loadAIGNE({
   }
 
   // format model name
-  const formattedModelName = IsTest ? modelName : await formatModelName(modelName, inquirerPrompt);
+  const formattedModelName = isTest ? modelName : await formatModelName(modelName, inquirerPrompt);
 
-  if (IsTest && path && !actionOptions?.runTest) {
+  if (isTest && path && !actionOptions?.runTest) {
     const model = await loadModel(parseModelOption(formattedModelName));
     return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
   }

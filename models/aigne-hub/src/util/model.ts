@@ -203,12 +203,7 @@ function printChatModelInfoBox({
   }
 
   console.log("\n");
-  console.log(
-    boxen(lines.join("\n"), 
-      padding: 1,
-      borderStyle: "classic",
-      borderColor: "cyan",),
-  );
+  console.log(boxen(lines.join("\n"), { padding: 1, borderStyle: "classic", borderColor: "cyan" }));
   console.log("\n");
 }
 

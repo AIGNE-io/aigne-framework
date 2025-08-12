@@ -388,6 +388,7 @@ test("Build first agent: setup memory for client agent", async () => {
     name: "chatbot",
     instructions: "You are a helpful assistant",
     inputKey: "message",
+    useMemoriesFromContext: true,
   });
 
   const aigne = new AIGNE({

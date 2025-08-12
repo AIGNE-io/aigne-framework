@@ -448,6 +448,7 @@ async function createAIGNE() {
   const chat = AIAgent.from({
     name: "chat",
     inputKey: "message",
+    useMemoriesFromContext: true,
   });
 
   return new AIGNE({ model, agents: [chat] });

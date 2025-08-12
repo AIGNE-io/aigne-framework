@@ -227,7 +227,7 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
 ]
 `;
 
-exports[`AIGNE.invoke should respond $meta field with usage metrics with {
+exports[`AIGNE.invoke should respond $metafield with usage metrics with {
   streaming: true,
   returnMetadata: true,
 } 1`] = `

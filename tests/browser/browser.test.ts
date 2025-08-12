@@ -115,6 +115,7 @@ async function startServer() {
     name: "chatbot",
     memory: [],
     inputKey: "message",
+    useMemoriesFromContext: true,
   });
 
   const aigne = new AIGNE({

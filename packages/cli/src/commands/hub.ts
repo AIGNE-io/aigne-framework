@@ -190,6 +190,7 @@ async function connectHub() {
 
 async function useHub() {
   const hubs = await getHubs();
+
   if (!hubs.length) {
     console.log(chalk.yellow("No AIGNE Hub configured."));
     return;

@@ -13,7 +13,7 @@ Commands:
   aigne serve-mcp      Serve the agents in the specified directory as a MCP
                        server (streamable http)
   aigne observe        Start the observability server
-  aigne connect [url]  Manage AIGNE Hub connections
+  aigne hub            Manage AIGNE Hub connections
   aigne doc-smith      Generate and maintain project docs — powered by agents.
                                                         [aliases: docsmith, doc]
 

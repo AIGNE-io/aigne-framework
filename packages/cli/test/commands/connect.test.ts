@@ -165,7 +165,7 @@ describe("load aigne", () => {
           expect.stringContaining("No AIGNE Hub connections found"),
         );
         expect(mockConsoleLog).toHaveBeenCalledWith(
-          expect.stringContaining("Use 'aigne connect <url>' to connect to a hub"),
+          expect.stringContaining("Use 'aigne hub connect' to connect to a hub"),
         );
       } finally {
         console.log = originalConsoleLog;

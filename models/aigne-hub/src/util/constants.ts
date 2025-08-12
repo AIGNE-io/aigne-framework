@@ -7,7 +7,7 @@ const ACCESS_KEY_SESSION_API = `${ACCESS_KEY_PREFIX}/session`;
 const AIGNE_HUB_DID = "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ";
 const AGENT_HUB_PROVIDER = "aignehub";
 const AIGNE_HUB_URL = "https://hub.aigne.io/";
-const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-5.1-mini";
+const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-5-mini";
 const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_HUB_MODEL}`;
 const DEFAULT_MODEL_PROVIDER = "openai";
 

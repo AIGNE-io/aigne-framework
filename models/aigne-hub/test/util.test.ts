@@ -295,7 +295,7 @@ describe("load aigne", () => {
 
     test("should return default aignehub model when no model provided", async () => {
       const result = await formatModelName("", mockInquirerPrompt);
-      expect(result).toBe("aignehub:openai/gpt-4o");
+      expect(result).toBe("aignehub:openai/gpt-5-mini");
     });
 
     test("should return model as-is when provider is aignehub", async () => {

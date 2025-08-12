@@ -70,7 +70,7 @@ export async function loadAIGNE({
     options,
     actionOptions?.inquirerPromptFn,
   );
-
+  const { temperature, topP, presencePenalty, frequencyPenalty } = options || {};
   let modelName = options?.model || "";
 
   if (path) {
@@ -87,7 +87,6 @@ export async function loadAIGNE({
     return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
   }
 
-  const { temperature, topP, presencePenalty, frequencyPenalty } = options || {};
   const model = await loadModel(
     {
       ...parseModelOption(formattedModelName),

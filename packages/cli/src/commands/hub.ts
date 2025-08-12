@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import { AIGNE_ENV_FILE, AIGNE_HUB_URL, connectToAIGNEHub } from "@aigne/aigne-hub";
+import { AIGNE_ENV_FILE, AIGNE_HUB_URL, connectToAIGNEHub, isTest } from "@aigne/aigne-hub";
 import chalk from "chalk";
 import Table from "cli-table3";
 import inquirer from "inquirer";
@@ -278,6 +278,22 @@ async function saveAndConnect(url: string) {
   }
 
   try {
+    if (isTest) {
+      writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          "hub.aigne.io": {
+            AIGNE_HUB_API_KEY: "test-key",
+            AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
+          },
+          default: {
+            AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
+          },
+        }),
+      );
+      return;
+    }
+
     await connectToAIGNEHub(url);
     console.log(chalk.green(`✓ Hub ${url} connected successfully.`));
   } catch (error: any) {

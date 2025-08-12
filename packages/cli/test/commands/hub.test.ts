@@ -7,52 +7,27 @@ import { createHubCommand } from "../../src/commands/hub.js";
 import { createHonoServer } from "../_mocks_/server.js";
 
 const mockOpen = mock(() => {});
-const mockConsoleLog = mock(() => {});
-const mockConsoleError = mock(() => {});
 const mockInquirerPrompt = mock(() => {}) as any;
-
-mock.module("open", () => ({ default: mockOpen }));
-mock.module("inquirer", () => ({ default: { prompt: mockInquirerPrompt } }));
-mock.module("@aigne/aigne-hub", () => ({
-  connectToAIGNEHub: () => {
-    writeFile(
-      AIGNE_ENV_FILE,
-      stringify({
-        "hub.aigne.io": {
-          AIGNE_HUB_API_KEY: "test-key",
-          AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
-        },
-        default: {
-          AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
-        },
-      }),
-    );
-
-    return {
-      apiKey: "test-key",
-      url: "https://hub.aigne.io/ai-kit",
-    };
-  },
-}));
-mock.module("../../src/utils/aigne-hub-user.ts", () => ({
-  getUserInfo: async () => ({
-    user: {
-      fullName: "test",
-      email: "test@test.com",
-      did: "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
-    },
-    creditBalance: { balance: 100, total: 100 },
-    paymentLink: "https://test.com",
-    profileLink: "https://test.com/profile",
-  }),
-}));
 
 describe("hub command", () => {
   afterEach(async () => {
-    mockConsoleLog.mockClear();
-    mockConsoleError.mockClear();
     mockInquirerPrompt.mockClear();
   });
+
+  mock.module("open", () => ({ default: mockOpen }));
+  mock.module("inquirer", () => ({ default: { prompt: mockInquirerPrompt } }));
+  mock.module("../../src/utils/aigne-hub-user.ts", () => ({
+    getUserInfo: async () => ({
+      user: {
+        fullName: "test",
+        email: "test@test.com",
+        did: "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
+      },
+      creditBalance: { balance: 100, total: 100 },
+      paymentLink: "https://test.com",
+      profileLink: "https://test.com/profile",
+    }),
+  }));
 
   describe("createHubCommand", () => {
     test("should create hub command with all subcommands", () => {

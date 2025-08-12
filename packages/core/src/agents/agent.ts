@@ -72,7 +72,7 @@ export type PublishTopic<O extends Message> =
  * @template O The agent output message type
  */
 export interface AgentOptions<I extends Message = Message, O extends Message = Message>
-  extends Partial<Pick<Agent, "guideRails" | "taskTitle">> {
+  extends Partial<Pick<Agent, "guideRails">> {
   /**
    * Topics the agent should subscribe to
    *
@@ -109,6 +109,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    * for documentation and debugging
    */
   description?: string;
+
+  taskTitle?: string | ((input: I) => PromiseOrValue<string | undefined>);
 
   /**
    * Zod schema defining the input message structure
@@ -265,7 +267,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     this.name = options.name || this.constructor.name;
     this.alias = options.alias;
     this.description = options.description;
-    this.taskTitle = options.taskTitle;
+    this.taskTitle = options.taskTitle as Agent<I, O>["taskTitle"];
 
     if (inputSchema) checkAgentInputOutputSchema(inputSchema);
     if (outputSchema) checkAgentInputOutputSchema(outputSchema);
@@ -365,7 +367,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    */
   readonly description?: string;
 
-  taskTitle?: string | ((input: I) => PromiseOrValue<string | undefined>);
+  taskTitle?: string | ((input: Message) => PromiseOrValue<string | undefined>);
 
   async renderTaskTitle(input: I): Promise<string | undefined> {
     if (!this.taskTitle) return;

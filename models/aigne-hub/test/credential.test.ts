@@ -224,6 +224,116 @@ describe("credential", () => {
       });
     });
 
+    test("should handle official hub subscription choice", async () => {
+      const mockInquirerPrompt = mock(async (prompt: any) => {
+        if (prompt.name === "subscribe") {
+          return { subscribe: "official" };
+        }
+        return {};
+      });
+
+      const result = await loadCredential({
+        model: "aignehub:openai/gpt-4",
+        inquirerPromptFn: mockInquirerPrompt,
+      });
+
+      expect(result).toEqual({
+        apiKey: "test",
+        url: joinURL(url, "ai-kit"),
+      });
+    });
+
+    test("should handle manual configuration choice and exit", async () => {
+      const mockInquirerPrompt = mock(async (prompt: any) => {
+        if (prompt.name === "subscribe") {
+          return { subscribe: "manual" };
+        }
+        return {};
+      });
+
+      const mockExit = mock((code?: number) => {
+        throw new Error(`Process exit called with code: ${code}`);
+      });
+      const originalExit = process.exit;
+      process.exit = mockExit;
+
+      try {
+        await loadCredential({
+          model: "aignehub:openai/gpt-4",
+          inquirerPromptFn: mockInquirerPrompt,
+        });
+      } catch {
+        // Expected to exit
+      }
+
+      process.exit = originalExit;
+    });
+
+    test("should handle custom URL input with validation", async () => {
+      const mockInquirerPrompt = mock(async (prompt: any) => {
+        if (prompt.name === "subscribe") {
+          return { subscribe: "custom" };
+        }
+        if (prompt.name === "customUrl") {
+          return { customUrl: url };
+        }
+        return {};
+      });
+
+      const result = await loadCredential({
+        model: "aignehub:openai/gpt-4",
+        inquirerPromptFn: mockInquirerPrompt,
+      });
+
+      expect(result).toEqual({
+        apiKey: "test",
+        url: joinURL(url, "ai-kit"),
+      });
+    });
+
+    test("should handle connectToAIGNEHub error gracefully", async () => {
+      const mockInquirerPrompt = mock(async (prompt: any) => {
+        if (prompt.name === "subscribe") {
+          return { subscribe: "official" };
+        }
+        return {};
+      });
+
+      const result = await loadCredential({
+        model: "aignehub:openai/gpt-4",
+        inquirerPromptFn: mockInquirerPrompt,
+      });
+
+      expect(result).toEqual({ apiKey: "test", url: joinURL(url, "ai-kit") });
+    });
+
+    test("should handle case insensitive model name matching", async () => {
+      const testContent = {
+        "hub.aigne.io": {
+          AIGNE_HUB_API_KEY: "test-key",
+          AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
+        },
+      };
+      await writeFile(AIGNE_ENV_FILE, stringify(testContent));
+
+      const result = await loadCredential({ model: "AIGNEHUB:openai/gpt-4" });
+
+      expect(result).toEqual({
+        apiKey: "test",
+        url: joinURL(url, "ai-kit"),
+      });
+    });
+
+    test("should handle empty model name", async () => {
+      const result = await loadCredential({ model: "" });
+      expect(result).toEqual({});
+    });
+
+    test("should handle undefined model", async () => {
+      const result = await loadCredential();
+      expect(result).toEqual({});
+    });
+
     afterAll(async () => {
       await close();
     });

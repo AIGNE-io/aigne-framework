@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.0...platform-helpers-v0.6.1) (2025-08-12)
+
+
+### Bug Fixes
+
+* **core:** examples cases that failed when using aigne-hub ([#337](https://github.com/AIGNE-io/aigne-framework/issues/337)) ([0d4a31c](https://github.com/AIGNE-io/aigne-framework/commit/0d4a31c24d9e7d26f00d1accb80719d9ad79a4c6))
+
 ## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.5.1...platform-helpers-v0.6.0) (2025-08-06)
 
 

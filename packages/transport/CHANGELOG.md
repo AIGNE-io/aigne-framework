@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.13.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.12.5...transport-v0.13.0) (2025-08-12)
+
+
+### Features
+
+* **cli:** add retry functionality and improve error handling for AIGNE Hub ([#348](https://github.com/AIGNE-io/aigne-framework/issues/348)) ([672c93a](https://github.com/AIGNE-io/aigne-framework/commit/672c93abbba8b4b234f6d810536ff4b603a97e1e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.11.0
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.18
+    * @aigne/core bumped to 1.49.0
+    * @aigne/default-memory bumped to 1.1.0
+    * @aigne/test-utils bumped to 0.5.26
+
 ## [0.12.5](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.12.4...transport-v0.12.5) (2025-08-12)
 
 

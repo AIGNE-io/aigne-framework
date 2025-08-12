@@ -1,6 +1,6 @@
 {
   "name": "@aigne/did-space-memory",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "DID Spaces memory for AIGNE framework",
   "publishConfig": {
     "access": "public"

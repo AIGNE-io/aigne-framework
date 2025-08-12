@@ -172,18 +172,24 @@ export class BaseClient {
     if (!result.ok) {
       let message: string | undefined;
       let resultText: string | undefined;
+      let type: string | undefined;
 
       try {
         const text = await result.text();
-        const json = tryOrThrow(() => JSON.parse(text) as { error?: { message: string } });
+        const json = tryOrThrow(
+          () => JSON.parse(text) as { error?: { message: string; type?: string } },
+        );
         resultText = text;
         message = json?.error?.message;
+        type = json?.error?.type;
       } catch {
         // ignore
       }
 
       if (message) {
-        throw new Error(message);
+        const e = new Error(message);
+        if (type) (e as any).type = type;
+        throw e;
       }
 
       throw new Error(`Failed to fetch url ${args[0]} with status ${result.status}: ${resultText}`);

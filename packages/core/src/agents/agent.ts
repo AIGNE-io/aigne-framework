@@ -691,7 +691,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
         break;
       } catch (error) {
         const res = await this.processAgentError(input, error, options);
-        throw res.error ?? error;
+        if (!res.retry) throw res.error ?? error;
       }
     }
   }
@@ -826,6 +826,9 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     error: Error,
     options: AgentInvokeOptions,
   ): Promise<{ retry?: boolean; error?: Error }> {
+    if ("$error_has_been_processed" in error && error.$error_has_been_processed) return {};
+    Object.defineProperty(error, "$error_has_been_processed", { value: true, enumerable: false });
+
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
     if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
 

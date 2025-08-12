@@ -151,7 +151,7 @@ export class TerminalTracer {
     };
 
     const onError: AgentHooks["onError"] = async ({ context, agent, error, ...event }) => {
-      if (error.message.includes("please first buy some credits in the link below")) {
+      if ("type" in error && error.type === "NOT_ENOUGH") {
         const retry = await proxiedPrompts.select({
           message: highlightUrl(error.message),
           choices: [

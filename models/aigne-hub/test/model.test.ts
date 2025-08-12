@@ -7,6 +7,7 @@ import {
   findModel,
   formatModelName,
   loadModel,
+  maskApiKey,
   parseModelOption,
 } from "../src/util/model.js";
 import { createHonoServer } from "./_mocks_/utils.js";
@@ -33,6 +34,18 @@ describe("model", () => {
     delete process.env.http_proxy;
     delete process.env.ALL_PROXY;
     delete process.env.all_proxy;
+  });
+
+  describe("maskApiKey", () => {
+    test("should mask api key", () => {
+      const result = maskApiKey("1234567890");
+      expect(result).toBe("1234*****90");
+    });
+
+    test("should mask api key", () => {
+      const result = maskApiKey("123");
+      expect(result).toBe("123");
+    });
   });
 
   describe("availableModels", () => {

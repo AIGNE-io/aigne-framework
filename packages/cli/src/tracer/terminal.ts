@@ -22,6 +22,7 @@ import * as prompts from "@inquirer/prompts";
 import chalk from "chalk";
 import { Marked } from "marked";
 import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
+import { highlightUrl } from "../utils/string-utils.js";
 import { parseDuration } from "../utils/time.js";
 
 export interface TerminalTracerOptions {
@@ -55,6 +56,29 @@ export class TerminalTracer {
       { concurrent: true },
     );
 
+    const proxiedPrompts = new Proxy(
+      {},
+      {
+        get: (_target, prop) => {
+          // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
+          const method = prompts[prop as keyof typeof prompts] as (...args: any[]) => any;
+          if (typeof method !== "function") return undefined;
+
+          return async (config: any) => {
+            const renderer =
+              listr["renderer"] instanceof AIGNEListrRenderer ? listr["renderer"] : undefined;
+            await renderer?.pause();
+
+            try {
+              return await method({ ...config });
+            } finally {
+              await renderer?.resume();
+            }
+          };
+        },
+      },
+    ) as typeof prompts;
+
     const onStart: AgentHooks["onStart"] = async ({ context, agent, ...event }) => {
       if (agent instanceof UserAgent) return;
 
@@ -69,7 +93,7 @@ export class TerminalTracer {
       this.tasks[contextId] = task;
 
       const listrTask: Parameters<typeof listr.add>[0] = {
-        title: this.formatTaskTitle(agent, { ...event }),
+        title: await this.formatTaskTitle(agent, { ...event }),
         task: (ctx, taskWrapper) => {
           const subtask = taskWrapper.newListr([{ task: () => task.promise }]);
           task.listr.resolve({ subtask, taskWrapper, ctx });
@@ -91,32 +115,7 @@ export class TerminalTracer {
         listr.add(listrTask);
       }
 
-      return {
-        options: {
-          prompts: new Proxy(
-            {},
-            {
-              get: (_target, prop) => {
-                // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
-                const method = prompts[prop as keyof typeof prompts] as (...args: any[]) => any;
-                if (typeof method !== "function") return undefined;
-
-                return async (config: any) => {
-                  const renderer =
-                    listr["renderer"] instanceof AIGNEListrRenderer ? listr["renderer"] : undefined;
-                  await renderer?.pause();
-
-                  try {
-                    return await method({ ...config });
-                  } finally {
-                    await renderer?.resume();
-                  }
-                };
-              },
-            },
-          ),
-        },
-      };
+      return { options: { prompts: proxiedPrompts } };
     };
 
     const onSuccess: AgentHooks["onSuccess"] = async ({ context, agent, output, ...event }) => {
@@ -137,7 +136,12 @@ export class TerminalTracer {
         if (model) task.extraTitleMetadata.model = model;
       }
 
-      taskWrapper.title = this.formatTaskTitle(agent, { ...event, task, usage: true, time: true });
+      taskWrapper.title = await this.formatTaskTitle(agent, {
+        ...event,
+        task,
+        usage: true,
+        time: true,
+      });
 
       if (!parentContextId || !this.tasks[parentContextId]) {
         Object.assign(ctx, output);
@@ -147,6 +151,28 @@ export class TerminalTracer {
     };
 
     const onError: AgentHooks["onError"] = async ({ context, agent, error, ...event }) => {
+      if (error.message.includes("please first buy some credits in the link below")) {
+        const retry = await proxiedPrompts.select({
+          message: highlightUrl(error.message),
+          choices: [
+            {
+              name: "I have bought some credits, try again",
+              value: "retry" as const,
+            },
+            {
+              name: "Exit",
+              value: "exit" as const,
+            },
+          ],
+        });
+
+        console.log("");
+
+        if (retry === "retry") {
+          return { retry: true };
+        }
+      }
+
       const contextId = context.id;
 
       const task = this.tasks[contextId];
@@ -155,7 +181,12 @@ export class TerminalTracer {
       task.endTime = Date.now();
 
       const { taskWrapper } = await task.listr.promise;
-      taskWrapper.title = this.formatTaskTitle(agent, { ...event, task, usage: true, time: true });
+      taskWrapper.title = await this.formatTaskTitle(agent, {
+        ...event,
+        task,
+        usage: true,
+        time: true,
+      });
 
       task.reject(error);
     };
@@ -204,14 +235,14 @@ export class TerminalTracer {
     return chalk.grey(`[${parseDuration(duration)}]`);
   }
 
-  formatTaskTitle(
+  async formatTaskTitle(
     agent: Agent,
     { task, usage, time, input }: { task?: Task; usage?: boolean; time?: boolean; input: Message },
   ) {
     let title = agent.name;
 
     if (agent.taskTitle) {
-      title += ` ${chalk.cyan(agent.renderTaskTitle(input))}`;
+      title += ` ${chalk.cyan(await agent.renderTaskTitle(input))}`;
     }
 
     if (usage && task?.usage)

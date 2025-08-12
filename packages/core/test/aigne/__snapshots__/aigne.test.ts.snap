@@ -120,13 +120,6 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
     },
   },
   {
-    "delta": {
-      "text": {
-        "message": " ",
-      },
-    },
-  },
-  {
     "progress": {
       "agent": {
         "name": "OpenAIChatModel",
@@ -140,14 +133,14 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
   {
     "delta": {
       "text": {
-        "message": "today",
+        "message": " ",
       },
     },
   },
   {
     "delta": {
       "text": {
-        "message": "?",
+        "message": "today",
       },
     },
   },
@@ -159,6 +152,13 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
       "event": "agentSucceed",
       "output": {
         "message": "Hello, How can I assist you today?",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "message": "?",
       },
     },
   },
@@ -217,19 +217,19 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
     },
   },
   {
+    "delta": {
+      "text": {
+        "message": " world",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
       },
       "error": [Error: Test error],
       "event": "agentFailed",
-    },
-  },
-  {
-    "delta": {
-      "text": {
-        "message": " world",
-      },
     },
   },
   [Error: Test error],

@@ -101,6 +101,43 @@ describe("credential", () => {
   describe("loadCredential", async () => {
     const { url, close } = await createHonoServer();
 
+    test("should use custom inquirer prompt function when provided", async () => {
+      const mockInquirerPrompt = mock(async (prompt: any) => {
+        if (prompt.name === "subscribe") {
+          return { subscribe: "custom" };
+        }
+
+        if (prompt.name === "customUrl") {
+          return { customUrl: url };
+        }
+
+        return {};
+      });
+
+      const testContent = {
+        default: {
+          AIGNE_HUB_API_URL: joinURL(url, "ai-kit"),
+        },
+      };
+      await writeFile(AIGNE_ENV_FILE, stringify(testContent));
+
+      const result = await loadCredential({
+        model: "aignehub:openai/gpt-4",
+        inquirerPromptFn: mockInquirerPrompt,
+      });
+
+      expect(result).toEqual({
+        apiKey: "test",
+        url: joinURL(url, "ai-kit"),
+      });
+
+      await close();
+    });
+  });
+
+  describe("loadCredential", async () => {
+    const { url, close } = await createHonoServer();
+
     beforeEach(async () => {
       await rm(AIGNE_ENV_FILE, { force: true });
     });
@@ -193,30 +230,6 @@ describe("credential", () => {
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
       const result = await loadCredential({ model: "aignehub:openai/gpt-4" });
-
-      expect(result).toEqual({
-        apiKey: "test",
-        url: joinURL(url, "ai-kit"),
-      });
-    });
-
-    test("should use custom inquirer prompt function when provided", async () => {
-      const mockInquirerPrompt = mock(async (prompt: any) => {
-        if (prompt.name === "subscribe") {
-          return { subscribe: "custom" };
-        }
-
-        if (prompt.name === "customUrl") {
-          return { customUrl: url };
-        }
-
-        return {};
-      });
-
-      const result = await loadCredential({
-        model: "aignehub:openai/gpt-4",
-        inquirerPromptFn: mockInquirerPrompt,
-      });
 
       expect(result).toEqual({
         apiKey: "test",

@@ -918,18 +918,6 @@ exports[`AIGNEClient should return error with options {
       },
     },
   },
-  {
-    "progress": {
-      "agent": {
-        "name": "chat",
-      },
-      "contextId": "TEST_CONTEXT_ID",
-      "error": [Error: test llm model error],
-      "event": "agentFailed",
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
   [Error: test llm model error],
 ]
 `;
@@ -1030,18 +1018,6 @@ exports[`AIGNEClient should return error with options {
       "text": {
         "message": ", world",
       },
-    },
-  },
-  {
-    "progress": {
-      "agent": {
-        "name": "chat",
-      },
-      "contextId": "TEST_CONTEXT_ID",
-      "error": [Error: test llm model error],
-      "event": "agentFailed",
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
     },
   },
   [Error: test llm model error],
@@ -1146,18 +1122,6 @@ exports[`AIGNEClient should return error with options {
       },
     },
   },
-  {
-    "progress": {
-      "agent": {
-        "name": "chat",
-      },
-      "contextId": "TEST_CONTEXT_ID",
-      "error": [Error: test llm model error],
-      "event": "agentFailed",
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
   [Error: test llm model error],
 ]
 `;
@@ -1260,18 +1224,6 @@ exports[`AIGNEClient should return error with options {
       },
     },
   },
-  {
-    "progress": {
-      "agent": {
-        "name": "chat",
-      },
-      "contextId": "TEST_CONTEXT_ID",
-      "error": [Error: test llm model error],
-      "event": "agentFailed",
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
   [Error: test llm model error],
 ]
 `;
@@ -1372,18 +1324,6 @@ exports[`AIGNEClient should return error with options {
       "text": {
         "message": ", world",
       },
-    },
-  },
-  {
-    "progress": {
-      "agent": {
-        "name": "chat",
-      },
-      "contextId": "TEST_CONTEXT_ID",
-      "error": [Error: test llm model error],
-      "event": "agentFailed",
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
     },
   },
   [Error: test llm model error],

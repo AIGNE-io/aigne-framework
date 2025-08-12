@@ -145,6 +145,8 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    * The template receives a {{memories}} variable containing serialized memory content.
    */
   memoryPromptTemplate?: string;
+
+  useMemoriesFromContext?: boolean;
 }
 
 /**
@@ -268,6 +270,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     this.toolChoice = options.toolChoice;
     this.memoryAgentsAsTools = options.memoryAgentsAsTools;
     this.memoryPromptTemplate = options.memoryPromptTemplate;
+    this.useMemoriesFromContext = options.useMemoriesFromContext;
 
     if (typeof options.catchToolsError === "boolean")
       this.catchToolsError = options.catchToolsError;
@@ -350,6 +353,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    * The template receives a {{memories}} variable containing serialized memory content.
    */
   memoryPromptTemplate?: string;
+
+  useMemoriesFromContext?: boolean;
 
   /**
    * Whether to catch error from tool execution and continue processing.

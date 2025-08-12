@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.11.1](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.11.0...anthropic-v0.11.1) (2025-08-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.49.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.27
+
+## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.10.13...anthropic-v0.11.0) (2025-08-12)
+
+
+### Features
+
+* **cli:** add retry functionality and improve error handling for AIGNE Hub ([#348](https://github.com/AIGNE-io/aigne-framework/issues/348)) ([672c93a](https://github.com/AIGNE-io/aigne-framework/commit/672c93abbba8b4b234f6d810536ff4b603a97e1e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.49.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.26
+
 ## [0.10.13](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.10.12...anthropic-v0.10.13) (2025-08-12)
 
 

@@ -131,7 +131,7 @@ export class PromptBuilder {
       );
     }
 
-    if (options.context?.memories?.length) {
+    if (options.agent?.useMemoriesFromContext && options.context?.memories?.length) {
       memories.push(...options.context.memories);
     }
 

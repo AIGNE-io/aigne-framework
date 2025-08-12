@@ -24,9 +24,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { ZodError, ZodObject, z } from "zod";
 import { TerminalTracer } from "../tracer/terminal.js";
-
 import { loadAIGNE } from "./load-aigne.js";
-
 import {
   type ChatLoopOptions,
   DEFAULT_CHAT_INPUT_KEY,

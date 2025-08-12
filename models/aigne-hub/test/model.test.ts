@@ -39,7 +39,7 @@ describe("model", () => {
   describe("maskApiKey", () => {
     test("should mask api key", () => {
       const result = maskApiKey("1234567890");
-      expect(result).toBe("1234*****90");
+      expect(result).toBe("1234********7890");
     });
 
     test("should mask api key", () => {

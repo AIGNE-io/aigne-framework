@@ -77,7 +77,10 @@ export async function serveMCPServerFromDir(options: {
 }) {
   const port = options.port || DEFAULT_PORT();
 
-  const aigne = await loadAIGNE(options.dir, { aigneHubUrl: options.aigneHubUrl });
+  const aigne = await loadAIGNE({
+    path: options.dir,
+    options: { aigneHubUrl: options.aigneHubUrl },
+  });
 
   await serveMCPServer({
     aigne,

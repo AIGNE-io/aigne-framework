@@ -52,63 +52,57 @@ async function prepareAIGNEConfig(
   return { AIGNE_HUB_URL, inquirerPrompt: alreadyConnected ? mockInquirerPrompt : inquirerPrompt };
 }
 
-export async function loadAIGNEByOptions(
-  options?: Model & Pick<RunOptions, "model" | "aigneHubUrl">,
-  modelOptions?: ChatModelOptions,
+export async function loadAIGNE({
+  path,
+  options,
+  modelOptions,
+  actionOptions,
+}: {
+  path?: string;
+  options?: Model & Pick<RunOptions, "model" | "aigneHubUrl">;
+  modelOptions?: ChatModelOptions;
   actionOptions?: {
     inquirerPromptFn?: LoadCredentialOptions["inquirerPromptFn"];
     runTest?: boolean;
-  },
-) {
+  };
+}) {
   const { AIGNE_HUB_URL, inquirerPrompt } = await prepareAIGNEConfig(
     options,
     actionOptions?.inquirerPromptFn,
   );
 
+  let modelName = options?.model || "";
+
+  if (path) {
+    const { aigne } = await loadAIGNEFile(path).catch(() => ({ aigne: null }));
+    const modelFromPath = `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`;
+    modelName = modelName || modelFromPath;
+  }
+
   // format model name
-  const modelName = IsTest
-    ? options?.model
-    : await formatModelName(options?.model || "", inquirerPrompt);
+  const formattedModelName = IsTest ? modelName : await formatModelName(modelName, inquirerPrompt);
+
+  if (IsTest && path && !actionOptions?.runTest) {
+    const model = await loadModel(parseModelOption(formattedModelName));
+    return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
+  }
 
   const { temperature, topP, presencePenalty, frequencyPenalty } = options || {};
   const model = await loadModel(
-    { ...parseModelOption(modelName), temperature, topP, presencePenalty, frequencyPenalty },
+    {
+      ...parseModelOption(formattedModelName),
+      temperature,
+      topP,
+      presencePenalty,
+      frequencyPenalty,
+    },
     modelOptions,
     { aigneHubUrl: AIGNE_HUB_URL, inquirerPromptFn: actionOptions?.inquirerPromptFn },
   );
 
-  return new AIGNE({ model });
-}
-
-export async function loadAIGNE(
-  path: string,
-  options?: Pick<RunOptions, "model" | "aigneHubUrl">,
-  actionOptions?: {
-    inquirerPromptFn?: LoadCredentialOptions["inquirerPromptFn"];
-    runTest?: boolean;
-  },
-) {
-  const { AIGNE_HUB_URL, inquirerPrompt } = await prepareAIGNEConfig(
-    options,
-    actionOptions?.inquirerPromptFn,
-  );
-
-  const { aigne } = await loadAIGNEFile(path).catch(() => ({ aigne: null }));
-  const modelFromPath = `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`;
-
-  // format model name
-  const modelName = IsTest
-    ? options?.model
-    : await formatModelName(options?.model || modelFromPath, inquirerPrompt);
-
-  if (IsTest && !actionOptions?.runTest) {
-    const model = await loadModel(parseModelOption(modelName));
+  if (path) {
     return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
   }
 
-  const model = await loadModel(parseModelOption(modelName), undefined, {
-    aigneHubUrl: AIGNE_HUB_URL,
-    inquirerPromptFn: actionOptions?.inquirerPromptFn,
-  });
-  return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
+  return new AIGNE({ model });
 }

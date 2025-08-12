@@ -35,7 +35,10 @@ export function createTestCommand({
       const path = aigneFilePath || options.path;
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
 
-      const aigne = await loadAIGNE(absolutePath, { aigneHubUrl: options?.aigneHubUrl });
+      const aigne = await loadAIGNE({
+        path: absolutePath,
+        options: { aigneHubUrl: options?.aigneHubUrl },
+      });
       assert(aigne.rootDir);
 
       spawnSync("node", ["--test"], { cwd: aigne.rootDir, stdio: "inherit" });

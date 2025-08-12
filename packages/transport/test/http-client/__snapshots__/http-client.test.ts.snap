@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://goo.gl/fbAQLP
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`AIGNEClient should return correct process options {
   streaming: true,
@@ -96,6 +96,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello ",
+      },
+      "text": {
+        "message": " ",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "OpenAIChatModel",
@@ -112,30 +122,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "message": "Hello ",
-      },
-      "text": {
-        "message": " ",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
         "message": "Hello world",
       },
       "text": {
         "message": "world",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
       },
     },
   },
@@ -151,6 +141,16 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
     },
   },
 ]
@@ -260,6 +260,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello ",
+      },
+      "text": {
+        "message": " ",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "OpenAIChatModel",
@@ -276,30 +286,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "message": "Hello ",
-      },
-      "text": {
-        "message": " ",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
         "message": "Hello world",
       },
       "text": {
         "message": "world",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
       },
     },
   },
@@ -315,6 +305,16 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
     },
   },
 ]
@@ -424,6 +424,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello ",
+      },
+      "text": {
+        "message": " ",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "OpenAIChatModel",
@@ -440,30 +450,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "message": "Hello ",
-      },
-      "text": {
-        "message": " ",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
         "message": "Hello world",
       },
       "text": {
         "message": "world",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
       },
     },
   },
@@ -479,6 +469,16 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
     },
   },
 ]
@@ -588,6 +588,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello ",
+      },
+      "text": {
+        "message": " ",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "OpenAIChatModel",
@@ -604,30 +614,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "message": "Hello ",
-      },
-      "text": {
-        "message": " ",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
         "message": "Hello world",
       },
       "text": {
         "message": "world",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
       },
     },
   },
@@ -643,6 +633,16 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
     },
   },
 ]
@@ -752,6 +752,16 @@ exports[`AIGNEClient should return correct process options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello ",
+      },
+      "text": {
+        "message": " ",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "OpenAIChatModel",
@@ -768,30 +778,10 @@ exports[`AIGNEClient should return correct process options {
   {
     "delta": {
       "json": {
-        "message": "Hello ",
-      },
-      "text": {
-        "message": " ",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
         "message": "Hello world",
       },
       "text": {
         "message": "world",
-      },
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello world!",
-      },
-      "text": {
-        "message": "!",
       },
     },
   },
@@ -807,6 +797,16 @@ exports[`AIGNEClient should return correct process options {
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "message": "Hello world!",
+      },
+      "text": {
+        "message": "!",
+      },
     },
   },
 ]
@@ -909,6 +909,16 @@ exports[`AIGNEClient should return error with options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello, world",
+      },
+      "text": {
+        "message": ", world",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -918,16 +928,6 @@ exports[`AIGNEClient should return error with options {
       "event": "agentFailed",
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello, world",
-      },
-      "text": {
-        "message": ", world",
-      },
     },
   },
   [Error: test llm model error],
@@ -1023,6 +1023,16 @@ exports[`AIGNEClient should return error with options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello, world",
+      },
+      "text": {
+        "message": ", world",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -1032,16 +1042,6 @@ exports[`AIGNEClient should return error with options {
       "event": "agentFailed",
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello, world",
-      },
-      "text": {
-        "message": ", world",
-      },
     },
   },
   [Error: test llm model error],
@@ -1137,6 +1137,16 @@ exports[`AIGNEClient should return error with options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello, world",
+      },
+      "text": {
+        "message": ", world",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -1146,16 +1156,6 @@ exports[`AIGNEClient should return error with options {
       "event": "agentFailed",
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello, world",
-      },
-      "text": {
-        "message": ", world",
-      },
     },
   },
   [Error: test llm model error],
@@ -1251,6 +1251,16 @@ exports[`AIGNEClient should return error with options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello, world",
+      },
+      "text": {
+        "message": ", world",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -1260,16 +1270,6 @@ exports[`AIGNEClient should return error with options {
       "event": "agentFailed",
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello, world",
-      },
-      "text": {
-        "message": ", world",
-      },
     },
   },
   [Error: test llm model error],
@@ -1365,6 +1365,16 @@ exports[`AIGNEClient should return error with options {
     },
   },
   {
+    "delta": {
+      "json": {
+        "message": "Hello, world",
+      },
+      "text": {
+        "message": ", world",
+      },
+    },
+  },
+  {
     "progress": {
       "agent": {
         "name": "chat",
@@ -1374,16 +1384,6 @@ exports[`AIGNEClient should return error with options {
       "event": "agentFailed",
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello, world",
-      },
-      "text": {
-        "message": ", world",
-      },
     },
   },
   [Error: test llm model error],

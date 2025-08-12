@@ -79,38 +79,33 @@ export async function createConnect({
   appName = "AIGNE CLI",
   appLogo = "https://www.aigne.io/favicon.ico?imageFilter=resize&w=32",
 }: CreateConnectOptions) {
-  try {
-    const startSessionURL = joinURL(connectUrl, ACCESS_KEY_SESSION_API);
-    const { data: session } = await request({ url: startSessionURL, method: "POST" });
-    const token = session.id;
+  const startSessionURL = joinURL(connectUrl, ACCESS_KEY_SESSION_API);
+  const { data: session } = await request({ url: startSessionURL, method: "POST" });
+  const token = session.id;
 
-    const pageUrl = withQuery(joinURL(connectUrl, connectAction), {
-      __token__: encodeEncryptionKey(token),
-      source,
-      closeOnSuccess,
-      cli: true,
-      appName: ` ${appName}`,
-      appLogo,
+  const pageUrl = withQuery(joinURL(connectUrl, connectAction), {
+    __token__: encodeEncryptionKey(token),
+    source,
+    closeOnSuccess,
+    cli: true,
+    appName: ` ${appName}`,
+    appLogo,
+  });
+
+  openPage?.(pageUrl);
+
+  return await wrapSpinner(`Waiting for connection: ${connectUrl}`, async () => {
+    const checkAuthorizeStatus = intervalFetchConfig ?? fetchConfigs;
+
+    const authorizeStatus = await checkAuthorizeStatus({
+      connectUrl,
+      sessionId: token,
+      fetchTimeout: retry * fetchInterval,
+      fetchInterval: retry,
     });
 
-    openPage?.(pageUrl);
-
-    return await wrapSpinner(`Waiting for connection: ${connectUrl}`, async () => {
-      const checkAuthorizeStatus = intervalFetchConfig ?? fetchConfigs;
-
-      const authorizeStatus = await checkAuthorizeStatus({
-        connectUrl,
-        sessionId: token,
-        fetchTimeout: retry * fetchInterval,
-        fetchInterval: retry,
-      });
-
-      return authorizeStatus;
-    });
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
+    return authorizeStatus;
+  });
 }
 
 export async function getAIGNEHubMountPoint(url: string) {
@@ -153,27 +148,19 @@ export async function connectToAIGNEHub(url: string) {
 
     const envs = parse(await nodejs.fs.readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
 
-    await nodejs.fs
-      .writeFile(
-        AIGNE_ENV_FILE,
-        stringify({
-          ...envs,
-          [host]: {
-            AIGNE_HUB_API_KEY: accessKeyOptions.apiKey,
-            AIGNE_HUB_API_URL: accessKeyOptions.url,
-          },
-          default: {
-            AIGNE_HUB_API_URL: accessKeyOptions.url,
-          },
-        }),
-      )
-      .catch((err) => {
-        logger.error(
-          "Failed to write AIGNE Hub access token to .aigne/aigne-hub-connected.yaml",
-          err.message,
-        );
-        throw err;
-      });
+    await nodejs.fs.writeFile(
+      AIGNE_ENV_FILE,
+      stringify({
+        ...envs,
+        [host]: {
+          AIGNE_HUB_API_KEY: accessKeyOptions.apiKey,
+          AIGNE_HUB_API_URL: accessKeyOptions.url,
+        },
+        default: {
+          AIGNE_HUB_API_URL: accessKeyOptions.url,
+        },
+      }),
+    );
 
     return accessKeyOptions;
   } catch (error) {
@@ -219,10 +206,7 @@ export async function loadCredential(options?: LoadCredentialOptions) {
   }
 
   const envs = parse(await nodejs.fs.readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-  let inquirerPrompt = (options?.inquirerPromptFn ?? inquirer.prompt) as typeof inquirer.prompt;
-  if (IsTest) {
-    inquirerPrompt = (async () => ({ subscribe: "official" })) as any;
-  }
+  const inquirerPrompt = (options?.inquirerPromptFn ?? inquirer.prompt) as typeof inquirer.prompt;
 
   const configUrl = options?.aigneHubUrl || process.env.AIGNE_HUB_API_URL;
   const AIGNE_HUB_URL = configUrl || envs?.default?.AIGNE_HUB_API_URL || DEFAULT_AIGNE_HUB_URL;

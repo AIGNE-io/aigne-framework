@@ -171,6 +171,8 @@ export function maskApiKey(apiKey?: string) {
   return `${start}${"*".repeat(8)}${end}`;
 }
 
+let printed = false;
+
 function printChatModelInfoBox({
   provider,
   model,
@@ -182,6 +184,9 @@ function printChatModelInfoBox({
   credential?: { url?: string; apiKey?: string };
   m: LoadableModel;
 }) {
+  if (printed) return;
+  printed = true;
+
   const lines = [
     `${chalk.cyan("Provider")}: ${chalk.green(provider)}`,
     `${chalk.cyan("Model")}: ${chalk.green(model)}`,

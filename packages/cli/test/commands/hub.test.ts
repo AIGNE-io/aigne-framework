@@ -26,6 +26,7 @@ describe("hub command", () => {
       creditBalance: { balance: 100, total: 100 },
       paymentLink: "https://test.com",
       profileLink: "https://test.com/profile",
+      enableCredit: true,
     }),
   }));
 

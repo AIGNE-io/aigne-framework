@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.4.10...aigne-hub-v0.5.0) (2025-08-13)
+
+
+### Features
+
+* **cli:** support aigne hub commond ([#352](https://github.com/AIGNE-io/aigne-framework/issues/352)) ([0341f19](https://github.com/AIGNE-io/aigne-framework/commit/0341f190229b42c5d2ab8a8616597359f35543a7))
+
+
+### Bug Fixes
+
+* ensure log prints only once ([#354](https://github.com/AIGNE-io/aigne-framework/issues/354)) ([b5a64f7](https://github.com/AIGNE-io/aigne-framework/commit/b5a64f74ac67854fc6d576aacd1aa8b91a256765))
+
 ## [0.4.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.4.9...aigne-hub-v0.4.10) (2025-08-12)
 
 

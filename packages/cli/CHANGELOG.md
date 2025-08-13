@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.35.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.34.1...cli-v1.35.0) (2025-08-13)
+
+
+### Features
+
+* **cli:** support aigne hub commond ([#352](https://github.com/AIGNE-io/aigne-framework/issues/352)) ([0341f19](https://github.com/AIGNE-io/aigne-framework/commit/0341f190229b42c5d2ab8a8616597359f35543a7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.5.0
+
 ## [1.34.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.34.0...cli-v1.34.1) (2025-08-12)
 
 

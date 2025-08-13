@@ -150,21 +150,32 @@ export class TerminalTracer {
       task.resolve();
     };
 
+    let buyCreditsPromptPromise: Promise<"retry" | "exit"> | undefined;
+
     const onError: AgentHooks["onError"] = async ({ context, agent, error, ...event }) => {
       if ("type" in error && error.type === "NOT_ENOUGH") {
-        const retry = await proxiedPrompts.select({
-          message: highlightUrl(error.message),
-          choices: [
-            {
-              name: "I have bought some credits, try again",
-              value: "retry" as const,
-            },
-            {
-              name: "Exit",
-              value: "exit" as const,
-            },
-          ],
-        });
+        // Avoid multiple agents asking for credits, we will only show the prompt once
+        buyCreditsPromptPromise ??= (async () => {
+          const retry = await proxiedPrompts.select({
+            message: highlightUrl(error.message),
+            choices: [
+              {
+                name: "I have bought some credits, try again",
+                value: "retry" as const,
+              },
+              {
+                name: "Exit",
+                value: "exit" as const,
+              },
+            ],
+          });
+
+          return retry;
+        })();
+
+        const retry = await buyCreditsPromptPromise;
+        // Clear the promise so that we can show the prompt again if needed
+        buyCreditsPromptPromise = undefined;
 
         console.log("");
 

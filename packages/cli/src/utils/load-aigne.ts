@@ -54,9 +54,8 @@ function printChatModelInfoBox(model: ChatModel) {
     lines.push(`${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(credential?.apiKey))}`);
   }
 
-  console.log("\n");
   console.log(boxen(lines.join("\n"), { padding: 1, borderStyle: "classic", borderColor: "cyan" }));
-  console.log("\n");
+  console.log("");
 }
 
 async function prepareAIGNEConfig(
@@ -116,6 +115,10 @@ export async function loadAIGNE({
     const model = await loadModel(parseModelOption(formattedModelName));
     return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
   }
+
+  console.log(
+    `${chalk.grey("TIPS:")} run ${chalk.cyan("aigne observe")} to start the observability server.\n`,
+  );
 
   const model = await loadModel(
     {

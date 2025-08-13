@@ -12,6 +12,7 @@ import {
 } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import { parse } from "yaml";
 import { z } from "zod";
 import { mockModule } from "../_mocks_/mock-module.js";
@@ -20,6 +21,8 @@ test("runWithAIGNE should run agent correctly", async () => {
   await runWithAIGNE(
     (aigne) => {
       expect(logger.level).toBe(LogLevel.DEBUG);
+
+      expect(aigne.model).toBeInstanceOf(OpenAIChatModel);
 
       assert(aigne.model);
 

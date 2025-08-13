@@ -15,7 +15,11 @@ import { HttpsProxyAgent } from "https-proxy-agent";
 import type inquirer from "inquirer";
 import type { ClientOptions } from "openai";
 import { AIGNEHubChatModel } from "../cli-aigne-hub-model.js";
-import { AGENT_HUB_PROVIDER, DEFAULT_AIGNE_HUB_PROVIDER_MODEL } from "./constants.js";
+import {
+  AGENT_HUB_PROVIDER,
+  DEFAULT_AIGNE_HUB_PROVIDER_MODEL,
+  DEFAULT_MODEL_PROVIDER,
+} from "./constants.js";
 import { loadCredential } from "./credential.js";
 import type { LoadableModel, LoadCredentialOptions, Model } from "./type.js";
 
@@ -179,7 +183,7 @@ export async function loadModel(
     presencePenalty: model?.presencePenalty ?? undefined,
   };
 
-  const provider = (MODEL_PROVIDER ?? model?.provider ?? AGENT_HUB_PROVIDER).replace(/-/g, "");
+  const provider = (MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER).replace(/-/g, "");
   const models = availableModels();
 
   const m = findModel(models, provider);

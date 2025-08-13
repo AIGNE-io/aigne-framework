@@ -248,7 +248,7 @@ describe("model", () => {
       });
 
       expect(model).toBeDefined();
-      expect(model?.constructor.name).toBe("AIGNEHubChatModel");
+      expect(model?.constructor.name).toBe("OpenAIChatModel");
     });
 
     test("should load model with explicit parameters", async () => {
@@ -305,7 +305,7 @@ describe("model", () => {
       });
 
       expect(model).toBeDefined();
-      expect(model?.constructor.name).toBe("AIGNEHubChatModel");
+      expect(model?.constructor.name).toBe("OpenAIChatModel");
     });
 
     test("should handle model options override", async () => {

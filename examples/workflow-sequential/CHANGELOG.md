@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.17.33](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.32...example-workflow-sequential-v1.17.33) (2025-08-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.35.1
+
 ## [1.17.32](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-sequential-v1.17.31...example-workflow-sequential-v1.17.32) (2025-08-13)
 
 

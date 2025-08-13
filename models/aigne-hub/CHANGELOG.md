@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.5.0...aigne-hub-v0.5.1) (2025-08-13)
+
+
+### Bug Fixes
+
+* resolve circular dependency in aigne-hub ([#355](https://github.com/AIGNE-io/aigne-framework/issues/355)) ([202c1f3](https://github.com/AIGNE-io/aigne-framework/commit/202c1f3acc199f4512580b3c1f73c1dee13e40a5))
+
 ## [0.5.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.4.10...aigne-hub-v0.5.0) (2025-08-13)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.35.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.35.0...cli-v1.35.1) (2025-08-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.5.1
+
 ## [1.35.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.34.1...cli-v1.35.0) (2025-08-13)
 
 

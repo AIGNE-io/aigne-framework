@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.18.24](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.23...example-mcp-sqlite-v1.18.24) (2025-08-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.35.1
+
 ## [1.18.23](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.22...example-mcp-sqlite-v1.18.23) (2025-08-13)
 
 

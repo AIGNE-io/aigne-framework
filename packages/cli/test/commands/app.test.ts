@@ -337,6 +337,7 @@ test("loadApplication should load doc-smith correctly", async () => {
   const spawn = spyOn(childProcess, "spawn").mockImplementationOnce(() => {
     const result: any = new EventEmitter();
     result.stderr = new EventEmitter();
+    result.stdout = new EventEmitter();
 
     setTimeout(() => {
       result.emit("exit", 0);
@@ -352,7 +353,7 @@ test("loadApplication should load doc-smith correctly", async () => {
 
   expect(spawn.mock.lastCall).toEqual([
     "npm",
-    ["install", "--omit", "dev"],
+    ["install", "--omit", "dev", "--verbose"],
     {
       cwd: tmp,
       stdio: "pipe",

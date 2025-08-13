@@ -12,6 +12,14 @@ import {
 } from "../src/util/model.js";
 import { createHonoServer } from "./_mocks_/utils.js";
 
+const mockInquirerPrompt = mock(async (prompt: any) => {
+  if (prompt.name === "subscribe") {
+    return { subscribe: "custom" };
+  }
+
+  return {};
+});
+
 describe("model", () => {
   beforeEach(async () => {
     await rm(AIGNE_ENV_FILE, { force: true });
@@ -223,7 +231,7 @@ describe("model", () => {
   });
 
   describe("loadModel", async () => {
-    const { close } = await createHonoServer();
+    const { url, close } = await createHonoServer();
 
     beforeEach(async () => {
       await rm(AIGNE_ENV_FILE, { force: true });
@@ -234,10 +242,13 @@ describe("model", () => {
       process.env.MODEL_NAME = "gpt-4";
       process.env.OPENAI_API_KEY = "test-key";
 
-      const model = await loadModel();
+      const model = await loadModel(undefined, undefined, {
+        inquirerPromptFn: mockInquirerPrompt,
+        aigneHubUrl: url,
+      });
 
       expect(model).toBeDefined();
-      expect(model?.constructor.name).toBe("OpenAIChatModel");
+      expect(model?.constructor.name).toBe("AIGNEHubChatModel");
     });
 
     test("should load model with explicit parameters", async () => {
@@ -288,10 +299,13 @@ describe("model", () => {
     test("should use default model provider when not specified", async () => {
       process.env.OPENAI_API_KEY = "test-key";
 
-      const model = await loadModel({ name: "gpt-4" });
+      const model = await loadModel({ name: "gpt-4" }, undefined, {
+        inquirerPromptFn: mockInquirerPrompt,
+        aigneHubUrl: url,
+      });
 
       expect(model).toBeDefined();
-      expect(model?.constructor.name).toBe("OpenAIChatModel");
+      expect(model?.constructor.name).toBe("AIGNEHubChatModel");
     });
 
     test("should handle model options override", async () => {

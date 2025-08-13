@@ -265,7 +265,14 @@ export class TerminalTracer {
         }
       },
     },
-    markedTerminal({ forceHyperLink: false }),
+    markedTerminal(
+      { forceHyperLink: false },
+      {
+        theme: {
+          string: chalk.green,
+        },
+      },
+    ),
   );
 
   get outputKey() {

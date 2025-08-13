@@ -6,10 +6,7 @@ import {
   type ChatModelOutput,
 } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import {
-  AIGNEHubChatModel as BlockletAIGNEHubChatModel,
-  type HubChatModelOptions,
-} from "./blocklet-aigne-hub-model.js";
+import { AIGNEHubChatModel as BlockletAIGNEHubChatModel } from "./blocklet-aigne-hub-model.js";
 import {
   type AIGNEHubChatModelOptions,
   AIGNEHubChatModel as CliAIGNEHubChatModel,
@@ -37,14 +34,14 @@ export class AIGNEHubChatModel extends ChatModel {
     return new AIGNEHubChatModel({ ...options, url });
   }
 
-  constructor(public options: HubChatModelOptions) {
+  constructor(public options: AIGNEHubChatModelOptions) {
     super();
 
     const isBlocklet =
       process.env.BLOCKLET_AIGNE_API_URL && process.env.BLOCKLET_AIGNE_API_PROVIDER;
     const AIGNEHubModel = isBlocklet ? BlockletAIGNEHubChatModel : CliAIGNEHubChatModel;
 
-    this.client = new AIGNEHubModel(options as AIGNEHubChatModelOptions);
+    this.client = new AIGNEHubModel(options);
   }
 
   getCredential() {

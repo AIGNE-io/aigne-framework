@@ -1,5 +1,5 @@
+import os from "node:os";
 import {
-  type AgentInvokeOptions,
   type AgentProcessResult,
   ChatModel,
   type ChatModelInput,
@@ -8,12 +8,13 @@ import {
 } from "@aigne/core";
 import { checkArguments, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
-import { BaseClient } from "@aigne/transport/http-client/base-client.js";
+import {
+  BaseClient,
+  type BaseClientInvokeOptions,
+} from "@aigne/transport/http-client/base-client.js";
 import { joinURL } from "ufo";
 import { z } from "zod";
-import { AIGNE_HUB_URL } from "./util/constants.js";
-
-const DEFAULT_CHAT_MODEL = "openai/gpt-4o";
+import { AIGNE_HUB_URL, DEFAULT_AIGNE_HUB_MODEL } from "./util/constants.js";
 
 const aigneHubChatModelOptionsSchema = z.object({
   url: z.string().optional(),
@@ -63,14 +64,21 @@ export class AIGNEHubChatModel extends ChatModel {
     return {
       url: url.endsWith(path) ? url : joinURL(url, path),
       apiKey: this.options.apiKey || process.env.AIGNE_HUB_API_KEY,
-      model: this.options.model || DEFAULT_CHAT_MODEL,
+      model: this.options.model || DEFAULT_AIGNE_HUB_MODEL,
     };
   }
 
   override process(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
+    options: BaseClientInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this.client.__invoke(undefined, input, options);
+    return this.client.__invoke(undefined, input, {
+      ...options,
+      fetchOptions: {
+        headers: {
+          "x-aigne-hub-client-did": `@aigne/aigne-hub:${os.hostname()}`,
+        },
+      },
+    });
   }
 }

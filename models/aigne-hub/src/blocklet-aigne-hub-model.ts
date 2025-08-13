@@ -1,5 +1,3 @@
-import type { AnthropicChatModelOptions } from "@aigne/anthropic";
-import type { BedrockChatModelOptions } from "@aigne/bedrock";
 import {
   type AgentInvokeOptions,
   type AgentProcessResult,
@@ -8,22 +6,15 @@ import {
   type ChatModelOutput,
 } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import type { OpenAIChatModelOptions } from "@aigne/openai";
 import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
 import { AIGNE_HUB_URL } from "./util/constants.js";
 import { availableModels, findModel } from "./util/model.js";
-
-export type HubChatModelOptions =
-  | AIGNEHubChatModelOptions
-  | AnthropicChatModelOptions
-  | BedrockChatModelOptions
-  | OpenAIChatModelOptions;
 
 export class AIGNEHubChatModel extends ChatModel {
   protected _client?: ChatModel;
 
   constructor(
-    public options: HubChatModelOptions & { apiKey?: string; baseURL?: string; url?: string },
+    public options: AIGNEHubChatModelOptions & { apiKey?: string; baseURL?: string; url?: string },
   ) {
     super();
   }

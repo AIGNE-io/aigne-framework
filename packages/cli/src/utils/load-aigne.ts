@@ -99,7 +99,7 @@ export async function loadAIGNE({
     {
       aigneHubUrl: AIGNE_HUB_URL,
       inquirerPromptFn: actionOptions?.inquirerPromptFn,
-      runLogger: true,
+      printLogger: true,
     },
   );
 

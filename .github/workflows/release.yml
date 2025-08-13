@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+      - release
 
 permissions:
   contents: write
@@ -20,6 +21,8 @@ jobs:
         id: release
         with:
           token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN}}
+          prerelease: ${{ github.ref == 'refs/heads/main' }}
+          prerelease-type: beta
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,7 +73,7 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: |
           npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
-          pnpm -F "@aigne/*" publish --access public --no-git-checks
+          pnpm -F "@aigne/*" publish --access public --no-git-checks ${{ github.ref == 'refs/heads/main' && ' --tag beta' || '' }}
 
       - name: Check if observability/blocklet version changed
         if: ${{ steps.release.outputs.release_created }}

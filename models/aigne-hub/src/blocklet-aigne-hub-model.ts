@@ -1,15 +1,14 @@
 import {
-  type AgentInvokeOptions,
   type AgentProcessResult,
   ChatModel,
   type ChatModelInput,
   type ChatModelOutput,
 } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
 import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
 import { AIGNE_HUB_URL } from "./util/constants.js";
 import { availableModels, findModel } from "./util/model.js";
-
 export class AIGNEHubChatModel extends ChatModel {
   protected _client?: ChatModel;
 
@@ -75,11 +74,16 @@ export class AIGNEHubChatModel extends ChatModel {
 
   override process(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
+    options: BaseClientInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     if (!this.client) {
       throw new Error("Client not initialized");
     }
+
+    options.fetchOptions = {
+      headers: { "x-aigne-hub-client-did": process.env.BLOCKLET_APP_PID || "" },
+      ...options.fetchOptions,
+    };
 
     return this.client.invoke(input, options);
   }

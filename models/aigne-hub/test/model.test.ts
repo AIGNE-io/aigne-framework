@@ -300,6 +300,7 @@ describe("model", () => {
       const model = await loadModel(
         { provider: "openai", name: "gpt-4", temperature: 0.5 },
         { temperature: 0.9 },
+        { printLogger: true },
       );
 
       expect(model).toBeDefined();

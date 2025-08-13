@@ -15,7 +15,7 @@ import chalk from "chalk";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import type inquirer from "inquirer";
 import type { ClientOptions } from "openai";
-import { AIGNEHubChatModel } from "../index.js";
+import { AIGNEHubChatModel } from "../cli-aigne-hub-model.js";
 import {
   AGENT_HUB_PROVIDER,
   DEFAULT_AIGNE_HUB_PROVIDER_MODEL,

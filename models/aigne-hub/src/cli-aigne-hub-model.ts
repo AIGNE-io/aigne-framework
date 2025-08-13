@@ -40,7 +40,7 @@ export interface AIGNEHubChatModelOptions {
   clientOptions?: OpenAIChatModelOptions["clientOptions"];
 }
 
-export class CliAIGNEHubChatModel extends ChatModel {
+export class AIGNEHubChatModel extends ChatModel {
   private client: BaseClient;
 
   constructor(public options: AIGNEHubChatModelOptions) {

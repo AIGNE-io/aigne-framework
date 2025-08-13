@@ -6,8 +6,14 @@ import {
   type ChatModelOutput,
 } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import { BlockletAIGNEHubChatModel, type HubChatModelOptions } from "./blocklet-aigne-hub-model.js";
-import { type AIGNEHubChatModelOptions, CliAIGNEHubChatModel } from "./cli-aigne-hub-model.js";
+import {
+  AIGNEHubChatModel as BlockletAIGNEHubChatModel,
+  type HubChatModelOptions,
+} from "./blocklet-aigne-hub-model.js";
+import {
+  type AIGNEHubChatModelOptions,
+  AIGNEHubChatModel as CliAIGNEHubChatModel,
+} from "./cli-aigne-hub-model.js";
 import { AIGNE_HUB_URL } from "./util/constants.js";
 import { getAIGNEHubMountPoint } from "./util/credential.js";
 

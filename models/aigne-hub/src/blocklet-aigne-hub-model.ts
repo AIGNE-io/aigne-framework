@@ -19,7 +19,7 @@ export type HubChatModelOptions =
   | BedrockChatModelOptions
   | OpenAIChatModelOptions;
 
-export class BlockletAIGNEHubChatModel extends ChatModel {
+export class AIGNEHubChatModel extends ChatModel {
   private client: ChatModel;
 
   constructor(

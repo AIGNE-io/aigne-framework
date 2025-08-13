@@ -223,12 +223,12 @@ test("loadAgentFromYaml should support hooks", async () => {
   expect({
     name: agent.name,
     hooks: agent.hooks.map((i) =>
-      Object.fromEntries(Object.entries(i).map(([k, v]) => [k, v?.name])),
+      Object.fromEntries(Object.entries(i).map(([k, v]) => [k, k === "priority" ? v : v?.name])),
     ),
     skills: agent.skills.map((i) => ({
       name: i.name,
       hooks: agent.hooks.map((i) =>
-        Object.fromEntries(Object.entries(i).map(([k, v]) => [k, v?.name])),
+        Object.fromEntries(Object.entries(i).map(([k, v]) => [k, k === "priority" ? v : v?.name])),
       ),
     })),
   }).toMatchSnapshot();

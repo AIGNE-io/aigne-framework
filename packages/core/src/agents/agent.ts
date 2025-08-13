@@ -9,6 +9,7 @@ import type { ContextUsage } from "../aigne/usage.js";
 import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
+import { sortHooks } from "../utils/agent-utils.js";
 import { logger } from "../utils/logger.js";
 import {
   agentResponseStreamToObject,
@@ -24,6 +25,7 @@ import {
   flat,
   isEmpty,
   isNil,
+  isNonNullable,
   isRecord,
   type Nullish,
   type PromiseOrValue,
@@ -696,8 +698,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     }
   }
 
-  private async callHooks<Hook extends keyof AgentHooks>(
-    hook: Hook,
+  private async callHooks<Hook extends keyof Omit<AgentHooks, "priority">>(
+    hook: Hook | Hook[],
     input: AgentHookInput<Hook>,
     options: AgentInvokeOptions,
   ): Promise<AgentHookOutput<Hook>> {
@@ -705,15 +707,20 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     const result = {};
 
-    for (const hooks of flat(options.hooks, options.context.hooks, this.hooks)) {
-      const h = hooks[hook];
-      if (!h) continue;
+    const hs = flat(hook);
+    const hooks = sortHooks(flat(options.hooks, options.context.hooks, this.hooks))
+      .flatMap((hooks) => hs.map((h) => hooks[h]))
+      .filter(isNonNullable);
 
+    for (const h of hooks) {
       if (typeof h === "function") {
         Object.assign(result, await h({ ...input, context, agent: this } as any));
       } else {
         Object.assign(result, await context.invoke<any, any>(h, { ...input, agent: this }));
       }
+
+      // If the hook returns a retry signal, we stop processing further hooks
+      if ("retry" in result && result.retry) return result as AgentHookOutput<Hook>;
     }
 
     return result as AgentHookOutput<Hook>;
@@ -802,10 +809,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     logger.debug("Invoke agent %s succeed with output: %O", this.name, finalOutput);
 
-    let o = await this.callHooks("onSuccess", { input, output: finalOutput }, options);
-    if (o?.output) finalOutput = o.output as O;
-
-    o = await this.callHooks("onEnd", { input, output: finalOutput }, options);
+    const o = await this.callHooks(["onSuccess", "onEnd"], { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
 
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
@@ -832,8 +836,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
     if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
 
-    const res = (await this.callHooks("onError", { input, error }, options)) ?? {};
-    Object.assign(res, await this.callHooks("onEnd", { input, error }, options));
+    const res = (await this.callHooks(["onError", "onEnd"], { input, error }, options)) ?? {};
 
     return { ...res };
   }
@@ -1066,6 +1069,8 @@ export type AgentOutput<T extends Agent> = T extends Agent<any, infer O> ? O : n
  * tracing, error handling, and more.
  */
 export interface AgentHooks<I extends Message = Message, O extends Message = Message> {
+  priority?: "low" | "medium" | "high";
+
   /**
    * Called when agent processing begins
    *

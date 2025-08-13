@@ -1,6 +1,7 @@
 type: team
 name: test_agent_with_default_input
 hooks:
+  priority: high
   on_start:
     type: ai
     name: test_hooks_inline

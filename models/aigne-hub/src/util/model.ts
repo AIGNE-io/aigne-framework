@@ -232,7 +232,9 @@ export async function loadModel(
   if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
 
   const credential = await loadCredential({ ...options, model: `${provider}:${params.model}` });
-  printChatModelInfoBox({ provider, model: params.model || "", credential, m });
+  if (options?.runLogger) {
+    printChatModelInfoBox({ provider, model: params.model || "", credential, m });
+  }
 
   return m.create({
     ...(credential || {}),

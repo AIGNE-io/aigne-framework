@@ -96,7 +96,11 @@ export async function loadAIGNE({
       frequencyPenalty,
     },
     modelOptions,
-    { aigneHubUrl: AIGNE_HUB_URL, inquirerPromptFn: actionOptions?.inquirerPromptFn },
+    {
+      aigneHubUrl: AIGNE_HUB_URL,
+      inquirerPromptFn: actionOptions?.inquirerPromptFn,
+      runLogger: true,
+    },
   );
 
   if (path) {

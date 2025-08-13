@@ -9,7 +9,6 @@ const AGENT_HUB_PROVIDER = "aignehub";
 const AIGNE_HUB_URL = "https://hub.aigne.io/";
 const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-5-mini";
 const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AGENT_HUB_PROVIDER}:${DEFAULT_AIGNE_HUB_MODEL}`;
-const DEFAULT_MODEL_PROVIDER = "openai";
 
 const isTest = process.env.CI || process.env.NODE_ENV === "test";
 const TEST_AIGNE_ENV_FILE = nodejs.path.join(
@@ -26,7 +25,6 @@ const AIGNE_ENV_FILE = isTest ? TEST_AIGNE_ENV_FILE : PROD_AIGNE_ENV_FILE;
 
 export {
   DEFAULT_AIGNE_HUB_PROVIDER_MODEL,
-  DEFAULT_MODEL_PROVIDER,
   AIGNE_HUB_DID,
   AIGNE_HUB_URL,
   isTest,

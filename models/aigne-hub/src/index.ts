@@ -47,6 +47,10 @@ export class AIGNEHubChatModel extends ChatModel {
     this.client = new AIGNEHubModel(options as AIGNEHubChatModelOptions);
   }
 
+  getCredential() {
+    return this.client.getCredential();
+  }
+
   override process(
     input: ChatModelInput,
     options: AgentInvokeOptions,

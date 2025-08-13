@@ -71,6 +71,7 @@
     "@listr2/prompt-adapter-inquirer": "^3.0.1",
     "@modelcontextprotocol/sdk": "^1.15.0",
     "@smithy/node-http-handler": "^4.1.0",
+    "boxen": "^8.0.1",
     "chalk": "^5.4.1",
     "cli-table3": "^0.6.5",
     "detect-port": "^2.1.0",

@@ -9,10 +9,13 @@ import {
   AIGNE_HUB_URL as DEFAULT_AIGNE_HUB_URL,
   formatModelName,
   loadModel,
+  maskApiKey,
   parseModelOption,
 } from "@aigne/aigne-hub";
-import { AIGNE, type ChatModelOptions } from "@aigne/core";
+import { AIGNE, type ChatModel, type ChatModelOptions } from "@aigne/core";
 import { loadAIGNEFile } from "@aigne/core/loader/index.js";
+import boxen from "boxen";
+import chalk from "chalk";
 import inquirer from "inquirer";
 import { parse, stringify } from "yaml";
 import { availableMemories } from "../constants.js";
@@ -28,6 +31,33 @@ export interface RunOptions extends RunAIGNECommandOptions {
 }
 
 const mockInquirerPrompt = (() => Promise.resolve({ useAigneHub: true })) as any;
+
+let printed = false;
+
+function printChatModelInfoBox(model: ChatModel) {
+  if (printed) return;
+  printed = true;
+
+  const credential = model.getCredential();
+
+  const lines = [`${chalk.cyan("Provider")}: ${chalk.green(model.name.replace("ChatModel", ""))}`];
+
+  if (credential?.model) {
+    lines.push(`${chalk.cyan("Model")}: ${chalk.green(credential?.model)}`);
+  }
+
+  if (credential?.url) {
+    lines.push(`${chalk.cyan("API URL")}: ${chalk.green(credential?.url || "N/A")}`);
+  }
+
+  if (credential?.apiKey) {
+    lines.push(`${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(credential?.apiKey))}`);
+  }
+
+  console.log("\n");
+  console.log(boxen(lines.join("\n"), { padding: 1, borderStyle: "classic", borderColor: "cyan" }));
+  console.log("\n");
+}
 
 async function prepareAIGNEConfig(
   options?: Pick<RunOptions, "model" | "aigneHubUrl"> & Partial<Model>,
@@ -96,12 +126,12 @@ export async function loadAIGNE({
       frequencyPenalty,
     },
     modelOptions,
-    {
-      aigneHubUrl: AIGNE_HUB_URL,
-      inquirerPromptFn: actionOptions?.inquirerPromptFn,
-      printLogger: true,
-    },
+    { aigneHubUrl: AIGNE_HUB_URL, inquirerPromptFn: actionOptions?.inquirerPromptFn },
   );
+
+  if (model) {
+    printChatModelInfoBox(model);
+  }
 
   if (path) {
     return await AIGNE.load(path, { loadModel, memories: availableMemories, model });

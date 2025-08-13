@@ -10,17 +10,12 @@ import { OpenAIChatModel } from "@aigne/openai";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
-import boxen from "boxen";
 import chalk from "chalk";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import type inquirer from "inquirer";
 import type { ClientOptions } from "openai";
 import { AIGNEHubChatModel } from "../cli-aigne-hub-model.js";
-import {
-  AGENT_HUB_PROVIDER,
-  DEFAULT_AIGNE_HUB_PROVIDER_MODEL,
-  DEFAULT_MODEL_PROVIDER,
-} from "./constants.js";
+import { AGENT_HUB_PROVIDER, DEFAULT_AIGNE_HUB_PROVIDER_MODEL } from "./constants.js";
 import { loadCredential } from "./credential.js";
 import type { LoadableModel, LoadCredentialOptions, Model } from "./type.js";
 
@@ -171,47 +166,6 @@ export function maskApiKey(apiKey?: string) {
   return `${start}${"*".repeat(8)}${end}`;
 }
 
-let printed = false;
-
-function printChatModelInfoBox({
-  provider,
-  model,
-  credential,
-  m,
-}: {
-  provider: string;
-  model: string;
-  credential?: { url?: string; apiKey?: string };
-  m: LoadableModel;
-}) {
-  if (printed) return;
-  printed = true;
-
-  const lines = [
-    `${chalk.cyan("Provider")}: ${chalk.green(provider)}`,
-    `${chalk.cyan("Model")}: ${chalk.green(model)}`,
-  ];
-
-  if (provider.includes(AGENT_HUB_PROVIDER)) {
-    lines.push(
-      `${chalk.cyan("API URL")}: ${chalk.green(credential?.url || "N/A")}`,
-      `${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(credential?.apiKey))}`,
-    );
-  } else {
-    const apiKeyEnvName = Array.isArray(m.apiKeyEnvName) ? m.apiKeyEnvName : [m.apiKeyEnvName];
-    const envKeyName = apiKeyEnvName.find((name) => name && process.env[name]);
-    if (envKeyName) {
-      lines.push(`${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(process.env[envKeyName]))}`);
-    } else {
-      lines.push(`${chalk.cyan("API Key")}: ${chalk.yellow("Not found")}`);
-    }
-  }
-
-  console.log("\n");
-  console.log(boxen(lines.join("\n"), { padding: 1, borderStyle: "classic", borderColor: "cyan" }));
-  console.log("\n");
-}
-
 export async function loadModel(
   model?: Model,
   modelOptions?: ChatModelOptions,
@@ -225,16 +179,12 @@ export async function loadModel(
     presencePenalty: model?.presencePenalty ?? undefined,
   };
 
-  const provider = (MODEL_PROVIDER ?? model?.provider ?? DEFAULT_MODEL_PROVIDER).replace(/-/g, "");
+  const provider = (MODEL_PROVIDER ?? model?.provider ?? AGENT_HUB_PROVIDER).replace(/-/g, "");
   const models = availableModels();
 
   const m = findModel(models, provider);
   if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
-
   const credential = await loadCredential({ ...options, model: `${provider}:${params.model}` });
-  if (options?.printLogger) {
-    printChatModelInfoBox({ provider, model: params.model || "", credential, m });
-  }
 
   return m.create({
     ...(credential || {}),

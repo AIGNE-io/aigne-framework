@@ -27,6 +27,10 @@ test("ChatModel implementation", async () => {
         },
       };
     }
+
+    getCredential() {
+      return {};
+    }
   }
 
   const model = new TestChatModel();
@@ -69,6 +73,10 @@ test("ChatModel with streaming response", async () => {
         },
       });
     }
+
+    getCredential() {
+      return {};
+    }
   }
 
   const model = new StreamingChatModel();
@@ -109,6 +117,10 @@ test("ChatModel with streaming response with async generator", async () => {
       yield textDelta({ text: "..." });
 
       return { model: "gpt-4o", usage: { inputTokens: 5, outputTokens: 10 } };
+    }
+
+    getCredential() {
+      return {};
     }
   }
 
@@ -164,6 +176,10 @@ test("ChatModel with tools", async () => {
       return {
         text: "No tools available",
       };
+    }
+
+    getCredential() {
+      return {};
     }
   }
 
@@ -239,6 +255,10 @@ test("ChatModel should return capabilities", async () => {
       };
     }
 
+    getCredential() {
+      return {};
+    }
+
     protected override supportsParallelToolCalls = false;
   }
 
@@ -264,6 +284,10 @@ test("ChatModel should auto convert tool name to valid function name", async () 
           },
         ],
       };
+    }
+
+    getCredential() {
+      return {};
     }
   }
 

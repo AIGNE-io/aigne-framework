@@ -23,7 +23,6 @@ export type LoadCredentialOptions = {
   model?: string;
   aigneHubUrl?: string;
   inquirerPromptFn?: InquirerPromptFn;
-  printLogger?: boolean;
 };
 
 export interface LoadableModel {

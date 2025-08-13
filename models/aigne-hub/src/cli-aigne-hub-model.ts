@@ -41,23 +41,30 @@ export interface AIGNEHubChatModelOptions {
 }
 
 export class AIGNEHubChatModel extends ChatModel {
-  private client: BaseClient;
+  protected _client?: BaseClient;
 
   constructor(public options: AIGNEHubChatModelOptions) {
     checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
-
     super();
+  }
 
-    const url = options.url || process.env.AIGNE_HUB_API_URL || AIGNE_HUB_URL;
+  get client() {
+    const { url, apiKey, model } = this.getCredential();
+
+    const options = { ...this.options, url, apiKey, model };
+    this._client ??= new BaseClient(options);
+    return this._client;
+  }
+
+  getCredential() {
+    const url = this.options.url || process.env.AIGNE_HUB_API_URL || AIGNE_HUB_URL;
     const path = "/api/v2/chat";
 
-    const params = {
-      ...options,
+    return {
       url: url.endsWith(path) ? url : joinURL(url, path),
-      model: options.model || DEFAULT_CHAT_MODEL,
-      apiKey: options.apiKey || process.env.AIGNE_HUB_API_KEY,
+      apiKey: this.options.apiKey || process.env.AIGNE_HUB_API_KEY,
+      model: this.options.model || DEFAULT_CHAT_MODEL,
     };
-    this.client = new BaseClient(params);
   }
 
   override process(

@@ -84,8 +84,7 @@ export class BedrockChatModel extends ChatModel {
   protected _client?: BedrockRuntimeClient;
 
   get client() {
-    const accessKeyId = this.options?.accessKeyId || process.env["AWS_ACCESS_KEY_ID"];
-    const secretAccessKey = this.options?.secretAccessKey || process.env["AWS_SECRET_ACCESS_KEY"];
+    const { accessKeyId, secretAccessKey, region } = this.getCredential();
 
     if (!accessKeyId || !secretAccessKey)
       throw new Error(
@@ -95,15 +94,30 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
       );
 
     this._client ??= new BedrockRuntimeClient({
-      region: this.options?.region,
+      region: region,
       credentials: { accessKeyId, secretAccessKey },
       ...this.options?.clientOptions,
     });
+
     return this._client;
   }
 
   get modelOptions() {
     return this.options?.modelOptions;
+  }
+
+  getCredential() {
+    const accessKeyId = this.options?.accessKeyId || process.env["AWS_ACCESS_KEY_ID"];
+    const secretAccessKey = this.options?.secretAccessKey || process.env["AWS_SECRET_ACCESS_KEY"];
+    const region = this.options?.region || process.env["AWS_REGION"];
+
+    return {
+      accessKeyId,
+      secretAccessKey,
+      region,
+      apiKey: secretAccessKey,
+      model: this.modelOptions?.model ?? BEDROCK_DEFAULT_CHAT_MODEL,
+    };
   }
 
   /**
@@ -116,8 +130,8 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
   }
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
-    const modelId =
-      input.modelOptions?.model ?? this.modelOptions?.model ?? BEDROCK_DEFAULT_CHAT_MODEL;
+    const { model } = this.getCredential();
+    const modelId = input.modelOptions?.model ?? model;
 
     const { messages, system } = getRunMessages(input);
     const toolConfig = convertTools(input);

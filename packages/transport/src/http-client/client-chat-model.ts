@@ -22,4 +22,8 @@ export class ClientChatModel extends ChatModel {
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     return this.client._invoke(this.name, input, options);
   }
+
+  getCredential() {
+    return {};
+  }
 }

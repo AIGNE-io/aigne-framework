@@ -2,13 +2,14 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { FunctionAgentFn } from "../agents/agent.js";
+import type { AgentHooks, FunctionAgentFn } from "../agents/agent.js";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { camelizeSchema, defaultInputSchema, inputOutputSchema, optionalize } from "./schema.js";
 
 export interface HooksSchema {
+  priority?: AgentHooks["priority"];
   onStart?: NestAgentSchema;
   onSuccess?: NestAgentSchema;
   onError?: NestAgentSchema;
@@ -100,6 +101,7 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
 
     const hooksSchema: ZodType<HooksSchema> = camelizeSchema(
       z.object({
+        priority: optionalize(z.union([z.literal("low"), z.literal("medium"), z.literal("high")])),
         onStart: optionalize(nestAgentSchema),
         onSuccess: optionalize(nestAgentSchema),
         onError: optionalize(nestAgentSchema),

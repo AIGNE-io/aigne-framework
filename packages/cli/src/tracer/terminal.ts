@@ -196,6 +196,7 @@ export class TerminalTracer {
         ...options,
         hooks: flat(
           {
+            priority: "high",
             onStart,
             onSuccess,
             onError,

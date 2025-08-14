@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -33,5 +34,9 @@ export const nodejs = {
 
   get os(): typeof import("node:os") {
     return os;
+  },
+
+  get crypto(): typeof import("node:crypto") {
+    return crypto;
   },
 };

@@ -1,11 +1,11 @@
-import crypto from "node:crypto";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { AesCrypter } from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
 
 const aes = new AesCrypter();
 export const decrypt = (m: string, s: string, i: string) =>
-  aes.decrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
+  aes.decrypt(m, nodejs.crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
 export const encrypt = (m: string, s: string, i: string) =>
-  aes.encrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
+  aes.encrypt(m, nodejs.crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
 
 const escapeFn = (str: string) => str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 const unescapeFn = (str: string) =>

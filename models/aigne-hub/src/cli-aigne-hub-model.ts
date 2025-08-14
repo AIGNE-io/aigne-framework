@@ -1,4 +1,3 @@
-import os from "node:os";
 import {
   type AgentProcessResult,
   ChatModel,
@@ -8,6 +7,7 @@ import {
 } from "@aigne/core";
 import { checkArguments, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import {
   BaseClient,
   type BaseClientInvokeOptions,
@@ -73,7 +73,7 @@ export class AIGNEHubChatModel extends ChatModel {
     options: BaseClientInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     options.fetchOptions = {
-      headers: { "x-aigne-hub-client-did": `@aigne/aigne-hub:${os.hostname()}` },
+      headers: { "x-aigne-hub-client-did": `@aigne/aigne-hub:${nodejs.os.hostname()}` },
       ...options.fetchOptions,
     };
 

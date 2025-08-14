@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.36.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.35.1...cli-v1.36.0) (2025-08-14)
+
+
+### Features
+
+* **core:** add priority support for agent hooks ([#358](https://github.com/AIGNE-io/aigne-framework/issues/358)) ([9196141](https://github.com/AIGNE-io/aigne-framework/commit/91961413aea171048a6afae87ffc8dc53e20fca8))
+
+
+### Bug Fixes
+
+* **cli:** alwasy print useage information after agent processed ([58da143](https://github.com/AIGNE-io/aigne-framework/commit/58da143329a6748005c7812723c6b3f986e07e08))
+* **cli:** clean app folder before upgrade ([#362](https://github.com/AIGNE-io/aigne-framework/issues/362)) ([0553c50](https://github.com/AIGNE-io/aigne-framework/commit/0553c504f5d0a446397bdccb20c91921cc618167))
+* **cli:** improve feedback in AIGNE Hub commands ([#361](https://github.com/AIGNE-io/aigne-framework/issues/361)) ([ff29a4b](https://github.com/AIGNE-io/aigne-framework/commit/ff29a4b3c7bb828ef9894482586c8c4df41a2122))
+* **cli:** improve markdown terminal theme styling ([#360](https://github.com/AIGNE-io/aigne-framework/issues/360)) ([dc9efbb](https://github.com/AIGNE-io/aigne-framework/commit/dc9efbb477e6792f51090c4fdd6e129e90821263))
+* **cli:** log only once in loadAIGNE ([#357](https://github.com/AIGNE-io/aigne-framework/issues/357)) ([6e6d968](https://github.com/AIGNE-io/aigne-framework/commit/6e6d96814fbc87f210522ae16daf94c1f84f311a))
+* **cli:** prevent multiple simultaneous buy credits prompts ([#363](https://github.com/AIGNE-io/aigne-framework/issues/363)) ([b8fb459](https://github.com/AIGNE-io/aigne-framework/commit/b8fb459261fe327bcc9bfb4d163e66863cb797ec))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.20
+    * @aigne/agentic-memory bumped to 1.0.20
+    * @aigne/aigne-hub bumped to 0.5.2
+    * @aigne/core bumped to 1.50.0
+    * @aigne/default-memory bumped to 1.1.2
+    * @aigne/openai bumped to 0.11.2
+
 ## [1.35.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.35.0...cli-v1.35.1) (2025-08-13)
 
 

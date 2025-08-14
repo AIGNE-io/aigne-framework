@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.50.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.49.1...core-v1.50.0) (2025-08-14)
+
+
+### Features
+
+* **core:** add priority support for agent hooks ([#358](https://github.com/AIGNE-io/aigne-framework/issues/358)) ([9196141](https://github.com/AIGNE-io/aigne-framework/commit/91961413aea171048a6afae87ffc8dc53e20fca8))
+
+
+### Bug Fixes
+
+* **cli:** log only once in loadAIGNE ([#357](https://github.com/AIGNE-io/aigne-framework/issues/357)) ([6e6d968](https://github.com/AIGNE-io/aigne-framework/commit/6e6d96814fbc87f210522ae16daf94c1f84f311a))
+* **cli:** prevent multiple simultaneous buy credits prompts ([#363](https://github.com/AIGNE-io/aigne-framework/issues/363)) ([b8fb459](https://github.com/AIGNE-io/aigne-framework/commit/b8fb459261fe327bcc9bfb4d163e66863cb797ec))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/platform-helpers bumped to 0.6.2
+
 ## [1.49.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.49.0...core-v1.49.1) (2025-08-12)
 
 

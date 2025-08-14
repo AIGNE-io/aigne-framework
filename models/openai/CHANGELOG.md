@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.11.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.11.1...openai-v0.11.2) (2025-08-14)
+
+
+### Bug Fixes
+
+* **cli:** log only once in loadAIGNE ([#357](https://github.com/AIGNE-io/aigne-framework/issues/357)) ([6e6d968](https://github.com/AIGNE-io/aigne-framework/commit/6e6d96814fbc87f210522ae16daf94c1f84f311a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.50.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.28
+
 ## [0.11.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.11.0...openai-v0.11.1) (2025-08-12)
 
 

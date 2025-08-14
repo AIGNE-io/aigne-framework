@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.14.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.13.1...transport-v0.14.0) (2025-08-14)
+
+
+### Features
+
+* **transport:** add retry mechanism to HTTP client ([#364](https://github.com/AIGNE-io/aigne-framework/issues/364)) ([85dfab0](https://github.com/AIGNE-io/aigne-framework/commit/85dfab0d285199137edea47199c448247823258c))
+
+
+### Bug Fixes
+
+* **cli:** log only once in loadAIGNE ([#357](https://github.com/AIGNE-io/aigne-framework/issues/357)) ([6e6d968](https://github.com/AIGNE-io/aigne-framework/commit/6e6d96814fbc87f210522ae16daf94c1f84f311a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.11.2
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.20
+    * @aigne/core bumped to 1.50.0
+    * @aigne/default-memory bumped to 1.1.2
+    * @aigne/test-utils bumped to 0.5.28
+
 ## [0.13.1](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.13.0...transport-v0.13.1) (2025-08-12)
 
 

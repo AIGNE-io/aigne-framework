@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.21.20](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.19...agent-library-v1.21.20) (2025-08-14)
+
+
+### Bug Fixes
+
+* **cli:** log only once in loadAIGNE ([#357](https://github.com/AIGNE-io/aigne-framework/issues/357)) ([6e6d968](https://github.com/AIGNE-io/aigne-framework/commit/6e6d96814fbc87f210522ae16daf94c1f84f311a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.50.0
+    * @aigne/openai bumped to 0.11.2
+
 ## [1.21.19](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.18...agent-library-v1.21.19) (2025-08-12)
 
 

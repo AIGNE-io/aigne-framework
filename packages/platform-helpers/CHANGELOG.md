@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.1...platform-helpers-v0.6.2) (2025-08-14)
+
+
+### Bug Fixes
+
+* **cli:** log only once in loadAIGNE ([#357](https://github.com/AIGNE-io/aigne-framework/issues/357)) ([6e6d968](https://github.com/AIGNE-io/aigne-framework/commit/6e6d96814fbc87f210522ae16daf94c1f84f311a))
+
 ## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.0...platform-helpers-v0.6.1) (2025-08-12)
 
 

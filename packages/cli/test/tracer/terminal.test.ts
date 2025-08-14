@@ -1,6 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
+import { AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE } from "@aigne/cli/constants.js";
 import { TerminalTracer } from "@aigne/cli/tracer/terminal.js";
 import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
+import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import { OpenAIChatModel } from "@aigne/openai";
 import * as prompts from "@inquirer/prompts";
@@ -29,6 +31,7 @@ test("TerminalTracer should work correctly", async () => {
 });
 
 test("TerminalTracer should raise error correctly", async () => {
+  logger.level = LogLevel.INFO;
   const aigne = new AIGNE();
   const context = aigne.newContext();
 
@@ -70,6 +73,7 @@ test("TerminalTracer should render output message with markdown highlight", asyn
 });
 
 test("TerminalTracer should render output message without markdown highlight in non-tty", async () => {
+  logger.level = LogLevel.INFO;
   const model = new OpenAIChatModel({});
 
   const aigne = new AIGNE({ model });
@@ -124,9 +128,9 @@ test("TerminalTracer should", async () => {
 
   const tracer = new TerminalTracer(context);
 
-  spyOn(prompts, "input").mockReturnValueOnce(Promise.resolve("John Doe") as any);
-  spyOn(prompts, "number").mockReturnValueOnce(Promise.resolve(18) as any);
-  spyOn(prompts, "select").mockReturnValueOnce(Promise.resolve("red") as any);
+  const input = spyOn(prompts, "input").mockReturnValueOnce(Promise.resolve("John Doe") as any);
+  const number = spyOn(prompts, "number").mockReturnValueOnce(Promise.resolve(18) as any);
+  const select = spyOn(prompts, "select").mockReturnValueOnce(Promise.resolve("red") as any);
 
   const { result } = await tracer.run(agent, {});
 
@@ -135,4 +139,107 @@ test("TerminalTracer should", async () => {
     age: 18,
     color: "red",
   });
+
+  input.mockRestore();
+  number.mockRestore();
+  select.mockRestore();
+});
+
+test("TerminalTracer should handle buy credits prompt", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const agent = FunctionAgent.from(() => ({}));
+
+  const tracer = new TerminalTracer(context);
+
+  const promptBuyCredits = spyOn(tracer, "promptBuyCredits").mockResolvedValueOnce("retry");
+
+  spyOn(agent, "process")
+    .mockImplementationOnce(() => {
+      const e = new Error("You need to buy credits to continue.");
+      (e as any).type = AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE;
+      throw e;
+    })
+    .mockReturnValueOnce({ text: "This is a response after buying credits" });
+
+  const result = await tracer.run(agent, {});
+
+  expect(result.result).toEqual({ text: "This is a response after buying credits" });
+  expect(promptBuyCredits).toHaveBeenCalledTimes(1);
+});
+
+test("TerminalTracer should exit if user choose exit for buy credits", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const agent = FunctionAgent.from(() => ({}));
+
+  const tracer = new TerminalTracer(context);
+
+  const promptBuyCredits = spyOn(tracer, "promptBuyCredits")
+    .mockResolvedValueOnce("retry")
+    .mockResolvedValueOnce("exit");
+
+  const process = spyOn(agent, "process")
+    .mockImplementationOnce(() => {
+      const e = new Error("You need to buy credits to continue.");
+      (e as any).type = AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE;
+      throw e;
+    })
+    .mockImplementationOnce(() => {
+      const e = new Error("You need to buy credits to continue.");
+      (e as any).type = AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE;
+      throw e;
+    });
+
+  expect(tracer.run(agent, {})).rejects.toThrowError("You need to buy credits to continue.");
+  expect(process).toHaveBeenCalledTimes(2);
+  expect(promptBuyCredits).toHaveBeenCalledTimes(2);
+});
+
+test("TerminalTracer should exit if user choose exit for buy credits", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const tracer = new TerminalTracer(context);
+
+  const select = spyOn(prompts, "select")
+    .mockResolvedValueOnce("exit")
+    .mockResolvedValueOnce("retry");
+  expect(await tracer["promptBuyCredits"](new Error("You need to buy credits to continue."))).toBe(
+    "exit",
+  );
+  expect(await tracer["promptBuyCredits"](new Error("You need to buy credits to continue."))).toBe(
+    "retry",
+  );
+
+  select.mockRestore();
+});
+
+test("TerminalTracer should hold only one prompt at a time", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const tracer = new TerminalTracer(context);
+
+  const start = Promise.withResolvers();
+
+  const select = spyOn(prompts, "select").mockImplementationOnce((async () => {
+    await start.promise;
+    return "retry";
+  }) as any);
+
+  const results = Promise.all(
+    new Array(10)
+      .fill(0)
+      .map(() => tracer["promptBuyCredits"](new Error("You need to buy credits to continue."))),
+  );
+
+  start.resolve();
+
+  expect(await results).toEqual(new Array(10).fill("retry"));
+  expect(select).toHaveBeenCalledTimes(1);
+
+  select.mockRestore();
 });

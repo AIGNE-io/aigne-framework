@@ -666,17 +666,17 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
         output = {};
       }
 
-      let response = await this.process(input, options);
-      if (response instanceof Agent) response = transferToAgentOutput(response);
-
-      const stream =
-        response instanceof ReadableStream
-          ? response
-          : isAsyncGenerator(response)
-            ? asyncGeneratorToReadableStream(response)
-            : objectToAgentResponseStream(response);
-
       try {
+        let response = await this.process(input, options);
+        if (response instanceof Agent) response = transferToAgentOutput(response);
+
+        const stream =
+          response instanceof ReadableStream
+            ? response
+            : isAsyncGenerator(response)
+              ? asyncGeneratorToReadableStream(response)
+              : objectToAgentResponseStream(response);
+
         for await (const chunk of stream) {
           mergeAgentResponseChunk(output, chunk);
 

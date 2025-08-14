@@ -21,6 +21,7 @@ import { markedTerminal } from "@aigne/marked-terminal";
 import * as prompts from "@inquirer/prompts";
 import chalk from "chalk";
 import { Marked } from "marked";
+import { AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE } from "../constants.js";
 import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
 import { highlightUrl } from "../utils/string-utils.js";
 import { parseDuration } from "../utils/time.js";
@@ -55,29 +56,7 @@ export class TerminalTracer {
       [],
       { concurrent: true },
     );
-
-    const proxiedPrompts = new Proxy(
-      {},
-      {
-        get: (_target, prop) => {
-          // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
-          const method = prompts[prop as keyof typeof prompts] as (...args: any[]) => any;
-          if (typeof method !== "function") return undefined;
-
-          return async (config: any) => {
-            const renderer =
-              listr["renderer"] instanceof AIGNEListrRenderer ? listr["renderer"] : undefined;
-            await renderer?.pause();
-
-            try {
-              return await method({ ...config });
-            } finally {
-              await renderer?.resume();
-            }
-          };
-        },
-      },
-    ) as typeof prompts;
+    this.listr = listr;
 
     const onStart: AgentHooks["onStart"] = async ({ context, agent, ...event }) => {
       if (agent instanceof UserAgent) return;
@@ -115,7 +94,7 @@ export class TerminalTracer {
         listr.add(listrTask);
       }
 
-      return { options: { prompts: proxiedPrompts } };
+      return { options: { prompts: this.proxiedPrompts } };
     };
 
     const onSuccess: AgentHooks["onSuccess"] = async ({ context, agent, output, ...event }) => {
@@ -150,32 +129,9 @@ export class TerminalTracer {
       task.resolve();
     };
 
-    let buyCreditsPromptPromise: Promise<"retry" | "exit"> | undefined;
-
     const onError: AgentHooks["onError"] = async ({ context, agent, error, ...event }) => {
-      if ("type" in error && error.type === "NOT_ENOUGH") {
-        // Avoid multiple agents asking for credits, we will only show the prompt once
-        buyCreditsPromptPromise ??= (async () => {
-          const retry = await proxiedPrompts.select({
-            message: highlightUrl(error.message),
-            choices: [
-              {
-                name: "I have bought some credits, try again",
-                value: "retry" as const,
-              },
-              {
-                name: "Exit",
-                value: "exit" as const,
-              },
-            ],
-          });
-
-          return retry;
-        })();
-
-        const retry = await buyCreditsPromptPromise;
-        // Clear the promise so that we can show the prompt again if needed
-        buyCreditsPromptPromise = undefined;
+      if ("type" in error && error.type === AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE) {
+        const retry = await this.promptBuyCredits(error);
 
         console.log("");
 
@@ -220,6 +176,61 @@ export class TerminalTracer {
     );
 
     return { result, context };
+  }
+
+  private listr?: AIGNEListr;
+
+  private proxiedPrompts = new Proxy(
+    {},
+    {
+      get: (_target, prop) => {
+        // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
+        const method = prompts[prop as keyof typeof prompts] as (...args: any[]) => any;
+        if (typeof method !== "function") return undefined;
+
+        return async (config: any) => {
+          const renderer =
+            this.listr?.["renderer"] instanceof AIGNEListrRenderer
+              ? this.listr["renderer"]
+              : undefined;
+          await renderer?.pause();
+
+          try {
+            return await method({ ...config });
+          } finally {
+            await renderer?.resume();
+          }
+        };
+      },
+    },
+  ) as typeof prompts;
+
+  private buyCreditsPromptPromise: Promise<"retry" | "exit"> | undefined;
+
+  private async promptBuyCredits(error: Error) {
+    // Avoid multiple agents asking for credits, we will only show the prompt once
+    this.buyCreditsPromptPromise ??= (async () => {
+      const retry = await this.proxiedPrompts.select({
+        message: highlightUrl(error.message),
+        choices: [
+          {
+            name: "I have bought some credits, try again",
+            value: "retry" as const,
+          },
+          {
+            name: "Exit",
+            value: "exit" as const,
+          },
+        ],
+      });
+
+      return retry;
+    })();
+
+    return this.buyCreditsPromptPromise.finally(() => {
+      // Clear the promise so that we can show the prompt again if needed
+      this.buyCreditsPromptPromise = undefined;
+    });
   }
 
   formatTokenUsage(usage: Partial<ContextUsage>, extra?: { [key: string]: string }) {

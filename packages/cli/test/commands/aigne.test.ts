@@ -19,6 +19,9 @@ test("aigne command should print help if no any subcommand", async () => {
   const command = createAIGNECommand();
 
   const exit = spyOn(process, "exit").mockReturnValue(undefined as never);
+  spyOn(console, "error")
+    .mockReturnValue(undefined as never)
+    .mockRestore();
   const log = spyOn(console, "error").mockReturnValue(undefined as never);
 
   await command.parseAsync([]);

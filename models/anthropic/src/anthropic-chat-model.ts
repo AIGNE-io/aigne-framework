@@ -114,8 +114,7 @@ export class AnthropicChatModel extends ChatModel {
   protected _client?: Anthropic;
 
   get client() {
-    const apiKey =
-      this.options?.apiKey || process.env[this.apiKeyEnvName] || process.env.CLAUDE_API_KEY;
+    const { apiKey } = this.getCredential();
     if (!apiKey)
       throw new Error(
         "AnthropicChatModel requires an API key. Please provide it via `options.apiKey`, or set the `ANTHROPIC_API_KEY` or `CLAUDE_API_KEY` environment variable",
@@ -131,6 +130,16 @@ export class AnthropicChatModel extends ChatModel {
 
   get modelOptions() {
     return this.options?.modelOptions;
+  }
+
+  getCredential() {
+    const apiKey =
+      this.options?.apiKey || process.env[this.apiKeyEnvName] || process.env.CLAUDE_API_KEY;
+
+    return {
+      apiKey,
+      model: this.options?.model || CHAT_MODEL_CLAUDE_DEFAULT_MODEL,
+    };
   }
 
   private getMaxTokens(model: string): number {
@@ -163,7 +172,8 @@ export class AnthropicChatModel extends ChatModel {
   private ajv = new Ajv();
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
-    const model = this.options?.model || CHAT_MODEL_CLAUDE_DEFAULT_MODEL;
+    const { model } = this.getCredential();
+
     const disableParallelToolUse =
       input.modelOptions?.parallelToolCalls === false ||
       this.modelOptions?.parallelToolCalls === false;

@@ -10,7 +10,6 @@ import { OpenAIChatModel } from "@aigne/openai";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
-import boxen from "boxen";
 import chalk from "chalk";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import type inquirer from "inquirer";
@@ -171,47 +170,6 @@ export function maskApiKey(apiKey?: string) {
   return `${start}${"*".repeat(8)}${end}`;
 }
 
-let printed = false;
-
-function printChatModelInfoBox({
-  provider,
-  model,
-  credential,
-  m,
-}: {
-  provider: string;
-  model: string;
-  credential?: { url?: string; apiKey?: string };
-  m: LoadableModel;
-}) {
-  if (printed) return;
-  printed = true;
-
-  const lines = [
-    `${chalk.cyan("Provider")}: ${chalk.green(provider)}`,
-    `${chalk.cyan("Model")}: ${chalk.green(model)}`,
-  ];
-
-  if (provider.includes(AGENT_HUB_PROVIDER)) {
-    lines.push(
-      `${chalk.cyan("API URL")}: ${chalk.green(credential?.url || "N/A")}`,
-      `${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(credential?.apiKey))}`,
-    );
-  } else {
-    const apiKeyEnvName = Array.isArray(m.apiKeyEnvName) ? m.apiKeyEnvName : [m.apiKeyEnvName];
-    const envKeyName = apiKeyEnvName.find((name) => name && process.env[name]);
-    if (envKeyName) {
-      lines.push(`${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(process.env[envKeyName]))}`);
-    } else {
-      lines.push(`${chalk.cyan("API Key")}: ${chalk.yellow("Not found")}`);
-    }
-  }
-
-  console.log("\n");
-  console.log(boxen(lines.join("\n"), { padding: 1, borderStyle: "classic", borderColor: "cyan" }));
-  console.log("\n");
-}
-
 export async function loadModel(
   model?: Model,
   modelOptions?: ChatModelOptions,
@@ -230,9 +188,7 @@ export async function loadModel(
 
   const m = findModel(models, provider);
   if (!m) throw new Error(`Unsupported model: ${model?.provider} ${model?.name}`);
-
   const credential = await loadCredential({ ...options, model: `${provider}:${params.model}` });
-  printChatModelInfoBox({ provider, model: params.model || "", credential, m });
 
   return m.create({
     ...(credential || {}),

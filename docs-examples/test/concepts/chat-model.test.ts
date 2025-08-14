@@ -66,6 +66,10 @@ test("Example ChatModel: Custom Implementation", async () => {
         },
       };
     }
+
+    getCredential() {
+      return {};
+    }
   }
   // #endregion example-chat-models-custom-implementation
 

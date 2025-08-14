@@ -147,18 +147,26 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsTemperature = true;
 
   get client() {
-    const apiKey = this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault;
+    const { apiKey, url } = this.getCredential();
     if (!apiKey)
       throw new Error(
         `${this.name} requires an API key. Please provide it via \`options.apiKey\`, or set the \`${this.apiKeyEnvName}\` environment variable`,
       );
 
     this._client ??= new CustomOpenAI({
-      baseURL: this.options?.baseURL,
+      baseURL: url,
       apiKey,
       ...this.options?.clientOptions,
     });
     return this._client;
+  }
+
+  getCredential() {
+    return {
+      url: this.options?.baseURL || process.env.OPENAI_BASE_URL,
+      apiKey: this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault,
+      model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
+    };
   }
 
   get modelOptions() {
@@ -178,8 +186,10 @@ export class OpenAIChatModel extends ChatModel {
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
+    const { model } = this.getCredential();
+
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
-      model: this.options?.model || CHAT_MODEL_OPENAI_DEFAULT_MODEL,
+      model,
       temperature: this.supportsTemperature
         ? (input.modelOptions?.temperature ?? this.modelOptions?.temperature)
         : undefined,

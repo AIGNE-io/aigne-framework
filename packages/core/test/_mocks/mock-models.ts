@@ -5,6 +5,10 @@ export class OpenAIChatModel extends ChatModel {
   process(): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     throw new Error("Method not implemented.");
   }
+
+  getCredential() {
+    return {};
+  }
 }
 
 export class ClaudeChatModel extends OpenAIChatModel {}

@@ -26,6 +26,7 @@ describe("hub command", () => {
       creditBalance: { balance: 100, total: 100 },
       paymentLink: "https://test.com",
       profileLink: "https://test.com/profile",
+      enableCredit: true,
     }),
   }));
 
@@ -178,6 +179,49 @@ describe("hub command", () => {
       await command.parseAsync(["hub", "info"]);
 
       expect(mockInquirerPrompt).toHaveBeenCalled();
+    });
+  });
+
+  describe("hub command with existing configuration with empty env", () => {
+    beforeEach(async () => {
+      await writeFile(AIGNE_ENV_FILE, stringify({}));
+    });
+
+    test("should list existing hubs", async () => {
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "list"]);
+    });
+
+    test("should show current status", async () => {
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "status"]);
+    });
+
+    test("should allow switching between hubs", async () => {
+      mockInquirerPrompt.mockResolvedValue({
+        hubApiKey: "https://test.example.com/ai-kit",
+      });
+
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "use"]);
+    });
+
+    test("should allow removing hubs", async () => {
+      mockInquirerPrompt.mockResolvedValue({
+        hubApiKey: "https://test.example.com/ai-kit",
+      });
+
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "remove"]);
+    });
+
+    test("should show hub info", async () => {
+      mockInquirerPrompt.mockResolvedValue({
+        hubApiKey: "https://hub.aigne.io/ai-kit",
+      });
+
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "info"]);
     });
   });
 });

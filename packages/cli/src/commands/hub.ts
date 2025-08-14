@@ -42,6 +42,7 @@ function printHubStatus(data: {
     payment: string;
     profile: string;
   };
+  enableCredit: boolean;
 }) {
   const divider = "─".repeat(46);
 
@@ -64,14 +65,20 @@ function printHubStatus(data: {
   console.log(`  ${chalk.bold("Email:".padEnd(8))} ${data.user.email}`);
   console.log("");
 
-  console.log(chalk.bold("Credits:"));
-  console.log(`  ${chalk.bold("Used:".padEnd(8))} ${data.credits.used.toLocaleString()}`);
-  console.log(`  ${chalk.bold("Total:".padEnd(8))} ${data.credits.total.toLocaleString()}`);
-  console.log("");
+  if (data.enableCredit) {
+    console.log(chalk.bold("Credits:"));
+    console.log(`  ${chalk.bold("Used:".padEnd(8))} ${data.credits.used.toLocaleString()}`);
+    console.log(`  ${chalk.bold("Total:".padEnd(8))} ${data.credits.total.toLocaleString()}`);
+    console.log("");
 
-  console.log(chalk.bold("Links:"));
-  console.log(`  ${chalk.bold("Payment:".padEnd(8))} ${data.links.payment}`);
-  console.log(`  ${chalk.bold("Profile:".padEnd(8))} ${data.links.profile}`);
+    console.log(chalk.bold("Links:"));
+    if (data.links.payment) {
+      console.log(`  ${chalk.bold("Payment:".padEnd(8))} ${data.links.payment}`);
+    }
+    if (data.links.profile) {
+      console.log(`  ${chalk.bold("Profile:".padEnd(8))} ${data.links.profile}`);
+    }
+  }
 }
 
 async function getHubs(): Promise<StatusInfo[]> {
@@ -108,7 +115,7 @@ const getDefaultHub = async () => {
 
 async function formatHubsList(statusList: StatusInfo[]) {
   if (statusList?.length === 0) {
-    console.log(chalk.yellow("No AIGNE Hub configured."));
+    console.log(chalk.yellow("No AIGNE Hub connected."));
     console.log("Use 'aigne hub connect' to connect to a hub.");
     return;
   }
@@ -116,27 +123,23 @@ async function formatHubsList(statusList: StatusInfo[]) {
   const defaultHub = await getDefaultHub();
 
   const table = new Table({
-    head: ["URL", "ACTIVE", "STATUS"],
-    colWidths: [50, 10, 20],
+    head: ["URL", "ACTIVE"],
+    colWidths: [70, 10],
     style: {
       head: ["cyan"],
       border: ["grey"],
     },
   });
 
-  console.log(chalk.blue("AIGNE Hubs:\n"));
+  console.log(chalk.blue("Connected AIGNE Hubs:\n"));
 
   for (const status of statusList) {
     const isConnected = new URL(status.apiUrl).origin === new URL(defaultHub).origin;
-
-    table.push([
-      status.apiUrl,
-      isConnected ? "*" : "-",
-      isConnected ? "Connected" : "Not connected",
-    ]);
+    table.push([status.apiUrl, isConnected ? "YES" : "NO"]);
   }
 
   console.log(table.toString());
+  console.log(chalk.blue("Use 'aigne hub use' to switch to a different hub."));
 }
 
 export function createHubCommand(): CommandModule {
@@ -146,7 +149,23 @@ export function createHubCommand(): CommandModule {
     builder: (yargs) =>
       yargs
         .command(["list", "ls"], "List all connected AIGNE Hubs", listHubs)
-        .command("connect", "Connect to an AIGNE Hub", connectHub)
+        .command({
+          command: "connect [url]",
+          describe: "Connect to an AIGNE Hub",
+          builder: (yargs) =>
+            yargs.positional("url", {
+              type: "string",
+              describe: "The URL of the AIGNE Hub to connect to",
+              default: null,
+            }),
+          handler: (args) => {
+            if (args.url) {
+              saveAndConnect(args.url);
+            } else {
+              connectHub();
+            }
+          },
+        })
         .command("use", "Switch to a different AIGNE Hub", useHub)
         .command(["status", "st"], "Show current active hub", showStatus)
         .command(["remove", "rm"], "Remove a connected hub", removeHub)
@@ -192,7 +211,7 @@ async function useHub() {
   const hubs = await getHubs();
 
   if (!hubs.length) {
-    console.log(chalk.yellow("No AIGNE Hub configured."));
+    console.log(chalk.yellow("No AIGNE Hub connected."));
     return;
   }
 
@@ -221,7 +240,7 @@ async function showStatus() {
 async function removeHub() {
   const hubs = await getHubs();
   if (!hubs.length) {
-    console.log(chalk.yellow("No AIGNE Hub configured."));
+    console.log(chalk.yellow("No AIGNE Hub connected."));
     return;
   }
 
@@ -241,7 +260,7 @@ async function removeHub() {
 async function showInfo() {
   const hubs = await getHubs();
   if (!hubs.length) {
-    console.log(chalk.yellow("No AIGNE Hub configured."));
+    console.log(chalk.yellow("No AIGNE Hub connected."));
     return;
   }
 
@@ -355,5 +374,6 @@ async function printHubDetails(url: string) {
       payment: userInfo?.paymentLink || "",
       profile: userInfo?.profileLink || "",
     },
+    enableCredit: userInfo?.enableCredit || false,
   });
 }

@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { spawn } from "node:child_process";
-import { readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { extname, join } from "node:path";
 import { isatty } from "node:tty";
@@ -298,13 +298,21 @@ export async function loadApplication({
         title: `Downloading ${name}`,
         skip: (ctx) => ctx.version === check?.version,
         task: async (ctx) => {
+          await rm(dir, { force: true, recursive: true });
+          await mkdir(dir, { recursive: true });
+
           await downloadAndExtract(ctx.url, dir, { strip: 1 });
         },
       },
       {
         title: "Installing dependencies",
-        task: async () => {
-          await installDependencies(dir);
+        task: async (_, task) => {
+          await installDependencies(dir, {
+            log: (log) => {
+              const last = log.split("\n").findLast((i) => !!i);
+              if (last) task.output = last;
+            },
+          });
         },
       },
     ],
@@ -349,13 +357,22 @@ async function isInstallationAvailable(
   return { version, available };
 }
 
-async function installDependencies(dir: string) {
+async function installDependencies(dir: string, { log }: { log?: (log: string) => void } = {}) {
   await new Promise<void>((resolve, reject) => {
-    const child = spawn("npm", ["install", "--omit", "dev"], { cwd: dir, stdio: "pipe" });
+    const child = spawn("npm", ["install", "--omit", "dev", "--verbose"], {
+      cwd: dir,
+      stdio: "pipe",
+    });
+
+    child.stdout.on("data", (data) => {
+      log?.(data.toString());
+    });
 
     let stderr = "";
     child.stderr.on("data", (data) => {
-      stderr += data.toString();
+      const str = data.toString();
+      log?.(str);
+      stderr += str;
     });
 
     child.on("error", (error) => reject(error));

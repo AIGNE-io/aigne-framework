@@ -65,15 +65,15 @@ import { PoeChatModel } from "@aigne/poe";
 const model = new PoeChatModel({
   // Provide API key directly or use environment variable POE_API_KEY
   apiKey: "your-api-key", // Optional if set in env variables
-  // Specify model (defaults to 'gpt-5-mini')
+  // Specify model (defaults to 'openai/gpt-4o')
   model: "claude-3-opus",
   modelOptions: {
-    temperature: 0.8,
+    temperature: 0.7,
   },
 });
 
 const result = await model.invoke({
-  messages: [{ role: "user", content: "Tell me about yourself" }],
+  messages: [{ role: "user", content: "Which model are you using?" }],
 });
 
 console.log(result);
@@ -82,8 +82,8 @@ console.log(result);
     text: "I'm powered by Poe, using the Claude 3 Opus model from Anthropic.",
     model: "claude-3-opus",
     usage: {
-      inputTokens: 6,
-      outputTokens: 17
+      inputTokens: 5,
+      outputTokens: 14
     }
   }
   */
@@ -102,7 +102,7 @@ const model = new PoeChatModel({
 
 const stream = await model.invoke(
   {
-    messages: [{ role: "user", content: "Tell me about yourself" }],
+    messages: [{ role: "user", content: "Which model are you using?" }],
   },
   { streaming: true },
 );
@@ -119,7 +119,7 @@ for await (const chunk of stream) {
 }
 
 console.log(fullText); // Output: "I'm powered by Poe, using the Claude 3 Opus model from Anthropic."
-console.log(json); // { model: "claude-3-opus", usage: { inputTokens: 5, outputTokens: 14 } }
+console.log(json); // { model: "anthropic/claude-3-opus", usage: { inputTokens: 5, outputTokens: 14 } }
 ```
 
 ## License

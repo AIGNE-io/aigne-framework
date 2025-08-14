@@ -70,6 +70,10 @@ class CustomChatModel extends ChatModel {
       },
     };
   }
+
+  getCredential() {
+    return {};
+  }
 }
 ```
 

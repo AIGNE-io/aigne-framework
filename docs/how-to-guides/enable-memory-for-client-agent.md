@@ -85,6 +85,7 @@ const agent = AIAgent.from({
   name: "chatbot",
   instructions: "You are a helpful assistant",
   inputKey: "message",
+  useMemoriesFromContext: true,
 });
 
 const aigne = new AIGNE({

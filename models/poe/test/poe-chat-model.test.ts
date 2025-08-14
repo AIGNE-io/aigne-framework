@@ -17,7 +17,7 @@ test("Poe chat model basic usage", async () => {
     // Provide API key directly or use environment variable POE_API_KEY
     apiKey: "your-api-key", // Optional if set in env variables
     // Specify model (defaults to 'openai/gpt-4o')
-    model: "anthropic/claude-3-opus",
+    model: "claude-3-opus",
     modelOptions: {
       temperature: 0.7,
     },
@@ -25,7 +25,7 @@ test("Poe chat model basic usage", async () => {
 
   spyOn(model, "process").mockReturnValueOnce({
     text: "I'm powered by Poe, using the Claude 3 Opus model from Anthropic.",
-    model: "anthropic/claude-3-opus",
+    model: "claude-3-opus",
     usage: {
       inputTokens: 5,
       outputTokens: 14,
@@ -40,7 +40,7 @@ test("Poe chat model basic usage", async () => {
   /* Output:
   {
     text: "I'm powered by Poe, using the Claude 3 Opus model from Anthropic.",
-    model: "anthropic/claude-3-opus",
+    model: "claude-3-opus",
     usage: {
       inputTokens: 5,
       outputTokens: 14
@@ -50,7 +50,7 @@ test("Poe chat model basic usage", async () => {
 
   expect(result).toEqual({
     text: "I'm powered by Poe, using the Claude 3 Opus model from Anthropic.",
-    model: "anthropic/claude-3-opus",
+    model: "claude-3-opus",
     usage: {
       inputTokens: 5,
       outputTokens: 14,
@@ -63,7 +63,7 @@ test("Poe chat model with streaming using async generator", async () => {
   // #region example-poe-chat-model-streaming
   const model = new PoeChatModel({
     apiKey: "your-api-key",
-    model: "anthropic/claude-3-opus",
+    model: "claude-3-opus",
   });
 
   spyOn(model, "process").mockImplementationOnce(async function* () {
@@ -74,7 +74,7 @@ test("Poe chat model with streaming using async generator", async () => {
     yield textDelta({ text: " model from Anthropic." });
 
     return {
-      model: "anthropic/claude-3-opus",
+      model: "claude-3-opus",
       usage: { inputTokens: 5, outputTokens: 14 },
     };
   });
@@ -102,7 +102,7 @@ test("Poe chat model with streaming using async generator", async () => {
 
   expect(fullText).toBe("I'm powered by Poe, using the Claude 3 Opus model from Anthropic.");
   expect(json).toEqual({
-    model: "anthropic/claude-3-opus",
+    model: "claude-3-opus",
     usage: { inputTokens: 5, outputTokens: 14 },
   });
   // #endregion example-poe-chat-model-streaming

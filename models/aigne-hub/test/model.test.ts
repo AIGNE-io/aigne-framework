@@ -72,7 +72,7 @@ describe("model", () => {
       process.env.HTTP_PROXY = "http://proxy.example.com:8080";
 
       const models = availableModels();
-      expect(models).toHaveLength(9);
+      expect(models).toHaveLength(11);
     });
 
     test("should create models with correct client options", () => {

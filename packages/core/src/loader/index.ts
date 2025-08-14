@@ -107,6 +107,7 @@ async function parseHooks(
   return await Promise.all(
     hooks.map(
       async (hook): Promise<{ [key in keyof AllHooks]: AllHooks[key] | undefined }> => ({
+        priority: hook.priority,
         onStart: hook.onStart ? await loadNestAgent(path, hook.onStart, options) : undefined,
         onSuccess: hook.onSuccess ? await loadNestAgent(path, hook.onSuccess, options) : undefined,
         onError: hook.onError ? await loadNestAgent(path, hook.onError, options) : undefined,

@@ -196,6 +196,7 @@ export class TerminalTracer {
         ...options,
         hooks: flat(
           {
+            priority: "high",
             onStart,
             onSuccess,
             onError,
@@ -264,7 +265,14 @@ export class TerminalTracer {
         }
       },
     },
-    markedTerminal({ forceHyperLink: false }),
+    markedTerminal(
+      { forceHyperLink: false },
+      {
+        theme: {
+          string: chalk.green,
+        },
+      },
+    ),
   );
 
   get outputKey() {

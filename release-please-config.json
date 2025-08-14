@@ -15,6 +15,7 @@
     "models/bedrock": {},
     "models/deepseek": {},
     "models/doubao": {},
+    "models/poe": {},
     "models/gemini": {},
     "models/ollama": {},
     "models/open-router": {},

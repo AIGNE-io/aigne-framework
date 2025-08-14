@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@aigne/core": ["../core/src"],
+      "@aigne/core/*": ["../core/src/*"],
+      "@aigne/poe": ["./src"],
+      "@aigne/poe/*": ["./src/*"]
+    }
+  },
+  "exclude": ["node_modules", "lib"],
+  "include": ["src", "test"]
+}

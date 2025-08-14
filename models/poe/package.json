@@ -1,7 +1,6 @@
 {
-  "name": "@aigne/aigne-hub",
-  "version": "0.5.2",
-  "description": "AIGNE Hub SDK for integrating with Hub AI models",
+  "name": "@aigne/poe",
+  "description": "AIGNE Poe SDK for integrating with Poe's language models and API services",
   "publishConfig": {
     "access": "public"
   },
@@ -32,11 +31,6 @@
       "import": "./lib/esm/index.js",
       "require": "./lib/cjs/index.js",
       "types": "./lib/dts/index.d.ts"
-    },
-    "./constants": {
-      "import": "./lib/esm/constants.js",
-      "require": "./lib/cjs/constants.js",
-      "types": "./lib/dts/constants.d.ts"
     }
   },
   "scripts": {
@@ -49,38 +43,13 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/anthropic": "workspace:^",
-    "@aigne/bedrock": "workspace:^",
-    "@aigne/core": "workspace:^",
-    "@aigne/deepseek": "workspace:^",
-    "@aigne/default-memory": "workspace:^",
-    "@aigne/doubao": "workspace:^",
-    "@aigne/gemini": "workspace:^",
-    "@aigne/ollama": "workspace:^",
-    "@aigne/open-router": "workspace:^",
-    "@aigne/openai": "workspace:^",
-    "@aigne/platform-helpers": "workspace:^",
-    "@aigne/poe": "workspace:^",
-    "@aigne/transport": "workspace:^",
-    "@aigne/xai": "workspace:^",
-    "@ocap/mcrypto": "^1.21.0",
-    "@smithy/node-http-handler": "^4.1.0",
-    "chalk": "^5.4.1",
-    "https-proxy-agent": "^7.0.6",
-    "inquirer": "^12.7.0",
-    "open": "^10.2.0",
-    "openai": "^5.8.3",
-    "p-wait-for": "^5.0.2",
-    "ufo": "^1.6.1",
-    "yaml": "^2.8.0",
-    "zod": "^3.25.67"
+    "@aigne/openai": "workspace:^"
   },
   "devDependencies": {
-    "@aigne/openai": "workspace:^",
+    "@aigne/core": "workspace:^",
     "@aigne/test-utils": "workspace:^",
     "@types/bun": "^1.2.18",
-    "detect-port": "^2.1.0",
-    "hono": "^4.8.4",
+    "@types/node": "^24.0.12",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"

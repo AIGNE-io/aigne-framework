@@ -3,11 +3,13 @@ import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
 import type { ChatModel, ChatModelOptions } from "@aigne/core/agents/chat-model.js";
 import { DeepSeekChatModel } from "@aigne/deepseek";
+import { DoubaoChatModel } from "@aigne/doubao";
 import { GeminiChatModel } from "@aigne/gemini";
 import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";
 import { OpenAIChatModel } from "@aigne/openai";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+import { PoeChatModel } from "@aigne/poe";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
 import chalk from "chalk";
@@ -85,6 +87,16 @@ export function availableModels(): LoadableModel[] {
       name: XAIChatModel.name,
       apiKeyEnvName: "XAI_API_KEY",
       create: (params) => new XAIChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: DoubaoChatModel.name,
+      apiKeyEnvName: "DOUBAO_API_KEY",
+      create: (params) => new DoubaoChatModel({ ...params, clientOptions }),
+    },
+    {
+      name: PoeChatModel.name,
+      apiKeyEnvName: "POE_API_KEY",
+      create: (params) => new PoeChatModel({ ...params, clientOptions }),
     },
     {
       name: AIGNEHubChatModel.name,

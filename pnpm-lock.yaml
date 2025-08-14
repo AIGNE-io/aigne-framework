@@ -679,6 +679,9 @@ importers:
       '@aigne/default-memory':
         specifier: workspace:^
         version: link:../../memory/default
+      '@aigne/doubao':
+        specifier: workspace:^
+        version: link:../doubao
       '@aigne/gemini':
         specifier: workspace:^
         version: link:../gemini
@@ -694,6 +697,9 @@ importers:
       '@aigne/platform-helpers':
         specifier: workspace:^
         version: link:../../packages/platform-helpers
+      '@aigne/poe':
+        specifier: workspace:^
+        version: link:../poe
       '@aigne/transport':
         specifier: workspace:^
         version: link:../../packages/transport
@@ -982,6 +988,34 @@ importers:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.18
+        version: 1.2.18(@types/react@19.1.8)
+      '@types/node':
+        specifier: ^24.0.12
+        version: 24.0.12
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  models/poe:
+    dependencies:
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../openai
+    devDependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../../packages/test-utils

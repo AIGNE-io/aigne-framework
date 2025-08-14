@@ -7,9 +7,12 @@ import type {
   Message,
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { ChatModelName } from "../constants.js";
+
+const DEFAULT_MAX_RECONNECTS = 3;
 
 /**
  * Options for invoking an agent through the BaseClient.
@@ -20,7 +23,9 @@ export interface BaseClientInvokeOptions extends InvokeOptions {
    * Additional fetch API options to customize the HTTP request.
    * These options will be merged with the default options used by the client.
    */
-  fetchOptions?: Partial<RequestInit>;
+  fetchOptions?: Partial<RequestInit> & {
+    maxRetries?: number;
+  };
 }
 
 export interface BaseClientOptions {
@@ -166,8 +171,15 @@ export class BaseClient {
    *
    * @private
    */
-  async fetch(...args: Parameters<typeof globalThis.fetch>): Promise<Response> {
-    const result = await globalThis.fetch(...args);
+  async fetch(url: string, init?: BaseClientInvokeOptions["fetchOptions"]): Promise<Response> {
+    const { default: retry } = await import("p-retry");
+
+    const result = await retry(() => globalThis.fetch(url, init), {
+      retries: init?.maxRetries ?? DEFAULT_MAX_RECONNECTS,
+      onFailedAttempt: (error) => {
+        logger.warn("Retrying fetch request due to error:", error);
+      },
+    });
 
     if (!result.ok) {
       let message: string | undefined;
@@ -192,7 +204,7 @@ export class BaseClient {
         throw e;
       }
 
-      throw new Error(`Failed to fetch url ${args[0]} with status ${result.status}: ${resultText}`);
+      throw new Error(`Failed to fetch url ${url} with status ${result.status}: ${resultText}`);
     }
 
     return result;

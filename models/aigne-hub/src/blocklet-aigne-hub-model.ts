@@ -51,7 +51,7 @@ export class AIGNEHubChatModel extends ChatModel {
       apiKey,
     };
 
-    this._client ?? modelEntry.create(options);
+    this._client ??= modelEntry.create(options);
     return this._client;
   }
 

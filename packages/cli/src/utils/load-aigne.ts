@@ -47,7 +47,13 @@ function printChatModelInfoBox(model: ChatModel) {
   }
 
   if (credential?.url) {
-    lines.push(`${chalk.cyan("API URL")}: ${chalk.green(credential?.url || "N/A")}`);
+    try {
+      lines.push(
+        `${chalk.cyan("API URL")}: ${chalk.green(new URL(credential?.url).origin || "N/A")}`,
+      );
+    } catch {
+      lines.push(`${chalk.cyan("API URL")}: ${chalk.green(credential?.url || "N/A")}`);
+    }
   }
 
   if (credential?.apiKey) {

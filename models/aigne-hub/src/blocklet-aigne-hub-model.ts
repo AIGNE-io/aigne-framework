@@ -5,7 +5,6 @@ import {
   type ChatModelOutput,
 } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
 import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
 import { AIGNE_HUB_URL } from "./util/constants.js";

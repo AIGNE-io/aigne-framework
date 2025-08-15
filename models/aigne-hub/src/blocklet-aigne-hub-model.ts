@@ -86,8 +86,13 @@ export class AIGNEHubChatModel extends ChatModel {
       throw new Error("Client not initialized");
     }
 
+    const { BLOCKLET_APP_PID, ABT_NODE_DID } = process.env;
+    const clientId = BLOCKLET_APP_PID || ABT_NODE_DID || "";
+
     options.fetchOptions = {
-      headers: { "x-aigne-hub-client-did": process.env.BLOCKLET_APP_PID || "" },
+      headers: {
+        "x-aigne-hub-client-did": clientId,
+      },
       ...options.fetchOptions,
     };
 

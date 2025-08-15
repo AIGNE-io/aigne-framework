@@ -135,7 +135,7 @@ async function formatHubsList(statusList: StatusInfo[]) {
 
   for (const status of statusList) {
     const isConnected = new URL(status.apiUrl).origin === new URL(defaultHub).origin;
-    table.push([status.apiUrl, isConnected ? "YES" : "NO"]);
+    table.push([new URL(status.apiUrl).origin, isConnected ? "YES" : "NO"]);
   }
 
   console.log(table.toString());
@@ -234,7 +234,7 @@ async function showStatus() {
     console.log(chalk.red("No active hub."));
     return;
   }
-  console.log(`Active hub: ${active} - online`);
+  console.log(`Active hub: ${new URL(active).origin} - online`);
 }
 
 async function removeHub() {

@@ -123,7 +123,8 @@ test("BedrockChatModel.invoke with tool call and structured output", async () =>
     secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
   });
 
-  spyOn(model.client, "send")
+  const client = await model.client();
+  spyOn(client, "send")
     .mockImplementationOnce(() =>
       Promise.resolve({
         stream: createMockEventStream({
@@ -161,8 +162,9 @@ test("BedrockChatModel.invoke with streaming", async () => {
     accessKeyId: "YOUR_ACCESS_KEY_ID",
     secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
   });
+  const client = await model.client();
 
-  spyOn(model.client, "send").mockImplementation(() =>
+  spyOn(client, "send").mockImplementation(() =>
     Promise.resolve({
       stream: createMockEventStream({
         path: join(import.meta.dirname, "bedrock-streaming-response-text.txt"),
@@ -186,7 +188,8 @@ test("BedrockChatModel.invoke without streaming", async () => {
     secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
   });
 
-  spyOn(model.client, "send").mockImplementation(() =>
+  const client = await model.client();
+  spyOn(client, "send").mockImplementation(() =>
     Promise.resolve({
       stream: createMockEventStream({
         path: join(import.meta.dirname, "bedrock-streaming-response-text.txt"),

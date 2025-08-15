@@ -190,25 +190,10 @@ export const checkConnectionStatus = async (host: string) => {
     throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
   }
 
-  try {
-    // check if the url is valid
-    const apiUrl = await getAIGNEHubMountPoint(env.AIGNE_HUB_API_URL);
-    if (apiUrl !== env.AIGNE_HUB_API_URL) {
-      envs[host].AIGNE_HUB_API_URL = apiUrl;
-      envs.default.AIGNE_HUB_API_URL = apiUrl;
-      await nodejs.fs.writeFile(AIGNE_ENV_FILE, stringify(envs));
-    }
-
-    return {
-      apiKey: env.AIGNE_HUB_API_KEY,
-      url: apiUrl,
-    };
-  } catch {
-    return {
-      apiKey: env.AIGNE_HUB_API_KEY,
-      url: env.AIGNE_HUB_API_URL,
-    };
-  }
+  return {
+    apiKey: env.AIGNE_HUB_API_KEY,
+    url: env.AIGNE_HUB_API_URL,
+  };
 };
 
 export async function loadCredential(options?: LoadCredentialOptions) {

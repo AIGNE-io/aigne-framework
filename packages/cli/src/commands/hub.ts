@@ -7,6 +7,7 @@ import inquirer from "inquirer";
 import { parse, stringify } from "yaml";
 import type { CommandModule } from "yargs";
 import { getUserInfo } from "../utils/aigne-hub-user.js";
+import { getUrlOrigin } from "../utils/get-url-origin.js";
 
 interface StatusInfo {
   host: string;
@@ -24,14 +25,6 @@ interface AIGNEEnv {
 const formatNumber = (balance: string) => {
   const balanceNum = String(balance).split(".")[0];
   return chalk.yellow((balanceNum || "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-};
-
-const getUrlOrigin = (url: string) => {
-  try {
-    return new URL(url).origin;
-  } catch {
-    return url;
-  }
 };
 
 function printHubStatus(data: {

@@ -19,6 +19,7 @@ import chalk from "chalk";
 import inquirer from "inquirer";
 import { parse, stringify } from "yaml";
 import { availableMemories } from "../constants.js";
+import { getUrlOrigin } from "./get-url-origin.js";
 import type { RunAIGNECommandOptions } from "./run-with-aigne.js";
 
 const isTest = process.env.CI || process.env.NODE_ENV === "test";
@@ -47,13 +48,7 @@ function printChatModelInfoBox(model: ChatModel) {
   }
 
   if (credential?.url) {
-    try {
-      lines.push(
-        `${chalk.cyan("API URL")}: ${chalk.green(new URL(credential?.url).origin || "N/A")}`,
-      );
-    } catch {
-      lines.push(`${chalk.cyan("API URL")}: ${chalk.green(credential?.url || "N/A")}`);
-    }
+    lines.push(`${chalk.cyan("API URL")}: ${chalk.green(getUrlOrigin(credential?.url) || "N/A")}`);
   }
 
   if (credential?.apiKey) {

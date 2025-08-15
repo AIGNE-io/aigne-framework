@@ -28,7 +28,7 @@ test("ChatModel implementation", async () => {
       };
     }
 
-    getCredential() {
+    async getCredential() {
       return {};
     }
   }
@@ -74,7 +74,7 @@ test("ChatModel with streaming response", async () => {
       });
     }
 
-    getCredential() {
+    async getCredential() {
       return {};
     }
   }
@@ -119,7 +119,7 @@ test("ChatModel with streaming response with async generator", async () => {
       return { model: "gpt-4o", usage: { inputTokens: 5, outputTokens: 10 } };
     }
 
-    getCredential() {
+    async getCredential() {
       return {};
     }
   }
@@ -178,7 +178,7 @@ test("ChatModel with tools", async () => {
       };
     }
 
-    getCredential() {
+    async getCredential() {
       return {};
     }
   }
@@ -255,7 +255,7 @@ test("ChatModel should return capabilities", async () => {
       };
     }
 
-    getCredential() {
+    async getCredential() {
       return {};
     }
 
@@ -286,7 +286,7 @@ test("ChatModel should auto convert tool name to valid function name", async () 
       };
     }
 
-    getCredential() {
+    async getCredential() {
       return {};
     }
   }

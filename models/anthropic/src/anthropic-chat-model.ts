@@ -113,8 +113,8 @@ export class AnthropicChatModel extends ChatModel {
    */
   protected _client?: Anthropic;
 
-  get client() {
-    const { apiKey } = this.getCredential();
+  async client() {
+    const { apiKey } = await this.getCredential();
     if (!apiKey)
       throw new Error(
         "AnthropicChatModel requires an API key. Please provide it via `options.apiKey`, or set the `ANTHROPIC_API_KEY` or `CLAUDE_API_KEY` environment variable",
@@ -132,7 +132,7 @@ export class AnthropicChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  getCredential() {
+  async getCredential() {
     const apiKey =
       this.options?.apiKey || process.env[this.apiKeyEnvName] || process.env.CLAUDE_API_KEY;
 
@@ -172,7 +172,7 @@ export class AnthropicChatModel extends ChatModel {
   private ajv = new Ajv();
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
-    const { model } = this.getCredential();
+    const { model } = await this.getCredential();
 
     const disableParallelToolUse =
       input.modelOptions?.parallelToolCalls === false ||
@@ -194,7 +194,8 @@ export class AnthropicChatModel extends ChatModel {
       return this.requestStructuredOutput(body, input.responseFormat);
     }
 
-    const stream = this.client.messages.stream({
+    const client = await this.client();
+    const stream = client.messages.stream({
       ...body,
       stream: true,
     });
@@ -228,17 +229,16 @@ export class AnthropicChatModel extends ChatModel {
       usage: mergeUsage(result.usage, output.usage),
     };
   }
-
   private async extractResultFromAnthropicStream(
-    stream: ReturnType<typeof this.client.messages.stream>,
+    stream: ReturnType<Anthropic["messages"]["stream"]>,
     streaming?: false,
   ): Promise<ChatModelOutput>;
   private async extractResultFromAnthropicStream(
-    stream: ReturnType<typeof this.client.messages.stream>,
+    stream: ReturnType<Anthropic["messages"]["stream"]>,
     streaming: true,
   ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
   private async extractResultFromAnthropicStream(
-    stream: ReturnType<typeof this.client.messages.stream>,
+    stream: ReturnType<Anthropic["messages"]["stream"]>,
     streaming?: boolean,
   ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
     const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
@@ -332,7 +332,8 @@ export class AnthropicChatModel extends ChatModel {
       throw new Error("Expected json_schema response format");
     }
 
-    const result = await this.client.messages.create({
+    const client = await this.client();
+    const result = await client.messages.create({
       ...body,
       tools: [
         {

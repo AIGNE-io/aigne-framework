@@ -35,11 +35,11 @@ const mockInquirerPrompt = (() => Promise.resolve({ useAigneHub: true })) as any
 
 let printed = false;
 
-function printChatModelInfoBox(model: ChatModel) {
+async function printChatModelInfoBox(model: ChatModel) {
   if (printed) return;
   printed = true;
 
-  const credential = model.getCredential();
+  const credential = await model.getCredential();
 
   const lines = [`${chalk.cyan("Provider")}: ${chalk.green(model.name.replace("ChatModel", ""))}`];
 
@@ -134,7 +134,7 @@ export async function loadAIGNE({
   );
 
   if (model) {
-    printChatModelInfoBox(model);
+    await printChatModelInfoBox(model);
   }
 
   if (path) {

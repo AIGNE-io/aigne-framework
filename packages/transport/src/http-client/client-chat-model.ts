@@ -23,7 +23,7 @@ export class ClientChatModel extends ChatModel {
     return this.client._invoke(this.name, input, options);
   }
 
-  getCredential() {
+  async getCredential() {
     return {};
   }
 }

@@ -35,11 +35,11 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     });
   }
 
-  abstract getCredential(): {
+  abstract getCredential(): Promise<{
     url?: string;
     apiKey?: string;
     model?: string;
-  };
+  }>;
 
   /**
    * Indicates whether the model supports parallel tool calls

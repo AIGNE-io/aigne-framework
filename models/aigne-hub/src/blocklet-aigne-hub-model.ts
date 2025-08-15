@@ -4,13 +4,14 @@ import {
   type ChatModelInput,
   type ChatModelOutput,
 } from "@aigne/core";
-import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
 import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
 import { AIGNE_HUB_URL } from "./util/constants.js";
+import { getAIGNEHubMountPoint } from "./util/credential.js";
 import { availableModels, findModel } from "./util/model.js";
+
 export class AIGNEHubChatModel extends ChatModel {
-  protected _client?: ChatModel;
+  protected _client?: Promise<ChatModel>;
 
   constructor(
     public options: AIGNEHubChatModelOptions & { apiKey?: string; baseURL?: string; url?: string },
@@ -40,22 +41,24 @@ export class AIGNEHubChatModel extends ChatModel {
       console.error(err);
     }
 
-    const { apiKey, url, model } = this.getCredential();
+    this._client ??= this.getCredential().then((credential) => {
+      const { apiKey, url, model } = credential;
 
-    const options = {
-      ...this.options,
-      ...credentialOptions,
-      modelOptions: this.options.modelOptions,
-      model,
-      url,
-      apiKey,
-    };
+      const options = {
+        ...this.options,
+        ...credentialOptions,
+        modelOptions: this.options.modelOptions,
+        model,
+        url,
+        apiKey,
+      };
 
-    this._client ??= modelEntry.create(options);
+      return modelEntry.create(options);
+    });
     return this._client;
   }
 
-  getCredential() {
+  async getCredential() {
     const rawCredential = process.env.BLOCKLET_AIGNE_API_CREDENTIAL;
     let credentialOptions: Record<string, any> = {};
     try {
@@ -64,18 +67,21 @@ export class AIGNEHubChatModel extends ChatModel {
     } catch (err) {
       console.error(err);
     }
+    const url = await getAIGNEHubMountPoint(
+      this.options.url || process.env.BLOCKLET_AIGNE_API_URL || AIGNE_HUB_URL,
+    );
 
     return {
-      url: this.options.url || process.env.BLOCKLET_AIGNE_API_URL || AIGNE_HUB_URL,
+      url,
       apiKey: this.options.apiKey || credentialOptions?.apiKey,
       model: this.options.model || process.env.BLOCKLET_AIGNE_API_MODEL,
     };
   }
 
-  override process(
+  override async process(
     input: ChatModelInput,
     options: BaseClientInvokeOptions,
-  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+  ): Promise<AgentProcessResult<ChatModelOutput>> {
     if (!this.client) {
       throw new Error("Client not initialized");
     }
@@ -85,6 +91,7 @@ export class AIGNEHubChatModel extends ChatModel {
       ...options.fetchOptions,
     };
 
-    return this.client.invoke(input, options);
+    const client = await this.client;
+    return client.invoke(input, options);
   }
 }

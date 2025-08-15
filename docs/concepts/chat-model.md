@@ -71,7 +71,7 @@ class CustomChatModel extends ChatModel {
     };
   }
 
-  getCredential() {
+  async getCredential() {
     return {};
   }
 }

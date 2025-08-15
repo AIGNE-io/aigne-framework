@@ -67,7 +67,7 @@ test("Example ChatModel: Custom Implementation", async () => {
       };
     }
 
-    getCredential() {
+    async getCredential() {
       return {};
     }
   }

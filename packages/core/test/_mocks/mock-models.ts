@@ -6,7 +6,7 @@ export class OpenAIChatModel extends ChatModel {
     throw new Error("Method not implemented.");
   }
 
-  getCredential() {
+  async getCredential() {
     return {};
   }
 }

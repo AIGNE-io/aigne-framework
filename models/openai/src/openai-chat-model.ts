@@ -146,8 +146,8 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsToolStreaming = true;
   protected supportsTemperature = true;
 
-  get client() {
-    const { apiKey, url } = this.getCredential();
+  async client() {
+    const { apiKey, url } = await this.getCredential();
     if (!apiKey)
       throw new Error(
         `${this.name} requires an API key. Please provide it via \`options.apiKey\`, or set the \`${this.apiKeyEnvName}\` environment variable`,
@@ -161,7 +161,7 @@ export class OpenAIChatModel extends ChatModel {
     return this._client;
   }
 
-  getCredential() {
+  async getCredential() {
     return {
       url: this.options?.baseURL || process.env.OPENAI_BASE_URL,
       apiKey: this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault,
@@ -186,7 +186,7 @@ export class OpenAIChatModel extends ChatModel {
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
-    const { model } = this.getCredential();
+    const { model } = await this.getCredential();
 
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model,
@@ -211,7 +211,8 @@ export class OpenAIChatModel extends ChatModel {
     }
 
     const { jsonMode, responseFormat } = await this.getRunResponseFormat(input);
-    const stream = (await this.client.chat.completions.create({
+    const client = await this.client();
+    const stream = (await client.chat.completions.create({
       ...body,
       tools: toolsFromInputTools(input.tools, {
         addTypeToEmptyParameters: !this.supportsToolsEmptyParameters,
@@ -311,7 +312,8 @@ export class OpenAIChatModel extends ChatModel {
     const { jsonMode, responseFormat: resolvedResponseFormat } = await this.getRunResponseFormat({
       responseFormat,
     });
-    const res = (await this.client.chat.completions.create({
+    const client = await this.client();
+    const res = (await client.chat.completions.create({
       ...body,
       response_format: resolvedResponseFormat,
     })) as unknown as Stream<OpenAI.Chat.Completions.ChatCompletionChunk>;

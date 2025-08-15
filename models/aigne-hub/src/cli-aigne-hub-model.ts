@@ -50,7 +50,7 @@ export class AIGNEHubChatModel extends ChatModel {
     super();
   }
 
-  get client() {
+  async client() {
     this._client ??= this.getCredential().then((credential) => {
       const { url, apiKey, model } = credential;
       const options = { ...this.options, url, apiKey, model };
@@ -84,7 +84,7 @@ export class AIGNEHubChatModel extends ChatModel {
       ...options.fetchOptions,
     };
 
-    const client = await this.client;
+    const client = await this.client();
     return client.__invoke(undefined, input, options);
   }
 }

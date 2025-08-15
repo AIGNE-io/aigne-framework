@@ -19,7 +19,7 @@ export class AIGNEHubChatModel extends ChatModel {
     super();
   }
 
-  get client() {
+  async client() {
     const models = availableModels();
     const rawProvider = process.env.BLOCKLET_AIGNE_API_PROVIDER ?? "";
     const providerKey = rawProvider.toLowerCase().replace(/-/g, "");
@@ -96,7 +96,7 @@ export class AIGNEHubChatModel extends ChatModel {
       ...options.fetchOptions,
     };
 
-    const client = await this.client;
+    const client = await this.client();
     return client.invoke(input, options);
   }
 }

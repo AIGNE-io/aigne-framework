@@ -73,7 +73,10 @@ export class AIGNEHubChatModel extends ChatModel {
     options: BaseClientInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     options.fetchOptions = {
-      headers: { "x-aigne-hub-client-did": `@aigne/aigne-hub:${nodejs.os.hostname()}` },
+      headers: {
+        "x-aigne-hub-client-did":
+          process.env.BLOCKLET_APP_PID || `@aigne/aigne-hub:${nodejs.os.hostname()}`,
+      },
       ...options.fetchOptions,
     };
 

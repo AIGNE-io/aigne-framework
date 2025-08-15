@@ -5,6 +5,7 @@ import {
   type ChatModelOutput,
 } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
 import type { AIGNEHubChatModelOptions } from "./cli-aigne-hub-model.js";
 import { AIGNE_HUB_URL } from "./util/constants.js";
@@ -81,7 +82,10 @@ export class AIGNEHubChatModel extends ChatModel {
     }
 
     options.fetchOptions = {
-      headers: { "x-aigne-hub-client-did": process.env.BLOCKLET_APP_PID || "" },
+      headers: {
+        "x-aigne-hub-client-did":
+          process.env.BLOCKLET_APP_PID || `@aigne/aigne-hub:${nodejs.os.hostname()}`,
+      },
       ...options.fetchOptions,
     };
 

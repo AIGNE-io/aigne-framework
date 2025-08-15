@@ -117,7 +117,8 @@ test("AnthropicChatModel.invoke", async () => {
     apiKey: "YOUR_API_KEY",
   });
 
-  spyOn(model.client.messages, "stream")
+  const client = await model.client();
+  spyOn(client.messages, "stream")
     .mockReturnValueOnce(
       createMockEventStream({
         path: join(import.meta.dirname, "anthropic-streaming-response-1.txt"),
@@ -129,7 +130,7 @@ test("AnthropicChatModel.invoke", async () => {
       }),
     );
 
-  spyOn(model.client.messages, "create").mockResolvedValue(
+  spyOn(client.messages, "create").mockResolvedValue(
     (await import(
       "./anthropic-structured-response-3.json"
     )) as unknown as Anthropic.Messages.Message,
@@ -157,7 +158,8 @@ test("AnthropicChatModel.invoke should pass system and messages to claude correc
     apiKey: "YOUR_API_KEY",
   });
 
-  const stream = spyOn(model.client.messages, "stream").mockReturnValueOnce(
+  const client = await model.client();
+  const stream = spyOn(client.messages, "stream").mockReturnValueOnce(
     createMockEventStream({
       path: join(import.meta.dirname, "anthropic-streaming-response-1.txt"),
     }),
@@ -185,7 +187,8 @@ test("AnthropicChatModel.invoke should use system message as user message if mes
     apiKey: "YOUR_API_KEY",
   });
 
-  const stream = spyOn(model.client.messages, "stream").mockReturnValueOnce(
+  const client = await model.client();
+  const stream = spyOn(client.messages, "stream").mockReturnValueOnce(
     createMockEventStream({
       path: join(import.meta.dirname, "anthropic-streaming-response-1.txt"),
     }),
@@ -217,7 +220,8 @@ test("AnthropicChatModel.invoke with streaming", async () => {
     apiKey: "YOUR_API_KEY",
   });
 
-  spyOn(model.client.messages, "stream").mockReturnValueOnce(
+  const client = await model.client();
+  spyOn(client.messages, "stream").mockReturnValueOnce(
     createMockEventStream({
       path: join(import.meta.dirname, "anthropic-streaming-response-text.txt"),
     }),
@@ -238,7 +242,8 @@ test("AnthropicChatModel.invoke without streaming", async () => {
     apiKey: "YOUR_API_KEY",
   });
 
-  spyOn(model.client.messages, "stream").mockReturnValue(
+  const client = await model.client();
+  spyOn(client.messages, "stream").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "anthropic-streaming-response-text.txt"),
     }),
@@ -256,7 +261,8 @@ test("AnthropicChatModel should use tool to get json output directly if no tools
     apiKey: "YOUR_API_KEY",
   });
 
-  spyOn(model.client.messages, "create").mockReturnValueOnce(
+  const client = await model.client();
+  spyOn(client.messages, "create").mockReturnValueOnce(
     JSON.parse(
       await readFile(join(import.meta.dirname, "anthropic-structured-response-3.json"), "utf8"),
     ),
@@ -310,7 +316,8 @@ test("AnthropicChatModel should try parse text as json if there are both tools a
     apiKey: "YOUR_API_KEY",
   });
 
-  spyOn(model.client.messages, "stream").mockReturnValueOnce(
+  const client = await model.client();
+  spyOn(client.messages, "stream").mockReturnValueOnce(
     createMockEventStream({
       path: join(import.meta.dirname, "anthropic-streaming-response-2.txt"),
     }),

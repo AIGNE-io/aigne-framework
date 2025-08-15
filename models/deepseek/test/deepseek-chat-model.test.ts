@@ -117,7 +117,8 @@ beforeEach(() => {
 });
 
 test("DeepSeekChatModel.invoke should return the correct tool", async () => {
-  spyOn(model.client.chat.completions, "create").mockReturnValue(
+  const client = await model.client();
+  spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "deepseek-streaming-response-1.txt"),
     }),
@@ -132,7 +133,8 @@ test("DeepSeekChatModel.invoke should return the correct tool", async () => {
 });
 
 test("DeepSeekChatModel.invoke", async () => {
-  spyOn(model.client.chat.completions, "create").mockReturnValue(
+  const client = await model.client();
+  spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "deepseek-streaming-response-2.txt"),
     }),

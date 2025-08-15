@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.61.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.61.0...aigne-framework-v1.61.1) (2025-08-15)
+
+
+### Bug Fixes
+
+* **model:** ensure Chat Model client is initialized before use ([#367](https://github.com/AIGNE-io/aigne-framework/issues/367)) ([7543ccb](https://github.com/AIGNE-io/aigne-framework/commit/7543ccb7e1cf5395c4f4e1f51659982b58f5daa1))
+
 ## [1.61.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.60.0...aigne-framework-v1.61.0) (2025-08-14)
 
 

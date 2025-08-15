@@ -106,7 +106,8 @@ beforeEach(() => {
 });
 
 test("GeminiChatModel.invoke should return the correct tool", async () => {
-  spyOn(model.client.chat.completions, "create").mockReturnValue(
+  const client = await model.client();
+  spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "gemini-streaming-response-1.txt"),
     }),
@@ -121,7 +122,8 @@ test("GeminiChatModel.invoke should return the correct tool", async () => {
 });
 
 test("GeminiChatModel.invoke should use tool result correctly", async () => {
-  const create = spyOn(model.client.chat.completions, "create")
+  const client = await model.client();
+  const create = spyOn(client.chat.completions, "create")
     .mockReturnValueOnce(
       createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-2.txt") }),
     )
@@ -149,7 +151,8 @@ test("GeminiChatModel.invoke should use tool result correctly", async () => {
 });
 
 test("GeminiChatModel should reset last message role from system to user", async () => {
-  const create = spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
+  const client = await model.client();
+  const create = spyOn(client.chat.completions, "create").mockReturnValueOnce(
     createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-2.txt") }),
   );
 

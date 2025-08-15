@@ -116,7 +116,8 @@ test("XAIChatModel.invoke should return the correct tool", async () => {
     model: "grok-2-latest",
   });
 
-  spyOn(model.client.chat.completions, "create").mockReturnValue(
+  const client = await model.client();
+  spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "xai-streaming-response-1.txt"),
     }),
@@ -136,7 +137,8 @@ test("XAIChatModel.invoke", async () => {
     model: "grok-2-latest",
   });
 
-  spyOn(model.client.chat.completions, "create").mockReturnValue(
+  const client = await model.client();
+  spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "xai-streaming-response-2.txt"),
     }),

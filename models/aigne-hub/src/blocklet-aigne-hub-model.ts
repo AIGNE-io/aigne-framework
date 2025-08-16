@@ -82,10 +82,6 @@ export class AIGNEHubChatModel extends ChatModel {
     input: ChatModelInput,
     options: BaseClientInvokeOptions,
   ): Promise<AgentProcessResult<ChatModelOutput>> {
-    if (!this.client) {
-      throw new Error("Client not initialized");
-    }
-
     const { BLOCKLET_APP_PID, ABT_NODE_DID } = process.env;
     const clientId = BLOCKLET_APP_PID || ABT_NODE_DID || "";
 

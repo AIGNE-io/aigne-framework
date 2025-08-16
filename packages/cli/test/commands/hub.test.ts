@@ -149,6 +149,11 @@ describe("hub command", () => {
     });
 
     test("should allow switching between hubs", async () => {
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "connect", "https://hub.aigne.io/ai-kit"]);
+    });
+
+    test("should allow switching between hubs", async () => {
       mockInquirerPrompt.mockResolvedValue({
         hubApiKey: "https://test.example.com/ai-kit",
       });

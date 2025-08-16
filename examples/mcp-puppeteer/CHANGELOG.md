@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.18.29](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.18.28...example-mcp-puppeteer-v1.18.29) (2025-08-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.21
+    * @aigne/cli bumped to 1.36.4
+    * @aigne/core bumped to 1.50.1
+    * @aigne/default-memory bumped to 1.1.3
+    * @aigne/openai bumped to 0.11.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.29
+
 ## [1.18.28](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.18.27...example-mcp-puppeteer-v1.18.28) (2025-08-15)
 
 

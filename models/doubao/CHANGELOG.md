@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.15](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.14...doubao-v1.0.15) (2025-08-16)
+
+
+### Bug Fixes
+
+* **core:** make getCredential async for aigne-hub mount point retrieval ([#372](https://github.com/AIGNE-io/aigne-framework/issues/372)) ([34ce7a6](https://github.com/AIGNE-io/aigne-framework/commit/34ce7a645fa83994d3dfe0f29ca70098cfecac9c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.11.3
+  * devDependencies
+    * @aigne/core bumped to 1.50.1
+    * @aigne/test-utils bumped to 0.5.29
+
 ## [1.0.14](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.13...doubao-v1.0.14) (2025-08-14)
 
 

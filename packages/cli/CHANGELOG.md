@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.36.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.36.3...cli-v1.36.4) (2025-08-16)
+
+
+### Bug Fixes
+
+* **core:** make getCredential async for aigne-hub mount point retrieval ([#372](https://github.com/AIGNE-io/aigne-framework/issues/372)) ([34ce7a6](https://github.com/AIGNE-io/aigne-framework/commit/34ce7a645fa83994d3dfe0f29ca70098cfecac9c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.21
+    * @aigne/agentic-memory bumped to 1.0.21
+    * @aigne/aigne-hub bumped to 0.6.3
+    * @aigne/core bumped to 1.50.1
+    * @aigne/default-memory bumped to 1.1.3
+    * @aigne/openai bumped to 0.11.3
+
 ## [1.36.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.36.2...cli-v1.36.3) (2025-08-15)
 
 

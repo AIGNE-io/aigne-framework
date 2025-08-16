@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.50.0...core-v1.50.1) (2025-08-16)
+
+
+### Bug Fixes
+
+* **core:** make getCredential async for aigne-hub mount point retrieval ([#372](https://github.com/AIGNE-io/aigne-framework/issues/372)) ([34ce7a6](https://github.com/AIGNE-io/aigne-framework/commit/34ce7a645fa83994d3dfe0f29ca70098cfecac9c))
+
 ## [1.50.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.49.1...core-v1.50.0) (2025-08-14)
 
 

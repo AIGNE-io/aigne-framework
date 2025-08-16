@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.6.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.6.2...aigne-hub-v0.6.3) (2025-08-16)
+
+
+### Bug Fixes
+
+* **core:** make getCredential async for aigne-hub mount point retrieval ([#372](https://github.com/AIGNE-io/aigne-framework/issues/372)) ([34ce7a6](https://github.com/AIGNE-io/aigne-framework/commit/34ce7a645fa83994d3dfe0f29ca70098cfecac9c))
+* **models:** support custom clientId for aigne-hub adapter ([#373](https://github.com/AIGNE-io/aigne-framework/issues/373)) ([0e46568](https://github.com/AIGNE-io/aigne-framework/commit/0e465683f4b34fb7456e313fa45f0cda50bb08dc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.11.3
+    * @aigne/bedrock bumped to 0.9.3
+    * @aigne/core bumped to 1.50.1
+    * @aigne/deepseek bumped to 0.7.21
+    * @aigne/default-memory bumped to 1.1.3
+    * @aigne/doubao bumped to 1.0.15
+    * @aigne/gemini bumped to 0.9.3
+    * @aigne/ollama bumped to 0.7.21
+    * @aigne/open-router bumped to 0.7.21
+    * @aigne/openai bumped to 0.11.3
+    * @aigne/poe bumped to 1.0.1
+    * @aigne/transport bumped to 0.14.1
+    * @aigne/xai bumped to 0.7.21
+  * devDependencies
+    * @aigne/openai bumped to 0.11.3
+    * @aigne/test-utils bumped to 0.5.29
+
 ## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.6.1...aigne-hub-v0.6.2) (2025-08-15)
 
 

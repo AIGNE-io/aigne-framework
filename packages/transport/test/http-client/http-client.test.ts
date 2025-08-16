@@ -24,6 +24,8 @@ import compression from "compression";
 import { detect } from "detect-port";
 import express from "express";
 import { Hono } from "hono";
+import { ChatModelName } from "../../src/constants.js";
+import { ClientChatModel } from "../../src/http-client/client-chat-model.js";
 import { OpenAIChatModel } from "../_mocks_/mock-models.js";
 
 test("AIGNEClient example simple", async () => {
@@ -453,3 +455,46 @@ async function createAIGNE() {
 
   return new AIGNE({ model, agents: [chat] });
 }
+
+test("ClientChatModel should have correct name", () => {
+  const mockClient = {} as AIGNEHTTPClient;
+  const chatModel = new ClientChatModel(mockClient);
+
+  expect(chatModel.name).toBe(ChatModelName);
+});
+
+test("ClientChatModel should process input through client", async () => {
+  const mockClient = {
+    _invoke: () => Promise.resolve({ output: "test output" }),
+  } as unknown as AIGNEHTTPClient;
+
+  const mockInvoke = spyOn(mockClient, "_invoke");
+
+  const chatModel = new ClientChatModel(mockClient);
+  const input = { messages: [{ role: "user" as const, content: "test" }] };
+  const options = {
+    context: {
+      userContext: {},
+      memories: [],
+      hooks: [],
+      emit: () => {},
+      subscribe: () => {},
+      unsubscribe: () => {},
+      timeout: 5000,
+    } as any,
+  };
+
+  const result = await chatModel.process(input, options);
+
+  expect(mockInvoke).toHaveBeenCalledWith(ChatModelName, input, options);
+  expect(result).toEqual({ output: "test output" });
+});
+
+test("ClientChatModel should return empty credentials", async () => {
+  const mockClient = {} as AIGNEHTTPClient;
+  const chatModel = new ClientChatModel(mockClient);
+
+  const credentials = await chatModel.getCredential();
+
+  expect(credentials).toEqual({});
+});

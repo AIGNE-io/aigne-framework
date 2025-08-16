@@ -39,6 +39,7 @@ export interface AIGNEHubChatModelOptions {
   model?: string;
   modelOptions?: ChatModelOptions;
   clientOptions?: OpenAIChatModelOptions["clientOptions"];
+  clientId?: string;
 }
 
 export class AIGNEHubChatModel extends ChatModel {
@@ -73,7 +74,8 @@ export class AIGNEHubChatModel extends ChatModel {
     options: BaseClientInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     const { BLOCKLET_APP_PID, ABT_NODE_DID } = process.env;
-    const clientId = BLOCKLET_APP_PID || ABT_NODE_DID || `@aigne/aigne-hub:${nodejs.os.hostname()}`;
+    const localClientId = `@aigne/aigne-hub:${nodejs.os.hostname()}`;
+    const clientId = this.options.clientId || BLOCKLET_APP_PID || ABT_NODE_DID || localClientId;
 
     options.fetchOptions = {
       headers: { "x-aigne-hub-client-did": clientId },

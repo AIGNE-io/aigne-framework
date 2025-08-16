@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.36.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.36.2...cli-v1.36.3) (2025-08-15)
+
+
+### Bug Fixes
+
+* **cli:** display only the origin URL when linking to hub ([#369](https://github.com/AIGNE-io/aigne-framework/issues/369)) ([b3baf3f](https://github.com/AIGNE-io/aigne-framework/commit/b3baf3f2c98f965d5279dd0dfb282be9f5ffb6c2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.6.2
+
 ## [1.36.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.36.1...cli-v1.36.2) (2025-08-15)
 
 

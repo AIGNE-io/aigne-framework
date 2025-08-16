@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import type { ChatModelInput } from "@aigne/core";
 import { joinURL } from "ufo";
 import { AIGNEHubChatModel } from "../src/blocklet-aigne-hub-model.js";

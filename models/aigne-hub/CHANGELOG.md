@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.6.1...aigne-hub-v0.6.2) (2025-08-15)
+
+
+### Bug Fixes
+
+* **cli:** display only the origin URL when linking to hub ([#369](https://github.com/AIGNE-io/aigne-framework/issues/369)) ([b3baf3f](https://github.com/AIGNE-io/aigne-framework/commit/b3baf3f2c98f965d5279dd0dfb282be9f5ffb6c2))
+* **model:** add x-aigne-hub-client-did header for hub model requests ([#371](https://github.com/AIGNE-io/aigne-framework/issues/371)) ([8c29f37](https://github.com/AIGNE-io/aigne-framework/commit/8c29f377d6ef3833723c8ec721a252171026d84d))
+
 ## [0.6.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.6.0...aigne-hub-v0.6.1) (2025-08-15)
 
 

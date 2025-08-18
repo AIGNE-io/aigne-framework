@@ -61,28 +61,30 @@ export class DefaultMemoryStorage extends MemoryStorage {
 
     const db = await this.db;
 
-    const memories =
-      this.options?.enableFTS && query.search
-        ? await db
-            .select()
-            .from(Memories)
-            .innerJoin(sql`Memories_fts`, sql`Memories_fts.id = ${Memories.id}`)
-            .where(sql`Memories_fts MATCH ${sql.param(this.segment(query.search).join(" OR "))}`)
-            .orderBy(sql`bm25(Memories_fts)`)
-            .limit(limit)
-            .execute()
-            .then((rows) => rows.map((row) => row.Memories))
-        : await db
-            .select()
-            .from(Memories)
-            .where(sessionId ? eq(Memories.sessionId, sessionId) : isNull(Memories.sessionId))
-            .orderBy(
-              query.orderBy
-                ? (query.orderBy[1] === "asc" ? asc : desc)(sql.identifier(query.orderBy[0]))
-                : desc(Memories.id),
-            )
-            .limit(limit)
-            .execute();
+    const match =
+      this.options?.enableFTS && query.search ? this.segment(query.search).join(" OR ") : undefined;
+
+    const memories = match
+      ? await db
+          .select()
+          .from(Memories)
+          .innerJoin(sql`Memories_fts`, sql`Memories_fts.id = ${Memories.id}`)
+          .where(sql`Memories_fts MATCH ${sql.param(match)}`)
+          .orderBy(sql`bm25(Memories_fts)`)
+          .limit(limit)
+          .execute()
+          .then((rows) => rows.map((row) => row.Memories))
+      : await db
+          .select()
+          .from(Memories)
+          .where(sessionId ? eq(Memories.sessionId, sessionId) : isNull(Memories.sessionId))
+          .orderBy(
+            query.orderBy
+              ? (query.orderBy[1] === "asc" ? asc : desc)(sql.identifier(query.orderBy[0]))
+              : desc(Memories.id),
+          )
+          .limit(limit)
+          .execute();
 
     return {
       result: memories.map(this.convertMemory),

@@ -2,19 +2,16 @@ import assert from "node:assert";
 import { spawn } from "node:child_process";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { extname, join } from "node:path";
-import { isatty } from "node:tty";
+import { join } from "node:path";
 import { loadModel } from "@aigne/aigne-hub";
-import { type Agent, AIAgent, AIGNE, type Message, readAllString } from "@aigne/core";
-import { pick } from "@aigne/core/utils/type-utils.js";
+import { type Agent, AIGNE, type Message } from "@aigne/core";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
-import { parse } from "yaml";
-import type { CommandModule } from "yargs";
-import { ZodBoolean, ZodNumber, ZodObject, ZodString, ZodType } from "zod";
+import type { Argv, CommandModule } from "yargs";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
-import { runAgentWithAIGNE, stdinHasData } from "../utils/run-with-aigne.js";
+import { runAgentWithAIGNE } from "../utils/run-with-aigne.js";
+import { parseAgentInput, withAgentInputSchema } from "../utils/yargs.js";
 import { serveMCPServerFromDir } from "./serve-mcp.js";
 
 const NPM_PACKAGE_CACHE_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
@@ -121,58 +118,16 @@ const agentCommandModule = ({
   dir: string;
   agent: Agent;
 }): CommandModule<unknown, { input?: string[]; format?: "json" | "yaml"; model?: string }> => {
-  const inputSchema: { [key: string]: ZodType } =
-    agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
-
   return {
     command: agent.name,
     aliases: agent.alias || [],
     describe: agent.description || "",
-    builder: (yargs) => {
-      for (const [option, config] of Object.entries(inputSchema)) {
-        const innerType = innerZodType(config);
-
-        yargs.option(option, {
-          // TODO: support more types
-          type:
-            innerType instanceof ZodBoolean
-              ? "boolean"
-              : innerType instanceof ZodNumber
-                ? "number"
-                : "string",
-          description: config.description,
-        });
-
-        if (!(config.isNullable() || config.isOptional())) {
-          yargs.demandOption(option);
-        }
-      }
-
-      return yargs
-        .option("input", {
-          type: "array",
-          description: "Input to the agent, use @<file> to read from a file",
-          alias: ["i"],
-        })
-        .option("format", {
-          type: "string",
-          description: 'Input format, can be "json" or "yaml"',
-          choices: ["json", "yaml"],
-        }) as any;
-    },
+    builder: async (yargs) => withAgentInputSchema(yargs, agent) as Argv<unknown>,
     handler: async (input) => {
       await invokeCLIAgentFromDir({ dir, agent: agent.name, input });
     },
   };
 };
-
-function innerZodType(type: ZodType): ZodType {
-  if ("innerType" in type._def && type._def.innerType instanceof ZodType) {
-    return innerZodType(type._def.innerType);
-  }
-
-  return type;
-}
 
 export async function invokeCLIAgentFromDir(options: {
   dir: string;
@@ -188,76 +143,12 @@ export async function invokeCLIAgentFromDir(options: {
     const agent = aigne.cli.agents[options.agent];
     assert(agent, `Agent ${options.agent} not found in ${options.dir}`);
 
-    const inputSchema: { [key: string]: ZodType } =
-      agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
-
-    const input = Object.fromEntries(
-      await Promise.all(
-        Object.entries(pick(options.input, Object.keys(inputSchema))).map(async ([key, val]) => {
-          if (typeof val === "string" && val.startsWith("@")) {
-            const schema = inputSchema[key];
-
-            val = await readFileAsInput(val, {
-              format: schema instanceof ZodString ? "raw" : undefined,
-            });
-          }
-
-          return [key, val];
-        }),
-      ),
-    );
-
-    const rawInput =
-      options.input.input ||
-      (isatty(process.stdin.fd) || !(await stdinHasData())
-        ? null
-        : [await readAllString(process.stdin)].filter(Boolean));
-
-    if (rawInput) {
-      for (const raw of rawInput) {
-        const parsed = raw.startsWith("@")
-          ? await readFileAsInput(raw, { format: options.input.format })
-          : raw;
-
-        if (typeof parsed !== "string") {
-          Object.assign(input, parsed);
-        } else {
-          const inputKey = agent instanceof AIAgent ? agent.inputKey : undefined;
-          if (inputKey) {
-            Object.assign(input, { [inputKey]: parsed });
-          }
-        }
-      }
-    }
+    const input = await parseAgentInput(options.input, agent);
 
     await runAgentWithAIGNE(aigne, agent, { input });
   } finally {
     await aigne.shutdown();
   }
-}
-
-async function readFileAsInput(
-  value: string,
-  { format }: { format?: "raw" | "json" | "yaml" } = {},
-): Promise<unknown> {
-  if (value.startsWith("@")) {
-    const ext = extname(value);
-
-    value = await readFile(value.slice(1), "utf8");
-
-    if (!format) {
-      if (ext === ".json") format = "json";
-      else if (ext === ".yaml" || ext === ".yml") format = "yaml";
-    }
-  }
-
-  if (format === "json") {
-    return JSON.parse(value);
-  } else if (format === "yaml") {
-    return parse(value);
-  }
-
-  return value;
 }
 
 export async function loadApplication({

@@ -176,14 +176,14 @@ aigne run --input "Hello, please introduce yourself"
 aigne run --model openai:gpt-4.1 --input "Explain the basic concepts of machine learning"
 
 # Use specific Agent and input
-aigne run --entry-agent poem --input-topic "Spring" --input-style "Modern"
+aigne run --entry-agent poem --topic "Spring" --style "Modern"
 ```
 
 ### Adjust Model Parameters
 
 ```bash
 # Set lower temperature for more deterministic output
-aigne run --temperature 0.2 --entry-agent poem --input-topic "Autumn" --input-style "Classical"
+aigne run --temperature 0.2 --entry-agent poem --topic "Autumn" --style "Classical"
 ```
 
 ### Enable Debug Mode

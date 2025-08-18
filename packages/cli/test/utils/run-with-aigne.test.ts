@@ -141,6 +141,7 @@ test("parseAgentInputByCommander should parse input correctly", async () => {
       name: z.string(),
       age: z.number().int(),
     }),
+    inputKey: "message",
   });
 
   const testInputFile = join(import.meta.dirname, "run-with-aigne-test-input.txt");
@@ -161,7 +162,7 @@ test("parseAgentInputByCommander should parse input correctly", async () => {
     parseAgentInputByCommander(agent, {
       input: ["Hello!"],
       inputKey: "message",
-      argv: ["", "", "--input-name", `@${testInputFile}`, "--input-age", "30"],
+      argv: ["", "", "--name", `@${testInputFile}`, "--age", "30"],
     }),
   ).resolves.toEqual({
     name: testInputContent,
@@ -175,9 +176,9 @@ test("parseAgentInputByCommander should parse input correctly", async () => {
       argv: [
         "",
         "",
-        "--input-name",
+        "--name",
         `@${join(import.meta.dirname, "run-with-aigne-test-input-not-exists.txt")}`,
-        "--input-age",
+        "--age",
         "30",
       ],
     }),

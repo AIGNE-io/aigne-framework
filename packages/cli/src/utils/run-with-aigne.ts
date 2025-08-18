@@ -1,28 +1,23 @@
-import { fstat } from "node:fs";
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
-import { promisify } from "node:util";
 import { exists } from "@aigne/agent-library/utils/fs.js";
 import { availableModels, parseModelOption } from "@aigne/aigne-hub";
 import {
   type Agent,
-  AIAgent,
   type AIGNE,
   type ChatModelOptions,
   DEFAULT_OUTPUT_KEY,
   type Message,
-  readAllString,
   UserAgent,
 } from "@aigne/core";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
-import { flat, isEmpty, type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import { isEmpty, type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
-import { parse } from "yaml";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { ZodError, ZodObject, z } from "zod";
+import { ZodError, z } from "zod";
 import { TerminalTracer } from "../tracer/terminal.js";
 import { loadAIGNE } from "./load-aigne.js";
 import {
@@ -30,6 +25,7 @@ import {
   DEFAULT_CHAT_INPUT_KEY,
   runChatLoopInTerminal,
 } from "./run-chat-loop.js";
+import { parseAgentInput, withAgentInputSchema } from "./yargs.js";
 
 export interface RunAIGNECommandOptions {
   chat?: boolean;
@@ -136,54 +132,11 @@ export async function parseAgentInputByCommander(
     defaultInput?: string | Message;
   } = {},
 ): Promise<Message> {
-  const inputSchemaShape = flat(
-    agent instanceof AIAgent ? agent.inputKey : undefined,
-    agent.inputSchema instanceof ZodObject ? Object.keys(agent.inputSchema.shape) : [],
-  );
-
-  const parsedInput = await yargs().parseAsync(options.argv ?? process.argv);
-
-  const input = Object.fromEntries(
-    await Promise.all(
-      inputSchemaShape.map(async (key) => {
-        const k = `input${key.charAt(0).toUpperCase()}${key.slice(1)}`;
-        let value = parsedInput[k];
-
-        if (typeof value === "string" && value.startsWith("@")) {
-          value = await readFile(value.slice(1), "utf8");
-        }
-
-        return [key, value];
-      }),
-    ),
-  );
-
-  const rawInput =
-    options.input ||
-    (isatty(process.stdin.fd) || !(await stdinHasData())
-      ? null
-      : [await readAllString(process.stdin)].filter(Boolean));
-
-  if (rawInput?.length) {
-    for (let raw of rawInput) {
-      if (raw.startsWith("@")) {
-        raw = await readFile(raw.slice(1), "utf8");
-      }
-
-      if (options.format === "json") {
-        Object.assign(input, JSON.parse(raw));
-      } else if (options.format === "yaml") {
-        Object.assign(input, parse(raw));
-      } else {
-        Object.assign(
-          input,
-          typeof options.inputKey === "string"
-            ? { [options.inputKey]: raw }
-            : { [DEFAULT_CHAT_INPUT_KEY]: raw },
-        );
-      }
-    }
-  }
+  const args = await withAgentInputSchema(yargs(), agent)
+    .showHelpOnFail(false)
+    .fail(() => {})
+    .parseAsync(options.argv ?? process.argv);
+  const input = await parseAgentInput({ ...args, input: options.input || args.input }, agent);
 
   if (isEmpty(input)) {
     const defaultInput = options.defaultInput || process.env.INITIAL_CALL;
@@ -332,9 +285,4 @@ export async function runAgentWithAIGNE(
   }
 
   return { result };
-}
-
-export async function stdinHasData(): Promise<boolean> {
-  const stats = await promisify(fstat)(0);
-  return stats.isFIFO() || stats.isFile();
 }

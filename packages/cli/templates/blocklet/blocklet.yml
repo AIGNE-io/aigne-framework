@@ -1,0 +1,57 @@
+name: agent-demo
+title: Agent Demo
+version: 0.0.1
+description: Demo blocklet that shows how to serve a static html5 game with Blocklet Server
+files:
+  - agent/
+  - logo.png
+  - blocklet.yml
+  - blocklet.md
+keywords:
+  - aigne
+  - agent
+  - blocklet
+author:
+  name: wangshijun
+  email: wangshijun2010@gmail.com
+  url: http://github.com/wangshijun
+license: MIT
+main: agent
+logo: logo.png
+community: ''
+documentation: ''
+homepage: ''
+environments: []
+specVersion: 1.2.8
+interfaces:
+  - type: web
+    name: publicUrl
+    path: /
+    prefix: '*'
+    port: BLOCKLET_PORT
+    protocol: tcp
+did: z2qa9xwZ9rH1MQGpjAAnVb3LtJWhTLnwQQEbQ
+engine:
+  interpreter: blocklet
+  source:
+    store: https://test.store.blocklet.dev
+    name: z2qa7DjgQgy9o2XSXGcmgVEBqJ86DA5THy7Yy
+    version: latest
+  args: []
+timeout:
+  start: 10
+payment:
+  price: []
+  share: []
+requirements:
+  abtnode: '>=1.1.0'
+  os: '*'
+  cpu: '*'
+scripts:
+  dev: blocklet dev
+capabilities:
+  clusterMode: false
+  component: true
+  navigation: true
+components: []
+

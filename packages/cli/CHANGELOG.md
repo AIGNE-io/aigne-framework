@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.37.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.36.4...cli-v1.37.0) (2025-08-18)
+
+
+### Features
+
+* **cli:** add support for array inputs in CLI arguments ([#378](https://github.com/AIGNE-io/aigne-framework/issues/378)) ([827ae11](https://github.com/AIGNE-io/aigne-framework/commit/827ae112de8d1a2e997b272b759090b6e5b8d395))
+* **cli:** support hide or collapse task for agents in CLI ([#381](https://github.com/AIGNE-io/aigne-framework/issues/381)) ([05b372d](https://github.com/AIGNE-io/aigne-framework/commit/05b372d431a862f7cdfa2a90bb4b7b2379bf97ab))
+
+
+### Bug Fixes
+
+* **cli:** only log API requests at info level and above ([#376](https://github.com/AIGNE-io/aigne-framework/issues/376)) ([03fc4d9](https://github.com/AIGNE-io/aigne-framework/commit/03fc4d9aad6e81aeae3b2eb02a62f7acade3bd77))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.22
+    * @aigne/agentic-memory bumped to 1.0.22
+    * @aigne/aigne-hub bumped to 0.6.4
+    * @aigne/core bumped to 1.51.0
+    * @aigne/default-memory bumped to 1.1.4
+    * @aigne/openai bumped to 0.11.4
+
 ## [1.36.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.36.3...cli-v1.36.4) (2025-08-16)
 
 

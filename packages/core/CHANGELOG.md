@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.51.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.50.1...core-v1.51.0) (2025-08-18)
+
+
+### Features
+
+* **cli:** support hide or collapse task for agents in CLI ([#381](https://github.com/AIGNE-io/aigne-framework/issues/381)) ([05b372d](https://github.com/AIGNE-io/aigne-framework/commit/05b372d431a862f7cdfa2a90bb4b7b2379bf97ab))
+
 ## [1.50.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.50.0...core-v1.50.1) (2025-08-16)
 
 

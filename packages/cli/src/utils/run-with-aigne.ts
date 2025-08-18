@@ -120,7 +120,7 @@ export const createRunAIGNECommand = (yargs: Argv) =>
     .option("log-level", {
       describe: `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
       type: "string",
-      default: getLevelFromEnv(logger.options.ns) || LogLevel.INFO,
+      default: getLevelFromEnv(logger.options.ns) || LogLevel.SILENT,
       coerce: customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
     })
     .option("aigne-hub-url", {

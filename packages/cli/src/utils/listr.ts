@@ -94,8 +94,10 @@ export class AIGNEListr extends Listr<
       this.ctx = {};
       this.spinner.start();
 
-      const request = this.myOptions.formatRequest();
-      if (request) console.log(request);
+      if (logger.enabled(LogLevel.INFO)) {
+        const request = this.myOptions.formatRequest();
+        if (request) console.log(request);
+      }
 
       logger.logMessage = (...args) => this.logs.push(format(...args));
       for (const method of ["debug", "log", "info", "warn", "error"] as const) {

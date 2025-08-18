@@ -33,7 +33,6 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const db = req.app.locals.db as LibSQLDatabase;
 
     const queryResult = traceTreeQuerySchema.safeParse(req.query);
-
     if (!queryResult.success) {
       res.status(400).json({
         error: "Invalid query parameters",
@@ -42,11 +41,14 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       return;
     }
 
-    const { page, pageSize, searchText, componentId, startDate, endDate } = queryResult.data;
+    let { page, pageSize, searchText, componentId, startDate, endDate } = queryResult.data;
+
+    page = Number.isFinite(page) && page >= 0 ? page : 0;
+    pageSize = Number.isFinite(pageSize) && pageSize > 0 && pageSize <= 1000 ? pageSize : 50;
     const offset = page * pageSize;
 
     const rootFilter = and(
-      or(isNull(Trace.parentId), eq(Trace.parentId, "")),
+      or(isNull(Trace.parentId), sql`${Trace.parentId} = ''`),
       isNull(Trace.action),
     );
 
@@ -71,16 +73,17 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       whereClause = and(whereClause, eq(Trace.componentId, componentId));
     }
 
-    const rootCalls = await db
-      .select({
-        id: Trace.id,
-        rootId: Trace.rootId,
-        parentId: Trace.parentId,
-        name: Trace.name,
-        startTime: Trace.startTime,
-        endTime: Trace.endTime,
-        status: Trace.status,
-        attributes: sql<string>`
+    try {
+      const rootCalls = await db
+        .select({
+          id: Trace.id,
+          rootId: Trace.rootId,
+          parentId: Trace.parentId,
+          name: Trace.name,
+          startTime: Trace.startTime,
+          endTime: Trace.endTime,
+          status: Trace.status,
+          attributes: sql<string>`
           CASE 
             WHEN ${Trace.attributes} IS NULL THEN JSON_OBJECT('input', '', 'output', '')
             ELSE JSON_OBJECT(
@@ -88,41 +91,54 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
               CASE 
                 WHEN JSON_EXTRACT(${Trace.attributes}, '$.input') IS NOT NULL 
                 THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), 1, 150) || 
-                CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT)) > 150 THEN '...' ELSE '' END
+                    CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT)) > 150 THEN '...' ELSE '' END
                 ELSE ''
               END,
               'output',
               CASE 
                 WHEN JSON_EXTRACT(${Trace.attributes}, '$.output') IS NOT NULL 
                 THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), 1, 150) || 
-                CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT)) > 150 THEN '...' ELSE '' END
+                    CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT)) > 150 THEN '...' ELSE '' END
                 ELSE ''
               END
             )
           END
         `,
-        userId: Trace.userId,
-        componentId: Trace.componentId,
-      })
-      .from(Trace)
-      .where(whereClause)
-      .orderBy(desc(Trace.startTime))
-      .limit(pageSize)
-      .offset(offset)
-      .execute();
+          userId: Trace.userId,
+          componentId: Trace.componentId,
+        })
+        .from(Trace)
+        .where(whereClause)
+        .orderBy(desc(Trace.startTime))
+        .limit(pageSize)
+        .offset(offset)
+        .execute();
 
-    const processedRootCalls = rootCalls.map((call) => {
-      try {
-        return {
-          ...call,
-          attributes: JSON.parse(call.attributes),
-        };
-      } catch (_err) {
-        return call;
-      }
-    });
+      const processedRootCalls = rootCalls.map((call) => {
+        try {
+          return {
+            ...call,
+            attributes: JSON.parse(call.attributes),
+          };
+        } catch {
+          return call;
+        }
+      });
 
-    res.json({ total, page, pageSize, data: processedRootCalls.filter((r) => r.rootId) });
+      res.json({
+        total,
+        page,
+        pageSize,
+        data: processedRootCalls,
+      });
+    } catch {
+      res.json({
+        total,
+        page,
+        pageSize,
+        data: [],
+      });
+    }
   });
 
   router.get("/tree/components", ...middleware, async (req: Request, res: Response) => {

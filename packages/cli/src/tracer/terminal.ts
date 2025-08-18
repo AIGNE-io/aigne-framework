@@ -11,6 +11,8 @@ import {
   DEFAULT_OUTPUT_KEY,
   type InvokeOptions,
   type Message,
+  mergeContextUsage,
+  newEmptyContextUsage,
   UserAgent,
 } from "@aigne/core";
 import { promiseWithResolvers } from "@aigne/core/utils/promise.js";
@@ -54,14 +56,46 @@ export class TerminalTracer {
     );
     this.listr = listr;
 
+    const collapsedMap = new Map<
+      string,
+      { ancestor: { contextId: string }; usage: ContextUsage; models: Set<string> }
+    >();
+    const hideContextIds = new Set<string>();
+
     const onStart: AgentHooks["onStart"] = async ({ context, agent, ...event }) => {
       if (agent instanceof UserAgent) return;
+
+      if (agent.taskRenderMode === "hide") {
+        hideContextIds.add(context.id);
+        return;
+      } else if (agent.taskRenderMode === "collapse") {
+        collapsedMap.set(context.id, {
+          ancestor: { contextId: context.id },
+          usage: newEmptyContextUsage(),
+          models: new Set(),
+        });
+      }
+
+      if (context.parentId) {
+        if (hideContextIds.has(context.parentId)) {
+          hideContextIds.add(context.id);
+          return;
+        }
+
+        const collapsed = collapsedMap.get(context.parentId);
+        if (collapsed) {
+          collapsedMap.set(context.id, collapsed);
+          return;
+        }
+      }
 
       const contextId = context.id;
       const parentContextId = context.parentId;
 
       const task: Task = {
         ...promiseWithResolvers(),
+        agent,
+        input: event.input,
         listr: promiseWithResolvers(),
         startTime: Date.now(),
       };
@@ -96,6 +130,39 @@ export class TerminalTracer {
     const onSuccess: AgentHooks["onSuccess"] = async ({ context, agent, output, ...event }) => {
       const contextId = context.id;
       const parentContextId = context.parentId;
+
+      const collapsed = collapsedMap.get(contextId);
+      if (collapsed) {
+        if (agent instanceof ChatModel) {
+          const { usage, model } = output as ChatModelOutput;
+          if (usage) mergeContextUsage(collapsed.usage, usage);
+          if (model) collapsed.models.add(model);
+        }
+
+        const task = this.tasks[collapsed.ancestor.contextId];
+        if (task) {
+          task.usage = collapsed.usage;
+          task.extraTitleMetadata ??= {};
+          if (collapsed.models.size)
+            task.extraTitleMetadata.model = [...collapsed.models].join(",");
+
+          const { taskWrapper } = await task.listr.promise;
+
+          taskWrapper.title = await this.formatTaskTitle(task.agent, {
+            input: task.input,
+            task,
+            usage: Boolean(
+              task.usage.inputTokens || task.usage.outputTokens || task.usage.aigneHubCredits,
+            ),
+            time: context.id === collapsed.ancestor.contextId,
+          });
+
+          if (context.id === collapsed.ancestor.contextId) {
+            task?.resolve();
+          }
+          return;
+        }
+      }
 
       const task = this.tasks[contextId];
       if (!task) return;
@@ -233,6 +300,9 @@ export class TerminalTracer {
     const items = [
       [chalk.yellow(usage.inputTokens), chalk.grey("input tokens")],
       [chalk.cyan(usage.outputTokens), chalk.grey("output tokens")],
+      usage.aigneHubCredits
+        ? [chalk.blue(usage.aigneHubCredits.toFixed()), chalk.grey("AIGNE Hub credits")]
+        : undefined,
       usage.agentCalls ? [chalk.magenta(usage.agentCalls), chalk.grey("agent calls")] : undefined,
     ];
 
@@ -357,6 +427,8 @@ type Task = ReturnType<typeof promiseWithResolvers<void>> & {
       taskWrapper: AIGNEListrTaskWrapper;
     }>
   >;
+  agent: Agent;
+  input: Message;
   startTime?: number;
   endTime?: number;
   usage?: Partial<ContextUsage>;

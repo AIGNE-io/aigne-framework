@@ -69,6 +69,8 @@ export type PublishTopic<O extends Message> =
   | string[]
   | ((output: O) => PromiseOrValue<Nullish<string | string[]>>);
 
+export type TaskRenderMode = "hide" | "collapse";
+
 /**
  * Configuration options for an agent
  *
@@ -115,6 +117,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   description?: string;
 
   taskTitle?: string | ((input: I) => PromiseOrValue<string | undefined>);
+
+  taskRenderMode?: TaskRenderMode;
 
   /**
    * Zod schema defining the input message structure
@@ -272,6 +276,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     this.alias = options.alias;
     this.description = options.description;
     this.taskTitle = options.taskTitle as Agent<I, O>["taskTitle"];
+    this.taskRenderMode = options.taskRenderMode;
 
     if (inputSchema) checkAgentInputOutputSchema(inputSchema);
     if (outputSchema) checkAgentInputOutputSchema(outputSchema);
@@ -381,6 +386,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     return nunjucks.renderString(s, { ...input });
   }
+
+  taskRenderMode?: TaskRenderMode;
 
   private readonly _inputSchema?: AgentInputOutputSchema<I>;
 

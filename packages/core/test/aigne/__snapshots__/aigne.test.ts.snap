@@ -252,6 +252,7 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
         "$meta": {
           "usage": {
             "agentCalls": 4,
+            "aigneHubCredits": 0,
             "inputTokens": 13,
             "outputTokens": 24,
           },

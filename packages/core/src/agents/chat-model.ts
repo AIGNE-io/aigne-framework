@@ -167,6 +167,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     if (usage) {
       options.context.usage.outputTokens += usage.outputTokens;
       options.context.usage.inputTokens += usage.inputTokens;
+      if (usage.aigneHubCredits) options.context.usage.aigneHubCredits += usage.aigneHubCredits;
     }
   }
 

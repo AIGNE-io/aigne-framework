@@ -22,7 +22,7 @@ import {
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import { Ajv } from "ajv";
-import OpenAI, { type APIError, type ClientOptions } from "openai";
+import type { ClientOptions, OpenAI } from "openai";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
@@ -31,6 +31,7 @@ import type {
 import type { Stream } from "openai/streaming.js";
 import { v7 } from "uuid";
 import { z } from "zod";
+import { CustomOpenAI } from "./openai.js";
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 
@@ -587,22 +588,6 @@ function handleCompleteToolCall(
     },
     args: call.function?.arguments || "",
   });
-}
-
-// Use a custom OpenAI client to handle API errors for better error messages
-class CustomOpenAI extends OpenAI {
-  protected override makeStatusError(
-    status: number,
-    error: object,
-    message: string | undefined,
-    headers: Headers,
-  ): APIError {
-    if (!("error" in error) || typeof error.error !== "string") {
-      message = JSON.stringify(error);
-    }
-
-    return super.makeStatusError(status, error, message, headers);
-  }
 }
 
 // safeParseJSON is now imported from @aigne/core

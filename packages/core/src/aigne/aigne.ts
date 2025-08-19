@@ -2,6 +2,7 @@ import { AIGNEObserver } from "@aigne/observability-api";
 import { z } from "zod";
 import type { Agent, AgentResponse, AgentResponseStream, Message } from "../agents/agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
+import type { ImageModel } from "../agents/image-model.js";
 import type { UserAgent } from "../agents/user-agent.js";
 import { type LoadOptions, load } from "../loader/index.js";
 import { checkArguments, createAccessorArray } from "../utils/type-utils.js";
@@ -38,6 +39,11 @@ export interface AIGNEOptions {
    * Global model to use for all agents not specifying a model.
    */
   model?: ChatModel;
+
+  /**
+   * Optional image model to use for image processing tasks.
+   */
+  imageModel?: ImageModel;
 
   /**
    * Skills to use for the AIGNE instance.
@@ -89,18 +95,13 @@ export class AIGNE<U extends UserContext = UserContext> {
    * @param options - Options to override the loaded configuration.
    * @returns A fully initialized AIGNE instance with configured agents and skills.
    */
-  static async load(
-    path: string,
-    options: AIGNEOptions & Omit<LoadOptions, "path">,
-  ): Promise<AIGNE> {
-    const { model, agents = [], skills = [], ...aigne } = await load({ ...options, path });
+  static async load(path: string, options: AIGNEOptions & LoadOptions): Promise<AIGNE> {
+    const { model, imageModel, agents = [], skills = [], ...aigne } = await load(path, options);
     return new AIGNE({
       ...aigne,
       ...options,
-      rootDir: aigne.rootDir,
-      model: options?.model || model,
-      name: options?.name || aigne.name || undefined,
-      description: options?.description || aigne.description || undefined,
+      model,
+      imageModel,
       agents: agents.concat(options?.agents ?? []),
       skills: skills.concat(options?.skills ?? []),
     });
@@ -118,6 +119,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     this.name = options?.name;
     this.description = options?.description;
     this.model = options?.model;
+    this.imageModel = options?.imageModel;
     this.limits = options?.limits;
     this.observer =
       process.env.AIGNE_OBSERVABILITY_DISABLED === "true"
@@ -151,6 +153,11 @@ export class AIGNE<U extends UserContext = UserContext> {
    * Global model to use for all agents that don't specify their own model.
    */
   model?: ChatModel;
+
+  /**
+   * Optional image model to use for image processing tasks.
+   */
+  imageModel?: ImageModel;
 
   /**
    * Usage limits applied to this AIGNE instance's execution.
@@ -458,6 +465,7 @@ export class AIGNE<U extends UserContext = UserContext> {
 
 const aigneOptionsSchema = z.object({
   model: z.custom<ChatModel>().optional(),
+  imageModel: z.custom<ImageModel>().optional(),
   skills: z.array(z.custom<Agent>()).optional(),
   agents: z.array(z.custom<Agent>()).optional(),
   observer: z.custom<AIGNEObserver>().optional(),

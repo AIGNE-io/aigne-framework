@@ -597,7 +597,7 @@ export interface ChatModelOutputUsage {
   aigneHubCredits?: number;
 }
 
-const chatModelOutputUsageSchema = z.object({
+export const chatModelOutputUsageSchema = z.object({
   inputTokens: z.number(),
   outputTokens: z.number(),
   aigneHubCredits: z.number().optional(),

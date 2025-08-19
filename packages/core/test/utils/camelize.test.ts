@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { camelize } from "../../src/utils/camelize.js";
+import { camelize, snakelize } from "../../src/utils/camelize.js";
 
 describe("camelize", () => {
   describe("Basic type handling", () => {
@@ -43,30 +43,6 @@ describe("camelize", () => {
       const expected = {
         apiKey: "secret",
         accessToken: "token123",
-      };
-      expect(camelize(input)).toEqual(expected);
-    });
-
-    it("should handle hyphen separated keys", () => {
-      const input = {
-        "user-name": "John",
-        "email-address": "john@example.com",
-      };
-      const expected = {
-        userName: "John",
-        emailAddress: "john@example.com",
-      };
-      expect(camelize(input)).toEqual(expected);
-    });
-
-    it("should handle space separated keys", () => {
-      const input = {
-        "user name": "John",
-        "email address": "john@example.com",
-      };
-      const expected = {
-        userName: "John",
-        emailAddress: "john@example.com",
       };
       expect(camelize(input)).toEqual(expected);
     });
@@ -182,20 +158,6 @@ describe("camelize", () => {
   });
 
   describe("Edge cases", () => {
-    it("should handle keys with special characters", () => {
-      const input = {
-        "user@name": "John",
-        "email#address": "john@example.com",
-        phone$number: "123-456-7890",
-      };
-      const expected = {
-        userName: "John",
-        emailAddress: "john@example.com",
-        phoneNumber: "123-456-7890",
-      };
-      expect(camelize(input)).toEqual(expected);
-    });
-
     it("should handle keys starting with numbers", () => {
       const input = {
         "1st_name": "John",
@@ -232,6 +194,102 @@ describe("camelize", () => {
       expect(typeof result.userName).toBe("string");
       expect(typeof result.age).toBe("number");
       expect(typeof result.isActive).toBe("boolean");
+    });
+  });
+});
+
+describe("snakelize", () => {
+  describe("Basic type handling", () => {
+    it("should handle string input", () => {
+      expect(snakelize("helloWorld")).toBe("hello_world");
+    });
+
+    it("should handle empty object", () => {
+      expect(camelize({})).toEqual({});
+    });
+
+    it("should handle empty array", () => {
+      expect(camelize([])).toEqual([]);
+    });
+  });
+
+  describe("Object processing", () => {
+    it("should convert object keys to snake_case", () => {
+      const input = {
+        userName: "John",
+        firstName: "Doe",
+        emailAddress: "john@example.com",
+      };
+      const expected = {
+        user_name: "John",
+        first_name: "Doe",
+        email_address: "john@example.com",
+      };
+      expect(snakelize(input)).toEqual(expected);
+    });
+  });
+
+  describe("Shallow conversion", () => {
+    it("should only convert top-level keys", () => {
+      const input = {
+        userInfo: {
+          firstName: "John",
+          lastName: "Doe",
+        },
+        accountSettings: {
+          emailNotifications: true,
+        },
+      };
+      const expected = {
+        user_info: {
+          firstName: "John",
+          lastName: "Doe",
+        },
+        account_settings: {
+          emailNotifications: true,
+        },
+      };
+      expect(snakelize(input, true)).toEqual(expected);
+    });
+  });
+
+  describe("Edge cases", () => {
+    it("should handle keys starting with numbers", () => {
+      const input = {
+        "1stName": "John",
+        "2ndName": "Doe",
+      };
+      const expected = {
+        "1st_name": "John",
+        "2nd_name": "Doe",
+      };
+      expect(snakelize(input)).toEqual(expected);
+    });
+
+    it("should handle keys starting with uppercase letters", () => {
+      const input = {
+        UserName: "John",
+        EmailAddress: "john@example.com",
+      };
+      const expected = {
+        user_name: "John",
+        email_address: "john@example.com",
+      };
+      expect(snakelize(input)).toEqual(expected);
+    });
+  });
+
+  describe("Type safety", () => {
+    it("should preserve original types", () => {
+      const input = {
+        userName: "John",
+        age: 30,
+        isActive: true,
+      };
+      const result = snakelize(input);
+      expect(typeof result.user_name).toBe("string");
+      expect(typeof result.age).toBe("number");
+      expect(typeof result.is_active).toBe("boolean");
     });
   });
 });

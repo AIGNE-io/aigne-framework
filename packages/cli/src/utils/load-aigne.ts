@@ -14,6 +14,7 @@ import {
 } from "@aigne/aigne-hub";
 import { AIGNE, type ChatModel, type ChatModelOptions } from "@aigne/core";
 import { loadAIGNEFile } from "@aigne/core/loader/index.js";
+import { OpenAIImageModel } from "@aigne/openai";
 import boxen from "boxen";
 import chalk from "chalk";
 import inquirer from "inquirer";
@@ -138,7 +139,12 @@ export async function loadAIGNE({
   }
 
   if (path) {
-    return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
+    return await AIGNE.load(path, {
+      loadModel,
+      memories: availableMemories,
+      model,
+      imageModel: new OpenAIImageModel({}),
+    });
   }
 
   return new AIGNE({ model });

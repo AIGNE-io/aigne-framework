@@ -50,6 +50,12 @@ export interface AIAgentSchema extends BaseAgentSchema {
   toolChoice?: AIAgentToolChoice;
 }
 
+export interface ImageAgentSchema extends BaseAgentSchema {
+  type: "image";
+  instructions: string;
+  modelOptions?: Record<string, any>;
+}
+
 export interface MCPAgentSchema extends BaseAgentSchema {
   type: "mcp";
   url?: string;
@@ -79,6 +85,7 @@ export interface FunctionAgentSchema extends BaseAgentSchema {
 
 export type AgentSchema =
   | AIAgentSchema
+  | ImageAgentSchema
   | MCPAgentSchema
   | TeamAgentSchema
   | TransformAgentSchema
@@ -141,27 +148,35 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
       ),
     });
 
+    const instructionsSchema = z
+      .union([
+        z.string(),
+        z.object({
+          url: z.string(),
+        }),
+      ])
+      .transform((v) =>
+        typeof v === "string"
+          ? v
+          : v && nodejs.fs.readFile(nodejs.path.join(nodejs.path.dirname(path), v.url), "utf8"),
+      ) as ZodType<string>;
+
     return camelizeSchema(
       z.discriminatedUnion("type", [
         z
           .object({
             type: z.literal("ai"),
-            instructions: optionalize(
-              z.union([
-                z.string(),
-                z.object({
-                  url: z.string(),
-                }),
-              ]),
-            ).transform((v) =>
-              typeof v === "string"
-                ? v
-                : v &&
-                  nodejs.fs.readFile(nodejs.path.join(nodejs.path.dirname(path), v.url), "utf8"),
-            ) as ZodType<string | undefined>,
+            instructions: optionalize(instructionsSchema),
             inputKey: optionalize(z.string()),
             outputKey: optionalize(z.string()),
             toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
+          })
+          .extend(baseAgentSchema.shape),
+        z
+          .object({
+            type: z.literal("image"),
+            instructions: instructionsSchema,
+            modelOptions: optionalize(camelizeSchema(z.record(z.any()))),
           })
           .extend(baseAgentSchema.shape),
         z

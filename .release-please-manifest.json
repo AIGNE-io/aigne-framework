@@ -40,5 +40,6 @@
   "memory/did-space": "1.0.22",
   "memory/fs": "1.0.22",
   "models/doubao": "1.0.16",
-  "models/poe": "1.0.2"
+  "models/poe": "1.0.2",
+  "blocklet/agent-runtime": "0.1.0"
 }

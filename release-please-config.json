@@ -52,7 +52,17 @@
     "examples/workflow-router": {},
     "examples/workflow-sequential": {},
     "examples/chat-bot": {},
-    "examples/memory": {}
+    "examples/memory": {},
+    "blocklet/agent-runtime": {
+      "package-name": "blocklet-agent-runtime",
+      "extra-files": [
+        {
+          "type": "yaml",
+          "path": "blocklet.yml",
+          "jsonpath": "$.version"
+        }
+      ]
+    }
   },
   "plugins": [
     {

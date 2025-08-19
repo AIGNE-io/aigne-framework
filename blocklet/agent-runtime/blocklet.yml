@@ -1,0 +1,51 @@
+name: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS
+title: AIGNE Agent Runtime
+description: >-
+  AIGNE Agent Runtime is a specialized runtime engine designed for executing AI
+  agents, serving as the core runtime environment for the Blocklet system
+keywords:
+  - blocklet
+  - react
+group: dapp
+did: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS
+main: api/dist/index.js
+author:
+  name: Leermao
+  email: lipeng@arcblock.io
+repository:
+  type: git
+  url: git+https://github.com/blocklet/create-blocklet.git
+specVersion: 1.2.8
+version: 1.0.0
+logo: logo.png
+files:
+  - dist
+  - logo.png
+  - screenshots
+interfaces:
+  - type: web
+    name: publicUrl
+    path: /
+    prefix: '*'
+    port: BLOCKLET_PORT
+    protocol: http
+community: ''
+documentation: ''
+homepage: ''
+license: ''
+payment:
+  price: []
+  share: []
+timeout:
+  start: 60
+requirements:
+  server: '>=1.16.28'
+  os: '*'
+  cpu: '*'
+scripts:
+  dev: npm run start
+environments: []
+capabilities: {}
+screenshots:
+  - 1c861c0ffd2ea6128d8de10196920cb1.png
+components: []

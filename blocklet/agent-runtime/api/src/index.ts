@@ -22,6 +22,9 @@ const { name, version } = require("../../package.json");
 
 export const app = express();
 
+const isProduction =
+  process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
+
 const blocklet = new AuthService();
 const COMPONENT_CACHE_TTL = 1 * 60 * 1000; // 1 minute
 const componentCache = new Map();
@@ -49,12 +52,11 @@ AIGNEObserver.setExportFn(async (spans) => {
   });
 });
 
-const debug = true;
 app.use(async (req, res, next) => {
   const raw = String(req.headers["x-blocklet-component-id"] || "");
   const componentId = raw.split("/").pop();
   if (engineComponentId === componentId) {
-    if (!debug) {
+    if (!isProduction) {
       return res
         .status(400)
         .send(
@@ -110,9 +112,6 @@ app.use(cors());
 const router = express.Router();
 router.use("/api", user as any, routes);
 app.use(router);
-
-const isProduction =
-  process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
 
 if (isProduction) {
   logger.info("process.env.BLOCKLET_APP_DIR", process.env.BLOCKLET_APP_DIR);

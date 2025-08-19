@@ -15,11 +15,17 @@ const traceTreeQuerySchema = z.object({
   page: z
     .string()
     .optional()
-    .transform((val) => parseInt(val || "0") || 0),
+    .transform((val) => {
+      const page = parseInt(val || "0") || 0;
+      return Number.isFinite(page) && page >= 0 && page <= 1000000 ? page : 0;
+    }),
   pageSize: z
     .string()
     .optional()
-    .transform((val) => parseInt(val || "10") || 10),
+    .transform((val) => {
+      const pageSize = parseInt(val || "10") || 10;
+      return Number.isFinite(pageSize) && pageSize > 0 && pageSize <= 1000 ? pageSize : 50;
+    }),
   searchText: z.string().optional().default(""),
   componentId: z.string().optional().default(""),
   startDate: z.string().optional().default(""),
@@ -41,17 +47,18 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       return;
     }
 
-    let { page, pageSize, searchText, componentId, startDate, endDate } = queryResult.data;
-
-    page = Number.isFinite(page) && page >= 0 ? page : 0;
-    pageSize = Number.isFinite(pageSize) && pageSize > 0 && pageSize <= 1000 ? pageSize : 50;
+    const { page, pageSize, searchText, componentId, startDate, endDate } = queryResult.data;
     const offset = page * pageSize;
 
-    const rootFilter = and(
-      or(isNull(Trace.parentId), sql`${Trace.parentId} = ''`),
-      isNull(Trace.action),
-    );
+    if (!Number.isSafeInteger(offset) || offset > Number.MAX_SAFE_INTEGER) {
+      res.status(400).json({
+        error: "Page number too large, would cause overflow",
+        details: { page, pageSize, calculatedOffset: offset },
+      });
+      return;
+    }
 
+    const rootFilter = and(or(isNull(Trace.parentId)), isNull(Trace.action));
     const count = await db.select({ count: sql`count(*)` }).from(Trace).where(rootFilter).execute();
     const total = Number((count[0] as { count: string }).count ?? 0);
 
@@ -131,7 +138,9 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
         pageSize,
         data: processedRootCalls,
       });
-    } catch {
+    } catch (error) {
+      console.error("Error in traceTreeQuerySchema", error);
+
       res.json({
         total,
         page,

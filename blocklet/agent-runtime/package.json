@@ -1,0 +1,123 @@
+{
+  "name": "@blocklet/agent-runtime",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "blocklet dev",
+    "lint": "tsc --noEmit && eslint src api/src --ext .mjs,.js,.jsx,.ts,.tsx",
+    "lint:fix": "npm run lint -- --fix",
+    "start": "cross-env NODE_ENV=development nodemon --exec tsx api/dev.ts -w api",
+    "clean": "node scripts/build-clean.mjs",
+    "bundle": "tsc --noEmit && npm run bundle:client && npm run bundle:api",
+    "bundle:client": "vite build",
+    "bundle:api": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release --external @aigne/sqlite,open",
+    "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
+    "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json",
+    "prepare": "npx simple-git-hooks"
+  },
+  "lint-staged": {
+    "*.{mjs,js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint"
+    ],
+    "*.{css,less,scss,json,graphql}": [
+      "prettier --write"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@aigne/aigne-hub": "workspace:^",
+    "@aigne/cli": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/observability-api": "workspace:^",
+    "@aigne/sqlite": "workspace:^",
+    "@aigne/transport": "workspace:^",
+    "@arcblock/did-auth": "^1.20.15",
+    "@arcblock/did-auth-storage-nedb": "^1.7.1",
+    "@arcblock/did-connect": "^3.0.43",
+    "@arcblock/react-hooks": "^3.1.23",
+    "@arcblock/ux": "^3.1.23",
+    "@blocklet/sdk": "^1.16.44",
+    "@mui/icons-material": "^7.3.1",
+    "@mui/material": "^7.2.0",
+    "@ocap/client": "^1.20.15",
+    "@ocap/mcrypto": "^1.20.15",
+    "@ocap/wallet": "^1.20.15",
+    "@uiw/react-markdown-preview": "^5.1.5",
+    "axios": "^1.7.9",
+    "compare-versions": "^6.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv-flow": "^4.1.0",
+    "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
+    "flat": "^5.0.2",
+    "framer-motion": "^12.23.12",
+    "idb": "^8.0.3",
+    "open": "^10.2.0",
+    "react-error-boundary": "^6.0.0",
+    "ufo": "^1.6.1",
+    "uuid": "^11.1.0",
+    "yet-another-react-lightbox": "^3.25.0"
+  },
+  "devDependencies": {
+    "@arcblock/eslint-config": "^0.3.3",
+    "@arcblock/eslint-config-ts": "^0.3.3",
+    "@blocklet/js-sdk": "^1.16.44",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/dotenv-flow": "^3.3.3",
+    "@types/express": "^4.17.21",
+    "@types/flat": "^5.0.5",
+    "@types/node": "^20.17.19",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.6.0",
+    "bumpp": "^9.11.1",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.1",
+    "import-sort-style-module": "^6.0.0",
+    "lint-staged": "^15.4.3",
+    "nodemon": "^3.1.9",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.5.1",
+    "prettier-plugin-import-sort": "^0.0.7",
+    "react": "~19.1.0",
+    "react-dom": "~19.1.0",
+    "react-router-dom": "^6.29.0",
+    "rimraf": "^5.0.10",
+    "simple-git-hooks": "^2.11.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vite": "^7.0.0",
+    "vite-plugin-blocklet": "^0.10.1",
+    "vite-plugin-svgr": "^4.3.0",
+    "zx": "^8.3.2"
+  },
+  "importSort": {
+    ".js, .jsx, .mjs": {
+      "parser": "babylon",
+      "style": "module"
+    },
+    ".ts, .tsx": {
+      "style": "module",
+      "parser": "typescript"
+    }
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  }
+}

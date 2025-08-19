@@ -17,14 +17,14 @@ const traceTreeQuerySchema = z.object({
     .optional()
     .transform((val) => {
       const page = parseInt(val || "0") || 0;
-      return Number.isFinite(page) && page >= 0 && page <= 1000000 ? page : 0;
+      return Number.isFinite(page) && page >= 0 ? page : 0;
     }),
   pageSize: z
     .string()
     .optional()
     .transform((val) => {
       const pageSize = parseInt(val || "10") || 10;
-      return Number.isFinite(pageSize) && pageSize > 0 && pageSize <= 1000 ? pageSize : 50;
+      return Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 50;
     }),
   searchText: z.string().optional().default(""),
   componentId: z.string().optional().default(""),
@@ -58,7 +58,7 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       return;
     }
 
-    const rootFilter = and(or(isNull(Trace.parentId)), isNull(Trace.action));
+    const rootFilter = and(isNull(Trace.parentId), isNull(Trace.action));
     const count = await db.select({ count: sql`count(*)` }).from(Trace).where(rootFilter).execute();
     const total = Number((count[0] as { count: string }).count ?? 0);
 

@@ -358,3 +358,11 @@ test("PromptBuilder from file", async () => {
 
   expect(prompt).toMatchSnapshot();
 });
+
+test("PromptBuilder should build image prompt correctly", async () => {
+  const builder = PromptBuilder.from("Draw an image about {{topic}}");
+
+  expect(await builder.buildImagePrompt({ input: { topic: "a cat" } })).toEqual({
+    prompt: "Draw an image about a cat",
+  });
+});

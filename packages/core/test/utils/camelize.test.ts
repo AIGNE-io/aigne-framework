@@ -205,11 +205,11 @@ describe("snakelize", () => {
     });
 
     it("should handle empty object", () => {
-      expect(camelize({})).toEqual({});
+      expect(snakelize({})).toEqual({});
     });
 
     it("should handle empty array", () => {
-      expect(camelize([])).toEqual([]);
+      expect(snakelize([])).toEqual([]);
     });
   });
 

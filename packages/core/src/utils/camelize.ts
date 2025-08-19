@@ -22,30 +22,6 @@ export type Camelize<T, S = false> = T extends Array<infer U>
   ? Array<CamelizeObject<U, S>>
   : CamelizeObject<T, S>;
 
-export type SnakeCase<S extends string> = S extends `${infer P1}${infer P2}${infer P3}`
-  ? `${P1}${P2 extends Uppercase<P2> ? "_" : ""}${Lowercase<P2>}${SnakeCase<P3>}`
-  : S;
-
-export type SnakelizeObject<T, S = false> = {
-  [K in keyof T as SnakeCase<string & K>]: T[K] extends Date
-    ? T[K]
-    : T[K] extends RegExp
-      ? T[K]
-      : T[K] extends Array<infer U>
-        ? U extends object | undefined
-          ? Array<SnakelizeObject<U>>
-          : T[K]
-        : T[K] extends object | undefined
-          ? S extends true
-            ? T[K]
-            : SnakelizeObject<T[K]>
-          : T[K];
-};
-
-export type Snakelize<T, S = false> = T extends Array<infer U>
-  ? Array<SnakelizeObject<U, S>>
-  : SnakelizeObject<T, S>;
-
 export function camelize<T, S extends boolean = false>(
   obj: T,
   shallow?: S,

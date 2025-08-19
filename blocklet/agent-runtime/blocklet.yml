@@ -20,8 +20,10 @@ version: 1.0.0
 logo: logo.png
 files:
   - dist
-  - logo.png
   - screenshots
+  - api/dist
+  - logo.png
+  - .env
 interfaces:
   - type: web
     name: publicUrl
@@ -47,5 +49,6 @@ scripts:
 environments: []
 capabilities: {}
 screenshots:
-  - 1c861c0ffd2ea6128d8de10196920cb1.png
+  - 77d91fef25b90ae21ef9959a3444c1b9.png
+  - 5505674235a0c66be5e6b33af929a7a0.png
 components: []

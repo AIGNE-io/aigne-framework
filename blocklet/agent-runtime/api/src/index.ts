@@ -8,13 +8,16 @@ import sessionMiddleware from "@blocklet/sdk/lib/middlewares/session";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv-flow";
-import express, { type ErrorRequestHandler } from "express";
+import express, {
+  type ErrorRequestHandler,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import path from "path";
 
 import logger from "./libs/logger.js";
 import routes from "./routes/index.js";
-
-const AuthService = require("@blocklet/sdk/service/auth");
 
 dotenv.config();
 
@@ -22,14 +25,9 @@ const { name, version } = require("../../package.json");
 
 export const app = express();
 
+const engineComponentId = Config.env.componentDid;
 const isProduction =
   process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
-
-const blocklet = new AuthService();
-const COMPONENT_CACHE_TTL = 1 * 60 * 1000; // 1 minute
-const componentCache = new Map();
-const engineComponentId = Config.env.componentDid;
-const user = sessionMiddleware({ accessKey: true });
 
 const OBSERVABILITY_DID = "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh";
 AIGNEObserver.setExportFn(async (spans) => {
@@ -52,11 +50,18 @@ AIGNEObserver.setExportFn(async (spans) => {
   });
 });
 
-app.use(async (req, res, next) => {
+app.set("trust proxy", true);
+app.use(cookieParser());
+app.use(express.json({ limit: "1 mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1 mb" }));
+app.use(cors());
+
+app.use(async (req: Request, res: Response, next: NextFunction) => {
   const raw = String(req.headers["x-blocklet-component-id"] || "");
   const componentId = raw.split("/").pop();
+
   if (engineComponentId === componentId) {
-    if (!isProduction) {
+    if (isProduction) {
       return res
         .status(400)
         .send(
@@ -65,65 +70,21 @@ app.use(async (req, res, next) => {
     }
   }
 
-  if (!componentId) {
-    return res.status(400).send("Agent Runtime: Bad Request");
-  }
-
-  const cachedChecker = componentCache.get(componentId);
-  if (!cachedChecker || Date.now() - cachedChecker.timestamp > COMPONENT_CACHE_TTL) {
-    const component = await blocklet.getComponent(componentId);
-    componentCache.set(componentId, {
-      component,
-      timestamp: Date.now(),
-    });
-  }
-
-  const cached = componentCache.get(componentId);
-  const { component } = cached;
-  if (!component) {
-    return res.status(404).send("Static Server: Component Not Found");
-  }
-
-  const env = component.environments.find((x: { key: string }) => x.key === "BLOCKLET_APP_DIR");
-  if (!env) {
-    return res.status(404).send("Static Server: Component Not Valid");
-  }
-
-  req.mainDir = component.meta.main
-    ? path.join(env.value, component.meta.main)
-    : path.resolve(env.value);
-  req.component = component;
-  if (process.env.DOCKER_HOST_SERVER_DIR && process.env.DOCKER_CONTAINER_SERVER_DIR) {
-    req.mainDir = req.mainDir.replace(
-      new RegExp(process.env.DOCKER_HOST_SERVER_DIR, "g"),
-      process.env.DOCKER_CONTAINER_SERVER_DIR,
-    );
-  }
-  logger.warn("serve static from", req.mainDir);
   return next();
 });
 
-app.set("trust proxy", true);
-app.use(cookieParser());
-app.use(express.json({ limit: "1 mb" }));
-app.use(express.urlencoded({ extended: true, limit: "1 mb" }));
-app.use(cors());
-
 const router = express.Router();
-router.use("/api", user as any, routes);
+router.use("/api", sessionMiddleware({ accessKey: true }) as any, routes);
 app.use(router);
 
 if (isProduction) {
-  logger.info("process.env.BLOCKLET_APP_DIR", process.env.BLOCKLET_APP_DIR);
   const staticDir = path.resolve(process.env.BLOCKLET_APP_DIR!, "dist");
   app.use(express.static(staticDir, { maxAge: "30d", index: false }));
   app.use(fallback("index.html", { root: staticDir }) as any);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.use(<ErrorRequestHandler>((err, _req, res, _next) => {
-    // eslint-disable-next-line prettier/prettier
-    logger.error(err.stack);
-    res.status(500).send("Something broke!");
+    const message = err instanceof Error ? err.message : "Unknown error";
+    res.status(500).json({ success: false, error: message });
   }));
 }
 

@@ -12,20 +12,18 @@ import { getGlobalSettingPath } from "../utils/index.js";
 const router = express.Router();
 
 const traceTreeQuerySchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .transform((val) => {
-      const page = parseInt(val || "0") || 0;
-      return Number.isFinite(page) && page >= 0 ? page : 0;
-    }),
-  pageSize: z
-    .string()
-    .optional()
-    .transform((val) => {
-      const pageSize = parseInt(val || "10") || 10;
-      return Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 50;
-    }),
+  page: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .catch(() => 0)
+    .default(0),
+  pageSize: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .catch(() => 10)
+    .default(10),
   searchText: z.string().optional().default(""),
   componentId: z.string().optional().default(""),
   startDate: z.string().optional().default(""),

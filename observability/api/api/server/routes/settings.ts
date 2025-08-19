@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import express, { type Request, type Response } from "express";
+import express, { type Request, type Response, type Router } from "express";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
 import { getGlobalSettingPath } from "../utils/index.js";
@@ -12,7 +12,7 @@ const AIGNEObserverSettingsSchema = z
   .optional()
   .default({ live: false });
 
-export default ({ middleware }: { middleware: express.RequestHandler[] }) => {
+export default ({ middleware }: { middleware: express.RequestHandler[] }): Router => {
   router.get("/", ...middleware, async (_req: Request, res: Response) => {
     const settingPath = getGlobalSettingPath();
     if (!existsSync(settingPath)) {

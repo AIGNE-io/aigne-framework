@@ -78,17 +78,16 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
       whereClause = and(whereClause, eq(Trace.componentId, componentId));
     }
 
-    try {
-      const rootCalls = await db
-        .select({
-          id: Trace.id,
-          rootId: Trace.rootId,
-          parentId: Trace.parentId,
-          name: Trace.name,
-          startTime: Trace.startTime,
-          endTime: Trace.endTime,
-          status: Trace.status,
-          attributes: sql<string>`
+    const rootCalls = await db
+      .select({
+        id: Trace.id,
+        rootId: Trace.rootId,
+        parentId: Trace.parentId,
+        name: Trace.name,
+        startTime: Trace.startTime,
+        endTime: Trace.endTime,
+        status: Trace.status,
+        attributes: sql<string>`
           CASE 
             WHEN ${Trace.attributes} IS NULL THEN JSON_OBJECT('input', '', 'output', '')
             ELSE JSON_OBJECT(
@@ -109,43 +108,33 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
             )
           END
         `,
-          userId: Trace.userId,
-          componentId: Trace.componentId,
-        })
-        .from(Trace)
-        .where(whereClause)
-        .orderBy(desc(Trace.startTime))
-        .limit(pageSize)
-        .offset(offset)
-        .execute();
+        userId: Trace.userId,
+        componentId: Trace.componentId,
+      })
+      .from(Trace)
+      .where(whereClause)
+      .orderBy(desc(Trace.startTime))
+      .limit(pageSize)
+      .offset(offset)
+      .execute();
 
-      const processedRootCalls = rootCalls.map((call) => {
-        try {
-          return {
-            ...call,
-            attributes: JSON.parse(call.attributes),
-          };
-        } catch {
-          return call;
-        }
-      });
+    const processedRootCalls = rootCalls.map((call) => {
+      try {
+        return {
+          ...call,
+          attributes: JSON.parse(call.attributes),
+        };
+      } catch {
+        return call;
+      }
+    });
 
-      res.json({
-        total,
-        page,
-        pageSize,
-        data: processedRootCalls,
-      });
-    } catch (error) {
-      console.error("Error in traceTreeQuerySchema", error);
-
-      res.json({
-        total,
-        page,
-        pageSize,
-        data: [],
-      });
-    }
+    res.json({
+      total,
+      page,
+      pageSize,
+      data: processedRootCalls,
+    });
   });
 
   router.get("/tree/components", ...middleware, async (req: Request, res: Response) => {

@@ -101,7 +101,7 @@ beforeEach(() => {
 });
 
 test("OllamaChatModel.invoke llama3.1 should return the correct tool", async () => {
-  const client = await model.client();
+  const client = await model.client;
   spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "ollama-streaming-response-1.txt"),
@@ -117,7 +117,7 @@ test("OllamaChatModel.invoke llama3.1 should return the correct tool", async () 
 });
 
 test("OllamaChatModel.invoke llama3.1", async () => {
-  const client = await model.client();
+  const client = await model.client;
   spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "ollama-streaming-response-2.txt"),

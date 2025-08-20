@@ -1,5 +1,6 @@
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
+import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import { Hono } from "hono";
@@ -11,12 +12,10 @@ export async function createHonoServer() {
   const honoApp = new Hono();
 
   const aigne = await createAIGNE();
+  const aigneServer = new AIGNEHTTPServer(aigne);
 
   honoApp.post("/ai-kit/api/v2/chat", async (c) => {
-    return c.json({
-      result: "success",
-      headers: c.req.header(),
-    });
+    return aigneServer.invoke(c.req.raw);
   });
 
   honoApp.get("/__blocklet__.js", async (c) => {

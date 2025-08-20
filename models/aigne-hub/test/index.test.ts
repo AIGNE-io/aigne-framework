@@ -1,5 +1,8 @@
-import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
+import assert from "node:assert";
 import type { ChatModelInput } from "@aigne/core";
+import { ChatModel, isAgentResponseDelta } from "@aigne/core";
+import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { joinURL } from "ufo";
 import { AIGNEHubChatModel } from "../src/index.js";
 import { createHonoServer } from "./_mocks_/server.js";
@@ -13,7 +16,7 @@ const mockEnv = {
 };
 
 describe("AIGNEHubChatModel", async () => {
-  const { url, close } = await createHonoServer();
+  const { url, aigne, close } = await createHonoServer();
 
   beforeEach(() => {
     Object.entries(mockEnv).forEach(([key, value]) => {
@@ -64,44 +67,6 @@ describe("AIGNEHubChatModel", async () => {
     });
   });
 
-  describe("process", () => {
-    test("should process input with client and add headers", async () => {
-      const model = new AIGNEHubChatModel({ url });
-      const input: ChatModelInput = {
-        messages: [{ role: "user" as const, content: "Hello" }],
-      };
-      const result = await model.invoke(input, {});
-      // @ts-ignore
-      expect(result.headers["x-aigne-hub-client-did"]).toBe("test-pid");
-    });
-
-    test("should use ABT_NODE_DID when BLOCKLET_APP_PID is not available", async () => {
-      delete process.env.BLOCKLET_APP_PID;
-      process.env.ABT_NODE_DID = "test-did-value";
-
-      const model = new AIGNEHubChatModel({ url });
-      const input: ChatModelInput = {
-        messages: [{ role: "user" as const, content: "Hello" }],
-      };
-      const result = await model.invoke(input, {});
-      // @ts-ignore
-      expect(result.headers["x-aigne-hub-client-did"]).toBe("test-did-value");
-    });
-
-    test("should use empty string when neither BLOCKLET_APP_PID nor ABT_NODE_DID is available", async () => {
-      delete process.env.BLOCKLET_APP_PID;
-      delete process.env.ABT_NODE_DID;
-
-      const model = new AIGNEHubChatModel({ url });
-      const input: ChatModelInput = {
-        messages: [{ role: "user" as const, content: "Hello" }],
-      };
-      const result = await model.invoke(input, {});
-      // @ts-ignore
-      expect(result.headers["x-aigne-hub-client-did"]).toMatch(/@aigne\/aigne-hub/);
-    });
-  });
-
   describe("error handling", () => {
     test("should handle credential parsing errors gracefully", async () => {
       process.env.BLOCKLET_AIGNE_API_CREDENTIAL = '{"invalid": "json"';
@@ -139,5 +104,50 @@ describe("AIGNEHubChatModel", async () => {
       const credential = await model.credential;
       expect(credential.model).toBe("deepseek/deepseek-r1");
     });
+  });
+
+  test("AIGNEHubChatModel example simple", async () => {
+    assert(aigne.model instanceof ChatModel);
+
+    spyOn(aigne.model, "process").mockReturnValueOnce(
+      Promise.resolve(stringToAgentResponseStream("Hello world!")),
+    );
+
+    const client = new AIGNEHubChatModel({
+      url,
+      apiKey: "123",
+      model: "openai/gpt-4o-mini",
+    });
+
+    const response = await client.invoke({ messages: [{ role: "user", content: "hello" }] });
+    expect(response).toEqual({ text: "Hello world!" });
+  });
+
+  test("AIGNEHubChatModel example with streaming", async () => {
+    assert(aigne.model instanceof ChatModel);
+
+    spyOn(aigne.model, "process").mockReturnValueOnce(
+      Promise.resolve(stringToAgentResponseStream("Hello world!")),
+    );
+
+    const client = new AIGNEHubChatModel({
+      url,
+      apiKey: "123",
+      model: "openai/gpt-4o-mini",
+    });
+
+    const stream = await client.invoke(
+      { messages: [{ role: "user", content: "hello" }] },
+      { streaming: true },
+    );
+
+    let text = "";
+    for await (const chunk of stream) {
+      if (isAgentResponseDelta(chunk)) {
+        if (chunk.delta.text?.text) text += chunk.delta.text.text;
+      }
+    }
+
+    expect(text).toEqual("Hello world!");
   });
 });

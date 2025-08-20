@@ -118,7 +118,7 @@ beforeEach(() => {
 });
 
 test("OpenRouterChatModel.invoke should return the correct tool", async () => {
-  const client = await model.client();
+  const client = await model.client;
   spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "open-router-streaming-response-1.txt"),
@@ -134,7 +134,7 @@ test("OpenRouterChatModel.invoke should return the correct tool", async () => {
 });
 
 test("OpenRouterChatModel.invoke", async () => {
-  const client = await model.client();
+  const client = await model.client;
   spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "open-router-streaming-response-2.txt"),

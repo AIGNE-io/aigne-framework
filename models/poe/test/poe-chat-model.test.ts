@@ -118,7 +118,7 @@ beforeEach(() => {
 });
 
 test("PoeChatModel.invoke should return the correct tool", async () => {
-  const client = await model.client();
+  const client = await model.client;
   spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "poe-streaming-response-1.txt"),
@@ -134,7 +134,7 @@ test("PoeChatModel.invoke should return the correct tool", async () => {
 });
 
 test("PoeChatModel.invoke", async () => {
-  const client = await model.client();
+  const client = await model.client;
   spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "poe-streaming-response-2.txt"),

@@ -117,7 +117,7 @@ beforeEach(() => {
 });
 
 test("DoubaoChatModel.invoke should return the correct tool", async () => {
-  const client = await model.client();
+  const client = await model.client;
   spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "doubao-streaming-response-1.txt"),
@@ -133,7 +133,7 @@ test("DoubaoChatModel.invoke should return the correct tool", async () => {
 });
 
 test("DoubaoChatModel.invoke", async () => {
-  const client = await model.client();
+  const client = await model.client;
   spyOn(client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "doubao-streaming-response-2.txt"),

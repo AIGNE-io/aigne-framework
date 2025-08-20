@@ -168,6 +168,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   memory?: MemoryAgent | MemoryAgent[];
 
+  asyncMemoryRecord?: boolean;
+
   /**
    * Maximum number of memory items to retrieve
    */
@@ -200,6 +202,7 @@ export const agentOptionsSchema: ZodObject<{
   skills: z.array(z.union([z.custom<Agent>(), z.custom<FunctionAgentFn>()])).optional(),
   disableEvents: z.boolean().optional(),
   memory: z.union([z.custom<MemoryAgent>(), z.array(z.custom<MemoryAgent>())]).optional(),
+  asyncMemoryRecord: z.boolean().optional(),
   maxRetrieveMemoryCount: z.number().optional(),
   hooks: z.union([z.array(hooksSchema), hooksSchema]).optional(),
   guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
@@ -294,6 +297,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     } else if (options.memory) {
       this.memories.push(options.memory);
     }
+    this.asyncMemoryRecord = options.asyncMemoryRecord;
 
     this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
 
@@ -305,6 +309,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    * List of memories this agent can use
    */
   readonly memories: MemoryAgent[] = [];
+
+  asyncMemoryRecord?: boolean;
 
   tag?: string;
 
@@ -956,10 +962,13 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     this.publishToTopics(output, options);
 
-    await this.recordMemories(
+    const memory = this.recordMemories(
       { content: [{ input, output: replaceTransferAgentToName(output), source: this.name }] },
       options,
-    );
+    ).catch((error) => {
+      logger.error(`Agent ${this.name} failed to record memories:`, error);
+    });
+    if (!this.asyncMemoryRecord) await memory;
   }
 
   protected async publishToTopics(output: Message, options: AgentInvokeOptions) {

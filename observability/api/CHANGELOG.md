@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.9.0...observability-api-v0.9.1) (2025-08-20)
+
+
+### Bug Fixes
+
+* **observability:** handle pagination and query errors properly ([#380](https://github.com/AIGNE-io/aigne-framework/issues/380)) ([1088b67](https://github.com/AIGNE-io/aigne-framework/commit/1088b677bb553c1c3c2a977dcf1648afef069bb0))
+
 ## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.8.2...observability-api-v0.9.0) (2025-08-01)
 
 

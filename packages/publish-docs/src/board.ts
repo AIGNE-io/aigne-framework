@@ -25,8 +25,8 @@ interface BaseBoard {
   icon: string | null;
   passports: unknown[];
   translation: {
-    title: Record<string, unknown>;
-    desc: Record<string, unknown>;
+    title: Record<string, string>;
+    desc: Record<string, string>;
   };
 }
 
@@ -49,8 +49,8 @@ interface CreateBoardRequest {
   cover: string;
   type: string;
   translation: {
-    title: Record<string, unknown>;
-    desc: Record<string, unknown>;
+    title: Record<string, string>;
+    desc: Record<string, string>;
   };
 }
 
@@ -58,8 +58,8 @@ interface CreateBoardRequest {
 interface CreateBoardResponse extends BaseBoard {
   passports: unknown[];
   translation: {
-    title: Record<string, unknown>;
-    desc: Record<string, unknown>;
+    title: Record<string, string>;
+    desc: Record<string, string>;
   };
   cover: string;
 }

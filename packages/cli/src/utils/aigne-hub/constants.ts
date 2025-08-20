@@ -1,12 +1,12 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-export const WELLKNOWN_SERVICE_PATH_PREFIX = "/.well-known/service";
 const ACCESS_KEY_PREFIX = "/api/access-key";
+export const WELLKNOWN_SERVICE_PATH_PREFIX = "/.well-known/service";
 export const ACCESS_KEY_SESSION_API = `${ACCESS_KEY_PREFIX}/session`;
 
-export const AIGNE_HUB_PROVIDER = "aignehub";
 const DEFAULT_AIGNE_HUB_MODEL = "openai/gpt-5-mini";
+export const AIGNE_HUB_PROVIDER = "aignehub";
 export const DEFAULT_AIGNE_HUB_PROVIDER_MODEL = `${AIGNE_HUB_PROVIDER}:${DEFAULT_AIGNE_HUB_MODEL}`;
 
 export const isTest = process.env.CI || process.env.NODE_ENV === "test";

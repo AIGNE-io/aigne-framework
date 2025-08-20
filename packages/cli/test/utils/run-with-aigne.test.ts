@@ -1,4 +1,4 @@
-import { expect, mock, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, expect, mock, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
@@ -16,6 +16,14 @@ import { OpenAIChatModel } from "@aigne/openai";
 import { parse } from "yaml";
 import { z } from "zod";
 import { mockModule } from "../_mocks_/mock-module.js";
+
+beforeEach(() => {
+  process.env.MODEL = "openai:gpt-4o-mini";
+});
+
+afterEach(() => {
+  delete process.env.MODEL;
+});
 
 test("runWithAIGNE should run agent correctly", async () => {
   await runWithAIGNE(

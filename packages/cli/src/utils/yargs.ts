@@ -158,12 +158,3 @@ export async function stdinHasData(): Promise<boolean> {
   const stats = await promisify(fstat)(0);
   return stats.isFIFO() || stats.isFile();
 }
-
-export const onFail: Parameters<Argv["fail"]>[0] = (message, error, yargs) => {
-  // We catch all errors below, here just print the help message non-error case like demandCommand
-  if (!error) {
-    yargs.showHelp();
-
-    console.error(`\n${message}`);
-  }
-};

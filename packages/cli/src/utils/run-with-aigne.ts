@@ -12,7 +12,14 @@ import {
   UserAgent,
 } from "@aigne/core";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
-import { isEmpty, type PromiseOrValue, pick, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import {
+  isEmpty,
+  isNil,
+  omitBy,
+  type PromiseOrValue,
+  pick,
+  tryOrThrow,
+} from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import type { Argv } from "yargs";
 import yargs from "yargs";
@@ -25,7 +32,7 @@ import {
   DEFAULT_CHAT_INPUT_KEY,
   runChatLoopInTerminal,
 } from "./run-chat-loop.js";
-import { onFail, parseAgentInput, withAgentInputSchema } from "./yargs.js";
+import { parseAgentInput, withAgentInputSchema } from "./yargs.js";
 
 export interface RunAIGNECommandOptions {
   chat?: boolean;
@@ -177,14 +184,13 @@ export async function runWithAIGNE(
         }
 
         const aigne = await loadAIGNE({
-          modelOptions: pick(
-            options,
-            "model",
-            "temperature",
-            "topP",
-            "presencePenalty",
-            "frequencyPenalty",
-          ),
+          modelOptions: {
+            ...modelOptions,
+            ...omitBy(
+              pick(options, "model", "temperature", "topP", "presencePenalty", "frequencyPenalty"),
+              (v) => isNil(v),
+            ),
+          },
         });
 
         try {
@@ -211,7 +217,6 @@ export async function runWithAIGNE(
     )
     .alias("h", "help")
     .alias("v", "version")
-    .fail(onFail)
     .parseAsync(hideBin(argv))
     .catch((error) => {
       console.error(`${chalk.red("Error:")} ${error.message}`);

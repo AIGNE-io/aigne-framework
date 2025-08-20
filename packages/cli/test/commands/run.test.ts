@@ -1,4 +1,4 @@
-import { expect, mock, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, expect, mock, spyOn, test } from "bun:test";
 import { randomUUID } from "node:crypto";
 import { rm, stat } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
@@ -8,6 +8,14 @@ import { AIGNE } from "@aigne/core";
 import yargs from "yargs";
 import { mockAIGNEPackage, mockAIGNEV1Package } from "../_mocks_/mock-aigne-package.js";
 import { mockModule } from "../_mocks_/mock-module.js";
+
+beforeEach(() => {
+  process.env.MODEL = "openai:gpt-4o-mini";
+});
+
+afterEach(() => {
+  delete process.env.MODEL;
+});
 
 test("run command should call run chat loop correctly", async () => {
   const runAgentWithAIGNE = mock();

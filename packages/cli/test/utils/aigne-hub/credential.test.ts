@@ -92,7 +92,7 @@ describe("credential", () => {
       const testContent = { otherKey: "value" };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      await expect(checkConnectionStatus("test-host")).rejects.toThrow(
+      expect(checkConnectionStatus("test-host")).rejects.toThrow(
         "AIGNE_HUB_API_KEY key not found, need to login first",
       );
     });
@@ -106,7 +106,7 @@ describe("credential", () => {
       };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      await expect(checkConnectionStatus("test-host")).rejects.toThrow(
+      expect(checkConnectionStatus("test-host")).rejects.toThrow(
         "AIGNE_HUB_API_KEY host not found, need to login first",
       );
     });
@@ -119,7 +119,7 @@ describe("credential", () => {
       };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      await expect(checkConnectionStatus("test-host")).rejects.toThrow(
+      expect(checkConnectionStatus("test-host")).rejects.toThrow(
         "AIGNE_HUB_API_KEY key not found, need to login first",
       );
     });

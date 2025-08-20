@@ -9,6 +9,8 @@ import yargs from "yargs";
 let listen: Mock<typeof application.listen>;
 
 beforeEach(() => {
+  process.env.MODEL = "openai:gpt-4o-mini";
+
   listen = spyOn(application, "listen").mockImplementationOnce(((_port, _host, cb) => {
     if (typeof cb === "function") cb();
     return new Server();
@@ -16,6 +18,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  delete process.env.MODEL;
+
   listen.mockRestore();
 });
 

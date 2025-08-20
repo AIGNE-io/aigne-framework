@@ -7,6 +7,10 @@ import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import { createHonoServer } from "../_mocks_/server.js";
 
+afterEach(() => {
+  delete process.env.AIGNE_HUB_API_URL;
+});
+
 describe("load aigne", () => {
   describe("loadAIGNE", () => {
     test("should load aigne successfully with default env file", async () => {

@@ -1,5 +1,5 @@
+import { ConfigProvider } from "@arcblock/ux/lib/Config";
 import { ErrorFallback } from "@arcblock/ux/lib/ErrorBoundary";
-import { LocaleProvider } from "@arcblock/ux/lib/Locale/context";
 import { ThemeProvider } from "@arcblock/ux/lib/Theme";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -14,8 +14,8 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-
 import "./app.css";
+import Layout from "./components/layout.tsx";
 import { SessionProvider } from "./contexts/session.ts";
 import theme from "./libs/theme.ts";
 import { translations } from "./locales/index.tsx";
@@ -36,7 +36,6 @@ function App() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#1F1F24",
       }}
     >
       <CircularProgress />
@@ -45,12 +44,12 @@ function App() {
 
   return (
     <Suspense fallback={fallback}>
-      <LocaleProvider translations={translations} fallbackLocale="en">
+      <ConfigProvider translations={translations} prefer="system">
         <ErrorBoundary FallbackComponent={ErrorFallback} onReset={window.location.reload}>
           <CssBaseline />
           <Outlet />
         </ErrorBoundary>
-      </LocaleProvider>
+      </ConfigProvider>
     </Suspense>
   );
 }
@@ -58,7 +57,14 @@ function App() {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      <Route path="/" element={<Chat />} />
+      <Route
+        path="/"
+        element={
+          <Layout>
+            <Chat />
+          </Layout>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Route>,
   ),

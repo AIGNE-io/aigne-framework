@@ -10,7 +10,7 @@ import MessageBubble from "../components/message-bubble.tsx";
 import TextLoading from "../components/text-loading.tsx";
 import TypingIndicator from "../components/typing-indicator.tsx";
 import { useSessionContext } from "../contexts/session.ts";
-import { type Message as DBMessage, getAllMessages, saveMessage } from "../libs/db.ts";
+import type { Message as DBMessage } from "../libs/db.ts";
 
 type Message = DBMessage & { taskTitle?: string };
 
@@ -18,13 +18,9 @@ function Chat() {
   const { locale } = useLocaleContext();
   const { session } = useSessionContext();
   const [aiChatting, setAiChatting] = useState(false);
-  const MESSAGES_PER_PAGE = 50;
   const [messages, setMessages] = useState<Message[]>([]);
   const [streamingMessage, setStreamingMessage] = useState<Message | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
   const aiResponseRef = useRef("");
   const isScrolling = useRef(false);
   const scrollTimeout = useRef<NodeJS.Timeout>(undefined);
@@ -37,68 +33,11 @@ function Chat() {
     }, 100);
   }, []);
 
-  const loadMoreMessages = useCallback(async () => {
-    if (isLoading || !hasMore || isWaitingToLoadRef.current) return;
-
-    isWaitingToLoadRef.current = true;
-    setIsLoading(true);
-
-    try {
-      const oldestMessage = messages[0];
-      const newMessages = await getAllMessages("", MESSAGES_PER_PAGE, oldestMessage?.timestamp);
-
-      if (newMessages.length < MESSAGES_PER_PAGE) {
-        setHasMore(false);
-      }
-
-      // 保持滚动位置
-      const container = document.querySelector(".messages-container");
-      if (container) {
-        // 记录当前滚动位置
-        const oldScrollTop = container.scrollTop;
-        const oldScrollHeight = container.scrollHeight;
-
-        // 添加新消息
-        setMessages((prev) => [...newMessages, ...prev]);
-
-        // 恢复滚动位置
-        requestAnimationFrame(() => {
-          const newScrollHeight = container.scrollHeight;
-          container.scrollTop = oldScrollTop + (newScrollHeight - oldScrollHeight);
-        });
-      } else {
-        setMessages((prev) => [...newMessages, ...prev]);
-      }
-    } finally {
-      setIsLoading(false);
-      setTimeout(() => {
-        isWaitingToLoadRef.current = false;
-      }, 500);
-    }
-  }, [messages, isLoading, hasMore]);
-
-  // 处理滚动事件
-  useEffect(() => {
-    const container = document.querySelector(".messages-container");
-    if (!container) return;
-
-    const handleScroll = () => {
-      // 当滚动到顶部时加载更多
-      if (container.scrollTop === 0 && !isLoading && hasMore && !isWaitingToLoadRef.current) {
-        loadMoreMessages();
-      }
-    };
-
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [loadMoreMessages, isLoading, hasMore]);
-
   // 新消息到来时滚动到底部
   useEffect(() => {
     // 只有在不是加载历史消息且不是初始加载时才自动滚动到底部
     if (
       messages.length > 0 &&
-      !isLoading &&
       !isWaitingToLoadRef.current &&
       messages[messages.length - 1]?.isUser
     ) {
@@ -107,7 +46,7 @@ function Chat() {
         container.scrollTop = container.scrollHeight;
       }
     }
-  }, [messages, messages.length, isLoading]);
+  }, [messages, messages.length]);
 
   // 移除旧的滚动处理
   useEffect(() => {
@@ -221,7 +160,6 @@ function Chat() {
         };
 
         setMessages((prev) => [...prev, aiMessage]);
-        saveMessage(aiMessage);
         setStreamingMessage(null);
         setAiChatting(false);
       } catch (error) {
@@ -261,7 +199,6 @@ function Chat() {
         sessionId,
       };
       setMessages((prev) => [...prev, newUserMessage]);
-      saveMessage(newUserMessage);
       run(message, userId, sessionId);
     },
     [run],
@@ -280,14 +217,13 @@ function Chat() {
   return (
     <Box
       sx={{
-        height: "100vh",
+        height: 1,
         display: "flex",
         flexDirection: "column",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Messages Container */}
       <Box
         className="messages-container"
         sx={{
@@ -315,19 +251,6 @@ function Chat() {
         >
           <Box sx={{ flex: 1 }} />
           <Box>
-            {isLoading && (
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  py: 2,
-                  color: "rgba(255, 255, 255, 0.6)",
-                }}
-              >
-                <Typography variant="caption">Loading more messages...</Typography>
-              </Box>
-            )}
             {messages.map((message, index) => (
               <Box key={message.id}>
                 {message.text && (
@@ -370,22 +293,12 @@ function Chat() {
               </>
             )}
 
-            <div ref={loadMoreTriggerRef} style={{ height: "1px", marginTop: "20px" }} />
             <div ref={messagesEndRef} />
           </Box>
         </Container>
       </Box>
 
-      <Box
-        sx={{
-          pt: 1,
-          pb: 1.5,
-          px: { xs: 1, sm: 2 },
-          backdropFilter: "blur(10px)",
-          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-          backgroundColor: "rgba(10, 14, 23, 0.8)",
-        }}
-      >
+      <Box sx={{ pt: 1, pb: 1.5, px: { xs: 1, sm: 2 } }}>
         <Container
           maxWidth="md"
           sx={{
@@ -396,9 +309,7 @@ function Chat() {
           }}
         >
           <ChatInput
-            onSend={(message) => {
-              handleSendMessage(message, session?.user?.did, session?.id);
-            }}
+            onSend={(message) => handleSendMessage(message, session?.user?.did, "")}
             disabled={aiChatting}
           />
         </Container>

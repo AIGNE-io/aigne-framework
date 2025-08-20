@@ -17,12 +17,17 @@ import { parse } from "yaml";
 import { z } from "zod";
 import { mockModule } from "../_mocks_/mock-module.js";
 
+let originalEnv: NodeJS.ProcessEnv;
+
 beforeEach(() => {
+  originalEnv = { MODEL: process.env.MODEL, OPENAI_API_KEY: process.env.OPENAI_API_KEY };
+
   process.env.MODEL = "openai:gpt-4o-mini";
+  process.env.OPENAI_API_KEY = "test-openai-api-key";
 });
 
 afterEach(() => {
-  delete process.env.MODEL;
+  Object.assign(process.env, originalEnv);
 });
 
 test("runWithAIGNE should run agent correctly", async () => {

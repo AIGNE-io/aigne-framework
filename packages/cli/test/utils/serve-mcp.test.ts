@@ -1,4 +1,4 @@
-import { expect, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIGNE_CLI_VERSION } from "@aigne/cli/constants";
@@ -10,6 +10,17 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { detect } from "detect-port";
 import { mockModule } from "../_mocks_/mock-module.js";
+
+let originalEnv: NodeJS.ProcessEnv;
+
+beforeEach(() => {
+  originalEnv = { OPENAI_API_KEY: process.env.OPENAI_API_KEY };
+  process.env.OPENAI_API_KEY = "test-openai-api-key";
+});
+
+afterEach(() => {
+  Object.assign(process.env, originalEnv);
+});
 
 test("serveMCPServer should work", async () => {
   const port = await detect();

@@ -40,6 +40,10 @@ export function createAppCommands(): CommandModule[] {
         .command(serveMcpCommandModule({ name: app.name, dir }))
         .command(upgradeCommandModule({ name: app.name, dir, isLatest: !isCache, version }));
 
+      if (aigne.cli.chat) {
+        yargs.command({ ...agentCommandModule({ dir, agent: aigne.cli.chat }), command: "$0" });
+      }
+
       for (const agent of aigne.cli?.agents ?? []) {
         yargs.command(agentCommandModule({ dir, agent }));
       }
@@ -139,12 +143,14 @@ export async function invokeCLIAgentFromDir(options: {
   });
 
   try {
-    const agent = aigne.cli.agents[options.agent];
+    const { chat, agents } = aigne.cli;
+
+    const agent = chat && chat.name === options.agent ? chat : agents[options.agent];
     assert(agent, `Agent ${options.agent} not found in ${options.dir}`);
 
     const input = await parseAgentInput(options.input, agent);
 
-    await runAgentWithAIGNE(aigne, agent, { input });
+    await runAgentWithAIGNE(aigne, agent, { input, chat: agent === chat });
   } finally {
     await aigne.shutdown();
   }

@@ -113,8 +113,8 @@ export class AnthropicChatModel extends ChatModel {
    */
   protected _client?: Anthropic;
 
-  async client() {
-    const { apiKey } = await this.getCredential();
+  get client() {
+    const { apiKey } = this.credential;
     if (!apiKey)
       throw new Error(
         "AnthropicChatModel requires an API key. Please provide it via `options.apiKey`, or set the `ANTHROPIC_API_KEY` or `CLAUDE_API_KEY` environment variable",
@@ -132,7 +132,7 @@ export class AnthropicChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  async getCredential() {
+  override get credential() {
     const apiKey =
       this.options?.apiKey || process.env[this.apiKeyEnvName] || process.env.CLAUDE_API_KEY;
 
@@ -172,7 +172,7 @@ export class AnthropicChatModel extends ChatModel {
   private ajv = new Ajv();
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
-    const { model } = await this.getCredential();
+    const model = input.modelOptions?.model || this.credential.model;
 
     const disableParallelToolUse =
       input.modelOptions?.parallelToolCalls === false ||
@@ -194,8 +194,7 @@ export class AnthropicChatModel extends ChatModel {
       return this.requestStructuredOutput(body, input.responseFormat);
     }
 
-    const client = await this.client();
-    const stream = client.messages.stream({
+    const stream = this.client.messages.stream({
       ...body,
       stream: true,
     });
@@ -332,8 +331,7 @@ export class AnthropicChatModel extends ChatModel {
       throw new Error("Expected json_schema response format");
     }
 
-    const client = await this.client();
-    const result = await client.messages.create({
+    const result = await this.client.messages.create({
       ...body,
       tools: [
         {

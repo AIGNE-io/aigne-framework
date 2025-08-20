@@ -1,21 +1,34 @@
-import { expect, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { loadModel } from "@aigne/aigne-hub";
 import { AIGNE_CLI_VERSION } from "@aigne/cli/constants";
 import { serveMCPServer } from "@aigne/cli/utils/serve-mcp.js";
 import { AIGNE } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
+import { OpenAIChatModel } from "@aigne/openai";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { detect } from "detect-port";
 import { mockModule } from "../_mocks_/mock-module.js";
 
+let originalEnv: NodeJS.ProcessEnv;
+
+beforeEach(() => {
+  originalEnv = { OPENAI_API_KEY: process.env.OPENAI_API_KEY };
+  process.env.OPENAI_API_KEY = "test-openai-api-key";
+});
+
+afterEach(() => {
+  Object.assign(process.env, originalEnv);
+});
+
 test("serveMCPServer should work", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { loadModel });
+  const aigne = await AIGNE.load(testAgentsPath, {
+    model: new OpenAIChatModel(),
+  });
 
   assert(aigne.model, "aigne.model should be defined");
   spyOn(aigne.model, "process")
@@ -62,7 +75,9 @@ test("serveMCPServer should respond error from not supported methods", async () 
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { loadModel });
+  const aigne = await AIGNE.load(testAgentsPath, {
+    model: new OpenAIChatModel(),
+  });
   const server = await serveMCPServer({ aigne, port });
 
   spyOn(console, "error").mockReturnValueOnce(undefined);
@@ -94,8 +109,9 @@ test("serveMCPServer should respond error from agent processing", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { loadModel });
-
+  const aigne = await AIGNE.load(testAgentsPath, {
+    model: new OpenAIChatModel(),
+  });
   assert(aigne.model, "engine.model should be defined");
   spyOn(aigne.model, "process").mockReturnValueOnce(
     arrayToAgentProcessAsyncGenerator([new Error("test error from model")]),
@@ -131,8 +147,9 @@ test("serveMCPServer should respond 500 error", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { loadModel });
-
+  const aigne = await AIGNE.load(testAgentsPath, {
+    model: new OpenAIChatModel(),
+  });
   await using _ = await mockModule("@aigne/cli/utils/serve-mcp.ts", () => ({
     createMcpServer: () => {
       throw new Error("test error from create mcp server");

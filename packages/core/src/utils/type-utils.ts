@@ -117,7 +117,7 @@ export function omitDeep<T, K>(obj: T, ...keys: (K | K[])[]): unknown {
   return obj;
 }
 
-export function omitBy<T extends Record<string, unknown>, K extends keyof T>(
+export function omitBy<T extends object, K extends keyof T>(
   obj: T,
   predicate: (value: T[K], key: K) => boolean,
 ): Partial<T> {

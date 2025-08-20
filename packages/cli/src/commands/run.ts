@@ -101,12 +101,10 @@ export function createRunCommand({
 
               const aigne = await loadAIGNE({
                 path: dir,
-                options: {
+                modelOptions: {
                   ...options,
                   model: options.model || process.env.MODEL,
                   aigneHubUrl: options?.aigneHubUrl,
-                },
-                actionOptions: {
                   inquirerPromptFn: (prompt) => {
                     if (prompt.type === "input") {
                       return task

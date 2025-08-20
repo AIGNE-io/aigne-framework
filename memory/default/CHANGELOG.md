@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.1.5](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.1.4...default-memory-v1.1.5) (2025-08-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.52.0
+  * devDependencies
+    * @aigne/openai bumped to 0.11.5
+
+## [1.1.4](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.1.3...default-memory-v1.1.4) (2025-08-18)
+
+
+### Bug Fixes
+
+* **memory:** memory storage error if search segments is empty ([#379](https://github.com/AIGNE-io/aigne-framework/issues/379)) ([4e36b6b](https://github.com/AIGNE-io/aigne-framework/commit/4e36b6bfe71cd78ee75014ba26a4c121417e5daa))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.51.0
+  * devDependencies
+    * @aigne/openai bumped to 0.11.4
+
 ## [1.1.3](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.1.2...default-memory-v1.1.3) (2025-08-16)
 
 

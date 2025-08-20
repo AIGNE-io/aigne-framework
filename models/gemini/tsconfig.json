@@ -2,8 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@aigne/core": ["../core/src"],
-      "@aigne/core/*": ["../core/src/*"],
       "@aigne/gemini": ["./src"],
       "@aigne/gemini/*": ["./src/*"]
     }

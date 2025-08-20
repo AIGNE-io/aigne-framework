@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.0.3](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.2...poe-v1.0.3) (2025-08-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.11.5
+  * devDependencies
+    * @aigne/core bumped to 1.52.0
+    * @aigne/test-utils bumped to 0.5.31
+
+## [1.0.2](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.1...poe-v1.0.2) (2025-08-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.11.4
+  * devDependencies
+    * @aigne/core bumped to 1.51.0
+    * @aigne/test-utils bumped to 0.5.30
+
 ## [1.0.1](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.0...poe-v1.0.1) (2025-08-16)
 
 

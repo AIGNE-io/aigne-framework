@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.63.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.62.0...aigne-framework-v1.63.0) (2025-08-20)
+
+
+### Features
+
+* **agents:** add async memory recording option ([#385](https://github.com/AIGNE-io/aigne-framework/issues/385)) ([573acdb](https://github.com/AIGNE-io/aigne-framework/commit/573acdb617434e6699b2e07db942e6336706d27f))
+
+
+### Bug Fixes
+
+* **observability:** handle pagination and query errors properly ([#380](https://github.com/AIGNE-io/aigne-framework/issues/380)) ([1088b67](https://github.com/AIGNE-io/aigne-framework/commit/1088b677bb553c1c3c2a977dcf1648afef069bb0))
+
+## [1.62.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.61.3...aigne-framework-v1.62.0) (2025-08-18)
+
+
+### Features
+
+* **cli:** add support for array inputs in CLI arguments ([#378](https://github.com/AIGNE-io/aigne-framework/issues/378)) ([827ae11](https://github.com/AIGNE-io/aigne-framework/commit/827ae112de8d1a2e997b272b759090b6e5b8d395))
+* **cli:** support hide or collapse task for agents in CLI ([#381](https://github.com/AIGNE-io/aigne-framework/issues/381)) ([05b372d](https://github.com/AIGNE-io/aigne-framework/commit/05b372d431a862f7cdfa2a90bb4b7b2379bf97ab))
+
+
+### Bug Fixes
+
+* **cli:** only log API requests at info level and above ([#376](https://github.com/AIGNE-io/aigne-framework/issues/376)) ([03fc4d9](https://github.com/AIGNE-io/aigne-framework/commit/03fc4d9aad6e81aeae3b2eb02a62f7acade3bd77))
+* **memory:** memory storage error if search segments is empty ([#379](https://github.com/AIGNE-io/aigne-framework/issues/379)) ([4e36b6b](https://github.com/AIGNE-io/aigne-framework/commit/4e36b6bfe71cd78ee75014ba26a4c121417e5daa))
+
 ## [1.61.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.61.2...aigne-framework-v1.61.3) (2025-08-16)
 
 

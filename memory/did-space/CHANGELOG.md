@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.23](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.0.22...did-space-memory-v1.0.23) (2025-08-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.52.0
+    * @aigne/openai bumped to 0.11.5
+
+## [1.0.22](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.0.21...did-space-memory-v1.0.22) (2025-08-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.51.0
+    * @aigne/openai bumped to 0.11.4
+
 ## [1.0.21](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.0.20...did-space-memory-v1.0.21) (2025-08-16)
 
 

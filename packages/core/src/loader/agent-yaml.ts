@@ -2,7 +2,7 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { AgentHooks, FunctionAgentFn } from "../agents/agent.js";
+import type { AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
@@ -28,6 +28,7 @@ export interface BaseAgentSchema {
   name?: string;
   description?: string;
   taskTitle?: string;
+  taskRenderMode?: TaskRenderMode;
   inputSchema?: ZodType<Record<string, any>>;
   defaultInput?: Record<string, any>;
   outputSchema?: ZodType<Record<string, any>>;
@@ -117,6 +118,7 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
       alias: optionalize(z.array(z.string())),
       description: optionalize(z.string()),
       taskTitle: optionalize(z.string()),
+      taskRenderMode: optionalize(z.union([z.literal("hide"), z.literal("collapse")])),
       inputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["inputSchema"]>,

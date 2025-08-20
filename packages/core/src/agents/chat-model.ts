@@ -1,6 +1,12 @@
 import { z } from "zod";
 import type { PromiseOrValue } from "../utils/type-utils.js";
-import { Agent, type AgentInvokeOptions, type AgentProcessResult, type Message } from "./agent.js";
+import {
+  Agent,
+  type AgentInvokeOptions,
+  type AgentOptions,
+  type AgentProcessResult,
+  type Message,
+} from "./agent.js";
 
 /**
  * ChatModel is an abstract base class for interacting with Large Language Models (LLMs).
@@ -28,18 +34,23 @@ import { Agent, type AgentInvokeOptions, type AgentProcessResult, type Message }
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   override tag = "ChatModelAgent";
 
-  constructor() {
+  constructor(
+    options?: Omit<AgentOptions<ChatModelInput, ChatModelOutput>, "inputSchema" | "outputSchema">,
+  ) {
     super({
+      ...options,
       inputSchema: chatModelInputSchema,
       outputSchema: chatModelOutputSchema,
     });
   }
 
-  abstract getCredential(): Promise<{
+  get credential(): PromiseOrValue<{
     url?: string;
     apiKey?: string;
     model?: string;
-  }>;
+  }> {
+    return {};
+  }
 
   /**
    * Indicates whether the model supports parallel tool calls
@@ -167,6 +178,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     if (usage) {
       options.context.usage.outputTokens += usage.outputTokens;
       options.context.usage.inputTokens += usage.inputTokens;
+      if (usage.aigneHubCredits) options.context.usage.aigneHubCredits += usage.aigneHubCredits;
     }
   }
 
@@ -596,7 +608,7 @@ export interface ChatModelOutputUsage {
   aigneHubCredits?: number;
 }
 
-const chatModelOutputUsageSchema = z.object({
+export const chatModelOutputUsageSchema = z.object({
   inputTokens: z.number(),
   outputTokens: z.number(),
   aigneHubCredits: z.number().optional(),

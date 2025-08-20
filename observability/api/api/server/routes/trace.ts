@@ -12,14 +12,18 @@ import { getGlobalSettingPath } from "../utils/index.js";
 const router = express.Router();
 
 const traceTreeQuerySchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .transform((val) => parseInt(val || "0") || 0),
-  pageSize: z
-    .string()
-    .optional()
-    .transform((val) => parseInt(val || "10") || 10),
+  page: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .catch(() => 0)
+    .default(0),
+  pageSize: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .catch(() => 10)
+    .default(10),
   searchText: z.string().optional().default(""),
   componentId: z.string().optional().default(""),
   startDate: z.string().optional().default(""),
@@ -33,7 +37,6 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const db = req.app.locals.db as LibSQLDatabase;
 
     const queryResult = traceTreeQuerySchema.safeParse(req.query);
-
     if (!queryResult.success) {
       res.status(400).json({
         error: "Invalid query parameters",
@@ -45,11 +48,15 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
     const { page, pageSize, searchText, componentId, startDate, endDate } = queryResult.data;
     const offset = page * pageSize;
 
-    const rootFilter = and(
-      or(isNull(Trace.parentId), eq(Trace.parentId, "")),
-      isNull(Trace.action),
-    );
+    if (!Number.isSafeInteger(offset) || offset > Number.MAX_SAFE_INTEGER) {
+      res.status(400).json({
+        error: "Page number too large, would cause overflow",
+        details: { page, pageSize, calculatedOffset: offset },
+      });
+      return;
+    }
 
+    const rootFilter = and(isNull(Trace.parentId), isNull(Trace.action));
     const count = await db.select({ count: sql`count(*)` }).from(Trace).where(rootFilter).execute();
     const total = Number((count[0] as { count: string }).count ?? 0);
 
@@ -87,14 +94,14 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
               'input', 
               CASE 
                 WHEN JSON_EXTRACT(${Trace.attributes}, '$.input') IS NOT NULL 
-                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), 1, 150) || 
+                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), 1, 150) ||
                 CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT)) > 150 THEN '...' ELSE '' END
                 ELSE ''
               END,
               'output',
               CASE 
                 WHEN JSON_EXTRACT(${Trace.attributes}, '$.output') IS NOT NULL 
-                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), 1, 150) || 
+                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), 1, 150) ||
                 CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT)) > 150 THEN '...' ELSE '' END
                 ELSE ''
               END
@@ -117,12 +124,17 @@ export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHand
           ...call,
           attributes: JSON.parse(call.attributes),
         };
-      } catch (_err) {
+      } catch {
         return call;
       }
     });
 
-    res.json({ total, page, pageSize, data: processedRootCalls.filter((r) => r.rootId) });
+    res.json({
+      total,
+      page,
+      pageSize,
+      data: processedRootCalls,
+    });
   });
 
   router.get("/tree/components", ...middleware, async (req: Request, res: Response) => {

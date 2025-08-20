@@ -91,16 +91,13 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   static async load(
     path: string,
-    options: AIGNEOptions & Omit<LoadOptions, "path">,
+    options: Omit<AIGNEOptions, keyof LoadOptions> & LoadOptions = {},
   ): Promise<AIGNE> {
-    const { model, agents = [], skills = [], ...aigne } = await load({ ...options, path });
+    const { agents = [], skills = [], model, ...aigne } = await load(path, options);
     return new AIGNE({
       ...aigne,
       ...options,
-      rootDir: aigne.rootDir,
-      model: options?.model || model,
-      name: options?.name || aigne.name || undefined,
-      description: options?.description || aigne.description || undefined,
+      model,
       agents: agents.concat(options?.agents ?? []),
       skills: skills.concat(options?.skills ?? []),
     });

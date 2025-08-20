@@ -2,9 +2,11 @@ import { Agent } from "../agents/agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { parseAgentFile } from "./agent-yaml.js";
 
+const importFn = new Function("path", "return import(path)");
+
 export async function loadAgentFromJsFile(path: string) {
   const { default: agent } = await tryOrThrow(
-    () => import(/* @vite-ignore */ path),
+    () => importFn(path),
     (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
   );
 

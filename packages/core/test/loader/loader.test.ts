@@ -11,7 +11,7 @@ const loadModel = () => new OpenAIChatModel();
 
 test("AIGNE.load should load agents correctly", async () => {
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
-    loadModel,
+    model: loadModel,
   });
 
   expect(aigne).toEqual(
@@ -68,7 +68,6 @@ test("loader should use override options", async () => {
   const testSkill = AIAgent.from({ name: "test-skill" });
 
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
-    loadModel,
     model,
     agents: [testAgent],
     skills: [testSkill],
@@ -101,19 +100,14 @@ test("load should process path correctly", async () => {
 
   // mock a non-existing file
   stat.mockReturnValueOnce(Promise.reject(new Error("not found")));
-  expect(load({ loadModel, path: "aigne.yaml" })).rejects.toThrow("not found");
+  expect(load("aigne.yaml")).rejects.toThrow("not found");
 
   // mock a yaml file with invalid content
   stat.mockReturnValueOnce(
     Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"));
-  expect(
-    load({
-      loadModel,
-      path: "invalid-yaml/aigne.yaml",
-    }),
-  ).rejects.toThrow("Failed to parse aigne.yaml");
+  expect(load("invalid-yaml/aigne.yaml")).rejects.toThrow("Failed to parse aigne.yaml");
   expect(readFile).toHaveBeenLastCalledWith("invalid-yaml/aigne.yaml", "utf8");
 
   // mock a valid yaml but invalid properties
@@ -121,12 +115,7 @@ test("load should process path correctly", async () => {
     Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: 123"));
-  expect(
-    load({
-      loadModel,
-      path: "invalid-properties/aigne.yaml",
-    }),
-  ).rejects.toThrow("Failed to validate aigne.yaml");
+  expect(load("invalid-properties/aigne.yaml")).rejects.toThrow("Failed to validate aigne.yaml");
   expect(readFile).toHaveBeenLastCalledWith("invalid-properties/aigne.yaml", "utf8");
 
   // mock a directory with a .yaml file
@@ -134,9 +123,9 @@ test("load should process path correctly", async () => {
     Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
-  expect(load({ loadModel, path: "foo" })).resolves.toEqual(
+  expect(load("foo", { model: loadModel })).resolves.toEqual(
     expect.objectContaining({
-      model: expect.anything(),
+      chatModel: expect.anything(),
       agents: [],
       skills: [],
     }),
@@ -152,9 +141,9 @@ test("load should process path correctly", async () => {
       Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
     );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
-  expect(load({ loadModel, path: "bar" })).resolves.toEqual(
+  expect(load("bar", { model: loadModel })).resolves.toEqual(
     expect.objectContaining({
-      model: expect.anything(),
+      chatModel: expect.anything(),
       agents: [],
       skills: [],
     }),

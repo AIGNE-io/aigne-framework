@@ -3,7 +3,6 @@ import { spawn } from "node:child_process";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { loadModel } from "@aigne/aigne-hub";
 import { type Agent, AIGNE, type Message } from "@aigne/core";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
@@ -136,7 +135,7 @@ export async function invokeCLIAgentFromDir(options: {
 }) {
   const aigne = await loadAIGNE({
     path: options.dir,
-    options: { model: options.input.model },
+    modelOptions: { model: options.input.model },
   });
 
   try {
@@ -166,7 +165,7 @@ export async function loadApplication({
   const check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
   if (check?.available) {
     return {
-      aigne: await AIGNE.load(dir, { loadModel }),
+      aigne: await AIGNE.load(dir),
       dir,
       version: check.version,
       isCache: true,
@@ -217,7 +216,7 @@ export async function loadApplication({
   ).run();
 
   return {
-    aigne: await AIGNE.load(dir, { loadModel }),
+    aigne: await AIGNE.load(dir),
     dir,
     version: result.version,
   };

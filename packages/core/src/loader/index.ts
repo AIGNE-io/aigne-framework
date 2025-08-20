@@ -1,5 +1,4 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
-import type { Camelize } from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
 import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
@@ -11,7 +10,13 @@ import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
-import { flat, isNonNullable, type PromiseOrValue, tryOrThrow } from "../utils/type-utils.js";
+import {
+  flat,
+  isNonNullable,
+  isRecord,
+  type PromiseOrValue,
+  tryOrThrow,
+} from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
 import { camelizeSchema, optionalize } from "./schema.js";
@@ -19,16 +24,16 @@ import { camelizeSchema, optionalize } from "./schema.js";
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
 export interface LoadOptions {
-  loadModel: (
-    model?: Camelize<z.infer<typeof aigneFileSchema>["model"]>,
-  ) => PromiseOrValue<ChatModel | undefined>;
   memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
-  path: string;
-  model?: ChatModel;
+  model?:
+    | ChatModel
+    | ((
+        model?: z.infer<typeof aigneFileSchema>["chatModel"],
+      ) => PromiseOrValue<ChatModel | undefined>);
 }
 
-export async function load(options: LoadOptions): Promise<AIGNEOptions> {
-  const { aigne, rootDir } = await loadAIGNEFile(options.path);
+export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
+  const { aigne, rootDir } = await loadAIGNEFile(path);
 
   const allAgentPaths = new Set(
     flat(aigne.agents, aigne.skills, aigne.mcpServer?.agents, aigne.cli?.agents).map((i) =>
@@ -47,7 +52,8 @@ export async function load(options: LoadOptions): Promise<AIGNEOptions> {
   return {
     ...aigne,
     rootDir,
-    model: options?.model || (await options.loadModel(aigne.model)),
+    model:
+      typeof options.model === "function" ? await options.model(aigne.chatModel) : options.model,
     agents: pickAgents(aigne.agents ?? []),
     skills: pickAgents(aigne.skills ?? []),
     mcpServer: {
@@ -224,21 +230,28 @@ const aigneFileSchema = camelizeSchema(
   z.object({
     name: optionalize(z.string()),
     description: optionalize(z.string()),
-    model: optionalize(
-      z.union([
-        z.string(),
-        camelizeSchema(
-          z.object({
-            provider: z.string().nullish(),
-            name: z.string().nullish(),
-            temperature: z.number().min(0).max(2).nullish(),
-            topP: z.number().min(0).nullish(),
-            frequencyPenalty: z.number().min(-2).max(2).nullish(),
-            presencePenalty: z.number().min(-2).max(2).nullish(),
-          }),
+    chatModel: z
+      .preprocess(
+        (v) => {
+          if (!isRecord(v)) return v;
+          return { ...v, model: v.model || `${v.provider || ""}:${v.name || ""}` };
+        },
+        optionalize(
+          z.union([
+            z.string(),
+            camelizeSchema(
+              z.object({
+                model: optionalize(z.string()),
+                temperature: optionalize(z.number().min(0).max(2)),
+                topP: optionalize(z.number().min(0)),
+                frequencyPenalty: optionalize(z.number().min(-2).max(2)),
+                presencePenalty: optionalize(z.number().min(-2).max(2)),
+              }),
+            ),
+          ]),
         ),
-      ]),
-    ).transform((v) => (typeof v === "string" ? { name: v } : v)),
+      )
+      .transform((v) => (typeof v === "string" ? { model: v } : v)),
     agents: optionalize(z.array(z.string())),
     skills: optionalize(z.array(z.string())),
     mcpServer: optionalize(
@@ -271,8 +284,7 @@ export async function loadAIGNEFile(path: string): Promise<{
   );
 
   const aigne = tryOrThrow(
-    () =>
-      aigneFileSchema.parse({ ...json, model: json.model ?? json.chat_model ?? json.chatModel }),
+    () => aigneFileSchema.parse(json),
     (error) => new Error(`Failed to validate aigne.yaml from ${file}: ${error.message}`),
   );
 

@@ -79,7 +79,7 @@ export async function serveMCPServerFromDir(options: {
 
   const aigne = await loadAIGNE({
     path: options.dir,
-    options: { aigneHubUrl: options.aigneHubUrl },
+    modelOptions: { aigneHubUrl: options.aigneHubUrl },
   });
 
   await serveMCPServer({

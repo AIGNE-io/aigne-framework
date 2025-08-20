@@ -22,7 +22,7 @@ import {
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import { Ajv } from "ajv";
-import OpenAI, { type APIError, type ClientOptions } from "openai";
+import type { ClientOptions, OpenAI } from "openai";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
@@ -31,6 +31,7 @@ import type {
 import type { Stream } from "openai/streaming.js";
 import { v7 } from "uuid";
 import { z } from "zod";
+import { CustomOpenAI } from "./openai.js";
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 
@@ -146,8 +147,8 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsToolStreaming = true;
   protected supportsTemperature = true;
 
-  async client() {
-    const { apiKey, url } = await this.getCredential();
+  client() {
+    const { apiKey, url } = this.credential;
     if (!apiKey)
       throw new Error(
         `${this.name} requires an API key. Please provide it via \`options.apiKey\`, or set the \`${this.apiKeyEnvName}\` environment variable`,
@@ -161,7 +162,7 @@ export class OpenAIChatModel extends ChatModel {
     return this._client;
   }
 
-  async getCredential() {
+  override get credential() {
     return {
       url: this.options?.baseURL || process.env.OPENAI_BASE_URL,
       apiKey: this.options?.apiKey || process.env[this.apiKeyEnvName] || this.apiKeyDefault,
@@ -186,7 +187,7 @@ export class OpenAIChatModel extends ChatModel {
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
-    const { model } = await this.getCredential();
+    const model = input.modelOptions?.model || this.credential.model;
 
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model,
@@ -587,22 +588,6 @@ function handleCompleteToolCall(
     },
     args: call.function?.arguments || "",
   });
-}
-
-// Use a custom OpenAI client to handle API errors for better error messages
-class CustomOpenAI extends OpenAI {
-  protected override makeStatusError(
-    status: number,
-    error: object,
-    message: string | undefined,
-    headers: Headers,
-  ): APIError {
-    if (!("error" in error) || typeof error.error !== "string") {
-      message = JSON.stringify(error);
-    }
-
-    return super.makeStatusError(status, error, message, headers);
-  }
 }
 
 // safeParseJSON is now imported from @aigne/core

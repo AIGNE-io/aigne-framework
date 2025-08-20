@@ -18,7 +18,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        options: { model: "aignehub:openai/gpt-4o" },
+        modelOptions: { model: "aignehub:openai/gpt-4o" },
         actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
       });
 
@@ -45,7 +45,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        options: { model: "aignehub:openai/gpt-4o" },
+        modelOptions: { model: "aignehub:openai/gpt-4o" },
         actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
       });
 
@@ -66,7 +66,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        options: { model: "aignehub:openai/gpt-4o" },
+        modelOptions: { model: "aignehub:openai/gpt-4o" },
         actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
       });
 
@@ -89,7 +89,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        options: { model: "aignehub:openai/gpt-4o" },
+        modelOptions: { model: "aignehub:openai/gpt-4o" },
         actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
       });
 
@@ -119,7 +119,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        options: { model: "aignehub:openai/gpt-4o" },
+        modelOptions: { model: "aignehub:openai/gpt-4o" },
         actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
       });
 
@@ -149,7 +149,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        options: { model: "aignehub:openai/gpt-4o" },
+        modelOptions: { model: "aignehub:openai/gpt-4o" },
         actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
       });
 
@@ -179,7 +179,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        options: { model: "aignehub:openai/gpt-4o" },
+        modelOptions: { model: "aignehub:openai/gpt-4o" },
         actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
       });
 

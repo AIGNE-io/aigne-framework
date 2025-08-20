@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 import type { ChatModelInput } from "@aigne/core";
 import { joinURL } from "ufo";
-import { AIGNEHubChatModel } from "../src/blocklet-aigne-hub-model.js";
 import { createHonoServer } from "./_mocks_/server.js";
 
 const mockEnv = {
@@ -14,7 +14,6 @@ const mockEnv = {
 
 describe("AIGNEHubChatModel", async () => {
   const { url, close } = await createHonoServer();
-  const model = new AIGNEHubChatModel({ url: url });
 
   beforeEach(() => {
     Object.entries(mockEnv).forEach(([key, value]) => {
@@ -36,6 +35,7 @@ describe("AIGNEHubChatModel", async () => {
 
   describe("constructor", () => {
     test("should create instance with options", () => {
+      const model = new AIGNEHubChatModel({ url });
       expect(model.options.url).toBe(url);
       expect(model.options.apiKey).toBeUndefined();
       expect(model.options.model).toBeUndefined();
@@ -44,27 +44,24 @@ describe("AIGNEHubChatModel", async () => {
 
   describe("client", () => {
     test("should create client on first call", async () => {
-      const client = await model.client();
+      const model = new AIGNEHubChatModel({ url });
+      const client = model["client"];
       expect(client).toBeDefined();
-    });
-
-    test("should reuse client on subsequent calls", async () => {
-      const client1 = await model.client();
-      const client2 = await model.client();
-      expect(client1).toBe(client2);
     });
 
     test("should throw error for unsupported provider", async () => {
       process.env.BLOCKLET_AIGNE_API_PROVIDER = "unsupported";
-      await expect(model.client()).rejects.toThrow(/Unsupported model provider/);
+
+      expect(() => new AIGNEHubChatModel({ url })).toThrowError(/Unsupported model provider/);
     });
   });
 
-  describe("getCredential", () => {
+  describe("credential", () => {
     test("should return credentials from environment variables", async () => {
-      const credential = await model.getCredential();
+      const model = new AIGNEHubChatModel({ url });
+      const credential = await model.credential;
 
-      expect(credential.url).toBe(joinURL(url, "ai-kit"));
+      expect(credential.url).toBe(joinURL(url, "ai-kit/api/v2/chat"));
       expect(credential.apiKey).toBe("test-api-key");
       expect(credential.model).toBe("openai/gpt-4o-mini");
     });
@@ -72,11 +69,13 @@ describe("AIGNEHubChatModel", async () => {
 
   describe("process", () => {
     test("should process input with client and add headers", async () => {
+      const model = new AIGNEHubChatModel({ url });
+
       const mockClient = {
         invoke: mock(() => Promise.resolve({ output: "test response" })),
       };
 
-      const originalClient = model.client;
+      const originalClient = model["client"];
       (model as any).client = mock(() => Promise.resolve(mockClient));
 
       const input: ChatModelInput = {
@@ -84,7 +83,7 @@ describe("AIGNEHubChatModel", async () => {
       };
       const options = { fetchOptions: {} };
 
-      const result = await model.process(input, options);
+      const result = await model.invoke(input, options);
 
       expect(result).toBeDefined();
       expect(mockClient.invoke).toHaveBeenCalledWith(input, {
@@ -103,11 +102,13 @@ describe("AIGNEHubChatModel", async () => {
       delete process.env.BLOCKLET_APP_PID;
       process.env.ABT_NODE_DID = "test-did-value";
 
+      const model = new AIGNEHubChatModel({ url });
+
       const mockClient = {
         invoke: mock(() => Promise.resolve({ output: "test response" })),
       };
 
-      const originalClient = model.client;
+      const originalClient = model["client"];
       (model as any).client = mock(() => Promise.resolve(mockClient));
 
       const input: ChatModelInput = {
@@ -133,11 +134,13 @@ describe("AIGNEHubChatModel", async () => {
       delete process.env.BLOCKLET_APP_PID;
       delete process.env.ABT_NODE_DID;
 
+      const model = new AIGNEHubChatModel({ url });
+
       const mockClient = {
         invoke: mock(() => Promise.resolve({ output: "test response" })),
       };
 
-      const originalClient = model.client;
+      const originalClient = model["client"];
       (model as any).client = mock(() => Promise.resolve(mockClient));
 
       const input: ChatModelInput = {
@@ -165,7 +168,9 @@ describe("AIGNEHubChatModel", async () => {
     test("should handle credential parsing errors gracefully", async () => {
       process.env.BLOCKLET_AIGNE_API_CREDENTIAL = '{"invalid": "json"';
 
-      const credential = await model.getCredential();
+      const model = new AIGNEHubChatModel({ url });
+
+      const credential = await model.credential;
       expect(credential).toBeDefined();
     });
 
@@ -175,8 +180,10 @@ describe("AIGNEHubChatModel", async () => {
       delete process.env.BLOCKLET_AIGNE_API_CREDENTIAL;
       delete process.env.BLOCKLET_AIGNE_API_URL;
 
-      const credential = await model.getCredential();
-      expect(credential.url).toBe(joinURL(url, "ai-kit"));
+      const model = new AIGNEHubChatModel({ url });
+
+      const credential = await model.credential;
+      expect(credential.url).toBe(joinURL(url, "ai-kit/api/v2/chat"));
     });
   });
 
@@ -184,14 +191,14 @@ describe("AIGNEHubChatModel", async () => {
     test("gemini-2.0-flash", async () => {
       process.env.BLOCKLET_AIGNE_API_MODEL = "google/gemini-2.0-flash";
       const model = new AIGNEHubChatModel({ url: url });
-      const credential = await model.getCredential();
+      const credential = await model.credential;
       expect(credential.model).toBe("google/gemini-2.0-flash");
     });
 
     test("deepseek-r1", async () => {
       process.env.BLOCKLET_AIGNE_API_MODEL = "deepseek/deepseek-r1";
       const model = new AIGNEHubChatModel({ url: url });
-      const credential = await model.getCredential();
+      const credential = await model.credential;
       expect(credential.model).toBe("deepseek/deepseek-r1");
     });
   });

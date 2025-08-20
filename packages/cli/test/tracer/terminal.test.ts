@@ -10,7 +10,7 @@ import * as prompts from "@inquirer/prompts";
 test("TerminalTracer should work correctly", async () => {
   const model = new OpenAIChatModel({});
 
-  const aigne = new AIGNE({ model });
+  const aigne = new AIGNE({ model: model });
   const context = aigne.newContext();
 
   const testAgent = AIAgent.from({
@@ -55,7 +55,7 @@ test("TerminalTracer should raise error correctly", async () => {
 test("TerminalTracer should render output message with markdown highlight", async () => {
   const model = new OpenAIChatModel({});
 
-  const aigne = new AIGNE({ model });
+  const aigne = new AIGNE({ model: model });
   const context = aigne.newContext();
 
   const tracer = new TerminalTracer(context);
@@ -76,7 +76,7 @@ test("TerminalTracer should render output message without markdown highlight in 
   logger.level = LogLevel.INFO;
   const model = new OpenAIChatModel({});
 
-  const aigne = new AIGNE({ model });
+  const aigne = new AIGNE({ model: model });
   const context = aigne.newContext();
 
   const tracer = new TerminalTracer(context);

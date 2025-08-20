@@ -5,53 +5,43 @@ import {
   type ChatModelInput,
   type ChatModelOutput,
 } from "@aigne/core";
-import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import { AIGNEHubChatModel as BlockletAIGNEHubChatModel } from "./blocklet-aigne-hub-model.js";
-import {
-  type AIGNEHubChatModelOptions,
-  AIGNEHubChatModel as CliAIGNEHubChatModel,
-} from "./cli-aigne-hub-model.js";
-import { AIGNE_HUB_URL } from "./util/constants.js";
-import { getAIGNEHubMountPoint } from "./util/credential.js";
+import type { AIGNEHubChatModelOptions } from "./aigne-hub-model.js";
+import { findModel } from "./utils/model.js";
 
-export * from "./util/constants.js";
-export * from "./util/credential.js";
-export * from "./util/crypto.js";
-export * from "./util/model.js";
-export * from "./util/type.js";
+export * from "./utils/blocklet.js";
+export * from "./utils/constants.js";
+export * from "./utils/model.js";
 
 export class AIGNEHubChatModel extends ChatModel {
-  private client: ChatModel;
+  constructor(public options: AIGNEHubChatModelOptions) {
+    const provider = process.env.BLOCKLET_AIGNE_API_PROVIDER || AIGNEHubChatModel.name;
 
-  static async load(options: AIGNEHubChatModelOptions) {
-    const u = process.env.BLOCKLET_AIGNE_API_URL ?? process.env.AIGNE_HUB_API_URL ?? AIGNE_HUB_URL;
-    let url = options.url ?? u;
+    const { match, all } = findModel(provider);
 
-    if ((process.env.BLOCKLET_AIGNE_API_PROVIDER || "").toLocaleLowerCase().includes("aignehub")) {
-      url = await getAIGNEHubMountPoint(url);
+    if (!match) {
+      const available = all.map((m) => m.name).join(", ");
+      throw new Error(
+        `Unsupported model provider: ${provider} ${process.env.BLOCKLET_AIGNE_API_MODEL}. Available providers: ${available}`,
+      );
     }
 
-    return new AIGNEHubChatModel({ ...options, url });
+    const client = match.create(options);
+
+    super({ name: client.name });
+
+    this.client = client;
   }
 
-  constructor(public options: AIGNEHubChatModelOptions) {
-    super();
+  protected client: ChatModel;
 
-    const isBlocklet =
-      process.env.BLOCKLET_AIGNE_API_URL && process.env.BLOCKLET_AIGNE_API_PROVIDER;
-    const AIGNEHubModel = isBlocklet ? BlockletAIGNEHubChatModel : CliAIGNEHubChatModel;
-
-    this.client = new AIGNEHubModel(options);
+  override get credential() {
+    return this.client.credential;
   }
 
-  getCredential() {
-    return this.client.getCredential();
-  }
-
-  override process(
+  override async process(
     input: ChatModelInput,
     options: AgentInvokeOptions,
-  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this.client.process(input, options);
+  ): Promise<AgentProcessResult<ChatModelOutput>> {
+    return this.client.invoke(input, options);
   }
 }

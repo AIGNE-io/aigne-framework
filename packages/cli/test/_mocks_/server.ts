@@ -1,4 +1,4 @@
-import { encrypt } from "@aigne/aigne-hub";
+import { encrypt } from "@aigne/cli/utils/aigne-hub/crypto.js";
 import { serve } from "bun";
 import { detect } from "detect-port";
 import { Hono } from "hono";

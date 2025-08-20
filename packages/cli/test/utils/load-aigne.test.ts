@@ -1,10 +1,10 @@
 import { afterAll, afterEach, describe, expect, mock, test } from "bun:test";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { AIGNE_ENV_FILE } from "@aigne/aigne-hub";
+import { AIGNE_ENV_FILE } from "@aigne/cli/utils/aigne-hub/constants.js";
+import { loadAIGNE } from "@aigne/cli/utils/load-aigne.js";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
-import { loadAIGNE } from "../../src/utils/load-aigne.js";
 import { createHonoServer } from "../_mocks_/server.js";
 
 describe("load aigne", () => {
@@ -18,8 +18,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o" },
-        actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -45,8 +44,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o" },
-        actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -66,8 +64,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o" },
-        actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -89,8 +86,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o" },
-        actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -119,8 +115,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o" },
-        actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -149,8 +144,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o" },
-        actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -179,8 +173,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o" },
-        actionOptions: { inquirerPromptFn: mockInquirerPrompt, runTest: true },
+        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));

@@ -25,7 +25,7 @@ import {
   DEFAULT_CHAT_INPUT_KEY,
   runChatLoopInTerminal,
 } from "./run-chat-loop.js";
-import { parseAgentInput, withAgentInputSchema } from "./yargs.js";
+import { onFail, parseAgentInput, withAgentInputSchema } from "./yargs.js";
 
 export interface RunAIGNECommandOptions {
   chat?: boolean;
@@ -211,6 +211,7 @@ export async function runWithAIGNE(
     )
     .alias("h", "help")
     .alias("v", "version")
+    .fail(onFail)
     .parseAsync(hideBin(argv))
     .catch((error) => {
       console.error(`${chalk.red("Error:")} ${error.message}`);

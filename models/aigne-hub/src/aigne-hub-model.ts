@@ -70,7 +70,10 @@ export class AIGNEHubChatModel extends ChatModel {
 
   override get credential() {
     this._credential = getAIGNEHubMountPoint(
-      this.options.url || process.env.AIGNE_HUB_API_URL || AIGNE_HUB_URL,
+      this.options.url ||
+        process.env.BLOCKLET_AIGNE_API_URL ||
+        process.env.AIGNE_HUB_API_URL ||
+        AIGNE_HUB_URL,
       AIGNE_HUB_BLOCKLET_DID,
     ).then((url) => {
       const path = "/api/v2/chat";

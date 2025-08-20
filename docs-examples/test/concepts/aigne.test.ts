@@ -76,7 +76,7 @@ test("Example AIGNE: load", async () => {
 
   const path = join(import.meta.dirname, "../../test-aigne"); // "/PATH/TO/AIGNE_PROJECT";
 
-  const aigne = await AIGNE.load(path);
+  const aigne = await AIGNE.load(path, { model: () => new OpenAIChatModel() });
 
   assert(aigne.model);
   expect(aigne.model).toBeInstanceOf(OpenAIChatModel);

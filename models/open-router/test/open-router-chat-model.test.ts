@@ -133,7 +133,7 @@ test("OpenRouterChatModel.invoke should return the correct tool", async () => {
 });
 
 test("OpenRouterChatModel.invoke", async () => {
-  spyOn(models.client.chat.completions, "create").mockReturnValue(
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "open-router-streaming-response-2.txt"),
     }),

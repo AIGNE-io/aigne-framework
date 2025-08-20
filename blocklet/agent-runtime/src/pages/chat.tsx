@@ -33,9 +33,7 @@ function Chat() {
     }, 100);
   }, []);
 
-  // 新消息到来时滚动到底部
   useEffect(() => {
-    // 只有在不是加载历史消息且不是初始加载时才自动滚动到底部
     if (
       messages.length > 0 &&
       !isWaitingToLoadRef.current &&
@@ -48,7 +46,6 @@ function Chat() {
     }
   }, [messages, messages.length]);
 
-  // 移除旧的滚动处理
   useEffect(() => {
     const container = document.querySelector(".messages-container");
     if (!container) return;
@@ -171,14 +168,12 @@ function Chat() {
     [locale],
   );
 
-  // 只在有新消息时滚动到底部
   useEffect(() => {
     if (streamingMessage) {
       scrollToBottom();
     }
   }, [streamingMessage, scrollToBottom]);
 
-  // 监听窗口高度变化并滚动到底部
   useEffect(() => {
     const handleResize = () => {
       scrollToBottom(true);

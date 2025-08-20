@@ -17,10 +17,7 @@ interface MessageBubbleProps {
 }
 
 function MessageBubble({ message, isUser }: MessageBubbleProps) {
-  // 提取 tab 标记
   const tabRegex = /<tab:\s*([^>]+)>/g;
-
-  // 移除消息中的 tab 标记
   const cleanMessage = message.replace(tabRegex, "");
 
   return (

@@ -15,10 +15,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const renderAddons = () => {
     const addonsArray = [];
 
-    // 启用了多语言，且检测到了 locale context，且有多种语言可以切换
     addonsArray.push(<LocaleSelector key="locale-selector" showText={false} />);
 
-    // 切换明暗主题
     addonsArray.push(<ThemeModeToggle key="theme-mode-toggle" />);
 
     addonsArray.push(<SessionManager size={24} session={session} />);

@@ -147,7 +147,7 @@ export class OpenAIChatModel extends ChatModel {
   protected supportsToolStreaming = true;
   protected supportsTemperature = true;
 
-  client() {
+  get client() {
     const { apiKey, url } = this.credential;
     if (!apiKey)
       throw new Error(
@@ -212,8 +212,7 @@ export class OpenAIChatModel extends ChatModel {
     }
 
     const { jsonMode, responseFormat } = await this.getRunResponseFormat(input);
-    const client = await this.client();
-    const stream = (await client.chat.completions.create({
+    const stream = (await this.client.chat.completions.create({
       ...body,
       tools: toolsFromInputTools(input.tools, {
         addTypeToEmptyParameters: !this.supportsToolsEmptyParameters,
@@ -313,8 +312,7 @@ export class OpenAIChatModel extends ChatModel {
     const { jsonMode, responseFormat: resolvedResponseFormat } = await this.getRunResponseFormat({
       responseFormat,
     });
-    const client = await this.client();
-    const res = (await client.chat.completions.create({
+    const res = (await this.client.chat.completions.create({
       ...body,
       response_format: resolvedResponseFormat,
     })) as unknown as Stream<OpenAI.Chat.Completions.ChatCompletionChunk>;

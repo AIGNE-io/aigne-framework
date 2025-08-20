@@ -13,6 +13,10 @@ export * from "./utils/constants.js";
 export * from "./utils/model.js";
 
 export class AIGNEHubChatModel extends ChatModel {
+  static async load(options: AIGNEHubChatModelOptions) {
+    return new AIGNEHubChatModel(options);
+  }
+
   constructor(public options: AIGNEHubChatModelOptions) {
     const provider = process.env.BLOCKLET_AIGNE_API_PROVIDER || AIGNEHubChatModel.name;
 

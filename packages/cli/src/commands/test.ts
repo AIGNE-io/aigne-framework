@@ -37,7 +37,7 @@ export function createTestCommand({
 
       const aigne = await loadAIGNE({
         path: absolutePath,
-        options: { aigneHubUrl: options?.aigneHubUrl },
+        modelOptions: { aigneHubUrl: options?.aigneHubUrl },
       });
       assert(aigne.rootDir);
 

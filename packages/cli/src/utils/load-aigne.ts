@@ -1,29 +1,13 @@
-import { existsSync, mkdirSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
-import type { LoadCredentialOptions, Model } from "@aigne/aigne-hub";
-import {
-  AIGNE_ENV_FILE,
-  checkConnectionStatus,
-  AIGNE_HUB_URL as DEFAULT_AIGNE_HUB_URL,
-  formatModelName,
-  loadModel,
-  maskApiKey,
-  parseModelOption,
-} from "@aigne/aigne-hub";
 import { AIGNE, type ChatModel, type ChatModelOptions } from "@aigne/core";
-import { loadAIGNEFile } from "@aigne/core/loader/index.js";
+import { isNil, omitBy } from "@aigne/core/utils/type-utils.js";
 import { OpenAIImageModel } from "@aigne/openai";
 import boxen from "boxen";
 import chalk from "chalk";
-import inquirer from "inquirer";
-import { parse, stringify } from "yaml";
 import { availableMemories } from "../constants.js";
+import { loadChatModel, maskApiKey } from "./aigne-hub/model.js";
+import type { LoadCredentialOptions } from "./aigne-hub/type.js";
 import { getUrlOrigin } from "./get-url-origin.js";
 import type { RunAIGNECommandOptions } from "./run-with-aigne.js";
-
-const isTest = process.env.CI || process.env.NODE_ENV === "test";
 
 export interface RunOptions extends RunAIGNECommandOptions {
   path: string;
@@ -32,15 +16,13 @@ export interface RunOptions extends RunAIGNECommandOptions {
   aigneHubUrl?: string;
 }
 
-const mockInquirerPrompt = (() => Promise.resolve({ useAigneHub: true })) as any;
-
 let printed = false;
 
 async function printChatModelInfoBox(model: ChatModel) {
   if (printed) return;
   printed = true;
 
-  const credential = await model.getCredential();
+  const credential = await model.credential;
 
   const lines = [`${chalk.cyan("Provider")}: ${chalk.green(model.name.replace("ChatModel", ""))}`];
 
@@ -60,92 +42,34 @@ async function printChatModelInfoBox(model: ChatModel) {
   console.log("");
 }
 
-async function prepareAIGNEConfig(
-  options?: Pick<RunOptions, "model" | "aigneHubUrl"> & Partial<Model>,
-  inquirerPromptFn?: LoadCredentialOptions["inquirerPromptFn"],
-) {
-  const aigneDir = join(homedir(), ".aigne");
-  if (!existsSync(aigneDir)) {
-    mkdirSync(aigneDir, { recursive: true });
-  }
-
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-  const inquirerPrompt = (inquirerPromptFn ?? inquirer.prompt) as typeof inquirer.prompt;
-
-  // get aigne hub url
-  const configUrl = options?.aigneHubUrl || process.env.AIGNE_HUB_API_URL;
-  const AIGNE_HUB_URL = configUrl || envs?.default?.AIGNE_HUB_API_URL || DEFAULT_AIGNE_HUB_URL;
-
-  const { host } = new URL(AIGNE_HUB_URL);
-  const result = await checkConnectionStatus(host).catch(() => null);
-  const alreadyConnected = Boolean(result?.apiKey);
-
-  return { AIGNE_HUB_URL, inquirerPrompt: alreadyConnected ? mockInquirerPrompt : inquirerPrompt };
-}
-
 export async function loadAIGNE({
   path,
-  options,
   modelOptions,
-  actionOptions,
 }: {
   path?: string;
-  options?: Model & Pick<RunOptions, "model" | "aigneHubUrl">;
-  modelOptions?: ChatModelOptions;
-  actionOptions?: {
-    inquirerPromptFn?: LoadCredentialOptions["inquirerPromptFn"];
-    runTest?: boolean;
-  };
+  modelOptions?: ChatModelOptions & LoadCredentialOptions;
 }) {
-  const { AIGNE_HUB_URL, inquirerPrompt } = await prepareAIGNEConfig(
-    options,
-    actionOptions?.inquirerPromptFn,
-  );
-  const { temperature, topP, presencePenalty, frequencyPenalty } = options || {};
-  let modelName = options?.model || "";
+  let aigne: AIGNE;
 
   if (path) {
-    const { aigne } = await loadAIGNEFile(path).catch(() => ({ aigne: null }));
-    const modelFromPath = `${aigne?.model?.provider ?? ""}:${aigne?.model?.name ?? ""}`;
-    modelName = modelName || modelFromPath;
-  }
-
-  // format model name
-  const formattedModelName = isTest ? modelName : await formatModelName(modelName, inquirerPrompt);
-
-  if (isTest && path && !actionOptions?.runTest) {
-    const model = await loadModel(parseModelOption(formattedModelName));
-    return await AIGNE.load(path, { loadModel, memories: availableMemories, model });
+    aigne = await AIGNE.load(path, {
+      memories: availableMemories,
+      model: (options) =>
+        loadChatModel({ ...options, ...omitBy(modelOptions ?? {}, (v) => isNil(v)) }),
+      imageModel: () => new OpenAIImageModel(),
+    });
+  } else {
+    const chatModel = await loadChatModel({ ...modelOptions });
+    aigne = new AIGNE({ model: chatModel });
   }
 
   console.log(
     `${chalk.grey("TIPS:")} run ${chalk.cyan("aigne observe")} to start the observability server.\n`,
   );
 
-  const model = await loadModel(
-    {
-      ...parseModelOption(formattedModelName),
-      temperature,
-      topP,
-      presencePenalty,
-      frequencyPenalty,
-    },
-    modelOptions,
-    { aigneHubUrl: AIGNE_HUB_URL, inquirerPromptFn: actionOptions?.inquirerPromptFn },
-  );
-
-  if (model) {
-    await printChatModelInfoBox(model);
+  if (aigne.model) {
+    await printChatModelInfoBox(aigne.model);
   }
 
-  if (path) {
-    return await AIGNE.load(path, {
-      loadModel,
-      memories: availableMemories,
-      model,
-      imageModel: new OpenAIImageModel({}),
-    });
-  }
-
-  return new AIGNE({ model });
+  return aigne;
 }

@@ -263,3 +263,40 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
   },
 ]
 `;
+
+exports[`AIGNE.invoke should respond $meta field with usage metrics with {
+  streaming: true,
+  returnMetadata: true,
+} 1`] = `
+[
+  {
+    "delta": {
+      "text": {
+        "message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "message": " world",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$meta": {
+          "usage": {
+            "agentCalls": 4,
+            "aigneHubCredits": 0,
+            "inputTokens": 13,
+            "outputTokens": 24,
+          },
+        },
+        "message": "Hello world",
+      },
+    },
+  },
+]
+`;

@@ -156,8 +156,8 @@ jobs:
                 echo "Testing $dir with ${{ matrix.provider }}:$MODEL"
                 start_time=$(date +%s)
                 cd $dir
-                echo "MODEL_PROVIDER=${{ matrix.provider }} MODEL_NAME=$MODEL pnpm test:llm"
-                MODEL_PROVIDER=${{ matrix.provider }} MODEL_NAME=$MODEL pnpm test:llm || exit 1
+                echo "MODEL=${{ matrix.provider }}:$MODEL pnpm test:llm"
+                MODEL="${{ matrix.provider }}:$MODEL" pnpm test:llm || exit 1
                 cd ../..
                 end_time=$(date +%s)
                 duration=$((end_time - start_time))

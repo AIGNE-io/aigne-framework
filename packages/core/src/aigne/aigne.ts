@@ -95,8 +95,11 @@ export class AIGNE<U extends UserContext = UserContext> {
    * @param options - Options to override the loaded configuration.
    * @returns A fully initialized AIGNE instance with configured agents and skills.
    */
-  static async load(path: string, options: AIGNEOptions & LoadOptions): Promise<AIGNE> {
-    const { model, imageModel, agents = [], skills = [], ...aigne } = await load(path, options);
+  static async load(
+    path: string,
+    options: Omit<AIGNEOptions, keyof LoadOptions> & LoadOptions = {},
+  ): Promise<AIGNE> {
+    const { agents = [], skills = [], model, imageModel, ...aigne } = await load(path, options);
     return new AIGNE({
       ...aigne,
       ...options,

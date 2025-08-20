@@ -7,8 +7,13 @@ import { application } from "express";
 import yargs from "yargs";
 
 let listen: Mock<typeof application.listen>;
+let originalEnv: NodeJS.ProcessEnv;
 
 beforeEach(() => {
+  originalEnv = { MODEL: process.env.MODEL, OPENAI_API_KEY: process.env.OPENAI_API_KEY };
+  process.env.MODEL = "openai:gpt-4o-mini";
+  process.env.OPENAI_API_KEY = "test-openai-api-key";
+
   listen = spyOn(application, "listen").mockImplementationOnce(((_port, _host, cb) => {
     if (typeof cb === "function") cb();
     return new Server();
@@ -16,6 +21,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  Object.assign(process.env, originalEnv);
+
   listen.mockRestore();
 });
 

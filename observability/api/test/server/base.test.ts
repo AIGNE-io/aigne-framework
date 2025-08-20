@@ -170,12 +170,12 @@ describe("Base Server", () => {
   test("GET /api/settings should return default when file not exists", async () => {
     const port = 12347;
     const url = `http://localhost:${port}`;
+    rmSync(mockSettingFilePath, { recursive: true, force: true });
 
     const { server } = await startServer({
       port,
       dbUrl: getObservabilityDbPath("mock-observer.db"),
     });
-
     const res = await fetch(`${url}/api/settings`, { method: "GET" });
     expect(res.status).toBe(200);
     const json = await res.json();

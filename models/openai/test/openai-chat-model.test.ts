@@ -119,8 +119,7 @@ beforeEach(() => {
 });
 
 test("OpenAIChatModel.invoke should return the correct tool", async () => {
-  const client = await model.client();
-  spyOn(client.chat.completions, "create").mockReturnValue(
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-1.txt"),
     }),
@@ -135,8 +134,7 @@ test("OpenAIChatModel.invoke should return the correct tool", async () => {
 });
 
 test("OpenAIChatModel.invoke should return structured output", async () => {
-  const client = await model.client();
-  spyOn(client.chat.completions, "create").mockReturnValue(
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-2.txt"),
     }),
@@ -152,8 +150,7 @@ test("OpenAIChatModel.invoke should return structured output", async () => {
 });
 
 test("OpenAIChatModel.invoke with streaming", async () => {
-  const client = await model.client();
-  spyOn(client.chat.completions, "create").mockReturnValue(
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
     }),
@@ -170,8 +167,7 @@ test("OpenAIChatModel.invoke with streaming", async () => {
 });
 
 test("OpenAIChatModel.invoke without streaming", async () => {
-  const client = await model.client();
-  spyOn(client.chat.completions, "create").mockReturnValue(
+  spyOn(model.client.chat.completions, "create").mockReturnValue(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
     }),
@@ -190,8 +186,7 @@ test("OpenAIChatModel should use tool to get json output directly if no tools in
     model: "gpt-4o-mini",
   });
 
-  const client = await model.client();
-  spyOn(client.chat.completions, "create").mockReturnValueOnce(
+  spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-2.txt"),
     }),
@@ -247,8 +242,7 @@ test("OpenAIChatModel should try parse text as json if there are both tools and 
   });
   model["supportsToolsUseWithJsonSchema"] = false;
 
-  const client = await model.client();
-  spyOn(client.chat.completions, "create").mockReturnValueOnce(
+  spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
     createMockEventStream({
       path: join(import.meta.dirname, "openai-streaming-response-2.txt"),
     }),

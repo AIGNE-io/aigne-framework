@@ -2,7 +2,7 @@ import { mkdir, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { exists } from "@aigne/agent-library/utils/fs.js";
-import { availableModels, parseModelOption } from "@aigne/aigne-hub";
+import { availableModels } from "@aigne/aigne-hub";
 import {
   type Agent,
   type AIGNE,
@@ -12,7 +12,14 @@ import {
   UserAgent,
 } from "@aigne/core";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
-import { isEmpty, type PromiseOrValue, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import {
+  isEmpty,
+  isNil,
+  omitBy,
+  type PromiseOrValue,
+  pick,
+  tryOrThrow,
+} from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import type { Argv } from "yargs";
 import yargs from "yargs";
@@ -177,14 +184,13 @@ export async function runWithAIGNE(
         }
 
         const aigne = await loadAIGNE({
-          options: {
-            ...parseModelOption(options.model),
-            temperature: options.temperature,
-            topP: options.topP,
-            presencePenalty: options.presencePenalty,
-            frequencyPenalty: options.frequencyPenalty,
+          modelOptions: {
+            ...modelOptions,
+            ...omitBy(
+              pick(options, "model", "temperature", "topP", "presencePenalty", "frequencyPenalty"),
+              (v) => isNil(v),
+            ),
           },
-          modelOptions,
         });
 
         try {

@@ -1,15 +1,15 @@
 import { afterAll, beforeEach, describe, expect, mock, test } from "bun:test";
 import { readFile, rm, writeFile } from "node:fs/promises";
-import { joinURL } from "ufo";
-import { parse, stringify } from "yaml";
-import { AIGNE_ENV_FILE } from "../../../src/utils/aigne-hub/constants.js";
+import { AIGNE_ENV_FILE } from "@aigne/cli/utils/aigne-hub/constants.js";
 import {
   checkConnectionStatus,
   connectToAIGNEHub,
   createConnect,
   fetchConfigs,
   loadAIGNEHubCredential as loadCredential,
-} from "../../../src/utils/aigne-hub/credential.js";
+} from "@aigne/cli/utils/aigne-hub/credential.js";
+import { joinURL } from "ufo";
+import { parse, stringify } from "yaml";
 import { createHonoServer } from "../../_mocks_/server.js";
 
 describe("credential util functions", () => {

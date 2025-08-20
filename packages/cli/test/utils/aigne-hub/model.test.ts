@@ -1,13 +1,13 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from "bun:test";
 import { rm, writeFile } from "node:fs/promises";
-import { stringify } from "yaml";
-import { AIGNE_ENV_FILE } from "../../../src/utils/aigne-hub/constants.js";
+import { AIGNE_ENV_FILE } from "@aigne/cli/utils/aigne-hub/constants.js";
 import {
   formatModelName,
   loadChatModel as loadModel,
   maskApiKey,
   parseModelOption,
-} from "../../../src/utils/aigne-hub/model.js";
+} from "@aigne/cli/utils/aigne-hub/model.js";
+import { stringify } from "yaml";
 import { createHonoServer } from "../../_mocks_/server.js";
 
 const mockInquirerPrompt = mock(async (prompt: any) => {

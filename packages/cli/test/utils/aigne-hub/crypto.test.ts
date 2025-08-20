@@ -4,7 +4,7 @@ import {
   decrypt,
   encodeEncryptionKey,
   encrypt,
-} from "../../../src/utils/aigne-hub/crypto.js";
+} from "@aigne/cli/utils/aigne-hub/crypto.js";
 
 describe("Encryption Functions", () => {
   describe("encodeEncryptionKey", () => {

@@ -21,6 +21,13 @@ interface BaseBoard {
   position: number;
   createdAt: string;
   updatedAt: string;
+  cover: string;
+  icon: string | null;
+  passports: unknown[];
+  translation: {
+    title: Record<string, unknown>;
+    desc: Record<string, unknown>;
+  };
 }
 
 // Board list response interface
@@ -57,6 +64,12 @@ interface CreateBoardResponse extends BaseBoard {
   cover: string;
 }
 
+// Update board request interface
+interface UpdateBoardRequest extends BaseBoard {}
+
+// Update board response interface
+interface UpdateBoardResponse extends BaseBoard {}
+
 export async function getBoards(input: {
   appUrl: string;
   accessToken: string;
@@ -87,6 +100,67 @@ export async function getBoards(input: {
   return await getBoardsResponse.json();
 }
 
+export async function updateBoard(input: {
+  appUrl: string;
+  accessToken: string;
+  boardData: UpdateBoardRequest;
+}): Promise<UpdateBoardResponse> {
+  const { appUrl, accessToken, boardData } = input;
+
+  const url = new URL(appUrl);
+  const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
+
+  // Update board
+  const updateBoardUrl = joinURL(url.origin, mountPoint, `/api/boards/${boardData.id}`);
+
+  const updateBoardResponse = await fetch(updateBoardUrl, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(boardData),
+  });
+
+  if (!updateBoardResponse.ok) {
+    const errorText = await updateBoardResponse.text();
+    throw new Error(
+      `Failed to update board: ${updateBoardResponse.status} ${updateBoardResponse.statusText} - ${errorText}`,
+    );
+  }
+
+  return await updateBoardResponse.json();
+}
+
+// Helper function to check if board needs update and perform update if needed
+async function checkAndUpdateBoard(input: {
+  appUrl: string;
+  accessToken: string;
+  existingBoard: BaseBoard;
+  boardName?: string;
+  desc: string;
+  cover: string;
+}): Promise<void> {
+  const { appUrl, accessToken, existingBoard, boardName, desc, cover } = input;
+
+  const titleChanged = boardName && existingBoard.title !== boardName;
+  const descChanged = existingBoard.desc !== desc;
+  const coverChanged = existingBoard.cover !== cover;
+
+  if (titleChanged || descChanged || coverChanged) {
+    await updateBoard({
+      appUrl,
+      accessToken,
+      boardData: {
+        ...existingBoard,
+        title: boardName || existingBoard.title,
+        desc,
+        cover,
+      },
+    });
+  }
+}
+
 export async function findOrCreateBoard(input: {
   appUrl: string;
   accessToken: string;
@@ -104,6 +178,16 @@ export async function findOrCreateBoard(input: {
     const existingBoard = boardsResponse.boards.find((board) => board.id === boardId);
 
     if (existingBoard) {
+      // Check and update board if needed
+      await checkAndUpdateBoard({
+        appUrl,
+        accessToken,
+        existingBoard,
+        boardName,
+        desc,
+        cover,
+      });
+
       return existingBoard.id;
     }
   } catch (error) {
@@ -121,7 +205,16 @@ export async function findOrCreateBoard(input: {
         const currentUser = await getCurrentUser({ appUrl, accessToken });
 
         if (currentUser.user.did === boardWithSameName.createdBy) {
-          // Same board name and created by current user, return existing board
+          // Same board name and created by current user, check for updates
+          await checkAndUpdateBoard({
+            appUrl,
+            accessToken,
+            existingBoard: boardWithSameName,
+            boardName,
+            desc,
+            cover,
+          });
+
           return boardWithSameName.id;
         } else {
           // Board name exists but created by different user, throw error

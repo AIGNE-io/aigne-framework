@@ -55,7 +55,7 @@ For more complex applications, AIGNE supports loading instance configuration fro
 ```ts file="../../docs-examples/test/concepts/aigne.test.ts" region="example-aigne-load" exclude_imports
 const path = join(import.meta.dirname, "../../test-aigne"); // "/PATH/TO/AIGNE_PROJECT";
 
-const aigne = await AIGNE.load(path, { loadModel });
+const aigne = await AIGNE.load(path);
 ```
 
 ### Adding Agents

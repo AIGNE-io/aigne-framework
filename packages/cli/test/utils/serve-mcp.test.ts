@@ -1,8 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { loadModel } from "@aigne/aigne-hub";
 import { AIGNE_CLI_VERSION } from "@aigne/cli/constants";
+import { loadChatModel } from "@aigne/cli/utils/aigne-hub/model.js";
 import { serveMCPServer } from "@aigne/cli/utils/serve-mcp.js";
 import { AIGNE } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
@@ -15,7 +15,10 @@ test("serveMCPServer should work", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { loadModel });
+  const aigne = await AIGNE.load(testAgentsPath, {
+    // @ts-ignore
+    model: (options: any) => loadChatModel(options),
+  });
 
   assert(aigne.model, "aigne.model should be defined");
   spyOn(aigne.model, "process")
@@ -62,7 +65,10 @@ test("serveMCPServer should respond error from not supported methods", async () 
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { loadModel });
+  const aigne = await AIGNE.load(testAgentsPath, {
+    // @ts-ignore
+    model: (options: any) => loadChatModel(options),
+  });
   const server = await serveMCPServer({ aigne, port });
 
   spyOn(console, "error").mockReturnValueOnce(undefined);
@@ -94,8 +100,10 @@ test("serveMCPServer should respond error from agent processing", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { loadModel });
-
+  const aigne = await AIGNE.load(testAgentsPath, {
+    // @ts-ignore
+    model: (options: any) => loadChatModel(options),
+  });
   assert(aigne.model, "engine.model should be defined");
   spyOn(aigne.model, "process").mockReturnValueOnce(
     arrayToAgentProcessAsyncGenerator([new Error("test error from model")]),
@@ -131,8 +139,10 @@ test("serveMCPServer should respond 500 error", async () => {
   const port = await detect();
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
-  const aigne = await AIGNE.load(testAgentsPath, { loadModel });
-
+  const aigne = await AIGNE.load(testAgentsPath, {
+    // @ts-ignore
+    model: (options: any) => loadChatModel(options),
+  });
   await using _ = await mockModule("@aigne/cli/utils/serve-mcp.ts", () => ({
     createMcpServer: () => {
       throw new Error("test error from create mcp server");

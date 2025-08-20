@@ -1,6 +1,5 @@
 import { afterAll, afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import type { ChatModelInput } from "@aigne/core";
 import { ChatModel, isAgentResponseDelta } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
 import { joinURL } from "ufo";

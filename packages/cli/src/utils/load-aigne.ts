@@ -58,7 +58,6 @@ export async function loadAIGNE({
     });
   } else {
     const chatModel = await loadChatModel({ ...modelOptions });
-
     aigne = new AIGNE({ model: chatModel });
   }
 

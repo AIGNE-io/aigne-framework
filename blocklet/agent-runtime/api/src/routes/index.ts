@@ -68,6 +68,7 @@ router.get("/chat/agent", async (req, res) => {
 router.post("/chat", async (req, res) => {
   try {
     const { aigne } = await loadAIGNEFile(req.mainDir).catch(() => ({ aigne: null }));
+    // @ts-ignore
     const modelFromPath = `${aigne?.model?.provider ?? "openai"}/${aigne?.model?.name ?? "gpt-5-mini"}`;
     const model = await AIGNEHubChatModel.load({ model: modelFromPath });
     const engine = await AIGNE.load(req.mainDir, { model });

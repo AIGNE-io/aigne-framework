@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.53.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.52.0...core-v1.53.0) (2025-08-20)
+
+
+### Features
+
+* add ImageModel/ImageAgent support ([#383](https://github.com/AIGNE-io/aigne-framework/issues/383)) ([96a2093](https://github.com/AIGNE-io/aigne-framework/commit/96a209368d91d98f47db6de1e404640368a86fa8))
+
 ## [1.52.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.51.0...core-v1.52.0) (2025-08-20)
 
 

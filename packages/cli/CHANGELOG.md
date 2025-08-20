@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.38.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.37.1...cli-v1.38.0) (2025-08-20)
+
+
+### Features
+
+* add ImageModel/ImageAgent support ([#383](https://github.com/AIGNE-io/aigne-framework/issues/383)) ([96a2093](https://github.com/AIGNE-io/aigne-framework/commit/96a209368d91d98f47db6de1e404640368a86fa8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.24
+    * @aigne/agentic-memory bumped to 1.0.24
+    * @aigne/aigne-hub bumped to 0.6.6
+    * @aigne/core bumped to 1.53.0
+    * @aigne/default-memory bumped to 1.1.6
+    * @aigne/openai bumped to 0.12.0
+
 ## [1.37.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.37.0...cli-v1.37.1) (2025-08-20)
 
 

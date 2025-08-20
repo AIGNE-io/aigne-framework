@@ -19,6 +19,7 @@ import {
   type Message,
 } from "../agents/agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
+import type { ImageModel } from "../agents/image-model.js";
 import {
   isTransferAgentOutput,
   type TransferAgentOutput,
@@ -126,6 +127,8 @@ export interface Context<U extends UserContext = UserContext>
   rootId: string;
 
   model?: ChatModel;
+
+  imageModel?: ImageModel;
 
   skills?: Agent[];
 
@@ -285,6 +288,10 @@ export class AIGNEContext implements Context {
 
   get model() {
     return this.internal.model;
+  }
+
+  get imageModel() {
+    return this.internal.imageModel;
   }
 
   get skills() {
@@ -589,7 +596,7 @@ class AIGNEContextShared {
   constructor(
     private readonly parent?: Pick<
       Context,
-      "model" | "agents" | "skills" | "limits" | "observer"
+      "model" | "imageModel" | "agents" | "skills" | "limits" | "observer"
     > & {
       messageQueue?: MessageQueue;
       events?: Emitter<any>;
@@ -605,6 +612,10 @@ class AIGNEContextShared {
 
   get model() {
     return this.parent?.model;
+  }
+
+  get imageModel() {
+    return this.parent?.imageModel;
   }
 
   get skills() {

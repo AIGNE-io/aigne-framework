@@ -1,5 +1,6 @@
 import { AIGNE, type ChatModel, type ChatModelOptions } from "@aigne/core";
 import { isNil, omitBy } from "@aigne/core/utils/type-utils.js";
+import { OpenAIImageModel } from "@aigne/openai";
 import boxen from "boxen";
 import chalk from "chalk";
 import { availableMemories } from "../constants.js";
@@ -55,6 +56,7 @@ export async function loadAIGNE({
       memories: availableMemories,
       model: (options) =>
         loadChatModel({ ...options, ...omitBy(modelOptions ?? {}, (v) => isNil(v)) }),
+      imageModel: () => new OpenAIImageModel(),
     });
   } else {
     const chatModel = await loadChatModel({ ...modelOptions });

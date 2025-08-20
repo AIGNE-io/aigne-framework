@@ -1,0 +1,154 @@
+[
+  {
+    "description": "An introduction to @aigne/cli, its main features, and the problems it solves for agent development.",
+    "parentId": null,
+    "path": "/overview",
+    "sourceIds": ["README.md", "package.json", "src/commands/aigne.ts", "src/cli.ts"],
+    "title": "Overview"
+  },
+  {
+    "description": "A step-by-step guide to installing the CLI and creating and running your first AIGNE project.",
+    "parentId": null,
+    "path": "/getting-started",
+    "sourceIds": [
+      "README.md",
+      "src/commands/create.ts",
+      "src/commands/run.ts",
+      "templates/default/README.md",
+      "templates/default/aigne.yaml",
+      "templates/default/chat.yaml"
+    ],
+    "title": "Getting Started"
+  },
+  {
+    "description": "Explains the fundamental concepts of an AIGNE project, including its structure and key configuration files.",
+    "parentId": null,
+    "path": "/core-concepts",
+    "sourceIds": [
+      "templates/default/aigne.yaml",
+      "templates/default/chat.yaml",
+      "templates/default/sandbox.js",
+      "templates/default/filesystem.yaml",
+      "test-agents/aigne.yaml"
+    ],
+    "title": "Core Concepts"
+  },
+  {
+    "description": "Details the main project configuration file `aigne.yaml`, including chat model settings, agent definitions, and skill integrations.",
+    "parentId": "/core-concepts",
+    "path": "/core-concepts/project-configuration",
+    "sourceIds": [
+      "templates/default/aigne.yaml",
+      "test-agents/aigne.yaml",
+      "src/utils/load-aigne.ts"
+    ],
+    "title": "Project Configuration (aigne.yaml)"
+  },
+  {
+    "description": "Covers the definition and structure of agents and skills, the core executable components of an AIGNE project.",
+    "parentId": "/core-concepts",
+    "path": "/core-concepts/agents-and-skills",
+    "sourceIds": [
+      "templates/default/chat.yaml",
+      "templates/default/sandbox.js",
+      "templates/default/filesystem.yaml",
+      "test-agents/chat.yaml",
+      "test-agents/sandbox.js"
+    ],
+    "title": "Agents and Skills"
+  },
+  {
+    "description": "A detailed reference for all available CLI commands and their options, organized for quick look-up.",
+    "parentId": null,
+    "path": "/command-reference",
+    "sourceIds": ["README.md", "src/commands/aigne.ts", "src/cli.ts"],
+    "title": "Command Reference"
+  },
+  {
+    "description": "Scaffolds a new AIGNE project from a template.",
+    "parentId": "/command-reference",
+    "path": "/command-reference/create",
+    "sourceIds": ["src/commands/create.ts", "README.md"],
+    "title": "aigne create"
+  },
+  {
+    "description": "Executes an agent locally or from a remote URL, with options for chat mode, model selection, and input handling.",
+    "parentId": "/command-reference",
+    "path": "/command-reference/run",
+    "sourceIds": [
+      "src/commands/run.ts",
+      "README.md",
+      "src/utils/run-with-aigne.ts",
+      "src/utils/yargs.ts",
+      "src/utils/load-aigne.ts"
+    ],
+    "title": "aigne run"
+  },
+  {
+    "description": "Serves agents as a Model Context Protocol (MCP) server for integration with external systems.",
+    "parentId": "/command-reference",
+    "path": "/command-reference/serve-mcp",
+    "sourceIds": ["src/commands/serve-mcp.ts", "README.md", "src/utils/serve-mcp.ts"],
+    "title": "aigne serve-mcp"
+  },
+  {
+    "description": "Manages connections to the AIGNE Hub, allowing you to switch accounts, check status, and use Hub-provided models.",
+    "parentId": "/command-reference",
+    "path": "/command-reference/hub",
+    "sourceIds": ["src/commands/hub.ts", "src/utils/aigne-hub-user.ts", "src/constants.ts"],
+    "title": "aigne hub"
+  },
+  {
+    "description": "Starts a local server to view and analyze agent execution traces and observability data.",
+    "parentId": "/command-reference",
+    "path": "/command-reference/observe",
+    "sourceIds": ["src/commands/observe.ts", "README.md"],
+    "title": "aigne observe"
+  },
+  {
+    "description": "Runs automated tests for your agents and skills.",
+    "parentId": "/command-reference",
+    "path": "/command-reference/test",
+    "sourceIds": ["src/commands/test.ts", "README.md", "test-agents/README.md"],
+    "title": "aigne test"
+  },
+  {
+    "description": "Describes how to use pre-packaged applications like `doc-smith` for specialized tasks.",
+    "parentId": "/command-reference",
+    "path": "/command-reference/built-in-apps",
+    "sourceIds": ["src/commands/app.ts"],
+    "title": "Built-in Apps"
+  },
+  {
+    "description": "Practical guides for accomplishing common development tasks with @aigne/cli.",
+    "parentId": null,
+    "path": "/guides",
+    "sourceIds": ["README.md", "src/commands/hub.ts", "src/commands/run.ts"],
+    "title": "Guides"
+  },
+  {
+    "description": "A step-by-step tutorial on creating a new JavaScript agent and integrating it into your project as a skill.",
+    "parentId": "/guides",
+    "path": "/guides/creating-a-custom-agent",
+    "sourceIds": [
+      "templates/default/sandbox.js",
+      "test-agents/sandbox.js",
+      "templates/default/aigne.yaml"
+    ],
+    "title": "Creating a Custom Agent"
+  },
+  {
+    "description": "Learn how to run agents directly from a remote Git repository or tarball URL.",
+    "parentId": "/guides",
+    "path": "/guides/running-remote-agents",
+    "sourceIds": ["src/commands/run.ts", "README.md", "src/utils/download.ts"],
+    "title": "Running Remote Agents"
+  },
+  {
+    "description": "A complete log of features, bug fixes, and dependency updates for each version of @aigne/cli.",
+    "parentId": null,
+    "path": "/changelog",
+    "sourceIds": ["CHANGELOG.md"],
+    "title": "Changelog"
+  }
+]

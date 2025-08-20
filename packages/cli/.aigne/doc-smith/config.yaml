@@ -1,0 +1,64 @@
+# Project information for documentation publishing
+projectName: aigne-framework
+projectDesc: The functional, composable, and typescript-first AI Agent framework for real-world LLM Apps.
+projectLogo: https://avatars.githubusercontent.com/u/143965177?v=4
+
+# =============================================================================
+# Documentation Configuration
+# =============================================================================
+
+# Purpose: What's the main outcome you want readers to achieve?
+# Available options (uncomment and modify as needed):
+#   getStarted       - Get started quickly: Help new users go from zero to working in <30 minutes
+#   completeTasks    - Complete specific tasks: Guide users through common workflows and use cases
+#   findAnswers      - Find answers fast: Provide searchable reference for all features and APIs
+#   understandSystem - Understand the system: Explain how it works, why design decisions were made
+#   solveProblems    - Solve problems: Help users troubleshoot and fix issues
+#   mixedPurpose     - Mix of above: Comprehensive documentation covering multiple needs
+documentPurpose:
+  - completeTasks
+  - findAnswers
+
+# Target Audience: Who will be reading this most often?
+# Available options (uncomment and modify as needed):
+#   endUsers         - End users (non-technical): People who use the product but don't code
+#   developers       - Developers integrating: Engineers adding this to their projects
+#   devops           - DevOps/Infrastructure: Teams deploying, monitoring, maintaining systems
+#   decisionMakers   - Technical decision makers: Architects, leads evaluating or planning implementation
+#   supportTeams     - Support teams: People helping others use the product
+#   mixedTechnical   - Mixed technical audience: Developers, DevOps, and technical users
+targetAudienceTypes:
+  - developers
+
+# Reader Knowledge Level: What do readers typically know when they arrive?
+# Available options (uncomment and modify as needed):
+#   completeBeginners    - Complete beginners: New to this domain/technology entirely
+#   domainFamiliar       - Domain-familiar, tool-new: Know the problem space, new to this specific solution
+#   experiencedUsers     - Experienced users: Regular users needing reference/advanced topics
+#   emergencyTroubleshooting - Emergency/troubleshooting: Something's broken, need to fix it quickly
+#   exploringEvaluating  - Exploring/evaluating: Trying to understand if this fits their needs
+readerKnowledgeLevel: domainFamiliar
+
+# Documentation Depth: How comprehensive should the documentation be?
+# Available options (uncomment and modify as needed):
+#   essentialOnly      - Essential only: Cover the 80% use cases, keep it concise
+#   balancedCoverage   - Balanced coverage: Good depth with practical examples [RECOMMENDED]
+#   comprehensive      - Comprehensive: Cover all features, edge cases, and advanced scenarios
+#   aiDecide           - Let AI decide: Analyze code complexity and suggest appropriate depth
+documentationDepth: comprehensive
+
+# Custom Rules: Define specific documentation generation rules and requirements
+rules: |
+  
+
+# Target Audience: Describe your specific target audience and their characteristics
+targetAudience: |
+  
+
+locale: en
+translateLanguages:
+  - zh
+docsDir: ./docs  # Directory to save generated documentation
+sourcesPath:  # Source code paths to analyze
+  - ./
+lastGitHead: 1088b677bb553c1c3c2a977dcf1648afef069bb0

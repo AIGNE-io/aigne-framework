@@ -12,10 +12,15 @@ import { mockModule } from "../_mocks_/mock-module.js";
 let originalEnv: NodeJS.ProcessEnv;
 
 beforeEach(() => {
-  originalEnv = { MODEL: process.env.MODEL, OPENAI_API_KEY: process.env.OPENAI_API_KEY };
+  originalEnv = {
+    MODEL: process.env.MODEL,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    XAI_API_KEY: process.env.XAI_API_KEY,
+  };
 
   process.env.MODEL = "openai:gpt-4o-mini";
   process.env.OPENAI_API_KEY = "test-openai-api-key";
+  process.env.XAI_API_KEY = "test-xai-api-key";
 });
 
 afterEach(() => {

@@ -108,6 +108,18 @@ export class PromptBuilder {
     };
   }
 
+  async buildImagePrompt(options: Pick<PromptBuildOptions, "input">): Promise<{ prompt: string }> {
+    const messages =
+      (await (typeof this.instructions === "string"
+        ? ChatMessagesTemplate.from([SystemMessageTemplate.from(this.instructions)])
+        : this.instructions
+      )?.format(options.input, { workingDir: this.workingDir })) ?? [];
+
+    return {
+      prompt: messages.map((i) => i.content).join("\n"),
+    };
+  }
+
   private async buildMessages(options: PromptBuildOptions): Promise<ChatModelInputMessage[]> {
     const { input } = options;
 

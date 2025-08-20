@@ -21,7 +21,7 @@ test("AIGNE.load should load agents correctly", async () => {
     }),
   );
 
-  expect(aigne.agents.length).toBe(3);
+  expect(aigne.agents.length).toBe(4);
 
   const chat = aigne.agents[0];
   expect(chat).toEqual(
@@ -84,6 +84,9 @@ test("loader should use override options", async () => {
     expect.objectContaining({
       name: "test-team-agent",
     }),
+    expect.objectContaining({
+      name: "test-image-agent",
+    }),
     testAgent,
   ]);
   expect([...aigne.skills]).toEqual([expect.objectContaining({ name: "evaluateJs" }), testSkill]);
@@ -100,14 +103,16 @@ test("load should process path correctly", async () => {
 
   // mock a non-existing file
   stat.mockReturnValueOnce(Promise.reject(new Error("not found")));
-  expect(load("aigne.yaml")).rejects.toThrow("not found");
+  expect(load("aigne.yaml", { model: loadModel })).rejects.toThrow("not found");
 
   // mock a yaml file with invalid content
   stat.mockReturnValueOnce(
     Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"));
-  expect(load("invalid-yaml/aigne.yaml")).rejects.toThrow("Failed to parse aigne.yaml");
+  expect(load("invalid-yaml/aigne.yaml", { model: loadModel })).rejects.toThrow(
+    "Failed to parse aigne.yaml",
+  );
   expect(readFile).toHaveBeenLastCalledWith("invalid-yaml/aigne.yaml", "utf8");
 
   // mock a valid yaml but invalid properties
@@ -115,7 +120,9 @@ test("load should process path correctly", async () => {
     Promise.resolve({ isFile: () => true }) as ReturnType<typeof nodejs.fs.stat>,
   );
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: 123"));
-  expect(load("invalid-properties/aigne.yaml")).rejects.toThrow("Failed to validate aigne.yaml");
+  expect(load("invalid-properties/aigne.yaml", { model: loadModel })).rejects.toThrow(
+    "Failed to validate aigne.yaml",
+  );
   expect(readFile).toHaveBeenLastCalledWith("invalid-properties/aigne.yaml", "utf8");
 
   // mock a directory with a .yaml file

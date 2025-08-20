@@ -1360,11 +1360,7 @@ importers:
         version: link:../../packages/sqlite
       '@arcblock/did-connect':
         specifier: ^3.0.24
-<<<<<<< HEAD
-        version: 3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.46)(@blocklet/theme@3.0.33(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-=======
-        version: 3.0.24(1d63d1ec41d3b40d4f25cba7fbfd7e77)
->>>>>>> 8e74ccea (feat: support agent runtime blocklet as agent engine)
+        version: 3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.48)(@blocklet/theme@3.1.23(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@arcblock/ux':
         specifier: ^3.0.24
         version: 3.0.24(3229887ebef85d204beb14a892529cec)
@@ -1482,11 +1478,7 @@ importers:
         version: 1.16.46
       '@arcblock/did-connect':
         specifier: ^3.0.24
-<<<<<<< HEAD
-        version: 3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.46)(@blocklet/theme@3.0.33(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-=======
-        version: 3.0.24(1d63d1ec41d3b40d4f25cba7fbfd7e77)
->>>>>>> 8e74ccea (feat: support agent runtime blocklet as agent engine)
+        version: 3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.48)(@blocklet/theme@3.1.23(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@arcblock/ux':
         specifier: ^3.0.24
         version: 3.0.24(3229887ebef85d204beb14a892529cec)
@@ -12139,7 +12131,7 @@ snapshots:
       '@ocap/wallet': 1.20.15
       archiver: 7.0.1
       axios: 1.10.0(debug@4.4.1)
-      axios-mock-adapter: 2.1.0(axios@1.10.0(debug@4.4.1))
+      axios-mock-adapter: 2.1.0(axios@1.10.0)
       axon: 2.0.3
       chalk: 4.1.2
       cookie: 1.0.2
@@ -12261,11 +12253,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-<<<<<<< HEAD
-  '@arcblock/did-connect@3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.46)(@blocklet/theme@3.0.33(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
-=======
-  '@arcblock/did-connect@3.0.24(1d63d1ec41d3b40d4f25cba7fbfd7e77)':
->>>>>>> 8e74ccea (feat: support agent runtime blocklet as agent engine)
+  '@arcblock/did-connect@3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.48)(@blocklet/theme@3.1.23(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@arcblock/bridge': 3.0.24
       '@arcblock/did': 1.20.15
@@ -13581,11 +13569,7 @@ snapshots:
   '@blocklet/did-space-react@1.1.5(b94e7bfddf4cba4f2975d5af38f760df)':
     dependencies:
       '@arcblock/did': 1.20.15
-<<<<<<< HEAD
-      '@arcblock/did-connect': 3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.46)(@blocklet/theme@3.0.33(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-=======
-      '@arcblock/did-connect': 3.0.24(1d63d1ec41d3b40d4f25cba7fbfd7e77)
->>>>>>> 8e74ccea (feat: support agent runtime blocklet as agent engine)
+      '@arcblock/did-connect': 3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.48)(@blocklet/theme@3.1.23(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@arcblock/ux': 3.0.24(3229887ebef85d204beb14a892529cec)
       '@blocklet/js-sdk': 1.16.48
       '@blocklet/sdk': 1.16.46(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
@@ -13886,11 +13870,7 @@ snapshots:
       '@abtnode/constant': 1.16.46
       '@abtnode/util': 1.16.46
       '@arcblock/bridge': 3.0.24
-<<<<<<< HEAD
-      '@arcblock/did-connect': 3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.46)(@blocklet/theme@3.0.33(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-=======
-      '@arcblock/did-connect': 3.0.24(1d63d1ec41d3b40d4f25cba7fbfd7e77)
->>>>>>> 8e74ccea (feat: support agent runtime blocklet as agent engine)
+      '@arcblock/did-connect': 3.0.24(@arcblock/ux@3.0.24(3229887ebef85d204beb14a892529cec))(@blocklet/js-sdk@1.16.48)(@blocklet/theme@3.1.23(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)))(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@arcblock/icons': 3.0.24(react@19.1.0)
       '@arcblock/react-hooks': 3.0.24
       '@arcblock/ux': 3.0.24(3229887ebef85d204beb14a892529cec)
@@ -17370,15 +17350,11 @@ snapshots:
 
   awesome-phonenumber@7.5.0: {}
 
-<<<<<<< HEAD
-  axios-mock-adapter@2.1.0(axios@1.10.0(debug@4.4.1)):
-=======
   axe-core@4.10.3: {}
 
   axios-mock-adapter@2.1.0(axios@1.10.0):
->>>>>>> 8e74ccea (feat: support agent runtime blocklet as agent engine)
     dependencies:
-      axios: 1.10.0(debug@4.4.1)
+      axios: 1.10.0
       fast-deep-equal: 3.1.3
       is-buffer: 2.0.5
 

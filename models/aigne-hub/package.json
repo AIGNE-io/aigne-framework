@@ -65,7 +65,6 @@
   "devDependencies": {
     "@aigne/openai": "workspace:^",
     "@aigne/test-utils": "workspace:^",
-    "@ocap/mcrypto": "^1.21.0",
     "@types/bun": "^1.2.18",
     "detect-port": "^2.1.0",
     "hono": "^4.8.4",

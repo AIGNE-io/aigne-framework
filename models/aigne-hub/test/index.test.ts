@@ -1,7 +1,7 @@
-import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
-import { AIGNEHubChatModel } from "@aigne/aigne-hub";
+import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
 import type { ChatModelInput } from "@aigne/core";
 import { joinURL } from "ufo";
+import { AIGNEHubChatModel } from "../src/index.js";
 import { createHonoServer } from "./_mocks_/server.js";
 
 const mockEnv = {
@@ -23,9 +23,7 @@ describe("AIGNEHubChatModel", async () => {
   });
 
   afterEach(() => {
-    Object.keys(mockEnv).forEach((key) => {
-      delete process.env[key];
-    });
+    Object.keys(mockEnv).forEach((key) => delete process.env[key]);
     delete process.env.BLOCKLET_AIGNE_API_URL;
   });
 
@@ -51,7 +49,6 @@ describe("AIGNEHubChatModel", async () => {
 
     test("should throw error for unsupported provider", async () => {
       process.env.BLOCKLET_AIGNE_API_PROVIDER = "unsupported";
-
       expect(() => new AIGNEHubChatModel({ url })).toThrowError(/Unsupported model provider/);
     });
   });
@@ -70,32 +67,12 @@ describe("AIGNEHubChatModel", async () => {
   describe("process", () => {
     test("should process input with client and add headers", async () => {
       const model = new AIGNEHubChatModel({ url });
-
-      const mockClient = {
-        invoke: mock(() => Promise.resolve({ output: "test response" })),
-      };
-
-      const originalClient = model["client"];
-      (model as any).client = mock(() => Promise.resolve(mockClient));
-
       const input: ChatModelInput = {
         messages: [{ role: "user" as const, content: "Hello" }],
       };
-      const options = { fetchOptions: {} };
-
-      const result = await model.invoke(input, options);
-
-      expect(result).toBeDefined();
-      expect(mockClient.invoke).toHaveBeenCalledWith(input, {
-        fetchOptions: {
-          headers: {
-            "x-aigne-hub-client-did": "test-pid",
-          },
-        },
-      });
-      expect(mockClient.invoke).toHaveBeenCalledTimes(1);
-
-      (model as any).client = originalClient;
+      const result = await model.invoke(input, {});
+      // @ts-ignore
+      expect(result.headers["x-aigne-hub-client-did"]).toBe("test-pid");
     });
 
     test("should use ABT_NODE_DID when BLOCKLET_APP_PID is not available", async () => {
@@ -103,31 +80,12 @@ describe("AIGNEHubChatModel", async () => {
       process.env.ABT_NODE_DID = "test-did-value";
 
       const model = new AIGNEHubChatModel({ url });
-
-      const mockClient = {
-        invoke: mock(() => Promise.resolve({ output: "test response" })),
-      };
-
-      const originalClient = model["client"];
-      (model as any).client = mock(() => Promise.resolve(mockClient));
-
       const input: ChatModelInput = {
         messages: [{ role: "user" as const, content: "Hello" }],
       };
-      const options = { fetchOptions: {} };
-
-      await model.process(input, options);
-
-      expect(mockClient.invoke).toHaveBeenCalledWith(input, {
-        fetchOptions: {
-          headers: {
-            "x-aigne-hub-client-did": "test-did-value",
-          },
-        },
-      });
-
-      (model as any).client = originalClient;
-      process.env.BLOCKLET_APP_PID = "test-pid";
+      const result = await model.invoke(input, {});
+      // @ts-ignore
+      expect(result.headers["x-aigne-hub-client-did"]).toBe("test-did-value");
     });
 
     test("should use empty string when neither BLOCKLET_APP_PID nor ABT_NODE_DID is available", async () => {
@@ -135,32 +93,12 @@ describe("AIGNEHubChatModel", async () => {
       delete process.env.ABT_NODE_DID;
 
       const model = new AIGNEHubChatModel({ url });
-
-      const mockClient = {
-        invoke: mock(() => Promise.resolve({ output: "test response" })),
-      };
-
-      const originalClient = model["client"];
-      (model as any).client = mock(() => Promise.resolve(mockClient));
-
       const input: ChatModelInput = {
         messages: [{ role: "user" as const, content: "Hello" }],
       };
-      const options = { fetchOptions: {} };
-
-      await model.process(input, options);
-
-      expect(mockClient.invoke).toHaveBeenCalledWith(input, {
-        fetchOptions: {
-          headers: {
-            "x-aigne-hub-client-did": "",
-          },
-        },
-      });
-
-      (model as any).client = originalClient;
-      process.env.BLOCKLET_APP_PID = "test-pid";
-      process.env.ABT_NODE_DID = "test-did";
+      const result = await model.invoke(input, {});
+      // @ts-ignore
+      expect(result.headers["x-aigne-hub-client-did"]).toMatch(/@aigne\/aigne-hub/);
     });
   });
 

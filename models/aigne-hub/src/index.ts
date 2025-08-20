@@ -1,10 +1,10 @@
 import {
-  type AgentInvokeOptions,
   type AgentProcessResult,
   ChatModel,
   type ChatModelInput,
   type ChatModelOutput,
 } from "@aigne/core";
+import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
 import type { AIGNEHubChatModelOptions } from "./aigne-hub-model.js";
 import { findModel } from "./utils/model.js";
 
@@ -40,7 +40,7 @@ export class AIGNEHubChatModel extends ChatModel {
 
   override async process(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
+    options: BaseClientInvokeOptions,
   ): Promise<AgentProcessResult<ChatModelOutput>> {
     return this.client.invoke(input, options);
   }

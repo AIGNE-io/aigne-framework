@@ -719,9 +719,6 @@ importers:
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../../packages/test-utils
-      '@ocap/mcrypto':
-        specifier: ^1.21.0
-        version: 1.21.0
       '@types/bun':
         specifier: ^1.2.18
         version: 1.2.18(@types/react@19.1.8)

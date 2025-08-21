@@ -3,7 +3,6 @@ import { spawn } from "node:child_process";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { loadModel } from "@aigne/aigne-hub";
 import { type Agent, AIGNE, type Message } from "@aigne/core";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
@@ -40,6 +39,10 @@ export function createAppCommands(): CommandModule[] {
         })
         .command(serveMcpCommandModule({ name: app.name, dir }))
         .command(upgradeCommandModule({ name: app.name, dir, isLatest: !isCache, version }));
+
+      if (aigne.cli.chat) {
+        yargs.command({ ...agentCommandModule({ dir, agent: aigne.cli.chat }), command: "$0" });
+      }
 
       for (const agent of aigne.cli?.agents ?? []) {
         yargs.command(agentCommandModule({ dir, agent }));
@@ -136,16 +139,18 @@ export async function invokeCLIAgentFromDir(options: {
 }) {
   const aigne = await loadAIGNE({
     path: options.dir,
-    options: { model: options.input.model },
+    modelOptions: { model: options.input.model },
   });
 
   try {
-    const agent = aigne.cli.agents[options.agent];
+    const { chat, agents } = aigne.cli;
+
+    const agent = chat && chat.name === options.agent ? chat : agents[options.agent];
     assert(agent, `Agent ${options.agent} not found in ${options.dir}`);
 
     const input = await parseAgentInput(options.input, agent);
 
-    await runAgentWithAIGNE(aigne, agent, { input });
+    await runAgentWithAIGNE(aigne, agent, { input, chat: agent === chat });
   } finally {
     await aigne.shutdown();
   }
@@ -163,14 +168,21 @@ export async function loadApplication({
   name = `@aigne/${name}`;
   dir ??= join(homedir(), ".aigne", "registry.npmjs.org", name);
 
-  const check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
+  let check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
   if (check?.available) {
-    return {
-      aigne: await AIGNE.load(dir, { loadModel }),
-      dir,
-      version: check.version,
-      isCache: true,
-    };
+    const aigne = await AIGNE.load(dir).catch((error) => {
+      console.warn(`⚠️ Failed to load ${name}, trying to reinstall:`, error.message);
+    });
+    if (aigne) {
+      return {
+        aigne,
+        dir,
+        version: check.version,
+        isCache: true,
+      };
+    }
+
+    check = undefined;
   }
 
   const result = await new Listr<{
@@ -217,7 +229,7 @@ export async function loadApplication({
   ).run();
 
   return {
-    aigne: await AIGNE.load(dir, { loadModel }),
+    aigne: await AIGNE.load(dir),
     dir,
     version: result.version,
   };

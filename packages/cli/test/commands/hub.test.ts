@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { writeFile } from "node:fs/promises";
-import { AIGNE_ENV_FILE } from "@aigne/aigne-hub";
 import { stringify } from "yaml";
 import yargs from "yargs";
 import { createHubCommand } from "../../src/commands/hub.js";
+import { AIGNE_ENV_FILE } from "../../src/utils/aigne-hub/constants.js";
 import { createHonoServer } from "../_mocks_/server.js";
 
 const mockOpen = mock(() => {});

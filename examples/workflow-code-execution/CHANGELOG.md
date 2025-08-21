@@ -1,5 +1,59 @@
 # Changelog
 
+## [1.17.34](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.17.33...example-workflow-code-execution-v1.17.34) (2025-08-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.25
+    * @aigne/cli bumped to 1.39.0
+    * @aigne/core bumped to 1.54.0
+    * @aigne/default-memory bumped to 1.1.7
+    * @aigne/openai bumped to 0.12.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.33
+
+## [1.17.33](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.17.32...example-workflow-code-execution-v1.17.33) (2025-08-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.38.1
+
+## [1.17.32](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.17.31...example-workflow-code-execution-v1.17.32) (2025-08-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.24
+    * @aigne/cli bumped to 1.38.0
+    * @aigne/core bumped to 1.53.0
+    * @aigne/default-memory bumped to 1.1.6
+    * @aigne/openai bumped to 0.12.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.32
+
+## [1.17.31](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.17.30...example-workflow-code-execution-v1.17.31) (2025-08-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.23
+    * @aigne/cli bumped to 1.37.1
+    * @aigne/core bumped to 1.52.0
+    * @aigne/default-memory bumped to 1.1.5
+    * @aigne/openai bumped to 0.11.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.31
+
 ## [1.17.30](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.17.29...example-workflow-code-execution-v1.17.30) (2025-08-18)
 
 

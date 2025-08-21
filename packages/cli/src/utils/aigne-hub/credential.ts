@@ -1,5 +1,9 @@
+import { existsSync, mkdirSync } from "node:fs";
+import { readFile, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_URL, getAIGNEHubMountPoint } from "@aigne/aigne-hub";
 import { logger } from "@aigne/core/utils/logger.js";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import inquirer from "inquirer";
 import open from "open";
 import pWaitFor from "p-wait-for";
@@ -7,10 +11,7 @@ import { joinURL, withQuery } from "ufo";
 import { parse, stringify } from "yaml";
 import {
   ACCESS_KEY_SESSION_API,
-  AGENT_HUB_PROVIDER,
   AIGNE_ENV_FILE,
-  AIGNE_HUB_DID,
-  AIGNE_HUB_URL as DEFAULT_AIGNE_HUB_URL,
   isTest,
   WELLKNOWN_SERVICE_PATH_PREFIX,
 } from "./constants.js";
@@ -108,22 +109,10 @@ export async function createConnect({
   });
 }
 
-export async function getAIGNEHubMountPoint(url: string) {
-  const { origin } = new URL(url);
-  const BLOCKLET_JSON_PATH = "__blocklet__.js?type=json";
-  const blockletInfo = await fetch(joinURL(origin, BLOCKLET_JSON_PATH));
-  const blocklet = await blockletInfo.json();
-  const aigneHubMount = (blocklet?.componentMountPoints || []).find(
-    (m: { did: string }) => m.did === AIGNE_HUB_DID,
-  );
-
-  return joinURL(origin, aigneHubMount?.mountPoint || "");
-}
-
 export async function connectToAIGNEHub(url: string) {
   const { origin, host } = new URL(url);
   const connectUrl = joinURL(origin, WELLKNOWN_SERVICE_PATH_PREFIX);
-  const apiUrl = await getAIGNEHubMountPoint(url);
+  const apiUrl = await getAIGNEHubMountPoint(url, AIGNE_HUB_BLOCKLET_DID);
 
   try {
     const openFn = isTest ? () => {} : open;
@@ -141,14 +130,14 @@ export async function connectToAIGNEHub(url: string) {
     };
 
     // After redirection, write the AIGNE Hub access token
-    const aigneDir = nodejs.path.join(nodejs.os.homedir(), ".aigne");
-    if (!nodejs.fsSync.existsSync(aigneDir)) {
-      nodejs.fsSync.mkdirSync(aigneDir, { recursive: true });
+    const aigneDir = join(homedir(), ".aigne");
+    if (!existsSync(aigneDir)) {
+      mkdirSync(aigneDir, { recursive: true });
     }
 
-    const envs = parse(await nodejs.fs.readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+    const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
 
-    await nodejs.fs.writeFile(
+    await writeFile(
       AIGNE_ENV_FILE,
       stringify({
         ...envs,
@@ -171,11 +160,11 @@ export async function connectToAIGNEHub(url: string) {
 
 export const checkConnectionStatus = async (host: string) => {
   // aigne-hub access token
-  if (!nodejs.fsSync.existsSync(AIGNE_ENV_FILE)) {
+  if (!existsSync(AIGNE_ENV_FILE)) {
     throw new Error("AIGNE_HUB_API_KEY file not found, need to login first");
   }
 
-  const data = await nodejs.fs.readFile(AIGNE_ENV_FILE, "utf8");
+  const data = await readFile(AIGNE_ENV_FILE, "utf8");
   if (!data.includes("AIGNE_HUB_API_KEY")) {
     throw new Error("AIGNE_HUB_API_KEY key not found, need to login first");
   }
@@ -196,87 +185,81 @@ export const checkConnectionStatus = async (host: string) => {
   };
 };
 
-export async function loadCredential(options?: LoadCredentialOptions) {
+export async function loadAIGNEHubCredential(options?: LoadCredentialOptions) {
   const isBlocklet = process.env.BLOCKLET_AIGNE_API_URL && process.env.BLOCKLET_AIGNE_API_PROVIDER;
   if (isBlocklet) return undefined;
 
-  const aigneDir = nodejs.path.join(nodejs.os.homedir(), ".aigne");
-  if (!nodejs.fsSync.existsSync(aigneDir)) {
-    nodejs.fsSync.mkdirSync(aigneDir, { recursive: true });
+  const aigneDir = join(homedir(), ".aigne");
+  if (!existsSync(aigneDir)) {
+    mkdirSync(aigneDir, { recursive: true });
   }
 
-  const envs = parse(await nodejs.fs.readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
   const inquirerPrompt = (options?.inquirerPromptFn ?? inquirer.prompt) as typeof inquirer.prompt;
 
   const configUrl = options?.aigneHubUrl || process.env.AIGNE_HUB_API_URL;
-  const AIGNE_HUB_URL = configUrl || envs?.default?.AIGNE_HUB_API_URL || DEFAULT_AIGNE_HUB_URL;
-  const connectUrl = joinURL(new URL(AIGNE_HUB_URL).origin, WELLKNOWN_SERVICE_PATH_PREFIX);
-  const { host } = new URL(AIGNE_HUB_URL);
-
-  const modelName = options?.model || "";
-  const isAIGNEHubModel = (modelName.toLocaleLowerCase() || "").includes(AGENT_HUB_PROVIDER);
+  const url = configUrl || envs?.default?.AIGNE_HUB_API_URL || AIGNE_HUB_URL;
+  const connectUrl = joinURL(new URL(url).origin, WELLKNOWN_SERVICE_PATH_PREFIX);
+  const { host } = new URL(url);
 
   let credential: { apiKey?: string; url?: string } = {};
 
-  if (isAIGNEHubModel) {
-    try {
-      credential = await checkConnectionStatus(host);
-    } catch (error) {
-      if (error instanceof Error && error.message.includes("login first")) {
-        let aigneHubUrl = connectUrl;
+  try {
+    credential = await checkConnectionStatus(host);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("login first")) {
+      let aigneHubUrl = connectUrl;
 
-        if (!configUrl) {
-          const { subscribe } = await inquirerPrompt({
-            type: "list",
-            name: "subscribe",
-            message:
-              "No LLM API Keys or AIGNE Hub connections found. How would you like to proceed?",
-            choices: [
-              {
-                name: "Connect to the Arcblock official AIGNE Hub (recommended, free credits for new users)",
-                value: "official",
-              },
-              connectUrl.includes(DEFAULT_AIGNE_HUB_URL)
-                ? {
-                    name: "Connect to your own AIGNE Hub instance (self-hosted)",
-                    value: "custom",
-                  }
-                : null,
-              {
-                name: "Exit and configure my own LLM API Keys",
-                value: "manual",
-              },
-            ].filter(Boolean) as { name: string; value: string }[],
-            default: "official",
-          });
-
-          if (subscribe === "custom") {
-            const { customUrl } = await inquirerPrompt({
-              type: "input",
-              name: "customUrl",
-              message: "Enter the URL of your AIGNE Hub:",
-              validate(input) {
-                try {
-                  const url = new URL(input);
-                  return url.protocol.startsWith("http")
-                    ? true
-                    : "Must be a valid URL with http or https";
-                } catch {
-                  return "Invalid URL";
+      if (!configUrl) {
+        const { subscribe } = await inquirerPrompt({
+          type: "list",
+          name: "subscribe",
+          message: "No LLM API Keys or AIGNE Hub connections found. How would you like to proceed?",
+          choices: [
+            {
+              name: "Connect to the Arcblock official AIGNE Hub (recommended, free credits for new users)",
+              value: "official",
+            },
+            connectUrl.includes(AIGNE_HUB_URL)
+              ? {
+                  name: "Connect to your own AIGNE Hub instance (self-hosted)",
+                  value: "custom",
                 }
-              },
-            });
-            aigneHubUrl = customUrl;
-          } else if (subscribe === "manual") {
-            console.log("You chose to configure your own LLM API Keys. Exiting...");
-            process.exit(0);
-          }
-        }
+              : null,
+            {
+              name: "Exit and configure my own LLM API Keys",
+              value: "manual",
+            },
+          ].filter(Boolean) as { name: string; value: string }[],
+          default: "official",
+        });
 
-        credential = await connectToAIGNEHub(aigneHubUrl);
-      } else {
-        throw error;
+        if (subscribe === "custom") {
+          const { customUrl } = await inquirerPrompt({
+            type: "input",
+            name: "customUrl",
+            message: "Enter the URL of your AIGNE Hub:",
+            validate(input) {
+              try {
+                const url = new URL(input);
+                return url.protocol.startsWith("http")
+                  ? true
+                  : "Must be a valid URL with http or https";
+              } catch {
+                return "Invalid URL";
+              }
+            },
+          });
+          aigneHubUrl = customUrl;
+        } else if (subscribe === "manual") {
+          console.log("You chose to configure your own LLM API Keys. Exiting...");
+          process.exit(0);
+        }
       }
+
+      credential = await connectToAIGNEHub(aigneHubUrl);
+    } else {
+      throw error;
     }
   }
 

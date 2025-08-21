@@ -83,8 +83,8 @@ export class BedrockChatModel extends ChatModel {
    */
   protected _client?: BedrockRuntimeClient;
 
-  async client() {
-    const { accessKeyId, secretAccessKey, region } = await this.getCredential();
+  get client() {
+    const { accessKeyId, secretAccessKey, region } = this.credential;
 
     if (!accessKeyId || !secretAccessKey)
       throw new Error(
@@ -106,7 +106,7 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
     return this.options?.modelOptions;
   }
 
-  async getCredential() {
+  override get credential() {
     const accessKeyId = this.options?.accessKeyId || process.env["AWS_ACCESS_KEY_ID"];
     const secretAccessKey = this.options?.secretAccessKey || process.env["AWS_SECRET_ACCESS_KEY"];
     const region = this.options?.region || process.env["AWS_REGION"];
@@ -130,8 +130,7 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
   }
 
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
-    const { model } = await this.getCredential();
-    const modelId = input.modelOptions?.model ?? model;
+    const modelId = input.modelOptions?.model ?? this.credential.model;
 
     const { messages, system } = getRunMessages(input);
     const toolConfig = convertTools(input);
@@ -147,8 +146,7 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
     };
 
     const command = new ConverseStreamCommand(body);
-    const client = await this.client();
-    const response = await client.send(command);
+    const response = await this.client.send(command);
     const jsonMode = input.responseFormat?.type === "json_schema";
     if (!jsonMode) {
       return this.extractResultFromStream(response.stream, modelId, true);
@@ -283,8 +281,7 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
       toolChoice: { tool: { name: "generate_json" } },
     };
     const command = new ConverseCommand({ ...body, system, toolConfig });
-    const client = await this.client();
-    const response = await client.send(command);
+    const response = await this.client.send(command);
     const jsonTool = response.output?.message?.content?.find<ContentBlock>(
       (i): i is ContentBlock.ToolUseMember => i.toolUse?.name === "generate_json",
     ) as ContentBlock.ToolUseMember | undefined;

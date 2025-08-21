@@ -18,6 +18,11 @@ exports[`AIGNE.load should load agents correctly 1`] = `
       "name": "test-team-agent",
       "taskTitle": undefined,
     },
+    {
+      "description": undefined,
+      "name": "test-image-agent",
+      "taskTitle": undefined,
+    },
   ],
   "cli": {
     "agents": [

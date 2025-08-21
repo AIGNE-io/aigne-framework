@@ -1,11 +1,13 @@
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import { AIGNE_ENV_FILE, AIGNE_HUB_URL, connectToAIGNEHub, isTest } from "@aigne/aigne-hub";
+import { AIGNE_HUB_URL } from "@aigne/aigne-hub";
 import chalk from "chalk";
 import Table from "cli-table3";
 import inquirer from "inquirer";
 import { parse, stringify } from "yaml";
 import type { CommandModule } from "yargs";
+import { AIGNE_ENV_FILE, isTest } from "../utils/aigne-hub/constants.js";
+import { connectToAIGNEHub } from "../utils/aigne-hub/credential.js";
 import { getUserInfo } from "../utils/aigne-hub-user.js";
 import { getUrlOrigin } from "../utils/get-url-origin.js";
 

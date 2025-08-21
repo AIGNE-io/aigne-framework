@@ -317,6 +317,7 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
         "name": "test-agent",
       },
       {
+        "chat": false,
         "input": {
           "description": {
             "key3": "test field form json",

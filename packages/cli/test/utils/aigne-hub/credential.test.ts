@@ -1,10 +1,80 @@
 import { afterAll, beforeEach, describe, expect, mock, test } from "bun:test";
-import { rm, writeFile } from "node:fs/promises";
+import { readFile, rm, writeFile } from "node:fs/promises";
+import { AIGNE_ENV_FILE } from "@aigne/cli/utils/aigne-hub/constants.js";
+import {
+  checkConnectionStatus,
+  connectToAIGNEHub,
+  createConnect,
+  fetchConfigs,
+  loadAIGNEHubCredential as loadCredential,
+} from "@aigne/cli/utils/aigne-hub/credential.js";
 import { joinURL } from "ufo";
-import { stringify } from "yaml";
-import { AIGNE_ENV_FILE } from "../src/util/constants.js";
-import { checkConnectionStatus, loadCredential } from "../src/util/credential.js";
-import { createHonoServer } from "./_mocks_/utils.js";
+import { parse, stringify } from "yaml";
+import { createHonoServer } from "../../_mocks_/server.js";
+
+describe("credential util functions", () => {
+  describe("fetchConfigs", () => {
+    test("should fetch configs successfully", async () => {
+      const { url, close } = await createHonoServer();
+      const configs = await fetchConfigs({
+        connectUrl: url,
+        sessionId: "test",
+        fetchInterval: 1000,
+        fetchTimeout: 5000,
+      });
+
+      expect(configs).toBeDefined();
+      expect(configs.accessKeyId).toBe("test");
+      expect(configs.accessKeySecret).toBe("test");
+      expect(configs.challenge).toBe("test");
+      close();
+    });
+  });
+
+  describe("createConnect", () => {
+    test("should create connection successfully", async () => {
+      const { url, close } = await createHonoServer();
+      const mockOpenPage = mock(() => {});
+
+      const result = await createConnect({ connectUrl: url, openPage: mockOpenPage });
+
+      expect(result).toBeDefined();
+      expect(result.accessKeyId).toBe("test");
+      expect(result.accessKeySecret).toBe("test");
+
+      expect(mockOpenPage).toHaveBeenCalledWith(
+        expect.stringContaining(`${url}connect-cli?__token__=`),
+      );
+
+      close();
+    });
+  });
+
+  describe("connectToAIGNEHub", () => {
+    test("should create connection successfully", async () => {
+      const { url, close } = await createHonoServer();
+      const result = await connectToAIGNEHub(url);
+
+      expect(result).toBeDefined();
+      expect(result.apiKey).toBe("test");
+      expect(result.url).toBe(joinURL(url, "ai-kit"));
+
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
+
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
+
+      await rm(AIGNE_ENV_FILE, { force: true });
+      close();
+    });
+  });
+
+  afterAll(async () => {
+    await rm(AIGNE_ENV_FILE, { force: true });
+  });
+});
 
 describe("credential", () => {
   beforeEach(async () => {
@@ -22,7 +92,7 @@ describe("credential", () => {
       const testContent = { otherKey: "value" };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      await expect(checkConnectionStatus("test-host")).rejects.toThrow(
+      expect(checkConnectionStatus("test-host")).rejects.toThrow(
         "AIGNE_HUB_API_KEY key not found, need to login first",
       );
     });
@@ -36,7 +106,7 @@ describe("credential", () => {
       };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      await expect(checkConnectionStatus("test-host")).rejects.toThrow(
+      expect(checkConnectionStatus("test-host")).rejects.toThrow(
         "AIGNE_HUB_API_KEY host not found, need to login first",
       );
     });
@@ -49,7 +119,7 @@ describe("credential", () => {
       };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      await expect(checkConnectionStatus("test-host")).rejects.toThrow(
+      expect(checkConnectionStatus("test-host")).rejects.toThrow(
         "AIGNE_HUB_API_KEY key not found, need to login first",
       );
     });
@@ -122,7 +192,6 @@ describe("credential", () => {
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
       const result = await loadCredential({
-        model: "aignehub:openai/gpt-4",
         inquirerPromptFn: mockInquirerPrompt,
       });
 
@@ -154,16 +223,6 @@ describe("credential", () => {
       delete process.env.BLOCKLET_AIGNE_API_PROVIDER;
     });
 
-    test("should return undefined when no model is provided and no AIGNE Hub connection exists", async () => {
-      const result = await loadCredential();
-      expect(result).toEqual({});
-    });
-
-    test("should return undefined when model is not an AIGNE Hub model", async () => {
-      const result = await loadCredential({ model: "openai:gpt-4" });
-      expect(result).toEqual({});
-    });
-
     test("should return credentials when AIGNE Hub model and valid connection exist", async () => {
       const testContent = {
         "hub.aigne.io": {
@@ -173,7 +232,7 @@ describe("credential", () => {
       };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      const result = await loadCredential({ model: "aignehub:openai/gpt-4" });
+      const result = await loadCredential();
 
       expect(result).toEqual({
         apiKey: "test-key",
@@ -190,7 +249,7 @@ describe("credential", () => {
       };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      const result = await loadCredential({ model: "MyAIGNEHub:openai/gpt-4" });
+      const result = await loadCredential();
 
       expect(result).toEqual({
         apiKey: "test-key",
@@ -208,7 +267,6 @@ describe("credential", () => {
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
       const result = await loadCredential({
-        model: "aignehub:openai/gpt-4",
         aigneHubUrl: "https://custom-hub.com",
       });
 
@@ -229,7 +287,7 @@ describe("credential", () => {
       };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      const result = await loadCredential({ model: "aignehub:openai/gpt-4" });
+      const result = await loadCredential();
 
       expect(result).toEqual({
         apiKey: "test",
@@ -246,7 +304,6 @@ describe("credential", () => {
       });
 
       const result = await loadCredential({
-        model: "aignehub:openai/gpt-4",
         inquirerPromptFn: mockInquirerPrompt,
       });
 
@@ -272,7 +329,6 @@ describe("credential", () => {
 
       try {
         await loadCredential({
-          model: "aignehub:openai/gpt-4",
           inquirerPromptFn: mockInquirerPrompt,
         });
       } catch {
@@ -294,7 +350,6 @@ describe("credential", () => {
       });
 
       const result = await loadCredential({
-        model: "aignehub:openai/gpt-4",
         inquirerPromptFn: mockInquirerPrompt,
       });
 
@@ -313,7 +368,6 @@ describe("credential", () => {
       });
 
       const result = await loadCredential({
-        model: "aignehub:openai/gpt-4",
         inquirerPromptFn: mockInquirerPrompt,
       });
 
@@ -329,22 +383,12 @@ describe("credential", () => {
       };
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-      const result = await loadCredential({ model: "AIGNEHUB:openai/gpt-4" });
+      const result = await loadCredential();
 
       expect(result).toEqual({
         apiKey: "test",
         url: joinURL(url, "ai-kit"),
       });
-    });
-
-    test("should handle empty model name", async () => {
-      const result = await loadCredential({ model: "" });
-      expect(result).toEqual({});
-    });
-
-    test("should handle undefined model", async () => {
-      const result = await loadCredential();
-      expect(result).toEqual({});
     });
 
     afterAll(async () => {

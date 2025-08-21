@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.54.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.53.0...core-v1.54.0) (2025-08-21)
+
+
+### Features
+
+* **cli:** add chat mode support for cli ([#389](https://github.com/AIGNE-io/aigne-framework/issues/389)) ([d7dc138](https://github.com/AIGNE-io/aigne-framework/commit/d7dc138719dd638ddb12c4625abdf42746baf35d))
+
+
+### Bug Fixes
+
+* **cli:** force reimport of agent modules with cache busting ([#392](https://github.com/AIGNE-io/aigne-framework/issues/392)) ([c372cb9](https://github.com/AIGNE-io/aigne-framework/commit/c372cb9600a9d78ad1808a045bcddfc285e9c6f0))
+
+## [1.53.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.52.0...core-v1.53.0) (2025-08-20)
+
+
+### Features
+
+* add ImageModel/ImageAgent support ([#383](https://github.com/AIGNE-io/aigne-framework/issues/383)) ([96a2093](https://github.com/AIGNE-io/aigne-framework/commit/96a209368d91d98f47db6de1e404640368a86fa8))
+
+## [1.52.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.51.0...core-v1.52.0) (2025-08-20)
+
+
+### Features
+
+* **agents:** add async memory recording option ([#385](https://github.com/AIGNE-io/aigne-framework/issues/385)) ([573acdb](https://github.com/AIGNE-io/aigne-framework/commit/573acdb617434e6699b2e07db942e6336706d27f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.9.1
+
 ## [1.51.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.50.1...core-v1.51.0) (2025-08-18)
 
 

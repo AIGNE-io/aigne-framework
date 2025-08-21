@@ -1,5 +1,56 @@
 # Changelog
 
+## [1.65.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.64.1...aigne-framework-v1.65.0) (2025-08-21)
+
+
+### Features
+
+* **cli:** add chat mode support for cli ([#389](https://github.com/AIGNE-io/aigne-framework/issues/389)) ([d7dc138](https://github.com/AIGNE-io/aigne-framework/commit/d7dc138719dd638ddb12c4625abdf42746baf35d))
+
+
+### Bug Fixes
+
+* **cli:** force reimport of agent modules with cache busting ([#392](https://github.com/AIGNE-io/aigne-framework/issues/392)) ([c372cb9](https://github.com/AIGNE-io/aigne-framework/commit/c372cb9600a9d78ad1808a045bcddfc285e9c6f0))
+* **transport:** simplify ClientAgentOptions interface ([#394](https://github.com/AIGNE-io/aigne-framework/issues/394)) ([001271a](https://github.com/AIGNE-io/aigne-framework/commit/001271a46a7a734cd28f3dae28303c11f01861a7))
+
+## [1.64.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.64.0...aigne-framework-v1.64.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* **cli:** force upgrade app while load app error ([#390](https://github.com/AIGNE-io/aigne-framework/issues/390)) ([fa5e427](https://github.com/AIGNE-io/aigne-framework/commit/fa5e427eb29157c3ebcd9c9bf8c5c6b31efad4ae))
+
+## [1.64.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.63.0...aigne-framework-v1.64.0) (2025-08-20)
+
+
+### Features
+
+* add ImageModel/ImageAgent support ([#383](https://github.com/AIGNE-io/aigne-framework/issues/383)) ([96a2093](https://github.com/AIGNE-io/aigne-framework/commit/96a209368d91d98f47db6de1e404640368a86fa8))
+
+
+### Bug Fixes
+
+* detecting changes in board information and updating board information ([#387](https://github.com/AIGNE-io/aigne-framework/issues/387)) ([419da73](https://github.com/AIGNE-io/aigne-framework/commit/419da73690fbdbd63ddd6b6dbc4ac0f5fe7e197b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.5
+
+## [1.63.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.62.0...aigne-framework-v1.63.0) (2025-08-20)
+
+
+### Features
+
+* **agents:** add async memory recording option ([#385](https://github.com/AIGNE-io/aigne-framework/issues/385)) ([573acdb](https://github.com/AIGNE-io/aigne-framework/commit/573acdb617434e6699b2e07db942e6336706d27f))
+
+
+### Bug Fixes
+
+* **observability:** handle pagination and query errors properly ([#380](https://github.com/AIGNE-io/aigne-framework/issues/380)) ([1088b67](https://github.com/AIGNE-io/aigne-framework/commit/1088b677bb553c1c3c2a977dcf1648afef069bb0))
+
 ## [1.62.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.61.3...aigne-framework-v1.62.0) (2025-08-18)
 
 

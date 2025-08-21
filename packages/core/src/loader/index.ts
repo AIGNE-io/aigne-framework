@@ -1,17 +1,24 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
-import type { Camelize } from "camelize-ts";
 import { parse } from "yaml";
 import { z } from "zod";
 import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
+import { ImageAgent } from "../agents/image-agent.js";
+import type { ImageModel } from "../agents/image-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
 import { TeamAgent } from "../agents/team-agent.js";
 import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
-import { flat, isNonNullable, type PromiseOrValue, tryOrThrow } from "../utils/type-utils.js";
+import {
+  flat,
+  isNonNullable,
+  isRecord,
+  type PromiseOrValue,
+  tryOrThrow,
+} from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
 import { camelizeSchema, optionalize } from "./schema.js";
@@ -19,21 +26,33 @@ import { camelizeSchema, optionalize } from "./schema.js";
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
 export interface LoadOptions {
-  loadModel: (
-    model?: Camelize<z.infer<typeof aigneFileSchema>["model"]>,
-  ) => PromiseOrValue<ChatModel | undefined>;
   memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
-  path: string;
-  model?: ChatModel;
+  model?:
+    | ChatModel
+    | ((
+        model?: z.infer<typeof aigneFileSchema>["chatModel"],
+      ) => PromiseOrValue<ChatModel | undefined>);
+  imageModel?:
+    | ImageModel
+    | ((
+        model?: z.infer<typeof aigneFileSchema>["imageModel"],
+      ) => PromiseOrValue<ImageModel | undefined>);
+  key?: string | number;
 }
 
-export async function load(options: LoadOptions): Promise<AIGNEOptions> {
-  const { aigne, rootDir } = await loadAIGNEFile(options.path);
+export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
+  options.key ??= Date.now();
+
+  const { aigne, rootDir } = await loadAIGNEFile(path);
 
   const allAgentPaths = new Set(
-    flat(aigne.agents, aigne.skills, aigne.mcpServer?.agents, aigne.cli?.agents).map((i) =>
-      nodejs.path.join(rootDir, i),
-    ),
+    flat(
+      aigne.agents,
+      aigne.skills,
+      aigne.mcpServer?.agents,
+      aigne.cli?.agents,
+      aigne.cli?.chat,
+    ).map((i) => nodejs.path.join(rootDir, i)),
   );
   const allAgents: { [path: string]: Agent } = Object.fromEntries(
     await Promise.all(
@@ -47,13 +66,19 @@ export async function load(options: LoadOptions): Promise<AIGNEOptions> {
   return {
     ...aigne,
     rootDir,
-    model: options?.model || (await options.loadModel(aigne.model)),
+    model:
+      typeof options.model === "function" ? await options.model(aigne.chatModel) : options.model,
+    imageModel:
+      typeof options.imageModel === "function"
+        ? await options.imageModel(aigne.imageModel)
+        : options.imageModel,
     agents: pickAgents(aigne.agents ?? []),
     skills: pickAgents(aigne.skills ?? []),
     mcpServer: {
       agents: pickAgents(aigne.mcpServer?.agents ?? []),
     },
     cli: {
+      chat: aigne.cli?.chat ? pickAgents([aigne.cli.chat])[0] : undefined,
       agents: pickAgents(aigne.cli?.agents ?? []),
     },
   };
@@ -65,7 +90,7 @@ export async function loadAgent(
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
-    const agent = await loadAgentFromJsFile(path);
+    const agent = await loadAgentFromJsFile(path, options);
     if (agent instanceof Agent) return agent;
     return parseAgent(path, agent, options, agentOptions);
   }
@@ -145,7 +170,7 @@ async function parseAgent(
         )
       : undefined;
 
-  const baseOptions: AgentOptions = {
+  const baseOptions: AgentOptions<any, any> = {
     ...agentOptions,
     ...agent,
     skills,
@@ -163,6 +188,14 @@ async function parseAgent(
         instructions:
           agent.instructions &&
           PromptBuilder.from(agent.instructions, { workingDir: nodejs.path.dirname(path) }),
+      });
+    }
+    case "image": {
+      return ImageAgent.from({
+        ...baseOptions,
+        instructions: PromptBuilder.from(agent.instructions, {
+          workingDir: nodejs.path.dirname(path),
+        }),
       });
     }
     case "mcp": {
@@ -224,21 +257,38 @@ const aigneFileSchema = camelizeSchema(
   z.object({
     name: optionalize(z.string()),
     description: optionalize(z.string()),
-    model: optionalize(
+    chatModel: z
+      .preprocess(
+        (v) => {
+          if (!isRecord(v)) return v;
+          return { ...v, model: v.model || `${v.provider || ""}:${v.name || ""}` };
+        },
+        optionalize(
+          z.union([
+            z.string(),
+            camelizeSchema(
+              z.object({
+                model: optionalize(z.string()),
+                temperature: optionalize(z.number().min(0).max(2)),
+                topP: optionalize(z.number().min(0)),
+                frequencyPenalty: optionalize(z.number().min(-2).max(2)),
+                presencePenalty: optionalize(z.number().min(-2).max(2)),
+              }),
+            ),
+          ]),
+        ),
+      )
+      .transform((v) => (typeof v === "string" ? { model: v } : v)),
+    imageModel: optionalize(
       z.union([
         z.string(),
         camelizeSchema(
           z.object({
-            provider: z.string().nullish(),
-            name: z.string().nullish(),
-            temperature: z.number().min(0).max(2).nullish(),
-            topP: z.number().min(0).nullish(),
-            frequencyPenalty: z.number().min(-2).max(2).nullish(),
-            presencePenalty: z.number().min(-2).max(2).nullish(),
+            model: optionalize(z.string()),
           }),
         ),
       ]),
-    ).transform((v) => (typeof v === "string" ? { name: v } : v)),
+    ).transform((v) => (typeof v === "string" ? { model: v } : v)),
     agents: optionalize(z.array(z.string())),
     skills: optionalize(z.array(z.string())),
     mcpServer: optionalize(
@@ -248,6 +298,7 @@ const aigneFileSchema = camelizeSchema(
     ),
     cli: optionalize(
       z.object({
+        chat: optionalize(z.string()),
         agents: optionalize(z.array(z.string())),
       }),
     ),
@@ -271,8 +322,7 @@ export async function loadAIGNEFile(path: string): Promise<{
   );
 
   const aigne = tryOrThrow(
-    () =>
-      aigneFileSchema.parse({ ...json, model: json.model ?? json.chat_model ?? json.chatModel }),
+    () => aigneFileSchema.parse(json),
     (error) => new Error(`Failed to validate aigne.yaml from ${file}: ${error.message}`),
   );
 

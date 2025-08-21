@@ -1,7 +1,5 @@
 #!/usr/bin/env aigne
 
-chat_model:
-  name: gpt-4o-mini
-  temperature: 0.8
+chat_model: aignehub:openai/gpt-4o-mini
 agents:
   - agents/chat.yaml

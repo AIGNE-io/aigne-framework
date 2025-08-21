@@ -76,9 +76,9 @@ router.post("/chat", async (req, res) => {
   const modelFromPath = `${chatModel?.provider ?? "openai"}/${chatModel?.name ?? "gpt-5-mini"}`;
 
   logger.info("modelFromPath", modelFromPath);
-  logger.info("aigne?.chatModel?.model", chatModel?.model);
+  logger.info("aigne?.chatModel", chatModel);
 
-  const model = await AIGNEHubChatModel.load({ model: chatModel?.model || modelFromPath });
+  const model = await AIGNEHubChatModel.load({ model: modelFromPath });
   const engine = await AIGNE.load(req.mainDir, { model });
   const aigneServer = new AIGNEHTTPServer(engine);
   await aigneServer.invoke(req, res, {

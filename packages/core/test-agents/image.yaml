@@ -1,0 +1,16 @@
+type: image
+name: test-image-agent
+instructions: |
+  Draw an image of a {{object}} in the {{style}} style.
+input_schema:
+  type: object
+  properties:
+    object:
+      type: string
+      description: The object to draw.
+    style:
+      type: string
+      description: The style of the image.
+  required:
+    - object
+    - style

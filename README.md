@@ -14,29 +14,7 @@
 
 ## What is AIGNE Framework
 
-AIGNE Framework is a functional AI application development framework designed to simplify and accelerate the process of building modern applications. It combines functional programming features, powerful artificial intelligence capabilities, and modular design principles to help developers easily create scalable solutions. AIGNE Framework is also deeply integrated with the Blocklet ecosystem, providing developers with a wealth of tools and resources.
-
-📛 AIGNE Name & Meaning
-\[ ˈei dʒən ] — like “agent” without the t
-
-🔤 Pronunciation
-It’s pronounced **\[ ˈei dʒən ]** — like *“agent” without the “t.”*
-
-🏞️ Origin
-*Aigne* is a small medieval village in southern France.
-In **Old Irish**, *aigne* means **“spirit”** — a perfect metaphor for agents that think and act.
-
-🔡 Acronym
-**AIGNE** = *Artificial Intelligence & Generative Natural-Language Ecosystem*
-An open framework for building real AI agents that live across cloud, browser, and edge.
-
-## Architecture diagram
-
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne.png" alt="AIGNE Arch" />
-</picture>
+AIGNE Framework \[ ˈei dʒən ] is a functional AI application development framework designed to simplify and accelerate the process of building modern applications. It combines functional programming features, powerful artificial intelligence capabilities, and modular design principles to help developers easily create scalable solutions. AIGNE Framework is also deeply integrated with the Blocklet ecosystem, providing developers with a wealth of tools and resources.
 
 ## Key Features
 
@@ -123,6 +101,14 @@ console.log(result2);
 //   B: "Sunshine warms the earth,  \nGentle breeze whispers softly,  \nNature sings with joy.  ",
 // }
 ```
+
+## Architecture diagram
+
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne.png" alt="AIGNE Arch" />
+</picture>
 
 ## Simplifying Agentic Workflows
 
@@ -346,6 +332,22 @@ AIGNE Framework is an open source project and welcomes community contributions. 
 ## License
 
 This project is licensed under the [Elastic-2.0](./LICENSE.md) - see the [LICENSE](./LICENSE.md) file for details.
+
+## About the Name
+
+📛 **AIGNE Name & Meaning**
+\[ ˈei dʒən ] — like "agent" without the t
+
+🔤 **Pronunciation**
+It's pronounced **\[ ˈei dʒən ]** — like *"agent" without the "t."*
+
+🏞️ **Origin**
+*Aigne* is a small medieval village in southern France.
+In **Old Irish**, *aigne* means **"spirit"** — a perfect metaphor for agents that think and act.
+
+🔡 **Acronym**
+**AIGNE** = *Artificial Intelligence & Generative Natural-Language Ecosystem*
+An open framework for building real AI agents that live across cloud, browser, and edge.
 
 ## Community and Support
 

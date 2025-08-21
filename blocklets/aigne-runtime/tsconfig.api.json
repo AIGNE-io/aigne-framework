@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "api/dist",
+    "noEmit": false,
+    "noEmitOnError": true
+  },
+  "exclude": ["node_modules", "lib", "dist"],
+  "include": ["api/*.d.ts", "api/src"]
+}

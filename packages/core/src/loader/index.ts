@@ -4,6 +4,8 @@ import { z } from "zod";
 import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
+import { ImageAgent } from "../agents/image-agent.js";
+import type { ImageModel } from "../agents/image-model.js";
 import { MCPAgent } from "../agents/mcp-agent.js";
 import { TeamAgent } from "../agents/team-agent.js";
 import { TransformAgent } from "../agents/transform-agent.js";
@@ -30,15 +32,27 @@ export interface LoadOptions {
     | ((
         model?: z.infer<typeof aigneFileSchema>["chatModel"],
       ) => PromiseOrValue<ChatModel | undefined>);
+  imageModel?:
+    | ImageModel
+    | ((
+        model?: z.infer<typeof aigneFileSchema>["imageModel"],
+      ) => PromiseOrValue<ImageModel | undefined>);
+  key?: string | number;
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
+  options.key ??= Date.now();
+
   const { aigne, rootDir } = await loadAIGNEFile(path);
 
   const allAgentPaths = new Set(
-    flat(aigne.agents, aigne.skills, aigne.mcpServer?.agents, aigne.cli?.agents).map((i) =>
-      nodejs.path.join(rootDir, i),
-    ),
+    flat(
+      aigne.agents,
+      aigne.skills,
+      aigne.mcpServer?.agents,
+      aigne.cli?.agents,
+      aigne.cli?.chat,
+    ).map((i) => nodejs.path.join(rootDir, i)),
   );
   const allAgents: { [path: string]: Agent } = Object.fromEntries(
     await Promise.all(
@@ -54,12 +68,17 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
     rootDir,
     model:
       typeof options.model === "function" ? await options.model(aigne.chatModel) : options.model,
+    imageModel:
+      typeof options.imageModel === "function"
+        ? await options.imageModel(aigne.imageModel)
+        : options.imageModel,
     agents: pickAgents(aigne.agents ?? []),
     skills: pickAgents(aigne.skills ?? []),
     mcpServer: {
       agents: pickAgents(aigne.mcpServer?.agents ?? []),
     },
     cli: {
+      chat: aigne.cli?.chat ? pickAgents([aigne.cli.chat])[0] : undefined,
       agents: pickAgents(aigne.cli?.agents ?? []),
     },
   };
@@ -71,7 +90,7 @@ export async function loadAgent(
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
-    const agent = await loadAgentFromJsFile(path);
+    const agent = await loadAgentFromJsFile(path, options);
     if (agent instanceof Agent) return agent;
     return parseAgent(path, agent, options, agentOptions);
   }
@@ -151,7 +170,7 @@ async function parseAgent(
         )
       : undefined;
 
-  const baseOptions: AgentOptions = {
+  const baseOptions: AgentOptions<any, any> = {
     ...agentOptions,
     ...agent,
     skills,
@@ -169,6 +188,14 @@ async function parseAgent(
         instructions:
           agent.instructions &&
           PromptBuilder.from(agent.instructions, { workingDir: nodejs.path.dirname(path) }),
+      });
+    }
+    case "image": {
+      return ImageAgent.from({
+        ...baseOptions,
+        instructions: PromptBuilder.from(agent.instructions, {
+          workingDir: nodejs.path.dirname(path),
+        }),
       });
     }
     case "mcp": {
@@ -252,6 +279,16 @@ const aigneFileSchema = camelizeSchema(
         ),
       )
       .transform((v) => (typeof v === "string" ? { model: v } : v)),
+    imageModel: optionalize(
+      z.union([
+        z.string(),
+        camelizeSchema(
+          z.object({
+            model: optionalize(z.string()),
+          }),
+        ),
+      ]),
+    ).transform((v) => (typeof v === "string" ? { model: v } : v)),
     agents: optionalize(z.array(z.string())),
     skills: optionalize(z.array(z.string())),
     mcpServer: optionalize(
@@ -261,6 +298,7 @@ const aigneFileSchema = camelizeSchema(
     ),
     cli: optionalize(
       z.object({
+        chat: optionalize(z.string()),
         agents: optionalize(z.array(z.string())),
       }),
     ),

@@ -1,0 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Lexend", sans-serif;
+}
+
+#app {
+  background-color: #1f1f24;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#app > div > span > svg {
+  display: none;
+}

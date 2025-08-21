@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.4...publish-docs-v0.5.5) (2025-08-20)
+
+
+### Bug Fixes
+
+* detecting changes in board information and updating board information ([#387](https://github.com/AIGNE-io/aigne-framework/issues/387)) ([419da73](https://github.com/AIGNE-io/aigne-framework/commit/419da73690fbdbd63ddd6b6dbc4ac0f5fe7e197b))
+
 ## [0.5.4](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.3...publish-docs-v0.5.4) (2025-08-11)
 
 

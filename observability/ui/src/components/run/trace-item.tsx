@@ -288,13 +288,17 @@ export default function TraceItemList({
           {t("duration")}
         </Box>
       </Box>
-      {renderTraceItems({
-        traceId,
-        items: traceSteps,
-        totalDuration: traceSteps[0]?.totalDuration ?? 0,
-        depth: 0,
-        onSelect,
-      })}
+
+      {/** biome-ignore lint/complexity/noUselessFragments: <explanation> */}
+      <>
+        {renderTraceItems({
+          traceId,
+          items: traceSteps,
+          totalDuration: traceSteps[0]?.totalDuration ?? 0,
+          depth: 0,
+          onSelect,
+        })}
+      </>
     </Box>
   );
 }

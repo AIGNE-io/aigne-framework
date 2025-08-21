@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.12.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.12.0...openai-v0.12.1) (2025-08-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.54.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.33
+
+## [0.12.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.11.5...openai-v0.12.0) (2025-08-20)
+
+
+### Features
+
+* add ImageModel/ImageAgent support ([#383](https://github.com/AIGNE-io/aigne-framework/issues/383)) ([96a2093](https://github.com/AIGNE-io/aigne-framework/commit/96a209368d91d98f47db6de1e404640368a86fa8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.53.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.32
+
 ## [0.11.5](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.11.4...openai-v0.11.5) (2025-08-20)
 
 

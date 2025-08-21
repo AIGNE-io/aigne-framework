@@ -52,7 +52,17 @@
     "examples/workflow-router": {},
     "examples/workflow-sequential": {},
     "examples/chat-bot": {},
-    "examples/memory": {}
+    "examples/memory": {},
+    "blocklets/aigne-runtime": {
+      "package-name": "aigne-runtime",
+      "extra-files": [
+        {
+          "type": "yaml",
+          "path": "blocklet.yml",
+          "jsonpath": "$.version"
+        }
+      ]
+    }
   },
   "plugins": [
     {

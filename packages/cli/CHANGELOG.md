@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.39.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.38.1...cli-v1.39.0) (2025-08-21)
+
+
+### Features
+
+* **cli:** add chat mode support for cli ([#389](https://github.com/AIGNE-io/aigne-framework/issues/389)) ([d7dc138](https://github.com/AIGNE-io/aigne-framework/commit/d7dc138719dd638ddb12c4625abdf42746baf35d))
+
+
+### Bug Fixes
+
+* **cli:** force reimport of agent modules with cache busting ([#392](https://github.com/AIGNE-io/aigne-framework/issues/392)) ([c372cb9](https://github.com/AIGNE-io/aigne-framework/commit/c372cb9600a9d78ad1808a045bcddfc285e9c6f0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.25
+    * @aigne/agentic-memory bumped to 1.0.25
+    * @aigne/aigne-hub bumped to 0.6.7
+    * @aigne/core bumped to 1.54.0
+    * @aigne/default-memory bumped to 1.1.7
+    * @aigne/openai bumped to 0.12.1
+
+## [1.38.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.38.0...cli-v1.38.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* **cli:** force upgrade app while load app error ([#390](https://github.com/AIGNE-io/aigne-framework/issues/390)) ([fa5e427](https://github.com/AIGNE-io/aigne-framework/commit/fa5e427eb29157c3ebcd9c9bf8c5c6b31efad4ae))
+
+## [1.38.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.37.1...cli-v1.38.0) (2025-08-20)
+
+
+### Features
+
+* add ImageModel/ImageAgent support ([#383](https://github.com/AIGNE-io/aigne-framework/issues/383)) ([96a2093](https://github.com/AIGNE-io/aigne-framework/commit/96a209368d91d98f47db6de1e404640368a86fa8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.24
+    * @aigne/agentic-memory bumped to 1.0.24
+    * @aigne/aigne-hub bumped to 0.6.6
+    * @aigne/core bumped to 1.53.0
+    * @aigne/default-memory bumped to 1.1.6
+    * @aigne/openai bumped to 0.12.0
+
 ## [1.37.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.37.0...cli-v1.37.1) (2025-08-20)
 
 

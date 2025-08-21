@@ -6,6 +6,7 @@ packages:
   - tests/*
   - observability/*
   - docs-examples
+  - blocklets/*
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - esbuild

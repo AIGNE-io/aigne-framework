@@ -6,16 +6,14 @@ import {
   type AgentResponse,
   type AgentResponseStream,
   type Message,
-  replaceTransferAgentToName,
 } from "@aigne/core";
-import type { MemoryAgent } from "@aigne/core/memory/memory.js";
 import { onAgentResponseStreamEnd } from "@aigne/core/utils/stream-utils.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import type { AIGNEHTTPClient } from "./client.js";
 
 export interface ClientAgentOptions<I extends Message = Message, O extends Message = Message>
-  extends Required<Pick<AgentOptions<I, O>, "name">> {
-  memory?: MemoryAgent | MemoryAgent[];
+  extends Partial<AgentOptions<I, O>> {
+  name: string;
 }
 
 export class ClientAgent<I extends Message = Message, O extends Message = Message> extends Agent<
@@ -74,14 +72,5 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
 
   override process(_input: I, _options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>> {
     throw new Error("Method not implemented.");
-  }
-
-  override async postprocess(input: I, output: O, options: AgentInvokeOptions): Promise<void> {
-    await this.recordMemories(
-      {
-        content: [{ input, output: replaceTransferAgentToName(output), source: this.name }],
-      },
-      options,
-    );
   }
 }

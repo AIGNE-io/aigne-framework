@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.64.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.64.0...aigne-framework-v1.64.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* **cli:** force upgrade app while load app error ([#390](https://github.com/AIGNE-io/aigne-framework/issues/390)) ([fa5e427](https://github.com/AIGNE-io/aigne-framework/commit/fa5e427eb29157c3ebcd9c9bf8c5c6b31efad4ae))
+
+## [1.64.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.63.0...aigne-framework-v1.64.0) (2025-08-20)
+
+
+### Features
+
+* add ImageModel/ImageAgent support ([#383](https://github.com/AIGNE-io/aigne-framework/issues/383)) ([96a2093](https://github.com/AIGNE-io/aigne-framework/commit/96a209368d91d98f47db6de1e404640368a86fa8))
+
+
+### Bug Fixes
+
+* detecting changes in board information and updating board information ([#387](https://github.com/AIGNE-io/aigne-framework/issues/387)) ([419da73](https://github.com/AIGNE-io/aigne-framework/commit/419da73690fbdbd63ddd6b6dbc4ac0f5fe7e197b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.5
+
 ## [1.63.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.62.0...aigne-framework-v1.63.0) (2025-08-20)
 
 

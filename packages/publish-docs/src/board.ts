@@ -43,6 +43,7 @@ interface BoardListResponse {
 
 // Create board request interface
 interface CreateBoardRequest {
+  id?: string;
   title: string;
   desc: string;
   passports: unknown[];
@@ -164,7 +165,7 @@ async function checkAndUpdateBoard(input: {
 export async function findOrCreateBoard(input: {
   appUrl: string;
   accessToken: string;
-  boardId: string;
+  boardId?: string;
   boardName?: string;
   desc?: string;
   cover?: string;
@@ -175,59 +176,77 @@ export async function findOrCreateBoard(input: {
   let boardsResponse: BoardListResponse | undefined;
   try {
     boardsResponse = await getBoards({ appUrl, accessToken });
-    const existingBoard = boardsResponse.boards.find((board) => board.id === boardId);
 
-    if (existingBoard) {
-      // Check and update board if needed
-      await checkAndUpdateBoard({
+    // If boardId is provided, check by boardId first
+    if (boardId) {
+      const existingBoard = boardsResponse.boards.find((board) => board.id === boardId);
+
+      if (existingBoard) {
+        // Check and update board if needed
+        await checkAndUpdateBoard({
+          appUrl,
+          accessToken,
+          existingBoard,
+          boardName,
+          desc,
+          cover,
+        });
+
+        return existingBoard.id;
+      }
+
+      // boardId provided but not found, create with specified boardId
+      if (!boardName) {
+        throw new Error("boardName is required when creating a new board");
+      }
+
+      return await createBoard({
+        boardId,
         appUrl,
         accessToken,
-        existingBoard,
         boardName,
         desc,
         cover,
       });
+    }
 
-      return existingBoard.id;
+    // If boardId not provided, check by boardName
+    if (boardName) {
+      const boardWithSameName = boardsResponse.boards.find((board) => board.title === boardName);
+
+      if (boardWithSameName) {
+        // Get current user to check if they created this board
+        try {
+          const currentUser = await getCurrentUser({ appUrl, accessToken });
+
+          if (currentUser.user.did === boardWithSameName.createdBy) {
+            // Same board name and created by current user, check for updates
+            await checkAndUpdateBoard({
+              appUrl,
+              accessToken,
+              existingBoard: boardWithSameName,
+              boardName,
+              desc,
+              cover,
+            });
+
+            return boardWithSameName.id;
+          } else {
+            // Board name exists but created by different user, throw error
+            throw new BoardNameExistsError(boardName);
+          }
+        } catch (error) {
+          if (error instanceof BoardNameExistsError) {
+            throw new BoardNameExistsError(boardName);
+          }
+
+          console.warn(`Failed to get current user: ${error}`);
+        }
+      }
     }
   } catch (error) {
     console.warn(`Failed to get boards list: ${error}`);
     // Continue to create board if we can't get the list
-  }
-
-  // If boardId not found and boardName is provided, check by boardName
-  if (boardName) {
-    const boardWithSameName = boardsResponse?.boards?.find((board) => board.title === boardName);
-
-    if (boardWithSameName) {
-      // Get current user to check if they created this board
-      try {
-        const currentUser = await getCurrentUser({ appUrl, accessToken });
-
-        if (currentUser.user.did === boardWithSameName.createdBy) {
-          // Same board name and created by current user, check for updates
-          await checkAndUpdateBoard({
-            appUrl,
-            accessToken,
-            existingBoard: boardWithSameName,
-            boardName,
-            desc,
-            cover,
-          });
-
-          return boardWithSameName.id;
-        } else {
-          // Board name exists but created by different user, throw error
-          throw new BoardNameExistsError(boardName);
-        }
-      } catch (error) {
-        if (error instanceof BoardNameExistsError) {
-          throw new BoardNameExistsError(boardName);
-        }
-
-        console.warn(`Failed to get current user: ${error}`);
-      }
-    }
   }
 
   // Board doesn't exist, create it
@@ -236,6 +255,7 @@ export async function findOrCreateBoard(input: {
   }
 
   return await createBoard({
+    boardId,
     appUrl,
     accessToken,
     boardName,
@@ -250,8 +270,9 @@ export async function createBoard(input: {
   boardName: string;
   desc?: string;
   cover?: string;
+  boardId?: string;
 }): Promise<string> {
-  const { appUrl, accessToken, boardName, desc = "", cover = "" } = input;
+  const { appUrl, accessToken, boardName, desc = "", cover = "", boardId } = input;
 
   const url = new URL(appUrl);
   const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
@@ -269,6 +290,10 @@ export async function createBoard(input: {
       desc: {},
     },
   };
+
+  if (boardId) {
+    createBoardData.id = boardId;
+  }
 
   const createBoardResponse = await fetch(createBoardUrl, {
     method: "POST",

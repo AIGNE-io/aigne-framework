@@ -1,6 +1,6 @@
-import { ConfigProvider } from "@arcblock/ux/lib/Config";
-import { ErrorFallback } from "@arcblock/ux/lib/ErrorBoundary";
-import { ThemeProvider } from "@arcblock/ux/lib/Theme";
+import { ConfigProvider } from "@arcblock/ux/lib/Config/index.js";
+import { ErrorFallback } from "@arcblock/ux/lib/ErrorBoundary/index.js";
+import { ThemeProvider } from "@arcblock/ux/lib/Theme/index.js";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";

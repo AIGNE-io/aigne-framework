@@ -40,5 +40,6 @@
   "memory/did-space": "1.0.25",
   "memory/fs": "1.0.25",
   "models/doubao": "1.0.19",
-  "models/poe": "1.0.5"
+  "models/poe": "1.0.5",
+  "blocklets/aigne-runtime": "1.0.0"
 }

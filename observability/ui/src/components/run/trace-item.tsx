@@ -289,7 +289,7 @@ export default function TraceItemList({
         </Box>
       </Box>
 
-      {/** biome-ignore lint/complexity/noUselessFragments: <explanation> */}
+      {/** biome-ignore lint/complexity/noUselessFragments: <> */}
       <>
         {renderTraceItems({
           traceId,

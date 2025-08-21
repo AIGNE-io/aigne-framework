@@ -34,8 +34,8 @@ did: z2qa9xwZ9rH1MQGpjAAnVb3LtJWhTLnwQQEbQ
 engine:
   interpreter: blocklet
   source:
-    store: https://test.store.blocklet.dev
-    name: z2qa7DjgQgy9o2XSXGcmgVEBqJ86DA5THy7Yy
+    store: https://store.blocklet.dev
+    name: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS
     version: latest
   args: []
 timeout:

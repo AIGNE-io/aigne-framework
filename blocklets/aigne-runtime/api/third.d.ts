@@ -15,6 +15,6 @@ declare namespace Express {
     };
 
     mainDir: string;
-    component: unknown;
+    component: any;
   }
 }

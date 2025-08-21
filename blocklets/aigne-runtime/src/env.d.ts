@@ -7,3 +7,5 @@ declare module "@arcblock/*";
 declare module "@blocklet/*";
 
 declare module "@ocap/*";
+
+declare module "*.css";

@@ -12,7 +12,7 @@ const AIGNEObserverSettingsSchema = z
   .optional()
   .default({ live: false });
 
-export default ({ middleware }: { middleware: express.RequestHandler[] }):Router => {
+export default ({ middleware }: { middleware: express.RequestHandler[] }): Router => {
   router.get("/", ...middleware, async (_req: Request, res: Response) => {
     const settingPath = getGlobalSettingPath();
     if (!existsSync(settingPath)) {

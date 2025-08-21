@@ -32,7 +32,13 @@ const traceTreeQuerySchema = z.object({
 
 import { createTraceBatchSchema } from "../../core/schema.js";
 
-export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHandler[] }):Router => {
+export default ({
+  sse,
+  middleware,
+}: {
+  sse: SSE;
+  middleware: express.RequestHandler[];
+}): Router => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
 

@@ -57,7 +57,6 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.get("/health", (req, res) => {
-  // @ts-ignore
   res.send(`component ${req.component?.meta?.title ?? req.component?.meta?.name} is running`);
 });
 
@@ -72,11 +71,14 @@ router.post("/chat", async (req, res) => {
   const { aigne } = await loadAIGNEFile(req.mainDir).catch(() => ({
     aigne: null,
   }));
-  const modelFromPath =
-    aigne?.chatModel?.model ||
-    // @ts-ignore
-    `${aigne?.chatModel?.provider || "openai"}/${aigne?.chatModel?.name || "gpt-5-mini"}`;
-  const model = await AIGNEHubChatModel.load({ model: modelFromPath });
+  // @ts-ignore
+  const chatModel = aigne?.chatModel || aigne?.model;
+  const modelFromPath = `${chatModel?.provider ?? "openai"}/${chatModel?.name ?? "gpt-5-mini"}`;
+
+  logger.info("modelFromPath", modelFromPath);
+  logger.info("aigne?.chatModel?.model", chatModel?.model);
+
+  const model = await AIGNEHubChatModel.load({ model: chatModel?.model || modelFromPath });
   const engine = await AIGNE.load(req.mainDir, { model });
   const aigneServer = new AIGNEHTTPServer(engine);
   await aigneServer.invoke(req, res, {

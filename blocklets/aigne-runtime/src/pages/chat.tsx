@@ -202,12 +202,11 @@ function Chat() {
     [run],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!session.user) {
       session.login();
     }
-  }, [session.user]);
+  }, [session.user, session.login]);
 
   if (!session) {
     return null;
@@ -250,18 +249,9 @@ function Chat() {
         >
           <Box sx={{ flex: 1 }} />
           <Box>
-            {messages.map((message, index) => (
+            {messages.map((message) => (
               <Box key={message.id}>
-                {message.text && (
-                  <MessageBubble
-                    id={message.id}
-                    message={message.text}
-                    isUser={message.isUser}
-                    isLast={index === messages.length - 1}
-                    links={message.links}
-                    images={message.images}
-                  />
-                )}
+                {message.text && <MessageBubble message={message.text} isUser={message.isUser} />}
               </Box>
             ))}
 
@@ -271,12 +261,9 @@ function Chat() {
                   <Box>
                     {streamingMessage.text && (
                       <MessageBubble
-                        id="streaming"
                         key="streaming"
                         message={streamingMessage.text}
                         isUser={false}
-                        isLast={false}
-                        images={streamingMessage.images}
                       />
                     )}
                   </Box>

@@ -164,7 +164,9 @@ export async function loadApplication({
 
   let check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
   if (check?.available) {
-    const aigne = await AIGNE.load(dir).catch(() => null);
+    const aigne = await AIGNE.load(dir).catch((error) => {
+      console.warn(`Failed to load ${name}, trying to reinstall:`, error.message);
+    });
     if (aigne) {
       return {
         aigne,

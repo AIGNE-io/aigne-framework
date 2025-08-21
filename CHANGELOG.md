@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.64.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.64.0...aigne-framework-v1.64.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* **cli:** force upgrade app while load app error ([#390](https://github.com/AIGNE-io/aigne-framework/issues/390)) ([fa5e427](https://github.com/AIGNE-io/aigne-framework/commit/fa5e427eb29157c3ebcd9c9bf8c5c6b31efad4ae))
+
 ## [1.64.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.63.0...aigne-framework-v1.64.0) (2025-08-20)
 
 

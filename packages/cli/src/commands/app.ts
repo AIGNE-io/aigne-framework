@@ -162,14 +162,20 @@ export async function loadApplication({
   name = `@aigne/${name}`;
   dir ??= join(homedir(), ".aigne", "registry.npmjs.org", name);
 
-  const check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
+  let check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
   if (check?.available) {
-    return {
-      aigne: await AIGNE.load(dir),
-      dir,
-      version: check.version,
-      isCache: true,
-    };
+    const aigne = await AIGNE.load(dir).catch(() => null);
+    if (aigne) {
+      return {
+        aigne,
+        dir,
+        version: check.version,
+        isCache: true,
+      };
+    }
+
+    check = undefined;
+    forceUpgrade = true;
   }
 
   const result = await new Listr<{

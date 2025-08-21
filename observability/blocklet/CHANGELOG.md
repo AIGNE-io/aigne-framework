@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.12.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.11.2...blocklet-observability-v1.12.0) (2025-08-21)
+
+
+### Features
+
+* **blocklet:** support agent runtime blocklet ([#396](https://github.com/AIGNE-io/aigne-framework/issues/396)) ([baaae69](https://github.com/AIGNE-io/aigne-framework/commit/baaae691d552b7c7d313c4964a135a1b245943f9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.10.0
+    * @aigne/observability-ui bumped to 0.8.0
+
 ## [1.11.2](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.11.1...blocklet-observability-v1.11.2) (2025-08-20)
 
 

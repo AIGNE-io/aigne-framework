@@ -73,7 +73,7 @@ export function createDeployCommands(): CommandModule<unknown, DeployOptions> {
         })
         .option("endpoint", {
           type: "string",
-          describe: "Endpoint to deploy the application to",
+          describe: "Deploy an aigne application to a specified endpoint.",
         });
     },
     handler: async (argv) => {
@@ -239,8 +239,8 @@ const deploy = async (path: string, endpoint: string) => {
               });
 
               const match = info.match(/Created Blocklet DID:\s+(\S+)/);
-              if (match) {
-                did = match[1]!;
+              if (match?.[1]) {
+                did = match[1];
               } else {
                 throw new Error(`DID not found. Output content: ${info}`);
               }

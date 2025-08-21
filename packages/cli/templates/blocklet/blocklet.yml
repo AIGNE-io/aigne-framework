@@ -1,7 +1,7 @@
-name: agent-demo
-title: Agent Demo
+name: agent-blocklet
+title: Agent Blocklet
 version: 0.0.1
-description: Demo blocklet that shows how to serve a static html5 game with Blocklet Server
+description: AIGNE Runtime is a specialized runtime engine designed for executing AI agents, serving as the core runtime environment for the Blocklet system
 files:
   - agent/
   - logo.png
@@ -30,7 +30,7 @@ interfaces:
     prefix: '*'
     port: BLOCKLET_PORT
     protocol: tcp
-did: z2qa9xwZ9rH1MQGpjAAnVb3LtJWhTLnwQQEbQ
+did: ""
 engine:
   interpreter: blocklet
   source:

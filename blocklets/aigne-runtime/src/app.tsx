@@ -14,7 +14,6 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-// @ts-ignore
 import "./app.css";
 import Layout from "./components/layout.js";
 import { SessionProvider } from "./contexts/session.js";

@@ -10,7 +10,6 @@ This project is packaged as a Blocklet agent application.
 npm install -g aigne
 ```
 
-
 ### Start the Project
 
 ```bash

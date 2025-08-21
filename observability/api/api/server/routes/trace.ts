@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { and, between, desc, eq, inArray, isNotNull, isNull, like, or, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
-import express, { type Request, type Response } from "express";
+import express, { type Request, type Response, type Router } from "express";
 import type SSE from "express-sse";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
@@ -32,7 +32,13 @@ const traceTreeQuerySchema = z.object({
 
 import { createTraceBatchSchema } from "../../core/schema.js";
 
-export default ({ sse, middleware }: { sse: SSE; middleware: express.RequestHandler[] }) => {
+export default ({
+  sse,
+  middleware,
+}: {
+  sse: SSE;
+  middleware: express.RequestHandler[];
+}): Router => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
 

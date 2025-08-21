@@ -60,6 +60,8 @@ export interface AIGNEOptions {
   };
 
   cli?: {
+    chat?: Agent;
+
     agents?: Agent[];
   };
 
@@ -132,6 +134,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     if (options?.agents?.length) this.addAgent(...options.agents);
     if (options?.mcpServer?.agents?.length) this.mcpServer.agents.push(...options.mcpServer.agents);
     if (options?.cli?.agents?.length) this.cli.agents.push(...options.cli.agents);
+    if (options?.cli?.chat) this.cli.chat = options.cli.chat;
 
     this.observer?.serve();
     this.initProcessExitHandler();
@@ -191,6 +194,8 @@ export class AIGNE<U extends UserContext = UserContext> {
   };
 
   readonly cli = {
+    chat: undefined as Agent | undefined,
+
     agents: createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name)),
   };
 

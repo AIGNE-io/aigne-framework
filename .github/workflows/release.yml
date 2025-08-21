@@ -90,7 +90,7 @@ jobs:
             sed -E -i "/^# Changelog$/d" observability/blocklet/CHANGELOG.md
           fi
 
-      - name: Blocklet workflow
+      - name: Blocklet workflow for observability
         if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
         env:
           COMPONENT_STORE_URL: ${{ secrets.STORE_ENDPOINT_PROD }}
@@ -102,6 +102,23 @@ jobs:
           skip-deploy: true
           skip-release: true
           working-directory: observability/blocklet
+          bundle-command: pnpm bundle
+          store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
+          store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Blocklet workflow for aigne-runtime
+        if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
+        env:
+          COMPONENT_STORE_URL: ${{ secrets.STORE_ENDPOINT_PROD }}
+        uses: blocklet/action-workflow@v1
+        with:
+          deps-server-version: beta
+          skip-deps: false
+          skip-upload: false
+          skip-deploy: true
+          skip-release: true
+          working-directory: blocklets/aigne-runtime
           bundle-command: pnpm bundle
           store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
           store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}

@@ -1,6 +1,5 @@
 import { isAgentResponseDelta, isAgentResponseProgress } from "@aigne/core";
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
-import { useLocaleContext } from "@arcblock/ux/lib/Locale/context.js";
 import { Box, Container, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { joinURL } from "ufo";
@@ -15,7 +14,6 @@ import type { Message as DBMessage } from "../libs/db.js";
 type Message = DBMessage & { taskTitle?: string };
 
 function Chat() {
-  const { locale } = useLocaleContext();
   const { session } = useSessionContext();
   const [aiChatting, setAiChatting] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -170,7 +168,7 @@ function Chat() {
         setStreamingMessage(null);
       }
     },
-    [locale, prefix, locale],
+    [prefix],
   );
 
   useEffect(() => {
@@ -204,6 +202,7 @@ function Chat() {
     [run],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!session.user) {
       session.login();

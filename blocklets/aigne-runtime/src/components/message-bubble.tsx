@@ -34,10 +34,7 @@ function MessageBubble({ message, isUser }: MessageBubbleProps) {
           gap: 1,
         }}
       >
-        <Box
-          style={{ maxWidth: isUser ? '79%' : '100%', alignSelf: 'flex-start' }}
-          sx={{}}
-        >
+        <Box style={{ maxWidth: isUser ? "79%" : "100%", alignSelf: "flex-start" }} sx={{}}>
           <Box
             sx={{
               width: "100%",
@@ -136,9 +133,9 @@ function MessageBubble({ message, isUser }: MessageBubbleProps) {
                 <Typography
                   variant="body1"
                   sx={{
-                    wordBreak: 'break-word',
-                    fontSize: '0.95rem',
-                    color: 'text.primary',
+                    wordBreak: "break-word",
+                    fontSize: "0.95rem",
+                    color: "text.primary",
                   }}
                 >
                   {message}

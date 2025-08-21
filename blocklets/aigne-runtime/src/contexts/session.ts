@@ -9,7 +9,7 @@ export function useSessionContext(): any {
   const data = useMemo(
     () => ({
       ...ctx,
-      isAdmin: ['admin', 'owner'].includes(ctx?.session?.user?.role),
+      isAdmin: ["admin", "owner"].includes(ctx?.session?.user?.role),
     }),
     [ctx],
   );

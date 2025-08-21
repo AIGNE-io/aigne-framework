@@ -1,6 +1,6 @@
-import { app, server } from './src';
+import { app, server } from "./src/index.js";
 
-import('vite-plugin-blocklet').then(({ setupClient }) => {
+import("vite-plugin-blocklet").then(({ setupClient }) => {
   setupClient(app, {
     server,
   });

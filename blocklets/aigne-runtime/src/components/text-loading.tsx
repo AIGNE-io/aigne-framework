@@ -1,11 +1,7 @@
 import { Box } from "@mui/material";
 import React, { useEffect } from "react";
 
-export default function TextLoading({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function TextLoading({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = React.useState("");
 
   useEffect(() => {

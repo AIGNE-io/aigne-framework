@@ -1,14 +1,9 @@
+import path from "node:path";
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 import { AIGNE } from "@aigne/core";
 import { loadAIGNEFile } from "@aigne/core/loader/index.js";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/server.js";
-import {
-  type NextFunction,
-  type Request,
-  type Response,
-  Router,
-} from "express";
-import path from "path";
+import { type NextFunction, type Request, type Response, Router } from "express";
 
 import logger from "../libs/logger.js";
 
@@ -28,10 +23,7 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
   }
 
   const cachedChecker = componentCache.get(componentId);
-  if (
-    !cachedChecker ||
-    Date.now() - cachedChecker.timestamp > COMPONENT_CACHE_TTL
-  ) {
+  if (!cachedChecker || Date.now() - cachedChecker.timestamp > COMPONENT_CACHE_TTL) {
     const component = await blocklet.getComponent(componentId);
     componentCache.set(componentId, {
       component,
@@ -42,14 +34,10 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
   const cached = componentCache.get(componentId);
   const { component } = cached;
   if (!component) {
-    return res
-      .status(404)
-      .send(`Agent Runtime: Component ${componentId} Not Found`);
+    return res.status(404).send(`Agent Runtime: Component ${componentId} Not Found`);
   }
 
-  const env = component.environments.find(
-    (x: { key: string }) => x.key === 'BLOCKLET_APP_DIR',
-  );
+  const env = component.environments.find((x: { key: string }) => x.key === "BLOCKLET_APP_DIR");
   if (!env) {
     return res.status(404).send("Agent Runtime: Component Not Valid");
   }
@@ -58,10 +46,7 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
     ? path.join(env.value, component.meta.main)
     : path.resolve(env.value);
   req.component = component;
-  if (
-    process.env.DOCKER_HOST_SERVER_DIR &&
-    process.env.DOCKER_CONTAINER_SERVER_DIR
-  ) {
+  if (process.env.DOCKER_HOST_SERVER_DIR && process.env.DOCKER_CONTAINER_SERVER_DIR) {
     req.mainDir = req.mainDir.replace(
       new RegExp(process.env.DOCKER_HOST_SERVER_DIR, "g"),
       process.env.DOCKER_CONTAINER_SERVER_DIR,
@@ -72,9 +57,7 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.get("/health", (req, res) => {
-  res.send(
-    `component ${req.component.meta?.title ?? req.component.meta?.name} is running`,
-  );
+  res.send(`component ${req.component.meta?.title ?? req.component.meta?.name} is running`);
 });
 
 router.get("/chat/agent", async (req, res) => {
@@ -88,7 +71,10 @@ router.post("/chat", async (req, res) => {
   const { aigne } = await loadAIGNEFile(req.mainDir).catch(() => ({
     aigne: null,
   }));
-  const modelFromPath = aigne?.chatModel?.model || "openai/gpt-5-mini";
+  const modelFromPath =
+    aigne?.chatModel?.model ||
+    // @ts-ignore
+    `${aigne?.chatModel?.provider || "openai"}/${aigne?.chatModel?.name || "gpt-5-mini"}`;
   const model = await AIGNEHubChatModel.load({ model: modelFromPath });
   const engine = await AIGNE.load(req.mainDir, { model });
   const aigneServer = new AIGNEHTTPServer(engine);

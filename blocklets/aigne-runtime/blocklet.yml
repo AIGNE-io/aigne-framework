@@ -32,9 +32,9 @@ interfaces:
     prefix: '*'
     port: BLOCKLET_PORT
     protocol: http
-community: https://community.arcblock.io/discussions/boards/aigne
-documentation: https://www.arcblock.io/docs/aigne-framework
-homepage: https://www.aigne.io/observability
+community: ""
+documentation: ""
+homepage: ""
 license: ''
 payment:
   price: []

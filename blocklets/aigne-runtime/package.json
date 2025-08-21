@@ -53,7 +53,6 @@
   },
   "devDependencies": {
     "@blocklet/js-sdk": "^1.16.44",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/dotenv-flow": "^3.3.3",

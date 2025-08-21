@@ -16,9 +16,7 @@ function TypingIndicator() {
               height: 4,
               borderRadius: "50%",
               backgroundColor:
-                theme?.palette.mode === "dark"
-                  ? "rgba(255, 255, 255, 0.8)"
-                  : "rgba(0, 0, 0, 0.8)",
+                theme?.palette.mode === "dark" ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.8)",
             }}
             animate={{
               y: [0, -4, 0],

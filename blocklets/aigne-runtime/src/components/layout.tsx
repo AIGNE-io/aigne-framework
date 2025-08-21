@@ -1,15 +1,14 @@
 import SessionManager from "@arcblock/did-connect/lib/SessionManager";
 import ThemeModeToggle from "@arcblock/ux/lib/Config/theme-mode-toggle.js";
 import Dashboard from "@arcblock/ux/lib/Layout/dashboard/index.js";
-import { useLocaleContext } from "@arcblock/ux/lib/Locale/context.js";
 import LocaleSelector from "@arcblock/ux/lib/Locale/selector.js";
 import Box from "@mui/material/Box";
 import { useMemo } from "react";
+// @ts-ignore
 import Logo from "../assets/logo.png?url";
 import { useSessionContext } from "../contexts/session.js";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { t } = useLocaleContext();
   const { session } = useSessionContext();
 
   const renderAddons = () => {
@@ -25,9 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const renderedAddons = renderAddons();
-  const nodes = Array.isArray(renderedAddons)
-    ? renderedAddons
-    : [renderedAddons];
+  const nodes = Array.isArray(renderedAddons) ? renderedAddons : [renderedAddons];
 
   const links = useMemo(() => {
     return [];

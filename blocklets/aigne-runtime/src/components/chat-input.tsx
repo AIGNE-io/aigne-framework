@@ -47,12 +47,7 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
         onChange={(e) => setPrompt(e.target.value)}
         endAdornment={
           <InputAdornment position="end">
-            <IconButton
-              onClick={handleSend}
-              size="small"
-              type="submit"
-              disabled={disabled}
-            >
+            <IconButton onClick={handleSend} size="small" type="submit" disabled={disabled}>
               <SendIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </InputAdornment>

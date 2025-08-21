@@ -1,5 +1,7 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 import "express-async-errors";
 
+import path from "node:path";
 import { AIGNEObserver } from "@aigne/observability-api";
 import { call, getComponentMountPoint } from "@blocklet/sdk/lib/component";
 import Config from "@blocklet/sdk/lib/config";
@@ -14,7 +16,6 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import path from "path";
 
 import logger from "./libs/logger.js";
 import routes from "./routes/index.js";
@@ -27,15 +28,12 @@ export const app = express();
 
 const engineComponentId = Config.env.componentDid;
 const isProduction =
-  process.env.NODE_ENV === "production" ||
-  process.env.ABT_NODE_SERVICE_ENV === "production";
+  process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
 
 const OBSERVABILITY_DID = "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh";
 AIGNEObserver.setExportFn(async (spans) => {
   if (!getComponentMountPoint(OBSERVABILITY_DID)) {
-    logger.warn(
-      'Please install the Observability blocklet to enable tracing agents',
-    );
+    logger.warn("Please install the Observability blocklet to enable tracing agents");
     return;
   }
 

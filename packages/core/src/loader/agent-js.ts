@@ -1,10 +1,12 @@
+import { withQuery } from "ufo";
 import { Agent } from "../agents/agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { parseAgentFile } from "./agent-yaml.js";
+import type { LoadOptions } from "./index.js";
 
-export async function loadAgentFromJsFile(path: string) {
+export async function loadAgentFromJsFile(path: string, options?: LoadOptions) {
   const { default: agent } = await tryOrThrow(
-    () => import(/* @vite-ignore */ path),
+    () => import(/* @vite-ignore */ withQuery(path, { key: options?.key })),
     (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
   );
 

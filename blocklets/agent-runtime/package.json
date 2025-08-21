@@ -1,5 +1,5 @@
 {
-  "name": "@blocklet/agent-runtime",
+  "name": "aigne-runtime",
   "private": true,
   "version": "0.1.0",
   "scripts": {

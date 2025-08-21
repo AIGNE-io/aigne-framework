@@ -34,12 +34,12 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
   const cached = componentCache.get(componentId);
   const { component } = cached;
   if (!component) {
-    return res.status(404).send("Static Server: Component Not Found");
+    return res.status(404).send(`Agent Runtime: Component ${componentId} Not Found`);
   }
 
   const env = component.environments.find((x: { key: string }) => x.key === "BLOCKLET_APP_DIR");
   if (!env) {
-    return res.status(404).send("Static Server: Component Not Valid");
+    return res.status(404).send("Agent Runtime: Component Not Valid");
   }
 
   req.mainDir = component.meta.main

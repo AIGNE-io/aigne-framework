@@ -1,11 +1,12 @@
 name: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS
-title: Agent Runtime
+title: AIGNE Runtime
 description: >-
-  AIGNE Agent Runtime is a specialized runtime engine designed for executing AI
+  AIGNE Runtime is a specialized runtime engine designed for executing AI
   agents, serving as the core runtime environment for the Blocklet system
 keywords:
   - blocklet
-  - react
+  - aigne
+  - agent
 group: dapp
 did: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS
 main: api/dist/index.js

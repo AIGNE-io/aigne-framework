@@ -16,11 +16,11 @@ import {
 } from "react-router-dom";
 // @ts-ignore
 import "./app.css";
-import Layout from "./components/layout.tsx";
-import { SessionProvider } from "./contexts/session.ts";
-import theme from "./libs/theme.ts";
-import { translations } from "./locales/index.tsx";
-import Chat from "./pages/chat.tsx";
+import Layout from "./components/layout.js";
+import { SessionProvider } from "./contexts/session.js";
+import theme from "./libs/theme.js";
+import { translations } from "./locales/index.js";
+import Chat from "./pages/chat.js";
 
 const prefix = window?.blocklet?.prefix || "/";
 

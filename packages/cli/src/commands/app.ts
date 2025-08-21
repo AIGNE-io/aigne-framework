@@ -175,7 +175,6 @@ export async function loadApplication({
     }
 
     check = undefined;
-    forceUpgrade = true;
   }
 
   const result = await new Listr<{

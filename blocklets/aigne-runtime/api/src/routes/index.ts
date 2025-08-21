@@ -68,26 +68,30 @@ router.get("/chat/agent", async (req, res) => {
 });
 
 router.post("/chat", async (req, res) => {
-  const { aigne } = await loadAIGNEFile(req.mainDir).catch(() => ({
-    aigne: null,
-  }));
-  const defaultModel = aigne?.chatModel?.model?.split(":");
-  if (defaultModel?.length !== 2) {
-    return res
-      .status(400)
-      .send(
-        "change your aigne.yml chatModel model to be like openai/gpt-5-mini or openai/gpt-4o-mini",
-      );
-  }
+  try {
+    const { aigne } = await loadAIGNEFile(req.mainDir).catch(() => ({
+      aigne: null,
+    }));
+    const defaultModel = aigne?.chatModel?.model?.split(":");
+    if (defaultModel?.length !== 2) {
+      return res
+        .status(400)
+        .send(
+          "change your aigne.yml chatModel model to be like openai/gpt-5-mini or openai/gpt-4o-mini",
+        );
+    }
 
-  const model = await AIGNEHubChatModel.load({
-    model: aigne?.chatModel?.model?.split(":")?.join("/"),
-  });
-  const engine = await AIGNE.load(req.mainDir, { model });
-  const aigneServer = new AIGNEHTTPServer(engine);
-  await aigneServer.invoke(req, res, {
-    userContext: { userId: req.user?.did },
-  });
+    const chatModel = aigne?.chatModel?.model?.split(":")?.join("/");
+    logger.info("chatModel", chatModel);
+
+    const model = new AIGNEHubChatModel({ model: chatModel });
+    const engine = await AIGNE.load(req.mainDir, { model });
+    const aigneServer = new AIGNEHTTPServer(engine);
+    await aigneServer.invoke(req, res, { userContext: { userId: req.user?.did } });
+  } catch (error) {
+    logger.error("chat error", error);
+    throw error;
+  }
 });
 
 export default router;

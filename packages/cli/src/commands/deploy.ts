@@ -270,21 +270,6 @@ const deploy = async (path: string, endpoint: string) => {
           await run("blocklet", ["bundle", "--create-release"], { cwd: deployRoot });
         },
       },
-      {
-        title: "Deploy to target endpoint",
-        task: async (_, task) => {
-          task.output = `Deploying to ${endpoint}...`;
-          await run("blocklet", ["deploy", "--endpoint", endpoint, ".blocklet/bundle"], {
-            cwd: deployRoot,
-          });
-        },
-      },
-      {
-        title: "Clean deploy files",
-        task: async () => {
-          await rm(deployRoot, { recursive: true, force: true });
-        },
-      },
     ],
     {
       concurrent: false,
@@ -297,6 +282,14 @@ const deploy = async (path: string, endpoint: string) => {
 
   try {
     await tasks.run();
+
+    await run("blocklet", ["deploy", "--endpoint", endpoint, ".blocklet/bundle"], {
+      cwd: deployRoot,
+      catchOutput: false,
+    });
+
+    await rm(deployRoot, { recursive: true, force: true });
+
     console.log(`✅ Deploy completed: ${path} -> ${endpoint}`);
   } catch (error) {
     console.error(`❌ Deploy failed: ${error instanceof Error ? error.message : String(error)}`);

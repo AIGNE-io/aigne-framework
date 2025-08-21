@@ -57,7 +57,8 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.get("/health", (req, res) => {
-  res.send(`component ${req.component.meta?.title ?? req.component.meta?.name} is running`);
+  // @ts-ignore
+  res.send(`component ${req.component?.meta?.title ?? req.component?.meta?.name} is running`);
 });
 
 router.get("/chat/agent", async (req, res) => {

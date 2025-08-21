@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.54.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.53.0...core-v1.54.0) (2025-08-21)
+
+
+### Features
+
+* **cli:** add chat mode support for cli ([#389](https://github.com/AIGNE-io/aigne-framework/issues/389)) ([d7dc138](https://github.com/AIGNE-io/aigne-framework/commit/d7dc138719dd638ddb12c4625abdf42746baf35d))
+
+
+### Bug Fixes
+
+* **cli:** force reimport of agent modules with cache busting ([#392](https://github.com/AIGNE-io/aigne-framework/issues/392)) ([c372cb9](https://github.com/AIGNE-io/aigne-framework/commit/c372cb9600a9d78ad1808a045bcddfc285e9c6f0))
+
 ## [1.53.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.52.0...core-v1.53.0) (2025-08-20)
 
 

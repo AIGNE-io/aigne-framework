@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.14.5](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.14.4...transport-v0.14.5) (2025-08-21)
+
+
+### Bug Fixes
+
+* **transport:** simplify ClientAgentOptions interface ([#394](https://github.com/AIGNE-io/aigne-framework/issues/394)) ([001271a](https://github.com/AIGNE-io/aigne-framework/commit/001271a46a7a734cd28f3dae28303c11f01861a7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.12.1
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.25
+    * @aigne/core bumped to 1.54.0
+    * @aigne/default-memory bumped to 1.1.7
+    * @aigne/test-utils bumped to 0.5.33
+
 ## [0.14.4](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.14.3...transport-v0.14.4) (2025-08-20)
 
 

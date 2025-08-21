@@ -27,12 +27,15 @@ export const app = express();
 
 const engineComponentId = Config.env.componentDid;
 const isProduction =
-  process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
+  process.env.NODE_ENV === "production" ||
+  process.env.ABT_NODE_SERVICE_ENV === "production";
 
 const OBSERVABILITY_DID = "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh";
 AIGNEObserver.setExportFn(async (spans) => {
   if (!getComponentMountPoint(OBSERVABILITY_DID)) {
-    logger.warn("Please install the Observability blocklet to enable tracing agents");
+    logger.warn(
+      'Please install the Observability blocklet to enable tracing agents',
+    );
     return;
   }
 
@@ -56,7 +59,7 @@ app.use(express.json({ limit: "1 mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1 mb" }));
 app.use(cors());
 
-app.use(async (req: Request, res: Response, next: NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   const raw = String(req.headers["x-blocklet-component-id"] || "");
   const componentId = raw.split("/").pop();
 
@@ -65,7 +68,7 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
       return res
         .status(400)
         .send(
-          "Agent Runtime is up and running.\nBut got nothing to show here.\nShould be used together with agent blocklets.",
+          "AIGNE Runtime is up and running.\nBut got nothing to show here.\nShould be used together with agent blocklets.",
         );
     }
   }
@@ -82,7 +85,7 @@ if (isProduction) {
   app.use(express.static(staticDir, { maxAge: "30d", index: false }));
   app.use(fallback("index.html", { root: staticDir }) as any);
 
-  app.use(<ErrorRequestHandler>((err, _req, res, _next) => {
+  app.use(<ErrorRequestHandler>((err, _req, res) => {
     const message = err instanceof Error ? err.message : "Unknown error";
     res.status(500).json({ success: false, error: message });
   }));

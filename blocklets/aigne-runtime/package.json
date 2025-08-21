@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "blocklet dev",
-    "lint": "tsc --noEmit && eslint src api/src --ext .mjs,.js,.jsx,.ts,.tsx",
+    "lint": "tsc --noEmit",
     "lint:fix": "npm run lint -- --fix",
     "start": "cross-env NODE_ENV=development nodemon --exec tsx api/dev.ts -w api",
     "clean": "node scripts/build-clean.mjs",

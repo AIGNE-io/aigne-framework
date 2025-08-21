@@ -46,7 +46,10 @@ function App() {
   return (
     <Suspense fallback={fallback}>
       <ConfigProvider translations={translations} prefer="system">
-        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={window.location.reload}>
+        <ErrorBoundary
+          FallbackComponent={ErrorFallback}
+          onReset={window.location.reload}
+        >
           <CssBaseline />
           <Outlet />
         </ErrorBoundary>

@@ -1,19 +1,13 @@
 import { Box, Typography } from "@mui/material";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 
-import type { ImageData, LinkData } from "../libs/db.js";
-
 const markdownComponents = {
   a: (props: any) => <span>{props.children}</span>,
 };
 
 interface MessageBubbleProps {
-  id: string;
   message: string;
   isUser: boolean;
-  isLast: boolean;
-  links?: LinkData[];
-  images?: ImageData[];
 }
 
 function MessageBubble({ message, isUser }: MessageBubbleProps) {
@@ -40,7 +34,10 @@ function MessageBubble({ message, isUser }: MessageBubbleProps) {
           gap: 1,
         }}
       >
-        <Box style={{ maxWidth: isUser ? "79%" : "100%", alignSelf: "flex-start" }} sx={{}}>
+        <Box
+          style={{ maxWidth: isUser ? '79%' : '100%', alignSelf: 'flex-start' }}
+          sx={{}}
+        >
           <Box
             sx={{
               width: "100%",
@@ -138,7 +135,11 @@ function MessageBubble({ message, isUser }: MessageBubbleProps) {
               {isUser ? (
                 <Typography
                   variant="body1"
-                  sx={{ wordBreak: "break-word", fontSize: "0.95rem", color: "text.primary" }}
+                  sx={{
+                    wordBreak: 'break-word',
+                    fontSize: '0.95rem',
+                    color: 'text.primary',
+                  }}
                 >
                   {message}
                 </Typography>

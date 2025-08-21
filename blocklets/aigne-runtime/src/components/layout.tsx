@@ -25,11 +25,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const renderedAddons = renderAddons();
-  const nodes = Array.isArray(renderedAddons) ? renderedAddons : [renderedAddons];
+  const nodes = Array.isArray(renderedAddons)
+    ? renderedAddons
+    : [renderedAddons];
 
   const links = useMemo(() => {
     return [];
-  }, [t]);
+  }, []);
 
   return (
     <Dashboard

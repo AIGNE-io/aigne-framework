@@ -7,7 +7,10 @@ const { SessionProvider, SessionContext, SessionConsumer, withSession } =
 export function useSessionContext(): any {
   const ctx: any = useContext(SessionContext);
   const data = useMemo(
-    () => ({ ...ctx, isAdmin: ["admin", "owner"].includes(ctx?.session?.user?.role) }),
+    () => ({
+      ...ctx,
+      isAdmin: ['admin', 'owner'].includes(ctx?.session?.user?.role),
+    }),
     [ctx],
   );
 

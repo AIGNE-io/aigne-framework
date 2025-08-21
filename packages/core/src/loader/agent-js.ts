@@ -5,8 +5,10 @@ import { parseAgentFile } from "./agent-yaml.js";
 import type { LoadOptions } from "./index.js";
 
 export async function loadAgentFromJsFile(path: string, options?: LoadOptions) {
+  if (options?.key) path = withQuery(path, { key: options?.key });
+
   const { default: agent } = await tryOrThrow(
-    () => import(/* @vite-ignore */ withQuery(path, { key: options?.key })),
+    () => import(/* @vite-ignore */ path),
     (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
   );
 

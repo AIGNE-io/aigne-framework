@@ -43,6 +43,7 @@ export async function startServer(
   app.locals.db = db;
 
   app.set("trust proxy", true);
+  // @ts-ignore
   app.use(cookieParser());
   app.use(express.json({ limit: "1 mb" }));
   app.use(express.urlencoded({ extended: true, limit: "1 mb" }));

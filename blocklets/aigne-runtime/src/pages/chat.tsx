@@ -19,9 +19,7 @@ function Chat() {
   const { session } = useSessionContext();
   const [aiChatting, setAiChatting] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [streamingMessage, setStreamingMessage] = useState<Message | null>(
-    null,
-  );
+  const [streamingMessage, setStreamingMessage] = useState<Message | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const aiResponseRef = useRef("");
   const isScrolling = useRef(false);
@@ -32,7 +30,7 @@ function Chat() {
   const scrollToBottom = useCallback((instant = false) => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({
-        behavior: instant ? 'auto' : 'smooth',
+        behavior: instant ? "auto" : "smooth",
       });
     }, 100);
   }, []);
@@ -67,7 +65,6 @@ function Chat() {
     };
 
     container.addEventListener("scroll", handleScroll);
-    // eslint-disable-next-line consistent-return
     return () => {
       container.removeEventListener("scroll", handleScroll);
       if (scrollTimeout.current) {
@@ -83,9 +80,7 @@ function Chat() {
       setStreamingMessage(null);
 
       try {
-        const agent = await fetch(
-          joinURL(window.location.origin, prefix, '/api/chat/agent'),
-        )
+        const agent = await fetch(joinURL(window.location.origin, prefix, "/api/chat/agent"))
           .then((res) => res.json())
           .catch(() => null);
         const client = new AIGNEHTTPClient({
@@ -142,10 +137,7 @@ function Chat() {
                 message.taskTitle = progress.taskTitle;
               }
 
-              if (
-                progress.event === 'agentSucceed' ||
-                progress.event === 'agentFailed'
-              ) {
+              if (progress.event === "agentSucceed" || progress.event === "agentFailed") {
                 if (previousTaskTitleAgent === progress.agent.name) {
                   message.taskTitle = undefined;
                   previousTaskTitleAgent = undefined;
@@ -292,12 +284,10 @@ function Chat() {
                 )}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <TypingIndicator />
-                  {streamingMessage &&
-                    !streamingMessage?.text &&
-                    streamingMessage?.taskTitle && (
-                      <Typography variant="caption" color="grey">
-                        <TextLoading>{streamingMessage?.taskTitle}</TextLoading>
-                      </Typography>
+                  {streamingMessage && !streamingMessage?.text && streamingMessage?.taskTitle && (
+                    <Typography variant="caption" color="grey">
+                      <TextLoading>{streamingMessage?.taskTitle}</TextLoading>
+                    </Typography>
                   )}
                 </Box>
               </>
@@ -319,9 +309,7 @@ function Chat() {
           }}
         >
           <ChatInput
-            onSend={(message) =>
-              handleSendMessage(message, session?.user?.did, '')
-            }
+            onSend={(message) => handleSendMessage(message, session?.user?.did, "")}
             disabled={aiChatting}
           />
         </Container>

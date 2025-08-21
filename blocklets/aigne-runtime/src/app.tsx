@@ -14,6 +14,8 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
+
+// @ts-ignore
 import "./app.css";
 import Layout from "./components/layout.js";
 import { SessionProvider } from "./contexts/session.js";
@@ -45,10 +47,7 @@ function App() {
   return (
     <Suspense fallback={fallback}>
       <ConfigProvider translations={translations} prefer="system">
-        <ErrorBoundary
-          FallbackComponent={ErrorFallback}
-          onReset={window.location.reload}
-        >
+        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={window.location.reload}>
           <CssBaseline />
           <Outlet />
         </ErrorBoundary>

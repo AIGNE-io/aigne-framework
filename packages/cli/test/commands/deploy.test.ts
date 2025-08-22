@@ -1,10 +1,16 @@
 import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { rm, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { stringify } from "yaml";
 import yargs from "yargs";
-import { createDeployCommands, DEPLOYED_FILE, deploy, run } from "../../src/commands/deploy.js";
+import {
+  createDeployCommands,
+  DEPLOYED_FILE,
+  deploy,
+  fileExists,
+  run,
+} from "../../src/commands/deploy.js";
 
 const spawnMock = mock((cmd: string) => {
   const stdoutHandlers: any[] = [];
@@ -72,8 +78,10 @@ describe("createDeployCommands", () => {
     const path = join(import.meta.dirname, "../_mocks_/deploy");
     const aigneHomeDir = join(homedir(), ".aigne");
     const deployedFile = join(aigneHomeDir, DEPLOYED_FILE);
+    if (!(await fileExists(aigneHomeDir))) {
+      await mkdir(aigneHomeDir, { recursive: true });
+    }
 
-    await rm(deployedFile, { recursive: true });
     await writeFile(deployedFile, stringify({ [path]: { name: "my-blocklet" } }));
 
     const command = yargs().command(createDeployCommands());

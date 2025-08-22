@@ -15,7 +15,7 @@ interface DeployOptions {
   endpoint?: string;
 }
 
-async function fileExists(p: string) {
+export async function fileExists(p: string) {
   try {
     await access(p, constants.F_OK);
     return true;

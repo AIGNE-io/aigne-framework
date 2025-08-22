@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { writeFile } from "node:fs/promises";
+import { rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { stringify } from "yaml";
@@ -27,7 +27,9 @@ const spawnMock = mock((cmd: string) => {
           stderrHandlers.forEach((fn) => fn("err-msg"));
           cb(1);
         } else {
-          stdoutHandlers.forEach((fn) => fn("ok-msg"));
+          stdoutHandlers.forEach((fn) =>
+            fn("Created Blocklet DID: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS"),
+          );
           cb(0);
         }
       }
@@ -44,7 +46,7 @@ beforeEach(async () => {
 describe("run", () => {
   it("should capture stdout on success", async () => {
     const result = await run("echo", ["test"]);
-    expect(result).toContain("ok-msg");
+    expect(result).toContain("Created Blocklet DID");
     expect(spawnMock).toHaveBeenCalledWith("echo", ["test"], expect.any(Object));
   });
 
@@ -67,18 +69,12 @@ describe("createDeployCommands", () => {
   });
 
   it("should have handler function", async () => {
-    const path = join(import.meta.dirname, "../_mocks_");
+    const path = join(import.meta.dirname, "../_mocks_/deploy");
     const aigneHomeDir = join(homedir(), ".aigne");
+    const deployedFile = join(aigneHomeDir, DEPLOYED_FILE);
 
-    await writeFile(
-      join(aigneHomeDir, DEPLOYED_FILE),
-      stringify({
-        [path]: {
-          name: "my-blocklet",
-          did: "z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS",
-        },
-      }),
-    );
+    await rm(deployedFile, { recursive: true });
+    await writeFile(deployedFile, stringify({ [path]: { name: "my-blocklet" } }));
 
     const command = yargs().command(createDeployCommands());
     await command.parseAsync(["deploy", "--path", path, "--endpoint", "http://endpoint"]);
@@ -100,7 +96,7 @@ describe("createDeployCommands", () => {
 
 describe("deploy function", () => {
   it("should run deploy tasks successfully (mocked)", async () => {
-    const path = join(import.meta.dirname, "../_mocks_");
+    const path = join(import.meta.dirname, "../_mocks_/deploy");
     const aigneHomeDir = join(homedir(), ".aigne");
 
     await writeFile(

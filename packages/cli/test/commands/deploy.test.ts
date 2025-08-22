@@ -3,6 +3,7 @@ import { writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { stringify } from "yaml";
+import yargs from "yargs";
 import { createDeployCommands, DEPLOYED_FILE, deploy, run } from "../../src/commands/deploy.js";
 
 const spawnMock = mock((cmd: string) => {
@@ -58,6 +59,29 @@ describe("createDeployCommands", () => {
     const cmd = createDeployCommands();
     expect(cmd.command).toBe("deploy");
     expect(cmd.describe).toMatch(/Deploy/);
+  });
+
+  it("should have builder function", () => {
+    const cmd = createDeployCommands();
+    expect(typeof cmd.builder).toBe("function");
+  });
+
+  it("should have handler function", async () => {
+    const path = join(import.meta.dirname, "../_mocks_");
+    const aigneHomeDir = join(homedir(), ".aigne");
+
+    await writeFile(
+      join(aigneHomeDir, DEPLOYED_FILE),
+      stringify({
+        [path]: {
+          name: "my-blocklet",
+          did: "z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS",
+        },
+      }),
+    );
+
+    const command = yargs().command(createDeployCommands());
+    await command.parseAsync(["deploy", "--path", path, "--endpoint", "http://endpoint"]);
   });
 
   it("should exit when path or endpoint missing", async () => {

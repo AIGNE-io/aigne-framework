@@ -40,7 +40,7 @@ mock.module("@inquirer/prompts", () => ({
   input: () => {
     return "demo";
   },
-  select: () => {},
+  select: () => "default",
 }));
 
 beforeEach(async () => {

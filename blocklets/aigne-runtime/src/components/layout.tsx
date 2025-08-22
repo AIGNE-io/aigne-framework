@@ -33,13 +33,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     navigation: [
       {
         title: "Docs",
-        link: "https://www.arcblock.io/docs/aigne-framework/zh/aigne-framework-getting-started-index-md",
+        link: "https://www.arcblock.io/docs/aigne-framework/en/aigne-framework-getting-started-index-md",
       },
     ],
   };
   const componentMountPoints = window.blocklet?.componentMountPoints;
   const observability = componentMountPoints?.find((item) => item.did === OBSERVABILITY_DID);
-  if (observability && ["admin", "owner"].includes(session?.role || "")) {
+  if (observability && ["admin", "owner"].includes(session?.user?.role || "")) {
     blockletInfo.navigation.push({
       title: observability.title,
       link: observability.mountPoint,
@@ -58,9 +58,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         description={window.blocklet?.appDescription}
         logo={
           window.blocklet?.logo ? (
-            <img src={window.blocklet.logo} alt="logo" />
+            <img src={window.blocklet.logo} alt={window.blocklet?.appName || "AIGNE Logo"} />
           ) : (
-            <img src={Logo} alt="logo" />
+            <img src={Logo} alt={window.blocklet?.appName || "AIGNE Logo"} />
           )
         }
         meta={blockletInfo}
@@ -73,7 +73,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         headerAddons={addons}
         headerProps={{ style: { display: "none" } }}
         links={links}
-        title={blocklet?.appName}
+        title={window.blocklet?.appName}
       >
         {children}
       </Dashboard>

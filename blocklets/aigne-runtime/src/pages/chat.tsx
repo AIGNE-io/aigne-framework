@@ -220,6 +220,7 @@ function Chat() {
         flexDirection: "column",
         position: "relative",
         overflow: "hidden",
+        flex: 1,
       }}
     >
       <Box

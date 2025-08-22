@@ -50,7 +50,8 @@ scripts:
 environments: []
 capabilities: {}
 screenshots:
-  - 82a097753c90f3103a30338a68b07ce5.png
+  - d19d90ffcbfbd137cb433816ed16fbe0.png
+  - 2f501b650fb857338843ec8a1c3bac68.png
 components:
   - name: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
     title: AIGNE Observability
@@ -60,3 +61,18 @@ components:
       store: https://store.blocklet.dev
       name: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
       version: latest
+navigation:
+  - id: github
+    title:
+      en: github
+      zh: github
+    link: https://github.com/AIGNE-io/aigne-framework
+    section:
+      - header
+  - id: homepage
+    title:
+      en: aigne
+      zh: AIGNE 官网
+    link: https://aigne.io/
+    section:
+      - header

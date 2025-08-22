@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.9.1...observability-api-v0.10.0) (2025-08-21)
+
+
+### Features
+
+* **blocklet:** support agent runtime blocklet ([#396](https://github.com/AIGNE-io/aigne-framework/issues/396)) ([baaae69](https://github.com/AIGNE-io/aigne-framework/commit/baaae691d552b7c7d313c4964a135a1b245943f9))
+
 ## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.9.0...observability-api-v0.9.1) (2025-08-20)
 
 

@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.66.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.65.0...aigne-framework-v1.66.0) (2025-08-21)
+
+
+### Features
+
+* **blocklet:** support agent runtime blocklet ([#396](https://github.com/AIGNE-io/aigne-framework/issues/396)) ([baaae69](https://github.com/AIGNE-io/aigne-framework/commit/baaae691d552b7c7d313c4964a135a1b245943f9))
+
+
+### Bug Fixes
+
+* add workflow for aigne runtime ([#400](https://github.com/AIGNE-io/aigne-framework/issues/400)) ([d04d926](https://github.com/AIGNE-io/aigne-framework/commit/d04d92682e7fa4278f02ca58f9911cf9e17abc57))
+* can specify an id to create a board ([#397](https://github.com/AIGNE-io/aigne-framework/issues/397)) ([f7e10fe](https://github.com/AIGNE-io/aigne-framework/commit/f7e10fe3fc188a8f38d6bd61ab85be8a9d444a06))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.6
+
 ## [1.65.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.64.1...aigne-framework-v1.65.0) (2025-08-21)
 
 

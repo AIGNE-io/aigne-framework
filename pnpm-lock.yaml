@@ -1305,7 +1305,7 @@ importers:
         specifier: ^2.1.2
         version: 2.2.0
       '@blocklet/sdk':
-        specifier: ^1.16.48
+        specifier: ^1.16.46
         version: 1.16.48(@mui/material@7.3.1(@emotion/react@11.14.0(@types/react@19.1.10)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.10)(react@19.1.1))(@types/react@19.1.10)(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@blocklet/ui-react':
         specifier: ^3.1.27
@@ -1402,13 +1402,13 @@ importers:
   observability/ui:
     dependencies:
       '@abtnode/util':
-        specifier: ^1.16.48
+        specifier: ^1.16.46
         version: 1.16.48
       '@arcblock/ux':
-        specifier: ^3.1.27
+        specifier: ^3.0.24
         version: 3.1.27(8c9be75987dc332180253e5ac48f9756)
       '@blocklet/sdk':
-        specifier: ^1.16.48
+        specifier: ^1.16.46
         version: 1.16.48(@mui/material@7.3.1(@emotion/react@11.14.0(@types/react@19.1.10)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.10)(react@19.1.1))(@types/react@19.1.10)(react@19.1.1))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@microsoft/fetch-event-source':
         specifier: ^2.0.1

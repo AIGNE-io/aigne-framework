@@ -526,8 +526,8 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     type Task = Promise<{ index: number; reader: Reader } & ReaderResult>;
 
     const read = async (index: number, reader: Reader): Task => {
-      const promise = reader.read();
-      return promise.then((result) => ({ ...result, reader, index }));
+      const result = await reader.read();
+      return { ...result, reader, index };
     };
 
     const tasks = new Map(streams.map((stream, index) => [index, read(index, stream.getReader())]));

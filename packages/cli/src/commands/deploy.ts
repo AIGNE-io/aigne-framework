@@ -8,6 +8,7 @@ import { input as inputInquirer, select as selectInquirer } from "@inquirer/prom
 import { ListrInquirerPromptAdapter } from "@listr2/prompt-adapter-inquirer";
 import { parse, stringify } from "yaml";
 import type { CommandModule } from "yargs";
+import { isTest } from "../utils/aigne-hub/constants.js";
 
 interface DeployOptions {
   path?: string;
@@ -23,7 +24,7 @@ async function fileExists(p: string) {
   }
 }
 
-const DEPLOYED_FILE = "deployed.yaml";
+export const DEPLOYED_FILE = isTest ? "deployed.test.yaml" : "deployed.yaml";
 
 export async function run(cmd: string, args: string[] = [], opts: any = {}): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -116,7 +117,7 @@ async function copyDir(src: string, dest: string) {
   }
 }
 
-const deploy = async (path: string, endpoint: string) => {
+export const deploy = async (path: string, endpoint: string) => {
   const aigneHomeDir = join(homedir(), ".aigne");
   if (!(await fileExists(aigneHomeDir))) {
     await mkdir(aigneHomeDir, { recursive: true });

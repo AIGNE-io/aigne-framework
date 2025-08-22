@@ -6,9 +6,9 @@ Built-in applications are pre-packaged AIGNE projects designed for specialized t
 
 Currently, the following built-in application is available:
 
-| Command     | Aliases           | Description                                                 |
-|-------------|-------------------|-------------------------------------------------------------|
-| `doc-smith` | `docsmith`, `doc` | Generate and maintain project docs — powered by agents.     |
+| Command     | Aliases           | Description                                             |
+|-------------|-------------------|---------------------------------------------------------|
+| `doc-smith` | `docsmith`, `doc` | Generate and maintain project docs — powered by agents. |
 
 ## Usage
 
@@ -23,11 +23,14 @@ The core functionality of an app is provided through its agents, which are expos
 aigne doc-smith --help
 ```
 
-Once you identify an agent to run, you can execute it like any other command.
+Many apps define a default agent that runs when no subcommand is specified. You can run this agent using the app's name or any of its aliases.
 
 ```bash
-# Run a hypothetical 'generate' agent within doc-smith
-aigne doc-smith generate --input "./src" --output "./docs"
+# Run doc-smith
+aigne doc-smith generate
+
+# You can also use an alias
+aigne doc generate
 ```
 
 ### Common Management Commands
@@ -53,16 +56,16 @@ aigne doc-smith serve-mcp
 
 ## Execution and Caching Flow
 
-When you run a built-in app for the first time, the CLI downloads it from the npm registry (`@aigne/doc-smith` in this case) and caches it locally in `~/.aigne/registry.npmjs.org/`. Subsequent runs use the cached version until it expires (after 24 hours) or you manually upgrade it.
+When you run a built-in app for the first time, the CLI downloads it from the npm registry (e.g., `@aigne/doc-smith`) and caches it locally in `~/.aigne/registry.npmjs.org/`. Subsequent runs use the cached version. The cache is checked for updates once every 24 hours.
 
 ```mermaid
 flowchart TD
-    A["User runs 'aigne doc-smith'"] --> B{"Is app cached and recent (< 24h)?"};
+    A["User runs 'aigne doc'"] --> B{"Is app cached and recent (< 24h)?"};
     B -- "Yes" --> E["Load app from local cache"];
     B -- "No" --> C["Fetch '@aigne/doc-smith' from npm registry"];
     C --> D["Download, extract, and install dependencies"];
     D --> E;
-    E --> F["Execute specified doc-smith command"];
+    E --> F["Execute specified 'doc' command"];
 ```
 
 This process ensures that you are always using a functional and up-to-date version of the application with minimal overhead.

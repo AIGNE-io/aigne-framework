@@ -39,9 +39,9 @@ aigne create
 
 ![Creating a project with an interactive prompt for the project name](https://docsmith.aigne.io/image-bin/uploads/61a25e0b14ee2b304cd02972e81236b2.png)
 
-Once completed, a success message will be displayed, and a new directory will be created with the following structure:
+Once completed, a success message will be displayed, and a new directory will be created with the default project structure.
 
-![File structure of a project created with the default template](https://docsmith.aigne.io/image-bin/uploads/d77c21029750a66ba316b3a91e00f9ca.png)
+![Project creation success message](https://docsmith.aigne.io/image-bin/uploads/d77c21029750a66ba316b3a91e00f9ca.png)
 
 ## Step 3: Configure Environment Variables
 
@@ -69,7 +69,7 @@ Now that the project is created and configured, you can start the agent. The `ru
 From inside the `my-first-agent` directory, execute:
 
 ```bash
-aigne run
+aigne run --chat
 ```
 
 The CLI will initialize the agent and present you with a chat prompt. You can now interact with your agent directly.

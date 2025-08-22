@@ -1,6 +1,6 @@
 # 用于文档中的媒体资源
 
-![使用默认模板创建项目](https://docsmith.aigne.io/image-bin/uploads/d77c21029750a66ba316b3a91e00f9ca.png)
+![使用默认模板创建项目，显示创建成功的消息](https://docsmith.aigne.io/image-bin/uploads/d77c21029750a66ba316b3a91e00f9ca.png)
 
 ![以 chat 模式运行默认模板创建的项目](https://docsmith.aigne.io/image-bin/uploads/6d8b90c443540b0fdb3c00211448a47f.png)
 

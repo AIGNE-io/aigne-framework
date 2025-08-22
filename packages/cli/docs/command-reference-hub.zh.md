@@ -1,169 +1,178 @@
 # aigne hub
 
-`aigne hub` 命令是管理 AIGNE Hub 连接的主要工具。Hub 提供对高级模型的访问、跟踪额度使用情况，并提供其他中心化服务。该命令组允许您连接到不同的 Hub 实例，在它们之间切换，并监控您的账户状态。
+`aigne hub` 命令提供了一套工具，用于管理你与 AIGNE Hub 的连接。通过该命令，你可以直接在终端轻松地切换不同的 Hub 实例（例如官方 Arcblock hub 和自托管 hub）、检查账户状态、查看信用余额等。
 
-## 命令概述
+### `hub list`
 
-`hub` 命令是管理连接的多个子命令的入口。
+列出你之前连接过的所有 AIGNE Hub。
 
-```mermaid
-flowchart TD
-    A["aigne hub"] --> B["connect"];
-    A --> C["list (ls)"];
-    A --> D["use"];
-    A --> E["status (st)"];
-    A --> F["remove (rm)"];
-    A --> G["info (i)"];
+**用法**
+
+```bash
+aigne hub list
+# 别名
+aigne hub ls
 ```
 
----
+**输出示例**
 
-## `connect [url]`
+该命令会显示一个包含所有已保存连接的表格，并标明当前激活的是哪一个。
 
-连接到一个新的 AIGNE Hub 实例。如果您在运行命令时不提供 URL，它将启动一个交互式提示，引导您连接到官方 AIGNE Hub 或自定义 Hub。
+```text
+已连接的 AIGNE Hub：
 
-### 用法
+┌────────────────────────────────────────────────────────────────────┬──────────┐
+│ URL                                                                │ 当前使用 │
+├────────────────────────────────────────────────────────────────────┼──────────┤
+│ https://hub.aigne.io                                               │ 是       │
+├────────────────────────────────────────────────────────────────────┼──────────┤
+│ https://my-custom-hub.example.com                                  │ 否       │
+└────────────────────────────────────────────────────────────────────┴──────────┘
+使用 'aigne hub use' 切换到不同的 hub。
+```
+
+### `hub connect`
+
+与一个 AIGNE Hub 实例建立连接，并将凭证保存在本地。该过程需要通过你的 Web 浏览器进行认证。
+
+**用法**
+
+```bash
+# 交互模式，选择官方或自定义 hub
+aigne hub connect
+
+# 指定 URL 的直接模式
+aigne hub connect <hub-url>
+```
 
 **交互模式**
 
-```bash
-aigne hub connect
-```
-这将显示以下选项：
+运行不带 URL 的 `aigne hub connect` 命令将出现一个交互式提示：
 
 ```text
-? 选择要连接的 hub：
-❯ 官方 Hub (https://hub.aigne.io)
-  自定义 Hub URL
+? 请选择要连接的 hub：› - 使用箭头键选择，按回车键提交。
+❯   官方 Hub (https://hub.aigne.io)
+    自定义 Hub URL
+```
+
+选择并成功通过浏览器认证后，你将看到一条确认信息：
+
+```text
+✓ Hub https://hub.aigne.io 连接成功。
 ```
 
 **直接模式**
 
-将 URL 作为参数提供以进行非交互式连接。
+提供 URL 作为参数来连接到一个特定的（通常是自托管的）hub。
 
 ```bash
-aigne hub connect https://your-custom-hub.example.com
+aigne hub connect https://my-custom-hub.example.com
 ```
 
-成功连接后，您的 API 密钥和 Hub URL 将保存到位于 `~/.config/aigne/env.yaml` 的配置文件中。
+### `hub use`
 
----
+将当前使用的 AIGNE Hub 切换到你之前连接过的一个实例。当前使用的 hub 将用于需要 Hub 服务的操作，例如运行由 Hub 提供的模型。
 
-## `list` (或 `ls`)
-
-列出所有已保存的 AIGNE Hub 连接，并指明当前活动的连接。
-
-### 用法
-
-```bash
-aigne hub list
-```
-
-### 输出示例
-
-该命令会显示一个包含所有已配置 Hub 的表格。
-
-```text
-已连接的 AIGNE Hubs:
-
-┌───────────────────────────────────────────┬────────┐
-│ URL                                       │ 活动   │
-├───────────────────────────────────────────┼────────┤
-│ https://hub.aigne.io                      │ 是     │
-├───────────────────────────────────────────┼────────┤
-│ https://your-custom-hub.example.com       │ 否     │
-└───────────────────────────────────────────┴────────┘
-使用 'aigne hub use' 切换到不同的 hub。
-```
-
----
-
-## `use`
-
-切换当前活动的 AIGNE Hub 连接。当命令需要 Hub 服务时（例如使用 Hub 提供的模型运行 `aigne run`），将使用当前活动的 Hub。
-
-### 用法
+**用法**
 
 ```bash
 aigne hub use
 ```
 
-该命令会以交互式列表的形式显示您已保存的 Hubs，让您可以选择要设置为当前活动连接的 Hub。
+**示例**
+
+该命令将提示你从已保存的连接列表中进行选择。
 
 ```text
-? 选择要切换到的 hub:
-❯ https://hub.aigne.io
-  https://your-custom-hub.example.com
+? 请选择要切换到的 hub：› - 使用箭头键选择，按回车键提交。
+    https://hub.aigne.io
+❯   https://my-custom-hub.example.com
 ```
 
----
+选择后，当前使用的 hub 将被更改。
 
-## `status` (或 `st`)
+```text
+✓ 已将当前使用的 hub 切换到 https://my-custom-hub.example.com
+```
 
-显示当前活动的 AIGNE Hub 的 URL。
+### `hub status`
 
-### 用法
+显示当前使用的 AIGNE Hub 的 URL。
+
+**用法**
 
 ```bash
 aigne hub status
+# 别名
+aigne hub st
 ```
 
-### 输出示例
+**输出示例**
 
 ```text
-当前活动的 hub: https://hub.aigne.io - 在线
+当前使用的 hub: https://hub.aigne.io - 在线
 ```
 
----
+### `hub remove`
 
-## `remove` (或 `rm`)
+从本地配置文件中删除一个已保存的 AIGNE Hub 连接。
 
-从您的配置中移除已保存的 AIGNE Hub 连接。
-
-### 用法
+**用法**
 
 ```bash
 aigne hub remove
+# 别名
+aigne hub rm
 ```
 
-该命令会启动一个交互式提示，让您可以选择要删除的已保存 Hub 连接。
+**示例**
 
----
+系统将提示你选择要删除的已保存连接。
 
-## `info` (或 `i`)
+```text
+? 请选择要删除的 hub：› - 使用箭头键选择，按回车键提交。
+    https://hub.aigne.io
+❯   https://my-custom-hub.example.com
+```
 
-显示所选 Hub 连接的详细账户和状态信息。
+确认后，连接将被删除。
 
-### 用法
+```text
+✓ Hub https://my-custom-hub.example.com 已删除
+```
+
+### `hub info`
+
+获取并显示所选 hub 的详细账户信息，包括用户详情和信用余额。
+
+**用法**
 
 ```bash
 aigne hub info
+# 别名
+aigne hub i
 ```
 
-该命令会首先提示您选择一个已配置的 Hub。然后，它会从该 Hub 获取并显示您的用户资料、连接状态、额度余额以及相关链接。
+**输出示例**
 
-### 输出示例
-
-输出内容为您在所选 Hub 上账户的综合摘要。请注意，只有当 Hub 启用了此功能时，才会显示额度和链接信息。
+从交互式提示中选择一个 hub 后，将显示详细信息。
 
 ```text
 AIGNE Hub 连接
 ──────────────────────────────────────────────
-Hub:         https://hub.aigne.io
-状态:        已连接 ✅
+Hub:        https://hub.aigne.io
+状态:     已连接 ✅
 
 用户:
-  姓名:      Jane Doe
-  DID:       did:abt:z123abc...
-  邮箱:      jane.doe@example.com
+  姓名:     John Doe
+  DID:      z2qA...p9Y
+  邮箱:    john.doe@example.com
 
-额度:
-  已用:      5,432
-  总量:      20,000
+信用点:
+  已用:     15,000
+  总量:    1,000,000
 
 链接:
-  支付:      https://hub.aigne.io/billing
+  支付:  https://hub.aigne.io/billing
   个人资料:  https://hub.aigne.io/profile
 ```
-
-这组命令让您可以全面控制您的 AIGNE Hub 连接。

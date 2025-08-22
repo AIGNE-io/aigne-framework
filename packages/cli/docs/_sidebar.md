@@ -14,4 +14,3 @@
 * [Guides](/guides.md)
   * [Creating a Custom Agent](/guides-creating-a-custom-agent.md)
   * [Running Remote Agents](/guides-running-remote-agents.md)
-* [Changelog](/changelog.md)

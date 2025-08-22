@@ -1,10 +1,10 @@
 # Command Reference
 
-The `@aigne/cli` provides a comprehensive set of commands to manage the entire lifecycle of your agent development, from project creation to deployment and monitoring. This page serves as a quick reference for all available commands. Select a command to view its detailed documentation, including all options and usage examples.
+This section provides a detailed reference for all available `@aigne/cli` commands and their options. The CLI is your primary tool for creating, running, testing, and deploying AIGNE agents. Each command is documented on its own page with comprehensive examples and parameter descriptions.
 
-## Command Structure
+## Command Overview
 
-The following diagram illustrates the primary commands available at the top level of the AIGNE CLI.
+The following diagram illustrates the main commands available in the AIGNE CLI:
 
 ```mermaid
 graph TD
@@ -17,27 +17,27 @@ graph TD
     A --> H["app"]
 ```
 
-## Available Commands
+Here is a summary of the primary commands. Select a command to view its detailed documentation, including all available options and usage examples.
 
-The following table provides a summary of the main commands. For a complete list of options and arguments for each, please refer to their dedicated pages.
-
-| Command | Description | More Info |
-|---|---|---|
-| `create` | Scaffolds a new AIGNE project from a template, setting up the necessary file structure and configuration. | [Details](./command-reference-create.md) |
-| `run` | Executes an agent locally or from a remote URL. Ideal for testing and interactive chat sessions. | [Details](./command-reference-run.md) |
-| `serve-mcp` | Serves one or more agents as a Model Context Protocol (MCP) server for integration with external systems. | [Details](./command-reference-serve-mcp.md) |
-| `hub` | Manages connections to the AIGNE Hub, allowing you to switch accounts, check status, and use Hub-provided models. | [Details](./command-reference-hub.md) |
-| `observe` | Starts a local observability server to view and analyze agent execution traces and data. | [Details](./command-reference-observe.md) |
-| `test` | Runs automated unit and integration tests for your agents and skills. | [Details](./command-reference-test.md) |
-| `app` | Provides access to pre-packaged applications, such as `doc-smith`, for specialized tasks. | [Details](./command-reference-built-in-apps.md) |
+| Command                                             | Description                                                                                                   |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [`aigne create`](./command-reference-create.md)         | Scaffolds a new AIGNE project from a template.                                                                |
+| [`aigne run`](./command-reference-run.md)               | Executes an agent locally or from a remote URL, with options for chat mode, model selection, and input handling. |
+| [`aigne serve-mcp`](./command-reference-serve-mcp.md)   | Serves agents as a Model Context Protocol (MCP) server for integration with external systems.                 |
+| [`aigne hub`](./command-reference-hub.md)               | Manages connections to the AIGNE Hub, allowing you to switch accounts, check status, and use Hub-provided models. |
+| [`aigne observe`](./command-reference-observe.md)       | Starts a local server to view and analyze agent execution traces and observability data.                      |
+| [`aigne test`](./command-reference-test.md)             | Runs automated tests for your agents and skills.                                                              |
+| [`aigne app`](./command-reference-built-in-apps.md)     | Executes pre-packaged applications like `doc-smith` for specialized tasks.                                    |
 
 ## Global Options
 
-These options can be used with the base `aigne` command.
+These options can be used with any command:
 
-- `--help`, `-h`: Displays a summary of all available commands and global options.
-- `--version`, `-v`: Shows the installed version of `@aigne/cli`.
+| Option          | Alias | Description                                  |
+| --------------- | ----- | -------------------------------------------- |
+| `--help`        | `-h`  | Display help information for a command.      |
+| `--version`     | `-v`  | Display the current version of `@aigne/cli`. |
 
 ---
 
-Now that you have an overview of the available commands, you can dive into the specifics of each one. For practical, task-oriented examples, check out the [Guides](./guides.md) section.
+For practical, task-oriented examples of how to combine these commands in your development workflow, please see the [Guides](./guides.md) section.

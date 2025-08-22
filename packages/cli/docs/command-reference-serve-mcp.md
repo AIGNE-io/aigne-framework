@@ -1,157 +1,116 @@
 # aigne serve-mcp
 
-The `aigne serve-mcp` command launches a local server that exposes your AIGNE agents through the Model Context Protocol (MCP). This allows external applications and services that are compatible with MCP to interact with your agents as callable tools, enabling seamless integration into larger systems.
+The `aigne serve-mcp` command starts a local server that exposes your AIGNE agents through the Model Context Protocol (MCP). This allows external systems and applications that are compatible with MCP to interact with your agents as if they were tools.
 
-This command is designed for backend integration, distinct from the `aigne run` command which is intended for interactive chat sessions.
+This is useful for integrating your agents into larger workflows or making them available to other services in a standardized way.
+
+## Basic Usage
+
+To start the server with default settings, navigate to your project directory and run:
+
+```bash
+# Start MCP server on default port 3000
+aigne serve-mcp
+```
+
+This command will scan the current directory for an AIGNE project, load the configured agents, and start an HTTP server. By default, the server runs on `http://localhost:3000/mcp`.
+
+![Running the MCP server](https://docsmith.aigne.io/image-bin/uploads/c3e0dc49f1df3c78a1d569a26dcf68c8.png)
 
 ## How It Works
 
-When you run `aigne serve-mcp`, the CLI performs the following steps:
-
-1.  **Load Project**: It loads the AIGNE project from the specified directory, parsing the `aigne.yaml` configuration.
-2.  **Identify Agents**: It identifies the agents designated for exposure via the `mcpServer.agents` list in your configuration file.
-3.  **Create MCP Tools**: For each designated agent, it creates a corresponding MCP tool. The agent's `name`, `description`, and `inputSchema` are used to define the tool's signature.
-4.  **Start HTTP Server**: It starts an HTTP server (using Express) that listens for incoming MCP requests on a specific path (e.g., `/mcp`).
-5.  **Handle Requests**: The server processes incoming tool invocation requests from MCP clients, passes the input to the corresponding AIGNE agent, and streams the result back to the client.
-
-The following diagram illustrates the request flow:
+The command initializes an MCP server and dynamically registers each specified agent from your AIGNE project as a callable "tool". When a request comes in, the server invokes the corresponding agent with the provided input and streams the output back to the client.
 
 ```mermaid
 sequenceDiagram
     participant Client as MCP Client
-    participant Server as aigne serve-mcp Server
+    participant Server as aigne serve-mcp
     participant AIGNE as AIGNE Engine
     participant Agent as Target Agent
 
-    Client->>+Server: POST /mcp (Invoke Tool Request)
+    Client->>Server: POST /mcp (MCP request with tool_use)
     Server->>AIGNE: invoke(agent, input)
     AIGNE->>Agent: Execute with input
     Agent-->>AIGNE: Return result
-    AIGNE-->>Server: Provide result
-    Server-->>-Client: Return Tool Result
+    AIGNE-->>Server: Forward result
+    Server-->>Client: Stream MCP response (tool_result)
 ```
 
-## Usage
+## Options
 
-To serve agents from the current directory on the default port (3000):
-
-```bash
-aigne serve-mcp
-```
-
-To serve agents from a specific directory on a custom port:
-
-```bash
-aigne serve-mcp --path ./my-agents --port 3001
-```
-
-## Command Options
-
-The `serve-mcp` command supports several options to customize its behavior:
+You can customize the server's behavior using the following options:
 
 | Option | Alias | Description | Type | Default |
 |---|---|---|---|---|
-| `--path` | `--url` | Path to the local agents directory or a URL to a remote AIGNE project. | `string` | `.` |
-| `--host` | | The host to run the MCP server on. Use `0.0.0.0` to expose the server to the public network. | `string` | `localhost` |
-| `--port` | | The port to run the MCP server on. Can also be set via the `PORT` environment variable. | `number` | `3000` |
-| `--pathname` | | The URL pathname for the MCP service endpoint. | `string` | `/mcp` |
-| `--aigne-hub-url` | | A custom URL for the AIGNE Hub service. This is used for fetching remote agent definitions or models. | `string` | N/A |
+| `--path` | `--url` | Path to the agents directory or a URL to an AIGNE project. | `string` | `.` |
+| `--host` | | Host to run the MCP server on. Use `0.0.0.0` to expose the server publicly. | `string` | `localhost` |
+| `--port` | | Port to run the MCP server on. If not set, it uses the `PORT` environment variable or defaults to 3000. | `number` | `3000` |
+| `--pathname` | | The specific URL path for the MCP service endpoint. | `string` | `/mcp` |
+| `--aigne-hub-url` | | Custom AIGNE Hub service URL. This is used for fetching remote agent definitions or models. | `string` | N/A |
 
-## Configuration
+## Examples
 
-To expose an agent via the MCP server, you must explicitly list it in the `mcpServer.agents` section of your `aigne.yaml` file. Agents not listed here will not be accessible through the MCP endpoint.
+### Run on a different port
 
-**Example `aigne.yaml`:**
-
-```yaml
-# aigne.yaml
-
-mcpServer:
-  agents:
-    - myCustomAgent
-
-agents:
-  - name: myCustomAgent
-    description: 'A custom agent that processes user data.'
-    # The inputSchema must be a ZodObject for MCP compatibility
-    inputSchema:
-      type: object
-      properties:
-        userId:
-          type: string
-        query:
-          type: string
-      required:
-        - userId
-    # ... other agent configuration
-```
-
-In this example, only `myCustomAgent` will be exposed as a tool on the MCP server.
-
-## Practical Example
-
-Let's walk through serving an agent and interacting with it using `curl`.
-
-**1. Agent Definition**
-
-Assume you have an agent named `text-summarizer` defined in your project.
-
-**2. Expose the Agent**
-
-Update your `aigne.yaml` to include it in the `mcpServer` configuration:
-
-```yaml
-# aigne.yaml
-
-mcpServer:
-  agents:
-    - text-summarizer
-
-agents:
-  - name: text-summarizer
-    description: 'Summarizes a given block of text.'
-    inputSchema:
-      type: object
-      properties:
-        text:
-          type: string
-          description: "The text to be summarized."
-      required: ["text"]
-    # ... additional configuration
-```
-
-**3. Start the Server**
-
-Run the command to start the server on port 8080.
+To avoid port conflicts, you can specify a different port.
 
 ```bash
+# Start MCP server on port 8080
 aigne serve-mcp --port 8080
 ```
 
-You should see the following output, confirming the server is running:
+### Serve agents from a specific directory
 
-```
-MCP server is running on http://localhost:8080/mcp
-```
-
-**4. Interact with the Server**
-
-You can now send a POST request to the `/mcp` endpoint to invoke the `text-summarizer` tool. The body of the request must follow the JSON-RPC 2.0 format expected by the MCP server.
+If your terminal's current working directory is not the project root, you must specify the path to your agents.
 
 ```bash
-curl -X POST http://localhost:8080/mcp \
--H "Content-Type: application/json" \
--d '{
-  "jsonrpc": "2.0",
-  "method": "invokeTool",
-  "params": {
-    "toolName": "text-summarizer",
-    "input": {
-      "text": "AIGNE CLI is the official command-line tool for AIGNE Framework, designed to simplify the development, testing, and deployment processes for AIGNE applications. It provides a series of useful commands to help developers quickly create projects, run agents, test code, and deploy applications."
-    }
-  },
-  "id": "request-123"
-}'
+# Start MCP server for agents at a specified path
+aigne serve-mcp --path ./my-agents-project
 ```
 
-The server will process this request, execute the `text-summarizer` agent with the provided text, and return the result.
+### Expose the server to the network
+
+To allow other devices on your network to access the MCP server, set the host to `0.0.0.0`.
+
+```bash
+# The server will be accessible via your machine's IP address
+aigne serve-mcp --host 0.0.0.0 --port 3001
+```
+
+### Change the service pathname
+
+For reverse proxy configurations or to avoid conflicts, you can change the URL path.
+
+```bash
+# The server will be available at http://localhost:3000/api/agents
+aigne serve-mcp --pathname /api/agents
+```
+
+## Project Configuration
+
+To control which agents are exposed through the MCP server, you need to add an `mcpServer` section to your `aigne.yaml` file. List the names of the agents you want to serve under the `agents` key.
+
+```yaml
+# aigne.yaml
+
+name: my-project
+description: A project with agents exposed via MCP.
+
+agents:
+  - id: myAgent1
+    # ... agent configuration
+
+  - id: myAgent2
+    # ... agent configuration
+
+# Expose specific agents via the MCP server
+mcpServer:
+  agents:
+    - myAgent1
+```
+
+In this example, only `myAgent1` will be available as a tool on the MCP server. If the `mcpServer` section is omitted, the server may attempt to load all available agents.
+
+---
+
+After setting up your MCP server, you may want to learn more about defining the agents themselves. Proceed to the [Agents and Skills](./core-concepts-agents-and-skills.md) section for more details.

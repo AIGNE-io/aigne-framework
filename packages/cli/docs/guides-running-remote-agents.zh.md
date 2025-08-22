@@ -1,79 +1,69 @@
-# 运行远程 Agent
+# 运行远程 Agents
 
-`@aigne/cli` 允许你直接从远程 URL 执行 Agent，无需手动克隆或进行本地设置。此功能有助于共享可复用的 Agent、在 CI/CD 管道中运行 Agent，或从中央存储库快速测试 Agent。CLI 会无缝处理下载、缓存和执行过程。
+AIGNE CLI 不仅可以从本地目录执行 Agent，还可以从远程位置执行。此功能允许你直接通过指向项目压缩包（例如 .tar.gz 文件）的 URL 运行 Agent。它简化了共享、测试以及将 Agent 集成到自动化工作流中的过程，无需预先克隆仓库。
+
+## 核心命令
+
+`run` 命令通过提供 URL（而非本地文件路径）来实现此功能。远程源必须是可公开访问的 tarball 压缩包。
+
+```bash
+# 从远程 URL 运行 Agent
+aigne run --url https://example.com/path/to/my-aigne-project.tar.gz
+
+# 你也可以使用 `path` 位置参数
+aigne run https://example.com/path/to/my-aigne-project.tar.gz
+```
 
 ## 工作原理
 
-当你向 `aigne run` 命令提供一个 URL 时，CLI 会启动一个进程来获取并运行该远程包。Agent 代码不会在远程执行，而是会下载到你的本地计算机上运行。
+当你提供一个 URL 时，CLI 会执行以下步骤：
 
-工作流程如下：
+1.  **下载**：从指定的 URL 获取压缩包。
+2.  **缓存**：创建一个本地目录来存储下载的内容。默认情况下，该目录位于你的主目录下的 `~/.aigne/` 中，其路径由 URL 派生而来。
+3.  **解压**：将压缩包解压到缓存目录中。
+4.  **执行**：然后，CLI 从解压后的文件中初始化并运行 Agent，就像处理本地项目一样。
+
+此过程确保了后续使用相同 URL 运行时可以利用本地缓存，从而避免重复下载。
 
 ```mermaid
-flowchart TD
-    A["用户执行 aigne run URL"] --> B{"路径是 URL 吗？"};
-    B -- "是" --> C["确定缓存目录"];
-    C -- "默认：~/.aigne/..." --> D["下载并解压包"];
-    C -- "自定义：--cache-dir" --> D;
-    D --> E["从缓存目录运行 Agent"];
-    B -- "否" --> F["从本地路径运行 Agent"];
+sequenceDiagram
+    participant User as 用户
+    participant AIGNE_CLI as AIGNE CLI
+    participant RemoteServer as 远程服务器
+    participant FileSystem as 本地文件系统
+    participant AIGNE_Engine as AIGNE 引擎
+
+    User->>AIGNE_CLI: aigne run --url <URL>
+    AIGNE_CLI->>RemoteServer: 为获取压缩包发送 HTTP GET 请求
+    RemoteServer-->>AIGNE_CLI: 返回压缩包数据流
+    AIGNE_CLI->>FileSystem: 下载并解压压缩包至缓存目录
+    AIGNE_CLI->>AIGNE_Engine: 从缓存目录初始化 AIGNE
+    AIGNE_Engine-->>User: 启动 Agent 交互
 ```
 
-1.  **URL 检测**：CLI 会识别出所提供的路径是一个 URL（例如，以 `http` 开头）。
-2.  **缓存位置**：CLI 会确定一个本地目录来存储包。默认情况下，该目录位于你的主目录下的 `~/.aigne/` 中，其子路径根据 URL派生，以防止冲突。你可以使用 `--cache-dir` 选项覆盖此位置。
-3.  **下载与解压**：CLI 从 URL 获取压缩包（例如，`.tar.gz` 文件）并将其内容解压到缓存目录中。在下载之前，该特定 URL 的任何现有内容都将被清除，以确保你运行的是源端的最新版本。
-4.  **执行**：最后，CLI 会从新填充的本地目录中运行该 Agent，就像运行任何本地项目一样。
+## 自定义缓存目录
 
-## 使用方法
-
-要运行远程 Agent，请将其 URL 作为主要参数提供给 `aigne run` 命令。
-
-### 运行默认 Agent
-
-如果你未指定 Agent 名称，CLI 将执行远程项目配置中定义的第一个 Agent。
+虽然默认的缓存位置 `~/.aigne/` 很方便，但你可以使用 `--cache-dir` 选项为下载和解压指定一个自定义目录。这在隔离项目依赖或在 CI/CD 系统等主目录可能非持久化或无法访问的环境中非常有用。
 
 ```bash
-# 从远程 tarball URL 运行默认 Agent
-aigne run https://example.com/path/to/your/aigne-project.tar.gz
+# 使用指定的本地目录作为缓存来运行远程 Agent
+aigne run --url https://example.com/my-agent.tar.gz --cache-dir ./temp-agent-cache
 ```
 
-### 运行特定 Agent
+在此示例中，Agent 压缩包将被下载并解压到你当前工作目录下的 `temp-agent-cache` 文件夹中。
 
-如果远程项目包含多个 Agent，你可以使用 `--entry-agent` 标志指定要运行哪一个。
+## 实践示例：从 GitHub 仓库运行
+
+你可以直接从 GitHub 仓库的发布版本压缩包或特定分支运行 Agent。GitHub 和其他 Git 平台提供 URL，用于将仓库快照下载为 .tar.gz 文件。
+
+例如，要从一个公共 GitHub 仓库的 `v1.2.0` 标签运行 Agent：
 
 ```bash
-# 从远程项目运行名为 'data-processor' 的特定 Agent
-aigne run https://example.com/path/to/project.tar.gz --entry-agent data-processor
+aigne run --url https://github.com/AIGNE-io/example-agent/archive/refs/tags/v1.2.0.tar.gz
 ```
 
-## 缓存管理
-
-CLI 的缓存机制可确保远程资产得到高效、可预测的存储。
-
-### 默认缓存位置
-
-默认情况下，软件包会缓存在你主目录下的结构化路径中。例如，来自 `https://github.com/my-org/my-agent/archive/v1.0.tar.gz` 的 Agent 将被缓存在类似 `~/.aigne/github.com/my-org/my-agent/archive/v1.0.tar.gz` 的目录中。
-
-### 自定义缓存目录
-
-对于需要精确控制文件位置的环境（例如具有指定工作空间的 CI 运行器），请使用 `--cache-dir` 选项。软件包将被下载并解压到此指定目录中。
-
-```bash
-# 使用一个临时的本地目录作为缓存
-aigne run https://example.com/path/to/project.tar.gz --cache-dir ./temp-agent-cache
-```
-
-此命令将创建一个 `./temp-agent-cache` 目录，并将其用作下载和运行 Agent 的基础目录。
-
-## 命令选项摘要
-
-以下是运行远程 Agent 的关键选项：
-
-| Option | Alias | Description |
-|---|---|---|
-| `path` (位置参数) | `url` | Agent 的路径。可以是本地目录，也可以是指向压缩项目的远程 URL。 |
-| `--entry-agent` | | 指定要运行的 Agent 的名称。如果省略，则使用项目中找到的第一个 Agent。 |
-| `--cache-dir` | | 当从 URL 运行时，此选项指定用于下载和解压包的自定义目录。它会覆盖默认的 `~/.aigne` 位置。 |
+此命令会下载 `example-agent` 仓库的 `v1.2.0` 版本，将其缓存在本地，并启动项目内定义的默认 Agent。
 
 ---
 
-运行远程 Agent 可以简化共享和部署。有关可与远程执行结合使用的所有运行时标志的完整列表，请参阅 [aigne run 命令参考](./command-reference-run.md)。
+`run` 命令的所有其他选项，如使用 `--entry-agent` 指定入口 Agent 或使用 `--model` 选择模型，在从 URL 运行时同样可用。有关完整的选项列表，请参阅 [`aigne run` 命令参考](./command-reference-run.md)。

@@ -10,46 +10,43 @@
   <center>Your command center for agent development</center>
 </p>
 
-`@aigne/cli` is the official command-line tool for the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework). It is designed to streamline the entire lifecycle of agent development, from initial project scaffolding to local testing, and final deployment. The CLI provides a suite of commands that automate common tasks, manage project configurations, and offer a consistent and efficient development workflow.
+`@aigne/cli` is the official command-line tool for the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework). It provides a comprehensive suite of commands to streamline the entire lifecycle of agent development, from initial project creation to testing, deployment, and monitoring.
 
-Whether you are building a simple agent or a complex multi-agent system, `@aigne/cli` serves as your primary interface for interacting with the AIGNE framework, simplifying an otherwise complex process.
-
-## Core Features
-
-`@aigne/cli` is equipped with several features to support agent development:
-
-*   **Project Scaffolding**: Quickly create new AIGNE projects with a standardized file structure and configuration, letting you focus on building agent logic from day one.
-*   **Local Agent Execution**: Run and interact with your agents directly from the command line in a chat loop, making it easy to test and debug behavior.
-*   **Automated Testing**: Includes a built-in test runner for executing unit and integration tests for your agents and skills.
-*   **MCP Server**: Expose your agents as a Model Context Protocol (MCP) server, enabling seamless integration with other applications and services.
-*   **Observability**: Launch a local server to view and analyze detailed execution traces, providing insights into your agent's performance and decision-making process.
-*   **Multi-Model Support**: Natively supports various AI model providers, including OpenAI, Claude, and XAI, allowing you to switch between models with ease.
-
-## How It Works
-
-The CLI acts as the central controller for your AIGNE projects. It reads your project's `aigne.yaml` configuration to understand your agents, skills, and model settings, and then uses this information to execute commands.
+The CLI is designed to provide a structured and efficient workflow for building, testing, and serving AI agents. The following diagram illustrates a typical development cycle using `@aigne/cli`:
 
 ```mermaid
-graph TD
-    A["Developer"] -- "Uses" --> B["@aigne/cli"];
-    B -- "aigne create" --> C["AIGNE Project Files"];
-    B -- "aigne run" --> D["Local Agent Execution"];
-    B -- "aigne test" --> E["Test Runner"];
-    B -- "aigne serve-mcp" --> F["MCP Server"];
-    B -- "aigne observe" --> G["Observability UI"];
-    C -- "Defines" --> D;
-    D -- "Connects to" --> H["AI Models (OpenAI, Claude, etc.)"];
-    F -- "Exposes Agents to" --> I["External Systems"];
+flowchart TD
+    A["Start: aigne create"] --> B["Develop Agents & Skills"];
+    B --> C{"Run or Test?"};
+    C -- "Run" --> D["aigne run (Interactive Chat)"];
+    C -- "Test" --> E["aigne test (Unit Tests)"];
+    D --> F["Refine Agent Logic"];
+    E --> F;
+    F --> B;
+    B --> G{"Deploy or Observe?"};
+    G -- "Deploy" --> H["aigne serve-mcp (Expose as API)"];
+    G -- "Observe" --> I["aigne observe (Analyze Traces)"];
+    H --> J["Integration with External Systems"];
+    I --> B;
 ```
 
-This workflow enables a rapid development cycle where you can define, run, and test agents efficiently from a single command-line interface.
+## Key Features
+
+`@aigne/cli` equips you with the necessary tools to manage your agent projects effectively:
+
+*   **Project Scaffolding**: Quickly create new AIGNE projects with `aigne create`. This command sets up a standardized file structure and configuration, letting you focus on building agents immediately.
+*   **Interactive Agent Execution**: Run and test your agents in a local, interactive chat loop using `aigne run`. This command supports executing agents from your local file system or directly from a remote URL.
+*   **Automated Testing**: Use `aigne test` to run unit and integration tests for your agents and skills, ensuring code quality and reliability.
+*   **MCP Server Deployment**: Expose your agents as a service with `aigne serve-mcp`. This command starts a server that conforms to the Model Context Protocol (MCP), allowing for standardized integration with external systems.
+*   **Execution Observability**: Launch a local monitoring service with `aigne observe` to view and analyze detailed execution traces of your agent's behavior, which simplifies debugging and optimization.
+*   **Multi-Model Support**: Flexibly switch between different AI model providers like OpenAI, Claude, and XAI to find the best fit for your application's needs.
 
 <picture>
   <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli-dark.png" media="(prefers-color-scheme: dark)">
   <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-cli.png" alt="AIGNE CLI in Action" />
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli.png" alt="AIGNE CLI Interface" />
 </picture>
 
-## Next Steps
+---
 
-Now that you have an overview of what `@aigne/cli` can do, you are ready to install it and create your first project. Proceed to the [Getting Started](./getting-started.md) guide for a step-by-step tutorial.
+Ready to get started? Proceed to the [Getting Started](./getting-started.md) guide to install the CLI and build your first agent.

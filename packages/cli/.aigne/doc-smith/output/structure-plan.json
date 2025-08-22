@@ -16,7 +16,8 @@
       "src/commands/run.ts",
       "templates/default/README.md",
       "templates/default/aigne.yaml",
-      "templates/default/chat.yaml"
+      "templates/default/chat.yaml",
+      "media.md"
     ],
     "title": "Getting Started"
   },
@@ -68,7 +69,7 @@
     "description": "Scaffolds a new AIGNE project from a template.",
     "parentId": "/command-reference",
     "path": "/command-reference/create",
-    "sourceIds": ["src/commands/create.ts", "README.md"],
+    "sourceIds": ["src/commands/create.ts", "README.md", "media.md"],
     "title": "aigne create"
   },
   {
@@ -80,7 +81,8 @@
       "README.md",
       "src/utils/run-with-aigne.ts",
       "src/utils/yargs.ts",
-      "src/utils/load-aigne.ts"
+      "src/utils/load-aigne.ts",
+      "media.md"
     ],
     "title": "aigne run"
   },
@@ -88,21 +90,28 @@
     "description": "Serves agents as a Model Context Protocol (MCP) server for integration with external systems.",
     "parentId": "/command-reference",
     "path": "/command-reference/serve-mcp",
-    "sourceIds": ["src/commands/serve-mcp.ts", "README.md", "src/utils/serve-mcp.ts"],
+    "sourceIds": ["src/commands/serve-mcp.ts", "README.md", "src/utils/serve-mcp.ts", "media.md"],
     "title": "aigne serve-mcp"
   },
   {
     "description": "Manages connections to the AIGNE Hub, allowing you to switch accounts, check status, and use Hub-provided models.",
     "parentId": "/command-reference",
     "path": "/command-reference/hub",
-    "sourceIds": ["src/commands/hub.ts", "src/utils/aigne-hub-user.ts", "src/constants.ts"],
+    "sourceIds": [
+      "src/commands/hub.ts",
+      "src/utils/aigne-hub-user.ts",
+      "src/constants.ts",
+      "src/utils/aigne-hub/credential.ts",
+      "src/utils/aigne-hub/model.ts",
+      "src/utils/aigne-hub/constants.ts"
+    ],
     "title": "aigne hub"
   },
   {
     "description": "Starts a local server to view and analyze agent execution traces and observability data.",
     "parentId": "/command-reference",
     "path": "/command-reference/observe",
-    "sourceIds": ["src/commands/observe.ts", "README.md"],
+    "sourceIds": ["src/commands/observe.ts", "README.md", "media.md"],
     "title": "aigne observe"
   },
   {
@@ -143,12 +152,5 @@
     "path": "/guides/running-remote-agents",
     "sourceIds": ["src/commands/run.ts", "README.md", "src/utils/download.ts"],
     "title": "Running Remote Agents"
-  },
-  {
-    "description": "A complete log of features, bug fixes, and dependency updates for each version of @aigne/cli.",
-    "parentId": null,
-    "path": "/changelog",
-    "sourceIds": ["CHANGELOG.md"],
-    "title": "Changelog"
   }
 ]

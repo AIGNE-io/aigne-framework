@@ -1,39 +1,49 @@
 # aigne test
 
-The `aigne test` command executes automated tests for the agents and skills within your AIGNE project. The CLI automatically discovers and runs test files (e.g., `sandbox.test.js`) in the specified agents directory, allowing you to verify the functionality of your code.
+The `aigne test` command runs automated tests for the agents and skills within your project. It discovers and executes test files, helping to verify the functionality and correctness of your code.
 
-This process is essential for ensuring your agents and their underlying skills behave as expected before deployment.
+This command is essential for maintaining code quality and ensuring that your agents behave as expected before deployment.
 
 ## Usage
 
 ```bash
+# Run tests for the project in the current directory
+aigne test
+
+# Run tests for a project at a specific path
 aigne test [path]
 ```
 
 ## Arguments
 
-| Argument | Description                                                                                    |
-|----------|------------------------------------------------------------------------------------------------|
-| `path`   | Optional. Specifies the path to the agents directory. If omitted, it defaults to the current directory. |
+| Argument | Description                                                                 |
+|----------|-----------------------------------------------------------------------------|
+| `path`   | Optional. The path to the directory containing the agents you want to test. Defaults to the current directory if not specified. |
+
+## How It Works
+
+The test runner automatically discovers test files within the specified directory. By convention, test files should be named with a `.test.js` suffix. For example, a test file for `sandbox.js` would be named `sandbox.test.js` and placed in the same directory.
 
 ## Examples
 
-### Test agents in the current directory
+### Run Tests in the Current Directory
 
-If you are in the root directory of your AIGNE project, you can run the tests without any additional arguments.
+If you are in the root directory of your AIGNE project, you can run all tests with a single command:
 
 ```bash
-# Test the agents in the current directory
 aigne test
 ```
 
-### Test agents in a specific directory
+### Run Tests in a Specific Directory
 
-If you want to run tests for a project located in a different directory, provide the path to that directory.
+If your project is located elsewhere, you can provide the path to its directory:
 
 ```bash
-# Test the agents at the specified path
-aigne test path/to/agents
+aigne test path/to/my-agents
 ```
 
-After running the command, the CLI will output the test results to your console.
+This command will navigate to the `path/to/my-agents` directory and execute the tests found there.
+
+---
+
+After verifying your agents with tests, you can proceed to execute them using the [`aigne run`](./command-reference-run.md) command or deploy them as a service with [`aigne serve-mcp`](./command-reference-serve-mcp.md).

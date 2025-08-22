@@ -1,17 +1,17 @@
 # Guides
 
-This section provides practical, step-by-step tutorials to help you accomplish common development tasks with `@aigne/cli`. These guides are designed to walk you through real-world scenarios, building on the concepts introduced in the earlier sections.
+This section provides practical, step-by-step guides for common development tasks using the AIGNE CLI. While the [Command Reference](./command-reference.md) offers a detailed look at every command and option, these guides focus on accomplishing specific goals from start to finish.
 
-Whether you're creating your first custom agent or running projects from a remote source, these guides offer clear instructions and code examples to get you started.
+Each guide is designed to walk you through a real-world scenario, providing code snippets and clear instructions to help you master key features of the AIGNE framework.
 
 ### [Creating a Custom Agent](./guides-creating-a-custom-agent.md)
 
-Learn how to build a new agent from the ground up. This guide covers the entire process, from scaffolding the initial files to writing the core logic for your agent in JavaScript or TypeScript and integrating it as a reusable skill within your AIGNE project.
+A step-by-step tutorial on creating a new JavaScript agent. Learn how to define its logic, structure it as a skill, and integrate it into your project for execution.
 
 ### [Running Remote Agents](./guides-running-remote-agents.md)
 
-Discover how to execute AIGNE agents directly from a remote source, such as a Git repository or a tarball URL. This guide explains how the `aigne run` command can download, cache, and run projects without needing a local checkout, streamlining testing and deployment.
+Learn how to run agents directly from a remote Git repository or tarball URL. This guide covers how the `aigne run` command downloads, caches, and executes remote projects, which is useful for testing and collaboration.
 
 ---
 
-After exploring these guides, you might want to dive deeper into the specific options for each command in our [Command Reference](./command-reference.md).
+Explore the guides above to get hands-on experience with key AIGNE CLI workflows. For a comprehensive overview of all available commands, please see the [Command Reference](./command-reference.md).

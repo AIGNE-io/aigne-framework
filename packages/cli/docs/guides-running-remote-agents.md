@@ -1,79 +1,69 @@
 # Running Remote Agents
 
-`@aigne/cli` allows you to execute agents directly from a remote URL, bypassing the need for manual cloning or local setup. This capability is useful for sharing reusable agents, running agents in CI/CD pipelines, or quickly testing agents from a central repository. The CLI handles the downloading, caching, and execution seamlessly.
+The AIGNE CLI can execute agents from remote locations, not just from local directories. This feature allows you to run agents directly from a URL pointing to a compressed project archive (e.g., a `.tar.gz` file). It simplifies sharing, testing, and integrating agents into automated workflows without needing to clone a repository first.
+
+## Core Command
+
+The `run` command is used for this purpose by providing a URL instead of a local file path. The remote source must be a publicly accessible tarball archive.
+
+```bash
+# Run an agent from a remote URL
+aigne run --url https://example.com/path/to/my-aigne-project.tar.gz
+
+# You can also use the `path` positional argument
+aigne run https://example.com/path/to/my-aigne-project.tar.gz
+```
 
 ## How It Works
 
-When you provide a URL to the `aigne run` command, the CLI initiates a process to fetch and run the remote package. The agent code is not executed remotely; it is downloaded and run on your local machine.
+When you provide a URL, the CLI performs the following steps:
 
-Here is the workflow:
+1.  **Download**: It fetches the compressed package from the specified URL.
+2.  **Cache**: It creates a local directory to store the downloaded content. By default, this is located in your home directory under `~/.aigne/`, with a path derived from the URL.
+3.  **Extract**: The package is uncompressed into the cache directory.
+4.  **Execute**: The CLI then initializes and runs the agent from the extracted files, just as it would with a local project.
+
+This process ensures that subsequent runs using the same URL can leverage the local cache, avoiding repeated downloads.
 
 ```mermaid
-flowchart TD
-    A["User executes aigne run URL"] --> B{"Is path a URL?"};
-    B -- "Yes" --> C["Determine cache directory"];
-    C -- "Default: ~/.aigne/..." --> D["Download & Extract Package"];
-    C -- "Custom: --cache-dir" --> D;
-    D --> E["Run agent from cache directory"];
-    B -- "No" --> F["Run agent from local path"];
+sequenceDiagram
+    participant User
+    participant AIGNE_CLI as AIGNE CLI
+    participant RemoteServer as Remote Server
+    participant FileSystem as Local Filesystem
+    participant AIGNE_Engine as AIGNE Engine
+
+    User->>AIGNE_CLI: aigne run --url <URL>
+    AIGNE_CLI->>RemoteServer: HTTP GET request for package
+    RemoteServer-->>AIGNE_CLI: Returns compressed package stream
+    AIGNE_CLI->>FileSystem: Downloads and extracts package to cache directory
+    AIGNE_CLI->>AIGNE_Engine: Initializes AIGNE from cache directory
+    AIGNE_Engine-->>User: Starts agent interaction
 ```
 
-1.  **URL Detection**: The CLI identifies that the provided path is a URL (e.g., starting with `http`).
-2.  **Cache Location**: It determines a local directory to store the package. By default, this is within your home directory under `~/.aigne/`, with a subpath derived from the URL to prevent conflicts. You can override this location using the `--cache-dir` option.
-3.  **Download & Extract**: It fetches the compressed package (e.g., a `.tar.gz` file) from the URL and extracts its contents into the cache directory. Any existing content for that specific URL is cleared before downloading to ensure you are running the latest version from the source.
-4.  **Execution**: Finally, it runs the agent from the newly populated local directory, just as it would with any local project.
+## Customizing the Cache Directory
 
-## Usage
-
-To run a remote agent, provide its URL as the primary argument to the `aigne run` command.
-
-### Running a Default Agent
-
-If you don't specify an agent name, the CLI will execute the first agent defined in the remote project's configuration.
+While the default cache location in `~/.aigne/` is convenient, you can specify a custom directory for the download and extraction using the `--cache-dir` option. This is useful for isolating project dependencies or in environments like CI/CD systems where the home directory may not be persistent or accessible.
 
 ```bash
-# Run the default agent from a remote tarball URL
-aigne run https://example.com/path/to/your/aigne-project.tar.gz
+# Run a remote agent using a specific local directory for caching
+aigne run --url https://example.com/my-agent.tar.gz --cache-dir ./temp-agent-cache
 ```
 
-### Running a Specific Agent
+In this example, the agent package will be downloaded and extracted into a `temp-agent-cache` folder within your current working directory.
 
-If the remote project contains multiple agents, you can specify which one to run using the `--entry-agent` flag.
+## Practical Example: Running from a GitHub Repository
+
+You can run an agent directly from a GitHub repository's release archive or a specific branch. GitHub and other Git platforms provide URLs to download a repository snapshot as a `.tar.gz` file.
+
+For instance, to run an agent from the `v1.2.0` tag of a public GitHub repository:
 
 ```bash
-# Run a specific agent named 'data-processor' from the remote project
-aigne run https://example.com/path/to/project.tar.gz --entry-agent data-processor
+aigne run --url https://github.com/AIGNE-io/example-agent/archive/refs/tags/v1.2.0.tar.gz
 ```
 
-## Cache Management
-
-The CLI's caching mechanism ensures that remote assets are stored efficiently and predictably.
-
-### Default Cache Location
-
-By default, packages are cached in a structured path within your home directory. For example, an agent from `https://github.com/my-org/my-agent/archive/v1.0.tar.gz` would be cached in a directory like `~/.aigne/github.com/my-org/my-agent/archive/v1.0.tar.gz`.
-
-### Custom Cache Directory
-
-For environments where you need precise control over file locations, such as a CI runner with a designated workspace, use the `--cache-dir` option. The package will be downloaded and extracted into this specified directory.
-
-```bash
-# Use a temporary local directory for the cache
-aigne run https://example.com/path/to/project.tar.gz --cache-dir ./temp-agent-cache
-```
-
-This command will create a `./temp-agent-cache` directory and use it as the base for downloading and running the agent.
-
-## Command Options Summary
-
-Here are the key options for running remote agents:
-
-| Option | Alias | Description |
-|---|---|---|
-| `path` (positional) | `url` | The path to the agent. Can be a local directory or a remote URL pointing to a compressed project. |
-| `--entry-agent` | | Specifies the name of the agent to run. If omitted, the first agent found in the project is used. |
-| `--cache-dir` | | When running from a URL, this specifies a custom directory to download and extract the package to. Overrides the default `~/.aigne` location. |
+This command downloads the `v1.2.0` version of the `example-agent` repository, caches it locally, and starts the default agent defined within the project.
 
 ---
 
-Running remote agents streamlines sharing and deployment. For a complete list of all runtime flags that can be combined with remote execution, see the [aigne run Command Reference](./command-reference-run.md).
+All other options for the `run` command, such as specifying an entry agent with `--entry-agent` or selecting a model with `--model`, are also available when running from a URL. For a full list of options, see the [`aigne run` command reference](./command-reference-run.md).

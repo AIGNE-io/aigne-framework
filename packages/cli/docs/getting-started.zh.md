@@ -1,84 +1,81 @@
 # 快速入门
 
-本指南将引导你逐步完成安装 `@aigne/cli`、从模板创建新项目以及运行你的第一个 AI agent 的全过程。
+本指南将引导您逐步完成安装 AIGNE 命令行界面 (CLI)、从模板创建新项目以及运行您的第一个 AI agent 的过程。完成本指南后，您将在本地计算机上拥有一个可运行的、基于聊天的 agent。
 
-## 1. 安装 CLI
+## 第 1 步：安装 AIGNE CLI
 
-首先，在你的系统上全局安装 AIGNE 命令行工具。你可以使用 npm、yarn 或 pnpm。
+AIGNE CLI 是一个需要 Node.js 的命令行工具。您可以使用您偏好的包管理器进行全局安装。
 
-#### 使用 npm
+**使用 npm**
 ```bash
 npm install -g @aigne/cli
 ```
 
-#### 使用 yarn
+**使用 yarn**
 ```bash
 yarn global add @aigne/cli
 ```
 
-#### 使用 pnpm
+**使用 pnpm**
 ```bash
 pnpm add -g @aigne/cli
 ```
 
-## 2. 创建你的第一个项目
+安装完成后，您可以在终端中运行 `aigne --help` 进行验证，该命令将显示可用命令列表。
 
-CLI 安装完成后，你可以搭建一个新的 AIGNE 项目。`create` 命令会创建一个包含默认文件结构和配置的目录。
+## 第 2 步：创建新项目
 
+安装 CLI 后，您便可以创建新的 AIGNE 项目。`create` 命令会搭建一个包含默认 agent 和必要配置文件的项目目录。
+
+要在名为 `my-first-agent` 的新目录中创建项目，请运行：
 ```bash
-aigne create my-aigne-project
+aigne create my-first-agent
 ```
 
-CLI 将启动一个交互式提示，要求你确认项目名称并选择模板。默认模板包含一个预配置的聊天 agent 和一个 JavaScript 沙箱技能。
-
-完成后，系统将创建一个名为 `my-aigne-project` 的新目录。
-
-## 3. 配置你的环境
-
-在运行 agent 之前，你必须为语言模型提供一个 API 密钥。默认项目使用 OpenAI 的 `gpt-4o-mini`。
-
-首先，进入你的新项目目录：
-
+或者，如果您在不提供路径的情况下运行该命令，它将以交互方式提示您输入项目名称：
 ```bash
-cd my-aigne-project
+aigne create
 ```
 
-接下来，通过复制所提供的示例文件来创建一个本地环境文件：
+![以交互式提示输入项目名称来创建项目](https://docsmith.aigne.io/image-bin/uploads/61a25e0b14ee2b304cd02972e81236b2.png)
 
-```bash
-# 在 macOS 或 Linux 上
-cp .env.local.example .env.local
+命令完成后，将显示一条成功消息，并创建一个具有以下结构的新目录：
 
-# 在 Windows 上
-copy .env.local.example .env.local
-```
+![使用默认模板创建的项目的目录结构](https://docsmith.aigne.io/image-bin/uploads/d77c21029750a66ba316b3a91e00f9ca.png)
 
-打开新建的 `.env.local` 文件并添加你的 OpenAI API 密钥：
+## 第 3 步：配置环境变量
 
-```shell
-# .env.local
+在运行 agent 之前，您需要为语言模型提供一个 API 密钥。默认模板已配置为使用 OpenAI。
 
-# OpenAI
-MODEL="openai:gpt-4o-mini"
-OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-```
+1.  进入新创建的项目目录：
+    ```bash
+    cd my-first-agent
+    ```
 
-## 4. 运行 Agent
+2.  项目中包含一个名为 `.env.local.example` 的文件。请将其复制为一个名为 `.env.local` 的新文件。
 
-你的项目现已配置完毕，可以运行了。在项目目录中，执行 `run` 命令以启动与你的 agent 的交互式聊天会话。
+3.  在编辑器中打开 `.env.local` 文件，并添加您的 OpenAI API 密钥：
+
+    ```shell
+    # OpenAI
+    MODEL="openai:gpt-4o-mini"
+    OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+    ```
+
+## 第 4 步：运行您的 Agent
+
+项目创建和配置完成后，您就可以启动 agent 了。`run` 命令会在您的终端中启动一个交互式聊天循环，让您可以与 agent 对话。
+
+在 `my-first-agent` 目录中，执行以下命令：
 
 ```bash
 aigne run
 ```
 
-现在你可以在终端中直接与你的 agent 互动了。
+CLI 会初始化 agent，并为您提供一个聊天提示符。现在，您可以直接与您的 agent 进行交互了。
 
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-cli.png" alt="AIGNE CLI 正在运行聊天会话" />
-</picture>
+![在聊天模式下运行默认项目](https://docsmith.aigne.io/image-bin/uploads/6d8b90c443540b0fdb3c00211448a47f.png)
 
 ## 后续步骤
 
-你已经成功设置了你的第一个 AIGNE 项目。要了解更多关于项目结构、配置文件以及 agents 和技能如何工作的信息，请继续阅读 [核心概念](./core-concepts.md) 部分。
+您已成功安装 AIGNE CLI，创建了一个项目，并运行了您的第一个 agent。要了解项目结构以及如何自定义您的 agent，请继续阅读 [核心概念](./core-concepts.md) 部分。

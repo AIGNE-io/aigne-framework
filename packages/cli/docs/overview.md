@@ -1,3 +1,7 @@
+---
+labels: ["Reference"]
+---
+
 # Overview
 
 <p align="center">
@@ -44,7 +48,7 @@ flowchart TD
 <picture>
   <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli-dark.png" media="(prefers-color-scheme: dark)">
   <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli.png" alt="AIGNE CLI Interface" />
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-cli.png" alt="AIGNE CLI Interface" />
 </picture>
 
 ---

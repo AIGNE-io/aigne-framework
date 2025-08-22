@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.8.0...observability-ui-v0.9.0) (2025-08-22)
+
+
+### Features
+
+* **cli:** support aigne deploy command ([#399](https://github.com/AIGNE-io/aigne-framework/issues/399)) ([b69cba9](https://github.com/AIGNE-io/aigne-framework/commit/b69cba901d95882f847032f41d963e2fa6893ab6))
+
 ## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.7...observability-ui-v0.8.0) (2025-08-21)
 
 

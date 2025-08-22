@@ -236,16 +236,7 @@ function Chat() {
       >
         <Container
           maxWidth="md"
-          sx={{
-            flex: 1,
-            px: { xs: 1, sm: 2 },
-            mx: "auto",
-            width: "100%",
-            maxWidth: { xs: "100%", sm: "600px" },
-            display: "flex",
-            flexDirection: "column",
-            minHeight: "100%",
-          }}
+          sx={{ flex: 1, mx: "auto", display: "flex", flexDirection: "column", minHeight: "100%" }}
         >
           <Box sx={{ flex: 1 }} />
           <Box>
@@ -285,15 +276,7 @@ function Chat() {
       </Box>
 
       <Box sx={{ pt: 1, pb: 1.5, px: { xs: 1, sm: 2 } }}>
-        <Container
-          maxWidth="md"
-          sx={{
-            px: { xs: 1, sm: 2 },
-            mx: "auto",
-            width: "100%",
-            maxWidth: { xs: "100%", sm: "600px" },
-          }}
-        >
+        <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2 }, mx: "auto" }}>
           <ChatInput
             onSend={(message) => handleSendMessage(message, session?.user?.did, "")}
             disabled={aiChatting}

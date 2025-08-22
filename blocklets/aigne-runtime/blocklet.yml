@@ -50,8 +50,7 @@ scripts:
 environments: []
 capabilities: {}
 screenshots:
-  - 77d91fef25b90ae21ef9959a3444c1b9.png
-  - 5505674235a0c66be5e6b33af929a7a0.png
+  - 82a097753c90f3103a30338a68b07ce5.png
 components:
   - name: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
     title: AIGNE Observability

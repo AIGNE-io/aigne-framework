@@ -36,6 +36,7 @@
     "@arcblock/did-connect": "^3.0.43",
     "@arcblock/ux": "^3.1.23",
     "@blocklet/sdk": "^1.16.44",
+    "@blocklet/ui-react": "^3.0.24",
     "@mui/icons-material": "^7.3.1",
     "@mui/material": "^7.2.0",
     "@uiw/react-markdown-preview": "^5.1.5",

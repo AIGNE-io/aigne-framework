@@ -5,6 +5,15 @@ import { Generator } from "./generator.js";
 import { publisher } from "./publisher.js";
 import type { PublishResult } from "./types.js";
 
+const boardMetaSchema = z
+  .object({
+    category: z.array(z.string()),
+    githubRepoUrl: z.string(),
+    commitSha: z.string(),
+    languages: z.array(z.string()),
+  })
+  .passthrough(); // Allow additional fields to pass through validation
+
 const withTokenSchema = z.object({
   sidebarPath: z.string(),
   boardId: z.string().optional(),
@@ -15,6 +24,7 @@ const withTokenSchema = z.object({
   boardName: z.string().optional(),
   boardDesc: z.string().optional(),
   boardCover: z.string().optional(),
+  boardMeta: boardMetaSchema.optional(),
 });
 
 const withAuthSchema = z.object({
@@ -31,10 +41,14 @@ const withAuthSchema = z.object({
   boardName: z.string().optional(),
   boardDesc: z.string().optional(),
   boardCover: z.string().optional(),
+  boardMeta: boardMetaSchema.optional(),
 });
 
 const optionsSchema = z.union([withTokenSchema, withAuthSchema]);
 export type PublishDocsOptions = z.infer<typeof optionsSchema>;
+
+// Re-export BoardMeta type for external use
+export type { BoardMeta } from "./board.js";
 
 export async function publishDocs(options: PublishDocsOptions): Promise<PublishResult> {
   const parsed = optionsSchema.parse(options);
@@ -70,6 +84,7 @@ export async function publishDocs(options: PublishDocsOptions): Promise<PublishR
       boardName: parsed.boardName,
       desc: parsed.boardDesc,
       cover: parsed.boardCover,
+      meta: parsed.boardMeta,
     });
   }
 

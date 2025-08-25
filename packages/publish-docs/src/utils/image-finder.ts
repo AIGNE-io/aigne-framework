@@ -42,25 +42,43 @@ export function findLocalImages(
 export function findImagePath(imageSrc: string, options: ImageFinderOptions): string | null {
   const { mediaFolder, markdownFilePath } = options;
 
-  // If absolute path, check directly
-  if (path.isAbsolute(imageSrc)) {
-    return fs.existsSync(imageSrc) ? imageSrc : null;
+  // Try to decode URL-encoded characters, fallback to original if decoding fails
+  let decodedImageSrc: string;
+  try {
+    decodedImageSrc = decodeURIComponent(imageSrc);
+  } catch {
+    console.warn(`Failed to decode image path: ${imageSrc}, using original`);
+    decodedImageSrc = imageSrc;
   }
 
-  // Try multiple search paths for relative images
-  const searchPaths = [
-    // 1. Try with mediaFolder as base (if configured)
-    mediaFolder ? path.resolve(mediaFolder, imageSrc) : null,
-    // 2. Try with current working directory as base
-    path.resolve(process.cwd(), imageSrc),
-    // 3. Try with markdown file directory as base
-    path.resolve(path.dirname(markdownFilePath), imageSrc),
-  ].filter(Boolean) as string[];
+  // Try both decoded and original paths in case there are encoding issues
+  const imageSourcesToTry = decodedImageSrc !== imageSrc ? [decodedImageSrc, imageSrc] : [imageSrc];
 
-  // Find first existing path
-  for (const searchPath of searchPaths) {
-    if (fs.existsSync(searchPath)) {
-      return searchPath;
+  for (const imageSource of imageSourcesToTry) {
+    // If absolute path, check directly
+    if (path.isAbsolute(imageSource)) {
+      if (fs.existsSync(imageSource)) {
+        return imageSource;
+      }
+      continue;
+    }
+
+    // Try multiple search paths for relative images
+    const searchPaths = [
+      // 1. Try with mediaFolder as base (if configured)
+      mediaFolder ? path.resolve(mediaFolder, imageSource) : null,
+      // 2. Try with current working directory as base
+      path.resolve(process.cwd(), imageSource),
+      // 3. Try with markdown file directory as base
+      path.resolve(path.dirname(markdownFilePath), imageSource),
+    ].filter(Boolean) as string[];
+
+    // Find first existing path
+    for (const searchPath of searchPaths) {
+      console.log(`Searching for image: ${searchPath}`);
+      if (fs.existsSync(searchPath)) {
+        return searchPath;
+      }
     }
   }
 

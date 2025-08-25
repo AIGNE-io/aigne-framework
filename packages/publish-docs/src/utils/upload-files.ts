@@ -8,17 +8,15 @@ import { getComponentMountPoint } from "./get-component-mount-point.js";
 
 export interface UploadFilesOptions {
   appUrl: string;
-  mediaFolder: string;
-  mediaFiles: string[];
+  filePaths: string[]; // Array of absolute file paths to upload
   concurrency?: number;
   accessToken: string;
   cacheFilePath?: string;
 }
 
 export interface UploadResult {
-  originalUrl: string;
-  diskUrl: string;
-  url: string;
+  filePath: string; // The local file path that was uploaded
+  url: string; // The uploaded URL
 }
 
 export interface UploadFilesResult {
@@ -64,7 +62,7 @@ function saveCache(cacheFilePath: string, cache: UploadCache): void {
 }
 
 export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFilesResult> {
-  const { appUrl, mediaFolder, mediaFiles, concurrency = 5, accessToken, cacheFilePath } = options;
+  const { appUrl, filePaths, concurrency = 5, accessToken, cacheFilePath } = options;
 
   // Load cache if provided
   let cache: UploadCache = {};
@@ -72,28 +70,11 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
     cache = loadCache(cacheFilePath);
   }
 
-  const urlMap = new Map<string, string>();
-  for (const url of mediaFiles) {
-    const filename = path.basename(url);
-    urlMap.set(filename, url);
-  }
+  console.log(`Files to upload: ${filePaths.length}`, filePaths);
 
-  const files = fs.readdirSync(mediaFolder);
+  const results: UploadResult[] = [];
 
-  const filesToUpload = files.filter((file) => {
-    const baseFilename = path.basename(file, path.extname(file));
-    const isMatch = urlMap.has(baseFilename);
-    return isMatch;
-  });
-  console.log(`Files to upload: ${filesToUpload.length}`, filesToUpload);
-
-  const results: UploadResult[] = mediaFiles.map((url) => ({
-    originalUrl: url,
-    diskUrl: "",
-    url: "",
-  }));
-
-  if (filesToUpload.length === 0) {
+  if (filePaths.length === 0) {
     return { results };
   }
 
@@ -104,20 +85,12 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
 
   const limit = pLimit(concurrency);
 
-  const uploadPromises = filesToUpload.map((file) =>
+  const uploadPromises = filePaths.map((filePath) =>
     limit(async () => {
-      const filePath = path.join(mediaFolder, file);
-      const baseFilename = path.basename(file, path.extname(file));
-      const originalUrl = urlMap.get(baseFilename);
+      const filename = path.basename(filePath);
+      const baseFilename = path.basename(filePath, path.extname(filePath));
 
-      if (!originalUrl) {
-        console.error(`No matching URL found for file: ${file}`);
-        return null;
-      }
-
-      console.log(
-        `Processing file: ${file}, baseFilename: ${baseFilename}, originalUrl: ${originalUrl}`,
-      );
+      console.log(`Processing file: ${filename} at ${filePath}`);
 
       try {
         const fileBuffer = fs.readFileSync(filePath);
@@ -125,44 +98,39 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
 
         // Check cache first
         if (cacheFilePath && cache[fileHash]) {
-          console.log(`Cache hit for ${file}, using cached URL: ${cache[fileHash].url}`);
-          const resultIndex = results.findIndex((r) => r.originalUrl === originalUrl);
-          if (resultIndex !== -1) {
-            results[resultIndex] = {
-              originalUrl,
-              diskUrl: filePath,
-              url: cache[fileHash].url,
-            };
-          }
+          console.log(`Cache hit for ${filename}, using cached URL: ${cache[fileHash].url}`);
           return {
-            originalUrl,
-            diskUrl: filePath,
+            filePath,
             url: cache[fileHash].url,
           };
         }
 
         const stats = fs.statSync(filePath);
         const fileSize = stats.size;
-        const fileExt = path.extname(file).substring(1);
-        const mimeType = getMimeType(file);
+        const fileExt = path.extname(filePath).substring(1);
+        const mimeType = getMimeType(filePath);
+
+        // Use hash-based filename to avoid encoding issues with non-ASCII characters
+        const hashBasedFilename = `${fileHash.substring(0, 16)}.${fileExt}`;
 
         const uploaderId = "Uploader";
         const fileId = `${uploaderId}-${baseFilename.toLowerCase().replace(/[^a-z0-9]/g, "")}-${fileHash.substring(0, 16)}`;
 
-        const metadata = {
+        // Metadata for TUS protocol (will be base64 encoded)
+        const tusMetadata = {
           uploaderId,
-          relativePath: `${baseFilename}.${fileExt}`,
-          name: `${baseFilename}.${fileExt}`,
+          relativePath: hashBasedFilename,
+          name: hashBasedFilename,
           type: mimeType,
           filetype: mimeType,
-          filename: `${baseFilename}.${fileExt}`,
+          filename: hashBasedFilename,
         };
 
-        const encodedMetadata = Object.entries(metadata)
+        const encodedMetadata = Object.entries(tusMetadata)
           .map(([key, value]) => `${key} ${Buffer.from(value).toString("base64")}`)
           .join(",");
 
-        console.log(`Starting upload for ${file}...`);
+        console.log(`Starting upload for ${filename} -> ${hashBasedFilename}...`);
 
         const createResponse = await fetch(uploadEndpoint, {
           method: "POST",
@@ -171,15 +139,15 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
             "Upload-Length": fileSize.toString(),
             "Upload-Metadata": encodedMetadata,
             Cookie: `login_token=${accessToken}`,
-            "x-uploader-file-name": `${baseFilename}.${fileExt}`,
+            "x-uploader-file-name": hashBasedFilename,
             "x-uploader-file-id": fileId,
             "x-uploader-file-ext": fileExt,
             "x-uploader-base-url": `${mountPoint}/api/uploads`,
             "x-uploader-endpoint-url": uploadEndpoint,
             "x-uploader-metadata": JSON.stringify({
               uploaderId: "Uploader",
-              relativePath: `${baseFilename}.${fileExt}`,
-              name: `${baseFilename}.${fileExt}`,
+              relativePath: hashBasedFilename,
+              name: hashBasedFilename,
               type: mimeType,
             }),
             "x-component-did": "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
@@ -206,15 +174,15 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
             "Upload-Offset": "0",
             "Content-Type": "application/offset+octet-stream",
             Cookie: `login_token=${accessToken}`,
-            "x-uploader-file-name": `${baseFilename}.${fileExt}`,
+            "x-uploader-file-name": hashBasedFilename,
             "x-uploader-file-id": fileId,
             "x-uploader-file-ext": fileExt,
             "x-uploader-base-url": `${mountPoint}/api/uploads`,
             "x-uploader-endpoint-url": uploadEndpoint,
             "x-uploader-metadata": JSON.stringify({
               uploaderId: "Uploader",
-              relativePath: `${baseFilename}.${fileExt}`,
-              name: `${baseFilename}.${fileExt}`,
+              relativePath: hashBasedFilename,
+              name: hashBasedFilename,
               type: mimeType,
             }),
             "x-component-did": "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
@@ -234,42 +202,36 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
         if (!uploadedFileUrl) {
           throw new Error("No URL found in the upload response");
         }
-        console.log(`File ${file} uploaded successfully: ${uploadedFileUrl}`);
+        console.log(
+          `File ${filename} -> ${hashBasedFilename} uploaded successfully: ${uploadedFileUrl}`,
+        );
 
         // Update cache
         if (cacheFilePath) {
           cache[fileHash] = {
-            local_path: file,
-            url: uploadedFileUrl,
-          };
-        }
-
-        const resultIndex = results.findIndex((r) => r.originalUrl === originalUrl);
-        if (resultIndex !== -1) {
-          results[resultIndex] = {
-            originalUrl,
-            diskUrl: filePath,
+            local_path: path.relative(process.cwd(), filePath),
             url: uploadedFileUrl,
           };
         }
 
         return {
-          originalUrl,
-          diskUrl: filePath,
+          filePath,
           url: uploadedFileUrl,
         };
       } catch (error) {
-        console.error(`Error uploading ${file}:`, error);
+        console.error(`Error uploading ${filename}:`, error);
         return {
-          originalUrl,
-          diskUrl: filePath,
+          filePath,
           url: "",
         };
       }
     }),
   );
 
-  await Promise.all(uploadPromises);
+  const uploadResults = await Promise.all(uploadPromises);
+
+  // Filter out null results and add to final results
+  results.push(...uploadResults.filter((result): result is UploadResult => result !== null));
 
   // Save cache if provided
   if (cacheFilePath) {

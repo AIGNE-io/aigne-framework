@@ -175,9 +175,6 @@ export class Converter {
 
     if (localImageSources.length === 0) return;
 
-    // Get media folder path - default to directory of the markdown file
-    const mediaFolder = this.uploadConfig.mediaFolder || path.dirname(filePath);
-
     // Find local image files
     const imageSearchResult = findLocalImages(localImageSources, {
       mediaFolder: this.uploadConfig.mediaFolder,
@@ -192,8 +189,7 @@ export class Converter {
       // Upload images
       const uploadOptions: UploadFilesOptions = {
         appUrl: this.uploadConfig.appUrl,
-        mediaFolder,
-        mediaFiles: localImageFiles.map((f) => path.basename(f)),
+        filePaths: localImageFiles,
         accessToken: this.uploadConfig.accessToken,
         concurrency: this.uploadConfig.concurrency,
         cacheFilePath: this.uploadConfig.cacheFilePath,
@@ -201,12 +197,12 @@ export class Converter {
 
       const result = await uploadFiles(uploadOptions);
 
-      // Create mapping from local paths to uploaded URLs
+      // Create mapping from original src paths to uploaded URLs
       const urlMapping = new Map<string, string>();
       for (const uploadResult of result.results) {
         if (uploadResult.url) {
           // Find the original src that corresponds to this uploaded file
-          const actualPath = uploadResult.diskUrl;
+          const actualPath = uploadResult.filePath;
           const originalSrc = Array.from(foundImagePaths.entries()).find(
             ([_, foundPath]) => foundPath === actualPath,
           )?.[0];
@@ -215,14 +211,6 @@ export class Converter {
             // Map the original src to the uploaded URL
             urlMapping.set(originalSrc, uploadResult.url);
           }
-
-          // Also map various path formats for compatibility
-          urlMapping.set(actualPath, uploadResult.url);
-          urlMapping.set(path.basename(actualPath), uploadResult.url);
-
-          // Map relative path from markdown file directory
-          const relativePath = path.relative(path.dirname(filePath), actualPath);
-          urlMapping.set(relativePath, uploadResult.url);
         }
       }
 

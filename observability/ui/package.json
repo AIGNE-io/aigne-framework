@@ -49,7 +49,6 @@
   },
   "dependencies": {
     "@abtnode/util": "^1.16.46",
-    "@arcblock/did-connect": "^3.0.24",
     "@arcblock/ux": "^3.0.24",
     "@blocklet/sdk": "^1.16.46",
     "@microsoft/fetch-event-source": "^2.0.1",

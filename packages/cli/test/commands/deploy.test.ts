@@ -1,16 +1,9 @@
 import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { stringify } from "yaml";
 import yargs from "yargs";
-import {
-  createDeployCommands,
-  DEPLOYED_FILE,
-  deploy,
-  fileExists,
-  run,
-} from "../../src/commands/deploy.js";
+import { createDeployCommands, deploy, fileExists, run } from "../../src/commands/deploy.js";
 
 const spawnMock = mock((cmd: string) => {
   const stdoutHandlers: any[] = [];
@@ -42,6 +35,13 @@ const spawnMock = mock((cmd: string) => {
     },
   } as any;
 });
+
+mock.module("@inquirer/prompts", () => ({
+  input: () => {
+    return "demo";
+  },
+  select: () => "default",
+}));
 
 beforeEach(async () => {
   const childProcess = await import("node:child_process");
@@ -77,12 +77,9 @@ describe("createDeployCommands", () => {
   it("should have handler function", async () => {
     const path = join(import.meta.dirname, "../_mocks_/deploy");
     const aigneHomeDir = join(homedir(), ".aigne");
-    const deployedFile = join(aigneHomeDir, DEPLOYED_FILE);
     if (!(await fileExists(aigneHomeDir))) {
       await mkdir(aigneHomeDir, { recursive: true });
     }
-
-    await writeFile(deployedFile, stringify({ [path]: { name: "my-blocklet" } }));
 
     const command = yargs().command(createDeployCommands());
     await command.parseAsync(["deploy", "--path", path, "--endpoint", "http://endpoint"]);
@@ -105,18 +102,6 @@ describe("createDeployCommands", () => {
 describe("deploy function", () => {
   it("should run deploy tasks successfully (mocked)", async () => {
     const path = join(import.meta.dirname, "../_mocks_/deploy");
-    const aigneHomeDir = join(homedir(), ".aigne");
-
-    await writeFile(
-      join(aigneHomeDir, DEPLOYED_FILE),
-      stringify({
-        [path]: {
-          name: "my-blocklet",
-          did: "z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS",
-        },
-      }),
-    );
-
     await deploy(path, "http://endpoint");
   });
 });

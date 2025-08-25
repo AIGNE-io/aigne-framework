@@ -1,49 +1,19 @@
-import SessionManager from "@arcblock/did-connect/lib/SessionManager";
-import ThemeModeToggle from "@arcblock/ux/lib/Config/theme-mode-toggle.js";
-import Dashboard from "@arcblock/ux/lib/Layout/dashboard/index.js";
-import LocaleSelector from "@arcblock/ux/lib/Locale/selector.js";
-import Box from "@mui/material/Box";
-import { useMemo } from "react";
-// @ts-ignore
-import Logo from "../assets/logo.png?url";
-import { useSessionContext } from "../contexts/session.js";
+import Footer from "@blocklet/ui-react/lib/Footer";
+import Header from "@blocklet/ui-react/lib/Header";
+import { Box } from "@mui/material";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { session } = useSessionContext();
-
-  const renderAddons = () => {
-    const addonsArray = [];
-
-    addonsArray.push(<LocaleSelector key="locale-selector" showText={false} />);
-
-    addonsArray.push(<ThemeModeToggle key="theme-mode-toggle" />);
-
-    addonsArray.push(<SessionManager size={24} session={session} />);
-
-    return addonsArray;
-  };
-
-  const renderedAddons = renderAddons();
-  const nodes = Array.isArray(renderedAddons) ? renderedAddons : [renderedAddons];
-
-  const links = useMemo(() => {
-    return [];
-  }, []);
-
   return (
-    <Dashboard
-      links={links}
-      title={window.blocklet?.appName}
-      headerProps={{
-        brand: window.blocklet?.appName,
-        description: window.blocklet?.appDescription,
-        addons: nodes,
-        logo: <Box component="img" src={Logo} alt="AIGNE" />,
-      }}
-      fullWidth
-      legacy={false}
-    >
-      {children}
-    </Dashboard>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      {/* @ts-ignore */}
+      <Header />
+
+      <Box sx={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
+        {children}
+      </Box>
+
+      {/* @ts-ignore */}
+      <Footer />
+    </Box>
   );
 }

@@ -33,10 +33,10 @@
     "@aigne/observability-api": "workspace:^",
     "@aigne/sqlite": "workspace:^",
     "@aigne/transport": "workspace:^",
-    "@arcblock/did-connect-react": "^3.1.27",
-    "@arcblock/ux": "^3.1.27",
+    "@arcblock/did-connect-react": "^3.1.28",
+    "@arcblock/ux": "^3.1.28",
     "@blocklet/sdk": "^1.16.48",
-    "@blocklet/ui-react": "^3.1.27",
+    "@blocklet/ui-react": "^3.1.28",
     "@mui/icons-material": "^7.3.1",
     "@mui/material": "^7.3.1",
     "@uiw/react-markdown-preview": "^5.1.5",
@@ -53,7 +53,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@blocklet/js-sdk": "^1.16.44",
+    "@blocklet/js-sdk": "^1.16.48",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/dotenv-flow": "^3.3.3",

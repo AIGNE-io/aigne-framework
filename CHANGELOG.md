@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.68.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.68.0...aigne-framework-v1.68.1) (2025-08-25)
+
+
+### Bug Fixes
+
+* update package to latest for observability ([#408](https://github.com/AIGNE-io/aigne-framework/issues/408)) ([997c3f3](https://github.com/AIGNE-io/aigne-framework/commit/997c3f3e8c9a7d6f3b3fedd3e6eea838b8385635))
+
 ## [1.68.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.67.0...aigne-framework-v1.68.0) (2025-08-25)
 
 

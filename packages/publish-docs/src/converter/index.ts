@@ -219,10 +219,9 @@ export class Converter {
         if (node.type === "image" && node.src && !isRemoteUrl(node.src)) {
           const uploadedUrl = urlMapping.get(node.src);
           if (uploadedUrl) {
-            console.log(`Updating image src: ${node.src} -> ${uploadedUrl}`);
             node.src = uploadedUrl;
           } else {
-            console.warn(`No uploaded URL found for image: ${node.src}`);
+            console.warn(`No uploaded URL found for image: ${decodeURIComponent(node.src || "")}`);
           }
         }
         if (node.children) {

@@ -26,10 +26,11 @@ export function findLocalImages(
 
     if (foundPath) {
       foundPaths.set(src, foundPath);
-      console.log(`Found image: ${src} -> ${foundPath}`);
     } else {
       missingImages.push(src);
-      console.warn(`Image not found: ${src} (searched in multiple locations)`);
+      console.warn(
+        `Image not found: ${decodeURIComponent(src || "")} (searched in multiple locations)`,
+      );
     }
   }
 
@@ -75,7 +76,6 @@ export function findImagePath(imageSrc: string, options: ImageFinderOptions): st
 
     // Find first existing path
     for (const searchPath of searchPaths) {
-      console.log(`Searching for image: ${searchPath}`);
       if (fs.existsSync(searchPath)) {
         return searchPath;
       }

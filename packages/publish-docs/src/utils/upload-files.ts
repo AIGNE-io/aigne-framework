@@ -70,8 +70,6 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
     cache = loadCache(cacheFilePath);
   }
 
-  console.log(`Files to upload: ${filePaths.length}`, filePaths);
-
   const results: UploadResult[] = [];
 
   if (filePaths.length === 0) {
@@ -81,7 +79,6 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
   const url = new URL(appUrl);
   const mountPoint = await getComponentMountPoint(appUrl, MEDIA_KIT_DID);
   const uploadEndpoint = `${url.origin}${mountPoint}/api/uploads`;
-  console.log(`Upload endpoint: ${uploadEndpoint}`);
 
   const limit = pLimit(concurrency);
 
@@ -90,15 +87,12 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
       const filename = path.basename(filePath);
       const baseFilename = path.basename(filePath, path.extname(filePath));
 
-      console.log(`Processing file: ${filename} at ${filePath}`);
-
       try {
         const fileBuffer = fs.readFileSync(filePath);
         const fileHash = crypto.createHash("sha256").update(fileBuffer).digest("hex");
 
         // Check cache first
         if (cacheFilePath && cache[fileHash]) {
-          console.log(`Cache hit for ${filename}, using cached URL: ${cache[fileHash].url}`);
           return {
             filePath,
             url: cache[fileHash].url,
@@ -129,8 +123,6 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
         const encodedMetadata = Object.entries(tusMetadata)
           .map(([key, value]) => `${key} ${Buffer.from(value).toString("base64")}`)
           .join(",");
-
-        console.log(`Starting upload for ${filename} -> ${hashBasedFilename}...`);
 
         const createResponse = await fetch(uploadEndpoint, {
           method: "POST",
@@ -165,8 +157,6 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
         if (!uploadUrl) {
           throw new Error("No upload URL received from server");
         }
-
-        console.log(`Upload created at ${uploadUrl}`);
         const uploadResponse = await fetch(`${url.origin}${uploadUrl}`, {
           method: "PATCH",
           headers: {
@@ -202,9 +192,6 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
         if (!uploadedFileUrl) {
           throw new Error("No URL found in the upload response");
         }
-        console.log(
-          `File ${filename} -> ${hashBasedFilename} uploaded successfully: ${uploadedFileUrl}`,
-        );
 
         // Update cache
         if (cacheFilePath) {

@@ -25,6 +25,8 @@ const withTokenSchema = z.object({
   boardDesc: z.string().optional(),
   boardCover: z.string().optional(),
   boardMeta: boardMetaSchema.optional(),
+  mediaFolder: z.string().optional(),
+  cacheFilePath: z.string().optional(),
 });
 
 const withAuthSchema = z.object({
@@ -42,6 +44,8 @@ const withAuthSchema = z.object({
   boardDesc: z.string().optional(),
   boardCover: z.string().optional(),
   boardMeta: boardMetaSchema.optional(),
+  mediaFolder: z.string().optional(),
+  cacheFilePath: z.string().optional(),
 });
 
 const optionsSchema = z.union([withTokenSchema, withAuthSchema]);
@@ -96,6 +100,13 @@ export async function publishDocs(options: PublishDocsOptions): Promise<PublishR
     sidebarPath: parsed.sidebarPath,
     slugPrefix: finalBoardId,
     slugWithoutExt: parsed.slugWithoutExt ?? true,
+    uploadConfig: {
+      appUrl: parsed.appUrl,
+      accessToken,
+      mediaFolder: parsed.mediaFolder,
+      cacheFilePath: parsed.cacheFilePath,
+      concurrency: 3,
+    },
   }).generate();
 
   const published = await publisher({

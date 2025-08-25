@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.2.0...aigne-runtime-v1.3.0) (2025-08-25)
+
+
+### Features
+
+* **ux:** use standard blocklet layout in aigne runtime ([#403](https://github.com/AIGNE-io/aigne-framework/issues/403)) ([a14274d](https://github.com/AIGNE-io/aigne-framework/commit/a14274dbf970bae7fed0eff150933ecf0f65eb64))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.6.9
+    * @aigne/transport bumped to 0.14.7
+
 ## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.1.0...aigne-runtime-v1.2.0) (2025-08-22)
 
 

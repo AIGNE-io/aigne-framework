@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.41.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.40.0...cli-v1.41.0) (2025-08-25)
+
+
+### Features
+
+* **ux:** use standard blocklet layout in aigne runtime ([#403](https://github.com/AIGNE-io/aigne-framework/issues/403)) ([a14274d](https://github.com/AIGNE-io/aigne-framework/commit/a14274dbf970bae7fed0eff150933ecf0f65eb64))
+
+
+### Bug Fixes
+
+* **cli:** prefer variables from process.env when loadChatModel ([#407](https://github.com/AIGNE-io/aigne-framework/issues/407)) ([d32b2db](https://github.com/AIGNE-io/aigne-framework/commit/d32b2db20435a022d944a674e90333899d881daf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.27
+    * @aigne/agentic-memory bumped to 1.0.27
+    * @aigne/aigne-hub bumped to 0.6.9
+    * @aigne/default-memory bumped to 1.1.9
+    * @aigne/openai bumped to 0.12.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.35
+
 ## [1.40.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.39.1...cli-v1.40.0) (2025-08-22)
 
 

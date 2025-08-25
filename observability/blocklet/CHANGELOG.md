@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.13.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.12.1...blocklet-observability-v1.13.0) (2025-08-25)
+
+
+### Features
+
+* **ux:** use standard blocklet layout in aigne runtime ([#403](https://github.com/AIGNE-io/aigne-framework/issues/403)) ([a14274d](https://github.com/AIGNE-io/aigne-framework/commit/a14274dbf970bae7fed0eff150933ecf0f65eb64))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-ui bumped to 0.10.0
+
 ## [1.12.1](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.12.0...blocklet-observability-v1.12.1) (2025-08-22)
 
 

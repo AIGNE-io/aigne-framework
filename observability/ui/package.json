@@ -48,9 +48,9 @@
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
-    "@abtnode/util": "^1.16.46",
-    "@arcblock/ux": "^3.0.24",
-    "@blocklet/sdk": "^1.16.46",
+    "@abtnode/util": "^1.16.48",
+    "@arcblock/ux": "^3.1.28",
+    "@blocklet/sdk": "^1.16.48",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",

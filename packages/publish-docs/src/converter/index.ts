@@ -18,19 +18,35 @@ import {
   TextNode,
 } from "lexical";
 import { marked, type RendererObject } from "marked";
+import { findLocalImages, isRemoteUrl } from "../utils/image-finder.js";
 import { slugify } from "../utils/slugify.js";
+import { type UploadFilesOptions, uploadFiles } from "../utils/upload-files.js";
 import { ImageNode } from "./nodes/image-node.js";
 import { MermaidNode } from "./nodes/mermaid-node.js";
+
+export interface ConverterOptions {
+  slugPrefix?: string;
+  slugWithoutExt?: boolean;
+  uploadConfig?: {
+    appUrl: string;
+    accessToken: string;
+    mediaFolder?: string;
+    concurrency?: number;
+    cacheFilePath?: string;
+  };
+}
 
 export class Converter {
   private slugPrefix?: string;
   public usedSlugs: Record<string, string[]>;
   public blankFilePaths: string[];
   private slugWithoutExt: boolean;
+  private uploadConfig?: ConverterOptions["uploadConfig"];
 
-  constructor(options: { slugPrefix?: string; slugWithoutExt?: boolean } = {}) {
+  constructor(options: ConverterOptions = {}) {
     this.slugPrefix = options.slugPrefix;
     this.slugWithoutExt = options.slugWithoutExt ?? true;
+    this.uploadConfig = options.uploadConfig;
     this.usedSlugs = {};
     this.blankFilePaths = [];
   }
@@ -132,7 +148,104 @@ export class Converter {
       );
     });
 
+    // Process images if upload config is provided
+    if (this.uploadConfig && content) {
+      await this.processImages(content, filePath);
+    }
+
     return { title, labels, content };
+  }
+
+  private async processImages(content: SerializedEditorState, filePath: string): Promise<void> {
+    if (!this.uploadConfig) return;
+
+    // Collect all local image sources
+    const localImageSources: string[] = [];
+
+    const collectImageSources = (node: any): void => {
+      if (node.type === "image" && node.src && !isRemoteUrl(node.src)) {
+        localImageSources.push(node.src);
+      }
+      if (node.children) {
+        node.children.forEach(collectImageSources);
+      }
+    };
+
+    content.root.children.forEach(collectImageSources);
+
+    if (localImageSources.length === 0) return;
+
+    // Get media folder path - default to directory of the markdown file
+    const mediaFolder = this.uploadConfig.mediaFolder || path.dirname(filePath);
+
+    // Find local image files
+    const imageSearchResult = findLocalImages(localImageSources, {
+      mediaFolder: this.uploadConfig.mediaFolder,
+      markdownFilePath: filePath,
+    });
+    const foundImagePaths = imageSearchResult.foundPaths;
+    const localImageFiles = Array.from(foundImagePaths.values());
+
+    if (localImageFiles.length === 0) return;
+
+    try {
+      // Upload images
+      const uploadOptions: UploadFilesOptions = {
+        appUrl: this.uploadConfig.appUrl,
+        mediaFolder,
+        mediaFiles: localImageFiles.map((f) => path.basename(f)),
+        accessToken: this.uploadConfig.accessToken,
+        concurrency: this.uploadConfig.concurrency,
+        cacheFilePath: this.uploadConfig.cacheFilePath,
+      };
+
+      const result = await uploadFiles(uploadOptions);
+
+      // Create mapping from local paths to uploaded URLs
+      const urlMapping = new Map<string, string>();
+      for (const uploadResult of result.results) {
+        if (uploadResult.url) {
+          // Find the original src that corresponds to this uploaded file
+          const actualPath = uploadResult.diskUrl;
+          const originalSrc = Array.from(foundImagePaths.entries()).find(
+            ([_, foundPath]) => foundPath === actualPath,
+          )?.[0];
+
+          if (originalSrc) {
+            // Map the original src to the uploaded URL
+            urlMapping.set(originalSrc, uploadResult.url);
+          }
+
+          // Also map various path formats for compatibility
+          urlMapping.set(actualPath, uploadResult.url);
+          urlMapping.set(path.basename(actualPath), uploadResult.url);
+
+          // Map relative path from markdown file directory
+          const relativePath = path.relative(path.dirname(filePath), actualPath);
+          urlMapping.set(relativePath, uploadResult.url);
+        }
+      }
+
+      // Update image sources in the content
+      const updateImageSources = (node: any): void => {
+        if (node.type === "image" && node.src && !isRemoteUrl(node.src)) {
+          const uploadedUrl = urlMapping.get(node.src);
+          if (uploadedUrl) {
+            console.log(`Updating image src: ${node.src} -> ${uploadedUrl}`);
+            node.src = uploadedUrl;
+          } else {
+            console.warn(`No uploaded URL found for image: ${node.src}`);
+          }
+        }
+        if (node.children) {
+          node.children.forEach(updateImageSources);
+        }
+      };
+
+      content.root.children.forEach(updateImageSources);
+    } catch (error) {
+      console.warn(`Failed to upload images for ${filePath}:`, error);
+    }
   }
 
   private trimTrailingLineBreak(node: LexicalNode | null) {

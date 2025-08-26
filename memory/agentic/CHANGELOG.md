@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.28](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.0.27...agentic-memory-v1.0.28) (2025-08-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.55.1
+    * @aigne/default-memory bumped to 1.1.10
+    * @aigne/openai bumped to 0.12.4
+
 ## [1.0.27](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.0.26...agentic-memory-v1.0.27) (2025-08-25)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.7...publish-docs-v0.6.0) (2025-08-26)
+
+
+### Features
+
+* **docs:** support auto asset uploading on publishing ([#410](https://github.com/AIGNE-io/aigne-framework/issues/410)) ([c0f84b3](https://github.com/AIGNE-io/aigne-framework/commit/c0f84b3c89cb17e5719d6707a0bf93dd99129f8b))
+
 ## [0.5.7](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.6...publish-docs-v0.5.7) (2025-08-25)
 
 

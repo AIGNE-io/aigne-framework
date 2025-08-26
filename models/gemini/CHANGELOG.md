@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.10](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.9.9...gemini-v0.9.10) (2025-08-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.12.4
+  * devDependencies
+    * @aigne/core bumped to 1.55.1
+    * @aigne/test-utils bumped to 0.5.36
+
 ## [0.9.9](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.9.8...gemini-v0.9.9) (2025-08-25)
 
 

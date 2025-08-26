@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.36](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.35...test-utils-v0.5.36) (2025-08-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.55.1
+
 ## [0.5.35](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.34...test-utils-v0.5.35) (2025-08-25)
 
 

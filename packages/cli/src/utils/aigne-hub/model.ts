@@ -44,14 +44,14 @@ export const formatModelName = async (
   const result = await inquirerPrompt({
     type: "list",
     name: "useAigneHub",
-    message: `Seems no API Key configured for ${provider}/${name}, select your preferred way to continue:`,
+    message: `No API key is configured for ${provider}/${name}, How would you like to proceed?`,
     choices: [
       {
-        name: `Connect to AIGNE Hub to use ${name} (Recommended since free credits available)`,
+        name: `Connect to AIGNE Hub to use ${name} (recommended — includes free credits)`,
         value: true,
       },
       {
-        name: `Exit and bring my owner API Key by set ${requireEnvs.join(", ")}`,
+        name: `Exit and use my own API key (set ${requireEnvs.join(" or ")})`,
         value: false,
       },
     ],

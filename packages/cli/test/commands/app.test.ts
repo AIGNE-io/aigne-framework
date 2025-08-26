@@ -353,11 +353,12 @@ test("loadApplication should load doc-smith correctly", async () => {
   await app.loadApplication({ name: "doc-smith", dir: tmp });
 
   expect(spawn.mock.lastCall).toEqual([
-    "npm",
-    ["install", "--omit", "dev", "--verbose"],
+    "corepack",
+    ["npm", "install", "--omit", "dev", "--verbose"],
     {
       cwd: tmp,
       stdio: "pipe",
+      shell: process.platform === "win32",
     },
   ]);
 

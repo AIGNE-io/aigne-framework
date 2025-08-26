@@ -62,6 +62,8 @@ const openAIImageModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  modelOptions: z.object({}).optional(),
+  clientOptions: z.object({}).optional(),
 });
 
 export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIImageModelOutput> {

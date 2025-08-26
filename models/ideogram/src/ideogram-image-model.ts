@@ -5,7 +5,7 @@ import {
   type ImageModelOutput,
   imageModelInputSchema,
 } from "@aigne/core";
-import { checkArguments } from "@aigne/core/utils/type-utils.js";
+import { checkArguments, pick } from "@aigne/core/utils/type-utils.js";
 import { type ZodType, z } from "zod";
 
 const IDEOGRAM_BASE_URL = "https://api.ideogram.ai/v1/ideogram-v3/generate";
@@ -51,6 +51,8 @@ const ideogramImageModelInputSchema: ZodType<IdeogramImageModelInput> =
 const ideogramImageModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
+  modelOptions: z.object({}).optional(),
+  clientOptions: z.object({}).optional(),
 });
 
 export class IdeogramImageModel extends ImageModel<
@@ -88,9 +90,25 @@ export class IdeogramImageModel extends ImageModel<
     const model = input.model;
     const formData = new FormData();
 
-    Object.keys(input).forEach((key) => {
-      if (input[key]) {
-        formData.append(key, input[key] as string);
+    const inputKeys = [
+      "prompt",
+      "seed",
+      "resolution",
+      "aspect_ratio",
+      "rendering_speed",
+      "magic_prompt",
+      "negative_prompt",
+      "num_images",
+      "color_palette",
+      "style_codes",
+      "style_type",
+    ];
+
+    const mergedInput = pick({ ...this.modelOptions, ...input }, inputKeys);
+
+    Object.keys(mergedInput).forEach((key) => {
+      if (mergedInput[key]) {
+        formData.append(key, mergedInput[key] as string);
       }
     });
 

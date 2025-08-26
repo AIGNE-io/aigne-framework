@@ -60,6 +60,8 @@ const geminiImageModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  modelOptions: z.object({}).optional(),
+  clientOptions: z.object({}).optional(),
 });
 
 export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiImageModelOutput> {
@@ -115,10 +117,12 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
       throw new Error("Gemini image models currently only support base64 format");
     }
 
+    const mergedInput = { ...this.modelOptions, ...input };
+
     const response = await this.client.models.generateImages({
       model: model,
-      prompt: input.prompt,
-      config: { numberOfImages: input.n || 1 },
+      prompt: mergedInput.prompt,
+      config: { numberOfImages: mergedInput.n || 1 },
     });
 
     return {

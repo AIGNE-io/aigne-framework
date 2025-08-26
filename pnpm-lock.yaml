@@ -1042,6 +1042,10 @@ importers:
         version: 5.8.3
 
   models/ideogram:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:*
+        version: link:../../packages/core
     devDependencies:
       '@types/bun':
         specifier: ^1.2.18
@@ -14101,8 +14105,8 @@ snapshots:
       prop-types: 15.8.1
       react: 19.1.0
     optionalDependencies:
-      '@emotion/react': 11.14.0(@types/react@18.3.23)(react@19.1.0)
-      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@19.1.0))(@types/react@18.3.23)(react@19.1.0)
+      '@emotion/react': 11.14.0(@types/react@19.1.8)(react@19.1.0)
+      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
 
   '@mui/system@5.17.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)':
     dependencies:

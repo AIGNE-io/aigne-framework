@@ -42,7 +42,9 @@
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@aigne/core": "workspace:*"
+  },
   "devDependencies": {
     "@types/bun": "^1.2.18",
     "@types/node": "^24.0.12",

@@ -24,7 +24,7 @@ async function createHonoServer() {
   };
 }
 
-test("ImageAgent should work correctly", async () => {
+test("IdeogramImageModel should generate images successfully", async () => {
   const { url, close } = await createHonoServer();
 
   const model = new IdeogramImageModel({

@@ -28,30 +28,8 @@ export interface IdeogramImageModelOutput extends ImageModelOutput {}
 
 export interface IdeogramImageModelOptions
   extends ImageModelOptions<IdeogramImageModelInput, IdeogramImageModelOutput> {
-  /**
-   * API key for OpenAI API
-   *
-   * If not provided, will look for OPENAI_API_KEY in environment variables
-   */
   apiKey?: string;
-
-  /**
-   * Base URL for OpenAI API
-   *
-   * Useful for proxies or alternate endpoints
-   */
   baseURL?: string;
-
-  /**
-   * OpenAI model to use
-   *
-   * Defaults to 'dall-e-2'
-   */
-  model?: string;
-
-  /**
-   * Additional model options to control behavior
-   */
   modelOptions?: Omit<Partial<IdeogramImageModelInput>, "model">;
 }
 
@@ -117,11 +95,21 @@ export class IdeogramImageModel extends ImageModel<
     });
 
     const { url, apiKey } = this.credential;
+    if (!apiKey)
+      throw new Error(
+        `${this.name} requires an API key. Please provide it via \`options.apiKey\`, or set the \`${this.apiKeyEnvName}\` environment variable`,
+      );
+
     const response = await fetch(url, {
       method: "POST",
       headers: { "api-key": apiKey ?? "" },
       body: formData,
     });
+
+    if (!response.ok) {
+      throw new Error(`Ideogram API error: ${response.status} ${response.statusText}`);
+    }
+
     const data = await response.json();
 
     return {

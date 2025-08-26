@@ -44,7 +44,10 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/openai": "workspace:^"
+    "@aigne/openai": "workspace:^",
+    "@google/genai": "^1.15.0",
+    "openai": "^5.8.3",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@aigne/core": "workspace:^",

@@ -30,6 +30,10 @@ interface CacheEntry {
 
 type UploadCache = Record<string, CacheEntry>;
 
+// Global state for tracking ongoing uploads and their results
+const ongoingUploads = new Map<string, Promise<UploadResult>>();
+const cacheUpdateMutex = new Map<string, Promise<void>>();
+
 function loadCache(cacheFilePath: string): UploadCache {
   if (!fs.existsSync(cacheFilePath)) {
     return {};
@@ -61,19 +65,156 @@ function saveCache(cacheFilePath: string, cache: UploadCache): void {
   }
 }
 
+async function performSingleUpload(
+  filePath: string,
+  fileHash: string,
+  uploadEndpoint: string,
+  accessToken: string,
+  mountPoint: string,
+  url: URL,
+): Promise<UploadResult> {
+  const baseFilename = path.basename(filePath, path.extname(filePath));
+
+  const fileBuffer = fs.readFileSync(filePath);
+  const stats = fs.statSync(filePath);
+  const fileSize = stats.size;
+  const fileExt = path.extname(filePath).substring(1);
+  const mimeType = getMimeType(filePath);
+
+  const hashBasedFilename = `${fileHash.substring(0, 16)}.${fileExt}`;
+
+  const uploaderId = "Uploader";
+  const fileId = `${uploaderId}-${baseFilename.toLowerCase().replace(/[^a-z0-9]/g, "")}-${fileHash.substring(0, 16)}`;
+
+  const tusMetadata = {
+    uploaderId,
+    relativePath: hashBasedFilename,
+    name: hashBasedFilename,
+    type: mimeType,
+    filetype: mimeType,
+    filename: hashBasedFilename,
+  };
+
+  const encodedMetadata = Object.entries(tusMetadata)
+    .map(([key, value]) => `${key} ${Buffer.from(value).toString("base64")}`)
+    .join(",");
+
+  const createResponse = await fetch(uploadEndpoint, {
+    method: "POST",
+    headers: {
+      "Tus-Resumable": "1.0.0",
+      "Upload-Length": fileSize.toString(),
+      "Upload-Metadata": encodedMetadata,
+      Cookie: `login_token=${accessToken}`,
+      "x-uploader-file-name": hashBasedFilename,
+      "x-uploader-file-id": fileId,
+      "x-uploader-file-ext": fileExt,
+      "x-uploader-base-url": `${mountPoint}/api/uploads`,
+      "x-uploader-endpoint-url": uploadEndpoint,
+      "x-uploader-metadata": JSON.stringify({
+        uploaderId: "Uploader",
+        relativePath: hashBasedFilename,
+        name: hashBasedFilename,
+        type: mimeType,
+      }),
+      "x-component-did": "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
+    },
+  });
+
+  if (!createResponse.ok) {
+    const errorText = await createResponse.text();
+    throw new Error(
+      `Failed to create upload: ${createResponse.status} ${createResponse.statusText}\n${errorText}`,
+    );
+  }
+
+  const uploadUrl = createResponse.headers.get("Location");
+  if (!uploadUrl) {
+    throw new Error("No upload URL received from server");
+  }
+  const uploadResponse = await fetch(`${url.origin}${uploadUrl}`, {
+    method: "PATCH",
+    headers: {
+      "Tus-Resumable": "1.0.0",
+      "Upload-Offset": "0",
+      "Content-Type": "application/offset+octet-stream",
+      Cookie: `login_token=${accessToken}`,
+      "x-uploader-file-name": hashBasedFilename,
+      "x-uploader-file-id": fileId,
+      "x-uploader-file-ext": fileExt,
+      "x-uploader-base-url": `${mountPoint}/api/uploads`,
+      "x-uploader-endpoint-url": uploadEndpoint,
+      "x-uploader-metadata": JSON.stringify({
+        uploaderId: "Uploader",
+        relativePath: hashBasedFilename,
+        name: hashBasedFilename,
+        type: mimeType,
+      }),
+      "x-component-did": "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
+      "x-uploader-file-exist": "true",
+    },
+    body: fileBuffer,
+  });
+  if (!uploadResponse.ok) {
+    const errorText = await uploadResponse.text();
+    throw new Error(
+      `Failed to upload file: ${uploadResponse.status} ${uploadResponse.statusText}\n${errorText}`,
+    );
+  }
+
+  const uploadResult = await uploadResponse.json();
+  const uploadedFileUrl = uploadResult.url;
+  if (!uploadedFileUrl) {
+    throw new Error("No URL found in the upload response");
+  }
+
+  return {
+    filePath,
+    url: uploadedFileUrl,
+  };
+}
+
+async function updateCacheWithMutex(
+  cacheFilePath: string,
+  fileHash: string,
+  filePath: string,
+  url: string,
+): Promise<void> {
+  // Wait for any ongoing cache updates for this file
+  if (cacheUpdateMutex.has(cacheFilePath)) {
+    await cacheUpdateMutex.get(cacheFilePath);
+  }
+
+  // Create a new mutex for this cache update
+  const updatePromise = (async () => {
+    const cache = loadCache(cacheFilePath);
+    cache[fileHash] = {
+      local_path: path.relative(process.cwd(), filePath),
+      url,
+    };
+    saveCache(cacheFilePath, cache);
+  })();
+
+  cacheUpdateMutex.set(cacheFilePath, updatePromise);
+
+  try {
+    await updatePromise;
+  } finally {
+    cacheUpdateMutex.delete(cacheFilePath);
+  }
+}
+
 export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFilesResult> {
   const { appUrl, filePaths, concurrency = 5, accessToken, cacheFilePath } = options;
 
-  // Load cache if provided
+  if (filePaths.length === 0) {
+    return { results: [] };
+  }
+
+  // Load initial cache
   let cache: UploadCache = {};
   if (cacheFilePath) {
     cache = loadCache(cacheFilePath);
-  }
-
-  const results: UploadResult[] = [];
-
-  if (filePaths.length === 0) {
-    return { results };
   }
 
   const url = new URL(appUrl);
@@ -83,13 +224,23 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
   const limit = pLimit(concurrency);
 
   const uploadPromises = filePaths.map((filePath) =>
-    limit(async () => {
+    limit(async (): Promise<UploadResult> => {
       const filename = path.basename(filePath);
-      const baseFilename = path.basename(filePath, path.extname(filePath));
 
       try {
         const fileBuffer = fs.readFileSync(filePath);
         const fileHash = crypto.createHash("sha256").update(fileBuffer).digest("hex");
+
+        // Check if this file is already being uploaded
+        const existingUpload = ongoingUploads.get(fileHash);
+        if (existingUpload) {
+          const result = await existingUpload;
+          // Return a new result with the correct filePath for this request
+          return {
+            filePath,
+            url: result.url,
+          };
+        }
 
         // Check cache first
         if (cacheFilePath && cache[fileHash]) {
@@ -99,114 +250,51 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
           };
         }
 
-        const stats = fs.statSync(filePath);
-        const fileSize = stats.size;
-        const fileExt = path.extname(filePath).substring(1);
-        const mimeType = getMimeType(filePath);
+        // Create upload promise and cache it
+        const uploadPromise = (async (): Promise<UploadResult> => {
+          try {
+            const result = await performSingleUpload(
+              filePath,
+              fileHash,
+              uploadEndpoint,
+              accessToken,
+              mountPoint,
+              url,
+            );
 
-        // Use hash-based filename to avoid encoding issues with non-ASCII characters
-        const hashBasedFilename = `${fileHash.substring(0, 16)}.${fileExt}`;
+            // Update cache asynchronously with mutex
+            if (cacheFilePath) {
+              updateCacheWithMutex(cacheFilePath, fileHash, filePath, result.url).catch((error) =>
+                console.warn(`Failed to update cache: ${error}`),
+              );
+            }
 
-        const uploaderId = "Uploader";
-        const fileId = `${uploaderId}-${baseFilename.toLowerCase().replace(/[^a-z0-9]/g, "")}-${fileHash.substring(0, 16)}`;
+            return result;
+          } catch (error) {
+            console.error(`Error uploading ${filename}:`, error);
+            return {
+              filePath,
+              url: "",
+            };
+          }
+        })();
 
-        // Metadata for TUS protocol (will be base64 encoded)
-        const tusMetadata = {
-          uploaderId,
-          relativePath: hashBasedFilename,
-          name: hashBasedFilename,
-          type: mimeType,
-          filetype: mimeType,
-          filename: hashBasedFilename,
-        };
+        // Cache the upload promise
+        ongoingUploads.set(fileHash, uploadPromise);
 
-        const encodedMetadata = Object.entries(tusMetadata)
-          .map(([key, value]) => `${key} ${Buffer.from(value).toString("base64")}`)
-          .join(",");
-
-        const createResponse = await fetch(uploadEndpoint, {
-          method: "POST",
-          headers: {
-            "Tus-Resumable": "1.0.0",
-            "Upload-Length": fileSize.toString(),
-            "Upload-Metadata": encodedMetadata,
-            Cookie: `login_token=${accessToken}`,
-            "x-uploader-file-name": hashBasedFilename,
-            "x-uploader-file-id": fileId,
-            "x-uploader-file-ext": fileExt,
-            "x-uploader-base-url": `${mountPoint}/api/uploads`,
-            "x-uploader-endpoint-url": uploadEndpoint,
-            "x-uploader-metadata": JSON.stringify({
-              uploaderId: "Uploader",
-              relativePath: hashBasedFilename,
-              name: hashBasedFilename,
-              type: mimeType,
-            }),
-            "x-component-did": "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
-          },
-        });
-
-        if (!createResponse.ok) {
-          const errorText = await createResponse.text();
-          throw new Error(
-            `Failed to create upload: ${createResponse.status} ${createResponse.statusText}\n${errorText}`,
-          );
-        }
-
-        const uploadUrl = createResponse.headers.get("Location");
-        if (!uploadUrl) {
-          throw new Error("No upload URL received from server");
-        }
-        const uploadResponse = await fetch(`${url.origin}${uploadUrl}`, {
-          method: "PATCH",
-          headers: {
-            "Tus-Resumable": "1.0.0",
-            "Upload-Offset": "0",
-            "Content-Type": "application/offset+octet-stream",
-            Cookie: `login_token=${accessToken}`,
-            "x-uploader-file-name": hashBasedFilename,
-            "x-uploader-file-id": fileId,
-            "x-uploader-file-ext": fileExt,
-            "x-uploader-base-url": `${mountPoint}/api/uploads`,
-            "x-uploader-endpoint-url": uploadEndpoint,
-            "x-uploader-metadata": JSON.stringify({
-              uploaderId: "Uploader",
-              relativePath: hashBasedFilename,
-              name: hashBasedFilename,
-              type: mimeType,
-            }),
-            "x-component-did": "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
-            "x-uploader-file-exist": "true",
-          },
-          body: fileBuffer,
-        });
-        if (!uploadResponse.ok) {
-          const errorText = await uploadResponse.text();
-          throw new Error(
-            `Failed to upload file: ${uploadResponse.status} ${uploadResponse.statusText}\n${errorText}`,
-          );
-        }
-
-        const uploadResult = await uploadResponse.json();
-        const uploadedFileUrl = uploadResult.url;
-        if (!uploadedFileUrl) {
-          throw new Error("No URL found in the upload response");
-        }
-
-        // Update cache
-        if (cacheFilePath) {
-          cache[fileHash] = {
-            local_path: path.relative(process.cwd(), filePath),
-            url: uploadedFileUrl,
+        try {
+          const result = await uploadPromise;
+          // Return result with correct filePath for this specific request
+          return {
+            filePath,
+            url: result.url,
           };
+        } finally {
+          // Clean up the ongoing upload tracking
+          ongoingUploads.delete(fileHash);
         }
-
-        return {
-          filePath,
-          url: uploadedFileUrl,
-        };
       } catch (error) {
-        console.error(`Error uploading ${filename}:`, error);
+        console.error(`Error processing ${filename}:`, error);
         return {
           filePath,
           url: "",
@@ -217,15 +305,7 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
 
   const uploadResults = await Promise.all(uploadPromises);
 
-  // Filter out null results and add to final results
-  results.push(...uploadResults.filter((result): result is UploadResult => result !== null));
-
-  // Save cache if provided
-  if (cacheFilePath) {
-    saveCache(cacheFilePath, cache);
-  }
-
-  return { results };
+  return { results: uploadResults };
 }
 
 function getMimeType(filename: string): string {

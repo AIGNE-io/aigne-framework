@@ -23,9 +23,14 @@ export interface UploadFilesResult {
   results: UploadResult[];
 }
 
+interface SiteUploadRecord {
+  url: string;
+  upload_time: string;
+}
+
 interface CacheEntry {
   local_path: string;
-  url: string;
+  sites: Record<string, SiteUploadRecord>;
 }
 
 type UploadCache = Record<string, CacheEntry>;
@@ -178,7 +183,8 @@ async function updateCacheWithMutex(
   cacheFilePath: string,
   fileHash: string,
   filePath: string,
-  url: string,
+  uploadedUrl: string,
+  siteOrigin: string,
 ): Promise<void> {
   // Wait for any ongoing cache updates for this file
   if (cacheUpdateMutex.has(cacheFilePath)) {
@@ -188,10 +194,19 @@ async function updateCacheWithMutex(
   // Create a new mutex for this cache update
   const updatePromise = (async () => {
     const cache = loadCache(cacheFilePath);
-    cache[fileHash] = {
-      local_path: path.relative(process.cwd(), filePath),
-      url,
+
+    if (!cache[fileHash]) {
+      cache[fileHash] = {
+        local_path: path.relative(process.cwd(), filePath),
+        sites: {},
+      };
+    }
+
+    cache[fileHash].sites[siteOrigin] = {
+      url: uploadedUrl,
+      upload_time: new Date().toISOString(),
     };
+
     saveCache(cacheFilePath, cache);
   })();
 
@@ -244,10 +259,14 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
 
         // Check cache first
         if (cacheFilePath && cache[fileHash]) {
-          return {
-            filePath,
-            url: cache[fileHash].url,
-          };
+          const siteOrigin = url.origin;
+          const cachedEntry = cache[fileHash];
+          if (cachedEntry.sites[siteOrigin]) {
+            return {
+              filePath,
+              url: cachedEntry.sites[siteOrigin].url,
+            };
+          }
         }
 
         // Create upload promise and cache it
@@ -264,8 +283,8 @@ export async function uploadFiles(options: UploadFilesOptions): Promise<UploadFi
 
             // Update cache asynchronously with mutex
             if (cacheFilePath) {
-              updateCacheWithMutex(cacheFilePath, fileHash, filePath, result.url).catch((error) =>
-                console.warn(`Failed to update cache: ${error}`),
+              updateCacheWithMutex(cacheFilePath, fileHash, filePath, result.url, url.origin).catch(
+                (error) => console.warn(`Failed to update cache: ${error}`),
               );
             }
 

@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import pLimit from "p-limit";
 import YAML from "yaml";
-import { MEDIA_KIT_DID } from "../constants.js";
+import { DISCUSS_KIT_DID, MEDIA_KIT_DID } from "../constants.js";
 import { getComponentMountPoint } from "./get-component-mount-point.js";
 
 export interface UploadFilesOptions {
@@ -117,12 +117,12 @@ async function performSingleUpload(
       "x-uploader-base-url": `${mountPoint}/api/uploads`,
       "x-uploader-endpoint-url": uploadEndpoint,
       "x-uploader-metadata": JSON.stringify({
-        uploaderId: "Uploader",
+        uploaderId,
         relativePath: hashBasedFilename,
         name: hashBasedFilename,
         type: mimeType,
       }),
-      "x-component-did": "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
+      "x-component-did": DISCUSS_KIT_DID,
     },
   });
 
@@ -150,12 +150,12 @@ async function performSingleUpload(
       "x-uploader-base-url": `${mountPoint}/api/uploads`,
       "x-uploader-endpoint-url": uploadEndpoint,
       "x-uploader-metadata": JSON.stringify({
-        uploaderId: "Uploader",
+        uploaderId,
         relativePath: hashBasedFilename,
         name: hashBasedFilename,
         type: mimeType,
       }),
-      "x-component-did": "z8ia1WEiBZ7hxURf6LwH21Wpg99vophFwSJdu",
+      "x-component-did": DISCUSS_KIT_DID,
       "x-uploader-file-exist": "true",
     },
     body: fileBuffer,

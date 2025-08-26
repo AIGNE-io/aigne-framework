@@ -27,6 +27,8 @@ import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../u
 import { highlightUrl } from "../utils/string-utils.js";
 import { parseDuration } from "../utils/time.js";
 
+const CREDITS_ERROR_HAS_BEEN_PROCESSED_FLAG = "$credits_error_has_been_processed";
+
 export interface TerminalTracerOptions {
   outputKey?: string;
 }
@@ -52,7 +54,7 @@ export class TerminalTracer {
           [this.formatResult(agent, context, result, options)].filter(Boolean),
       },
       [],
-      { concurrent: true },
+      { concurrent: true, exitOnError: false },
     );
     this.listr = listr;
 
@@ -194,12 +196,19 @@ export class TerminalTracer {
 
     const onError: AgentHooks["onError"] = async ({ context, agent, error, ...event }) => {
       if ("type" in error && error.type === AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE) {
-        const retry = await this.promptBuyCredits(error);
+        if (!Object.hasOwn(error, CREDITS_ERROR_HAS_BEEN_PROCESSED_FLAG)) {
+          Object.defineProperty(error, CREDITS_ERROR_HAS_BEEN_PROCESSED_FLAG, {
+            value: true,
+            enumerable: false,
+          });
 
-        console.log("");
+          const retry = await this.promptBuyCredits(error);
 
-        if (retry === "retry") {
-          return { retry: true };
+          console.log("");
+
+          if (retry === "retry") {
+            return { retry: true };
+          }
         }
       }
 

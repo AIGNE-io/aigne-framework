@@ -406,30 +406,37 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
 
     const results: Message[] = new Array(arr.length);
 
+    let error: Error | undefined;
+
     const queue = fastq.promise<unknown, { item: unknown; index: number }>(
       async ({ item, index }) => {
-        if (!isRecord(item))
-          throw new TypeError(`Expected ${String(key)} to be an object, got ${typeof item}`);
+        try {
+          if (!isRecord(item))
+            throw new TypeError(`Expected ${String(key)} to be an object, got ${typeof item}`);
 
-        const o = await agentProcessResultToObject(
-          await this._processNonIterator(
-            { ...input, [key]: arr, ...item },
-            { ...options, streaming: false },
-          ),
-        );
+          const o = await agentProcessResultToObject(
+            await this._processNonIterator(
+              { ...input, [key]: arr, ...item },
+              { ...options, streaming: false },
+            ),
+          );
 
-        const res = omit(o, key as any);
+          const res = omit(o, key as any);
 
-        // Merge the item result with the original item used for next iteration
-        if (this.iterateWithPreviousOutput) {
-          arr = produce(arr, (draft) => {
-            const item = draft[index];
-            assert(item);
-            Object.assign(item, res);
-          });
+          // Merge the item result with the original item used for next iteration
+          if (this.iterateWithPreviousOutput) {
+            arr = produce(arr, (draft) => {
+              const item = draft[index];
+              assert(item);
+              Object.assign(item, res);
+            });
+          }
+
+          results[index] = res;
+        } catch (e) {
+          error = e;
+          queue.killAndDrain();
         }
-
-        results[index] = res;
       },
       this.concurrency,
     );
@@ -439,6 +446,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     }
 
     await queue.drained();
+    if (error) throw error;
 
     yield { delta: { json: { [key]: results } } } as AgentResponseChunk<O>;
   }

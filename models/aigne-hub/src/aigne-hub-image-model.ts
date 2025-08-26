@@ -1,55 +1,34 @@
 import {
   type AgentProcessResult,
-  ChatModel,
-  type ChatModelInput,
-  type ChatModelOptions,
-  type ChatModelOutput,
+  ImageModel,
+  type ImageModelInput,
+  type ImageModelOutput,
 } from "@aigne/core";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
-import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import {
   BaseClient,
   type BaseClientInvokeOptions,
+  type ImageModelOptions,
 } from "@aigne/transport/http-client/base-client.js";
 import { joinURL } from "ufo";
-import { z } from "zod";
+import type { AIGNEHubChatModelOptions } from "./aigne-hub-model.js";
+import { aigneHubModelOptionsSchema } from "./aigne-hub-model.js";
 import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
-import {
-  AIGNE_HUB_BLOCKLET_DID,
-  AIGNE_HUB_DEFAULT_MODEL,
-  AIGNE_HUB_URL,
-} from "./utils/constants.js";
+import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_IMAGE_MODEL, AIGNE_HUB_URL } from "./utils/constants.js";
 
-export const aigneHubModelOptionsSchema = z.object({
-  url: z.string().optional(),
-  apiKey: z.string().optional(),
-  model: z.string().optional(),
-  modelOptions: z
-    .object({
-      model: z.string().optional(),
-      temperature: z.number().optional(),
-      topP: z.number().optional(),
-      frequencyPenalty: z.number().optional(),
-      presencePenalty: z.number().optional(),
-      parallelToolCalls: z.boolean().optional().default(true),
-    })
-    .optional(),
-  clientOptions: z.object({}).optional(),
-});
+type AIGNEHubImageOutput = {
+  data: { url?: string; b64_json?: string; b64Json?: string }[];
+  model: string;
+};
 
-export interface AIGNEHubChatModelOptions {
-  url?: string;
-  baseURL?: string;
-  apiKey?: string;
-  model?: string;
-  modelOptions?: ChatModelOptions;
-  clientOptions?: OpenAIChatModelOptions["clientOptions"] & { clientId?: string };
-}
+export type AIGNEHubImageModelOptions = Omit<AIGNEHubChatModelOptions, "modelOptions"> & {
+  modelOptions?: ImageModelOptions;
+};
 
-export class AIGNEHubChatModel extends ChatModel {
-  constructor(public options: AIGNEHubChatModelOptions) {
-    checkArguments("AIGNEHubChatModel", aigneHubModelOptionsSchema, options);
+export class AIGNEHubImageModel extends ImageModel {
+  constructor(public options: AIGNEHubImageModelOptions) {
+    checkArguments("AIGNEHubImageModel", aigneHubModelOptionsSchema, options);
     super();
   }
 
@@ -78,7 +57,7 @@ export class AIGNEHubChatModel extends ChatModel {
         AIGNE_HUB_URL,
       AIGNE_HUB_BLOCKLET_DID,
     ).then((url) => {
-      const path = "/api/v2/chat";
+      const path = "/api/v2/image";
 
       const rawCredential = process.env.BLOCKLET_AIGNE_API_CREDENTIAL;
       let credentialOptions: Record<string, any> = {};
@@ -93,8 +72,7 @@ export class AIGNEHubChatModel extends ChatModel {
         ...credentialOptions,
         url: url.endsWith(path) ? url : joinURL(url, path),
         apiKey: this.options.apiKey || process.env.AIGNE_HUB_API_KEY || credentialOptions.apiKey,
-        model:
-          this.options.model || process.env.BLOCKLET_AIGNE_API_MODEL || AIGNE_HUB_DEFAULT_MODEL,
+        model: this.options.model || process.env.BLOCKLET_AIGNE_API_MODEL || AIGNE_HUB_IMAGE_MODEL,
       };
     });
 
@@ -102,9 +80,9 @@ export class AIGNEHubChatModel extends ChatModel {
   }
 
   override async process(
-    input: ChatModelInput,
+    input: ImageModelInput,
     options: BaseClientInvokeOptions,
-  ): Promise<AgentProcessResult<ChatModelOutput>> {
+  ): Promise<AgentProcessResult<ImageModelOutput>> {
     const { BLOCKLET_APP_PID, ABT_NODE_DID } = nodejs.env;
     const clientId =
       this.options?.clientOptions?.clientId ||
@@ -112,15 +90,34 @@ export class AIGNEHubChatModel extends ChatModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    return (await this.client).__invoke(undefined, input, {
-      ...options,
-      fetchOptions: {
-        ...options.fetchOptions,
-        headers: {
-          ...options.fetchOptions?.headers,
-          "x-aigne-hub-client-did": clientId,
+    const response = await (await this.client).__invoke<ImageModelInput, AIGNEHubImageOutput>(
+      undefined,
+      input,
+      {
+        ...options,
+        streaming: false,
+        fetchOptions: {
+          ...options.fetchOptions,
+          headers: {
+            ...options.fetchOptions?.headers,
+            "x-aigne-hub-client-did": clientId,
+          },
         },
       },
-    });
+    );
+
+    return {
+      images: (response.data ?? []).map((image) => {
+        if (image.url) return { url: image.url };
+        if (image.b64_json) return { base64: image.b64_json };
+        if (image.b64Json) return { base64: image.b64Json };
+        throw new Error("Image response does not contain a valid URL or base64 data");
+      }),
+      usage: {
+        inputTokens: 0,
+        outputTokens: 0,
+      },
+      model: response?.model,
+    };
   }
 }

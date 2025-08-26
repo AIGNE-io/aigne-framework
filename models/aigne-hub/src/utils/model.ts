@@ -1,7 +1,7 @@
 import type { Agent } from "node:https";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
-import type { ChatModel, ChatModelOptions, ImageModel, ImageModelOptions } from "@aigne/core";
+import type { ChatModel, ChatModelOptions, ImageModel } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { DoubaoChatModel } from "@aigne/doubao";
 import { GeminiChatModel, GeminiImageModel, type GeminiImageModelInput } from "@aigne/gemini";
@@ -15,9 +15,11 @@ import {
   type OpenAIImageModelInput,
 } from "@aigne/openai";
 import { PoeChatModel } from "@aigne/poe";
+import type { ImageModelOptions } from "@aigne/transport/http-client/base-client.js";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import { AIGNEHubImageModel } from "../aigne-hub-image-model.js";
 import { AIGNEHubChatModel } from "../aigne-hub-model.js";
 
 const getClientOptions = () => {
@@ -161,6 +163,16 @@ export function availableImageModels(): LoadableImageModel[] {
           modelOptions: params.modelOptions as Partial<IdeogramImageModelInput["modelOptions"]>,
         }),
     },
+    {
+      name: AIGNEHubImageModel.name,
+      apiKeyEnvName: "AIGNE_HUB_API_KEY",
+      create: (params) =>
+        new AIGNEHubImageModel({
+          ...params,
+          clientOptions,
+          modelOptions: params.modelOptions as ImageModelOptions,
+        }),
+    },
   ];
 }
 
@@ -179,6 +191,19 @@ export function findModel(provider: string): {
 
     return m.name.some((n) => n.toLowerCase().includes(provider));
   });
+
+  return { all, match };
+}
+
+export function findImageModel(provider: string): {
+  all: LoadableImageModel[];
+  match: LoadableImageModel | undefined;
+} {
+  provider = provider.toLowerCase().replace(/-/g, "");
+
+  const all = availableImageModels();
+
+  const match = all.find((m) => m.name.toLowerCase().includes(provider));
 
   return { all, match };
 }

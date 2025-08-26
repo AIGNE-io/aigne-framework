@@ -34,7 +34,7 @@ export function findLocalImages(
       } catch {
         displaySrc = src || "";
       }
-      console.warn(`Image not found: ${displaySrc} (searched in multiple locations)`);
+      console.warn(`Image not found: ${displaySrc} (searched in all configured locations)`);
     }
   }
 

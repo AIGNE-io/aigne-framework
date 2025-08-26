@@ -150,8 +150,8 @@ describe("MermaidNode", () => {
         const cloned = MermaidNode.clone(original);
 
         expect(cloned.getCode()).toBe(original.getCode());
-        expect(cloned.getTheme()).toBe(original.getTheme());
-        expect(cloned.getMode()).toBe(original.getMode());
+        expect(cloned.getTheme()).toBe(original.getTheme() || "");
+        expect(cloned.getMode()).toBe(original.getMode() || "");
       });
     });
   });
@@ -426,6 +426,6 @@ describe("$isMermaidNode", () => {
   test("should return false for other nodes", () => {
     expect($isMermaidNode(null)).toBe(false);
     expect($isMermaidNode(undefined)).toBe(false);
-    expect($isMermaidNode({})).toBe(false);
+    expect($isMermaidNode({} as any)).toBe(false);
   });
 });

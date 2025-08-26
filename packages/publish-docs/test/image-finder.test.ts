@@ -236,7 +236,7 @@ describe("image-finder", () => {
       expect(result.foundPaths.get("image2.png")).toBe(path.resolve(process.cwd(), "image2.png"));
       expect(result.missingImages).toEqual(["missing.gif"]);
       expect(console.warn).toHaveBeenCalledWith(
-        "Image not found: missing.gif (searched in multiple locations)",
+        "Image not found: missing.gif (searched in all configured locations)",
       );
     });
 
@@ -285,7 +285,7 @@ describe("image-finder", () => {
 
       expect(result.missingImages).toEqual(["missing%20image.jpg"]);
       expect(console.warn).toHaveBeenCalledWith(
-        "Image not found: missing image.jpg (searched in multiple locations)",
+        "Image not found: missing image.jpg (searched in all configured locations)",
       );
     });
 
@@ -298,7 +298,7 @@ describe("image-finder", () => {
       expect(result.missingImages).toEqual(["missing%ZZ.jpg"]);
       // The warning should show the original string since decoding fails
       expect(console.warn).toHaveBeenCalledWith(
-        "Image not found: missing%ZZ.jpg (searched in multiple locations)",
+        "Image not found: missing%ZZ.jpg (searched in all configured locations)",
       );
     });
   });

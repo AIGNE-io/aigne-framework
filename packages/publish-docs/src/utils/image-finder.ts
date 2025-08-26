@@ -28,9 +28,13 @@ export function findLocalImages(
       foundPaths.set(src, foundPath);
     } else {
       missingImages.push(src);
-      console.warn(
-        `Image not found: ${decodeURIComponent(src || "")} (searched in multiple locations)`,
-      );
+      let displaySrc: string;
+      try {
+        displaySrc = decodeURIComponent(src || "");
+      } catch {
+        displaySrc = src || "";
+      }
+      console.warn(`Image not found: ${displaySrc} (searched in all configured locations)`);
     }
   }
 

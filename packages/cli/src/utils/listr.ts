@@ -5,7 +5,9 @@ import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils";
 import {
+  color,
   DefaultRenderer,
+  figures,
   Listr,
   ListrDefaultRendererLogLevels,
   type ListrDefaultRendererOptions,
@@ -30,6 +32,7 @@ export class AIGNEListr extends Listr<
   typeof AIGNEListrFallbackRenderer
 > {
   private result: Message = {};
+  private error?: Error;
 
   private logs: string[] = [];
 
@@ -62,6 +65,11 @@ export class AIGNEListr extends Listr<
           collapseSubtasks: false,
           icon: {
             [ListrDefaultRendererLogLevels.PENDING]: () => this.spinner.fetch(),
+            [ListrDefaultRendererLogLevels.COMPLETED_WITH_FAILED_SUBTASKS]: figures.cross,
+          },
+          color: {
+            [ListrDefaultRendererLogLevels.COMPLETED_WITH_FAILED_SUBTASKS]: (m) =>
+              m ? color.red(m) : "",
           },
           aigne: aigneOptions,
         },
@@ -114,7 +122,10 @@ export class AIGNEListr extends Listr<
 
       this.add({ task: () => this.extractStream(_stream) });
 
-      return await super.run().then(() => ({ ...this.result }));
+      return await super.run().then(() => {
+        if (this.error) throw this.error;
+        return { ...this.result };
+      });
     } finally {
       logger.logMessage = originalLog;
       Object.assign(console, originalConsole);
@@ -124,13 +135,18 @@ export class AIGNEListr extends Listr<
   }
 
   private async extractStream(stream: AgentResponseStream<Message>) {
-    this.result = {};
+    try {
+      this.result = {};
 
-    for await (const value of stream) {
-      mergeAgentResponseChunk(this.result, value);
+      for await (const value of stream) {
+        mergeAgentResponseChunk(this.result, value);
+      }
+
+      return this.result;
+    } catch (error) {
+      this.error = error;
+      throw error;
     }
-
-    return this.result;
   }
 }
 

@@ -1,0 +1,77 @@
+name: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS
+title: AIGNE Runtime
+description: >-
+  AIGNE Runtime is a specialized runtime engine designed for executing AI
+  agents, serving as the core runtime environment for the Blocklet system
+keywords:
+  - blocklet
+  - aigne
+  - agent
+group: dapp
+did: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS
+main: api/dist/index.js
+author:
+  name: Leermao
+  email: lipeng@arcblock.io
+repository:
+  type: git
+  url: git+https://github.com/blocklet/create-blocklet.git
+specVersion: 1.2.8
+version: 1.3.0
+logo: logo.png
+files:
+  - dist
+  - screenshots
+  - api/dist
+  - logo.png
+  - .env
+interfaces:
+  - type: web
+    name: publicUrl
+    path: /
+    prefix: '*'
+    port: BLOCKLET_PORT
+    protocol: http
+community: ''
+documentation: ''
+homepage: ''
+license: ''
+payment:
+  price: []
+  share: []
+timeout:
+  start: 60
+requirements:
+  server: '>=1.16.28'
+  os: '*'
+  cpu: '*'
+scripts:
+  dev: npm run start
+environments: []
+capabilities: {}
+screenshots:
+  - 2f501b650fb857338843ec8a1c3bac68.png
+components:
+  - name: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
+    title: AIGNE Observability
+    mountPoint: /observability
+    required: false
+    source:
+      store: https://store.blocklet.dev
+      name: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
+      version: latest
+navigation:
+  - id: aigne
+    title:
+      en: AIGNE Ecosystem
+      zh: AIGNE 生态
+    link: https://aigne.io/
+    section:
+      - header
+  - id: github
+    title:
+      en: GitHub
+      zh: GitHub
+    link: https://github.com/AIGNE-io/aigne-framework
+    section:
+      - header

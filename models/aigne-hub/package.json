@@ -1,6 +1,6 @@
 {
   "name": "@aigne/aigne-hub",
-  "version": "0.6.7",
+  "version": "0.6.9",
   "description": "AIGNE Hub SDK for integrating with Hub AI models",
   "publishConfig": {
     "access": "public"

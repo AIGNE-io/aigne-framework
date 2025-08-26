@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { marked, type Tokens, type TokensList } from "marked";
-import { Converter } from "./converter/index.js";
+import { Converter, type ConverterOptions } from "./converter/index.js";
 import { slugify } from "./utils/slugify.js";
 
 const resolveSubpageLexical = (slug: string) =>
@@ -22,6 +22,7 @@ export interface GeneratorOptions {
   sidebarPath: string;
   slugPrefix?: string;
   slugWithoutExt?: boolean;
+  uploadConfig?: ConverterOptions["uploadConfig"];
 }
 
 export class Generator {
@@ -38,6 +39,7 @@ export class Generator {
     this.converter = new Converter({
       slugPrefix: options.slugPrefix,
       slugWithoutExt: options.slugWithoutExt,
+      uploadConfig: options.uploadConfig,
     });
     this.slugWithoutExt = options.slugWithoutExt ?? true;
   }

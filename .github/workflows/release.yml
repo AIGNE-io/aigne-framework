@@ -90,7 +90,7 @@ jobs:
             sed -E -i "/^# Changelog$/d" observability/blocklet/CHANGELOG.md
           fi
 
-      - name: Blocklet workflow
+      - name: Blocklet workflow for observability
         if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
         env:
           COMPONENT_STORE_URL: ${{ secrets.STORE_ENDPOINT_PROD }}
@@ -102,6 +102,43 @@ jobs:
           skip-deploy: true
           skip-release: true
           working-directory: observability/blocklet
+          bundle-command: pnpm bundle
+          store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
+          store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Check if aigne-runtime version changed
+        if: ${{ steps.release.outputs.release_created }}
+        id: blocklets-aigne-runtime-version-check
+        run: |
+          if git diff HEAD~1 HEAD -- blocklets/aigne-runtime/package.json | grep '"version"'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Remove h3 from blocklets/aigne-runtime/CHANGELOG.md
+        id: blocklets-aigne-runtime-changelog-check
+        if: ${{ steps.release.outputs.release_created && steps.blocklets-aigne-runtime-version-check.outputs.changed == 'true'  }}
+        run: |
+          if [ -f blocklets/aigne-runtime/CHANGELOG.md ]; then
+            sed -E -i "s/^### (.*)$/**\1**/" blocklets/aigne-runtime/CHANGELOG.md
+            sed -E -i "/^# Changelog$/d" blocklets/aigne-runtime/CHANGELOG.md
+          fi
+
+      - name: Blocklet workflow for aigne-runtime
+        if: ${{ steps.release.outputs.release_created && steps.blocklets-aigne-runtime-version-check.outputs.changed == 'true'  }}
+        env:
+          COMPONENT_STORE_URL: ${{ secrets.STORE_ENDPOINT_PROD }}
+        uses: blocklet/action-workflow@v1
+        with:
+          deps-server-version: beta
+          skip-deps: false
+          skip-upload: false
+          skip-deploy: true
+          skip-release: true
+          working-directory: blocklets/aigne-runtime
           bundle-command: pnpm bundle
           store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
           store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}

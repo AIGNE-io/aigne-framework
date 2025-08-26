@@ -55,7 +55,11 @@ export async function loadAIGNE({
     aigne = await AIGNE.load(path, {
       memories: availableMemories,
       model: (options) =>
-        loadChatModel({ ...options, ...omitBy(modelOptions ?? {}, (v) => isNil(v)) }),
+        loadChatModel({
+          ...options,
+          ...omitBy(modelOptions ?? {}, (v) => isNil(v)),
+          model: modelOptions?.model || process.env.MODEL || options?.model,
+        }),
       imageModel: () => new OpenAIImageModel(),
     });
   } else {

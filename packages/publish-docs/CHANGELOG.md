@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.7](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.6...publish-docs-v0.5.7) (2025-08-25)
+
+
+### Bug Fixes
+
+* save board meta info ([#404](https://github.com/AIGNE-io/aigne-framework/issues/404)) ([433c07c](https://github.com/AIGNE-io/aigne-framework/commit/433c07c52229a73cc8e30b9f88927e0a88b07607))
+
+## [0.5.6](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.5...publish-docs-v0.5.6) (2025-08-21)
+
+
+### Bug Fixes
+
+* can specify an id to create a board ([#397](https://github.com/AIGNE-io/aigne-framework/issues/397)) ([f7e10fe](https://github.com/AIGNE-io/aigne-framework/commit/f7e10fe3fc188a8f38d6bd61ab85be8a9d444a06))
+
 ## [0.5.5](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.4...publish-docs-v0.5.5) (2025-08-20)
 
 

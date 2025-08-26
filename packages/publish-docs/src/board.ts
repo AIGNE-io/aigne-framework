@@ -11,6 +11,16 @@ export class BoardNameExistsError extends Error {
   }
 }
 
+// Meta field interface - extensible design
+export interface BoardMeta {
+  category: string[];
+  githubRepoUrl: string;
+  commitSha: string;
+  languages: string[];
+  // Allow additional fields for future extensions
+  [key: string]: unknown;
+}
+
 // Base board interface with common fields
 interface BaseBoard {
   id: string;
@@ -28,6 +38,7 @@ interface BaseBoard {
     title: Record<string, string>;
     desc: Record<string, string>;
   };
+  meta?: BoardMeta;
 }
 
 // Board list response interface
@@ -53,6 +64,7 @@ interface CreateBoardRequest {
     title: Record<string, string>;
     desc: Record<string, string>;
   };
+  meta?: BoardMeta;
 }
 
 // Create board response interface
@@ -141,14 +153,16 @@ async function checkAndUpdateBoard(input: {
   boardName?: string;
   desc: string;
   cover: string;
+  meta?: BoardMeta;
 }): Promise<void> {
-  const { appUrl, accessToken, existingBoard, boardName, desc, cover } = input;
+  const { appUrl, accessToken, existingBoard, boardName, desc, cover, meta } = input;
 
   const titleChanged = boardName && existingBoard.title !== boardName;
   const descChanged = existingBoard.desc !== desc;
   const coverChanged = existingBoard.cover !== cover;
+  const metaChanged = meta && JSON.stringify(existingBoard.meta) !== JSON.stringify(meta);
 
-  if (titleChanged || descChanged || coverChanged) {
+  if (titleChanged || descChanged || coverChanged || metaChanged) {
     await updateBoard({
       appUrl,
       accessToken,
@@ -157,6 +171,7 @@ async function checkAndUpdateBoard(input: {
         title: boardName || existingBoard.title,
         desc,
         cover,
+        ...(meta && { meta }),
       },
     });
   }
@@ -169,8 +184,9 @@ export async function findOrCreateBoard(input: {
   boardName?: string;
   desc?: string;
   cover?: string;
+  meta?: BoardMeta;
 }): Promise<string> {
-  const { appUrl, accessToken, boardId, boardName, desc = "", cover = "" } = input;
+  const { appUrl, accessToken, boardId, boardName, desc = "", cover = "", meta } = input;
 
   // First, try to get existing boards
   let boardsResponse: BoardListResponse | undefined;
@@ -190,6 +206,7 @@ export async function findOrCreateBoard(input: {
           boardName,
           desc,
           cover,
+          meta,
         });
 
         return existingBoard.id;
@@ -207,6 +224,7 @@ export async function findOrCreateBoard(input: {
         boardName,
         desc,
         cover,
+        meta,
       });
     }
 
@@ -228,6 +246,7 @@ export async function findOrCreateBoard(input: {
               boardName,
               desc,
               cover,
+              meta,
             });
 
             return boardWithSameName.id;
@@ -261,6 +280,7 @@ export async function findOrCreateBoard(input: {
     boardName,
     desc,
     cover,
+    meta,
   });
 }
 
@@ -271,8 +291,9 @@ export async function createBoard(input: {
   desc?: string;
   cover?: string;
   boardId?: string;
+  meta?: BoardMeta;
 }): Promise<string> {
-  const { appUrl, accessToken, boardName, desc = "", cover = "", boardId } = input;
+  const { appUrl, accessToken, boardName, desc = "", cover = "", boardId, meta } = input;
 
   const url = new URL(appUrl);
   const mountPoint = await getComponentMountPoint(appUrl, DISCUSS_KIT_DID);
@@ -293,6 +314,10 @@ export async function createBoard(input: {
 
   if (boardId) {
     createBoardData.id = boardId;
+  }
+
+  if (meta) {
+    createBoardData.meta = meta;
   }
 
   const createBoardResponse = await fetch(createBoardUrl, {

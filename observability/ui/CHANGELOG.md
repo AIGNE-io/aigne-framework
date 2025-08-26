@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.10.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.9.0...observability-ui-v0.10.0) (2025-08-25)
+
+
+### Features
+
+* **ux:** use standard blocklet layout in aigne runtime ([#403](https://github.com/AIGNE-io/aigne-framework/issues/403)) ([a14274d](https://github.com/AIGNE-io/aigne-framework/commit/a14274dbf970bae7fed0eff150933ecf0f65eb64))
+
+## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.8.0...observability-ui-v0.9.0) (2025-08-22)
+
+
+### Features
+
+* **cli:** support aigne deploy command ([#399](https://github.com/AIGNE-io/aigne-framework/issues/399)) ([b69cba9](https://github.com/AIGNE-io/aigne-framework/commit/b69cba901d95882f847032f41d963e2fa6893ab6))
+
+## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.7...observability-ui-v0.8.0) (2025-08-21)
+
+
+### Features
+
+* **blocklet:** support agent runtime blocklet ([#396](https://github.com/AIGNE-io/aigne-framework/issues/396)) ([baaae69](https://github.com/AIGNE-io/aigne-framework/commit/baaae691d552b7c7d313c4964a135a1b245943f9))
+
 ## [0.7.7](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.7.6...observability-ui-v0.7.7) (2025-08-12)
 
 

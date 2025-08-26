@@ -6,7 +6,7 @@ import {
   imageModelInputSchema,
 } from "@aigne/core";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 import { z } from "zod";
 
@@ -115,46 +115,20 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
       throw new Error("Gemini image models currently only support base64 format");
     }
 
-    if (model.includes("imagen")) {
-      const response = await this.client.models.generateImages({
-        model: model,
-        prompt: input.prompt,
-        config: { numberOfImages: input.n || 1 },
-      });
-
-      return {
-        images:
-          response.generatedImages
-            ?.filter((image) => image.image?.imageBytes)
-            .map((image) => ({ base64: image.image?.imageBytes! })) || [],
-        usage: {
-          inputTokens: 0,
-          outputTokens: 0,
-        },
-        model,
-      };
-    }
-
-    const response = await this.client.models.generateContent({
+    const response = await this.client.models.generateImages({
       model: model,
-      contents: input.prompt,
-      config: {
-        responseModalities: [Modality.TEXT, Modality.IMAGE],
-        candidateCount: input.n || 1,
-      },
-    });
-
-    const allImages: any[] = [];
-    response.candidates?.forEach((candidate) => {
-      const images = candidate.content?.parts || [];
-      allImages.push(...images.filter((part: any) => part.inlineData));
+      prompt: input.prompt,
+      config: { numberOfImages: input.n || 1 },
     });
 
     return {
-      images: allImages.map((image) => ({ base64: image.inlineData?.data! })),
+      images:
+        response.generatedImages
+          ?.filter((image) => image.image?.imageBytes)
+          .map((image) => ({ base64: image.image?.imageBytes! })) || [],
       usage: {
-        inputTokens: response.usageMetadata?.promptTokenCount || 0,
-        outputTokens: response.usageMetadata?.candidatesTokenCount || 0,
+        inputTokens: 0,
+        outputTokens: 0,
       },
       model,
     };

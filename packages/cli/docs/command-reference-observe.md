@@ -1,10 +1,14 @@
+---
+labels: ["Reference"]
+---
+
 # aigne observe
 
 The `aigne observe` command launches a local web server for monitoring, debugging, and analyzing the execution of your agents. It provides a user interface to inspect detailed traces, helping you understand agent behavior and diagnose issues.
 
 When you run an agent, its execution data is automatically recorded. The observability server reads this data and presents it in a web-based UI, allowing you to visualize the entire lifecycle of an agent's task.
 
-![Observability server running interface](https://docsmith.aigne.io/image-bin/uploads/c90e78e3379c15dd1d18fa82cb019857.png)
+![The user interface of the observability server](../assets/observe/observe-running-interface.png)
 
 ## Usage
 
@@ -50,7 +54,7 @@ sequenceDiagram
 
 Once the server is running and an agent has been executed, you can navigate to the provided URL in your browser to view detailed traces of each run.
 
-![Viewing call details in the observability UI](https://docsmith.aigne.io/image-bin/uploads/3634bfee2552c6234ad59189eb0516ed.png)
+![Viewing call details for a specific agent run](../assets/observe/observe-view-call-details.png)
 
 ## Options
 
@@ -71,7 +75,7 @@ If you want to run the server on a different port, such as `3001`, use the `--po
 aigne observe --port 3001
 ```
 
-### Expose the server publicly
+### Expose the server to your network
 
 To make the observability UI accessible from other machines on your local network, set the host to `0.0.0.0`.
 
@@ -79,4 +83,4 @@ To make the observability UI accessible from other machines on your local networ
 aigne observe --host 0.0.0.0
 ```
 
-This allows you to access the UI from other devices on the same network, which is useful for team collaboration or testing on mobile devices.
+This is useful for team collaboration or accessing the UI from a different device on the same network.

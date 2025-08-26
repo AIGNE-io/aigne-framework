@@ -1,3 +1,7 @@
+---
+labels: ["Reference"]
+---
+
 # aigne test
 
 The `aigne test` command runs automated tests for the agents and skills within your project. It discovers and executes test files, helping to verify the functionality and correctness of your code.
@@ -5,6 +9,8 @@ The `aigne test` command runs automated tests for the agents and skills within y
 This command is essential for maintaining code quality and ensuring that your agents behave as expected before deployment.
 
 ## Usage
+
+To execute tests, navigate to your project's root directory or specify the path to it.
 
 ```bash
 # Run tests for the project in the current directory
@@ -22,7 +28,7 @@ aigne test [path]
 
 ## How It Works
 
-The test runner automatically discovers test files within the specified directory. By convention, test files should be named with a `.test.js` suffix. For example, a test file for `sandbox.js` would be named `sandbox.test.js` and placed in the same directory.
+The test runner automatically discovers test files within the specified directory. By convention, test files should be named with a `.test.js` suffix. For example, the default project template includes a test file `sandbox.test.js` to verify the functionality of the code execution tool defined in `sandbox.js`.
 
 ## Examples
 

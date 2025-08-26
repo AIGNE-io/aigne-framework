@@ -1,3 +1,7 @@
+---
+labels: ["Reference"]
+---
+
 # aigne create
 
 The `aigne create` command initializes a new AIGNE project by scaffolding a directory structure and configuration files from a predefined template. It is the primary way to start building a new agent.
@@ -26,7 +30,7 @@ To create a project, run the `create` command, optionally specifying a path for 
 aigne create my-aigne-project
 
 # Create a project in the current directory (will prompt for a name)
-aigne create .
+aigne create
 ```
 
 ## Arguments
@@ -43,13 +47,13 @@ The command guides you through a series of prompts to configure the project.
 
 If you run the command without specifying a path (or use `.`), you will be prompted to enter a name for your project. This name will be used for the project directory.
 
-![Interactive prompt for project name](https://docsmith.aigne.io/image-bin/uploads/61a25e0b14ee2b304cd02972e81236b2.png)
+![Interactive prompt for project name](../assets/create/create-project-interactive-project-name-prompt.png)
 
 ### 2. Handling Non-Empty Directories
 
-If the target directory already exists and contains files, the CLI will ask for confirmation before proceeding. This is a safeguard to prevent accidental data loss.
+If the target directory already exists and contains files, the CLI will ask for confirmation before proceeding to prevent accidental data loss.
 
-```bash
+```text
 The directory "/path/to/my-aigne-project" is not empty. Do you want to remove its contents?
 ```
 
@@ -59,14 +63,13 @@ If you choose not to overwrite, the operation will be cancelled.
 
 After confirming the project path, you will be asked to select a project template. Currently, a `default` template is provided to get you started with a basic agent configuration.
 
-![Creating a project using the default template](https://docsmith.aigne.io/image-bin/uploads/d77c21029750a66ba316b3a91e00f9ca.png)
-
 ## Output
 
-Upon successful completion, the CLI will create the project files and display a confirmation message with the next steps to run your agent.
+Upon successful completion, the CLI creates the project files and displays a confirmation message with the next steps to run your agent.
 
-```bash
+![Successful project creation message](../assets/create/create-project-using-default-template-success-message.png)
 
+```text
 ✅ AIGNE project created successfully!
 
 To use your new agent, run:
@@ -75,4 +78,4 @@ To use your new agent, run:
 
 ---
 
-After creating your project, the next step is to run it. Proceed to the [`aigne run`](./command-reference-run.md) command reference to learn how.
+Once your project is created, the next step is to execute the agent. See the [`aigne run`](./command-reference-run.md) command reference for details.

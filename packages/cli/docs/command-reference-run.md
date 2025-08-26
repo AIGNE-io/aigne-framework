@@ -1,3 +1,7 @@
+---
+labels: ["Reference"]
+---
+
 # aigne run
 
 The `aigne run` command executes an agent, serving as the primary tool for testing, debugging, and interacting with your AIGNE agents directly from the terminal. It can run agents from a local directory or a remote URL, supports interactive chat sessions, and offers extensive options for configuring models and handling input/output.
@@ -21,7 +25,7 @@ aigne run --entry-agent my-specific-agent
 aigne run --chat
 ```
 
-## How It Works
+## Execution Flow
 
 The `run` command follows a clear sequence to prepare the environment and execute an agent. This process ensures that both local and remote agents are handled consistently.
 
@@ -57,10 +61,10 @@ Execute the default agent defined in the project located in the current director
 aigne run
 ```
 
-To run an agent from a different directory, use the `--path` option.
+To run an agent from a different directory, use the `path` positional argument or the `--path` option.
 
 ```bash
-aigne run --path ./my-other-project
+aigne run ./my-other-project
 ```
 
 ### Running a Remote Agent
@@ -87,7 +91,7 @@ aigne run --chat
 
 This will launch a session where you can type your inputs and see the agent's responses in real-time.
 
-![Running a project in chat mode](https://docsmith.aigne.io/image-bin/uploads/6d8b90c443540b0fdb3c00211448a47f.png)
+![Running a project created with the default template in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
 
 ### Providing Input to an Agent
 
@@ -95,7 +99,7 @@ The CLI offers multiple ways to provide input, accommodating simple text, struct
 
 **1. Agent-Specific Arguments**
 
-If your agent's input schema is defined, the CLI automatically generates corresponding command-line arguments.
+If your agent's input schema is defined (e.g., in a JavaScript or TypeScript file using Zod), the CLI automatically generates corresponding command-line arguments.
 
 ```bash
 # If the agent expects 'topic' and 'style' inputs
@@ -164,17 +168,17 @@ Here is a comprehensive list of options available for the `aigne run` command.
 | `--cache-dir <dir>` | Directory to download and cache remote packages. | `~/.aigne/<hostname>/<pathname>` |
 | `--chat` | Runs the agent in an interactive chat loop in the terminal. | `false` |
 | `--model <provider[:model]>` | AI model to use, e.g., `openai` or `openai:gpt-4o-mini`. | `openai` |
-| `--temperature <value>` | Controls randomness (0.0-2.0). Higher values are more random. | - |
-| `--top-p <value>` | Controls diversity via nucleus sampling (0.0-1.0). | - |
-| `--presence-penalty <value>` | Penalizes repeating tokens (-2.0 to 2.0). | - |
-| `--frequency-penalty <value>` | Penalizes frequent tokens (-2.0 to 2.0). | - |
-| `--input <value>`, `-i <value>` | Input to the agent. Use `@<file>` to read from a file. Can be specified multiple times. | - |
+| `--temperature <value>` | Controls randomness (0.0-2.0). Higher values are more random. | Provider default |
+| `--top-p <value>` | Controls diversity via nucleus sampling (0.0-1.0). | Provider default |
+| `--presence-penalty <value>` | Penalizes repeating tokens (-2.0 to 2.0). | Provider default |
+| `--frequency-penalty <value>` | Penalizes frequent tokens (-2.0 to 2.0). | Provider default |
+| `--input <value>`, `-i <value>` | Input to the agent. Use `@<file>` to read from a file. Can be specified multiple times. | `null` |
 | `--format <type>` | Input format when reading from files or stdin. Can be `text`, `json`, or `yaml`. | `text` |
 | `--output <file>`, `-o <file>` | File path to save the result. Defaults to standard output. | `stdout` |
 | `--output-key <key>` | The key in the result object to save to the output file. | `output` |
 | `--force` | Overwrites the output file if it already exists and creates parent directories if needed. | `false` |
 | `--log-level <level>` | Sets the logging level. Options: `SILENT`, `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`. | `SILENT` |
-| `--aigne-hub-url <url>` | Custom AIGNE Hub URL for fetching remote models or agent definitions. | - |
+| `--aigne-hub-url <url>` | Custom AIGNE Hub URL for fetching remote models or agent definitions. | `null` |
 
 ---
 

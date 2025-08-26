@@ -1,6 +1,12 @@
+---
+labels: ["Reference"]
+---
+
 # aigne hub
 
 The `aigne hub` command provides a suite of tools for managing your connections to AIGNE Hub. This allows you to easily switch between different Hub instances (like the official Arcblock hub and self-hosted ones), check your account status, view credit balances, and more, directly from your terminal.
+
+## Subcommands
 
 ### `hub list`
 
@@ -50,7 +56,7 @@ aigne hub connect <hub-url>
 Running `aigne hub connect` without a URL will present an interactive prompt:
 
 ```text
-? Choose a hub to connect: › - Use arrow-keys. Return to submit.
+? Choose a hub to connect: › 
 ❯   Official Hub (https://hub.aigne.io)
     Custom Hub URL
 ```
@@ -84,7 +90,7 @@ aigne hub use
 This command will prompt you to select from your list of saved connections.
 
 ```text
-? Choose a hub to switch to: › - Use arrow-keys. Return to submit.
+? Choose a hub to switch to: › 
     https://hub.aigne.io
 ❯   https://my-custom-hub.example.com
 ```
@@ -130,7 +136,7 @@ aigne hub rm
 You'll be prompted to choose which saved connection to remove.
 
 ```text
-? Choose a hub to remove: › - Use arrow-keys. Return to submit.
+? Choose a hub to remove: › 
     https://hub.aigne.io
 ❯   https://my-custom-hub.example.com
 ```
@@ -176,3 +182,5 @@ Links:
   Payment:  https://hub.aigne.io/billing
   Profile:  https://hub.aigne.io/profile
 ```
+
+This command is useful for quickly checking your account details and credit balance without leaving the terminal.

@@ -49,6 +49,8 @@ documentationDepth: comprehensive
 
 # Custom Rules: Define specific documentation generation rules and requirements
 rules: |
+  - 运行内置应用示例，运行 DocSmith: `aigne doc generate`
+  - 以聊天模式运行 agent 需要使用 --chat 参数: `aigne run --chat`
   
 
 # Target Audience: Describe your specific target audience and their characteristics

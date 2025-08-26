@@ -1,6 +1,10 @@
+---
+labels: ["Reference"]
+---
+
 # 核心概念
 
-为了有效地使用 AIGNE 进行构建，理解构成项目的基本组件至关重要。本节概述了项目结构，并介绍了 Agents、Skills 以及核心配置文件 `aigne.yaml` 的核心概念。这些元素协同工作，共同创建出功能强大且模块化的 AI 应用程序。
+要高效地使用 AIGNE 进行构建，理解项目的基本组成部分至关重要。本节将介绍核心概念：以 `aigne.yaml` 为基础的项目结构，以及被称为 Agents 和 Skills 的可执行单元。这些元素协同工作，共同创建模块化且功能强大的 AI 应用程序。
 
 ```mermaid
 graph TD
@@ -18,27 +22,31 @@ graph TD
     style C fill:#ccf,stroke:#333,stroke-width:2px
 ```
 
-## 项目结构与配置
+## 项目结构和配置
 
-每个 AIGNE 项目的核心都是 `aigne.yaml` 文件。这个中央清单是项目配置的唯一真实来源。它定义了基本元数据，指定了默认聊天模型，最重要的是，注册了作为应用程序一部分的 agents 和 skills。
+`aigne.yaml` 文件是每个 AIGNE 项目的核心清单。它作为配置的唯一真实来源，用于定义项目元数据、指定默认聊天模型以及注册所有 Agent 和 Skill。通过在一个地方管理这些关系，`aigne.yaml` 为复杂项目提供了清晰且有组织的结构。
 
-通过在单一位置管理这些关系，`aigne.yaml` 为复杂的项目也提供了清晰且有条理的结构。要完整了解所有可用属性和配置示例，请参阅[项目配置 (aigne.yaml)](./core-concepts-project-configuration.md) 指南。
+有关所有可用属性和配置选项的完整说明，请参阅 [项目配置 (aigne.yaml)](./core-concepts-project-configuration.md) 文档。
 
-## Agents 和 Skills
+## Agent 和 Skill
 
-Agents 和 Skills 是 AIGNE 项目中的主要可执行组件。
+Agent 和 Skill 是 AIGNE 项目中的主要可执行组件。它们代表了 AI 应用程序的逻辑和功能。
 
-### Agents
-**Agent** 是一个旨在执行任务的实体。它由一组指令定义，能够保留交互记忆，并利用一个或多个 Skills 来实现其目标。Agents 通常在各自的 YAML 文件（例如 `chat.yaml`）中定义，用以指定其行为和可供使用的工具。
+### Agent
+**Agent** 是一个旨在执行任务的实体。它由一组指令定义，可以维护其交互的记忆，并利用一个或多个 Skill 来实现其目标。Agent 通常在它们自己的 YAML 文件（例如 `chat.yaml`）中定义，这些文件指定了它们的行为和可以访问的工具。
 
-### Skills
-**Skill** 是 **Agent** 可以调用的可重用工具或函数。Skills 提供特定的封装功能，例如运行 JavaScript 代码 (`sandbox.js`)、与文件系统交互或调用外部 API。这种模块化的方法使您能够通过简单、可重用且可测试的组件来构建复杂的 agent 行为。
+### Skill
+**Skill** 是 Agent 可以调用的可重用工具或函数。Skill 提供特定的、封装的功能，例如执行 JavaScript 代码（`sandbox.js`）或与文件系统交互。这种模块化的方法允许你从简单、可重用和可测试的组件中组合出复杂的 Agent 行为。
 
-要了解如何定义和组织这些组件，请参阅详细的 [Agents 和 Skills](./core-concepts-agents-and-skills.md) 文档。
+以下是默认 `chat` Agent 运行的示例，它使用其 Skill 来响应用户输入：
+
+![一个在聊天模式下运行的 Agent](../assets/run/run-default-template-project-in-chat-mode.png)
+
+要了解如何定义和构建这些组件，请参阅详细的 [Agent 和 Skill](./core-concepts-agents-and-skills.md) 指南。
 
 ## 后续步骤
 
-掌握了这些核心概念后，您就可以开始探索项目配置的具体细节，并学习如何构建自己的 agents 和 skills。以下各节为每个组件提供了深入的详细信息：
+掌握了这些核心概念后，你就可以开始探索项目配置的具体细节以及如何构建自己的 Agent 和 Skill。以下各节提供了每个组件的深入详细信息：
 
-*   **[项目配置 (aigne.yaml)](./core-concepts-project-configuration.md)**: 深入了解主项目配置文件的详细信息。
-*   **[Agents 和 Skills](./core-concepts-agents-and-skills.md)**: 了解定义和创建 agents 和 skills 的具体方法。
+- **[项目配置 (aigne.yaml)](./core-concepts-project-configuration.md)**：深入了解主项目配置文件的详细信息。
+- **[Agent 和 Skill](./core-concepts-agents-and-skills.md)**：学习定义和创建 Agent 与 Skill 的具体细节。

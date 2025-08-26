@@ -1,11 +1,15 @@
+---
+labels: ["Reference"]
+---
+
 # Agents and Skills
 
-In an AIGNE project, Agents and Skills are the fundamental executable components. An Agent is the primary entity that receives input and orchestrates work, while a Skill is a specific, reusable function that an Agent can call to accomplish its goals. Both are defined within your project, typically in `.yaml` files for agents and `.js` files for skills, and are referenced in the main `aigne.yaml` configuration file. For more details on the project structure, see [Project Configuration (aigne.yaml)](./core-concepts-project-configuration.md).
+In an AIGNE project, Agents and Skills are the fundamental executable components. An Agent is the primary entity that receives input and orchestrates work, while a Skill is a specific, reusable function that an Agent can call to accomplish its goals. Both are defined within your project—typically in `.yaml` files for agents and `.js` files for skills—and are referenced in the main project configuration. For more details on the project structure, see [Project Configuration (aigne.yaml)](./core-concepts-project-configuration.md).
 
 ```mermaid
 graph TD;
-    A["Agent (e.g., Chatbot)"] -- "Uses" --> B{"Skill (e.g., Code Evaluator)"};
-    A["Agent (e.g., Chatbot)"] -- "Uses" --> C{"Skill (e.g., API Connector)"};
+    A["Agent (e.g., Chatbot)"] -- "Uses" --> B["Skill (e.g., Code Evaluator)"];
+    A["Agent (e.g., Chatbot)"] -- "Uses" --> C["Skill (e.g., API Connector)"];
 ```
 
 ## Agents
@@ -50,6 +54,8 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
 ```
 
 This allows AIGNE to integrate with a broader ecosystem of compatible tools.
+
+![Running an MCP service](../assets/run-mcp-service.png)
 
 ## Skills
 
@@ -97,9 +103,15 @@ evaluateJs.output_schema = {
 *   **`input_schema`**: A JSON Schema object that defines the function's parameters. This ensures the agent calls the skill with correctly formatted data.
 *   **`output_schema`**: A JSON Schema object that defines the structure of the function's return value. This helps the agent understand the result of the skill execution.
 
-### How They Work Together
+## How They Work Together
 
 When a user interacts with an agent, the AIGNE engine combines the user's input, the agent's instructions, and the descriptions of its available skills into a prompt for the LLM. The LLM then decides whether to respond directly or to use a skill to gather more information or perform an action.
+
+For example, a user might ask the chat agent to perform a calculation. The agent, equipped with the `sandbox.js` skill, can evaluate the code and return the result.
+
+![A chat agent using a skill to evaluate code](../assets/run/run-default-template-project-in-chat-mode.png)
+
+The underlying process follows a clear sequence:
 
 ```mermaid
 sequenceDiagram
@@ -118,7 +130,9 @@ sequenceDiagram
     Agent-->>User: "The result is 60."
 ```
 
-This flow allows agents to perform complex, multi-step tasks by breaking them down and delegating specific actions to specialized skills.
+This flow allows agents to perform complex, multi-step tasks by breaking them down and delegating specific actions to specialized skills. You can inspect the details of these interactions, including the exact inputs and outputs of each skill call, using the observability tools.
+
+![Viewing skill call details in the observability interface](../assets/observe/observe-view-call-details.png)
 
 ---
 

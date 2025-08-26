@@ -223,6 +223,15 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       },
     },
   },
+  {
+    "progress": {
+      "agent": {
+        "name": "chat",
+      },
+      "error": [Error: Test error],
+      "event": "agentFailed",
+    },
+  },
   [Error: Test error],
 ]
 `;

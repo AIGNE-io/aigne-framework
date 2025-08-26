@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.9](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.9.8...bedrock-v0.9.9) (2025-08-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.35
+
 ## [0.9.8](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.9.7...bedrock-v0.9.8) (2025-08-21)
 
 

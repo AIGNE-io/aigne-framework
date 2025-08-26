@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.7](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.6...publish-docs-v0.5.7) (2025-08-25)
+
+
+### Bug Fixes
+
+* save board meta info ([#404](https://github.com/AIGNE-io/aigne-framework/issues/404)) ([433c07c](https://github.com/AIGNE-io/aigne-framework/commit/433c07c52229a73cc8e30b9f88927e0a88b07607))
+
 ## [0.5.6](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.5...publish-docs-v0.5.6) (2025-08-21)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.27](https://github.com/AIGNE-io/aigne-framework/compare/fs-memory-v1.0.26...fs-memory-v1.0.27) (2025-08-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.12.3
+
 ## [1.0.26](https://github.com/AIGNE-io/aigne-framework/compare/fs-memory-v1.0.25...fs-memory-v1.0.26) (2025-08-21)
 
 

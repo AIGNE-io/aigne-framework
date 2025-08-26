@@ -265,10 +265,6 @@ export class AIGNEContext implements Context {
       this.rootId = this.span?.spanContext?.().traceId ?? v7();
     }
 
-    if (this.span) {
-      this.internal.addSpan(this.span);
-    }
-
     this.id = this.span?.spanContext()?.spanId ?? v7();
   }
 
@@ -312,10 +308,6 @@ export class AIGNEContext implements Context {
 
   get status() {
     return this.internal.status;
-  }
-
-  get spans() {
-    return this.internal.spans;
   }
 
   get usage() {
@@ -368,20 +360,15 @@ export class AIGNEContext implements Context {
     return Promise.resolve(newContext.internal.invoke(agent, message, newContext, options)).then(
       async (response) => {
         if (!options?.streaming) {
-          try {
-            let { __activeAgent__: activeAgent, ...output } =
-              await agentResponseStreamToObject(response);
-            output = await this.onInvocationResult(output, options);
+          let { __activeAgent__: activeAgent, ...output } =
+            await agentResponseStreamToObject(response);
+          output = await this.onInvocationResult(output, options);
 
-            if (options?.returnActiveAgent) {
-              return [output, activeAgent];
-            }
-
-            return output;
-          } catch (error) {
-            this.endAllSpans(error);
-            throw error;
+          if (options?.returnActiveAgent) {
+            return [output, activeAgent];
           }
+
+          return output;
         }
 
         const activeAgentPromise = promiseWithResolvers<Agent>();
@@ -404,11 +391,6 @@ export class AIGNEContext implements Context {
           onResult: async (output) => {
             activeAgentPromise.resolve(output.__activeAgent__);
             return await this.onInvocationResult(output, options);
-          },
-          onError: (error) => {
-            this.endAllSpans(error);
-
-            return error;
           },
         });
 
@@ -491,13 +473,6 @@ export class AIGNEContext implements Context {
 
     this.trace(eventName, args, b);
     return this.internal.events.emit(eventName, ...newArgs);
-  }
-
-  private async endAllSpans(error?: Error) {
-    this.spans.forEach((span) => {
-      span.setStatus({ code: SpanStatusCode.ERROR, message: error?.message });
-      span.end();
-    });
   }
 
   private async trace<K extends keyof ContextEmitEventMap>(
@@ -591,8 +566,6 @@ export class AIGNEContext implements Context {
 }
 
 class AIGNEContextShared {
-  spans: Span[] = [];
-
   constructor(
     private readonly parent?: Pick<
       Context,
@@ -632,10 +605,6 @@ class AIGNEContextShared {
 
   get limits() {
     return this.parent?.limits;
-  }
-
-  addSpan(span: Span) {
-    this.spans.push(span);
   }
 
   usage: ContextUsage = newEmptyContextUsage();

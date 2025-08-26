@@ -3,6 +3,7 @@ import { readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { AIGNE_ENV_FILE } from "@aigne/cli/utils/aigne-hub/constants.js";
 import { loadAIGNE } from "@aigne/cli/utils/load-aigne.js";
+import { withEnv } from "@aigne/test-utils/utils/with-env.js";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import { createHonoServer } from "../_mocks_/server.js";
@@ -191,6 +192,33 @@ describe("load aigne", () => {
     afterEach(async () => {
       await rm(AIGNE_ENV_FILE, { force: true });
     });
+  });
+
+  test("should prioritize MODEL env over options from aigne.yaml", async () => {
+    const aigne1 = await loadAIGNE({
+      path: join(import.meta.dirname, "../../test-agents"),
+      modelOptions: {},
+    });
+
+    expect(aigne1.model?.name).toBe("OpenAIChatModel");
+
+    using _ = withEnv({
+      MODEL: "gemini:gemini-2.0-pro",
+      GEMINI_API_KEY: "YOUR_GEMINI_API_KEY",
+      ANTHROPIC_API_KEY: "YOUR_ANTHROPIC_API_KEY",
+    });
+
+    const aigne2 = await loadAIGNE({
+      path: join(import.meta.dirname, "../../test-agents"),
+      modelOptions: {},
+    });
+    expect(aigne2.model?.name).toBe("GeminiChatModel");
+
+    const aigne3 = await loadAIGNE({
+      path: join(import.meta.dirname, "../../test-agents"),
+      modelOptions: { model: "anthropic:claude-3-7-sonnet-latest" },
+    });
+    expect(aigne3.model?.name).toBe("AnthropicChatModel");
   });
 
   afterAll(async () => {

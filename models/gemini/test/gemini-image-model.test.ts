@@ -1,30 +1,20 @@
 import { expect, spyOn, test } from "bun:test";
 import { GeminiImageModel } from "@aigne/gemini";
 
-test("GeminiImageModel other model should work correctly", async () => {
+test("GeminiImageModel imagen model should work correctly", async () => {
   const model = new GeminiImageModel({
     apiKey: "YOUR_API_KEY",
+    model: "imagen-4.0-generate-001",
   });
 
-  spyOn(model["client"].models, "generateContent").mockResolvedValueOnce({
-    candidates: [
+  spyOn(model["client"].models, "generateImages").mockResolvedValueOnce({
+    generatedImages: [
       {
-        content: {
-          parts: [
-            {
-              inlineData: {
-                data: "base64",
-              },
-            },
-          ],
+        image: {
+          imageBytes: "base64",
         },
       },
     ],
-    text: undefined,
-    data: undefined,
-    functionCalls: undefined,
-    executableCode: undefined,
-    codeExecutionResult: undefined,
   });
 
   const result = await model.invoke({ prompt: "Draw an image about a cat" });

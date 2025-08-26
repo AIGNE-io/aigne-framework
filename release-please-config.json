@@ -17,6 +17,7 @@
     "models/doubao": {},
     "models/poe": {},
     "models/gemini": {},
+    "models/ideogram": {},
     "models/ollama": {},
     "models/open-router": {},
     "models/openai": {},

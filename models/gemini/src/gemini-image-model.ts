@@ -10,7 +10,7 @@ import { GoogleGenAI, Modality } from "@google/genai";
 
 import { z } from "zod";
 
-const DEFAULT_MODEL = "gemini-2.0-flash";
+const DEFAULT_MODEL = "gemini-2.0-flash-preview-image-generation";
 
 export interface GeminiImageModelInput extends ImageModelInput {}
 export interface GeminiImageModelOutput extends ImageModelOutput {}

@@ -39,7 +39,6 @@ const ideogramImageModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   modelOptions: z.object({}).optional(),
-  clientOptions: z.object({}).optional(),
 });
 
 export class IdeogramImageModel extends ImageModel<

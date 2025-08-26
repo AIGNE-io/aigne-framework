@@ -25,6 +25,7 @@ function isDBLockedError(error: any): boolean {
 
 export function withRetry<T extends object>(
   db: T,
+  methods: (keyof T)[],
   {
     max = 20,
     backoffBase = 300,
@@ -36,7 +37,8 @@ export function withRetry<T extends object>(
   return new Proxy(db, {
     get(target, prop) {
       const val = (target as any)?.[prop];
-      if (typeof val === "function") {
+
+      if (methods.includes(prop as keyof T) && typeof val === "function") {
         return async (...args: any[]) => {
           let attempt = 1;
 

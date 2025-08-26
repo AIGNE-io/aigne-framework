@@ -1,5 +1,6 @@
 import { createClient } from "@libsql/client";
 import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
+import type { SQLiteSession } from "drizzle-orm/sqlite-core";
 import type { InitDatabaseOptions } from "./index.js";
 import { withRetry } from "./retry.js";
 
@@ -23,7 +24,13 @@ PRAGMA busy_timeout = 5000;
   }
 
   if ("session" in db && db.session && typeof db.session === "object") {
-    db.session = withRetry(db.session);
+    db.session = withRetry(db.session as SQLiteSession<any, any, any, any>, [
+      "all",
+      "get",
+      "run",
+      "values",
+      "count",
+    ]);
   }
 
   return db;

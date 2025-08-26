@@ -27,7 +27,7 @@ import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../u
 import { highlightUrl } from "../utils/string-utils.js";
 import { parseDuration } from "../utils/time.js";
 
-const CREDITS_ERROR_HAS_BEEN_PROCESSED_FLAG = "$credits_error_has_been_processed";
+const CREDITS_ERROR_PROCESSED_FLAG = "$credits_error_processed";
 
 export interface TerminalTracerOptions {
   outputKey?: string;
@@ -196,8 +196,8 @@ export class TerminalTracer {
 
     const onError: AgentHooks["onError"] = async ({ context, agent, error, ...event }) => {
       if ("type" in error && error.type === AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE) {
-        if (!Object.hasOwn(error, CREDITS_ERROR_HAS_BEEN_PROCESSED_FLAG)) {
-          Object.defineProperty(error, CREDITS_ERROR_HAS_BEEN_PROCESSED_FLAG, {
+        if (!Object.hasOwn(error, CREDITS_ERROR_PROCESSED_FLAG)) {
+          Object.defineProperty(error, CREDITS_ERROR_PROCESSED_FLAG, {
             value: true,
             enumerable: false,
           });

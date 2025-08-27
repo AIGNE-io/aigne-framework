@@ -42,6 +42,9 @@ export * from "./types.js";
 
 export const DEFAULT_INPUT_ACTION_GET = "$get";
 
+const DEFAULT_RETRY_MIN_TIMEOUT = 1000;
+const DEFAULT_RETRY_FACTOR = 2;
+
 /**
  * Basic message type that can contain any key-value pairs
  */
@@ -176,6 +179,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   maxRetrieveMemoryCount?: number;
 
   hooks?: AgentHooks<I, O> | AgentHooks<I, O>[];
+
+  retryOnError?: Agent<I, O>["retryOnError"] | boolean;
 }
 
 const hooksSchema = z.object({
@@ -206,6 +211,15 @@ export const agentOptionsSchema: ZodObject<{
   maxRetrieveMemoryCount: z.number().optional(),
   hooks: z.union([z.array(hooksSchema), hooksSchema]).optional(),
   guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
+  retryOnError: z
+    .object({
+      retries: z.number().int().min(0),
+      minTimeout: z.number().min(0).optional(),
+      factor: z.number().min(1).optional(),
+      randomize: z.boolean().optional(),
+      shouldRetry: z.custom<(error: Error) => boolean | Promise<boolean>>().optional(),
+    })
+    .optional(),
 });
 
 export interface AgentInvokeOptions<U extends UserContext = UserContext> {
@@ -302,6 +316,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
 
     this.hooks = flat(options.hooks);
+    this.retryOnError =
+      options.retryOnError === false
+        ? undefined
+        : options.retryOnError === true
+          ? {}
+          : options.retryOnError;
     this.guideRails = options.guideRails;
   }
 
@@ -330,6 +350,14 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    * {@includeCode ../../test/agents/agent.test.ts#example-agent-hooks}
    */
   readonly hooks: AgentHooks<I, O>[];
+
+  retryOnError?: {
+    retries?: number;
+    minTimeout?: number;
+    factor?: number;
+    randomize?: boolean;
+    shouldRetry?: (error: Error) => boolean | Promise<boolean>;
+  };
 
   /**
    * List of GuideRail agents applied to this agent
@@ -668,6 +696,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<O> {
     let output = {};
+    let attempt = 0;
 
     for (;;) {
       // Reset output to avoid accumulating old data
@@ -705,6 +734,26 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
         // Close the stream after processing
         break;
       } catch (error) {
+        if (this.retryOnError?.retries) {
+          const {
+            retries,
+            minTimeout = DEFAULT_RETRY_MIN_TIMEOUT,
+            factor = DEFAULT_RETRY_FACTOR,
+            randomize = false,
+            shouldRetry,
+          } = this.retryOnError;
+
+          if (attempt++ < retries && (!shouldRetry || (await shouldRetry(error)))) {
+            const timeout =
+              minTimeout * factor ** (attempt - 1) * (randomize ? 1 + Math.random() : 1);
+            logger.warn(
+              `Agent ${this.name} attempt ${attempt} failed with error: ${error}. Retrying in ${timeout}ms...`,
+            );
+            await new Promise((resolve) => setTimeout(resolve, timeout));
+            continue;
+          }
+        }
+
         const res = await this.processAgentError(input, error, options);
         if (!res.retry) throw res.error ?? error;
       }

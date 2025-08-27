@@ -303,7 +303,9 @@ test("ChatModel should auto convert tool name to valid function name", async () 
 });
 
 test("ChatModel should validate structured response with json schema", async () => {
-  const model = new OpenAIChatModel();
+  const model = new OpenAIChatModel({
+    retryOnError: false,
+  });
 
   const input: ChatModelInput = {
     messages: [{ role: "user", content: "Provide a JSON response with name and age." }],
@@ -333,5 +335,37 @@ test("ChatModel should validate structured response with json schema", async () 
   );
 
   modelProcess.mockReturnValueOnce({ json: { name: "Alice", age: 25 } });
+  expect(await model.invoke(input)).toEqual({ json: { name: "Alice", age: 25 } });
+});
+
+test("ChatModel should retry for internet errors or structured output errors", async () => {
+  const model = new OpenAIChatModel({});
+
+  const input: ChatModelInput = {
+    messages: [{ role: "user", content: "Provide a JSON response with name and age." }],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "TestSchema",
+        schema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            age: { type: "number" },
+          },
+          required: ["name", "age"],
+          additionalProperties: false,
+        },
+        strict: true,
+      },
+    },
+  };
+
+  const modelProcess = spyOn(model, "process");
+
+  modelProcess
+    .mockRejectedValueOnce(new TypeError("terminated") as never)
+    .mockReturnValueOnce({ json: { name: 30 } })
+    .mockReturnValueOnce({ json: { name: "Alice", age: 25 } });
   expect(await model.invoke(input)).toEqual({ json: { name: "Alice", age: 25 } });
 });

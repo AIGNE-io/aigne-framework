@@ -1,4 +1,5 @@
 import { Ajv } from "ajv";
+import isNetworkError from "is-network-error";
 import { z } from "zod";
 import type { PromiseOrValue } from "../utils/type-utils.js";
 import {
@@ -8,6 +9,13 @@ import {
   type AgentProcessResult,
   type Message,
 } from "./agent.js";
+
+const CHAT_MODEL_DEFAULT_RETRY_OPTIONS: Agent["retryOnError"] = {
+  retries: 3,
+  shouldRetry: (error) => error instanceof StructuredOutputError || isNetworkError(error),
+};
+
+export class StructuredOutputError extends Error {}
 
 /**
  * ChatModel is an abstract base class for interacting with Large Language Models (LLMs).
@@ -38,10 +46,21 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor(
     options?: Omit<AgentOptions<ChatModelInput, ChatModelOutput>, "inputSchema" | "outputSchema">,
   ) {
+    const retryOnError =
+      options?.retryOnError === false
+        ? false
+        : options?.retryOnError === true
+          ? CHAT_MODEL_DEFAULT_RETRY_OPTIONS
+          : {
+              ...CHAT_MODEL_DEFAULT_RETRY_OPTIONS,
+              ...options?.retryOnError,
+            };
+
     super({
       ...options,
       inputSchema: chatModelInputSchema,
       outputSchema: chatModelOutputSchema,
+      retryOnError,
     });
   }
 
@@ -177,7 +196,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     if (input.responseFormat?.type === "json_schema") {
       const ajv = new Ajv();
       if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
-        throw new Error(
+        throw new StructuredOutputError(
           `Output JSON does not conform to the provided JSON schema: ${ajv.errorsText()}`,
         );
       }

@@ -20,7 +20,10 @@ export async function createHonoServer() {
 
   honoApp.post("/ai-kit/api/v2/image", async (c) => {
     return c.json({
-      data: [{ url: "https://example.com/image.png" }],
+      images: [{ url: "https://example.com/image.png" }],
+      usage: {
+        aigneHubCredits: 100,
+      },
     });
   });
 

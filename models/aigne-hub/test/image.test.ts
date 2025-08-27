@@ -107,6 +107,7 @@ describe("AIGNEHubImageModel", async () => {
     expect(response).toEqual({
       images: [{ url: "https://example.com/image.png" }],
       usage: {
+        aigneHubCredits: 100,
         inputTokens: 0,
         outputTokens: 0,
       },
@@ -124,6 +125,7 @@ describe("AIGNEHubImageModel", async () => {
     expect(response).toEqual({
       images: [{ url: "https://example.com/image.png" }],
       usage: {
+        aigneHubCredits: 100,
         inputTokens: 0,
         outputTokens: 0,
       },

@@ -4,4 +4,4 @@ export const AIGNE_HUB_BLOCKLET_DID = "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ";
 
 export const AIGNE_HUB_DEFAULT_MODEL = "openai/gpt-5-mini";
 
-export const AIGNE_HUB_IMAGE_MODEL = "openai/dall-e-3";
+export const AIGNE_HUB_IMAGE_MODEL = "openai/gpt-image-1";

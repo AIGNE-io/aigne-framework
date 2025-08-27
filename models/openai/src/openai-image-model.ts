@@ -119,19 +119,12 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
   override async process(input: OpenAIImageModelInput): Promise<OpenAIImageModelOutput> {
     const model = input.model || this.credential.model;
 
-    const DEFAULT_INPUT_KEYS: (keyof Camelize<OpenAI.ImageGenerateParams>)[] = [
-      "prompt",
-      "size",
-      "n",
-    ];
-
     const map: { [key: string]: any[] } = {
       "dall-e-2": ["prompt", "size", "n"],
       "dall-e-3": ["prompt", "size", "n", "quality", "style", "user"],
       "gpt-image-1": [
         "prompt",
         "size",
-        "n",
         "background",
         "moderation",
         "outputCompression",
@@ -149,7 +142,7 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
     }
 
     const body: OpenAI.ImageGenerateParams = {
-      ...snakelize(pick({ ...this.modelOptions, ...input }, map[model] || DEFAULT_INPUT_KEYS)),
+      ...snakelize(pick({ ...this.modelOptions, ...input }, map[model] || map["dall-e-2"])),
       response_format: responseFormat,
       model,
     };

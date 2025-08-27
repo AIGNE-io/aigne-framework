@@ -95,7 +95,13 @@ export class AIGNEHubImageModel extends ImageModel {
       },
     );
 
-    Object.assign(res.usage, { inputTokens: 0, outputTokens: 0 });
-    return res;
+    return {
+      ...res,
+      usage: {
+        ...res.usage,
+        inputTokens: 0,
+        outputTokens: 0,
+      },
+    };
   }
 }

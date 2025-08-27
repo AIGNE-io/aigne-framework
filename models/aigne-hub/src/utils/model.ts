@@ -4,18 +4,12 @@ import { BedrockChatModel } from "@aigne/bedrock";
 import type { ChatModel, ChatModelOptions, ImageModel } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { DoubaoChatModel } from "@aigne/doubao";
-import { GeminiChatModel, GeminiImageModel, type GeminiImageModelInput } from "@aigne/gemini";
-import { IdeogramImageModel, type IdeogramImageModelInput } from "@aigne/ideogram";
+import { GeminiChatModel, GeminiImageModel } from "@aigne/gemini";
+import { IdeogramImageModel } from "@aigne/ideogram";
 import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";
-import {
-  OpenAIChatModel,
-  type OpenAIChatModelOptions,
-  OpenAIImageModel,
-  type OpenAIImageModelInput,
-} from "@aigne/openai";
+import { OpenAIChatModel, type OpenAIChatModelOptions, OpenAIImageModel } from "@aigne/openai";
 import { PoeChatModel } from "@aigne/poe";
-import type { ImageModelOptions } from "@aigne/transport/http-client/base-client.js";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
 import { HttpsProxyAgent } from "https-proxy-agent";
@@ -123,7 +117,7 @@ export function availableModels(): LoadableModel[] {
 export interface LoadableImageModel {
   name: string;
   apiKeyEnvName: string;
-  create: (options: { model?: string; modelOptions?: ImageModelOptions }) => ImageModel;
+  create: (options: { model?: string; modelOptions?: any }) => ImageModel;
 }
 
 export function availableImageModels(): LoadableImageModel[] {
@@ -133,45 +127,22 @@ export function availableImageModels(): LoadableImageModel[] {
     {
       name: OpenAIImageModel.name,
       apiKeyEnvName: "OPENAI_API_KEY",
-      create: (params) =>
-        new OpenAIImageModel({
-          model: params.model,
-          clientOptions,
-          ...(params.modelOptions && {
-            modelOptions: params.modelOptions as Partial<OpenAIImageModelInput["modelOptions"]>,
-          }),
-        }),
+      create: (params) => new OpenAIImageModel({ ...params, clientOptions }),
     },
     {
       name: GeminiImageModel.name,
       apiKeyEnvName: "GEMINI_API_KEY",
-      create: (params) =>
-        new GeminiImageModel({
-          ...params,
-          clientOptions,
-          ...(params.modelOptions && {
-            modelOptions: params.modelOptions as Partial<GeminiImageModelInput["modelOptions"]>,
-          }),
-        }),
+      create: (params) => new GeminiImageModel({ ...params, clientOptions }),
     },
     {
       name: IdeogramImageModel.name,
       apiKeyEnvName: "IDEOGRAM_API_KEY",
-      create: (params) =>
-        new IdeogramImageModel({
-          ...params,
-          modelOptions: params.modelOptions as Partial<IdeogramImageModelInput["modelOptions"]>,
-        }),
+      create: (params) => new IdeogramImageModel({ ...params }),
     },
     {
       name: AIGNEHubImageModel.name,
       apiKeyEnvName: "AIGNE_HUB_API_KEY",
-      create: (params) =>
-        new AIGNEHubImageModel({
-          ...params,
-          clientOptions,
-          modelOptions: params.modelOptions as ImageModelOptions,
-        }),
+      create: (params) => new AIGNEHubImageModel({ ...params, clientOptions }),
     },
   ];
 }

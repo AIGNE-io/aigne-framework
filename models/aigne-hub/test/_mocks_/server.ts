@@ -24,6 +24,7 @@ export async function createHonoServer() {
       usage: {
         aigneHubCredits: 100,
       },
+      model: "openai/dall-e-3",
     });
   });
 

@@ -100,7 +100,7 @@ describe("AIGNEHubImageModel", async () => {
     const client = new AIGNEHubImageModel({
       url,
       apiKey: "123",
-      model: "google/imagen-4.0-generate-001",
+      model: "openai/dall-e-3",
     });
 
     const response = await client.invoke({ prompt: "hello" });
@@ -111,6 +111,7 @@ describe("AIGNEHubImageModel", async () => {
         inputTokens: 0,
         outputTokens: 0,
       },
+      model: "openai/dall-e-3",
     });
   });
 
@@ -118,7 +119,7 @@ describe("AIGNEHubImageModel", async () => {
     const client = new AIGNEHubImageModel2({
       url,
       apiKey: "123",
-      model: "google/imagen-4.0-generate-001",
+      model: "openai/dall-e-3",
     });
 
     const response = await client.invoke({ prompt: "hello" });
@@ -129,6 +130,7 @@ describe("AIGNEHubImageModel", async () => {
         inputTokens: 0,
         outputTokens: 0,
       },
+      model: "openai/dall-e-3",
     });
   });
 });

@@ -79,16 +79,23 @@ export class AIGNEHubImageModel extends ImageModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    return await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(undefined, input, {
-      ...options,
-      streaming: false,
-      fetchOptions: {
-        ...options.fetchOptions,
-        headers: {
-          ...options.fetchOptions?.headers,
-          "x-aigne-hub-client-did": clientId,
+    const res = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
+      undefined,
+      input,
+      {
+        ...options,
+        streaming: false,
+        fetchOptions: {
+          ...options.fetchOptions,
+          headers: {
+            ...options.fetchOptions?.headers,
+            "x-aigne-hub-client-did": clientId,
+          },
         },
       },
-    });
+    );
+
+    Object.assign(res.usage, { inputTokens: 0, outputTokens: 0 });
+    return res;
   }
 }

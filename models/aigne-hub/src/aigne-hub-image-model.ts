@@ -38,7 +38,7 @@ export class AIGNEHubImageModel extends ImageModel {
   }>;
 
   override get credential() {
-    this._credential = getAIGNEHubMountPoint(
+    this._credential ??= getAIGNEHubMountPoint(
       this.options.url ||
         this.options.baseURL ||
         process.env.BLOCKLET_AIGNE_API_URL ||
@@ -79,30 +79,16 @@ export class AIGNEHubImageModel extends ImageModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    const response = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
-      undefined,
-      input,
-      {
-        ...options,
-        streaming: false,
-        fetchOptions: {
-          ...options.fetchOptions,
-          headers: {
-            ...options.fetchOptions?.headers,
-            "x-aigne-hub-client-did": clientId,
-          },
+    return await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(undefined, input, {
+      ...options,
+      streaming: false,
+      fetchOptions: {
+        ...options.fetchOptions,
+        headers: {
+          ...options.fetchOptions?.headers,
+          "x-aigne-hub-client-did": clientId,
         },
       },
-    );
-
-    return {
-      images: response.images,
-      usage: {
-        inputTokens: 0,
-        outputTokens: 0,
-        aigneHubCredits: Number(response.usage?.aigneHubCredits ?? 0),
-      },
-      model: response?.model,
-    };
+    });
   }
 }

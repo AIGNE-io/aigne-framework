@@ -42,7 +42,7 @@ export class AIGNEHubChatModel extends ChatModel {
   }>;
 
   override get credential() {
-    this._credential = getAIGNEHubMountPoint(
+    this._credential ??= getAIGNEHubMountPoint(
       this.options.url ||
         this.options.baseURL ||
         process.env.BLOCKLET_AIGNE_API_URL ||

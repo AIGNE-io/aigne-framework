@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
+import assert from "node:assert";
 
 // Create a proper Lexical test environment
 import { createHeadlessEditor } from "@lexical/headless";
@@ -212,7 +213,8 @@ describe("MermaidNode", () => {
       const conversionMap = MermaidNode.importDOM();
 
       expect(conversionMap).toBeTruthy();
-      expect(conversionMap!.pre).toBeDefined();
+      assert(conversionMap);
+      expect(conversionMap.pre).toBeDefined();
     });
 
     test("should return conversion for pre element with mermaid class", () => {
@@ -221,11 +223,13 @@ describe("MermaidNode", () => {
         classList: { contains: mock().mockReturnValue(true) },
       };
 
-      const result = conversionMap!.pre!(mockDomNode as any);
+      assert(conversionMap?.pre);
+      const result = conversionMap.pre(mockDomNode as any);
 
       expect(result).toBeTruthy();
-      expect(result!.priority).toBe(0);
-      expect(result!.conversion).toBeDefined();
+      assert(result);
+      expect(result.priority).toBe(0);
+      expect(result.conversion).toBeDefined();
     });
 
     test("should return null for pre element without mermaid class", () => {
@@ -234,7 +238,8 @@ describe("MermaidNode", () => {
         classList: { contains: mock().mockReturnValue(false) },
       };
 
-      const result = conversionMap!.pre!(mockDomNode as any);
+      assert(conversionMap?.pre);
+      const result = conversionMap.pre(mockDomNode as any);
 
       expect(result).toBeNull();
     });
@@ -243,7 +248,8 @@ describe("MermaidNode", () => {
       const conversionMap = MermaidNode.importDOM();
       const mockDomNode = {};
 
-      const result = conversionMap!.pre!(mockDomNode as any);
+      assert(conversionMap?.pre);
+      const result = conversionMap.pre(mockDomNode as any);
 
       expect(result).toBeNull();
     });
@@ -311,14 +317,16 @@ describe("convertMermaidElement", () => {
         textContent: "graph TD\n  A --> B",
       };
 
-      const conversionResult = conversionMap!.pre!(mockDomNode as any);
+      assert(conversionMap?.pre);
+      const conversionResult = conversionMap.pre(mockDomNode as any);
 
       if (conversionResult) {
         const result = conversionResult.conversion(mockDomNode as any);
 
         expect(result).toBeTruthy();
-        expect(result!.node).toBeInstanceOf(MermaidNode);
-        expect((result!.node as MermaidNode).getCode()).toBe("graph TD\n  A --> B");
+        assert(result);
+        expect(result.node).toBeInstanceOf(MermaidNode);
+        expect((result.node as MermaidNode).getCode()).toBe("graph TD\n  A --> B");
       }
     });
   });
@@ -331,13 +339,15 @@ describe("convertMermaidElement", () => {
         textContent: "",
       };
 
-      const conversionResult = conversionMap!.pre!(mockDomNode as any);
+      assert(conversionMap?.pre);
+      const conversionResult = conversionMap.pre(mockDomNode as any);
 
       if (conversionResult) {
         const result = conversionResult.conversion(mockDomNode as any);
 
         expect(result).toBeTruthy();
-        expect((result!.node as MermaidNode).getCode()).toBe("");
+        assert(result);
+        expect((result.node as MermaidNode).getCode()).toBe("");
       }
     });
   });
@@ -350,13 +360,16 @@ describe("convertMermaidElement", () => {
         textContent: null,
       };
 
-      const conversionResult = conversionMap!.pre!(mockDomNode as any);
+      assert(conversionMap?.pre);
+
+      const conversionResult = conversionMap.pre(mockDomNode as any);
 
       if (conversionResult) {
         const result = conversionResult.conversion(mockDomNode as any);
 
         expect(result).toBeTruthy();
-        expect((result!.node as MermaidNode).getCode()).toBe("");
+        assert(result);
+        expect((result.node as MermaidNode).getCode()).toBe("");
       }
     });
   });

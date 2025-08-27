@@ -5,7 +5,7 @@ import {
   type ImageModelOutput,
   imageModelInputSchema,
 } from "@aigne/core";
-import { checkArguments, pick } from "@aigne/core/utils/type-utils.js";
+import { checkArguments, isNonNullable, pick } from "@aigne/core/utils/type-utils.js";
 import { type GenerateImagesConfig, GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 
@@ -138,8 +138,8 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     return {
       images:
         response.generatedImages
-          ?.filter((image) => image.image?.imageBytes)
-          .map((image) => ({ base64: image.image?.imageBytes! })) || [],
+          ?.map(({ image }) => (image?.imageBytes ? { base64: image.imageBytes } : undefined))
+          .filter(isNonNullable) || [],
       usage: {
         inputTokens: 0,
         outputTokens: 0,

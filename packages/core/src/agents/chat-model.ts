@@ -196,7 +196,11 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       }
     }
 
-    if (input.responseFormat?.type === "json_schema") {
+    if (
+      input.responseFormat?.type === "json_schema" &&
+      // NOTE: Should not validate if there are tool calls
+      !output.toolCalls?.length
+    ) {
       const ajv = new Ajv();
       if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
         throw new StructuredOutputError(

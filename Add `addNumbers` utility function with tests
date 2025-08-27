@@ -1,0 +1,16 @@
+### Summary
+This PR adds a new utility function `addNumbers` that takes two numbers as input and returns their sum. This function is intended to simplify arithmetic operations across the project.
+
+### Changes
+- Added `src/utils/math.ts` containing `addNumbers` function.
+- Added `tests/utils/math.test.ts` for unit testing the function.
+
+### Testing
+- Ran unit tests to ensure the function works correctly.
+- Test cases cover positive, negative, and zero values.
+
+### Notes
+This is a new feature addition and does not break existing functionality.
+
+### Related Issue
+No related issue.

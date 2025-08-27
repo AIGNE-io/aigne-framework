@@ -1012,9 +1012,6 @@ importers:
       '@google/genai':
         specifier: ^1.15.0
         version: 1.15.0(@modelcontextprotocol/sdk@1.15.0)(encoding@0.1.13)
-      openai:
-        specifier: ^5.8.3
-        version: 5.8.3(ws@8.18.2)(zod@3.25.67)
       zod:
         specifier: ^3.25.67
         version: 3.25.67

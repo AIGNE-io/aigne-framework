@@ -13,11 +13,7 @@ import {
 import { joinURL } from "ufo";
 import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
 import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_IMAGE_MODEL, AIGNE_HUB_URL } from "./utils/constants.js";
-import {
-  type AIGNEHubImageModelOptions,
-  type AIGNEHubImageOutput,
-  aigneHubModelOptionsSchema,
-} from "./utils/type.js";
+import { type AIGNEHubImageModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
 export class AIGNEHubImageModel extends ImageModel {
   constructor(public options: AIGNEHubImageModelOptions) {
@@ -83,7 +79,7 @@ export class AIGNEHubImageModel extends ImageModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    const response = await (await this.client).__invoke<ImageModelInput, AIGNEHubImageOutput>(
+    const response = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
       undefined,
       input,
       {
@@ -100,15 +96,11 @@ export class AIGNEHubImageModel extends ImageModel {
     );
 
     return {
-      images: (response.data ?? []).map((image) => {
-        if (image.url) return { url: image.url };
-        if (image.b64_json) return { base64: image.b64_json };
-        if (image.b64Json) return { base64: image.b64Json };
-        throw new Error("Image response does not contain a valid URL or base64 data");
-      }),
+      images: response.images,
       usage: {
         inputTokens: 0,
         outputTokens: 0,
+        aigneHubCredits: Number(response.usage?.aigneHubCredits ?? 0),
       },
       model: response?.model,
     };

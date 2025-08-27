@@ -117,7 +117,12 @@ export function availableModels(): LoadableModel[] {
 export interface LoadableImageModel {
   name: string;
   apiKeyEnvName: string;
-  create: (options: { model?: string; modelOptions?: any }) => ImageModel;
+  create: (options: {
+    apiKey?: string;
+    url?: string;
+    model?: string;
+    modelOptions?: any;
+  }) => ImageModel;
 }
 
 export function availableImageModels(): LoadableImageModel[] {

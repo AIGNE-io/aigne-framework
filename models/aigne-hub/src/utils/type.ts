@@ -28,11 +28,6 @@ export interface AIGNEHubChatModelOptions {
   clientOptions?: OpenAIChatModelOptions["clientOptions"] & { clientId?: string };
 }
 
-export type AIGNEHubImageOutput = {
-  data: { url?: string; b64_json?: string; b64Json?: string }[];
-  model: string;
-};
-
 export type AIGNEHubImageModelOptions = Omit<AIGNEHubChatModelOptions, "modelOptions"> & {
   modelOptions?: { [key: string]: any };
 };

@@ -18,6 +18,12 @@ export async function createHonoServer() {
     return aigneServer.invoke(c.req.raw);
   });
 
+  honoApp.post("/ai-kit/api/v2/image", async (c) => {
+    return c.json({
+      data: [{ url: "https://example.com/image.png" }],
+    });
+  });
+
   honoApp.get("/__blocklet__.js", async (c) => {
     return c.json({
       componentMountPoints: [

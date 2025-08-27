@@ -59,7 +59,7 @@ export class AIGNEHubImageModel extends ImageModel {
   }
 
   constructor(public options: AIGNEHubImageModelOptions) {
-    const provider = process.env.BLOCKLET_AIGNE_API_PROVIDER || AIGNEHubChatModel.name;
+    const provider = process.env.BLOCKLET_AIGNE_API_PROVIDER || AIGNEHubImageModel.name;
 
     const { match, all } = findImageModel(provider);
 

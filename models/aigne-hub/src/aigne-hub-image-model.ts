@@ -79,7 +79,7 @@ export class AIGNEHubImageModel extends ImageModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    const res = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
+    const response = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
       undefined,
       input,
       {
@@ -96,12 +96,13 @@ export class AIGNEHubImageModel extends ImageModel {
     );
 
     return {
-      ...res,
+      images: response.images,
       usage: {
-        ...res.usage,
-        inputTokens: 0,
-        outputTokens: 0,
+        inputTokens: response.usage?.inputTokens ?? 0,
+        outputTokens: response.usage?.outputTokens ?? 0,
+        aigneHubCredits: response.usage?.aigneHubCredits,
       },
+      model: response?.model,
     };
   }
 }

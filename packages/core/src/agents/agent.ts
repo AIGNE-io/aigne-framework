@@ -42,6 +42,7 @@ export * from "./types.js";
 
 export const DEFAULT_INPUT_ACTION_GET = "$get";
 
+const DEFAULT_RETRIES = 3;
 const DEFAULT_RETRY_MIN_TIMEOUT = 1000;
 const DEFAULT_RETRY_FACTOR = 2;
 
@@ -212,13 +213,16 @@ export const agentOptionsSchema: ZodObject<{
   hooks: z.union([z.array(hooksSchema), hooksSchema]).optional(),
   guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
   retryOnError: z
-    .object({
-      retries: z.number().int().min(0),
-      minTimeout: z.number().min(0).optional(),
-      factor: z.number().min(1).optional(),
-      randomize: z.boolean().optional(),
-      shouldRetry: z.custom<(error: Error) => boolean | Promise<boolean>>().optional(),
-    })
+    .union([
+      z.boolean(),
+      z.object({
+        retries: z.number().int().min(0),
+        minTimeout: z.number().min(0).optional(),
+        factor: z.number().min(1).optional(),
+        randomize: z.boolean().optional(),
+        shouldRetry: z.custom<(error: Error) => boolean | Promise<boolean>>().optional(),
+      }),
+    ])
     .optional(),
 });
 
@@ -287,6 +291,8 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
  */
 export abstract class Agent<I extends Message = any, O extends Message = any> {
   constructor(options: AgentOptions<I, O> = {}) {
+    checkArguments("Agent options", agentOptionsSchema, options);
+
     const { inputSchema, outputSchema } = options;
 
     this.name = options.name || this.constructor.name;
@@ -320,7 +326,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       options.retryOnError === false
         ? undefined
         : options.retryOnError === true
-          ? {}
+          ? { retries: DEFAULT_RETRIES }
           : options.retryOnError;
     this.guideRails = options.guideRails;
   }
@@ -747,7 +753,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
             const timeout =
               minTimeout * factor ** (attempt - 1) * (randomize ? 1 + Math.random() : 1);
             logger.warn(
-              `Agent ${this.name} attempt ${attempt} failed with error: ${error}. Retrying in ${timeout}ms...`,
+              `Agent ${this.name} attempt ${attempt} of ${retries} failed with error: ${error}. Retrying in ${timeout}ms...`,
             );
             await new Promise((resolve) => setTimeout(resolve, timeout));
             continue;

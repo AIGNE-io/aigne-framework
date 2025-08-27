@@ -338,7 +338,7 @@ test("ChatModel should validate structured response with json schema", async () 
   expect(await model.invoke(input)).toEqual({ json: { name: "Alice", age: 25 } });
 });
 
-test("ChatModel should retry for internet errors or structured output errors", async () => {
+test("ChatModel should retry after network errors or structured output validation failures", async () => {
   const model = new OpenAIChatModel({});
 
   const input: ChatModelInput = {

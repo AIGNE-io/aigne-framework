@@ -1,12 +1,13 @@
 import { Ajv } from "ajv";
 import isNetworkError from "is-network-error";
 import { z } from "zod";
-import type { PromiseOrValue } from "../utils/type-utils.js";
+import { checkArguments, type PromiseOrValue } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
+  agentOptionsSchema,
   type Message,
 } from "./agent.js";
 
@@ -46,6 +47,8 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor(
     options?: Omit<AgentOptions<ChatModelInput, ChatModelOutput>, "inputSchema" | "outputSchema">,
   ) {
+    if (options) checkArguments("ChatModel", agentOptionsSchema, options);
+
     const retryOnError =
       options?.retryOnError === false
         ? false

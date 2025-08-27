@@ -815,3 +815,65 @@ test("Agent should render task title (function) correctly", async () => {
     "Test Task for message: Hello",
   );
 });
+
+test("Agent should support retrying on errors", async () => {
+  const agent = FunctionAgent.from({
+    retryOnError: { retries: 1 },
+    process: () => ({}),
+  });
+
+  const processSpy = spyOn(agent, "process");
+
+  processSpy
+    .mockRejectedValueOnce(new Error("Network error") as never)
+    .mockReturnValueOnce({ result: "success" });
+
+  expect(await agent.invoke({})).toEqual({ result: "success" });
+});
+
+test("Agent should support default retry options", async () => {
+  const agent = FunctionAgent.from({
+    retryOnError: true,
+    process: () => ({}),
+  });
+
+  const processSpy = spyOn(agent, "process");
+
+  processSpy
+    .mockRejectedValueOnce(new Error("Network error") as never)
+    .mockReturnValueOnce({ result: "success" });
+
+  expect(await agent.invoke({})).toEqual({ result: "success" });
+});
+
+test("Agent should support disable retry options", async () => {
+  const agent = FunctionAgent.from({
+    retryOnError: false,
+    process: () => ({}),
+  });
+
+  const processSpy = spyOn(agent, "process");
+
+  processSpy
+    .mockRejectedValueOnce(new Error("Network error") as never)
+    .mockReturnValueOnce({ result: "success" });
+
+  expect(agent.invoke({})).rejects.toThrow("Network error");
+});
+
+test("Agent should support custom retry condition", async () => {
+  const agent = FunctionAgent.from({
+    retryOnError: { shouldRetry: (error) => error.message === "custom error", retries: 1 },
+    process: () => ({}),
+  });
+
+  const processSpy = spyOn(agent, "process");
+
+  processSpy
+    .mockRejectedValueOnce(new Error("Network error") as never)
+    .mockRejectedValueOnce(new Error("custom error") as never)
+    .mockReturnValueOnce({ result: "success" });
+
+  expect(agent.invoke({})).rejects.toThrow("Network error");
+  expect(await agent.invoke({})).toEqual({ result: "success" });
+});

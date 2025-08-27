@@ -1,6 +1,5 @@
 import type { ChatModelOptions } from "@aigne/core";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
-import type { ImageModelOptions } from "@aigne/transport/http-client/base-client.js";
 import { z } from "zod";
 
 export const aigneHubModelOptionsSchema = z.object({
@@ -35,5 +34,5 @@ export type AIGNEHubImageOutput = {
 };
 
 export type AIGNEHubImageModelOptions = Omit<AIGNEHubChatModelOptions, "modelOptions"> & {
-  modelOptions?: ImageModelOptions;
+  modelOptions?: { [key: string]: any };
 };

@@ -14,29 +14,6 @@ import { ChatModelName } from "../constants.js";
 
 const DEFAULT_MAX_RECONNECTS = 3;
 
-export type ImageModelOptions = {
-  model?: string;
-  image?: string | string[];
-  prompt: string;
-  n?: number;
-  responseFormat?: "url" | "b64_json";
-  size?:
-    | "256x256"
-    | "512x512"
-    | "1024x1024"
-    | "1024x1792"
-    | "1792x1024"
-    | "1536x1024"
-    | "1024x1536"
-    | "auto";
-  style?: "vivid" | "natural";
-  quality?: "standard" | "hd" | "high" | "medium" | "low" | "auto";
-  background?: "transparent" | "opaque" | "auto";
-  outputFormat?: "jpeg" | "png" | "webp";
-  moderation?: "low" | "auto";
-  outputCompression?: number;
-};
-
 /**
  * Options for invoking an agent through the BaseClient.
  * Extends the standard AgentInvokeOptions with client-specific options.
@@ -55,7 +32,7 @@ export interface BaseClientOptions {
   url: string;
   apiKey?: string;
   model?: string;
-  modelOptions?: ChatModelOptions | ImageModelOptions;
+  modelOptions?: ChatModelOptions;
   clientOptions?: OpenAIChatModelOptions["clientOptions"];
 }
 

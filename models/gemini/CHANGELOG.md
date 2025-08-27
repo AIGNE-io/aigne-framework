@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.10.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.9.10...gemini-v0.10.0) (2025-08-27)
+
+
+### Features
+
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.0
+
 ## [0.9.10](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.9.9...gemini-v0.9.10) (2025-08-26)
 
 

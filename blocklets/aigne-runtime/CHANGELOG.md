@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.3.1...aigne-runtime-v1.4.0) (2025-08-27)
+
+
+### Features
+
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.7.0
+    * @aigne/transport bumped to 0.14.9
+
 ## [1.3.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.3.0...aigne-runtime-v1.3.1) (2025-08-26)
 
 

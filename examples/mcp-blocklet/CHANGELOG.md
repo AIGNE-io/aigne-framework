@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.16.40](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.16.39...example-mcp-blocklet-v1.16.40) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.30
+    * @aigne/cli bumped to 1.41.3
+    * @aigne/core bumped to 1.56.0
+    * @aigne/default-memory bumped to 1.1.12
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.37
+
 ## [1.16.39](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.16.38...example-mcp-blocklet-v1.16.39) (2025-08-27)
 
 

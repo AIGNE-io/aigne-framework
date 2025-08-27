@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.10.0...gemini-v0.11.0) (2025-08-27)
+
+
+### Features
+
+* **models:** support aigne hub models ([#416](https://github.com/AIGNE-io/aigne-framework/issues/416)) ([b4f014c](https://github.com/AIGNE-io/aigne-framework/commit/b4f014cf5ed08ef930d3ddfc278d3610e64c6af3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.1
+  * devDependencies
+    * @aigne/core bumped to 1.56.0
+    * @aigne/test-utils bumped to 0.5.37
+
 ## [0.10.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.9.10...gemini-v0.10.0) (2025-08-27)
 
 

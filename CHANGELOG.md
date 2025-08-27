@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.71.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.70.0...aigne-framework-v1.71.0) (2025-08-27)
+
+
+### Features
+
+* **models:** add retry mechanism for network errors and structured output validation errors ([#418](https://github.com/AIGNE-io/aigne-framework/issues/418)) ([52bc9ee](https://github.com/AIGNE-io/aigne-framework/commit/52bc9eec5f4f4fa3c3f26881c405f4f89dad01c9))
+* **models:** support aigne hub models ([#416](https://github.com/AIGNE-io/aigne-framework/issues/416)) ([b4f014c](https://github.com/AIGNE-io/aigne-framework/commit/b4f014cf5ed08ef930d3ddfc278d3610e64c6af3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.7.0
+
 ## [1.70.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.69.0...aigne-framework-v1.70.0) (2025-08-27)
 
 

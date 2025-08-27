@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.6.0...publish-docs-v0.7.0) (2025-08-27)
+
+
+### Features
+
+* **models:** support aigne hub models ([#416](https://github.com/AIGNE-io/aigne-framework/issues/416)) ([b4f014c](https://github.com/AIGNE-io/aigne-framework/commit/b4f014cf5ed08ef930d3ddfc278d3610e64c6af3))
+
 ## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.7...publish-docs-v0.6.0) (2025-08-26)
 
 

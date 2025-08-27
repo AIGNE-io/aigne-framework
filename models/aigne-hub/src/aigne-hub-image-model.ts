@@ -9,22 +9,15 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import {
   BaseClient,
   type BaseClientInvokeOptions,
-  type ImageModelOptions,
 } from "@aigne/transport/http-client/base-client.js";
 import { joinURL } from "ufo";
-import type { AIGNEHubChatModelOptions } from "./aigne-hub-model.js";
-import { aigneHubModelOptionsSchema } from "./aigne-hub-model.js";
 import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
 import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_IMAGE_MODEL, AIGNE_HUB_URL } from "./utils/constants.js";
-
-type AIGNEHubImageOutput = {
-  data: { url?: string; b64_json?: string; b64Json?: string }[];
-  model: string;
-};
-
-export type AIGNEHubImageModelOptions = Omit<AIGNEHubChatModelOptions, "modelOptions"> & {
-  modelOptions?: ImageModelOptions;
-};
+import {
+  type AIGNEHubImageModelOptions,
+  type AIGNEHubImageOutput,
+  aigneHubModelOptionsSchema,
+} from "./utils/type.js";
 
 export class AIGNEHubImageModel extends ImageModel {
   constructor(public options: AIGNEHubImageModelOptions) {

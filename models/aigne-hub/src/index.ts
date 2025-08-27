@@ -8,9 +8,8 @@ import {
   type ImageModelOutput,
 } from "@aigne/core";
 import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
-import type { AIGNEHubImageModelOptions } from "./aigne-hub-image-model.js";
-import type { AIGNEHubChatModelOptions } from "./aigne-hub-model.js";
 import { findImageModel, findModel } from "./utils/model.js";
+import type { AIGNEHubChatModelOptions, AIGNEHubImageModelOptions } from "./utils/type.js";
 
 export * from "./utils/blocklet.js";
 export * from "./utils/constants.js";

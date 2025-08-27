@@ -5,23 +5,23 @@ import {
   type ImageModelOutput,
   imageModelInputSchema,
 } from "@aigne/core";
+import { snakelize } from "@aigne/core/utils/camelize.js";
 import { checkArguments, pick } from "@aigne/core/utils/type-utils.js";
-import { type ZodType, z } from "zod";
+import { z } from "zod";
 
 const IDEOGRAM_BASE_URL = "https://api.ideogram.ai/v1/ideogram-v3/generate";
 
 export interface IdeogramImageModelInput extends ImageModelInput {
-  prompt: string;
   seed?: number;
   resolution?: string;
-  aspect_ratio?: string;
-  rendering_speed?: string;
-  magic_prompt?: string;
-  negative_prompt?: string;
-  num_images?: number;
-  color_palette?: any;
-  style_codes?: string[];
-  style_type?: string;
+  aspectRatio?: string;
+  renderingSpeed?: string;
+  magicPrompt?: string;
+  negativePrompt?: string;
+  numImages?: number;
+  colorPalette?: any;
+  styleCodes?: string[];
+  styleType?: string;
 }
 
 export interface IdeogramImageModelOutput extends ImageModelOutput {}
@@ -33,20 +33,7 @@ export interface IdeogramImageModelOptions
   modelOptions?: Omit<Partial<IdeogramImageModelInput>, "model">;
 }
 
-const ideogramImageModelInputSchema: ZodType<IdeogramImageModelInput> =
-  imageModelInputSchema.extend({
-    prompt: z.string(),
-    resolution: z.string().optional(),
-    aspect_ratio: z.string().optional(),
-    rendering_speed: z.string().optional(),
-    magic_prompt: z.string().optional(),
-    negative_prompt: z.string().optional(),
-    num_images: z.number().optional(),
-    color_palette: z.any().optional(),
-    style_codes: z.array(z.string()).optional(),
-    style_type: z.string().optional(),
-    seed: z.number().optional(),
-  });
+const ideogramImageModelInputSchema = imageModelInputSchema.extend({});
 
 const ideogramImageModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
@@ -94,17 +81,20 @@ export class IdeogramImageModel extends ImageModel<
       "prompt",
       "seed",
       "resolution",
-      "aspect_ratio",
-      "rendering_speed",
-      "magic_prompt",
-      "negative_prompt",
-      "num_images",
-      "color_palette",
-      "style_codes",
-      "style_type",
+      "aspectRatio",
+      "renderingSpeed",
+      "magicPrompt",
+      "negativePrompt",
+      "colorPalette",
+      "styleCodes",
+      "styleType",
     ];
 
-    const mergedInput = pick({ ...this.modelOptions, ...input }, inputKeys);
+    const mergedInput = snakelize(pick({ ...this.modelOptions, ...input }, inputKeys));
+
+    if (input.n) {
+      formData.append("num_images", input.n as unknown as string);
+    }
 
     Object.keys(mergedInput).forEach((key) => {
       if (mergedInput[key]) {
@@ -120,12 +110,13 @@ export class IdeogramImageModel extends ImageModel<
 
     const response = await fetch(url, {
       method: "POST",
-      headers: { "api-key": apiKey ?? "" },
+      headers: { "api-key": apiKey },
       body: formData,
     });
 
     if (!response.ok) {
-      throw new Error(`Ideogram API error: ${response.status} ${response.statusText}`);
+      const error = await response.text();
+      throw new Error(`Ideogram API error: ${response.status} ${response.statusText} ${error}`);
     }
 
     const data = await response.json();

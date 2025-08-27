@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@aigne/poe": ["./src"],
-      "@aigne/poe/*": ["./src/*"]
+      "@aigne/ideogram": ["./src"],
+      "@aigne/ideogram/*": ["./src/*"]
     }
   },
   "exclude": ["node_modules", "lib"],

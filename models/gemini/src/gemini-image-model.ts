@@ -5,14 +5,13 @@ import {
   type ImageModelOutput,
   imageModelInputSchema,
 } from "@aigne/core";
-import { checkArguments } from "@aigne/core/utils/type-utils.js";
-import { GoogleGenAI } from "@google/genai";
-
+import { checkArguments, pick } from "@aigne/core/utils/type-utils.js";
+import { type GenerateImagesConfig, GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 
-const DEFAULT_MODEL = "gemini-2.0-flash-preview-image-generation";
+const DEFAULT_MODEL = "imagen-4.0-generate-001";
 
-export interface GeminiImageModelInput extends ImageModelInput {}
+export interface GeminiImageModelInput extends ImageModelInput, GenerateImagesConfig {}
 export interface GeminiImageModelOutput extends ImageModelOutput {}
 
 export interface GeminiImageModelOptions
@@ -49,12 +48,7 @@ export interface GeminiImageModelOptions
   clientOptions?: Record<string, any>;
 }
 
-const geminiImageModelInputSchema = imageModelInputSchema.extend({
-  model: z.string().optional(),
-  n: z.number().optional(),
-  responseFormat: z.enum(["url", "base64"]).optional(),
-  size: z.string().optional(),
-});
+const geminiImageModelInputSchema = imageModelInputSchema.extend({});
 
 const geminiImageModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
@@ -118,11 +112,27 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     }
 
     const mergedInput = { ...this.modelOptions, ...input };
+    const inputKeys = [
+      "seed",
+      "safetyFilterLevel",
+      "personGeneration",
+      "outputMimeType",
+      "outputGcsUri",
+      "outputCompressionQuality",
+      "negativePrompt",
+      "language",
+      "includeSafetyAttributes",
+      "includeRaiReason",
+      "imageSize",
+      "guidanceScale",
+      "aspectRatio",
+      "addWatermark",
+    ];
 
     const response = await this.client.models.generateImages({
       model: model,
       prompt: mergedInput.prompt,
-      config: { numberOfImages: mergedInput.n || 1 },
+      config: { numberOfImages: mergedInput.n || 1, ...pick(mergedInput, inputKeys) },
     });
 
     return {

@@ -12,6 +12,7 @@ import {
   type ChatModelInput,
   type ChatModelOutput,
 } from "../../src/agents/chat-model.js";
+import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
 test("ChatModel implementation", async () => {
   // #region example-chat-model
@@ -299,4 +300,38 @@ test("ChatModel should auto convert tool name to valid function name", async () 
   });
 
   expect(process.mock.lastCall?.[0].tools?.at(0)?.function.name).toEqual("get___weather");
+});
+
+test("ChatModel should validate structured response with json schema", async () => {
+  const model = new OpenAIChatModel();
+
+  const input: ChatModelInput = {
+    messages: [{ role: "user", content: "Provide a JSON response with name and age." }],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "TestSchema",
+        schema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            age: { type: "number" },
+          },
+          required: ["name", "age"],
+          additionalProperties: false,
+        },
+        strict: true,
+      },
+    },
+  };
+
+  const modelProcess = spyOn(model, "process");
+
+  modelProcess.mockReturnValueOnce({ json: { name: 30 } });
+  expect(model.invoke(input)).rejects.toThrowError(
+    /Output JSON does not conform to the provided JSON schema/,
+  );
+
+  modelProcess.mockReturnValueOnce({ json: { name: "Alice", age: 25 } });
+  expect(await model.invoke(input)).toEqual({ json: { name: "Alice", age: 25 } });
 });

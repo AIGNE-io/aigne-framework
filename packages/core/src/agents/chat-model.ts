@@ -1,3 +1,4 @@
+import { Ajv } from "ajv";
 import { z } from "zod";
 import type { PromiseOrValue } from "../utils/type-utils.js";
 import {
@@ -170,6 +171,15 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
 
           toolCall.function.name = originalTool.function.name;
         }
+      }
+    }
+
+    if (input.responseFormat?.type === "json_schema") {
+      const ajv = new Ajv();
+      if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
+        throw new Error(
+          `Output JSON does not conform to the provided JSON schema: ${ajv.errorsText()}`,
+        );
       }
     }
 

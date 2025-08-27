@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.17.39](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.17.38...example-workflow-code-execution-v1.17.39) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.29
+    * @aigne/cli bumped to 1.41.2
+    * @aigne/default-memory bumped to 1.1.11
+    * @aigne/openai bumped to 0.13.0
+
 ## [1.17.38](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.17.37...example-workflow-code-execution-v1.17.38) (2025-08-26)
 
 

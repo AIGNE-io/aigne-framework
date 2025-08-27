@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.6.10...aigne-hub-v0.7.0) (2025-08-27)
+
+
+### Features
+
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/deepseek bumped to 0.7.29
+    * @aigne/doubao bumped to 1.0.23
+    * @aigne/gemini bumped to 0.10.0
+    * @aigne/ideogram bumped to 0.2.0
+    * @aigne/ollama bumped to 0.7.29
+    * @aigne/open-router bumped to 0.7.29
+    * @aigne/openai bumped to 0.13.0
+    * @aigne/poe bumped to 1.0.9
+    * @aigne/transport bumped to 0.14.9
+    * @aigne/xai bumped to 0.7.29
+  * devDependencies
+    * @aigne/openai bumped to 0.13.0
+
 ## [0.6.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.6.9...aigne-hub-v0.6.10) (2025-08-26)
 
 

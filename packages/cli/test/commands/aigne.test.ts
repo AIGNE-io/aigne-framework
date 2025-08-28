@@ -1,5 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import { createAIGNECommand } from "@aigne/cli/commands/aigne.js";
+import { AIGNE_CLI_VERSION } from "@aigne/cli/constants";
 
 test("aigne command should parse --version correctly", async () => {
   const command = createAIGNECommand();
@@ -26,7 +27,11 @@ test("aigne command should print help if no any subcommand", async () => {
 
   await command.parseAsync([]);
 
-  expect(log.mock.calls).toMatchSnapshot();
+  expect(
+    log.mock.calls.map((i) =>
+      i.map((j) => (typeof j === "string" ? j.replaceAll(AIGNE_CLI_VERSION, "xx.xx.xx") : j)),
+    ),
+  ).toMatchSnapshot();
 
   exit.mockRestore();
   log.mockRestore();

@@ -23,6 +23,7 @@
     "models/openai": {},
     "models/xai": {},
     "models/aigne-hub": {},
+    "models/lmstudio": {},
     "memory/default": {},
     "memory/agentic": {},
     "memory/fs": {},

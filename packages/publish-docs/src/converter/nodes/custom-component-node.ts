@@ -11,6 +11,7 @@ import type {
   NodeKey,
   Spread,
 } from "lexical";
+import { JSX, createElement, Fragment } from 'react';
 
 const NODE_TYPE = "x-component";
 
@@ -134,6 +135,10 @@ export class CustomComponentNode extends DecoratorBlockNode {
 
   override isInline(): false {
     return false;
+  }
+
+  override decorate(): JSX.Element {
+    return createElement(Fragment, null);
   }
 }
 

@@ -1,15 +1,18 @@
 import {
-  type DOMConversionMap,
-  type DOMConversionOutput,
-  type DOMExportOutput,
-  type ElementFormatType,
-  type LexicalNode,
-  type NodeKey,
-  type Spread,
-} from 'lexical';
-import { DecoratorBlockNode, SerializedDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode';
+  DecoratorBlockNode,
+  type SerializedDecoratorBlockNode,
+} from "@lexical/react/LexicalDecoratorBlockNode";
+import type {
+  DOMConversionMap,
+  DOMConversionOutput,
+  DOMExportOutput,
+  ElementFormatType,
+  LexicalNode,
+  NodeKey,
+  Spread,
+} from "lexical";
 
-const NODE_TYPE = 'x-component';
+const NODE_TYPE = "x-component";
 
 interface CustomComponentData {
   component: string;
@@ -25,7 +28,7 @@ export type SerializedCustomComponentNode = Spread<
 >;
 
 function isCustomComponent(domNode: HTMLElement): boolean {
-  return domNode.tagName.toLowerCase().startsWith('x-');
+  return domNode.tagName.toLowerCase().startsWith("x-");
 }
 
 function getComponentName(domNode: HTMLElement): string {
@@ -36,7 +39,10 @@ function getComponentName(domNode: HTMLElement): string {
 }
 
 function domToComponentProperties(domNode: HTMLElement): Record<string, unknown> {
-  const properties: Record<string, unknown> = { component: getComponentName(domNode), ...domNode.dataset };
+  const properties: Record<string, unknown> = {
+    component: getComponentName(domNode),
+    ...domNode.dataset,
+  };
   const { children } = domNode;
   const hasChildren = Array.from(children).some((child) => isCustomComponent(child as HTMLElement));
   if (hasChildren) {
@@ -45,7 +51,7 @@ function domToComponentProperties(domNode: HTMLElement): Record<string, unknown>
       return { component: childProperties.component, properties: childProperties };
     });
   } else {
-    properties.body = domNode.textContent?.trim() || '';
+    properties.body = domNode.textContent?.trim() || "";
   }
   return properties;
 }
@@ -54,7 +60,10 @@ function convertCustomComponentElement(domNode: HTMLElement): null | DOMConversi
   const component = getComponentName(domNode);
   try {
     if (component) {
-      const node = $createCustomComponentNode({ component, properties: domToComponentProperties(domNode) });
+      const node = $createCustomComponentNode({
+        component,
+        properties: domToComponentProperties(domNode),
+      });
       return { node };
     }
   } catch (e) {
@@ -80,7 +89,7 @@ export class CustomComponentNode extends DecoratorBlockNode {
   }
 
   override exportDOM(): DOMExportOutput {
-    const element = document.createElement('div');
+    const element = document.createElement("div");
     const { body, ...rest } = this.__data.properties || {};
     if (body) {
       element.textContent = body as string;
@@ -93,10 +102,10 @@ export class CustomComponentNode extends DecoratorBlockNode {
 
   static override importDOM(): DOMConversionMap | null {
     return {
-      'x-card': () => ({ conversion: convertCustomComponentElement, priority: 1 }),
-      'x-cards': () => ({ conversion: convertCustomComponentElement, priority: 1 }),
-      'x-code-group': () => ({ conversion: convertCustomComponentElement, priority: 1 }),
-      'x-steps': () => ({ conversion: convertCustomComponentElement, priority: 1 }),
+      "x-card": () => ({ conversion: convertCustomComponentElement, priority: 1 }),
+      "x-cards": () => ({ conversion: convertCustomComponentElement, priority: 1 }),
+      "x-code-group": () => ({ conversion: convertCustomComponentElement, priority: 1 }),
+      "x-steps": () => ({ conversion: convertCustomComponentElement, priority: 1 }),
     };
   }
 
@@ -133,6 +142,8 @@ export function $createCustomComponentNode(data: CustomComponentData): CustomCom
   return customComponentNode;
 }
 
-export function $isCustomComponentNode(node: LexicalNode | null | undefined): node is CustomComponentNode {
+export function $isCustomComponentNode(
+  node: LexicalNode | null | undefined,
+): node is CustomComponentNode {
   return node instanceof CustomComponentNode;
 }

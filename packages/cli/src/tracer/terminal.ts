@@ -23,6 +23,7 @@ import * as prompts from "@inquirer/prompts";
 import chalk from "chalk";
 import { Marked } from "marked";
 import { AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE } from "../constants.js";
+import checkbox from "../utils/inquirer/checkbox.js";
 import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
 import { highlightUrl } from "../utils/string-utils.js";
 import { parseDuration } from "../utils/time.js";
@@ -256,8 +257,11 @@ export class TerminalTracer {
     {},
     {
       get: (_target, prop) => {
-        // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
-        const method = prompts[prop as keyof typeof prompts] as (...args: any[]) => any;
+        const method =
+          prop === "checkbox"
+            ? checkbox
+            : // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
+              (prompts[prop as keyof typeof prompts] as (...args: any[]) => any);
         if (typeof method !== "function") return undefined;
 
         return async (config: any) => {

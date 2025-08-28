@@ -39,8 +39,6 @@
     "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib test/coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {

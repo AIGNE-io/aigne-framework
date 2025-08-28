@@ -11,7 +11,6 @@ import type {
   NodeKey,
   Spread,
 } from "lexical";
-import { JSX, createElement, Fragment } from 'react';
 
 const NODE_TYPE = "x-component";
 
@@ -138,7 +137,7 @@ export class CustomComponentNode extends DecoratorBlockNode {
   }
 
   override decorate(): JSX.Element {
-    return createElement(Fragment, null);
+    return null as any;
   }
 }
 

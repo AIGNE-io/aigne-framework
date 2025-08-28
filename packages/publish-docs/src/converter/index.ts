@@ -102,7 +102,7 @@ export class Converter {
         if (text.startsWith("<x-")) {
           // Check if text contains data-href attribute
           const dataHrefMatch = text.match(/data-href="([^"]+)"/);
-          if (dataHrefMatch && dataHrefMatch[1]) {
+          if (dataHrefMatch?.[1]) {
             const hrefValue = dataHrefMatch[1];
             // If href starts with "/", normalize the path (/aa/bb/cc => <slugPrefix>-aa-bb-cc)
             if (hrefValue.startsWith("/")) {

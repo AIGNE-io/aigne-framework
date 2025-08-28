@@ -115,7 +115,7 @@ export class IdeogramImageModel extends ImageModel<
         `${this.name} requires an API key. Please provide it via \`options.apiKey\`, or set the \`${this.apiKeyEnvName}\` environment variable`,
       );
 
-    const response = await fetch(joinURL(url, `/v1/${model}/generate`), {
+    const response = await fetch(joinURL(new URL(url).origin, `/v1/${model}/generate`), {
       method: "POST",
       headers: { "api-key": apiKey },
       body: formData,

@@ -1,5 +1,83 @@
 # Changelog
 
+## [1.41.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.41.2...cli-v1.41.3) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.30
+    * @aigne/agentic-memory bumped to 1.0.30
+    * @aigne/aigne-hub bumped to 0.8.0
+    * @aigne/core bumped to 1.56.0
+    * @aigne/default-memory bumped to 1.1.12
+    * @aigne/openai bumped to 0.13.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.37
+
+## [1.41.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.41.1...cli-v1.41.2) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.29
+    * @aigne/agentic-memory bumped to 1.0.29
+    * @aigne/aigne-hub bumped to 0.7.0
+    * @aigne/default-memory bumped to 1.1.11
+    * @aigne/openai bumped to 0.13.0
+
+## [1.41.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.41.0...cli-v1.41.1) (2025-08-26)
+
+
+### Bug Fixes
+
+* **cli:** reduce memory usage of AIGNE CLI ([#411](https://github.com/AIGNE-io/aigne-framework/issues/411)) ([9c36969](https://github.com/AIGNE-io/aigne-framework/commit/9c369699d966d37abf2d6a1624eac3d2fda4123b))
+* **cli:** use corepack instead of npm install deps ([#413](https://github.com/AIGNE-io/aigne-framework/issues/413)) ([1b9150c](https://github.com/AIGNE-io/aigne-framework/commit/1b9150c534bfd0cfbb51f5bed51fff609da93628))
+* optimize hub connect copy ([#415](https://github.com/AIGNE-io/aigne-framework/issues/415)) ([8acc4ad](https://github.com/AIGNE-io/aigne-framework/commit/8acc4adf5815afc9564235eeb40b09293c6ab00c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.28
+    * @aigne/agentic-memory bumped to 1.0.28
+    * @aigne/aigne-hub bumped to 0.6.10
+    * @aigne/core bumped to 1.55.1
+    * @aigne/default-memory bumped to 1.1.10
+    * @aigne/observability-api bumped to 0.10.1
+    * @aigne/openai bumped to 0.12.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.36
+
+## [1.41.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.40.0...cli-v1.41.0) (2025-08-25)
+
+
+### Features
+
+* **ux:** use standard blocklet layout in aigne runtime ([#403](https://github.com/AIGNE-io/aigne-framework/issues/403)) ([a14274d](https://github.com/AIGNE-io/aigne-framework/commit/a14274dbf970bae7fed0eff150933ecf0f65eb64))
+
+
+### Bug Fixes
+
+* **cli:** prefer variables from process.env when loadChatModel ([#407](https://github.com/AIGNE-io/aigne-framework/issues/407)) ([d32b2db](https://github.com/AIGNE-io/aigne-framework/commit/d32b2db20435a022d944a674e90333899d881daf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.27
+    * @aigne/agentic-memory bumped to 1.0.27
+    * @aigne/aigne-hub bumped to 0.6.9
+    * @aigne/default-memory bumped to 1.1.9
+    * @aigne/openai bumped to 0.12.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.35
+
 ## [1.40.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.39.1...cli-v1.40.0) (2025-08-22)
 
 

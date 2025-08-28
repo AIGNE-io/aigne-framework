@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.6.0...publish-docs-v0.7.0) (2025-08-27)
+
+
+### Features
+
+* **models:** support aigne hub models ([#416](https://github.com/AIGNE-io/aigne-framework/issues/416)) ([b4f014c](https://github.com/AIGNE-io/aigne-framework/commit/b4f014cf5ed08ef930d3ddfc278d3610e64c6af3))
+
+## [0.6.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.7...publish-docs-v0.6.0) (2025-08-26)
+
+
+### Features
+
+* **docs:** support auto asset uploading on publishing ([#410](https://github.com/AIGNE-io/aigne-framework/issues/410)) ([c0f84b3](https://github.com/AIGNE-io/aigne-framework/commit/c0f84b3c89cb17e5719d6707a0bf93dd99129f8b))
+
+## [0.5.7](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.6...publish-docs-v0.5.7) (2025-08-25)
+
+
+### Bug Fixes
+
+* save board meta info ([#404](https://github.com/AIGNE-io/aigne-framework/issues/404)) ([433c07c](https://github.com/AIGNE-io/aigne-framework/commit/433c07c52229a73cc8e30b9f88927e0a88b07607))
+
 ## [0.5.6](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.5.5...publish-docs-v0.5.6) (2025-08-21)
 
 

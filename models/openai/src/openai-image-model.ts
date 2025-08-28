@@ -62,6 +62,8 @@ const openAIImageModelOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  modelOptions: z.object({}).optional(),
+  clientOptions: z.object({}).optional(),
 });
 
 export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIImageModelOutput> {
@@ -114,20 +116,24 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
    * @param input The input to process
    * @returns The generated response
    */
-  override async process(input: ImageModelInput): Promise<ImageModelOutput> {
+  override async process(input: OpenAIImageModelInput): Promise<OpenAIImageModelOutput> {
     const model = input.model || this.credential.model;
 
-    const inputKeys: (keyof OpenAI.ImageGenerateParams)[] = [
-      "background",
-      "moderation",
-      "output_compression",
-      "output_format",
-      "prompt",
-      "quality",
-      "size",
-      "style",
-      "user",
-    ];
+    const map: { [key: string]: any[] } = {
+      "dall-e-2": ["prompt", "size", "n"],
+      "dall-e-3": ["prompt", "size", "n", "quality", "style", "user"],
+      "gpt-image-1": [
+        "prompt",
+        "size",
+        "background",
+        "moderation",
+        "outputCompression",
+        "outputFormat",
+        "quality",
+        "user",
+        "stream",
+      ],
+    };
 
     let responseFormat: OpenAI.ImageGenerateParams["response_format"];
 
@@ -136,7 +142,7 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
     }
 
     const body: OpenAI.ImageGenerateParams = {
-      ...snakelize(pick({ ...this.modelOptions, ...input }, inputKeys)),
+      ...snakelize(pick({ ...this.modelOptions, ...input }, map[model] || map["dall-e-2"])),
       response_format: responseFormat,
       model,
     };

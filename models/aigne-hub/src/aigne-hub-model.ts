@@ -2,53 +2,26 @@ import {
   type AgentProcessResult,
   ChatModel,
   type ChatModelInput,
-  type ChatModelOptions,
   type ChatModelOutput,
 } from "@aigne/core";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
-import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import {
   BaseClient,
   type BaseClientInvokeOptions,
 } from "@aigne/transport/http-client/base-client.js";
 import { joinURL } from "ufo";
-import { z } from "zod";
 import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
 import {
   AIGNE_HUB_BLOCKLET_DID,
   AIGNE_HUB_DEFAULT_MODEL,
   AIGNE_HUB_URL,
 } from "./utils/constants.js";
-
-const aigneHubChatModelOptionsSchema = z.object({
-  url: z.string().optional(),
-  apiKey: z.string().optional(),
-  model: z.string().optional(),
-  modelOptions: z
-    .object({
-      model: z.string().optional(),
-      temperature: z.number().optional(),
-      topP: z.number().optional(),
-      frequencyPenalty: z.number().optional(),
-      presencePenalty: z.number().optional(),
-      parallelToolCalls: z.boolean().optional().default(true),
-    })
-    .optional(),
-  clientOptions: z.object({}).optional(),
-});
-
-export interface AIGNEHubChatModelOptions {
-  url?: string;
-  apiKey?: string;
-  model?: string;
-  modelOptions?: ChatModelOptions;
-  clientOptions?: OpenAIChatModelOptions["clientOptions"] & { clientId?: string };
-}
+import { type AIGNEHubChatModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
 export class AIGNEHubChatModel extends ChatModel {
   constructor(public options: AIGNEHubChatModelOptions) {
-    checkArguments("AIGNEHubChatModel", aigneHubChatModelOptionsSchema, options);
+    checkArguments("AIGNEHubChatModel", aigneHubModelOptionsSchema, options);
     super();
   }
 
@@ -69,8 +42,9 @@ export class AIGNEHubChatModel extends ChatModel {
   }>;
 
   override get credential() {
-    this._credential = getAIGNEHubMountPoint(
+    this._credential ??= getAIGNEHubMountPoint(
       this.options.url ||
+        this.options.baseURL ||
         process.env.BLOCKLET_AIGNE_API_URL ||
         process.env.AIGNE_HUB_API_URL ||
         AIGNE_HUB_URL,

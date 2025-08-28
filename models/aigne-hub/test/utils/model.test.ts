@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { findModel } from "../../src/utils/model.js";
+import { findImageModel, findModel } from "../../src/utils/model.js";
 
 describe("findModel", async () => {
   describe("findModel function", () => {
@@ -115,6 +115,87 @@ describe("findModel", async () => {
       const result = findModel("xai");
       expect(result.match).toBeDefined();
       expect(result.match?.name).toBe("XAIChatModel");
+    });
+  });
+});
+
+describe("findImageModel", async () => {
+  describe("findImageModel function", () => {
+    test("should find exact image model match", () => {
+      const result = findImageModel("OpenAI");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("OpenAIImageModel");
+      expect(result.all).toHaveLength(4);
+    });
+
+    test("should find partial image model match", () => {
+      const result = findImageModel("gemini");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("GeminiImageModel");
+    });
+
+    test("should handle hyphenated names", () => {
+      const result = findImageModel("aigne-hub");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("AIGNEHubImageModel");
+    });
+
+    test("should be case insensitive", () => {
+      const result1 = findImageModel("OPENAI");
+      const result2 = findImageModel("openai");
+      const result3 = findImageModel("OpenAI");
+
+      expect(result1.match?.name).toBe("OpenAIImageModel");
+      expect(result2.match?.name).toBe("OpenAIImageModel");
+      expect(result3.match?.name).toBe("OpenAIImageModel");
+    });
+
+    test("should return undefined for non-matching provider", () => {
+      const result = findImageModel("nonexistent");
+      expect(result.match).toBeUndefined();
+      expect(result.all).toHaveLength(4);
+    });
+
+    test("should return all available image models", () => {
+      const result = findImageModel("any");
+      expect(result.all).toHaveLength(4);
+      expect(result.all).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: "OpenAIImageModel" }),
+          expect.objectContaining({ name: "GeminiImageModel" }),
+          expect.objectContaining({ name: "IdeogramImageModel" }),
+          expect.objectContaining({ name: "AIGNEHubImageModel" }),
+        ]),
+      );
+    });
+
+    test("should find Ideogram image model", () => {
+      const result = findImageModel("ideogram");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("IdeogramImageModel");
+    });
+
+    test("should find AIGNE Hub image model", () => {
+      const result = findImageModel("aigne-hub");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("AIGNEHubImageModel");
+    });
+
+    test("should handle special characters", () => {
+      const result = findImageModel("open_ai");
+      expect(result.match).toBeUndefined();
+    });
+
+    test("should find OpenAI image model", () => {
+      const result = findImageModel("openai");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("OpenAIImageModel");
+    });
+
+    test("should find Gemini image model", () => {
+      const result = findImageModel("gemini");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("GeminiImageModel");
     });
   });
 });

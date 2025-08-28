@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.0...sqlite-v0.4.1) (2025-08-26)
+
+
+### Bug Fixes
+
+* **cli:** reduce memory usage of AIGNE CLI ([#411](https://github.com/AIGNE-io/aigne-framework/issues/411)) ([9c36969](https://github.com/AIGNE-io/aigne-framework/commit/9c369699d966d37abf2d6a1624eac3d2fda4123b))
+
 ## [0.4.0](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.3.1...sqlite-v0.4.0) (2025-07-15)
 
 

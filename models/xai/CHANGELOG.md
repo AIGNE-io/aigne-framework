@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.7.30](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.29...xai-v0.7.30) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.1
+  * devDependencies
+    * @aigne/core bumped to 1.56.0
+    * @aigne/test-utils bumped to 0.5.37
+
+## [0.7.29](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.28...xai-v0.7.29) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.0
+
+## [0.7.28](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.27...xai-v0.7.28) (2025-08-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.12.4
+  * devDependencies
+    * @aigne/core bumped to 1.55.1
+    * @aigne/test-utils bumped to 0.5.36
+
+## [0.7.27](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.26...xai-v0.7.27) (2025-08-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.12.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.35
+
 ## [0.7.26](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.25...xai-v0.7.26) (2025-08-21)
 
 

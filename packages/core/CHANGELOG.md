@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.56.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.55.1...core-v1.56.0) (2025-08-27)
+
+
+### Features
+
+* **models:** add retry mechanism for network errors and structured output validation errors ([#418](https://github.com/AIGNE-io/aigne-framework/issues/418)) ([52bc9ee](https://github.com/AIGNE-io/aigne-framework/commit/52bc9eec5f4f4fa3c3f26881c405f4f89dad01c9))
+
+## [1.55.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.55.0...core-v1.55.1) (2025-08-26)
+
+
+### Bug Fixes
+
+* **cli:** reduce memory usage of AIGNE CLI ([#411](https://github.com/AIGNE-io/aigne-framework/issues/411)) ([9c36969](https://github.com/AIGNE-io/aigne-framework/commit/9c369699d966d37abf2d6a1624eac3d2fda4123b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.10.1
+
 ## [1.55.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.54.0...core-v1.55.0) (2025-08-21)
 
 

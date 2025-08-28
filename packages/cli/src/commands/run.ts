@@ -103,8 +103,6 @@ export function createRunCommand({
                 path: dir,
                 modelOptions: {
                   ...options,
-                  model: options.model || process.env.MODEL,
-                  aigneHubUrl: options?.aigneHubUrl,
                   inquirerPromptFn: (prompt) => {
                     if (prompt.type === "input") {
                       return task

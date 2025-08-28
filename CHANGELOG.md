@@ -1,5 +1,70 @@
 # Changelog
 
+## [1.71.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.70.0...aigne-framework-v1.71.0) (2025-08-27)
+
+
+### Features
+
+* **models:** add retry mechanism for network errors and structured output validation errors ([#418](https://github.com/AIGNE-io/aigne-framework/issues/418)) ([52bc9ee](https://github.com/AIGNE-io/aigne-framework/commit/52bc9eec5f4f4fa3c3f26881c405f4f89dad01c9))
+* **models:** support aigne hub models ([#416](https://github.com/AIGNE-io/aigne-framework/issues/416)) ([b4f014c](https://github.com/AIGNE-io/aigne-framework/commit/b4f014cf5ed08ef930d3ddfc278d3610e64c6af3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.7.0
+
+## [1.70.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.69.0...aigne-framework-v1.70.0) (2025-08-27)
+
+
+### Features
+
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+
+## [1.69.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.68.0...aigne-framework-v1.69.0) (2025-08-26)
+
+
+### Features
+
+* **docs:** support auto asset uploading on publishing ([#410](https://github.com/AIGNE-io/aigne-framework/issues/410)) ([c0f84b3](https://github.com/AIGNE-io/aigne-framework/commit/c0f84b3c89cb17e5719d6707a0bf93dd99129f8b))
+
+
+### Bug Fixes
+
+* **cli:** reduce memory usage of AIGNE CLI ([#411](https://github.com/AIGNE-io/aigne-framework/issues/411)) ([9c36969](https://github.com/AIGNE-io/aigne-framework/commit/9c369699d966d37abf2d6a1624eac3d2fda4123b))
+* **cli:** use corepack instead of npm install deps ([#413](https://github.com/AIGNE-io/aigne-framework/issues/413)) ([1b9150c](https://github.com/AIGNE-io/aigne-framework/commit/1b9150c534bfd0cfbb51f5bed51fff609da93628))
+* optimize hub connect copy ([#415](https://github.com/AIGNE-io/aigne-framework/issues/415)) ([8acc4ad](https://github.com/AIGNE-io/aigne-framework/commit/8acc4adf5815afc9564235eeb40b09293c6ab00c))
+* update package to latest for observability ([#408](https://github.com/AIGNE-io/aigne-framework/issues/408)) ([997c3f3](https://github.com/AIGNE-io/aigne-framework/commit/997c3f3e8c9a7d6f3b3fedd3e6eea838b8385635))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.6.0
+
+## [1.68.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.67.0...aigne-framework-v1.68.0) (2025-08-25)
+
+
+### Features
+
+* **ux:** use standard blocklet layout in aigne runtime ([#403](https://github.com/AIGNE-io/aigne-framework/issues/403)) ([a14274d](https://github.com/AIGNE-io/aigne-framework/commit/a14274dbf970bae7fed0eff150933ecf0f65eb64))
+
+
+### Bug Fixes
+
+* **cli:** prefer variables from process.env when loadChatModel ([#407](https://github.com/AIGNE-io/aigne-framework/issues/407)) ([d32b2db](https://github.com/AIGNE-io/aigne-framework/commit/d32b2db20435a022d944a674e90333899d881daf))
+* save board meta info ([#404](https://github.com/AIGNE-io/aigne-framework/issues/404)) ([433c07c](https://github.com/AIGNE-io/aigne-framework/commit/433c07c52229a73cc8e30b9f88927e0a88b07607))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/publish-docs bumped to 0.5.7
+
 ## [1.67.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.66.0...aigne-framework-v1.67.0) (2025-08-22)
 
 

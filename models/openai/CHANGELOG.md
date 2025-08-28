@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.13.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.13.0...openai-v0.13.1) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.56.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.37
+
+## [0.13.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.12.4...openai-v0.13.0) (2025-08-27)
+
+
+### Features
+
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+
+## [0.12.4](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.12.3...openai-v0.12.4) (2025-08-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.55.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.36
+
+## [0.12.3](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.12.2...openai-v0.12.3) (2025-08-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.35
+
 ## [0.12.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.12.1...openai-v0.12.2) (2025-08-21)
 
 

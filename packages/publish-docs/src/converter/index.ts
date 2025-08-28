@@ -99,25 +99,22 @@ export class Converter {
         return `<a href="${slugPrefix ? `${slugPrefix}-${slug}${anchor ? `#${anchor}` : ""}` : slug}${anchor ? `#${anchor}` : ""}">${marked.parseInline(text)}</a>`;
       },
       html({ text }) {
-        if (text.startsWith('<x-')) {
+        if (text.startsWith("<x-")) {
           // Check if text contains data-href attribute
           const dataHrefMatch = text.match(/data-href="([^"]+)"/);
           if (dataHrefMatch && dataHrefMatch[1]) {
             const hrefValue = dataHrefMatch[1];
             // If href starts with "/", normalize the path (/aa/bb/cc => <slugPrefix>-aa-bb-cc)
-            if (hrefValue.startsWith('/')) {
-              const prefix = slugPrefix ? `${slugPrefix}-` : ''
-              const processedHref = prefix + hrefValue.substring(1).replace(/\//g, '-');
-              const updatedText = text.replace(
-                /data-href="[^"]+"/,
-                `data-href="${processedHref}"`
-              );
+            if (hrefValue.startsWith("/")) {
+              const prefix = slugPrefix ? `${slugPrefix}-` : "";
+              const processedHref = prefix + hrefValue.substring(1).replace(/\//g, "-");
+              const updatedText = text.replace(/data-href="[^"]+"/, `data-href="${processedHref}"`);
               return updatedText;
             }
           }
         }
         return false;
-      }
+      },
     };
 
     marked.use({ renderer });

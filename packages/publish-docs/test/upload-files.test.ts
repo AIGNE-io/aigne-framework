@@ -1,26 +1,29 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
+import { join } from "node:path";
 import YAML from "yaml";
+import { mockModule } from "./mock-module.js";
 
 // Mock dependencies first
 const mockReadFileSync = mock();
 const mockWriteFileSync = mock();
 const mockExistsSync = mock();
 const mockStatSync = mock();
-const mockFetch = mock() as any;
 const mockGetComponentMountPoint = mock();
 const mockCreateHash = mock();
+
+const mockFetch = spyOn(globalThis, "fetch");
 
 // Create mock crypto module
 const mockCrypto = {
   createHash: mockCreateHash,
 };
 
-mock.module("node:crypto", () => ({
+const cryptoMock = await mockModule("node:crypto", () => ({
   default: mockCrypto,
   createHash: mockCreateHash,
 }));
 
-mock.module("node:fs", () => ({
+const fsMock = await mockModule("node:fs", () => ({
   default: {
     readFileSync: mockReadFileSync,
     writeFileSync: mockWriteFileSync,
@@ -33,15 +36,22 @@ mock.module("node:fs", () => ({
   statSync: mockStatSync,
 }));
 
-mock.module("../src/utils/get-component-mount-point.js", () => ({
-  default: {
+const mountPointMock = await mockModule(
+  join(import.meta.dirname, "../src/utils/get-component-mount-point.js"),
+  () => ({
+    default: {
+      getComponentMountPoint: mockGetComponentMountPoint,
+    },
     getComponentMountPoint: mockGetComponentMountPoint,
-  },
-  getComponentMountPoint: mockGetComponentMountPoint,
-}));
+  }),
+);
 
-// Mock global fetch
-(global as any).fetch = mockFetch;
+afterAll(async () => {
+  await cryptoMock[Symbol.asyncDispose]?.();
+  await fsMock[Symbol.asyncDispose]?.();
+  await mountPointMock[Symbol.asyncDispose]?.();
+  mockFetch.mockRestore();
+});
 
 // Now import the module under test
 import { type UploadFilesOptions, uploadFiles } from "../src/utils/upload-files.js";
@@ -111,19 +121,17 @@ describe("upload-files", () => {
       mockGetComponentMountPoint.mockResolvedValue("/mount-point");
 
       // Mock successful upload
-      const mockCreateResponse = {
-        ok: true,
+      const mockCreateResponse = new Response(null, {
         headers: {
-          get: mock().mockReturnValue("/upload/123"),
+          location: "/upload/123",
         },
-      };
+      });
 
-      const mockUploadResponse = {
-        ok: true,
-        json: mock().mockResolvedValue({
+      const mockUploadResponse = new Response(
+        JSON.stringify({
           url: "https://cdn.example.com/uploaded-file.jpg",
         }),
-      };
+      );
 
       mockFetch
         .mockResolvedValueOnce(mockCreateResponse) // Create upload
@@ -152,12 +160,10 @@ describe("upload-files", () => {
       mockGetComponentMountPoint.mockResolvedValue("/mount-point");
 
       // Mock failed creation
-      const mockCreateResponse = {
-        ok: false,
+      const mockCreateResponse = new Response("Invalid request", {
         status: 400,
         statusText: "Bad Request",
-        text: mock().mockResolvedValue("Invalid request"),
-      };
+      });
 
       mockFetch.mockResolvedValue(mockCreateResponse);
 
@@ -240,10 +246,7 @@ describe("upload-files", () => {
       mockGetComponentMountPoint.mockResolvedValue("/mount-point");
 
       // Mock response with no Location header
-      const mockCreateResponse = {
-        ok: true,
-        headers: { get: mock().mockReturnValue(null) },
-      };
+      const mockCreateResponse = new Response(null, {});
 
       mockFetch.mockResolvedValue(mockCreateResponse);
 
@@ -269,17 +272,16 @@ describe("upload-files", () => {
 
       mockGetComponentMountPoint.mockResolvedValue("/mount-point");
 
-      const mockCreateResponse = {
-        ok: true,
-        headers: { get: mock().mockReturnValue("/upload/123") },
-      };
+      const mockCreateResponse = new Response(null, {
+        headers: {
+          location: "/upload/123",
+        },
+      });
 
-      const mockUploadResponse = {
-        ok: false,
+      const mockUploadResponse = new Response("Upload failed", {
         status: 500,
         statusText: "Internal Server Error",
-        text: mock().mockResolvedValue("Upload failed"),
-      };
+      });
 
       mockFetch.mockResolvedValueOnce(mockCreateResponse).mockResolvedValueOnce(mockUploadResponse);
 
@@ -305,15 +307,13 @@ describe("upload-files", () => {
 
       mockGetComponentMountPoint.mockResolvedValue("/mount-point");
 
-      const mockCreateResponse = {
-        ok: true,
-        headers: { get: mock().mockReturnValue("/upload/123") },
-      };
+      const mockCreateResponse = new Response(null, {
+        headers: {
+          location: "/upload/123",
+        },
+      });
 
-      const mockUploadResponse = {
-        ok: true,
-        json: mock().mockResolvedValue({}), // No URL in response
-      };
+      const mockUploadResponse = new Response(JSON.stringify({}), {});
 
       mockFetch.mockResolvedValueOnce(mockCreateResponse).mockResolvedValueOnce(mockUploadResponse);
 
@@ -342,14 +342,16 @@ describe("upload-files", () => {
 
       mockGetComponentMountPoint.mockResolvedValue("/mount-point");
 
-      const mockCreateResponse = {
-        ok: true,
-        headers: { get: mock().mockReturnValue("/upload/123") },
-      };
-      const mockUploadResponse = {
-        ok: true,
-        json: mock().mockResolvedValue({ url: "https://cdn.example.com/uploaded.jpg" }),
-      };
+      const mockCreateResponse = new Response(null, {
+        headers: {
+          location: "/upload/123",
+        },
+      });
+      const mockUploadResponse = new Response(
+        JSON.stringify({
+          url: "https://cdn.example.com/uploaded.jpg",
+        }),
+      );
 
       mockFetch.mockResolvedValueOnce(mockCreateResponse).mockResolvedValueOnce(mockUploadResponse);
 

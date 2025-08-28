@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import path from "node:path";
 import {
   filterLocalImages,
@@ -8,15 +8,20 @@ import {
   type ImageSearchResult,
   isRemoteUrl,
 } from "../src/utils/image-finder.js";
+import { mockModule } from "./mock-module.js";
 
 // Mock fs module
 const mockExistsSync = mock();
-mock.module("node:fs", () => ({
+const fsMock = await mockModule("node:fs", () => ({
   default: {
     existsSync: mockExistsSync,
   },
   existsSync: mockExistsSync,
 }));
+
+afterAll(async () => {
+  await fsMock[Symbol.asyncDispose]();
+});
 
 // Mock console.warn to suppress warnings during tests
 const originalConsoleWarn = console.warn;

@@ -100,17 +100,22 @@ export class Converter {
       },
       html({ text }) {
         if (text.startsWith("<x-")) {
-          // Check if text contains data-href attribute
-          const dataHrefMatch = text.match(/data-href="([^"]+)"/);
-          if (dataHrefMatch?.[1]) {
-            const hrefValue = dataHrefMatch[1];
+          // Check if text contains data-href attributes and process all of them
+          const dataHrefMatches = text.matchAll(/data-href="([^"]+)"/g);
+          let updatedText = text;
+
+          for (const match of dataHrefMatches) {
+            const hrefValue = match[1];
             // If href starts with "/", normalize the path (/aa/bb/cc => <slugPrefix>-aa-bb-cc)
-            if (hrefValue.startsWith("/")) {
+            if (hrefValue?.startsWith("/")) {
               const prefix = slugPrefix ? `${slugPrefix}-` : "";
               const processedHref = prefix + hrefValue.substring(1).replace(/\//g, "-");
-              const updatedText = text.replace(/data-href="[^"]+"/, `data-href="${processedHref}"`);
-              return updatedText;
+              updatedText = updatedText.replace(match[0], `data-href="${processedHref}"`);
             }
+          }
+
+          if (updatedText !== text) {
+            return updatedText;
           }
         }
         return false;

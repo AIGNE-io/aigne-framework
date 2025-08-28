@@ -41,6 +41,7 @@
   "memory/fs": "1.0.30",
   "models/doubao": "1.0.24",
   "models/poe": "1.0.10",
-  "blocklets/aigne-runtime": "1.4.1",
-  "models/ideogram": "0.3.0"
+  "models/ideogram": "0.3.0",
+  "models/lmstudio": "0.0.0",
+  "blocklets/aigne-runtime": "1.4.1"
 }

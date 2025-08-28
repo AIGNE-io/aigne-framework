@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.42.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.41.3...cli-v1.42.0) (2025-08-28)
+
+
+### Features
+
+* **cli:** add searchable checkbox component with dynamic filtering ([#426](https://github.com/AIGNE-io/aigne-framework/issues/426)) ([1a76fe7](https://github.com/AIGNE-io/aigne-framework/commit/1a76fe7c2f7d91bc4041dfcd73850b39a18a036b))
+
+
+### Bug Fixes
+
+* **cli:** only show ascii logo on help and errors ([#425](https://github.com/AIGNE-io/aigne-framework/issues/425)) ([1279376](https://github.com/AIGNE-io/aigne-framework/commit/1279376b7ca9c1c38148dcde581ee4730771a4ad))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.31
+    * @aigne/agentic-memory bumped to 1.0.31
+    * @aigne/aigne-hub bumped to 0.8.1
+    * @aigne/core bumped to 1.57.0
+    * @aigne/default-memory bumped to 1.1.13
+    * @aigne/openai bumped to 0.13.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.38
+
 ## [1.41.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.41.2...cli-v1.41.3) (2025-08-27)
 
 

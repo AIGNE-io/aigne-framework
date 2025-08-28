@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.7.0...publish-docs-v0.8.0) (2025-08-28)
+
+
+### Features
+
+* **docs:** add support for custom component ([#422](https://github.com/AIGNE-io/aigne-framework/issues/422)) ([2610e54](https://github.com/AIGNE-io/aigne-framework/commit/2610e54588a44ee4fede7bc9957a7e547c966658))
+
+
+### Bug Fixes
+
+* **docs:** normalize data-href attribute for custom components ([#427](https://github.com/AIGNE-io/aigne-framework/issues/427)) ([ae8a251](https://github.com/AIGNE-io/aigne-framework/commit/ae8a2514f244148b0962fffdb8f284c27736f368))
+* polish custom component link ([#428](https://github.com/AIGNE-io/aigne-framework/issues/428)) ([f2d0e6d](https://github.com/AIGNE-io/aigne-framework/commit/f2d0e6d52f28ee9baa3a82b83f28d693cc4881b8))
+
 ## [0.7.0](https://github.com/AIGNE-io/aigne-framework/compare/publish-docs-v0.6.0...publish-docs-v0.7.0) (2025-08-27)
 
 

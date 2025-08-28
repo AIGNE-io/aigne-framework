@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.57.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.56.0...core-v1.57.0) (2025-08-28)
+
+
+### Features
+
+* **cli:** add searchable checkbox component with dynamic filtering ([#426](https://github.com/AIGNE-io/aigne-framework/issues/426)) ([1a76fe7](https://github.com/AIGNE-io/aigne-framework/commit/1a76fe7c2f7d91bc4041dfcd73850b39a18a036b))
+
 ## [1.56.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.55.1...core-v1.56.0) (2025-08-27)
 
 

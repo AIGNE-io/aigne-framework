@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.11.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.11.0...gemini-v0.11.1) (2025-08-28)
+
+
+### Bug Fixes
+
+* support gemini-2.0-flash model for image model ([#429](https://github.com/AIGNE-io/aigne-framework/issues/429)) ([5a0bba1](https://github.com/AIGNE-io/aigne-framework/commit/5a0bba197cf8785384b70302f86cf702d04b7fc4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.2
+  * devDependencies
+    * @aigne/core bumped to 1.57.0
+    * @aigne/test-utils bumped to 0.5.38
+
 ## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.10.0...gemini-v0.11.0) (2025-08-27)
 
 

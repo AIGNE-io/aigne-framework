@@ -50,4 +50,4 @@ jobs:
                 * Unclear or confusing wording that may hinder understanding
                 * Variable/function names that could be more descriptive or follow better naming conventions
                 * Comment clarity and proper English usage
-            **STRICT FILTERING**: Do NOT comment on minor style preferences, formatting choices, css-in-js, typescript importing, or subjective improvements unless they fall into the CRITICAL categories above.
+            **STRICT FILTERING**: Do NOT comment on minor style preferences, formatting choices, css-in-js, typescript importing, code indentation/spacing issues, or subjective improvements unless they fall into the CRITICAL categories above.

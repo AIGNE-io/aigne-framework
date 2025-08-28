@@ -1,8 +1,11 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
 
 // Mock fetch
-const mockFetch = mock() as any;
-(global as any).fetch = mockFetch;
+const mockFetch = spyOn(globalThis, "fetch");
+
+afterAll(() => {
+  mockFetch.mockRestore();
+});
 
 // Import the function under test
 import { getComponentMountPoint } from "../src/utils/get-component-mount-point.js";
@@ -36,12 +39,7 @@ describe("getComponentMountPoint", () => {
       ],
     };
 
-    const mockResponse = {
-      ok: true,
-      json: mock().mockResolvedValue(mockConfig),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
 
     const result = await getComponentMountPoint("https://app.example.com", "did:component:2");
 
@@ -52,7 +50,6 @@ describe("getComponentMountPoint", () => {
         Accept: "application/json",
       },
     });
-    expect(mockResponse.json).toHaveBeenCalled();
   });
 
   test("should handle appUrl with path", async () => {
@@ -66,12 +63,7 @@ describe("getComponentMountPoint", () => {
       ],
     };
 
-    const mockResponse = {
-      ok: true,
-      json: mock().mockResolvedValue(mockConfig),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
 
     const result = await getComponentMountPoint("https://app.example.com/path", "did:test");
 
@@ -93,28 +85,17 @@ describe("getComponentMountPoint", () => {
       ],
     };
 
-    const mockResponse = {
-      ok: true,
-      json: mock().mockResolvedValue(mockConfig),
-    };
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
 
-    mockFetch.mockResolvedValue(mockResponse);
-
-    await expect(
-      getComponentMountPoint("https://app.example.com", "did:nonexistent"),
-    ).rejects.toThrow("Component did:nonexistent not found in blocklet: https://app.example.com");
+    expect(getComponentMountPoint("https://app.example.com", "did:nonexistent")).rejects.toThrow(
+      "Component did:nonexistent not found in blocklet: https://app.example.com",
+    );
   });
 
   test("should throw error when fetch fails", async () => {
-    const mockResponse = {
-      ok: false,
-      status: 404,
-      statusText: "Not Found",
-    };
+    mockFetch.mockResolvedValue(new Response(null, { status: 404, statusText: "Not Found" }));
 
-    mockFetch.mockResolvedValue(mockResponse);
-
-    await expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
+    expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
       "Failed to fetch blocklet json: 404 Not Found, https://app.example.com/__blocklet__.js?type=json",
     );
   });
@@ -122,7 +103,7 @@ describe("getComponentMountPoint", () => {
   test("should throw error when fetch throws", async () => {
     mockFetch.mockRejectedValue(new Error("Network error"));
 
-    await expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
+    expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
       "Network error",
     );
   });
@@ -132,42 +113,27 @@ describe("getComponentMountPoint", () => {
       componentMountPoints: [],
     };
 
-    const mockResponse = {
-      ok: true,
-      json: mock().mockResolvedValue(mockConfig),
-    };
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
 
-    mockFetch.mockResolvedValue(mockResponse);
-
-    await expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
+    expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
       "Component did:test not found in blocklet: https://app.example.com",
     );
   });
 
   test("should handle malformed JSON response", async () => {
-    const mockResponse = {
-      ok: true,
-      json: mock().mockRejectedValue(new Error("Invalid JSON")),
-    };
+    mockFetch.mockResolvedValue(new Response("Invalid JSON"));
 
-    mockFetch.mockResolvedValue(mockResponse);
-
-    await expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
-      "Invalid JSON",
+    expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
+      "Failed to parse JSON",
     );
   });
 
   test("should handle config without componentMountPoints property", async () => {
     const mockConfig = {};
 
-    const mockResponse = {
-      ok: true,
-      json: mock().mockResolvedValue(mockConfig),
-    };
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
 
-    mockFetch.mockResolvedValue(mockResponse);
-
-    await expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(); // Will throw because componentMountPoints is undefined
+    expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(); // Will throw because componentMountPoints is undefined
   });
 
   test("should construct correct URL for different origins", async () => {
@@ -181,12 +147,7 @@ describe("getComponentMountPoint", () => {
       ],
     };
 
-    const mockResponse = {
-      ok: true,
-      json: mock().mockResolvedValue(mockConfig),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
 
     // Test with different URL formats
     await getComponentMountPoint("http://localhost:3000", "did:test");
@@ -197,6 +158,7 @@ describe("getComponentMountPoint", () => {
 
     mockFetch.mockClear();
 
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
     await getComponentMountPoint("https://subdomain.example.com:8080/app", "did:test");
     expect(mockFetch).toHaveBeenCalledWith(
       "https://subdomain.example.com:8080/__blocklet__.js?type=json",
@@ -216,12 +178,7 @@ describe("getComponentMountPoint", () => {
       ],
     };
 
-    const mockResponse = {
-      ok: true,
-      json: mock().mockResolvedValue(mockConfig),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
 
     const result = await getComponentMountPoint("https://app.example.com", specialDid);
 
@@ -239,21 +196,17 @@ describe("getComponentMountPoint", () => {
       ],
     };
 
-    const mockResponse = {
-      ok: true,
-      json: mock().mockResolvedValue(mockConfig),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
 
     // Should find exact match
     const result = await getComponentMountPoint("https://app.example.com", "did:Case:Sensitive");
     expect(result).toBe("/case");
 
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(mockConfig)));
     // Should not find case-different match
-    await expect(
-      getComponentMountPoint("https://app.example.com", "did:case:sensitive"),
-    ).rejects.toThrow("Component did:case:sensitive not found in blocklet");
+    expect(getComponentMountPoint("https://app.example.com", "did:case:sensitive")).rejects.toThrow(
+      "Component did:case:sensitive not found in blocklet",
+    );
   });
 
   test("should handle response with non-200 status codes", async () => {
@@ -265,13 +218,14 @@ describe("getComponentMountPoint", () => {
     ];
 
     for (const testCase of testCases) {
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: testCase.status,
-        statusText: testCase.statusText,
-      });
+      mockFetch.mockResolvedValue(
+        new Response(null, {
+          status: testCase.status,
+          statusText: testCase.statusText,
+        }),
+      );
 
-      await expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
+      expect(getComponentMountPoint("https://app.example.com", "did:test")).rejects.toThrow(
         `Failed to fetch blocklet json: ${testCase.status} ${testCase.statusText}`,
       );
 

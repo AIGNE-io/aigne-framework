@@ -1,21 +1,34 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { join } from "node:path";
+import { mockModule } from "./mock-module.js";
 
 // Mock dependencies first - must be before imports
 const mockFindLocalImages = mock();
 const mockUploadFiles = mock();
 const mockIsRemoteUrl = mock();
 
-mock.module("../src/utils/image-finder.js", () => ({
-  findLocalImages: mockFindLocalImages,
-  isRemoteUrl: mockIsRemoteUrl,
-}));
+const imageFinderMock = await mockModule(
+  join(import.meta.dirname, "../src/utils/image-finder.js"),
+  () => ({
+    findLocalImages: mockFindLocalImages,
+    isRemoteUrl: mockIsRemoteUrl,
+  }),
+);
 
-mock.module("../src/utils/upload-files.js", () => ({
-  uploadFiles: mockUploadFiles,
-}));
+const uploadFilesMock = await mockModule(
+  join(import.meta.dirname, "../src/utils/upload-files.js"),
+  () => ({
+    uploadFiles: mockUploadFiles,
+  }),
+);
 
 // Now import the module under test
 import { Converter, type ConverterOptions } from "../src/converter/index.js";
+
+afterAll(async () => {
+  await imageFinderMock[Symbol.asyncDispose]();
+  await uploadFilesMock[Symbol.asyncDispose]();
+});
 
 // Mock console methods
 const originalConsoleWarn = console.warn;
@@ -114,8 +127,8 @@ Some content here.`;
 
     test("should handle whitespace-only content", async () => {
       const markdown = `# Title Only
-      
-      
+
+
       `;
 
       const converter = new Converter();

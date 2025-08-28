@@ -41,7 +41,8 @@ function domToComponentProperties(domNode: HTMLElement): Record<string, unknown>
   const hasChildren = Array.from(children).some((child) => isCustomComponent(child as HTMLElement));
   if (hasChildren) {
     properties.children = Array.from(children).map((child) => {
-      return { component: properties.component, properties: domToComponentProperties(child as HTMLElement) };
+      const childProperties = domToComponentProperties(child as HTMLElement);
+      return { component: childProperties.component, properties: childProperties };
     });
   } else {
     properties.body = domNode.textContent?.trim() || '';

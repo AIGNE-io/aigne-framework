@@ -262,7 +262,8 @@ export class TerminalTracer {
             ? checkbox
             : // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
               (prompts[prop as keyof typeof prompts] as (...args: any[]) => any);
-        if (typeof method !== "function") return undefined;
+        if (typeof method !== "function")
+          throw new Error(`Unsupported prompt method ${String(prop)}`);
 
         return async (config: any) => {
           const renderer =

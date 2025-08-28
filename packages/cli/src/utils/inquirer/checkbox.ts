@@ -405,7 +405,6 @@ export default createPrompt(
       if (
         items.length > pageSize &&
         (theme.helpMode === "always" ||
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           (theme.helpMode === "auto" && (firstRender.current || config.source)))
       ) {
         helpTipBottom = `\n${theme.style.help("(Use arrow keys to reveal more choices)")}`;

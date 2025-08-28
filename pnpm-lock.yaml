@@ -1043,6 +1043,9 @@ importers:
       '@aigne/core':
         specifier: workspace:*
         version: link:../../packages/core
+      ufo:
+        specifier: ^1.6.1
+        version: 1.6.1
     devDependencies:
       '@types/bun':
         specifier: ^1.2.18

@@ -6,45 +6,28 @@ import {
   imageModelInputSchema,
 } from "@aigne/core";
 import { checkArguments, isNonNullable, pick } from "@aigne/core/utils/type-utils.js";
-import { type GenerateImagesConfig, GoogleGenAI } from "@google/genai";
+import {
+  type GenerateContentConfig,
+  type GenerateImagesConfig,
+  GoogleGenAI,
+  Modality,
+} from "@google/genai";
 import { z } from "zod";
 
 const DEFAULT_MODEL = "imagen-4.0-generate-001";
 
-export interface GeminiImageModelInput extends ImageModelInput, GenerateImagesConfig {}
+export interface GeminiImageModelInput
+  extends ImageModelInput,
+    GenerateImagesConfig,
+    GenerateContentConfig {}
 export interface GeminiImageModelOutput extends ImageModelOutput {}
 
 export interface GeminiImageModelOptions
   extends ImageModelOptions<GeminiImageModelInput, GeminiImageModelOutput> {
-  /**
-   * API key for Gemini API
-   *
-   * If not provided, will look for GEMINI_API_KEY in environment variables
-   */
   apiKey?: string;
-
-  /**
-   * Base URL for Gemini API
-   *
-   * Useful for proxies or alternate endpoints
-   */
   baseURL?: string;
-
-  /**
-   * Gemini model to use
-   *
-   * Defaults to 'gemini-2.0-flash'
-   */
   model?: string;
-
-  /**
-   * Additional model options to control behavior
-   */
   modelOptions?: Omit<Partial<GeminiImageModelInput>, "model">;
-
-  /**
-   * Client options for Gemini API
-   */
   clientOptions?: Record<string, any>;
 }
 
@@ -111,7 +94,18 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
       throw new Error("Gemini image models currently only support base64 format");
     }
 
+    if (model.includes("imagen")) {
+      return this.generateImageByImagen(input);
+    }
+
+    return this.generateImageByGemini(input);
+  }
+
+  private async generateImageByImagen(input: GeminiImageModelInput): Promise<ImageModelOutput> {
+    const model = input.model || this.credential.model;
+
     const mergedInput = { ...this.modelOptions, ...input };
+
     const inputKeys = [
       "seed",
       "safetyFilterLevel",
@@ -140,6 +134,67 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
         response.generatedImages
           ?.map(({ image }) => (image?.imageBytes ? { base64: image.imageBytes } : undefined))
           .filter(isNonNullable) || [],
+      usage: {
+        inputTokens: 0,
+        outputTokens: 0,
+      },
+      model,
+    };
+  }
+
+  private async generateImageByGemini(input: GeminiImageModelInput): Promise<ImageModelOutput> {
+    const model = input.model || this.credential.model;
+
+    const mergedInput = { ...this.modelOptions, ...input };
+
+    const inputKeys = [
+      "abortSignal",
+      "audioTimestamp",
+      "automaticFunctionCalling",
+      "cachedContent",
+      "frequencyPenalty",
+      "httpOptions",
+      "labels",
+      "logprobs",
+      "maxOutputTokens",
+      "mediaResolution",
+      "modelSelectionConfig",
+      "presencePenalty",
+      "responseJsonSchema",
+      "responseLogprobs",
+      "responseMimeType",
+      "responseSchema",
+      "routingConfig",
+      "safetySettings",
+      "seed",
+      "speechConfig",
+      "stopSequences",
+      "systemInstruction",
+      "temperature",
+      "thinkingConfig",
+      "toolConfig",
+      "tools",
+      "topK",
+      "topP",
+    ];
+
+    const response = await this.client.models.generateContent({
+      model: model,
+      contents: input.prompt,
+      config: {
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
+        candidateCount: input.n || 1,
+        ...pick(mergedInput, inputKeys),
+      },
+    });
+
+    const allImages = (response.candidates ?? [])
+      .flatMap((candidate) => candidate.content?.parts ?? [])
+      .filter((part) => part?.inlineData?.data)
+      .map((part) => ({ base64: part.inlineData!.data! }));
+
+    return {
+      images: allImages,
       usage: {
         inputTokens: 0,
         outputTokens: 0,

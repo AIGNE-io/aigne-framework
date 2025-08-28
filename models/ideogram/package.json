@@ -43,7 +43,8 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/core": "workspace:*"
+    "@aigne/core": "workspace:*",
+    "ufo": "^1.6.1"
   },
   "devDependencies": {
     "@types/bun": "^1.2.18",

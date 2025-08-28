@@ -95,13 +95,15 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     }
 
     if (model.includes("imagen")) {
-      return this.generateImageByImagen(input);
+      return this.generateImageByImagenModel(input);
     }
 
-    return this.generateImageByGemini(input);
+    return this.generateImageByGeminiModel(input);
   }
 
-  private async generateImageByImagen(input: GeminiImageModelInput): Promise<ImageModelOutput> {
+  private async generateImageByImagenModel(
+    input: GeminiImageModelInput,
+  ): Promise<ImageModelOutput> {
     const model = input.model || this.credential.model;
 
     const mergedInput = { ...this.modelOptions, ...input };
@@ -142,7 +144,9 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     };
   }
 
-  private async generateImageByGemini(input: GeminiImageModelInput): Promise<ImageModelOutput> {
+  private async generateImageByGeminiModel(
+    input: GeminiImageModelInput,
+  ): Promise<ImageModelOutput> {
     const model = input.model || this.credential.model;
 
     const mergedInput = { ...this.modelOptions, ...input };

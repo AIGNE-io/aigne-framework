@@ -30,6 +30,7 @@ test("IdeogramImageModel should generate images successfully", async () => {
   const model = new IdeogramImageModel({
     baseURL: url,
     apiKey: "YOUR_API_KEY",
+    model: "ideogram-v3",
   });
 
   const result = await model.invoke({ prompt: "Draw an image about a cat" });

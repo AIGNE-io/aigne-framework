@@ -10,7 +10,7 @@ async function createHonoServer() {
 
   const honoApp = new Hono();
 
-  honoApp.post("/", async (c) => {
+  honoApp.post("/v1/:model/generate", async (c) => {
     return c.json({
       data: [{ url: "https://example.com/image.png" }],
     });

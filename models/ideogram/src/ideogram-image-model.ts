@@ -80,6 +80,10 @@ export class IdeogramImageModel extends ImageModel<
     const model = input.model;
     const formData = new FormData();
 
+    if (model !== "ideogram-v3") {
+      throw new Error(`${this.name} only support ideogram-v3`);
+    }
+
     const inputKeys = [
       "prompt",
       "seed",

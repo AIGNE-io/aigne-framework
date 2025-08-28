@@ -27,6 +27,7 @@ export default createAIGNECommand({ aigneFilePath })
       yargs.showHelp();
 
       console.error(`\n${message}`);
+      process.exit(1);
     }
   })
   .parseAsync(hideBin([...process.argv.slice(0, 2), ...process.argv.slice(aigneFilePath ? 3 : 2)]))

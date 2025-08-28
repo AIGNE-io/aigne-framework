@@ -11,11 +11,9 @@ import { createServeMCPCommand } from "./serve-mcp.js";
 import { createTestCommand } from "./test.js";
 
 export function createAIGNECommand(options?: { aigneFilePath?: string }) {
-  console.log(asciiLogo);
-
   return yargs()
     .scriptName("aigne")
-    .usage("CLI for AIGNE framework")
+    .usage(`${asciiLogo}\n$0 <command> [options]`)
     .version(AIGNE_CLI_VERSION)
     .command(createRunCommand(options))
     .command(createTestCommand(options))
@@ -28,5 +26,6 @@ export function createAIGNECommand(options?: { aigneFilePath?: string }) {
     .demandCommand()
     .alias("help", "h")
     .alias("version", "v")
+    .wrap(null)
     .strict();
 }

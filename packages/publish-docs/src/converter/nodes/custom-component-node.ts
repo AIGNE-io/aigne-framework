@@ -2,20 +2,14 @@ import {
   type DOMConversionMap,
   type DOMConversionOutput,
   type DOMExportOutput,
-  type EditorConfig,
   type ElementFormatType,
-  type LexicalEditor,
   type LexicalNode,
   type NodeKey,
   type Spread,
 } from 'lexical';
-import { BlockWithAlignableContents } from '@lexical/react/LexicalBlockWithAlignableContents';
 import { DecoratorBlockNode, SerializedDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode';
-import type { JSX } from 'react';
 
 const NODE_TYPE = 'x-component';
-
-const CUSTOM_COMPONENT_ATTR_KEY = 'data-lexical-x';
 
 interface CustomComponentData {
   component: string;
@@ -43,12 +37,11 @@ function getComponentName(domNode: HTMLElement): string {
 
 function domToComponentProperties(domNode: HTMLElement): Record<string, unknown> {
   const properties: Record<string, unknown> = { component: getComponentName(domNode), ...domNode.dataset };
-  const children = domNode.children;
-  const hasChildren = Array.from(children).some(child => isCustomComponent(child as HTMLElement));
+  const { children } = domNode;
+  const hasChildren = Array.from(children).some((child) => isCustomComponent(child as HTMLElement));
   if (hasChildren) {
     properties.children = Array.from(children).map((child) => {
-      const properties = domToComponentProperties(child as HTMLElement);
-      return { component: properties.component, properties };
+      return { component: properties.component, properties: domToComponentProperties(child as HTMLElement) };
     });
   } else {
     properties.body = domNode.textContent?.trim() || '';
@@ -60,7 +53,7 @@ function convertCustomComponentElement(domNode: HTMLElement): null | DOMConversi
   const component = getComponentName(domNode);
   try {
     if (component) {
-      const node = $createCustomComponentNode({component, properties: domToComponentProperties(domNode)});
+      const node = $createCustomComponentNode({ component, properties: domToComponentProperties(domNode) });
       return { node };
     }
   } catch (e) {
@@ -87,7 +80,6 @@ export class CustomComponentNode extends DecoratorBlockNode {
 
   override exportDOM(): DOMExportOutput {
     const element = document.createElement('div');
-    element.setAttribute(CUSTOM_COMPONENT_ATTR_KEY, this.__data.component);
     const { body, ...rest } = this.__data.properties || {};
     if (body) {
       element.textContent = body as string;

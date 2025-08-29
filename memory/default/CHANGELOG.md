@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.15](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.1.14...default-memory-v1.1.15) (2025-08-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.57.2
+  * devDependencies
+    * @aigne/openai bumped to 0.13.4
+
 ## [1.1.14](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.1.13...default-memory-v1.1.14) (2025-08-29)
 
 

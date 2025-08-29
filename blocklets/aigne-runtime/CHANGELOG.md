@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.4.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.3...aigne-runtime-v1.4.4) (2025-08-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.8.3
+    * @aigne/core bumped to 1.57.2
+    * @aigne/transport bumped to 0.14.13
+
 ## [1.4.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.2...aigne-runtime-v1.4.3) (2025-08-29)
 
 

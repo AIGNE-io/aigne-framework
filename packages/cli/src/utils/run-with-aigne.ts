@@ -2,7 +2,6 @@ import { mkdir, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
 import { exists } from "@aigne/agent-library/utils/fs.js";
-import { availableModels } from "@aigne/aigne-hub";
 import {
   type Agent,
   type AIGNE,
@@ -11,20 +10,11 @@ import {
   type Message,
   UserAgent,
 } from "@aigne/core";
-import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
-import {
-  isEmpty,
-  isNil,
-  omitBy,
-  type PromiseOrValue,
-  pick,
-  tryOrThrow,
-} from "@aigne/core/utils/type-utils.js";
+import { logger } from "@aigne/core/utils/logger.js";
+import { isEmpty, isNil, omitBy, type PromiseOrValue, pick } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
-import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { ZodError, z } from "zod";
 import { TerminalTracer } from "../tracer/terminal.js";
 import { loadAIGNE } from "./load-aigne.js";
 import {
@@ -32,108 +22,16 @@ import {
   DEFAULT_CHAT_INPUT_KEY,
   runChatLoopInTerminal,
 } from "./run-chat-loop.js";
-import { parseAgentInput, withAgentInputSchema } from "./yargs.js";
-
-export interface RunAIGNECommandOptions {
-  chat?: boolean;
-  model?: string;
-  temperature?: number;
-  topP?: number;
-  presencePenalty?: number;
-  frequencyPenalty?: number;
-  input?: string[];
-  format?: "text" | "json" | "yaml";
-  output?: string;
-  outputKey?: string;
-  logLevel?: LogLevel;
-  force?: boolean;
-}
-
-export const createRunAIGNECommand = (yargs: Argv) =>
-  yargs
-    .option("chat", {
-      describe: "Run chat loop in terminal",
-      type: "boolean",
-      default: false,
-    })
-    .option("model", {
-      describe: `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
-        .map((i) => {
-          if (typeof i.name === "string") {
-            return i.name.toLowerCase().replace(/ChatModel$/i, "");
-          }
-          return i.name.map((n) => n.toLowerCase().replace(/ChatModel$/i, ""));
-        })
-        .join(", ")} (default: openai)`,
-      type: "string",
-    })
-    .option("temperature", {
-      describe:
-        "Temperature for the model (controls randomness, higher values produce more random outputs). Range: 0.0-2.0",
-      type: "number",
-      coerce: customZodError("--temperature", (s) => z.coerce.number().min(0).max(2).parse(s)),
-    })
-    .option("top-p", {
-      describe:
-        "Top P (nucleus sampling) parameter for the model (controls diversity). Range: 0.0-1.0",
-      type: "number",
-      coerce: customZodError("--top-p", (s) => z.coerce.number().min(0).max(1).parse(s)),
-    })
-    .option("presence-penalty", {
-      describe:
-        "Presence penalty for the model (penalizes repeating the same tokens). Range: -2.0 to 2.0",
-      type: "number",
-      coerce: customZodError("--presence-penalty", (s) =>
-        z.coerce.number().min(-2).max(2).parse(s),
-      ),
-    })
-    .option("frequency-penalty", {
-      describe:
-        "Frequency penalty for the model (penalizes frequency of token usage). Range: -2.0 to 2.0",
-      type: "number",
-      coerce: customZodError("--frequency-penalty", (s) =>
-        z.coerce.number().min(-2).max(2).parse(s),
-      ),
-    })
-    .option("input", {
-      describe: "Input to the agent, use @<file> to read from a file",
-      type: "array",
-      alias: "i",
-    })
-    .option("format", {
-      describe: "Input format for the agent (available: text, json, yaml default: text)",
-      type: "string",
-    })
-    .option("output", {
-      describe: "Output file to save the result (default: stdout)",
-      type: "string",
-      alias: "o",
-    })
-    .option("output-key", {
-      describe: "Key in the result to save to the output file",
-      type: "string",
-      default: DEFAULT_OUTPUT_KEY,
-    })
-    .option("force", {
-      describe:
-        "Truncate the output file if it exists, and create directory if the output path is not exists",
-      type: "boolean",
-      default: false,
-    })
-    .option("log-level", {
-      describe: `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
-      type: "string",
-      default: getLevelFromEnv(logger.options.ns) || LogLevel.SILENT,
-      coerce: customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
-    })
-    .option("aigne-hub-url", {
-      describe: "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models. ",
-      type: "string",
-    });
+import {
+  type AgentRunCommonOptions,
+  parseAgentInput,
+  withAgentInputSchema,
+  withRunAgentCommonOptions,
+} from "./yargs.js";
 
 export async function parseAgentInputByCommander(
   agent: Agent,
-  options: RunAIGNECommandOptions & {
+  options: AgentRunCommonOptions & {
     inputKey?: string;
     argv?: string[];
     defaultInput?: string | Message;
@@ -174,10 +72,10 @@ export async function runWithAIGNE(
   } = {},
 ) {
   await yargs()
-    .command<RunAIGNECommandOptions>(
+    .command<AgentRunCommonOptions>(
       "$0",
       "Run an agent with AIGNE",
-      (yargs) => createRunAIGNECommand(yargs),
+      (yargs) => withRunAgentCommonOptions(yargs),
       async (options) => {
         if (options.logLevel) {
           logger.level = options.logLevel;
@@ -207,7 +105,6 @@ export async function runWithAIGNE(
             ...options,
             outputKey: outputKey || options.outputKey,
             chatLoopOptions,
-            modelOptions,
             input,
           });
         } finally {
@@ -224,28 +121,18 @@ export async function runWithAIGNE(
     });
 }
 
-function customZodError<T extends (...args: unknown[]) => unknown>(label: string, fn: T): T {
-  return ((...args: Parameters<T>) =>
-    tryOrThrow(
-      () => fn(...args),
-      (e) => new Error(`${label} ${e instanceof ZodError ? e.issues[0]?.message : e.message}`),
-    )) as T;
-}
-
 export async function runAgentWithAIGNE(
   aigne: AIGNE,
   agent: Agent,
   {
     outputKey,
     chatLoopOptions,
-    modelOptions,
     ...options
   }: {
     outputKey?: string;
     chatLoopOptions?: ChatLoopOptions;
-    modelOptions?: ChatModelOptions;
     input?: Message;
-  } & Omit<RunAIGNECommandOptions, "input"> = {},
+  } & Omit<AgentRunCommonOptions, "input"> = {},
 ) {
   if (options.output) {
     const outputPath = isAbsolute(options.output)

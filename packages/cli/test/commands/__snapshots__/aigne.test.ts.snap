@@ -17,7 +17,7 @@ exports[`aigne command should print help if no any subcommand 1`] = `
 aigne <command> [options]
 
 Commands:
-  aigne run [path]     Run AIGNE from the specified agent
+  aigne run [path]     Run AIGNE from the specified path
   aigne test           Run tests in the specified agents directory
   aigne create [path]  Create a new aigne project with agent config files
   aigne serve-mcp      Serve the agents in the specified directory as a MCP server (streamable http)

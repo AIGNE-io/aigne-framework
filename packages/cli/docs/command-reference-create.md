@@ -4,78 +4,77 @@ labels: ["Reference"]
 
 # aigne create
 
-The `aigne create` command initializes a new AIGNE project by scaffolding a directory structure and configuration files from a predefined template. It is the primary way to start building a new agent.
-
-```mermaid
-flowchart TD
-    A["Start 'aigne create'"] --> B{"Path provided?"};
-    B -- "No" --> C["Prompt for Project Name"];
-    B -- "Yes" --> D["Use path as Project Name"];
-    C --> E{"Directory not empty?"};
-    D --> E;
-    E -- "Yes" --> F{"Confirm Overwrite"};
-    F -- "No" --> G["Cancel Operation"];
-    F -- "Yes" --> H["Select Template"];
-    E -- "No" --> H;
-    H --> I["Create Project Files"];
-    I --> J["Display Success Message"];
-```
+The `aigne create` command scaffolds a new AIGNE project from a template. It sets up the necessary directory structure and configuration files, allowing you to start developing your agent immediately.
 
 ## Usage
 
-To create a project, run the `create` command, optionally specifying a path for the new project directory.
+To create a project in a new directory, provide a path as an argument:
 
 ```bash
-# Create a project in a new directory named 'my-aigne-project'
+# Create a project in the 'my-aigne-project' directory
 aigne create my-aigne-project
+```
 
-# Create a project in the current directory (will prompt for a name)
+If you run the command without an argument, it will create a project in the current directory and prompt you for a project name.
+
+```bash
 aigne create
 ```
 
-## Arguments
-
-| Argument | Description                               | Required | Default                 |
-| :------- | :---------------------------------------- | :------- | :---------------------- |
-| `path`   | The path to the new project directory.    | No       | `.` (current directory) |
-
 ## Interactive Process
 
-The command guides you through a series of prompts to configure the project.
+When you run `aigne create` without a path, or if the target directory already contains files, the CLI guides you through an interactive process.
 
-### 1. Project Name
+1.  **Project Name**: If you don't specify a path, you'll be prompted for a project name.
 
-If you run the command without specifying a path (or use `.`), you will be prompted to enter a name for your project. This name will be used for the project directory.
+    ![AIGNE CLI prompting for a project name during creation.](../assets/create/create-project-interactive-project-name-prompt.png)
 
-![Interactive prompt for project name](../assets/create/create-project-interactive-project-name-prompt.png)
+2.  **Overwrite Confirmation**: If the target directory exists and is not empty, the CLI will ask for confirmation before proceeding to avoid accidental data loss.
 
-### 2. Handling Non-Empty Directories
+    ```bash
+    ? The directory "/path/to/your/my-aigne-project" is not empty. Do you want to remove its contents? › (y/N)
+    ```
 
-If the target directory already exists and contains files, the CLI will ask for confirmation before proceeding to prevent accidental data loss.
+3.  **Template Selection**: You will be asked to choose a project template. Currently, a `default` template is provided.
 
-```text
-The directory "/path/to/my-aigne-project" is not empty. Do you want to remove its contents?
+    ```bash
+    ? Select a template: › - Use arrow-keys. Return to submit.
+    ❯   default
+    ```
+
+## Arguments
+
+| Argument | Description                                  |
+| :------- | :------------------------------------------- |
+| `[path]` | Optional. The path where the project directory will be created. Defaults to the current directory (`.`), prompting for a project name if not provided. |
+
+## Command Flow
+
+The following diagram illustrates the process flow for the `aigne create` command.
+
+```mermaid
+flowchart TD
+    A["Start: aigne create command"] --> B{"Is path provided?"};
+    B -- "No" --> C["Prompt for Project Name"];
+    C --> D["Set path to Project Name"];
+    B -- "Yes" --> D;
+    D --> E{"Directory exists and is not empty?"};
+    E -- "Yes" --> F{"Prompt to overwrite?"};
+    F -- "No" --> G["Cancel Operation"];
+    F -- "Yes" --> H["Select Template"];
+    E -- "No" --> H;
+    H --> I["Create Directory & Copy Files"];
+    I --> J["Show Success Message"];
+    J --> K["End"];
+    G --> K;
 ```
-
-If you choose not to overwrite, the operation will be cancelled.
-
-### 3. Template Selection
-
-After confirming the project path, you will be asked to select a project template. Currently, a `default` template is provided to get you started with a basic agent configuration.
 
 ## Output
 
-Upon successful completion, the CLI creates the project files and displays a confirmation message with the next steps to run your agent.
+Upon successful creation, the CLI prints a confirmation message and provides the next command to run your agent.
 
-![Successful project creation message](../assets/create/create-project-using-default-template-success-message.png)
+![AIGNE CLI success message after creating a project.](../assets/create/create-project-using-default-template-success-message.png)
 
-```text
-✅ AIGNE project created successfully!
+After creating your project, you can start the agent by navigating into the new directory and using the `aigne run` command.
 
-To use your new agent, run:
-  cd my-aigne-project && aigne run
-```
-
----
-
-Once your project is created, the next step is to execute the agent. See the [`aigne run`](./command-reference-run.md) command reference for details.
+For more details on running an agent, see the [aigne run](./command-reference-run.md) command reference.

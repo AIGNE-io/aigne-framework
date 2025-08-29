@@ -4,48 +4,55 @@ labels: ["Reference"]
 
 # 概述
 
-<p align="center">
-  <picture>
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/packages/cli/logo-dark.svg" media="(prefers-color-scheme: dark)">
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/packages/cli/logo.svg" media="(prefers-color-scheme: light)">
-    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/packages/cli/logo.svg" alt="AIGNE 标志" width="400" />
-  </picture>
+`@aigne/cli` 是 AIGNE 框架的官方命令行工具。它充当您 Agent 开发的指挥中心，旨在简化从创建、测试到部署和监控的整个生命周期。
 
-  <center>你的 Agent 开发指挥中心</center>
-</p>
+<picture>
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli.png" media="(prefers-color-scheme: light)">
+  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-cli.png" alt="AIGNE CLI 界面" />
+</picture>
 
-`@aigne/cli` 是 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework) 的官方命令行工具。它提供了一整套命令，旨在简化从项目创建到测试、部署和监控的整个 agent 开发生命周期。
+## 开发工作流
 
-该 CLI 旨在为构建、测试和提供 AI agents 提供一个结构化且高效的工作流。下图展示了一个典型的开发周期：
+该 CLI 提供的命令直接映射 Agent 开发生命周期，涵盖从初始设置到生产部署的各个阶段。
 
 ```mermaid
 flowchart TD
-    A["aigne create"] --> B["开发 Agents & 技能"];
-    B --> C{"本地迭代"};
-    C -- "运行 & 调试" --> D["aigne run"];
-    C -- "测试" --> E["aigne test"];
-    D --> B;
-    E --> B;
-    B --> F{"准备集成？"};
-    F -- "作为 API 开放" --> G["aigne serve-mcp"];
-    F -- "分析性能" --> H["aigne observe"];
-    G --> I["与外部系统集成"];
-    H --> B;
+    subgraph "设置"
+        A["aigne create"]
+    end
+
+    subgraph "开发与测试"
+        B["aigne run"]
+        C["aigne test"]
+    end
+
+    subgraph "集成与部署"
+        D["aigne serve-mcp"]
+        E["aigne deploy"]
+    end
+
+    subgraph "监控"
+        F["aigne observe"]
+    end
+
+    A -- "创建项目" --> B
+    B -- "本地迭代" --> C
+    C -- "运行测试" --> D
+    D -- "提供集成服务" --> E
+    B -- "监控开发过程" --> F
+    E -- "监控生产环境" --> F
 ```
 
 ## 主要特性
 
-`@aigne/cli` 为你提供了有效管理 agent 项目所需的工具：
+*   **项目脚手架**：使用 `aigne create` 命令，通过预定义的文件结构和配置快速创建新的 AIGNE 项目。
+*   **本地 Agent 执行**：使用 `aigne run`，可在本地聊天循环中轻松运行和测试 AIGNE Agent。
+*   **自动化测试**：内置的 `aigne test` 命令支持对您的 Agent 和技能进行单元测试与集成测试。
+*   **MCP 服务**：使用 `aigne serve-mcp` 将 Agent 作为模型上下文协议 (MCP) 服务器启动，以实现与外部系统的无缝集成。
+*   **可观察性**：使用 `aigne observe` 启动本地服务器，以查看和分析 Agent 的执行追踪和性能数据。
+*   **多模型支持**：原生支持多种模型提供商，包括 OpenAI、Claude 和 XAI。
 
-*   **项目脚手架**：使用 [`aigne create`](./command-reference-create.md) 快速搭建一个具有标准化文件结构和配置的 AIGNE 新项目。
-*   **交互式 Agent 执行**：使用 [`aigne run`](./command-reference-run.md) 在本地交互式聊天循环中运行和测试你的 agents。该命令支持从本地文件系统或直接从远程 URL 执行 agents。
-*   **自动化测试**：使用 [`aigne test`](./command-reference-test.md) 为你的 agents 和技能运行单元测试和集成测试，确保代码质量和可靠性。
-*   **API 服务器部署**：使用 [`aigne serve-mcp`](./command-reference-serve-mcp.md) 将你的 agents 作为服务开放。该命令会启动一个符合模型上下文协议（MCP）的服务器，从而实现与外部系统的标准化集成。
-*   **执行可观测性**：使用 [`aigne observe`](./command-reference-observe.md) 启动本地监控服务，以查看和分析你的 agent 行为的详细执行轨迹，从而简化调试和优化过程。
-*   **多模型支持**：在 OpenAI、Claude 和 XAI 等不同的人工智能模型提供商之间灵活切换，以找到最适合你应用程序需求的模型。
+本概述涵盖了 `@aigne/cli` 的主要功能。如需开始构建，请继续阅读安装和设置指南。
 
-![在聊天模式下运行 agent](../assets/run/run-default-template-project-in-chat-mode.png)
-
----
-
-准备好开始了吗？请继续阅读[入门指南](./getting-started.md)以安装 CLI 并构建你的第一个 agent。
+[下一步：快速入门](./getting-started.md)

@@ -4,83 +4,68 @@ labels: ["Reference"]
 
 # aigne observe
 
-`aigne observe` 命令会启动一个本地 Web 服务器，用于监控、调试和分析 Agent 的执行情况。它提供了一个用户界面来检查详细的追踪信息，帮助您理解 Agent 的行为并诊断问题。
+`aigne observe` 命令会启动一个本地 Web 服务器，以帮助你可视化并分析 Agent 的执行轨迹。这是一个用于调试、监控性能以及理解 Agent 逐步行为的重要工具。
 
-运行 Agent 时，其执行数据会自动被记录。可观测性服务器会读取这些数据，并将其呈现在一个基于 Web 的用户界面中，让您可以可视化 Agent 任务的整个生命周期。
-
-![可观测性服务器的用户界面](../assets/observe/observe-running-interface.png)
+当你运行 Agent 时，AIGNE 框架会自动捕获详细的可观察性数据。`observe` 命令提供了一个用户界面来浏览这些数据。
 
 ## 用法
 
-在终端中运行该命令即可启动服务器。它会自动检测可用端口，并提供一个用于访问界面的 URL。
-
 ```bash
-# 在默认端口（例如 7890）上启动可观测性服务器
-aigne observe
+aigne observe [options]
 ```
 
-启动后，控制台将显示可观测性数据库的路径以及服务器运行的 URL：
+启动后，该命令会输出本地可观察性数据库的路径以及访问 Web 界面的 URL。
 
-```console
-可观测性数据库路径: /path/to/your/project/.aigne/observability.db
-可观测性服务器正在监听 http://localhost:7890
+```text
+可观察性数据库路径: /path/to/your/project/.aigne/observability.db
+可观察性服务器监听地址: http://localhost:7890
 ```
-
-## 工作原理
-
-可观测性系统在 Agent 执行期间捕获数据，并将其本地存储在 SQLite 数据库中。`aigne observe` 命令会启动一个本地 Web 服务器，该服务器读取这些数据，并将其呈现在一个用户友好的界面中以供分析。
-
-```mermaid
-sequenceDiagram
-    participant User as 开发者
-    participant CLI
-    participant Agent as Agent 执行
-    participant DB as SQLite 数据库
-    participant Server as 观测服务器 (UI)
-
-    User->>CLI: aigne run my-agent
-    CLI->>Agent: 启动 Agent
-    Agent->>DB: 写入执行追踪信息
-
-    User->>CLI: aigne observe
-    CLI->>Server: 启动服务器
-    Server-->>User: 服务器正在 http://... 运行
-    
-    User->>Server: 在浏览器中访问 UI
-    Server->>DB: 读取追踪数据
-    DB-->>Server: 返回数据
-    Server-->>User: 显示 Agent 追踪信息
-```
-
-一旦服务器运行起来且 Agent 已执行过，您就可以在浏览器中访问所提供的 URL，以查看每次运行的详细追踪信息。
-
-![查看特定 Agent 运行的调用详情](../assets/observe/observe-view-call-details.png)
 
 ## 选项
 
-`observe` 命令接受以下选项以自定义其行为。
-
-| 选项     | 类型     | 描述                                                                                                                                                                    | 默认值                 |
-|----------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
-| `--host` | `string` | 运行服务器的主机。使用 `0.0.0.0` 可将服务器暴露给网络上的其他设备。                                                                     | `localhost`            |
-| `--port` | `number` | 运行服务器的端口。如果指定端口不可用，它将自动查找下一个可用端口。如果未指定，则使用 `PORT` 环境变量或默认为 `7890`。 | `7890` 或 `process.env.PORT` |
+| 选项 | 类型 | 描述 |
+| :--- | :--- | :--- |
+| `--host` | `string` | 指定运行服务器的主机。使用 `0.0.0.0` 可将服务器暴露至你的本地网络。默认为 `localhost`。 |
+| `--port` | `number` | 指定服务器的端口。如果未提供，它将尝试使用 `PORT` 环境变量，否则默认为 `7890`。 |
 
 ## 示例
 
-### 在指定端口上启动服务器
+### 在默认端口上启动服务器
 
-如果您想在不同的端口（例如 `3001`）上运行服务器，请使用 `--port` 选项。
-
-```bash
-aigne observe --port 3001
-```
-
-### 将服务器暴露到您的网络
-
-要使可观测性 UI 可从您本地网络上的其他设备访问，请将主机设置为 `0.0.0.0`。
+在你的项目目录中运行该命令，即可在 `http://localhost:7890` 上启动服务器。
 
 ```bash
-aigne observe --host 0.0.0.0
+aigne observe
 ```
 
-这对于团队协作或从同一网络上的不同设备访问 UI 非常有用。
+### 在自定义端口上启动服务器
+
+使用 `--port` 选项指定一个不同的端口。
+
+```bash
+aigne observe --port 8000
+```
+
+### 将服务器暴露到你的网络
+
+使用 `--host 0.0.0.0` 可以使可观察性界面能够从同一网络中的其他设备访问。
+
+```bash
+aigne observe --host 0.0.0.0 --port 8080
+```
+
+## 可观察性界面
+
+服务器运行后，你可以在浏览器中打开提供的 URL 来查看 Agent 的执行数据。
+
+### 轨迹仪表盘
+
+主仪表盘列出了所有已记录的 Agent 执行轨迹，让你能够宏观地了解近期活动。
+
+![可观察性服务器的主运行界面，显示了最近的 Agent 轨迹列表。](../assets/observe/observe-running-interface.png)
+
+### 轨迹详情视图
+
+点击特定的轨迹会进入详情视图。在这里，你可以检视完整的执行流程，包括模型输入和输出、工具调用、中间步骤，以及 Agent 运行中每个阶段的性能指标。
+
+![特定调用轨迹的详细视图，显示了输入、输出、日志和元数据。](../assets/observe/observe-view-call-details.png)

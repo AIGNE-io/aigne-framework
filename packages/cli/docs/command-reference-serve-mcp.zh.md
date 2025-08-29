@@ -4,117 +4,154 @@ labels: ["Reference"]
 
 # aigne serve-mcp
 
-`aigne serve-mcp` 命令会启动一个本地服务器，通过 [Model Context Protocol (MCP)](https://modelcontextprotocol.dev/) 暴露你的 AIGNE Agent。这使得与 MCP 兼容的外部系统和应用程序能够像与标准工具一样与你的 Agent 交互。
+`aigne serve-mcp` 命令会启动一个本地 HTTP 服务器，将你的 AIGNE Agent 暴露为符合模型上下文协议 (Model Context Protocol, MCP) 的服务。这可以实现与外部系统的无缝集成，允许它们将你的 Agent 作为标准化工具来调用。
 
-这对于将你的 Agent 集成到更大的工作流中，或以标准化的、可流式传输的方式将它们提供给其他服务特别有用。
-
-## 基本用法
-
-要使用默认设置启动服务器，请导航到你的项目目录并运行以下命令：
-
-```bash
-# 在默认端口 3000 上启动 MCP 服务器
-aigne serve-mcp
-```
-
-该命令会扫描当前目录以查找 AIGNE 项目，加载为 MCP 指定的 Agent，并启动一个 HTTP 服务器。默认情况下，服务端点位于 `http://localhost:3000/mcp`。
-
-![运行 MCP 服务器](../assets/run-mcp-service.png)
+此命令对于在面向服务的架构中部署 Agent 至关重要，其他应用程序可以通过网络使用它们的功能。
 
 ## 工作原理
 
-该命令会初始化一个 MCP 服务器，并将你 `aigne.yaml` 中指定的每个 Agent 动态注册为一个可调用的“工具”。当一个兼容 MCP 的客户端发送使用这些工具之一的请求时，服务器会使用提供的输入调用相应的 Agent，并将输出以流式方式返回给客户端。
+当你运行 `aigne serve-mcp` 时，CLI 会执行以下操作：
+
+1.  它从指定路径加载 AIGNE 项目配置。
+2.  它识别指定用于 MCP 暴露的 Agent（通常在你的 `aigne.yaml` 文件中定义）。
+3.  它启动一个 Express.js Web 服务器来监听 HTTP 请求。
+4.  每个指定的 Agent 在 MCP 服务器实例中被注册为一个“工具”。
+5.  服务器在配置的端点（例如 `/mcp`）上监听 `POST` 请求。当收到使用工具的有效 MCP 请求时，服务器会调用相应的 Agent，传递输入，并以 MCP 格式将 Agent 的输出流式传输回客户端。
+
+下图说明了请求流程：
 
 ```mermaid
 sequenceDiagram
-    participant Client as MCP 客户端
-    participant Server as aigne serve-mcp
-    participant AIGNE as AIGNE 引擎
-    participant Agent as 目标 Agent
+    participant Client as External System
+    participant Server as MCP Server (aigne serve-mcp)
+    participant AIGNE as AIGNE Engine
+    participant Agent as Target Agent
 
-    Client->>Server: POST /mcp (带 tool_use 的 MCP 请求)
-    Server->>AIGNE: invoke(agent, input)
-    AIGNE->>Agent: 使用输入执行
-    Agent-->>AIGNE: 返回结果
-    AIGNE-->>Server: 转发结果
-    Server-->>Client: 流式传输 MCP 响应 (tool_result)
+    Client->>+Server: POST /mcp (MCP request with tool_use)
+    Server->>+AIGNE: invoke(agent, input)
+    AIGNE->>+Agent: Executes with input
+    Agent-->>-AIGNE: Returns result
+    AIGNE-->>-Server: Provides result
+    Server-->>-Client: Streams MCP response (tool_result)
+```
+
+## 用法
+
+```bash
+aigne serve-mcp [options]
 ```
 
 ## 选项
 
-你可以使用以下选项自定义服务器的行为：
+`serve-mcp` 命令提供以下选项：
 
-| 选项 | 别名 | 描述 | 类型 | 默认值 |
-|---|---|---|---|---|
-| `--path` | `url` | Agent 目录的路径或 AIGNE 项目的 URL。 | `string` | `.` |
-| `--host` | | 运行 MCP 服务器的主机。使用 `0.0.0.0` 公开暴露服务器。 | `string` | `localhost` |
-| `--port` | | 运行 MCP 服务器的端口。如果未设置，则使用 `PORT` 环境变量或默认为 3000。 | `number` | `3000` |
-| `--pathname` | | MCP 服务端点的特定 URL 路径。 | `string` | `/mcp` |
-| `--aigne-hub-url` | | 自定义 AIGNE Hub 服务 URL。用于获取远程 Agent 定义或模型。 | `string` | 不适用 |
+| Option | Alias | Description | Type | Default |
+| --- | --- | --- | --- | --- |
+| `--path` | `--url` | Agent 目录的路径或 AIGNE 项目的 URL。 | `string` | `.` |
+| `--host` | | 运行 MCP 服务器的主机。使用 `0.0.0.0` 可将服务器公开。 | `string` | `localhost` |
+| `--port` | | 运行 MCP 服务器的端口。如果未指定，则使用 `PORT` 环境变量或默认为 3000。 | `number` | `3000` |
+| `--pathname` | | MCP 服务端点的 URL 路径名。 | `string` | `/mcp` |
+| `--aigne-hub-url` | | 自定义 AIGNE Hub 服务 URL。用于获取远程 Agent 定义或模型。 | `string` | `undefined` |
 
 ## 示例
 
-### 在不同端口上运行
+### 在当前目录中启动服务器
 
-为避免端口冲突，你可以指定一个不同的端口。
+要在默认端口 (3000) 上为当前项目目录中定义的 Agent 提供服务，请不带任何选项运行该命令：
 
 ```bash
-# 在端口 8080 上启动 MCP 服务器
-aigne serve-mcp --port 8080
+aigne serve-mcp
 ```
 
-### 从特定目录提供 Agent
+成功启动后，你将看到一条确认消息：
 
-如果你的终端当前工作目录不是项目根目录，则必须指定项目的路径。
-
-```bash
-# 为指定路径下的 Agent 启动 MCP 服务器
-aigne serve-mcp --path ./my-agents-project
+```
+MCP server is running on http://localhost:3000/mcp
 ```
 
-### 将服务器暴露到网络
+### 在指定端口和路径上运行
 
-要允许本地网络上的其他设备访问 MCP 服务器，请将主机设置为 `0.0.0.0`。
+你可以使用 `--path` 和 `--port` 选项为你的 Agent 指定不同的目录和自定义端口。
 
 ```bash
-# 服务器将通过你机器的 IP 地址访问
+aigne serve-mcp --path ./path/to/agents --port 8080
+```
+
+此命令会在 8080 端口上为位于 `./path/to/agents` 的项目启动服务器。
+
+```
+MCP server is running on http://localhost:8080/mcp
+```
+
+### 公开服务器
+
+要使你的 MCP 服务器可从网络上的其他计算机访问，请将主机设置为 `0.0.0.0`。
+
+```bash
 aigne serve-mcp --host 0.0.0.0 --port 3001
 ```
 
-### 更改服务路径名
+现在，可以通过你计算机的网络 IP 地址在 3001 端口上访问该服务器。
 
-对于反向代理配置或为避免端点冲突，你可以更改 URL 路径。
+```
+MCP server is running on http://0.0.0.0:3001/mcp
+```
+
+### 在自定义路径名上提供服务
+
+要将服务终结点从 `/mcp` 更改为其他名称（例如 `/api/agents`），请使用 `--pathname` 选项。
 
 ```bash
-# 服务器将在 http://localhost:3000/api/agents 上可用
 aigne serve-mcp --pathname /api/agents
 ```
 
-## 项目配置
+服务器现在将在新的端点上监听请求。
 
-要控制通过 MCP 服务器暴露哪些 Agent，你必须在 `aigne.yaml` 文件中添加一个 `mcpServer` 部分。在 `agents` 键下列出你想要提供的 Agent 的 ID。
-
-```yaml
-# aigne.yaml
-
-name: my-project
-description: A project with agents exposed via MCP.
-
-agents:
-  - id: myAgent1
-    # ... Agent 配置
-
-  - id: myAgent2
-    # ... Agent 配置
-
-# 通过 MCP 服务器暴露特定的 Agent
-mcpServer:
-  agents:
-    - myAgent1
+```
+MCP server is running on http://localhost:3000/api/agents
 ```
 
-在此示例中，只有 `myAgent1` 会在 MCP 服务器上注册为工具。如果省略了 `mcpServer` 部分或 `agents` 列表，则不会暴露任何 Agent。
+## 与服务器交互
+
+服务器运行后，你可以通过向指定端点发送 `POST` 请求来与其交互。请求的正文必须是符合模型上下文协议的 JSON-RPC 2.0 对象。
+
+例如，如果你有一个名为 `getWeather` 的 Agent，它接受 `city` 作为输入，则可以使用 `curl` 调用它：
+
+```bash
+curl -X POST http://localhost:3000/mcp \
+-H "Content-Type: application/json" \
+-d '{
+  "jsonrpc": "2.0",
+  "method": "tool_use",
+  "params": {
+    "name": "getWeather",
+    "input": {
+      "city": "San Francisco"
+    }
+  },
+  "id": "req-123"
+}'
+```
+
+服务器将流式传回响应，响应将以结果负载结束，例如：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "旧金山天气晴朗，最高温度 70°F。"
+      }
+    ]
+  },
+  "id": "req-123"
+}
+```
+
+这使得将你的 AIGNE Agent 与任何能够发出 HTTP 请求的应用程序集成变得非常简单。
 
 ---
 
-设置好 MCP 服务器后，你可能希望了解更多关于定义 Agent 本身的信息。请前往 [Agent 和技能](./core-concepts-agents-and-skills.md) 部分查看更多详情。
+`serve-mcp` 命令是将你的 AIGNE Agent 集成到更大型应用程序和服务的关键组件。要了解有关配置哪些 Agent 被暴露的更多信息，请参阅[项目配置 (aigne.yaml)](./core-concepts-project-configuration.md) 指南。

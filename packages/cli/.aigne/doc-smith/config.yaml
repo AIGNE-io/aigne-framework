@@ -65,6 +65,6 @@ labels:
 docsDir: ./docs  # Directory to save generated documentation
 sourcesPath:  # Source code paths to analyze
   - ./
-lastGitHead: 330fc2c2192f0b448d5966b8a53affe0ecbe3428
+lastGitHead: bd3cff06c9b469bd442b731e10e7b1076618f455
 appUrl: "https://www.arcblock.io"
 boardId: "aigne-cli"

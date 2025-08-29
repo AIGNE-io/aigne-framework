@@ -4,20 +4,24 @@ labels: ["Reference"]
 
 # 指南
 
-本节提供了使用 AIGNE CLI 完成常见开发任务的实用分步指南。虽然 [命令参考](./command-reference.md) 详细介绍了每个命令和选项，但这些指南侧重于从头到尾实现特定目标。
+本节提供了实用的分步教程，帮助您使用 `@aigne/cli` 完成常见的开发任务。这些指南旨在让您亲身体验关键工作流程，从创建您的第一个 Agent 到将其部署用于生产环境。
 
-每个指南都旨在引导您完成一个真实场景，提供代码片段和清晰的说明，以帮助您有效地使用 AIGNE 框架的关键功能。下图展示了一个在交互式聊天会话中运行的 agent，这是遵循这些指南后的常见结果。
-
-![一个在交互式聊天会话中运行的 agent](../assets/run/run-default-template-project-in-chat-mode.png)
-
-### [创建自定义 Agent](./guides-creating-a-custom-agent.md)
-
-一篇关于创建新 JavaScript agent 的分步教程。学习如何定义其逻辑，将其构建为技能，并集成到项目中执行。本指南涵盖了从搭建新项目到编写 agent 核心功能的所有内容。
-
-### [运行远程 Agents](./guides-running-remote-agents.md)
-
-了解如何直接从远程 Git 仓库或 tarball URL 运行 agents。本指南介绍了 `aigne run` 命令如何下载、缓存和执行远程项目，这是一个用于测试、共享和协作的实用功能，无需进行本地设置。
+我们建议您在深入学习之前，对 [核心概念](./core-concepts.md) 部分涵盖的主题有基本的了解。
 
 ---
 
-浏览以上指南，获取关键 AIGNE CLI 工作流的实践经验。要全面了解所有可用命令及其选项，请参阅 [命令参考](./command-reference.md)。
+### [创建自定义 Agent](./guides-creating-a-custom-agent.md)
+
+学习如何从头开始构建一个自定义 Agent。本指南涵盖了使用 `aigne create` 搭建新项目、在 JavaScript 中定义 Agent 逻辑，以及将其作为技能集成到您的 `aigne.yaml` 配置中。
+
+### [运行远程 Agent](./guides-running-remote-agents.md)
+
+了解如何直接从远程 URL（例如 Git 仓库或 tarball）执行 AIGNE 项目。本指南涵盖了 `aigne run --url` 命令，适用于在没有本地设置的情况下测试、共享和运行 Agent。
+
+### [部署 Agent](./guides-deploying-agents.md)
+
+将您的 AIGNE 应用程序从开发阶段推向生产环境。本指南将引导您完成使用 `aigne deploy` 命令将项目作为 Blocklet 部署到指定端点的过程，使您的 Agent 可以作为服务访问。
+
+---
+
+遵循这些指南后，您将更加熟悉 `@aigne/cli` 的核心功能。有关所有命令及其选项的全面概述，请参阅 [命令参考](./command-reference.md)。

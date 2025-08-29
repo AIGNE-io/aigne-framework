@@ -4,182 +4,149 @@ labels: ["Reference"]
 
 # aigne run
 
-The `aigne run` command executes an agent, serving as the primary tool for testing, debugging, and interacting with your AIGNE agents directly from the terminal. It can run agents from a local directory or a remote URL, supports interactive chat sessions, and offers extensive options for configuring models and handling input/output.
+The `aigne run` command executes an agent from a local directory or a remote URL. It is the primary command for testing and interacting with your agents during development, offering features like interactive chat mode, dynamic model selection, and flexible input/output handling.
 
-## Synopsis
+## Usage
 
 ```bash
-# Run an agent from the current directory
+# Run the default agent in the current directory
 aigne run
 
 # Run an agent from a specific local path
-aigne run --path /path/to/your/agent
+aigne run --path /path/to/your/project
 
-# Run an agent from a remote URL
-aigne run --url https://github.com/user/repo/my-agent.git
+# Run an agent from a remote Git repository or tarball URL
+aigne run https://github.com/user/repo.git
 
 # Run a specific agent within a project
-aigne run --entry-agent my-specific-agent
+aigne run --entry-agent mySpecificAgent
 
-# Start an interactive chat session
+# Start an interactive chat session with an agent
 aigne run --chat
 ```
 
-## Execution Flow
+## How It Works
 
-The `run` command follows a clear sequence to prepare the environment and execute an agent. This process ensures that both local and remote agents are handled consistently.
+The `run` command follows a sequence of steps to prepare the environment and execute the agent:
 
 ```mermaid
 flowchart TD
-    A["User executes aigne run"] --> B{"Is path a remote URL?"};
+    A["Start aigne run [path]"] --> B{"Is path a URL?"};
     B -- "Yes" --> C["Download package to cache"];
     C --> D["Extract package to execution directory"];
     B -- "No" --> E["Use local path as execution directory"];
     D --> F["Initialize AIGNE Engine"];
     E --> F;
-    F -- "Loads aigne.yaml, .env files, and models" --> G["Identify Entry Agent"];
-    G -- "Uses --entry-agent or first agent found" --> H["Parse User Input"];
-    H -- "From CLI options, files, or stdin" --> I{"Chat mode enabled?"};
-    I -- "Yes" --> J["Start Interactive Chat Loop"];
+    F -- "Load aigne.yaml, .env files" --> G["Select Entry Agent"];
+    G -- "--entry-agent or first available" --> H["Parse User Input"];
+    H -- "From CLI args, --input, or stdin" --> I{"--chat mode?"};
+    I -- "Yes" --> J["Run Interactive Chat Loop"];
     I -- "No" --> K["Execute Agent Once"];
     J --> L["Shutdown AIGNE"];
-    K --> M{"Output specified?"};
-    M -- "Yes" --> N["Write result to file"];
-    M -- "No" --> O["Print result to stdout"];
-    N --> L;
-    O --> L;
+    K --> L;
+    L --> M["End"];
 ```
 
-## Usage Examples
+## Options
 
-### Running a Local Agent
+The `run` command supports a variety of options to customize its behavior.
 
-Execute the default agent defined in the project located in the current directory.
+### General Options
 
-```bash
-# Assumes the current directory is an AIGNE project
-aigne run
-```
+| Option | Description |
+|---|---|
+| `path` | Positional argument specifying the path to the agent's directory or a URL to an AIGNE project. Defaults to the current directory (`.`). |
+| `--entry-agent <name>` | The name of the agent to run. If not specified, AIGNE runs the first agent defined in the project. |
+| `--chat` | Runs the agent in an interactive chat loop in the terminal. This mode is ideal for conversational agents. |
+| `--cache-dir <dir>` | When running from a URL, this specifies a directory to download and cache the remote package. Defaults to `~/.aigne/`. |
 
-To run an agent from a different directory, use the `path` positional argument or the `--path` option.
+### Model Configuration
 
-```bash
-aigne run ./my-other-project
-```
+| Option | Description |
+|---|---|
+| `--model <provider[:model]>` | Specifies the AI model to use, e.g., 'openai' or 'openai:gpt-4o-mini'. This overrides the model configured in `aigne.yaml`. |
+| `--temperature <value>` | Sets the model's temperature (0.0-2.0) to control randomness. |
+| `--top-p <value>` | Sets the model's top-p (nucleus sampling) parameter (0.0-1.0) to control diversity. |
+| `--presence-penalty <value>` | Sets the presence penalty (-2.0 to 2.0) to discourage repeating tokens. |
+| `--frequency-penalty <value>` | Sets the frequency penalty (-2.0 to 2.0) to discourage frequent tokens. |
 
-### Running a Remote Agent
+### Input & Output
 
-You can execute agents directly from a remote URL. The CLI will download and cache the project before running it.
+| Option | Alias | Description |
+|---|---|---|
+| `--input <value>` | `-i` | Provides input to the agent. Can be specified multiple times. Use `@<file>` to read input from a file. |
+| `--format <format>` | | Specifies the format of the input when reading from a file or stdin. Can be `json` or `yaml`. |
+| `--output <file>` | `-o` | Saves the agent's result to the specified file instead of printing to stdout. |
+| `--output-key <key>` | | The key in the agent's result object to save to the output file. Defaults to `output`. |
+| `--force` | | If the output file already exists, this option allows overwriting it. It also creates parent directories if they don't exist. |
 
-```bash
-aigne run --url https://example.com/path/to/aigne-project.tar.gz
-```
+### Other Options
 
-By default, remote agents are cached in `~/.aigne`. You can specify a custom cache directory:
+| Option | Description |
+|---|---|
+| `--log-level <level>` | Sets the verbosity of logs. Available levels: `debug`, `info`, `warn`, `error`, `silent`. |
+| `--aigne-hub-url <url>` | Specifies a custom AIGNE Hub service URL for fetching remote models or credentials. |
 
-```bash
-aigne run --url <URL> --cache-dir ./temp-agent-cache
-```
+## Scenarios & Examples
 
-### Starting an Interactive Chat Session
+### Interactive Chat Mode
 
-For conversational agents, the `--chat` flag starts an interactive loop in your terminal, allowing you to have a back-and-forth conversation.
+To have a continuous conversation with your agent, use the `--chat` flag. This is useful for testing chatbots or assistants.
 
 ```bash
 aigne run --chat
 ```
 
-This will launch a session where you can type your inputs and see the agent's responses in real-time.
+This will start a session where you can type messages and receive responses from the agent. You can type `/exit` to end the session or `/help` for a list of available commands.
 
-![Running a project created with the default template in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
+![Running a project in chat mode](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/run/run-default-template-project-in-chat-mode.png)
 
-### Providing Input to an Agent
+### Providing Input from a File
 
-The CLI offers multiple ways to provide input, accommodating simple text, structured data, and file-based prompts.
-
-**1. Agent-Specific Arguments**
-
-If your agent's input schema is defined (e.g., in a JavaScript or TypeScript file using Zod), the CLI automatically generates corresponding command-line arguments.
+You can pass the content of a file as input to an agent using the `@` prefix. This is useful for complex or lengthy inputs.
 
 ```bash
-# If the agent expects 'topic' and 'style' inputs
-aigne run --topic "AI in software development" --style "formal"
-```
-
-**2. General Input with `--input`**
-
-Use the `--input` (or `-i`) flag for general-purpose input. This is typically mapped to the agent's primary input key.
-
-```bash
-aigne run --input "Summarize the key features of the AIGNE framework."
-```
-
-**3. Input from a File**
-
-To pass the content of a file as input, prefix the file path with `@`.
-
-```bash
-# The content of prompt.txt will be used as input
+# Pass the content of 'prompt.txt' as the main input
 aigne run --input @prompt.txt
+
+# If the agent's input schema has a field named 'document'
+aigne run --document @document.md
 ```
 
-**4. Structured Input (JSON/YAML)**
-
-For agents that expect structured data, you can provide a JSON or YAML file. The CLI infers the format from the file extension (`.json`, `.yaml`, `.yml`).
+If the file is a JSON or YAML file, the CLI can parse it automatically based on the file extension. You can also explicitly specify the format with `--format`.
 
 ```bash
-# The CLI infers the format from the file extension
+# AIGNE will parse data.json and map its keys to the agent's input schema
 aigne run --input @data.json
 
-# You can also specify the format explicitly
-aigne run --input @data.txt --format json
+# Explicitly treat input.txt as YAML
+aigne run --input @input.txt --format yaml
 ```
 
-### Controlling the Output
+### Specifying a Model and Parameters
 
-By default, the agent's final result is printed to standard output. You can redirect this to a file using the `--output` (or `-o`) option.
+You can override the default model and its settings for a single run directly from the command line.
 
 ```bash
-aigne run --input "Translate 'hello' to French" --output translation.txt
+# Run the agent with a specific OpenAI model and a higher temperature for more creative responses
+aigne run --model openai:gpt-4o-mini --temperature 1.2
 ```
 
-If the result is an object with multiple keys, `--output-key` specifies which value to save.
+### Saving Agent Output
+
+To save the result of an agent's execution to a file, use the `--output` flag.
 
 ```bash
-# Assuming the result is { translation: 'Bonjour', language: 'French' }
-# This saves 'Bonjour' to the file.
-aigne run --output-key translation --output result.txt
+# Run the agent and save the entire JSON result to result.json
+aigne run --input "Summarize the latest AI news" --output result.json
 ```
 
-To overwrite an existing output file, use the `--force` flag.
+If you only need a specific field from the output (e.g., the text content), you can use `--output-key`.
 
 ```bash
-aigne run --output result.txt --force
+# Assume the agent returns { "summary": "...", "sources": [...] }
+# This command saves only the summary text to summary.txt
+aigne run --input "Summarize..." --output summary.txt --output-key summary
 ```
 
-## Command Options
-
-Here is a comprehensive list of options available for the `aigne run` command.
-
-| Option | Description | Default |
-|---|---|---|
-| `path`, `url` | Path to the local agent directory or URL of a remote AIGNE project. | `.` |
-| `--entry-agent <name>` | Specifies the name of the agent to run. If omitted, the first agent found in the project is used. | First agent found |
-| `--cache-dir <dir>` | Directory to download and cache remote packages. | `~/.aigne/<hostname>/<pathname>` |
-| `--chat` | Runs the agent in an interactive chat loop in the terminal. | `false` |
-| `--model <provider[:model]>` | AI model to use, e.g., `openai` or `openai:gpt-4o-mini`. | `openai` |
-| `--temperature <value>` | Controls randomness (0.0-2.0). Higher values are more random. | Provider default |
-| `--top-p <value>` | Controls diversity via nucleus sampling (0.0-1.0). | Provider default |
-| `--presence-penalty <value>` | Penalizes repeating tokens (-2.0 to 2.0). | Provider default |
-| `--frequency-penalty <value>` | Penalizes frequent tokens (-2.0 to 2.0). | Provider default |
-| `--input <value>`, `-i <value>` | Input to the agent. Use `@<file>` to read from a file. Can be specified multiple times. | `null` |
-| `--format <type>` | Input format when reading from files or stdin. Can be `text`, `json`, or `yaml`. | `text` |
-| `--output <file>`, `-o <file>` | File path to save the result. Defaults to standard output. | `stdout` |
-| `--output-key <key>` | The key in the result object to save to the output file. | `output` |
-| `--force` | Overwrites the output file if it already exists and creates parent directories if needed. | `false` |
-| `--log-level <level>` | Sets the logging level. Options: `SILENT`, `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`. | `SILENT` |
-| `--aigne-hub-url <url>` | Custom AIGNE Hub URL for fetching remote models or agent definitions. | `null` |
-
----
-
-With the `aigne run` command, you have a flexible tool for agent execution. After testing your agent locally, you might want to deploy it as a service. To learn how, proceed to the [`aigne serve-mcp`](./command-reference-serve-mcp.md) documentation.
+For more advanced use cases, such as deploying your agent as a service, see the [`aigne serve-mcp`](./command-reference-serve-mcp.md) command.

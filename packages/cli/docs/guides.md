@@ -4,20 +4,24 @@ labels: ["Reference"]
 
 # Guides
 
-This section provides practical, step-by-step guides for accomplishing common development tasks with the AIGNE CLI. While the [Command Reference](./command-reference.md) offers a detailed look at every command and option, these guides focus on achieving specific goals from start to finish.
+This section provides practical, step-by-step tutorials to help you accomplish common development tasks with `@aigne/cli`. These guides are designed to give you hands-on experience with key workflows, from creating your first agent to deploying it for production use.
 
-Each guide is designed to walk you through a real-world scenario, providing code snippets and clear instructions to help you use key features of the AIGNE framework effectively. The image below shows an agent running in an interactive chat session, a common result of following these guides.
-
-![An agent running in an interactive chat session](../assets/run/run-default-template-project-in-chat-mode.png)
-
-### [Creating a Custom Agent](./guides-creating-a-custom-agent.md)
-
-A step-by-step tutorial on creating a new JavaScript agent. Learn how to define its logic, structure it as a skill, and integrate it into your project for execution. This guide covers everything from scaffolding a new project to writing your agent's core functionality.
-
-### [Running Remote Agents](./guides-running-remote-agents.md)
-
-Learn how to run agents directly from a remote Git repository or tarball URL. This guide covers how the `aigne run` command downloads, caches, and executes remote projects, a useful feature for testing, sharing, and collaboration without needing a local setup.
+We recommend having a basic understanding of the topics covered in the [Core Concepts](./core-concepts.md) section before diving in.
 
 ---
 
-Explore the guides above to get hands-on experience with key AIGNE CLI workflows. For a comprehensive overview of all available commands and their options, please see the [Command Reference](./command-reference.md).
+### [Creating a Custom Agent](./guides-creating-a-custom-agent.md)
+
+Learn how to build a custom agent from scratch. This guide covers scaffolding a new project using `aigne create`, defining agent logic in JavaScript, and integrating it as a skill within your `aigne.yaml` configuration.
+
+### [Running Remote Agents](./guides-running-remote-agents.md)
+
+Discover how to execute AIGNE projects directly from a remote URL, such as a Git repository or a tarball. This guide covers the `aigne run --url` command and is useful for testing, sharing, and running agents without a local setup.
+
+### [Deploying Agents](./guides-deploying-agents.md)
+
+Take your AIGNE application from development to production. This guide walks you through the process of deploying your project as a Blocklet to a specified endpoint using the `aigne deploy` command, making your agent accessible as a service.
+
+---
+
+After following these guides, you'll be more familiar with the core capabilities of `@aigne/cli`. For a comprehensive overview of all commands and their options, please refer to the [Command Reference](./command-reference.md).

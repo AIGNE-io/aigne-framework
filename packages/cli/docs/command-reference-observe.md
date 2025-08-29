@@ -4,83 +4,68 @@ labels: ["Reference"]
 
 # aigne observe
 
-The `aigne observe` command launches a local web server for monitoring, debugging, and analyzing the execution of your agents. It provides a user interface to inspect detailed traces, helping you understand agent behavior and diagnose issues.
+The `aigne observe` command starts a local web server to help you visualize and analyze agent execution traces. This is an essential tool for debugging, monitoring performance, and understanding the step-by-step behavior of your agents.
 
-When you run an agent, its execution data is automatically recorded. The observability server reads this data and presents it in a web-based UI, allowing you to visualize the entire lifecycle of an agent's task.
-
-![The user interface of the observability server](../assets/observe/observe-running-interface.png)
+When you run your agents, the AIGNE framework automatically captures detailed observability data. The `observe` command provides a user interface to explore this data.
 
 ## Usage
 
-To start the server, run the command from your terminal. It will automatically detect an available port and provide a URL to access the interface.
-
 ```bash
-# Start the observability server on a default port (e.g., 7890)
-aigne observe
+aigne observe [options]
 ```
 
-Upon startup, the console will display the path to the observability database and the URL where the server is running:
+Upon starting, the command will print the path to the local observability database and the URL to access the web interface.
 
-```console
+```text
 Observability database path: /path/to/your/project/.aigne/observability.db
-Observability server listening on http://localhost:7890
+Observability server listening on: http://localhost:7890
 ```
-
-## How It Works
-
-The observability system captures data during agent execution and stores it locally in a SQLite database. The `aigne observe` command starts a local web server that reads this data and presents it in a user-friendly interface for analysis.
-
-```mermaid
-sequenceDiagram
-    participant User as Developer
-    participant CLI
-    participant Agent as Agent Execution
-    participant DB as SQLite Database
-    participant Server as Observe Server (UI)
-
-    User->>CLI: aigne run my-agent
-    CLI->>Agent: Start agent
-    Agent->>DB: Write execution traces
-
-    User->>CLI: aigne observe
-    CLI->>Server: Start server
-    Server-->>User: Server is running at http://...
-    
-    User->>Server: Access UI in browser
-    Server->>DB: Read trace data
-    DB-->>Server: Return data
-    Server-->>User: Display agent traces
-```
-
-Once the server is running and an agent has been executed, you can navigate to the provided URL in your browser to view detailed traces of each run.
-
-![Viewing call details for a specific agent run](../assets/observe/observe-view-call-details.png)
 
 ## Options
 
-The `observe` command accepts the following options to customize its behavior.
-
-| Option   | Type     | Description                                                                                                                                                             | Default                |
-|----------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
-| `--host` | `string` | The host to run the server on. Use `0.0.0.0` to expose the server to other devices on your network.                                                                     | `localhost`            |
-| `--port` | `number` | The port to run the server on. If the specified port is unavailable, it will automatically find the next open port. If unspecified, it uses the `PORT` environment variable or defaults to `7890`. | `7890` or `process.env.PORT` |
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| `--host` | `string` | Specifies the host to run the server on. Use `0.0.0.0` to expose the server to your local network. Defaults to `localhost`. |
+| `--port` | `number` | Specifies the port for the server. If not provided, it will try the `PORT` environment variable, or default to `7890`. |
 
 ## Examples
 
-### Start the server on a specific port
+### Start the server on the default port
 
-If you want to run the server on a different port, such as `3001`, use the `--port` option.
+Run the command in your project directory to start the server on `http://localhost:7890`.
 
 ```bash
-aigne observe --port 3001
+aigne observe
+```
+
+### Start the server on a custom port
+
+Use the `--port` option to specify a different port.
+
+```bash
+aigne observe --port 8000
 ```
 
 ### Expose the server to your network
 
-To make the observability UI accessible from other machines on your local network, set the host to `0.0.0.0`.
+Use `--host 0.0.0.0` to make the observability interface accessible from other devices on the same network.
 
 ```bash
-aigne observe --host 0.0.0.0
+aigne observe --host 0.0.0.0 --port 8080
 ```
 
-This is useful for team collaboration or accessing the UI from a different device on the same network.
+## The Observability Interface
+
+Once the server is running, you can open the provided URL in your browser to view the agent execution data.
+
+### Traces Dashboard
+
+The main dashboard lists all the recorded agent execution traces, giving you a high-level overview of recent activity.
+
+![The main running interface of the observability server, showing a list of recent agent traces.](../assets/observe/observe-running-interface.png)
+
+### Trace Details View
+
+Clicking on a specific trace will take you to a detailed view. Here you can inspect the complete execution flow, including model inputs and outputs, tool calls, intermediate steps, and performance metrics for each stage of the agent's run.
+
+![A detailed view of a specific call trace, showing inputs, outputs, logs, and metadata.](../assets/observe/observe-view-call-details.png)

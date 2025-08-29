@@ -43,7 +43,7 @@ export class PromptTemplate {
   }
 }
 
-const FIND_PROMPTS_IGNORED_DIRS = ["node_modules", ".git"];
+const IGNORED_PROMPT_DIRS = ["node_modules", ".git"];
 
 export class CustomLoader extends nunjucks.Loader {
   constructor(public options: { workingDir: string }) {
@@ -61,16 +61,14 @@ export class CustomLoader extends nunjucks.Loader {
 
     if (file) return nodejs.path.join(file.parentPath, file.name);
 
-    for (const dir of files) {
-      if (dir.isDirectory()) {
-        if (FIND_PROMPTS_IGNORED_DIRS.includes(dir.name)) continue;
+    for (const entry of files) {
+      if (entry.isDirectory()) {
+        if (IGNORED_PROMPT_DIRS.includes(entry.name)) continue;
 
-        const result = await this.findFile(nodejs.path.join(dir.parentPath, dir.name), name);
+        const result = await this.findFile(nodejs.path.join(entry.parentPath, entry.name), name);
         if (result) return result;
       }
     }
-
-    return;
   }
 
   getSource(name: string, callback: Callback<Error, LoaderSource>): LoaderSource {

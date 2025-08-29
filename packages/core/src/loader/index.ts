@@ -89,7 +89,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
 
 export async function loadAgent(
   path: string,
-  options?: LoadOptions & { rootDir: string },
+  options?: LoadOptions & { rootDir?: string },
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
@@ -110,7 +110,7 @@ export async function loadAgent(
 async function loadNestAgent(
   path: string,
   agent: NestAgentSchema,
-  options?: LoadOptions & { rootDir: string },
+  options?: LoadOptions & { rootDir?: string },
 ): Promise<Agent> {
   return typeof agent === "object" && "type" in agent
     ? parseAgent(path, agent, options)
@@ -125,7 +125,7 @@ async function loadNestAgent(
 async function parseHooks(
   path: string,
   hooks?: HooksSchema | HooksSchema[],
-  options?: LoadOptions & { rootDir: string },
+  options?: LoadOptions & { rootDir?: string },
 ): Promise<AgentHooks[] | undefined> {
   hooks = [hooks].flat().filter(isNonNullable);
   if (!hooks.length) return undefined;
@@ -155,9 +155,11 @@ async function parseHooks(
 async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
-  options?: LoadOptions & { rootDir: string },
+  options?: LoadOptions & { rootDir?: string },
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
+  const workingDir = options?.rootDir ?? nodejs.path.dirname(path);
+
   const skills =
     "skills" in agent
       ? agent.skills &&
@@ -188,15 +190,13 @@ async function parseAgent(
     case "ai": {
       return AIAgent.from({
         ...baseOptions,
-        instructions:
-          agent.instructions &&
-          PromptBuilder.from(agent.instructions, { workingDir: options?.rootDir }),
+        instructions: agent.instructions && PromptBuilder.from(agent.instructions, { workingDir }),
       });
     }
     case "image": {
       return ImageAgent.from({
         ...baseOptions,
-        instructions: PromptBuilder.from(agent.instructions, { workingDir: options?.rootDir }),
+        instructions: PromptBuilder.from(agent.instructions, { workingDir }),
       });
     }
     case "mcp": {

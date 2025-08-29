@@ -1,0 +1,5 @@
+type: ai
+name: test-relative-prompt-paths
+instructions:
+  url: ../prompts/prompt-a.md
+input_key: message

@@ -56,7 +56,10 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
   );
   const allAgents: { [path: string]: Agent } = Object.fromEntries(
     await Promise.all(
-      Array.from(allAgentPaths).map(async (path) => [path, await loadAgent(path, options)]),
+      Array.from(allAgentPaths).map(async (path) => [
+        path,
+        await loadAgent(path, { ...options, rootDir }),
+      ]),
     ),
   );
 
@@ -86,7 +89,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
 
 export async function loadAgent(
   path: string,
-  options?: LoadOptions,
+  options?: LoadOptions & { rootDir: string },
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
@@ -107,7 +110,7 @@ export async function loadAgent(
 async function loadNestAgent(
   path: string,
   agent: NestAgentSchema,
-  options?: LoadOptions,
+  options?: LoadOptions & { rootDir: string },
 ): Promise<Agent> {
   return typeof agent === "object" && "type" in agent
     ? parseAgent(path, agent, options)
@@ -122,7 +125,7 @@ async function loadNestAgent(
 async function parseHooks(
   path: string,
   hooks?: HooksSchema | HooksSchema[],
-  options?: LoadOptions,
+  options?: LoadOptions & { rootDir: string },
 ): Promise<AgentHooks[] | undefined> {
   hooks = [hooks].flat().filter(isNonNullable);
   if (!hooks.length) return undefined;
@@ -152,7 +155,7 @@ async function parseHooks(
 async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
-  options?: LoadOptions,
+  options?: LoadOptions & { rootDir: string },
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   const skills =
@@ -187,15 +190,13 @@ async function parseAgent(
         ...baseOptions,
         instructions:
           agent.instructions &&
-          PromptBuilder.from(agent.instructions, { workingDir: nodejs.path.dirname(path) }),
+          PromptBuilder.from(agent.instructions, { workingDir: options?.rootDir }),
       });
     }
     case "image": {
       return ImageAgent.from({
         ...baseOptions,
-        instructions: PromptBuilder.from(agent.instructions, {
-          workingDir: nodejs.path.dirname(path),
-        }),
+        instructions: PromptBuilder.from(agent.instructions, { workingDir: options?.rootDir }),
       });
     }
     case "mcp": {

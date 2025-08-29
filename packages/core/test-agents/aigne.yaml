@@ -8,6 +8,7 @@ agents:
   - chat-with-prompt.yaml
   - team.yaml
   - image.yaml
+  - agents/test-relative-prompt-paths.yaml
 skills:
   - sandbox.js
 mcp_server:

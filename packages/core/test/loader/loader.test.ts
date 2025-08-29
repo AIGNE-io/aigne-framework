@@ -22,7 +22,7 @@ test("AIGNE.load should load agents correctly", async () => {
     }),
   );
 
-  expect(aigne.agents.length).toBe(4);
+  expect(aigne.agents.length).toBe(5);
 
   const chat = aigne.agents[0];
   expect(chat).toEqual(
@@ -87,6 +87,9 @@ test("loader should use override options", async () => {
     }),
     expect.objectContaining({
       name: "test-image-agent",
+    }),
+    expect.objectContaining({
+      name: "test-relative-prompt-paths",
     }),
     testAgent,
   ]);
@@ -236,4 +239,35 @@ test("loadAgent should load js agent with a random key to avoid caching issues",
   );
 
   loadAgentFromJsFile.mockRestore();
+});
+
+test("loadAgent should support nested relative prompt paths", async () => {
+  const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"));
+
+  const agent = aigne.agents["test-relative-prompt-paths"];
+
+  assert(agent instanceof AIAgent);
+
+  expect(await agent.instructions.build({})).toMatchInlineSnapshot(`
+    {
+      "messages": [
+        {
+          "content": 
+    "You are a professional chatbot.
+
+    Please output in native English
+
+    "
+    ,
+          "name": undefined,
+          "role": "system",
+        },
+      ],
+      "modelOptions": undefined,
+      "responseFormat": undefined,
+      "toolAgents": undefined,
+      "toolChoice": undefined,
+      "tools": undefined,
+    }
+  `);
 });

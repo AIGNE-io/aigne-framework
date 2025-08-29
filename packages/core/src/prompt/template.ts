@@ -50,22 +50,48 @@ export class CustomLoader extends nunjucks.Loader {
 
   async = true;
 
+  private async findFile(dir: string, name: string): Promise<string | null> {
+    name = nodejs.path.basename(name);
+
+    const files = await nodejs.fs.readdir(dir, { withFileTypes: true });
+
+    const file = files.find((f) => f.name === name);
+
+    if (file) return nodejs.path.join(file.parentPath, file.name);
+
+    for (const dir of files) {
+      if (dir.isDirectory()) {
+        const result = await this.findFile(nodejs.path.join(dir.parentPath, dir.name), name);
+        if (result) return result;
+      }
+    }
+
+    return null;
+  }
+
   getSource(name: string, callback: Callback<Error, LoaderSource>): LoaderSource {
     let result: LoaderSource | null = null;
 
-    nodejs.fs.readFile(nodejs.path.join(this.options.workingDir, name), "utf-8").then(
-      (content) => {
-        result = {
-          src: content,
-          path: name,
-          noCache: true,
-        };
-        callback(null, result);
-      },
-      (error) => {
-        callback(error, null);
-      },
-    );
+    this.findFile(this.options.workingDir, name).then((path) => {
+      if (!path) {
+        callback(new Error(`Template not found: ${name}`), null);
+        return;
+      }
+
+      return nodejs.fs.readFile(path, "utf-8").then(
+        (content) => {
+          result = {
+            src: content,
+            path: name,
+            noCache: true,
+          };
+          callback(null, result);
+        },
+        (error) => {
+          callback(error, null);
+        },
+      );
+    });
 
     // nunjucks expects return LoaderSource synchronously, but we handle it asynchronously.
     return result as any;

@@ -43,6 +43,8 @@ export class PromptTemplate {
   }
 }
 
+const FIND_PROMPTS_IGNORED_DIRS = ["node_modules", ".git"];
+
 export class CustomLoader extends nunjucks.Loader {
   constructor(public options: { workingDir: string }) {
     super();
@@ -50,23 +52,25 @@ export class CustomLoader extends nunjucks.Loader {
 
   async = true;
 
-  private async findFile(dir: string, name: string): Promise<string | null> {
-    name = nodejs.path.basename(name);
+  private async findFile(dir: string, name: string): Promise<string | undefined> {
+    name = name.replace(/^[./]*/, "");
 
     const files = await nodejs.fs.readdir(dir, { withFileTypes: true });
 
-    const file = files.find((f) => f.name === name);
+    const file = files.find((f) => nodejs.path.join(f.parentPath, f.name).endsWith(name));
 
     if (file) return nodejs.path.join(file.parentPath, file.name);
 
     for (const dir of files) {
       if (dir.isDirectory()) {
+        if (FIND_PROMPTS_IGNORED_DIRS.includes(dir.name)) continue;
+
         const result = await this.findFile(nodejs.path.join(dir.parentPath, dir.name), name);
         if (result) return result;
       }
     }
 
-    return null;
+    return;
   }
 
   getSource(name: string, callback: Callback<Error, LoaderSource>): LoaderSource {

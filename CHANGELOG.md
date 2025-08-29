@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.1...aigne-framework-v1.72.2) (2025-08-29)
+
+
+### Bug Fixes
+
+* **core:** load nested prompt files with relative paths correctly ([#432](https://github.com/AIGNE-io/aigne-framework/issues/432)) ([036ffa7](https://github.com/AIGNE-io/aigne-framework/commit/036ffa72391d3f27870a5022b7964739805a6161))
+
 ## [1.72.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.0...aigne-framework-v1.72.1) (2025-08-29)
 
 

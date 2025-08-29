@@ -21,6 +21,7 @@ import { marked, type RendererObject } from "marked";
 import { findLocalImages, isRemoteUrl } from "../utils/image-finder.js";
 import { slugify } from "../utils/slugify.js";
 import { type UploadFilesOptions, uploadFiles } from "../utils/upload-files.js";
+import { CustomComponentNode } from "./nodes/custom-component-node.js";
 import { ImageNode } from "./nodes/image-node.js";
 import { MermaidNode } from "./nodes/mermaid-node.js";
 
@@ -97,6 +98,28 @@ export class Converter {
         usedSlugs[slug] = [...(usedSlugs[slug] ?? []), filePath];
         return `<a href="${slugPrefix ? `${slugPrefix}-${slug}${anchor ? `#${anchor}` : ""}` : slug}${anchor ? `#${anchor}` : ""}">${marked.parseInline(text)}</a>`;
       },
+      html({ text }) {
+        if (text.startsWith("<x-")) {
+          // Check if text contains data-href attributes and process all of them
+          const dataHrefMatches = text.matchAll(/data-href="([^"]+)"/g);
+          let updatedText = text;
+
+          for (const match of dataHrefMatches) {
+            const hrefValue = match[1];
+            // If href starts with "/", normalize the path (/aa/bb/cc => <slugPrefix>-aa-bb-cc)
+            if (hrefValue?.startsWith("/")) {
+              const prefix = slugPrefix ? `${slugPrefix}-` : "";
+              const processedHref = prefix + hrefValue.substring(1).replace(/\//g, "-");
+              updatedText = updatedText.replace(match[0], `data-href="${processedHref}"`);
+            }
+          }
+
+          if (updatedText !== text) {
+            return updatedText;
+          }
+        }
+        return false;
+      },
     };
 
     marked.use({ renderer });
@@ -120,6 +143,7 @@ export class Converter {
         MermaidNode,
         TextNode,
         LineBreakNode,
+        CustomComponentNode,
       ],
     });
 

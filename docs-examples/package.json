@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
+    "@aigne/aigne-hub": "workspace:^",
     "@aigne/anthropic": "workspace:^",
     "@aigne/bedrock": "workspace:^",
     "@aigne/core": "workspace:^",
@@ -29,7 +30,6 @@
     "@aigne/openai": "workspace:^",
     "@aigne/transport": "workspace:^",
     "@aigne/xai": "workspace:^",
-    "@aigne/aigne-hub": "workspace:^",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "hono": "^4.8.4",

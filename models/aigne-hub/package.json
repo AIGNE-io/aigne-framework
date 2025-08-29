@@ -1,6 +1,6 @@
 {
   "name": "@aigne/aigne-hub",
-  "version": "0.6.9",
+  "version": "0.8.1",
   "description": "AIGNE Hub SDK for integrating with Hub AI models",
   "publishConfig": {
     "access": "public"
@@ -50,6 +50,7 @@
     "@aigne/deepseek": "workspace:^",
     "@aigne/doubao": "workspace:^",
     "@aigne/gemini": "workspace:^",
+    "@aigne/ideogram": "workspace:^",
     "@aigne/ollama": "workspace:^",
     "@aigne/open-router": "workspace:^",
     "@aigne/openai": "workspace:^",
@@ -63,7 +64,6 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@aigne/openai": "workspace:^",
     "@aigne/test-utils": "workspace:^",
     "@types/bun": "^1.2.18",
     "detect-port": "^2.1.0",

@@ -1,12 +1,22 @@
+import { Ajv } from "ajv";
+import isNetworkError from "is-network-error";
 import { z } from "zod";
-import type { PromiseOrValue } from "../utils/type-utils.js";
+import { checkArguments, type PromiseOrValue } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
+  agentOptionsSchema,
   type Message,
 } from "./agent.js";
+
+const CHAT_MODEL_DEFAULT_RETRY_OPTIONS: Agent["retryOnError"] = {
+  retries: 3,
+  shouldRetry: (error) => error instanceof StructuredOutputError || isNetworkError(error),
+};
+
+export class StructuredOutputError extends Error {}
 
 /**
  * ChatModel is an abstract base class for interacting with Large Language Models (LLMs).
@@ -37,10 +47,23 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   constructor(
     options?: Omit<AgentOptions<ChatModelInput, ChatModelOutput>, "inputSchema" | "outputSchema">,
   ) {
+    if (options) checkArguments("ChatModel", agentOptionsSchema, options);
+
+    const retryOnError =
+      options?.retryOnError === false
+        ? false
+        : options?.retryOnError === true
+          ? CHAT_MODEL_DEFAULT_RETRY_OPTIONS
+          : {
+              ...CHAT_MODEL_DEFAULT_RETRY_OPTIONS,
+              ...options?.retryOnError,
+            };
+
     super({
       ...options,
       inputSchema: chatModelInputSchema,
       outputSchema: chatModelOutputSchema,
+      retryOnError,
     });
   }
 
@@ -170,6 +193,19 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
 
           toolCall.function.name = originalTool.function.name;
         }
+      }
+    }
+
+    if (
+      input.responseFormat?.type === "json_schema" &&
+      // NOTE: Should not validate if there are tool calls
+      !output.toolCalls?.length
+    ) {
+      const ajv = new Ajv();
+      if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
+        throw new StructuredOutputError(
+          `Output JSON does not conform to the provided JSON schema: ${ajv.errorsText()}`,
+        );
       }
     }
 

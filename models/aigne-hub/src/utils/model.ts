@@ -1,19 +1,39 @@
 import type { Agent } from "node:https";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
-import type { ChatModel, ChatModelOptions } from "@aigne/core";
+import type { ChatModel, ChatModelOptions, ImageModel } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { DoubaoChatModel } from "@aigne/doubao";
-import { GeminiChatModel } from "@aigne/gemini";
+import { GeminiChatModel, GeminiImageModel } from "@aigne/gemini";
+import { IdeogramImageModel } from "@aigne/ideogram";
 import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";
-import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
+import { OpenAIChatModel, type OpenAIChatModelOptions, OpenAIImageModel } from "@aigne/openai";
 import { PoeChatModel } from "@aigne/poe";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import { AIGNEHubImageModel } from "../aigne-hub-image-model.js";
 import { AIGNEHubChatModel } from "../aigne-hub-model.js";
 
+const getClientOptions = () => {
+  const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
+    .map((i) => process.env[i])
+    .filter(Boolean)[0];
+
+  const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
+  const clientOptions: OpenAIChatModelOptions["clientOptions"] = {
+    fetchOptions: {
+      // @ts-ignore
+      agent: httpAgent,
+    },
+  };
+
+  return {
+    clientOptions,
+    httpAgent,
+  };
+};
 export interface LoadableModel {
   name: string | string[];
   apiKeyEnvName?: string | string[];
@@ -26,17 +46,7 @@ export interface LoadableModel {
 }
 
 export function availableModels(): LoadableModel[] {
-  const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
-    .map((i) => process.env[i])
-    .filter(Boolean)[0];
-
-  const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
-  const clientOptions: OpenAIChatModelOptions["clientOptions"] = {
-    fetchOptions: {
-      // @ts-ignore
-      agent: httpAgent,
-    },
-  };
+  const { clientOptions, httpAgent } = getClientOptions();
 
   return [
     {
@@ -104,6 +114,44 @@ export function availableModels(): LoadableModel[] {
   ];
 }
 
+export interface LoadableImageModel {
+  name: string;
+  apiKeyEnvName: string;
+  create: (options: {
+    apiKey?: string;
+    url?: string;
+    model?: string;
+    modelOptions?: any;
+  }) => ImageModel;
+}
+
+export function availableImageModels(): LoadableImageModel[] {
+  const { clientOptions } = getClientOptions();
+
+  return [
+    {
+      name: OpenAIImageModel.name,
+      apiKeyEnvName: "OPENAI_API_KEY",
+      create: (params) => new OpenAIImageModel({ ...params, clientOptions }),
+    },
+    {
+      name: GeminiImageModel.name,
+      apiKeyEnvName: "GEMINI_API_KEY",
+      create: (params) => new GeminiImageModel({ ...params, clientOptions }),
+    },
+    {
+      name: IdeogramImageModel.name,
+      apiKeyEnvName: "IDEOGRAM_API_KEY",
+      create: (params) => new IdeogramImageModel({ ...params }),
+    },
+    {
+      name: AIGNEHubImageModel.name,
+      apiKeyEnvName: "AIGNE_HUB_API_KEY",
+      create: (params) => new AIGNEHubImageModel({ ...params, clientOptions }),
+    },
+  ];
+}
+
 export function findModel(provider: string): {
   all: LoadableModel[];
   match: LoadableModel | undefined;
@@ -119,6 +167,19 @@ export function findModel(provider: string): {
 
     return m.name.some((n) => n.toLowerCase().includes(provider));
   });
+
+  return { all, match };
+}
+
+export function findImageModel(provider: string): {
+  all: LoadableImageModel[];
+  match: LoadableImageModel | undefined;
+} {
+  provider = provider.toLowerCase().replace(/-/g, "");
+
+  const all = availableImageModels();
+
+  const match = all.find((m) => m.name.toLowerCase().includes(provider));
 
   return { all, match };
 }

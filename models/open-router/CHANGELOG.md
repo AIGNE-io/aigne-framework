@@ -1,5 +1,50 @@
 # Changelog
 
+## [0.7.31](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.30...open-router-v0.7.31) (2025-08-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.2
+  * devDependencies
+    * @aigne/core bumped to 1.57.0
+    * @aigne/test-utils bumped to 0.5.38
+
+## [0.7.30](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.29...open-router-v0.7.30) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.1
+  * devDependencies
+    * @aigne/core bumped to 1.56.0
+    * @aigne/test-utils bumped to 0.5.37
+
+## [0.7.29](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.28...open-router-v0.7.29) (2025-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.0
+
+## [0.7.28](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.27...open-router-v0.7.28) (2025-08-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.12.4
+  * devDependencies
+    * @aigne/core bumped to 1.55.1
+    * @aigne/test-utils bumped to 0.5.36
+
 ## [0.7.27](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.26...open-router-v0.7.27) (2025-08-25)
 
 

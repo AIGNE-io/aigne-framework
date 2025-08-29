@@ -1,7 +1,7 @@
 {
   "name": "aigne-runtime",
   "private": true,
-  "version": "1.3.0",
+  "version": "1.4.2",
   "scripts": {
     "dev": "blocklet dev",
     "lint": "tsc --noEmit && biome check",
@@ -12,8 +12,7 @@
     "bundle:client": "vite build",
     "bundle:api": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release --external @aigne/sqlite",
     "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
-    "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json",
-    "prepare": "npx simple-git-hooks"
+    "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json"
   },
   "browserslist": {
     "production": [

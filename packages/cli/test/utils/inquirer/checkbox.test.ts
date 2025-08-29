@@ -650,12 +650,12 @@ describe("checkbox prompt", () => {
       message: "Select a number",
       choices: numberedChoices,
       instructions:
-        " (Pulse <space> para seleccionar, <a> para alternar todos, <i> para invertir selección, y <enter> para continuar)",
+        " (Press <space> to select, <a> to toggle all, <i> to invert selection, and <enter> to proceed)",
     });
 
     expect(getScreen()).toMatchInlineSnapshot(`
-      "? Select a number (Pulse <space> para seleccionar, <a> para alternar todos, <i>
-      para invertir selección, y <enter> para continuar)
+      "? Select a number (Press <space> to select, <a> to toggle all, <i> to invert
+      selection, and <enter> to proceed)
       ❯◯ 1
        ◯ 2
        ◯ 3

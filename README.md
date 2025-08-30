@@ -346,6 +346,14 @@ AIGNE Framework is an open source project and welcomes community contributions. 
 ## License
 
 This project is licensed under the [Elastic-2.0](./LICENSE.md) - see the [LICENSE](./LICENSE.md) file for details.
+## Getting Started
+Steps to quickly set up the project locally:
+1. Fork the repo
+2. Clone your fork
+3. Install dependencies
+4. Run tests
+
+
 
 ## Community and Support
 

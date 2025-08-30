@@ -196,7 +196,8 @@ async function parseAgent(
       });
     }
     case "image": {
-      if (!instructions) throw new Error(`Missing instructions for image agent: ${path}`);
+      if (!instructions)
+        throw new Error(`Missing required instructions for image agent at path: ${path}`);
 
       return ImageAgent.from({
         ...baseOptions,

@@ -159,13 +159,17 @@ export default createPrompt(
   <Value>(config: CheckboxConfig<Value>, done: (value: Array<Value>) => void) => {
     const { instructions, pageSize = 7, loop = true, required, validate = () => true } = config;
     const shortcuts = { all: "a", invert: "i", ...config.shortcuts };
-    const theme = makeTheme<CheckboxTheme>(checkboxTheme, config.theme);
+    const theme = makeTheme<CheckboxTheme>(checkboxTheme, {
+      ...config.theme,
+      helpMode: config.theme?.helpMode || (config.source ? "always" : "auto"),
+    });
     const firstRender = useRef(true);
     const [status, setStatus] = useState<Status>(config.source ? "loading" : "idle");
     const prefix = usePrefix({ status, theme });
 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [searchError, setSearchError] = useState<string>();
+    const [preserveActivePosition, setPreserveActivePosition] = useState(false);
 
     const initialItems = config.choices ? normalizeChoices(config.choices) : [];
     const initialSelectedChoices = new Map<Value, NormalizedChoice<Value>>(
@@ -208,11 +212,14 @@ export default createPrompt(
               return item;
             });
             setItems(itemsWithSelection);
-            // Reset active to first selectable item after search
-            const firstSelectable = itemsWithSelection.findIndex(isSelectable);
-            if (firstSelectable >= 0) {
-              setActive(firstSelectable);
+            // Only reset active to first selectable item when not preserving position
+            if (!preserveActivePosition) {
+              const firstSelectable = itemsWithSelection.findIndex(isSelectable);
+              if (firstSelectable >= 0) {
+                setActive(firstSelectable);
+              }
             }
+            setPreserveActivePosition(false);
             setSearchError(undefined);
             setStatus("idle");
           }
@@ -280,6 +287,8 @@ export default createPrompt(
           // In search mode, prevent space from being added to search term
           rl.clearLine(0);
           rl.write(searchTerm); // Restore search term without the space
+          // Preserve active position when updating selected choices
+          setPreserveActivePosition(true);
         }
         const activeItem = items[active];
         if (activeItem && isSelectable(activeItem)) {
@@ -292,7 +301,7 @@ export default createPrompt(
           setSelectedChoices(newSelectedChoices);
           setItems(items.map((choice, i) => (i === active ? toggle(choice) : choice)));
         }
-      } else if (key.name === shortcuts.all && !config.source) {
+      } else if ((key.name === shortcuts.all && !config.source) || (key.ctrl && key.name === "a")) {
         const selectAll = items.some((choice) => isSelectable(choice) && !choice.checked);
         const newSelectedChoices = new Map<Value, NormalizedChoice<Value>>();
         if (selectAll) {
@@ -304,6 +313,10 @@ export default createPrompt(
         }
         setSelectedChoices(newSelectedChoices);
         setItems(items.map(check(selectAll)));
+        if (config.source) {
+          // Preserve active position when updating selected choices in search mode
+          setPreserveActivePosition(true);
+        }
       } else if (key.name === shortcuts.invert && !config.source) {
         const newSelectedChoices = new Map<Value, NormalizedChoice<Value>>();
         items.forEach((item) => {
@@ -400,15 +413,19 @@ export default createPrompt(
         helpTipTop = ` (Press ${keys.filter((key) => key !== "").join(", ")})`;
       }
 
-      if (
+      if (config.source) {
+        // Always show bottom tip in search mode for better UX
+        const message =
+          items.length > pageSize
+            ? "(Use arrow keys to reveal more choices, ctrl+a to select all)"
+            : "(Use arrow keys to navigate, ctrl+a to select all)";
+        helpTipBottom = `\n${theme.style.help(message)}`;
+      } else if (
         items.length > pageSize &&
-        (theme.helpMode === "always" ||
-          (theme.helpMode === "auto" && (firstRender.current || config.source)))
+        (theme.helpMode === "always" || (theme.helpMode === "auto" && firstRender.current))
       ) {
         helpTipBottom = `\n${theme.style.help("(Use arrow keys to reveal more choices)")}`;
-        if (!config.source) {
-          firstRender.current = false;
-        }
+        firstRender.current = false;
       }
     }
 

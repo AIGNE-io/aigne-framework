@@ -7,6 +7,36 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.21.34](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.33...agent-library-v1.21.34) (2025-08-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.57.3
+    * @aigne/openai bumped to 0.13.5
+
+## [1.21.33](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.32...agent-library-v1.21.33) (2025-08-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.57.2
+    * @aigne/openai bumped to 0.13.4
+
+## [1.21.32](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.31...agent-library-v1.21.32) (2025-08-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.57.1
+    * @aigne/openai bumped to 0.13.3
+
 ## [1.21.31](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.30...agent-library-v1.21.31) (2025-08-28)
 
 

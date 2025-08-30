@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.42.0",
+  "version": "1.42.4",
   "description": "Your command center for agent development",
   "publishConfig": {
     "access": "public"
@@ -101,6 +101,7 @@
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",
+    "@inquirer/testing": "^2.1.49",
     "@types/archiver": "^6.0.3",
     "@types/bun": "^1.2.18",
     "@types/express": "^5.0.3",

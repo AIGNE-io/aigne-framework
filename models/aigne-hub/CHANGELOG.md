@@ -1,5 +1,74 @@
 # Changelog
 
+## [0.8.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.3...aigne-hub-v0.8.4) (2025-08-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.11.15
+    * @aigne/bedrock bumped to 0.9.15
+    * @aigne/core bumped to 1.57.3
+    * @aigne/deepseek bumped to 0.7.34
+    * @aigne/doubao bumped to 1.0.28
+    * @aigne/gemini bumped to 0.11.4
+    * @aigne/ideogram bumped to 0.3.4
+    * @aigne/ollama bumped to 0.7.34
+    * @aigne/open-router bumped to 0.7.34
+    * @aigne/openai bumped to 0.13.5
+    * @aigne/poe bumped to 1.0.14
+    * @aigne/transport bumped to 0.14.14
+    * @aigne/xai bumped to 0.7.34
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.41
+
+## [0.8.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.2...aigne-hub-v0.8.3) (2025-08-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.11.14
+    * @aigne/bedrock bumped to 0.9.14
+    * @aigne/core bumped to 1.57.2
+    * @aigne/deepseek bumped to 0.7.33
+    * @aigne/doubao bumped to 1.0.27
+    * @aigne/gemini bumped to 0.11.3
+    * @aigne/ideogram bumped to 0.3.3
+    * @aigne/ollama bumped to 0.7.33
+    * @aigne/open-router bumped to 0.7.33
+    * @aigne/openai bumped to 0.13.4
+    * @aigne/poe bumped to 1.0.13
+    * @aigne/transport bumped to 0.14.13
+    * @aigne/xai bumped to 0.7.33
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.40
+
+## [0.8.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.1...aigne-hub-v0.8.2) (2025-08-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.11.13
+    * @aigne/bedrock bumped to 0.9.13
+    * @aigne/core bumped to 1.57.1
+    * @aigne/deepseek bumped to 0.7.32
+    * @aigne/doubao bumped to 1.0.26
+    * @aigne/gemini bumped to 0.11.2
+    * @aigne/ideogram bumped to 0.3.2
+    * @aigne/ollama bumped to 0.7.32
+    * @aigne/open-router bumped to 0.7.32
+    * @aigne/openai bumped to 0.13.3
+    * @aigne/poe bumped to 1.0.12
+    * @aigne/transport bumped to 0.14.12
+    * @aigne/xai bumped to 0.7.32
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.39
+
 ## [0.8.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.0...aigne-hub-v0.8.1) (2025-08-28)
 
 

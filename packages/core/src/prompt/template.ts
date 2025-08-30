@@ -53,11 +53,15 @@ export class CustomLoader extends nunjucks.Loader {
   getSource(name: string, callback: Callback<Error, LoaderSource>): LoaderSource {
     let result: LoaderSource | null = null;
 
-    nodejs.fs.readFile(nodejs.path.join(this.options.workingDir, name), "utf-8").then(
+    const path = nodejs.path.isAbsolute(name)
+      ? name
+      : nodejs.path.join(this.options.workingDir, name);
+
+    nodejs.fs.readFile(path, "utf-8").then(
       (content) => {
         result = {
           src: content,
-          path: name,
+          path,
           noCache: true,
         };
         callback(null, result);

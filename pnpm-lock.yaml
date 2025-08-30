@@ -1775,6 +1775,9 @@ importers:
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../test-utils
+      '@inquirer/testing':
+        specifier: ^2.1.49
+        version: 2.1.49(@types/node@24.0.12)
       '@types/archiver':
         specifier: ^6.0.3
         version: 6.0.3
@@ -3251,6 +3254,15 @@ packages:
 
   '@inquirer/select@4.3.2':
     resolution: {integrity: sha512-nwous24r31M+WyDEHV+qckXkepvihxhnyIaod2MG7eCE6G0Zm/HUF6jgN8GXgf4U7AU6SLseKdanY195cwvU6w==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
+  '@inquirer/testing@2.1.49':
+    resolution: {integrity: sha512-XAB4lEaqCwUi/RN40H3JiQqpbza9Ne/EkC15b6ftfaLk1DxSJYVmrf/suY6Owm7388MPqlGnQWV6L0HoqXOtRA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -13602,6 +13614,14 @@ snapshots:
       '@inquirer/type': 3.0.8(@types/node@24.0.12)
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.3
+    optionalDependencies:
+      '@types/node': 24.0.12
+
+  '@inquirer/testing@2.1.49(@types/node@24.0.12)':
+    dependencies:
+      '@inquirer/type': 3.0.8(@types/node@24.0.12)
+      ansi-escapes: 4.3.2
+      mute-stream: 2.0.0
     optionalDependencies:
       '@types/node': 24.0.12
 

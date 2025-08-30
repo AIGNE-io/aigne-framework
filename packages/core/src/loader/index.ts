@@ -181,21 +181,27 @@ async function parseAgent(
     ],
   };
 
+  let instructions: PromptBuilder | undefined;
+  if ("instructions" in agent && agent.instructions) {
+    instructions = PromptBuilder.from(agent.instructions.content, {
+      workingDir: nodejs.path.dirname(agent.instructions.path),
+    });
+  }
+
   switch (agent.type) {
     case "ai": {
       return AIAgent.from({
         ...baseOptions,
-        instructions:
-          agent.instructions &&
-          PromptBuilder.from(agent.instructions, { workingDir: nodejs.path.dirname(path) }),
+        instructions,
       });
     }
     case "image": {
+      if (!instructions)
+        throw new Error(`Missing required instructions for image agent at path: ${path}`);
+
       return ImageAgent.from({
         ...baseOptions,
-        instructions: PromptBuilder.from(agent.instructions, {
-          workingDir: nodejs.path.dirname(path),
-        }),
+        instructions,
       });
     }
     case "mcp": {

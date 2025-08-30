@@ -23,6 +23,11 @@ exports[`AIGNE.load should load agents correctly 1`] = `
       "name": "test-image-agent",
       "taskTitle": undefined,
     },
+    {
+      "description": undefined,
+      "name": "test-relative-prompt-paths",
+      "taskTitle": undefined,
+    },
   ],
   "cli": {
     "agents": [

@@ -1,5 +1,60 @@
 # Changelog
 
+## [1.42.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.42.3...cli-v1.42.4) (2025-08-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.34
+    * @aigne/agentic-memory bumped to 1.0.34
+    * @aigne/aigne-hub bumped to 0.8.4
+    * @aigne/core bumped to 1.57.3
+    * @aigne/default-memory bumped to 1.1.16
+    * @aigne/openai bumped to 0.13.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.41
+
+## [1.42.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.42.2...cli-v1.42.3) (2025-08-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.33
+    * @aigne/agentic-memory bumped to 1.0.33
+    * @aigne/aigne-hub bumped to 0.8.3
+    * @aigne/core bumped to 1.57.2
+    * @aigne/default-memory bumped to 1.1.15
+    * @aigne/openai bumped to 0.13.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.40
+
+## [1.42.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.42.1...cli-v1.42.2) (2025-08-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.32
+    * @aigne/agentic-memory bumped to 1.0.32
+    * @aigne/aigne-hub bumped to 0.8.2
+    * @aigne/core bumped to 1.57.1
+    * @aigne/default-memory bumped to 1.1.14
+    * @aigne/openai bumped to 0.13.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.39
+
+## [1.42.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.42.0...cli-v1.42.1) (2025-08-29)
+
+
+### Bug Fixes
+
+* resolve checkbox multi-select issues and add comprehensive test ([#430](https://github.com/AIGNE-io/aigne-framework/issues/430)) ([a81be74](https://github.com/AIGNE-io/aigne-framework/commit/a81be74253923a1a2981f0780a15f175fd439210))
+
 ## [1.42.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.41.3...cli-v1.42.0) (2025-08-28)
 
 

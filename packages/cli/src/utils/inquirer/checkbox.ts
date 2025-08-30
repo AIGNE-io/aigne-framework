@@ -113,10 +113,6 @@ function isSelectable<Value>(item: Item<Value>): item is NormalizedChoice<Value>
   return !Separator.isSeparator(item) && !item.disabled;
 }
 
-function isChecked<Value>(item: Item<Value>): item is NormalizedChoice<Value> {
-  return isSelectable(item) && item.checked;
-}
-
 function toggle<Value>(item: Item<Value>): Item<Value> {
   return isSelectable(item) ? { ...item, checked: !item.checked } : item;
 }
@@ -172,15 +168,16 @@ export default createPrompt(
     const [searchError, setSearchError] = useState<string>();
 
     const initialItems = config.choices ? normalizeChoices(config.choices) : [];
-    const initialSelectedValues = new Set<Value>(
+    const initialSelectedChoices = new Map<Value, NormalizedChoice<Value>>(
       initialItems
         .filter(
           (item): item is NormalizedChoice<Value> => !Separator.isSeparator(item) && item.checked,
         )
-        .map((item) => item.value),
+        .map((item) => [item.value, item]),
     );
 
-    const [selectedValues, setSelectedValues] = useState<Set<Value>>(initialSelectedValues);
+    const [selectedChoices, setSelectedChoices] =
+      useState<Map<Value, NormalizedChoice<Value>>>(initialSelectedChoices);
     const [items, setItems] = useState<ReadonlyArray<Item<Value>>>(initialItems);
 
     useEffect(() => {
@@ -199,12 +196,13 @@ export default createPrompt(
 
           if (!controller.signal.aborted) {
             const normalizedResults = normalizeChoices(results);
-            // Preserve selected state from selectedValues
+
+            // Preserve selected state from selectedChoices
             const itemsWithSelection = normalizedResults.map((item) => {
               if (!Separator.isSeparator(item)) {
                 return {
                   ...item,
-                  checked: selectedValues.has(item.value),
+                  checked: selectedChoices.has(item.value),
                 };
               }
               return item;
@@ -230,7 +228,7 @@ export default createPrompt(
       return () => {
         controller.abort();
       };
-    }, [searchTerm, config.source]);
+    }, [searchTerm, config.source, selectedChoices]);
 
     const bounds = useMemo(() => {
       const first = items.findIndex(isSelectable);
@@ -251,13 +249,13 @@ export default createPrompt(
 
     useKeypress(async (key, rl) => {
       if (isEnterKey(key)) {
-        const selection = items.filter(isChecked);
-        const isValid = await validate([...selection]);
-        if (required && !items.some(isChecked)) {
+        const selectionChoices = Array.from(selectedChoices.values());
+        const isValid = await validate(selectionChoices);
+        if (required && selectedChoices.size === 0) {
           setError("At least one choice must be selected");
         } else if (isValid === true) {
           setStatus("done");
-          done(selection.map((choice) => choice.value));
+          done(selectionChoices.map((choice) => choice.value));
         } else {
           setError(isValid || "You must select a valid value");
         }
@@ -285,37 +283,37 @@ export default createPrompt(
         }
         const activeItem = items[active];
         if (activeItem && isSelectable(activeItem)) {
-          const newSelectedValues = new Set(selectedValues);
-          if (selectedValues.has(activeItem.value)) {
-            newSelectedValues.delete(activeItem.value);
+          const newSelectedChoices = new Map(selectedChoices);
+          if (selectedChoices.has(activeItem.value)) {
+            newSelectedChoices.delete(activeItem.value);
           } else {
-            newSelectedValues.add(activeItem.value);
+            newSelectedChoices.set(activeItem.value, activeItem);
           }
-          setSelectedValues(newSelectedValues);
+          setSelectedChoices(newSelectedChoices);
+          setItems(items.map((choice, i) => (i === active ? toggle(choice) : choice)));
         }
-        setItems(items.map((choice, i) => (i === active ? toggle(choice) : choice)));
       } else if (key.name === shortcuts.all && !config.source) {
         const selectAll = items.some((choice) => isSelectable(choice) && !choice.checked);
-        const newSelectedValues = new Set<Value>();
+        const newSelectedChoices = new Map<Value, NormalizedChoice<Value>>();
         if (selectAll) {
           items.forEach((item) => {
             if (isSelectable(item)) {
-              newSelectedValues.add(item.value);
+              newSelectedChoices.set(item.value, item);
             }
           });
         }
-        setSelectedValues(newSelectedValues);
+        setSelectedChoices(newSelectedChoices);
         setItems(items.map(check(selectAll)));
       } else if (key.name === shortcuts.invert && !config.source) {
-        const newSelectedValues = new Set<Value>();
+        const newSelectedChoices = new Map<Value, NormalizedChoice<Value>>();
         items.forEach((item) => {
           if (isSelectable(item)) {
-            if (!selectedValues.has(item.value)) {
-              newSelectedValues.add(item.value);
+            if (!selectedChoices.has(item.value)) {
+              newSelectedChoices.set(item.value, item);
             }
           }
         });
-        setSelectedValues(newSelectedValues);
+        setSelectedChoices(newSelectedChoices);
         setItems(items.map(toggle));
       } else if (isNumberKey(key) && !config.source) {
         const selectedIndex = Number(key.name) - 1;
@@ -332,13 +330,13 @@ export default createPrompt(
         const selectedItem = items[position];
         if (selectedItem && isSelectable(selectedItem)) {
           setActive(position);
-          const newSelectedValues = new Set(selectedValues);
-          if (selectedValues.has(selectedItem.value)) {
-            newSelectedValues.delete(selectedItem.value);
+          const newSelectedChoices = new Map(selectedChoices);
+          if (selectedChoices.has(selectedItem.value)) {
+            newSelectedChoices.delete(selectedItem.value);
           } else {
-            newSelectedValues.add(selectedItem.value);
+            newSelectedChoices.set(selectedItem.value, selectedItem);
           }
-          setSelectedValues(newSelectedValues);
+          setSelectedChoices(newSelectedChoices);
           setItems(items.map((choice, i) => (i === position ? toggle(choice) : choice)));
         }
       } else if (config.source && !isSpaceKey(key)) {
@@ -376,7 +374,7 @@ export default createPrompt(
     });
 
     if (status === "done") {
-      const selection = items.filter(isChecked);
+      const selection = Array.from(selectedChoices.values());
       const answer = theme.style.answer(theme.style.renderSelectedChoices(selection, items));
 
       return `${prefix} ${message} ${answer}`;

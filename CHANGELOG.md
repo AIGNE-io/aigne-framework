@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.72.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.3...aigne-framework-v1.72.4) (2025-08-30)
+
+
+### Bug Fixes
+
+* **core:** improve nested prompt file resolution ([#437](https://github.com/AIGNE-io/aigne-framework/issues/437)) ([38b5b13](https://github.com/AIGNE-io/aigne-framework/commit/38b5b1397b7897cddef39d60c8cae2152e37dc5b))
+
+## [1.72.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.2...aigne-framework-v1.72.3) (2025-08-29)
+
+
+### Bug Fixes
+
+* **core:** resolve nested prompt file correctly ([#434](https://github.com/AIGNE-io/aigne-framework/issues/434)) ([b334092](https://github.com/AIGNE-io/aigne-framework/commit/b334092900c003ca3c22d320e12712fd55c2500c))
+
+## [1.72.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.1...aigne-framework-v1.72.2) (2025-08-29)
+
+
+### Bug Fixes
+
+* **core:** load nested prompt files with relative paths correctly ([#432](https://github.com/AIGNE-io/aigne-framework/issues/432)) ([036ffa7](https://github.com/AIGNE-io/aigne-framework/commit/036ffa72391d3f27870a5022b7964739805a6161))
+
+## [1.72.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.0...aigne-framework-v1.72.1) (2025-08-29)
+
+
+### Bug Fixes
+
+* resolve checkbox multi-select issues and add comprehensive test ([#430](https://github.com/AIGNE-io/aigne-framework/issues/430)) ([a81be74](https://github.com/AIGNE-io/aigne-framework/commit/a81be74253923a1a2981f0780a15f175fd439210))
+
 ## [1.72.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.71.0...aigne-framework-v1.72.0) (2025-08-28)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.57.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.57.3...core-v1.57.4) (2025-08-30)
+
+
+### Bug Fixes
+
+* **core:** handle relative path correctly ([#440](https://github.com/AIGNE-io/aigne-framework/issues/440)) ([45a65fe](https://github.com/AIGNE-io/aigne-framework/commit/45a65fea432da44218007e566fe952fa973d8ae2))
+
 ## [1.57.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.57.2...core-v1.57.3) (2025-08-30)
 
 

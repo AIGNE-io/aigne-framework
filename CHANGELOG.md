@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.3...aigne-framework-v1.72.4) (2025-08-30)
+
+
+### Bug Fixes
+
+* **core:** improve nested prompt file resolution ([#437](https://github.com/AIGNE-io/aigne-framework/issues/437)) ([38b5b13](https://github.com/AIGNE-io/aigne-framework/commit/38b5b1397b7897cddef39d60c8cae2152e37dc5b))
+
 ## [1.72.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.2...aigne-framework-v1.72.3) (2025-08-29)
 
 

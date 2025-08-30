@@ -20,6 +20,9 @@ export async function toAIGNEPackage(src: string, dst: string) {
       name: "gpt-4o-mini", // TODO: get from config
     },
     agents: <string[]>[],
+    cli: {
+      agents: <string[]>[],
+    },
   };
 
   for (const agent of definition.agents) {
@@ -27,6 +30,7 @@ export async function toAIGNEPackage(src: string, dst: string) {
     const filename = getAgentFilename(agent);
     await writeFile(join(dst, filename), content);
     aigne.agents.push(filename);
+    aigne.cli.agents.push(filename);
   }
 
   await writeFile(join(dst, "aigne.yaml"), stringify(aigne));

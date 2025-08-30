@@ -16,6 +16,9 @@ chat_model:
 name: gpt-4o-mini
 agents:
   - chat.yaml
+cli:
+  agents:
+    - chat.yaml
   `,
     { name: "aigne.yaml" },
   );

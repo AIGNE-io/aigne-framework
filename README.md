@@ -347,6 +347,16 @@ AIGNE Framework is an open source project and welcomes community contributions. 
 
 This project is licensed under the [Elastic-2.0](./LICENSE.md) - see the [LICENSE](./LICENSE.md) file for details.
 
+## Contributing
+We welcome contributions from the community!  
+Steps to contribute:
+1. Fork this repository
+2. Create a branch for your changes
+3. Submit a Pull Request (PR)
+
+Please make sure your PR passes existing checks before submission.
+
+
 ## Community and Support
 
 AIGNE Framework has a vibrant developer community offering various support channels:

@@ -43,8 +43,6 @@ export class PromptTemplate {
   }
 }
 
-const IGNORED_PROMPT_DIRS = ["node_modules", ".git"];
-
 export class CustomLoader extends nunjucks.Loader {
   constructor(public options: { workingDir: string }) {
     super();
@@ -52,48 +50,26 @@ export class CustomLoader extends nunjucks.Loader {
 
   async = true;
 
-  private async findFile(dir: string, name: string): Promise<string | undefined> {
-    name = name.replace(/^[./]*/, "");
-
-    const files = await nodejs.fs.readdir(dir, { withFileTypes: true });
-
-    const file = files.find((f) => nodejs.path.join(f.parentPath, f.name).endsWith(name));
-
-    if (file) return nodejs.path.join(file.parentPath, file.name);
-
-    for (const entry of files) {
-      if (entry.isDirectory()) {
-        if (IGNORED_PROMPT_DIRS.includes(entry.name)) continue;
-
-        const result = await this.findFile(nodejs.path.join(entry.parentPath, entry.name), name);
-        if (result) return result;
-      }
-    }
-  }
-
   getSource(name: string, callback: Callback<Error, LoaderSource>): LoaderSource {
     let result: LoaderSource | null = null;
 
-    this.findFile(this.options.workingDir, name).then((path) => {
-      if (!path) {
-        callback(new Error(`Template not found: ${name}`), null);
-        return;
-      }
+    const path = nodejs.path.isAbsolute(name)
+      ? name
+      : nodejs.path.join(this.options.workingDir, name);
 
-      return nodejs.fs.readFile(path, "utf-8").then(
-        (content) => {
-          result = {
-            src: content,
-            path: name,
-            noCache: true,
-          };
-          callback(null, result);
-        },
-        (error) => {
-          callback(error, null);
-        },
-      );
-    });
+    nodejs.fs.readFile(path, "utf-8").then(
+      (content) => {
+        result = {
+          src: content,
+          path,
+          noCache: true,
+        };
+        callback(null, result);
+      },
+      (error) => {
+        callback(error, null);
+      },
+    );
 
     // nunjucks expects return LoaderSource synchronously, but we handle it asynchronously.
     return result as any;

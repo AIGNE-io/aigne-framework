@@ -42,9 +42,11 @@ export interface BaseAgentSchema {
       };
 }
 
+export type Instructions = { content: string; path: string };
+
 export interface AIAgentSchema extends BaseAgentSchema {
   type: "ai";
-  instructions?: string;
+  instructions?: Instructions;
   inputKey?: string;
   outputKey?: string;
   toolChoice?: AIAgentToolChoice;
@@ -52,7 +54,7 @@ export interface AIAgentSchema extends BaseAgentSchema {
 
 export interface ImageAgentSchema extends BaseAgentSchema {
   type: "image";
-  instructions: string;
+  instructions: Instructions;
   modelOptions?: Record<string, any>;
 }
 
@@ -157,9 +159,11 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
       ])
       .transform((v) =>
         typeof v === "string"
-          ? v
-          : v && nodejs.fs.readFile(nodejs.path.join(nodejs.path.dirname(path), v.url), "utf8"),
-      ) as ZodType<string>;
+          ? { content: v, path }
+          : Promise.resolve(nodejs.path.join(nodejs.path.dirname(path), v.url)).then((path) =>
+              nodejs.fs.readFile(path, "utf8").then((content) => ({ content, path })),
+            ),
+      ) as unknown as ZodType<Instructions>;
 
     return camelizeSchema(
       z.discriminatedUnion("type", [

@@ -56,10 +56,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
   );
   const allAgents: { [path: string]: Agent } = Object.fromEntries(
     await Promise.all(
-      Array.from(allAgentPaths).map(async (path) => [
-        path,
-        await loadAgent(path, { ...options, rootDir }),
-      ]),
+      Array.from(allAgentPaths).map(async (path) => [path, await loadAgent(path, options)]),
     ),
   );
 
@@ -89,7 +86,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
 
 export async function loadAgent(
   path: string,
-  options?: LoadOptions & { rootDir?: string },
+  options?: LoadOptions,
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
@@ -110,7 +107,7 @@ export async function loadAgent(
 async function loadNestAgent(
   path: string,
   agent: NestAgentSchema,
-  options?: LoadOptions & { rootDir?: string },
+  options?: LoadOptions,
 ): Promise<Agent> {
   return typeof agent === "object" && "type" in agent
     ? parseAgent(path, agent, options)
@@ -125,7 +122,7 @@ async function loadNestAgent(
 async function parseHooks(
   path: string,
   hooks?: HooksSchema | HooksSchema[],
-  options?: LoadOptions & { rootDir?: string },
+  options?: LoadOptions,
 ): Promise<AgentHooks[] | undefined> {
   hooks = [hooks].flat().filter(isNonNullable);
   if (!hooks.length) return undefined;
@@ -155,11 +152,9 @@ async function parseHooks(
 async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
-  options?: LoadOptions & { rootDir?: string },
+  options?: LoadOptions,
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
-  const workingDir = options?.rootDir ?? nodejs.path.dirname(path);
-
   const skills =
     "skills" in agent
       ? agent.skills &&
@@ -186,17 +181,27 @@ async function parseAgent(
     ],
   };
 
+  let instructions: PromptBuilder | undefined;
+  if ("instructions" in agent && agent.instructions) {
+    instructions = PromptBuilder.from(agent.instructions.content, {
+      workingDir: nodejs.path.dirname(agent.instructions.path),
+    });
+  }
+
   switch (agent.type) {
     case "ai": {
       return AIAgent.from({
         ...baseOptions,
-        instructions: agent.instructions && PromptBuilder.from(agent.instructions, { workingDir }),
+        instructions,
       });
     }
     case "image": {
+      if (!instructions)
+        throw new Error(`Missing required instructions for image agent at path: ${path}`);
+
       return ImageAgent.from({
         ...baseOptions,
-        instructions: PromptBuilder.from(agent.instructions, { workingDir }),
+        instructions,
       });
     }
     case "mcp": {

@@ -257,6 +257,11 @@ test("loadAgent should support nested relative prompt paths", async () => {
 
     Please output in native English
 
+    This is content of prompt-c.md
+
+    This is content of prompt-d.md
+
+
     "
     ,
           "name": undefined,

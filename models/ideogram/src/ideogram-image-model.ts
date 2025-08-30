@@ -12,6 +12,7 @@ import { joinURL } from "ufo";
 import { z } from "zod";
 
 const IDEOGRAM_BASE_URL = "https://api.ideogram.ai";
+const IDEOGRAM_DEFAULT_IMAGE_MODEL = "ideogram-v3";
 
 export interface IdeogramImageModelInput extends ImageModelInput {
   seed?: number;
@@ -64,6 +65,7 @@ export class IdeogramImageModel extends ImageModel<
     return {
       url: this.options?.baseURL || process.env.IDEOGRAM_BASE_URL || IDEOGRAM_BASE_URL,
       apiKey: this.options?.apiKey || process.env[this.apiKeyEnvName],
+      model: this.options?.model || IDEOGRAM_DEFAULT_IMAGE_MODEL,
     };
   }
 
@@ -77,7 +79,7 @@ export class IdeogramImageModel extends ImageModel<
    * @returns The generated response
    */
   override async process(input: IdeogramImageModelInput): Promise<ImageModelOutput> {
-    const model = input.model;
+    const model = input.model || this.credential.model;
     const formData = new FormData();
 
     if (model !== "ideogram-v3") {

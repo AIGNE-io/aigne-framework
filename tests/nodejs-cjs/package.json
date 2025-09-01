@@ -1,0 +1,29 @@
+{
+  "name": "@aigne/test-nodejs-cjs",
+  "version": "0.0.1",
+  "description": "A demonstration of using AIGNE Framework with memory.",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/memory",
+  "license": "ISC",
+  "private": true,
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "scripts": {
+    "test": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aigne/agent-library": "workspace:^",
+    "@aigne/cli": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/openai": "workspace:^"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

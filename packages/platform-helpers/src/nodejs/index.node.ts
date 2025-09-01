@@ -3,7 +3,9 @@ import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import url from "node:url";
 import { inspect } from "node:util";
+import vm from "node:vm";
 
 export const nodejs = {
   customInspect: inspect.custom,
@@ -38,5 +40,13 @@ export const nodejs = {
 
   get crypto(): typeof import("node:crypto") {
     return crypto;
+  },
+
+  get vm(): typeof import("node:vm") {
+    return vm;
+  },
+
+  get url(): typeof import("node:url") {
+    return url;
   },
 };

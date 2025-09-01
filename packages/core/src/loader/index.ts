@@ -1,3 +1,4 @@
+import { type Context, createContext } from "node:vm";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { z } from "zod";
@@ -38,6 +39,7 @@ export interface LoadOptions {
         model?: z.infer<typeof aigneFileSchema>["imageModel"],
       ) => PromiseOrValue<ImageModel | undefined>);
   key?: string | number;
+  vm?: Context;
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {

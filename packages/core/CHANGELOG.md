@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.57.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.57.4...core-v1.57.5) (2025-09-01)
+
+
+### Bug Fixes
+
+* **core:** replace static import with dynamic import for CommonJS compatibility ([#448](https://github.com/AIGNE-io/aigne-framework/issues/448)) ([6db1e57](https://github.com/AIGNE-io/aigne-framework/commit/6db1e570858fff32f7352143585b98e900f1f71d))
+
 ## [1.57.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.57.3...core-v1.57.4) (2025-08-30)
 
 

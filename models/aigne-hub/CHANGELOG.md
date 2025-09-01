@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.8.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.5...aigne-hub-v0.8.6) (2025-09-01)
+
+
+### Bug Fixes
+
+* **transport:** improve HTTP client option handling and error serialization ([#445](https://github.com/AIGNE-io/aigne-framework/issues/445)) ([d3bcdd2](https://github.com/AIGNE-io/aigne-framework/commit/d3bcdd23ab8011a7d40fc157fd61eb240494c7a5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.11.17
+    * @aigne/bedrock bumped to 0.9.17
+    * @aigne/core bumped to 1.57.5
+    * @aigne/deepseek bumped to 0.7.36
+    * @aigne/doubao bumped to 1.0.30
+    * @aigne/gemini bumped to 0.11.6
+    * @aigne/ideogram bumped to 0.3.6
+    * @aigne/ollama bumped to 0.7.36
+    * @aigne/open-router bumped to 0.7.36
+    * @aigne/openai bumped to 0.13.7
+    * @aigne/poe bumped to 1.0.16
+    * @aigne/transport bumped to 0.14.16
+    * @aigne/xai bumped to 0.7.36
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.43
+
 ## [0.8.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.4...aigne-hub-v0.8.5) (2025-08-30)
 
 

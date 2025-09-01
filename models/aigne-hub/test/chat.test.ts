@@ -125,7 +125,7 @@ describe("AIGNEHubChatModel", async () => {
   test("AIGNEHubChatModel example with streaming", async () => {
     assert(aigne.model instanceof ChatModel);
 
-    spyOn(aigne.model, "process").mockReturnValueOnce(
+    const processSpy = spyOn(aigne.model, "process").mockReturnValueOnce(
       Promise.resolve(stringToAgentResponseStream("Hello world!")),
     );
 
@@ -148,5 +148,19 @@ describe("AIGNEHubChatModel", async () => {
     }
 
     expect(text).toEqual("Hello world!");
+    expect(processSpy.mock.calls.at(-1)?.[0]).toMatchInlineSnapshot(`
+      {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user",
+          },
+        ],
+        "modelOptions": {
+          "model": "openai/gpt-4o-mini",
+          "parallelToolCalls": true,
+        },
+      }
+    `);
   });
 });

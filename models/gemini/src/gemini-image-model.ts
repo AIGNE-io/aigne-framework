@@ -194,8 +194,8 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
 
     const allImages = (response.candidates ?? [])
       .flatMap((candidate) => candidate.content?.parts ?? [])
-      .filter((part) => part?.inlineData?.data)
-      .map((part) => ({ base64: part.inlineData!.data! }));
+      .map((part) => (part.inlineData?.data ? { base64: part.inlineData?.data } : null))
+      .filter(isNonNullable);
 
     return {
       images: allImages,

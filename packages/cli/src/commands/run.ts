@@ -99,29 +99,31 @@ export function createRunCommand({
                 };
               }
 
-              const aigne = await loadAIGNE({
-                path: dir,
-                modelOptions: {
-                  ...options,
-                  inquirerPromptFn: (prompt) => {
-                    if (prompt.type === "input") {
+              try {
+                const aigne = await loadAIGNE({
+                  path: dir,
+                  modelOptions: {
+                    ...options,
+                    inquirerPromptFn: (prompt) => {
+                      if (prompt.type === "input") {
+                        return task
+                          .prompt(ListrInquirerPromptAdapter as any)
+                          .run(inputInquirer, prompt)
+                          .then((res: boolean) => ({ [prompt.name]: res }));
+                      }
+
                       return task
                         .prompt(ListrInquirerPromptAdapter as any)
-                        .run(inputInquirer, prompt)
+                        .run(selectInquirer, prompt)
                         .then((res: boolean) => ({ [prompt.name]: res }));
-                    }
-
-                    return task
-                      .prompt(ListrInquirerPromptAdapter as any)
-                      .run(selectInquirer, prompt)
-                      .then((res: boolean) => ({ [prompt.name]: res }));
+                    },
                   },
-                },
-              });
+                });
 
-              Object.assign(console, originalLog);
-
-              ctx.aigne = aigne;
+                ctx.aigne = aigne;
+              } finally {
+                Object.assign(console, originalLog);
+              }
             },
           },
           {

@@ -84,15 +84,26 @@ export class AIGNEHubChatModel extends ChatModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    return (await this.client).__invoke(undefined, input, {
-      ...options,
-      fetchOptions: {
-        ...options.fetchOptions,
-        headers: {
-          ...options.fetchOptions?.headers,
-          "x-aigne-hub-client-did": clientId,
+    return (await this.client).__invoke(
+      undefined,
+      {
+        ...input,
+        modelOptions: {
+          ...this.options.modelOptions,
+          ...input.modelOptions,
+          model: input.modelOptions?.model || (await this.credential).model,
         },
       },
-    });
+      {
+        ...options,
+        fetchOptions: {
+          ...options.fetchOptions,
+          headers: {
+            ...options.fetchOptions?.headers,
+            "x-aigne-hub-client-did": clientId,
+          },
+        },
+      },
+    );
   }
 }

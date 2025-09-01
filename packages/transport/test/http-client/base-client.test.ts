@@ -1,4 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
+import { FunctionAgent } from "@aigne/core";
 import { BaseClient } from "@aigne/transport/http-client/base-client";
 
 test("BaseClient should retry on fetch errors", async () => {
@@ -29,3 +30,43 @@ test("BaseClient should throw error if max retries exceeded", async () => {
 
   fetch.mockRestore();
 }, 10e3);
+
+test("BaseClient should pick options correctly", async () => {
+  const client = new BaseClient({ url: "" });
+
+  const fetch = spyOn(globalThis, "fetch");
+
+  fetch.mockResolvedValueOnce(new Response(JSON.stringify({ text: "hello" })));
+
+  const result = await client.__invoke(
+    undefined,
+    {},
+    {
+      fetchOptions: {},
+      userContext: {},
+      hooks: {},
+      prompts: {} as any,
+      memories: [],
+      streaming: false,
+      returnActiveAgent: true,
+      returnProgressChunks: true,
+      returnMetadata: true,
+      disableTransfer: true,
+      sourceAgent: FunctionAgent.from(() => ({})),
+      newContext: true,
+      ...{ context: {} }, // should be ignored field
+    },
+  );
+
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "text": "hello",
+    }
+  `);
+
+  expect(fetch.mock.calls[0]?.[1]?.body).toMatchInlineSnapshot(
+    `"{"input":{},"agent":"$CHAT_MODEL","options":{"userContext":{},"memories":[],"streaming":false,"returnProgressChunks":true}}"`,
+  );
+
+  fetch.mockRestore();
+});

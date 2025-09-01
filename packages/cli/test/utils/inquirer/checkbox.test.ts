@@ -1362,7 +1362,7 @@ describe("checkbox prompt", () => {
          ◯ C++
          ◯ C#
          ◯ Go
-        (Use arrow keys to reveal more choices)"
+        (Use arrow keys to reveal more choices, ctrl+a to select all)"
       `);
 
       events.type("Script");
@@ -1370,7 +1370,8 @@ describe("checkbox prompt", () => {
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages Script
         ❯◯ JavaScript
-         ◯ TypeScript"
+         ◯ TypeScript
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       events.keypress("space");
@@ -1379,7 +1380,8 @@ describe("checkbox prompt", () => {
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages Script
          ◉ JavaScript
-        ❯◉ TypeScript"
+        ❯◉ TypeScript
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       events.keypress("enter");
@@ -1396,13 +1398,15 @@ describe("checkbox prompt", () => {
       await Promise.resolve();
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages C++
-        ❯◯ C++"
+        ❯◯ C++
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       events.keypress("space");
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages C++
-        ❯◉ C++"
+        ❯◉ C++
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       events.keypress("enter");
@@ -1420,7 +1424,8 @@ describe("checkbox prompt", () => {
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages Java
         ❯◯ JavaScript
-         ◯ Java"
+         ◯ Java
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       events.keypress({ name: "backspace", ctrl: true });
@@ -1434,7 +1439,7 @@ describe("checkbox prompt", () => {
          ◯ C++
          ◯ C#
          ◯ Go
-        (Use arrow keys to reveal more choices)"
+        (Use arrow keys to reveal more choices, ctrl+a to select all)"
       `);
 
       events.keypress("space");
@@ -1458,7 +1463,8 @@ describe("checkbox prompt", () => {
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages xyz
 
-        > No results found"
+        > No results found
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       events.keypress("backspace");
@@ -1474,7 +1480,7 @@ describe("checkbox prompt", () => {
          ◯ C++
          ◯ C#
          ◯ Go
-        (Use arrow keys to reveal more choices)"
+        (Use arrow keys to reveal more choices, ctrl+a to select all)"
       `);
 
       abortController.abort();
@@ -1496,7 +1502,11 @@ describe("checkbox prompt", () => {
         { signal: abortController.signal },
       );
 
-      expect(getScreen()).toMatchInlineSnapshot(`"? Select programming languages"`);
+      expect(getScreen()).toMatchInlineSnapshot(`
+        "? Select programming languages 
+
+        (Use arrow keys to navigate, ctrl+a to select all)"
+      `);
 
       // Type to trigger search which will reject the promise
       events.type("java");
@@ -1507,7 +1517,8 @@ describe("checkbox prompt", () => {
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages java
 
-        > Search service unavailable"
+        > Search service unavailable
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       abortController.abort();
@@ -1531,7 +1542,11 @@ describe("checkbox prompt", () => {
       events.type("java");
       await Promise.resolve();
       // Should not show error message since it's not an Error instance
-      expect(getScreen()).toMatchInlineSnapshot(`"? Select programming languages java"`);
+      expect(getScreen()).toMatchInlineSnapshot(`
+        "? Select programming languages java
+
+        (Use arrow keys to navigate, ctrl+a to select all)"
+      `);
 
       abortController.abort();
       expect(answer).rejects.toThrow();
@@ -1554,7 +1569,8 @@ describe("checkbox prompt", () => {
          ◯ Java
          ◯ C++
          ◯ C#
-         ◯ Go"
+         ◯ Go
+        (Use arrow keys to reveal more choices, ctrl+a to select all)"
       `);
 
       // Search for 'Python'
@@ -1562,14 +1578,16 @@ describe("checkbox prompt", () => {
       await Promise.resolve();
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages Python
-        ❯◯ Python"
+        ❯◯ Python
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       // Select Python
       events.keypress("space");
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages Python
-        ❯◉ Python"
+        ❯◉ Python
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       // Clear search - both selections should still be there
@@ -1583,7 +1601,8 @@ describe("checkbox prompt", () => {
          ◯ Java
          ◯ C++
          ◯ C#
-         ◯ Go"
+         ◯ Go
+        (Use arrow keys to reveal more choices, ctrl+a to select all)"
       `);
 
       events.keypress("enter");
@@ -1614,7 +1633,8 @@ describe("checkbox prompt", () => {
          ~ Compiled ~
         - C++ Not available
          ◯ Go
-         ◯ Rust"
+         ◯ Rust
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       events.type("Go");
@@ -1623,7 +1643,8 @@ describe("checkbox prompt", () => {
         "? Select a language Go
          ~ Popular ~
          ~ Compiled ~
-        ❯◯ Go"
+        ❯◯ Go
+        (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
       events.keypress("space");
@@ -1648,6 +1669,7 @@ describe("checkbox prompt", () => {
         ❯◯ JavaScript
          ◯ TypeScript
          ◯ Python
+        (Use arrow keys to navigate, ctrl+a to select all)
         Popular web language"
       `);
 
@@ -1656,6 +1678,7 @@ describe("checkbox prompt", () => {
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select a language Type
         ❯◯ TypeScript
+        (Use arrow keys to navigate, ctrl+a to select all)
         JavaScript with types"
       `);
 

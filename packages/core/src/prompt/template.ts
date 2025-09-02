@@ -50,6 +50,14 @@ export class CustomLoader extends nunjucks.Loader {
 
   async = true;
 
+  override isRelative(filename: string): boolean {
+    return !nodejs.path.isAbsolute(filename);
+  }
+
+  override resolve(from: string, to: string): string {
+    return nodejs.path.resolve(nodejs.path.dirname(from), to);
+  }
+
   getSource(name: string, callback: Callback<Error, LoaderSource>): LoaderSource {
     let result: LoaderSource | null = null;
 

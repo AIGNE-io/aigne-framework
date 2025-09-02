@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.73.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.73.0...aigne-framework-v1.73.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* **cli:** ensure console is restored after loadAIGNE call ([#447](https://github.com/AIGNE-io/aigne-framework/issues/447)) ([68fae38](https://github.com/AIGNE-io/aigne-framework/commit/68fae38c10346cd202266decf0ab0869bb618a07))
+* **core:** replace static import with dynamic import for CommonJS compatibility ([#448](https://github.com/AIGNE-io/aigne-framework/issues/448)) ([6db1e57](https://github.com/AIGNE-io/aigne-framework/commit/6db1e570858fff32f7352143585b98e900f1f71d))
+* **transport:** improve HTTP client option handling and error serialization ([#445](https://github.com/AIGNE-io/aigne-framework/issues/445)) ([d3bcdd2](https://github.com/AIGNE-io/aigne-framework/commit/d3bcdd23ab8011a7d40fc157fd61eb240494c7a5))
+
+## [1.73.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.4...aigne-framework-v1.73.0) (2025-08-30)
+
+
+### Features
+
+* **cli:** support ctrl+a select all items for prompts.checkbox ([#439](https://github.com/AIGNE-io/aigne-framework/issues/439)) ([af1c6c0](https://github.com/AIGNE-io/aigne-framework/commit/af1c6c03a1ebb2a168d6750a121aacd142ab26ea))
+
+
+### Bug Fixes
+
+* **core:** handle relative path correctly ([#440](https://github.com/AIGNE-io/aigne-framework/issues/440)) ([45a65fe](https://github.com/AIGNE-io/aigne-framework/commit/45a65fea432da44218007e566fe952fa973d8ae2))
+
 ## [1.72.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.72.3...aigne-framework-v1.72.4) (2025-08-30)
 
 

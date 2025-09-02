@@ -2,14 +2,12 @@ import type {
   AgentResponse,
   AgentResponseChunk,
   AgentResponseStream,
-  ChatModelOptions,
   InvokeOptions,
   Message,
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
 import { logger } from "@aigne/core/utils/logger.js";
-import { omit, tryOrThrow } from "@aigne/core/utils/type-utils.js";
-import type { OpenAIChatModelOptions } from "@aigne/openai";
+import { pick, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { ChatModelName } from "../constants.js";
 
 const DEFAULT_MAX_RECONNECTS = 3;
@@ -31,9 +29,6 @@ export interface BaseClientInvokeOptions extends InvokeOptions {
 export interface BaseClientOptions {
   url: string;
   apiKey?: string;
-  model?: string;
-  modelOptions?: ChatModelOptions;
-  clientOptions?: OpenAIChatModelOptions["clientOptions"];
 }
 
 /**
@@ -111,8 +106,6 @@ export class BaseClient {
     input?: string | I,
     options?: BaseClientInvokeOptions,
   ): Promise<AgentResponse<O>> {
-    const model = this.options.modelOptions?.model ?? this.options.model;
-
     const headers: Record<string, any> = {
       "Content-Type": "application/json",
       ...options?.fetchOptions?.headers,
@@ -123,16 +116,18 @@ export class BaseClient {
     }
 
     const body: Record<string, any> = {
-      model,
       input,
       agent: agent ?? ChatModelName,
-      options: options && {
-        ...omit(options, "context" as any),
-        userContext: { ...options.userContext },
-        memories: [...(options.memories ?? [])],
-        modelOptions: this.options.modelOptions,
-        clientOptions: this.options.clientOptions,
-      },
+      options:
+        options &&
+        pick(
+          {
+            ...options,
+            userContext: { ...options.userContext },
+            memories: [...(options.memories ?? [])],
+          },
+          ["returnProgressChunks", "userContext", "memories", "streaming"],
+        ),
     };
 
     const response = await this.fetch(this.options.url, {

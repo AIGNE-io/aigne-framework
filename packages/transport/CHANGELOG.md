@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.14.16](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.14.15...transport-v0.14.16) (2025-09-01)
+
+
+### Bug Fixes
+
+* **transport:** improve HTTP client option handling and error serialization ([#445](https://github.com/AIGNE-io/aigne-framework/issues/445)) ([d3bcdd2](https://github.com/AIGNE-io/aigne-framework/commit/d3bcdd23ab8011a7d40fc157fd61eb240494c7a5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.7
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.36
+    * @aigne/core bumped to 1.57.5
+    * @aigne/default-memory bumped to 1.1.18
+    * @aigne/test-utils bumped to 0.5.43
+
+## [0.14.15](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.14.14...transport-v0.14.15) (2025-08-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.6
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.35
+    * @aigne/core bumped to 1.57.4
+    * @aigne/default-memory bumped to 1.1.17
+    * @aigne/test-utils bumped to 0.5.42
+
 ## [0.14.14](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.14.13...transport-v0.14.14) (2025-08-30)
 
 

@@ -1,5 +1,4 @@
 import { Ajv } from "ajv";
-import isNetworkError from "is-network-error";
 import { z } from "zod";
 import { checkArguments, type PromiseOrValue } from "../utils/type-utils.js";
 import {
@@ -13,7 +12,8 @@ import {
 
 const CHAT_MODEL_DEFAULT_RETRY_OPTIONS: Agent["retryOnError"] = {
   retries: 3,
-  shouldRetry: (error) => error instanceof StructuredOutputError || isNetworkError(error),
+  shouldRetry: async (error) =>
+    error instanceof StructuredOutputError || (await import("is-network-error")).default(error),
 };
 
 export class StructuredOutputError extends Error {}

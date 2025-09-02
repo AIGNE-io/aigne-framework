@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.16.47](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-github-v1.16.46...example-mcp-github-v1.16.47) (2025-09-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.36
+    * @aigne/cli bumped to 1.43.1
+    * @aigne/core bumped to 1.57.5
+    * @aigne/default-memory bumped to 1.1.18
+    * @aigne/openai bumped to 0.13.7
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.43
+
+## [1.16.46](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-github-v1.16.45...example-mcp-github-v1.16.46) (2025-08-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.35
+    * @aigne/cli bumped to 1.43.0
+    * @aigne/core bumped to 1.57.4
+    * @aigne/default-memory bumped to 1.1.17
+    * @aigne/openai bumped to 0.13.6
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.42
+
 ## [1.16.45](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-github-v1.16.44...example-mcp-github-v1.16.45) (2025-08-30)
 
 

@@ -20,7 +20,6 @@ AIGNE Ideogram SDK for integrating with Ideogram's image generation models and A
 
 `@aigne/ideogram` provides a seamless integration between the AIGNE Framework and Ideogram's powerful image generation models and APIs. This package enables developers to easily leverage Ideogram's advanced image generation capabilities in their AIGNE applications, providing a consistent interface across the framework while taking advantage of Ideogram's state-of-the-art image synthesis technology.
 
-
 ## Installation
 
 ### Using npm
@@ -51,6 +50,7 @@ const model = new IdeogramImageModel({
 });
 
 const result = await model.invoke({
+  model: "ideogram-v3",
   prompt: "A serene mountain landscape at sunset with golden light",
 });
 
@@ -63,12 +63,70 @@ console.log(result);
       }
     ],
     usage: {
-      promptTokens: 0
-      imageCount: 0
-    }
+      inputTokens: 0,
+      outputTokens: 0
+    },
+    model: "ideogram-v3"
   }
   */
 ```
+
+## Input Parameters
+
+The `IdeogramImageModel` supports the following input parameters:
+
+### Required Parameters
+
+- **`prompt`** (string): The text description of the image you want to generate.
+
+### Optional Parameters
+
+- **`model`** (string): only support ideogram-v3
+- **`n`** (number): Number of images to generate (1-8, defaults to 1)
+- **`seed`** (number): Random seed for reproducible generation (0 to 2147483647)
+- **`resolution`** (string): Image resolution (e.g., "1024x1024", "1792x1024")
+- **`aspectRatio`** (string): Aspect ratio for image generation (e.g., "1x1", "16x9")
+- **`renderingSpeed`** (string): Generation speed - "TURBO", "DEFAULT", or "QUALITY"
+- **`magicPrompt`** (string): Enable/disable MagicPrompt - "AUTO", "ON", or "OFF"
+- **`negativePrompt`** (string): Description of what to exclude from the image
+- **`colorPalette`** (object): Color palette for generation
+- **`styleCodes`** (string[]): List of 8-character hexadecimal style codes
+- **`styleType`** (string): Style type - "AUTO", "GENERAL", "REALISTIC", "DESIGN", or "FICTION"
+
+### Reference Parameters
+
+For complete parameter details, supported resolutions, aspect ratios, and advanced features, refer to the [Ideogram API Reference](https://developer.ideogram.ai/api-reference/api-reference/generate-v3).
+
+### Advanced Usage Example
+
+```typescript
+const result = await model.invoke({
+  prompt: "A futuristic cityscape with neon lights and flying cars",
+  model: "ideogram-v3",
+  n: 4,
+  resolution: "1792x1024",
+  renderingSpeed: "TURBO",
+  styleType: "FICTION",
+  negativePrompt: "blurry, low quality, distorted",
+  seed: 12345
+});
+```
+
+## Model Options
+
+You can also set default options when creating the model:
+
+```typescript
+const model = new IdeogramImageModel({
+  apiKey: "your-api-key",
+  modelOptions: {
+    styleType: "REALISTIC",
+    renderingSpeed: "QUALITY",
+    magicPrompt: "ON"
+  }
+});
+```
+
 ## Environment Variables
 
 Set the following environment variable for automatic API key detection:
@@ -76,6 +134,10 @@ Set the following environment variable for automatic API key detection:
 ```bash
 export IDEOGRAM_API_KEY="your-ideogram-api-key"
 ```
+
+## API Reference
+
+For complete parameter details, supported resolutions, aspect ratios, and advanced features, refer to the [Ideogram API Reference](https://developer.ideogram.ai/api-reference/api-reference/generate-v3).
 
 ## License
 

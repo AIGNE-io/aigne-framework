@@ -1,5 +1,47 @@
 # Changelog
 
+## [1.43.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.43.0...cli-v1.43.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* **cli:** ensure console is restored after loadAIGNE call ([#447](https://github.com/AIGNE-io/aigne-framework/issues/447)) ([68fae38](https://github.com/AIGNE-io/aigne-framework/commit/68fae38c10346cd202266decf0ab0869bb618a07))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.36
+    * @aigne/agentic-memory bumped to 1.0.36
+    * @aigne/aigne-hub bumped to 0.8.6
+    * @aigne/core bumped to 1.57.5
+    * @aigne/default-memory bumped to 1.1.18
+    * @aigne/openai bumped to 0.13.7
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.43
+
+## [1.43.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.42.4...cli-v1.43.0) (2025-08-30)
+
+
+### Features
+
+* **cli:** support ctrl+a select all items for prompts.checkbox ([#439](https://github.com/AIGNE-io/aigne-framework/issues/439)) ([af1c6c0](https://github.com/AIGNE-io/aigne-framework/commit/af1c6c03a1ebb2a168d6750a121aacd142ab26ea))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.35
+    * @aigne/agentic-memory bumped to 1.0.35
+    * @aigne/aigne-hub bumped to 0.8.5
+    * @aigne/core bumped to 1.57.4
+    * @aigne/default-memory bumped to 1.1.17
+    * @aigne/openai bumped to 0.13.6
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.42
+
 ## [1.42.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.42.3...cli-v1.42.4) (2025-08-30)
 
 

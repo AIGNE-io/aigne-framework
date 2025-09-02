@@ -40,11 +40,10 @@ test("run command should call run chat loop correctly", async () => {
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
   // should run chat agent in current directory
-  process.argv = ["", "", "", "chat"];
-
+  process.argv = ["run", ".", "chat"];
   const cwd = process.cwd();
   process.chdir(testAgentsPath);
-  await command.parseAsync(["run"]);
+  await command.parseAsync(process.argv);
   expect(runAgentWithAIGNE).toHaveBeenCalledTimes(1);
   expect(runAgentWithAIGNE).toHaveBeenLastCalledWith(
     expect.any(AIGNE),
@@ -54,7 +53,8 @@ test("run command should call run chat loop correctly", async () => {
   process.chdir(cwd);
 
   // should run in specified directory
-  await command.parseAsync(["run", testAgentsPath]);
+  process.argv = ["run", testAgentsPath, "chat"];
+  await command.parseAsync(process.argv);
   expect(runAgentWithAIGNE).toHaveBeenCalledTimes(2);
   expect(runAgentWithAIGNE).toHaveBeenLastCalledWith(
     expect.any(AIGNE),
@@ -64,7 +64,8 @@ test("run command should call run chat loop correctly", async () => {
 
   // should run in specified directory of relative path
   const relativePath = relative(cwd, testAgentsPath);
-  await command.parseAsync(["run", relativePath]);
+  process.argv = ["run", relativePath, "chat"];
+  await command.parseAsync(process.argv);
   expect(runAgentWithAIGNE).toHaveBeenCalledTimes(3);
   expect(runAgentWithAIGNE).toHaveBeenLastCalledWith(
     expect.any(AIGNE),
@@ -88,8 +89,8 @@ test("run command should download package and run correctly", async () => {
 
   const url = new URL(`https://www.aigne.io/${randomUUID()}/test-agents.tgz`);
 
-  process.argv = ["", "", "", "chat"];
-  await command.parseAsync(["run", url.toString()]);
+  process.argv = ["run", url.toString(), "chat"];
+  await command.parseAsync(process.argv);
 
   const path = join(homedir(), ".aigne", url.hostname, url.pathname);
   expect((await stat(join(path, "aigne.yaml"))).isFile()).toBeTrue();
@@ -116,8 +117,8 @@ test("run command should convert package from v1 and run correctly", async () =>
 
   const url = new URL(`https://www.aigne.io/${randomUUID()}/test-agents.tgz`);
 
-  process.argv = ["", "", "", "chat"];
-  await command.parseAsync(["run", url.toString()]);
+  process.argv = ["run", url.toString(), "chat"];
+  await command.parseAsync(process.argv);
 
   const path = join(homedir(), ".aigne", url.hostname, url.pathname);
   expect((await stat(join(path, "aigne.yaml"))).isFile()).toBeTrue();
@@ -138,10 +139,10 @@ test("run command should parse model options correctly", async () => {
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
-  const command = yargs().command(createRunCommand());
+  const command = yargs().scriptName("aigne").command(createRunCommand());
 
-  process.argv = ["", "", "", "chat", "--model", "xai:test-model"];
-  await command.parseAsync(["run", testAgentsPath]);
+  process.argv = ["run", testAgentsPath, "chat", "--model", "xai:test-model"];
+  await command.parseAsync(process.argv);
 
   expect(runAgentWithAIGNE).toHaveBeenLastCalledWith(
     expect.any(AIGNE),

@@ -74,7 +74,7 @@ export async function runWithAIGNE(
   await yargs()
     .command<AgentRunCommonOptions>(
       "$0",
-      "Run an agent with AIGNE",
+      "Execute an AI agent using the AIGNE framework with specified configuration",
       (yargs) => withRunAgentCommonOptions(yargs),
       async (options) => {
         if (options.logLevel) {

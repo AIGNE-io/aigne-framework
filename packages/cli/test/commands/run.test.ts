@@ -39,7 +39,7 @@ test("run command should call run chat loop correctly", async () => {
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
-  // should run in current directory
+  // should run chat agent in current directory
   process.argv = ["", "", "", "chat"];
 
   const cwd = process.cwd();

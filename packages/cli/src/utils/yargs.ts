@@ -23,6 +23,8 @@ import z, {
 
 export type InferArgv<T> = T extends Argv<infer U> ? U : never;
 
+const MODEL_OPTIONS_GROUP_NAME = "Model Options";
+
 export const withRunAgentCommonOptions = (yargs: Argv) =>
   yargs
     .option("chat", {
@@ -31,6 +33,7 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
       default: false,
     })
     .option("model", {
+      group: MODEL_OPTIONS_GROUP_NAME,
       describe: `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
         .map((i) => {
           if (typeof i.name === "string") {
@@ -42,18 +45,21 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
       type: "string",
     })
     .option("temperature", {
+      group: MODEL_OPTIONS_GROUP_NAME,
       describe:
         "Temperature for the model (controls randomness, higher values produce more random outputs). Range: 0.0-2.0",
       type: "number",
       coerce: customZodError("--temperature", (s) => z.coerce.number().min(0).max(2).parse(s)),
     })
     .option("top-p", {
+      group: MODEL_OPTIONS_GROUP_NAME,
       describe:
         "Top P (nucleus sampling) parameter for the model (controls diversity). Range: 0.0-1.0",
       type: "number",
       coerce: customZodError("--top-p", (s) => z.coerce.number().min(0).max(1).parse(s)),
     })
     .option("presence-penalty", {
+      group: MODEL_OPTIONS_GROUP_NAME,
       describe:
         "Presence penalty for the model (penalizes repeating the same tokens). Range: -2.0 to 2.0",
       type: "number",
@@ -62,6 +68,7 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
       ),
     })
     .option("frequency-penalty", {
+      group: MODEL_OPTIONS_GROUP_NAME,
       describe:
         "Frequency penalty for the model (penalizes frequency of token usage). Range: -2.0 to 2.0",
       type: "number",
@@ -92,7 +99,7 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
     })
     .option("force", {
       describe:
-        "Truncate the output file if it exists, and create directory if the output path is not exists",
+        "Truncate the output file if it exists, and create directory if the output path does not exists",
       type: "boolean",
       default: false,
     })
@@ -103,7 +110,8 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
       coerce: customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
     })
     .option("aigne-hub-url", {
-      describe: "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models. ",
+      group: MODEL_OPTIONS_GROUP_NAME,
+      describe: "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models.",
       type: "string",
     });
 
@@ -168,6 +176,7 @@ export function withAgentInputSchema(yargs: Argv, agent: Agent) {
     const type = inferZodType(config);
 
     yargs.option(option, {
+      group: "Agent Parameters",
       type: type.type,
       description: config.description,
       array: type.array,

@@ -1,7 +1,7 @@
 import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
-import { isNonNullable } from "@aigne/core/utils/type-utils.js";
+import { flat, isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { config } from "dotenv-flow";
 import type { CommandModule } from "yargs";
@@ -18,12 +18,12 @@ export function createRunCommand({
 } = {}): CommandModule<unknown, { path?: string }> {
   return {
     command: "run [path]",
-    describe: "Run AIGNE from the specified path",
+    describe: "Run AIGNE for the specified path",
     builder: async (yargs) => {
       return yargs
         .positional("path", {
           type: "string",
-          describe: "Path to the agents directory or URL to aigne project",
+          describe: "Path to the agents directory or URL to an aigne project",
           default: ".",
         })
         .help(false)
@@ -45,7 +45,14 @@ export function createRunCommand({
         });
       }
 
-      for (const agent of aigne.cli.agents) {
+      // Allow user to run all of agents in the AIGNE instances
+      for (const agent of flat(
+        aigne.cli.agents,
+        aigne.agents,
+        aigne.skills,
+        aigne.cli.chat,
+        aigne.mcpServer.agents,
+      )) {
         subYargs.command(agentCommandModule({ dir: path, agent }));
       }
 

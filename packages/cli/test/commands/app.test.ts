@@ -93,18 +93,17 @@ test("app command should register doc-smith to yargs", async () => {
 
     Generate documents by doc-smith
 
-    Options:
-          --help               Show help                                   [boolean]
+    Agent Parameters
+          --title  Title of doc to generate                      [string] [required]
+          --topic  Topic of doc to generate                                 [string]
+
+    Model Options
           --model              AI model to use in format 'provider[:model]' where
                                model is optional. Examples: 'openai' or
                                'openai:gpt-4o-mini'. Available providers: openai,
                                anthropic, bedrock, deepseek, gemini,google, ollama,
                                openrouter, xai, doubao, poe, aignehub (default:
                                openai)                                      [string]
-      -v, --version            Show version number                         [boolean]
-          --title              Title of doc to generate          [string] [required]
-          --topic              Topic of doc to generate                     [string]
-          --chat               Run chat loop in terminal  [boolean] [default: false]
           --temperature        Temperature for the model (controls randomness,
                                higher values produce more random outputs). Range:
                                0.0-2.0                                      [number]
@@ -114,23 +113,23 @@ test("app command should register doc-smith to yargs", async () => {
                                the same tokens). Range: -2.0 to 2.0         [number]
           --frequency-penalty  Frequency penalty for the model (penalizes frequency
                                of token usage). Range: -2.0 to 2.0          [number]
-      -i, --input              Input to the agent, use @<file> to read from a file
-                                                                             [array]
-          --format             Input format for the agent (available: text, json,
-                               yaml default: text)
-                                          [string] [choices: "text", "json", "yaml"]
-      -o, --output             Output file to save the result (default: stdout)
-                                                                            [string]
-          --output-key         Key in the result to save to the output file
-                                                       [string] [default: "message"]
-          --force              Truncate the output file if it exists, and create
-                               directory if the output path is not exists
-                                                          [boolean] [default: false]
-          --log-level          Log level for detailed debugging information. Values:
-                               silent, error, warn, info, debug
-                                                        [string] [default: "silent"]
           --aigne-hub-url      Custom AIGNE Hub service URL. Used to fetch remote
-                               agent definitions or models.                 [string]"
+                               agent definitions or models.                 [string]
+
+    Options:
+          --help        Show help                                          [boolean]
+      -v, --version     Show version number                                [boolean]
+          --chat        Run chat loop in terminal         [boolean] [default: false]
+      -i, --input       Input to the agent, use @<file> to read from a file  [array]
+          --format      Input format for the agent (available: text, json, yaml
+                        default: text)    [string] [choices: "text", "json", "yaml"]
+      -o, --output      Output file to save the result (default: stdout)    [string]
+          --output-key  Key in the result to save to the output file
+                                                       [string] [default: "message"]
+          --force       Truncate the output file if it exists, and create directory
+                        if the output path does not exists[boolean] [default: false]
+          --log-level   Log level for detailed debugging information. Values:
+                        silent, error, warn, info, debug[string] [default: "silent"]"
   `);
 
   const invokeAgentFromDir = spyOn(app, "invokeCLIAgentFromDir").mockReturnValueOnce(
@@ -351,7 +350,8 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
         "name": "test-agent",
       },
       {
-        "chat": false,
+        "chat": undefined,
+        "description": "@test-description.json",
         "input": {
           "description": {
             "key3": "test field form json",
@@ -360,6 +360,7 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
           "key2": "test field form json",
           "title": "test title",
         },
+        "title": "test title",
       },
     ]
   `,

@@ -150,9 +150,15 @@ export async function invokeCLIAgentFromDir(options: {
   });
 
   try {
-    const { chat, agents } = aigne.cli;
+    const { chat } = aigne.cli;
 
-    const agent = chat && chat.name === options.agent ? chat : agents[options.agent];
+    const agent =
+      chat && chat.name === options.agent
+        ? chat
+        : aigne.cli.agents[options.agent] ||
+          aigne.agents[options.agent] ||
+          aigne.skills[options.agent] ||
+          aigne.mcpServer.agents[options.agent];
     assert(agent, `Agent ${options.agent} not found in ${options.dir}`);
 
     const input = await parseAgentInput(options.input, agent);

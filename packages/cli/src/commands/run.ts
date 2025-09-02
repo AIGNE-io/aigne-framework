@@ -56,8 +56,13 @@ export function createRunCommand({
         subYargs.command(agentCommandModule({ dir: path, agent }));
       }
 
-      const argv = process.argv.slice((aigneFilePath ? 3 : 2) + 1);
-      if (argv[0] === options.path) argv.shift();
+      const argv = process.argv.slice(aigneFilePath ? 3 : 2);
+      if (argv[0] === "run") argv.shift(); // remove 'run' command
+
+      // For compatibility with old `run` command like: `aigne run --path /xx/xx --entry-agent xx --xx`
+      if (argv[0] === "--path" || argv[0] === "--url") argv.shift(); // remove --path flag
+      if (argv[0] === options.path) argv.shift(); // remove path/url args
+      if (argv[0] === "--entry-agent") argv.shift();
 
       await subYargs
         .strict()

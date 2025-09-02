@@ -81,7 +81,13 @@ export class AIGNEHubImageModel extends ImageModel {
 
     const response = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
       undefined,
-      input,
+      {
+        ...input,
+        modelOptions: {
+          ...this.options.modelOptions,
+          model: input.model || (await this.credential).model,
+        },
+      },
       {
         ...options,
         streaming: false,

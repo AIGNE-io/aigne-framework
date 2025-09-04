@@ -6,7 +6,7 @@ import { AIAgent } from "@aigne/core";
 import { DefaultMemory } from "@aigne/default-memory";
 
 const agent = AIAgent.from({
-  name: "image",
+  name: "nano_banana",
   instructions: "You are a drawer who creates images based on user descriptions.",
   memory: [
     new DefaultMemory({

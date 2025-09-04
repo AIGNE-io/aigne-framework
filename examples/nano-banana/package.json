@@ -1,9 +1,9 @@
 {
-  "name": "@aigne/example-image",
+  "name": "@aigne/example-nano-banana",
   "version": "0.0.0",
   "description": "A demonstration of using AIGNE Framework for image generating or editing.",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
-  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/image",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/nano-banana",
   "license": "MIT",
   "repository": {
     "type": "git",

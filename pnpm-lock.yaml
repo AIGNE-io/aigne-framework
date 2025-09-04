@@ -281,31 +281,6 @@ importers:
         specifier: workspace:^
         version: link:../../packages/cli
 
-  examples/image:
-    dependencies:
-      '@aigne/agent-library':
-        specifier: workspace:^
-        version: link:../../packages/agent-library
-      '@aigne/cli':
-        specifier: workspace:^
-        version: link:../../packages/cli
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@aigne/default-memory':
-        specifier: workspace:^
-        version: link:../../memory/default
-      '@aigne/fs-memory':
-        specifier: workspace:^
-        version: link:../../memory/fs
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
-      '@types/bun':
-        specifier: ^1.2.18
-        version: 1.2.18(@types/react@19.1.8)
-
   examples/mcp-blocklet:
     dependencies:
       '@aigne/agent-library':
@@ -495,6 +470,31 @@ importers:
       dotenv-flow:
         specifier: ^4.1.0
         version: 4.1.0
+
+  examples/nano-banana:
+    dependencies:
+      '@aigne/agent-library':
+        specifier: workspace:^
+        version: link:../../packages/agent-library
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/default-memory':
+        specifier: workspace:^
+        version: link:../../memory/default
+      '@aigne/fs-memory':
+        specifier: workspace:^
+        version: link:../../memory/fs
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.18
+        version: 1.2.18(@types/react@19.1.8)
 
   examples/workflow-code-execution:
     dependencies:

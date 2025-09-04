@@ -1,5 +1,7 @@
-import type { Message, UserAgent } from "@aigne/core";
-import { omit } from "@aigne/core/utils/type-utils.js";
+import { readFile } from "node:fs/promises";
+import { basename } from "node:path";
+import type { FileUnionContent, Message, UserAgent } from "@aigne/core";
+import { isNonNullable, omit } from "@aigne/core/utils/type-utils.js";
 import inquirer from "inquirer";
 import { TerminalTracer } from "../tracer/terminal.js";
 
@@ -60,11 +62,51 @@ export async function runChatLoopInTerminal(
       continue;
     }
 
-    await callAgent(userAgent, question, options);
+    const input: Message = {};
+
+    if (options.fileInputKey) {
+      const { message, files } = await extractFilesFromQuestion(question);
+      input[options.inputKey || DEFAULT_CHAT_INPUT_KEY] = message;
+      input[options.fileInputKey] = files;
+    } else {
+      input[options.inputKey || DEFAULT_CHAT_INPUT_KEY] = question;
+    }
+
+    await callAgent(userAgent, input, options);
+
     if (options.input && options.fileInputKey) {
       options.input = omit(options.input, options.fileInputKey);
     }
   }
+}
+
+async function extractFilesFromQuestion(
+  question: string,
+): Promise<{ message: string; files: FileUnionContent[] }> {
+  const fileRegex = /@\S+/g;
+  const paths = question.match(fileRegex) || [];
+
+  const files = (
+    await Promise.all(
+      paths.map<Promise<{ path: string; file: FileUnionContent } | undefined>>(async (path) => {
+        const p = path.slice(1);
+        const data = await readFile(p, "base64").catch((error) => {
+          if (error.code === "ENOENT") return null;
+          throw error;
+        });
+        if (!data) return;
+
+        return { path, file: { type: "file", data, filename: basename(p) } };
+      }),
+    )
+  ).filter(isNonNullable);
+
+  // Remove file paths from question
+  for (const { path } of files) {
+    question = question.replaceAll(path, "");
+  }
+
+  return { message: question, files: files.map((i) => i.file) };
 }
 
 async function callAgent(userAgent: UserAgent, input: Message | string, options: ChatLoopOptions) {

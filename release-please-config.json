@@ -55,6 +55,7 @@
     "examples/workflow-sequential": {},
     "examples/chat-bot": {},
     "examples/memory": {},
+    "examples/nano-banana": {},
     "blocklets/aigne-runtime": {
       "package-name": "aigne-runtime",
       "extra-files": [

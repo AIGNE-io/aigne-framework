@@ -3,7 +3,6 @@
 import { existsSync, realpathSync, statSync } from "node:fs";
 import chalk from "chalk";
 import { config } from "dotenv-flow";
-import { hideBin } from "yargs/helpers";
 import { createAIGNECommand } from "./commands/aigne.js";
 import { highlightUrl } from "./utils/string-utils.js";
 
@@ -30,7 +29,7 @@ export default createAIGNECommand({ aigneFilePath })
       process.exit(1);
     }
   })
-  .parseAsync(hideBin([...process.argv.slice(0, 2), ...process.argv.slice(aigneFilePath ? 3 : 2)]))
+  .parseAsync(process.argv.slice(aigneFilePath ? 3 : 2))
   .catch((error: Error) => {
     console.log(""); // Add an empty line for better readability
     console.error(`${chalk.red("Error:")} ${highlightUrl(error.message)}`);

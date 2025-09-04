@@ -1,183 +1,119 @@
-import assert from "node:assert";
 import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
-import type { Agent, AIGNE } from "@aigne/core";
-import { logger } from "@aigne/core/utils/logger.js";
-import { isNonNullable } from "@aigne/core/utils/type-utils.js";
+import { flat, isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
-import { input as inputInquirer, select as selectInquirer } from "@inquirer/prompts";
-import { ListrInquirerPromptAdapter } from "@listr2/prompt-adapter-inquirer";
 import { config } from "dotenv-flow";
 import type { CommandModule } from "yargs";
+import yargs from "yargs";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
-import { loadAIGNE, type RunOptions } from "../utils/load-aigne.js";
-import {
-  createRunAIGNECommand,
-  parseAgentInputByCommander,
-  runAgentWithAIGNE,
-} from "../utils/run-with-aigne.js";
+import { loadAIGNE } from "../utils/load-aigne.js";
+import { agentCommandModule } from "./app.js";
 
 export function createRunCommand({
   aigneFilePath,
 }: {
   aigneFilePath?: string;
-} = {}): CommandModule {
+} = {}): CommandModule<unknown, { path?: string }> {
   return {
     command: "run [path]",
-    describe: "Run AIGNE from the specified agent",
-    builder: (yargs) => {
-      return createRunAIGNECommand(yargs)
+    describe: "Run AIGNE for the specified path",
+    builder: async (yargs) => {
+      return yargs
         .positional("path", {
-          describe: "Path to the agents directory or URL to aigne project",
           type: "string",
+          describe: "Path to the agents directory or URL to an aigne project",
           default: ".",
-          alias: ["url"],
         })
-        .option("entry-agent", {
-          describe: "Name of the agent to run (defaults to the first agent found)",
-          type: "string",
-        })
-        .option("cache-dir", {
-          describe: "Directory to download the package to (defaults to the ~/.aigne/xxx)",
-          type: "string",
-        })
-        .option("aigne-hub-url", {
-          describe:
-            "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models. ",
-          type: "string",
-        })
+        .help(false)
+        .version(false)
         .strict(false);
     },
-    handler: async (argv) => {
-      const options = argv as unknown as RunOptions;
-      const path = aigneFilePath || options.path;
+    handler: async (options) => {
+      const p = aigneFilePath || options.path;
+      if (!p) throw new Error("No path specified");
 
-      if (options.logLevel) logger.level = options.logLevel;
+      const { aigne, path } = await loadApplication(p);
 
-      const { cacheDir, dir } = prepareDirs(path, options);
-      const originalLog: Record<string, (...args: any[]) => void> = {};
+      const subYargs = yargs().scriptName("").usage("aigne run <path> <agent> [...options]");
 
-      const { aigne, agent } = await new Listr<{
-        aigne: AIGNE;
-        agent: Agent;
-        logs: string[];
-      }>(
-        [
-          {
-            title: "Prepare environment",
-            task: (_, task) => {
-              if (cacheDir) {
-                return task.newListr([
-                  {
-                    title: "Download package",
-                    task: () => downloadPackage(path, cacheDir),
-                  },
-                  {
-                    title: "Extract package",
-                    task: () => extractPackage(cacheDir, dir),
-                  },
-                ]);
-              }
-            },
-          },
-          {
-            title: "Initialize AIGNE",
-            task: async (ctx, task) => {
-              // Load env files in the aigne directory
-              config({ path: dir, silent: true });
-
-              ctx.logs = [];
-
-              for (const method of ["debug", "log", "info", "warn", "error"] as const) {
-                originalLog[method] = console[method];
-
-                console[method] = (...args) => {
-                  ctx.logs.push(...args);
-                  task.output = args.join(" ");
-                };
-              }
-
-              try {
-                const aigne = await loadAIGNE({
-                  path: dir,
-                  modelOptions: {
-                    ...options,
-                    inquirerPromptFn: (prompt) => {
-                      if (prompt.type === "input") {
-                        return task
-                          .prompt(ListrInquirerPromptAdapter as any)
-                          .run(inputInquirer, prompt)
-                          .then((res: boolean) => ({ [prompt.name]: res }));
-                      }
-
-                      return task
-                        .prompt(ListrInquirerPromptAdapter as any)
-                        .run(selectInquirer, prompt)
-                        .then((res: boolean) => ({ [prompt.name]: res }));
-                    },
-                  },
-                });
-
-                ctx.aigne = aigne;
-              } finally {
-                Object.assign(console, originalLog);
-              }
-            },
-          },
-          {
-            task: (ctx) => {
-              const { aigne } = ctx;
-              assert(aigne);
-
-              let entryAgent: Agent | undefined;
-
-              if (options.entryAgent) {
-                entryAgent = aigne.agents[options.entryAgent];
-                if (!entryAgent) {
-                  throw new Error(`\
-Agent "${options.entryAgent}" not found in ${aigne.rootDir}
-
-Available agents:
-${aigne.agents.map((agent) => `  - ${agent.name}`).join("\n")}
-`);
-                }
-              } else {
-                entryAgent = aigne.agents[0];
-                if (!entryAgent) throw new Error(`No any agent found in ${aigne.rootDir}`);
-              }
-
-              ctx.agent = entryAgent;
-            },
-          },
-        ],
-        {
-          rendererOptions: {
-            collapseSubtasks: false,
-            showErrorMessage: false,
-            timer: PRESET_TIMER,
-          },
-        },
-      )
-        .run()
-        .then((ctx) => {
-          ctx.logs.forEach((log) => console.log(log));
-          return ctx;
+      if (aigne.cli.chat) {
+        subYargs.command({
+          ...agentCommandModule({ dir: path, agent: aigne.cli.chat }),
+          command: "$0",
         });
-
-      assert(aigne);
-      assert(agent);
-
-      const input = await parseAgentInputByCommander(agent, options);
-
-      try {
-        await runAgentWithAIGNE(aigne, agent, { ...options, input });
-      } finally {
-        await aigne.shutdown();
       }
+
+      // Allow user to run all of agents in the AIGNE instances
+      for (const agent of flat(
+        aigne.cli.agents,
+        aigne.agents,
+        aigne.skills,
+        aigne.cli.chat,
+        aigne.mcpServer.agents,
+      )) {
+        subYargs.command(agentCommandModule({ dir: path, agent }));
+      }
+
+      const argv = process.argv.slice(aigneFilePath ? 3 : 2);
+      if (argv[0] === "run") argv.shift(); // remove 'run' command
+
+      // For compatibility with old `run` command like: `aigne run --path /xx/xx --entry-agent xx --xx`
+      if (argv[0] === "--path" || argv[0] === "--url") argv.shift(); // remove --path flag
+      if (argv[0] === options.path) argv.shift(); // remove path/url args
+      if (argv[0] === "--entry-agent") argv.shift();
+
+      await subYargs
+        .strict()
+        .demandCommand()
+        .alias("h", "help")
+        .alias("v", "version")
+        .fail((message, error, yargs) => {
+          // We catch all errors below, here just print the help message non-error case like demandCommand
+          if (!error) {
+            yargs.showHelp();
+
+            console.error(`\n${message}`);
+            process.exit(1);
+          }
+        })
+        .parseAsync(argv);
     },
   };
+}
+
+async function loadApplication(path: string) {
+  const { cacheDir, dir } = prepareDirs(path);
+
+  if (cacheDir) {
+    await new Listr(
+      [
+        {
+          title: "Download package",
+          task: () => downloadPackage(path, cacheDir),
+        },
+        {
+          title: "Extract package",
+          task: () => extractPackage(cacheDir, dir),
+        },
+      ],
+      {
+        rendererOptions: {
+          collapseSubtasks: false,
+          showErrorMessage: false,
+          timer: PRESET_TIMER,
+        },
+      },
+    ).run();
+  }
+
+  // Load env files in the aigne directory
+  config({ path: dir, silent: true });
+
+  const aigne = await loadAIGNE({ path: dir });
+
+  return { aigne, path: dir };
 }
 
 async function downloadPackage(url: string, cacheDir: string) {
@@ -198,17 +134,12 @@ async function extractPackage(cacheDir: string, dir: string) {
   }
 }
 
-function prepareDirs(path: string, options: RunOptions) {
+function prepareDirs(path: string) {
   let dir: string;
   let cacheDir: string | undefined;
 
   if (!path.startsWith("http")) {
     dir = isAbsolute(path) ? path : resolve(process.cwd(), path);
-  } else if (options.cacheDir) {
-    dir = isAbsolute(options.cacheDir)
-      ? options.cacheDir
-      : resolve(process.cwd(), options.cacheDir);
-    cacheDir = join(dir, ".download");
   } else {
     dir = getLocalPackagePathFromUrl(path);
     cacheDir = getLocalPackagePathFromUrl(path, { subdir: ".download" });

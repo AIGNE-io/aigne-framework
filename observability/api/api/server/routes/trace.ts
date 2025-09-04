@@ -370,7 +370,7 @@ export default ({
 
   router.delete("/tree", async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
-    await db.update(Trace).set({ action: 1 }).where(isNull(Trace.action)).execute();
+    await db.delete(Trace).execute();
     res.json({ code: 0, message: "ok" });
   });
 

@@ -4,13 +4,18 @@ import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { type Agent, AIGNE, type Message } from "@aigne/core";
+import { logger } from "@aigne/core/utils/logger.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
-import type { Argv, CommandModule } from "yargs";
+import type { CommandModule } from "yargs";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { runAgentWithAIGNE } from "../utils/run-with-aigne.js";
-import { parseAgentInput, withAgentInputSchema } from "../utils/yargs.js";
+import {
+  type AgentRunCommonOptions,
+  parseAgentInput,
+  withAgentInputSchema,
+} from "../utils/yargs.js";
 import { serveMCPServerFromDir } from "./serve-mcp.js";
 
 const NPM_PACKAGE_CACHE_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
@@ -44,7 +49,7 @@ export function createAppCommands(): CommandModule[] {
         yargs.command({ ...agentCommandModule({ dir, agent: aigne.cli.chat }), command: "$0" });
       }
 
-      for (const agent of aigne.cli?.agents ?? []) {
+      for (const agent of aigne.cli.agents) {
         yargs.command(agentCommandModule({ dir, agent }));
       }
 
@@ -114,20 +119,22 @@ const upgradeCommandModule = ({
   },
 });
 
-const agentCommandModule = ({
+export const agentCommandModule = ({
   dir,
   agent,
 }: {
   dir: string;
   agent: Agent;
-}): CommandModule<unknown, { input?: string[]; format?: "json" | "yaml"; model?: string }> => {
+}): CommandModule<unknown, AgentRunCommonOptions> => {
   return {
     command: agent.name,
     aliases: agent.alias || [],
     describe: agent.description || "",
-    builder: async (yargs) => withAgentInputSchema(yargs, agent) as Argv<unknown>,
-    handler: async (input) => {
-      await invokeCLIAgentFromDir({ dir, agent: agent.name, input });
+    builder: async (yargs) => withAgentInputSchema(yargs, agent),
+    handler: async (options) => {
+      if (options.logLevel) logger.level = options.logLevel;
+
+      await invokeCLIAgentFromDir({ dir, agent: agent.name, input: options });
     },
   };
 };
@@ -135,22 +142,32 @@ const agentCommandModule = ({
 export async function invokeCLIAgentFromDir(options: {
   dir: string;
   agent: string;
-  input: Message & { input?: string[]; format?: "yaml" | "json"; model?: string };
+  input: Message & AgentRunCommonOptions;
 }) {
   const aigne = await loadAIGNE({
     path: options.dir,
-    modelOptions: { model: options.input.model },
+    modelOptions: options.input,
   });
 
   try {
-    const { chat, agents } = aigne.cli;
+    const { chat } = aigne.cli;
 
-    const agent = chat && chat.name === options.agent ? chat : agents[options.agent];
+    const agent =
+      chat && chat.name === options.agent
+        ? chat
+        : aigne.cli.agents[options.agent] ||
+          aigne.agents[options.agent] ||
+          aigne.skills[options.agent] ||
+          aigne.mcpServer.agents[options.agent];
     assert(agent, `Agent ${options.agent} not found in ${options.dir}`);
 
     const input = await parseAgentInput(options.input, agent);
 
-    await runAgentWithAIGNE(aigne, agent, { input, chat: agent === chat });
+    await runAgentWithAIGNE(aigne, agent, {
+      ...options.input,
+      input,
+      chat: agent === chat || options.input.chat,
+    });
   } finally {
     await aigne.shutdown();
   }

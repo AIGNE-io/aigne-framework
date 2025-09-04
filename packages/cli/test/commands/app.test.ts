@@ -93,16 +93,43 @@ test("app command should register doc-smith to yargs", async () => {
 
     Generate documents by doc-smith
 
+    Agent Parameters
+          --title  Title of doc to generate                      [string] [required]
+          --topic  Topic of doc to generate                                 [string]
+
+    Model Options
+          --model              AI model to use in format 'provider[:model]' where
+                               model is optional. Examples: 'openai' or
+                               'openai:gpt-4o-mini'. Available providers: openai,
+                               anthropic, bedrock, deepseek, gemini,google, ollama,
+                               openrouter, xai, doubao, poe, aignehub (default:
+                               openai)                                      [string]
+          --temperature        Temperature for the model (controls randomness,
+                               higher values produce more random outputs). Range:
+                               0.0-2.0                                      [number]
+          --top-p              Top P (nucleus sampling) parameter for the model
+                               (controls diversity). Range: 0.0-1.0         [number]
+          --presence-penalty   Presence penalty for the model (penalizes repeating
+                               the same tokens). Range: -2.0 to 2.0         [number]
+          --frequency-penalty  Frequency penalty for the model (penalizes frequency
+                               of token usage). Range: -2.0 to 2.0          [number]
+          --aigne-hub-url      Custom AIGNE Hub service URL. Used to fetch remote
+                               agent definitions or models.                 [string]
+
     Options:
-          --help     Show help                                             [boolean]
-          --model    Model to use for the application, example: openai:gpt-4.1 or
-                     google:gemini-2.5-flash                                [string]
-      -v, --version  Show version number                                   [boolean]
-          --title    Title of doc to generate                    [string] [required]
-          --topic    Topic of doc to generate                               [string]
-      -i, --input    Input to the agent, use @<file> to read from a file     [array]
-          --format   Input format, can be "json" or "yaml"
-                                                  [string] [choices: "json", "yaml"]"
+          --help        Show help                                          [boolean]
+      -v, --version     Show version number                                [boolean]
+          --chat        Run chat loop in terminal         [boolean] [default: false]
+      -i, --input       Input to the agent, use @<file> to read from a file  [array]
+          --format      Input format for the agent (available: text, json, yaml
+                        default: text)    [string] [choices: "text", "json", "yaml"]
+      -o, --output      Output file to save the result (default: stdout)    [string]
+          --output-key  Key in the result to save to the output file
+                                                       [string] [default: "message"]
+          --force       Truncate the output file if it exists, and create directory
+                        if the output path does not exists[boolean] [default: false]
+          --log-level   Log level for detailed debugging information. Values:
+                        silent, error, warn, info, debug[string] [default: "silent"]"
   `);
 
   const invokeAgentFromDir = spyOn(app, "invokeCLIAgentFromDir").mockReturnValueOnce(
@@ -131,6 +158,8 @@ test("app command should register doc-smith to yargs", async () => {
           "doc-smith",
           "generate",
         ],
+        "chat": false,
+        "force": false,
         "format": "yaml",
         "i": [
           "@test.yaml",
@@ -138,6 +167,10 @@ test("app command should register doc-smith to yargs", async () => {
         "input": [
           "@test.yaml",
         ],
+        "log-level": "silent",
+        "logLevel": "silent",
+        "output-key": "message",
+        "outputKey": "message",
         "title": "test title to generate",
         "topic": "test topic to generate",
       },
@@ -317,7 +350,8 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
         "name": "test-agent",
       },
       {
-        "chat": false,
+        "chat": undefined,
+        "description": "@test-description.json",
         "input": {
           "description": {
             "key3": "test field form json",
@@ -326,6 +360,7 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
           "key2": "test field form json",
           "title": "test title",
         },
+        "title": "test title",
       },
     ]
   `,

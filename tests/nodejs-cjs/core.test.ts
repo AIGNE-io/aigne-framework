@@ -1,0 +1,27 @@
+import { assert, expect, test, vi } from "vitest";
+
+const { AIAgent, AIGNE } = require("@aigne/core");
+const { OpenAIChatModel } = require("@aigne/openai");
+
+test("AIGNE core should work in Node.js", async () => {
+  const agent = AIAgent.from({
+    name: "memory_example",
+    instructions: "You are a friendly chatbot",
+    inputKey: "message",
+  });
+
+  const aigne = new AIGNE({
+    model: new OpenAIChatModel(),
+  });
+
+  assert(aigne.model);
+  vi.spyOn(aigne.model, "process").mockReturnValueOnce({
+    text: "Hello, I am a chatbot!",
+  });
+
+  const result = await aigne.invoke(agent, { message: "Hello, What is your name?" });
+
+  expect(result).toEqual({
+    message: "Hello, I am a chatbot!",
+  });
+});

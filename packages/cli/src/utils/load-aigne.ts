@@ -7,9 +7,9 @@ import { availableMemories } from "../constants.js";
 import { loadChatModel, maskApiKey } from "./aigne-hub/model.js";
 import type { LoadCredentialOptions } from "./aigne-hub/type.js";
 import { getUrlOrigin } from "./get-url-origin.js";
-import type { RunAIGNECommandOptions } from "./run-with-aigne.js";
+import type { AgentRunCommonOptions } from "./yargs.js";
 
-export interface RunOptions extends RunAIGNECommandOptions {
+export interface RunOptions extends AgentRunCommonOptions {
   path: string;
   entryAgent?: string;
   cacheDir?: string;

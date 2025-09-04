@@ -201,15 +201,6 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
     },
   },
   {
-    "progress": {
-      "agent": {
-        "name": "OpenAIChatModel",
-      },
-      "error": [Error: Test error],
-      "event": "agentFailed",
-    },
-  },
-  {
     "delta": {
       "text": {
         "message": "Hello",
@@ -221,6 +212,15 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       "text": {
         "message": " world",
       },
+    },
+  },
+  {
+    "progress": {
+      "agent": {
+        "name": "OpenAIChatModel",
+      },
+      "error": [Error: Test error],
+      "event": "agentFailed",
     },
   },
   {

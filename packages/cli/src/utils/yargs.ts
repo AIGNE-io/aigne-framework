@@ -3,20 +3,140 @@ import { readFile } from "node:fs/promises";
 import { extname } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
-import { type Agent, AIAgent, type Message, readAllString } from "@aigne/core";
-import { pick } from "@aigne/core/utils/type-utils.js";
+import { availableModels } from "@aigne/aigne-hub";
+import { type Agent, AIAgent, DEFAULT_OUTPUT_KEY, type Message, readAllString } from "@aigne/core";
+import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
+import { pick, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { parse } from "yaml";
 import type { Argv } from "yargs";
-import {
+import z, {
   ZodAny,
   ZodArray,
   ZodBoolean,
+  ZodError,
   ZodNumber,
   ZodObject,
   ZodString,
   ZodType,
   ZodUnknown,
 } from "zod";
+
+export type InferArgv<T> = T extends Argv<infer U> ? U : never;
+
+const MODEL_OPTIONS_GROUP_NAME = "Model Options";
+
+export const withRunAgentCommonOptions = (yargs: Argv) =>
+  yargs
+    .option("chat", {
+      describe: "Run chat loop in terminal",
+      type: "boolean",
+      default: false,
+    })
+    .option("model", {
+      group: MODEL_OPTIONS_GROUP_NAME,
+      describe: `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
+        .map((i) => {
+          if (typeof i.name === "string") {
+            return i.name.toLowerCase().replace(/ChatModel$/i, "");
+          }
+          return i.name.map((n) => n.toLowerCase().replace(/ChatModel$/i, ""));
+        })
+        .join(", ")} (default: openai)`,
+      type: "string",
+    })
+    .option("temperature", {
+      group: MODEL_OPTIONS_GROUP_NAME,
+      describe:
+        "Temperature for the model (controls randomness, higher values produce more random outputs). Range: 0.0-2.0",
+      type: "number",
+      coerce: customZodError("--temperature", (s) => z.coerce.number().min(0).max(2).parse(s)),
+    })
+    .option("top-p", {
+      group: MODEL_OPTIONS_GROUP_NAME,
+      describe:
+        "Top P (nucleus sampling) parameter for the model (controls diversity). Range: 0.0-1.0",
+      type: "number",
+      coerce: customZodError("--top-p", (s) => z.coerce.number().min(0).max(1).parse(s)),
+    })
+    .option("presence-penalty", {
+      group: MODEL_OPTIONS_GROUP_NAME,
+      describe:
+        "Presence penalty for the model (penalizes repeating the same tokens). Range: -2.0 to 2.0",
+      type: "number",
+      coerce: customZodError("--presence-penalty", (s) =>
+        z.coerce.number().min(-2).max(2).parse(s),
+      ),
+    })
+    .option("frequency-penalty", {
+      group: MODEL_OPTIONS_GROUP_NAME,
+      describe:
+        "Frequency penalty for the model (penalizes frequency of token usage). Range: -2.0 to 2.0",
+      type: "number",
+      coerce: customZodError("--frequency-penalty", (s) =>
+        z.coerce.number().min(-2).max(2).parse(s),
+      ),
+    })
+    .option("input", {
+      describe: "Input to the agent, use @<file> to read from a file",
+      type: "string",
+      array: true,
+      alias: "i",
+    })
+    .option("format", {
+      describe: "Input format for the agent (available: text, json, yaml default: text)",
+      type: "string",
+      choices: ["text", "json", "yaml"],
+    })
+    .option("output", {
+      describe: "Output file to save the result (default: stdout)",
+      type: "string",
+      alias: "o",
+    })
+    .option("output-key", {
+      describe: "Key in the result to save to the output file",
+      type: "string",
+      default: DEFAULT_OUTPUT_KEY,
+    })
+    .option("force", {
+      describe:
+        "Truncate the output file if it exists, and create directory if the output path does not exists",
+      type: "boolean",
+      default: false,
+    })
+    .option("log-level", {
+      describe: `Log level for detailed debugging information. Values: ${Object.values(LogLevel).join(", ")}`,
+      type: "string",
+      default: getLevelFromEnv(logger.options.ns) || LogLevel.SILENT,
+      coerce: customZodError("--log-level", (s) => z.nativeEnum(LogLevel).parse(s)),
+    })
+    .option("aigne-hub-url", {
+      group: MODEL_OPTIONS_GROUP_NAME,
+      describe: "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models.",
+      type: "string",
+    });
+
+type _AgentRunCommonOptions = Partial<InferArgv<ReturnType<typeof withAgentInputSchema>>>;
+
+/** Convert literal string types like 'foo-bar' to 'FooBar' */
+type PascalCase<S extends string> = string extends S
+  ? string
+  : S extends `${infer T}-${infer U}`
+    ? `${Capitalize<T>}${PascalCase<U>}`
+    : Capitalize<S>;
+
+/** Convert literal string types like 'foo-bar' to 'fooBar' */
+type CamelCase<S extends string> = string extends S
+  ? string
+  : S extends `${infer T}-${infer U}`
+    ? `${T}${PascalCase<U>}`
+    : S;
+
+/** Convert literal string types like 'foo-bar' to 'fooBar', allowing all `PropertyKey` types */
+type CamelCaseKey<K extends PropertyKey> = K extends string ? Exclude<CamelCase<K>, ""> : K;
+
+export type AgentRunCommonOptions = {
+  [key in keyof _AgentRunCommonOptions as CamelCaseKey<key>]: _AgentRunCommonOptions[key];
+};
 
 export function inferZodType(
   type: ZodType,
@@ -56,6 +176,7 @@ export function withAgentInputSchema(yargs: Argv, agent: Agent) {
     const type = inferZodType(config);
 
     yargs.option(option, {
+      group: "Agent Parameters",
       type: type.type,
       description: config.description,
       array: type.array,
@@ -66,25 +187,11 @@ export function withAgentInputSchema(yargs: Argv, agent: Agent) {
     }
   }
 
-  return yargs
-    .option("input", {
-      type: "string",
-      array: true,
-      description: "Input to the agent, use @<file> to read from a file",
-      alias: ["i"],
-    })
-    .option("format", {
-      type: "string",
-      description: 'Input format, can be "json" or "yaml"',
-      choices: ["json", "yaml"],
-    }) as Argv<{
-    input?: string[];
-    format?: "json" | "yaml";
-  }>;
+  return withRunAgentCommonOptions(yargs);
 }
 
 export async function parseAgentInput(
-  i: Message & { input?: string[]; format?: "json" | "yaml" },
+  i: Message & { input?: string[]; format?: string },
   agent: Agent,
 ) {
   const inputSchema: { [key: string]: ZodType } =
@@ -132,7 +239,7 @@ export async function parseAgentInput(
 
 async function readFileAsInput(
   value: string,
-  { format }: { format?: "raw" | "json" | "yaml" } = {},
+  { format }: { format?: "raw" | "json" | "yaml" | string } = {},
 ): Promise<unknown> {
   if (value.startsWith("@")) {
     const ext = extname(value);
@@ -157,4 +264,12 @@ async function readFileAsInput(
 export async function stdinHasData(): Promise<boolean> {
   const stats = await promisify(fstat)(0);
   return stats.isFIFO() || stats.isFile();
+}
+
+function customZodError<T extends (...args: unknown[]) => unknown>(label: string, fn: T): T {
+  return ((...args: Parameters<T>) =>
+    tryOrThrow(
+      () => fn(...args),
+      (e) => new Error(`${label} ${e instanceof ZodError ? e.issues[0]?.message : e.message}`),
+    )) as T;
 }

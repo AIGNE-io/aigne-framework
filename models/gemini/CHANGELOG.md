@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.11.6](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.11.5...gemini-v0.11.6) (2025-09-01)
+
+
+### Bug Fixes
+
+* **transport:** improve HTTP client option handling and error serialization ([#445](https://github.com/AIGNE-io/aigne-framework/issues/445)) ([d3bcdd2](https://github.com/AIGNE-io/aigne-framework/commit/d3bcdd23ab8011a7d40fc157fd61eb240494c7a5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.13.7
+  * devDependencies
+    * @aigne/core bumped to 1.57.5
+    * @aigne/test-utils bumped to 0.5.43
+
 ## [0.11.5](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.11.4...gemini-v0.11.5) (2025-08-30)
 
 

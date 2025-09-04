@@ -283,7 +283,9 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
         if (data.type === "local") {
           base64 = await nodejs.fs.readFile(data.path, "base64");
         } else if (data.type === "url") {
-          base64 = Buffer.from(await (await this.downloadFile(data.url)).arrayBuffer()).toBase64();
+          base64 = Buffer.from(await (await this.downloadFile(data.url)).arrayBuffer()).toString(
+            "base64",
+          );
         } else {
           throw new Error(`Unexpected file type: ${data.type}`);
         }

@@ -216,18 +216,22 @@ test("GeminiChatModel should support image mode", async () => {
     },
   });
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(result).toMatchInlineSnapshot(
+    { files: [{ path: expect.any(String) }] },
+    `
     {
       "files": [
         {
+          "filename": undefined,
           "mimeType": undefined,
-          "path": "/var/folders/tp/46k4cvdn6mv9rzqgy8br5b9r0000gn/T/0199157d-3f59-71a2-a467-b3006480ede9/0199157d-3f5b-7054-a086-2df3f6c3ec22",
+          "path": Any<String>,
           "type": "local",
         },
       ],
       "text": "hello world",
     }
-  `);
+  `,
+  );
   expect(generateSpy.mock.lastCall).toMatchInlineSnapshot(`
     [
       {

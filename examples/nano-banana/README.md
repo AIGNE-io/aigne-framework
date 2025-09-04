@@ -23,10 +23,10 @@ This example demonstrates how to create a chatbot with image capabilities using 
 ```bash
 export GEMINI_API_KEY=YOUR_GEMINI_API_KEY # Set your Gemini API key
 
-npx -y @aigne/example-image --input 'Draw an image of a lovely cat'
+npx -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'
 
 # Run in interactive chat mode
-npx -y @aigne/example-image --chat
+npx -y @aigne/example-nano-banana --chat
 ```
 
 ## Installation

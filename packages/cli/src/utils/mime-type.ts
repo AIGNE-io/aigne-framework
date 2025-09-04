@@ -1,4 +1,4 @@
-export const MIME_TYPES: { [key: string]: string } = {
+export const IMAGE_MIME_TYPES: { [key: string]: string } = {
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   png: "image/png",
@@ -8,5 +8,5 @@ export const MIME_TYPES: { [key: string]: string } = {
 
 export function getMimeTypeFromFilename(filename: string): string | undefined {
   const ext = filename.split(".").pop()?.toLowerCase();
-  return ext ? MIME_TYPES[ext] : undefined;
+  return ext ? IMAGE_MIME_TYPES[ext] : undefined;
 }

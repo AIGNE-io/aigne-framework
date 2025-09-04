@@ -4,13 +4,56 @@ labels: ["Reference"]
 
 # aigne hub
 
-The `aigne hub` command provides a suite of tools for managing your connections to AIGNE Hub. This allows you to easily switch between different Hub instances (like the official Arcblock hub and self-hosted ones), check your account status, view credit balances, and more, directly from your terminal.
+The `aigne hub` command provides a suite of tools for managing your connections to AIGNE Hub. This allows you to easily connect to the official AIGNE Hub or self-hosted instances, switch between them, and check your account status and credit balance directly from your terminal.
+
+Your connections are stored locally in the `~/.aigne/aigne-hub-connected.yaml` file.
+
+```d2
+direction: down
+
+"Developer Machine": {
+  shape: rectangle
+
+  "aigne CLI": {
+    shape: rectangle
+  }
+
+  "Local Config (~/.aigne/)": {
+    shape: document
+  }
+
+  "aigne CLI" <-> "Local Config (~/.aigne/)": "Reads/Writes Connections"
+}
+
+"AIGNE Hubs": {
+  shape: package
+  grid-columns: 2
+
+  "Official Hub (hub.aigne.io)": {
+    shape: cylinder
+  }
+
+  "Self-Hosted Hub": {
+    shape: cylinder
+  }
+}
+
+"Developer Machine"."aigne CLI" -> "AIGNE Hubs"."Official Hub (hub.aigne.io)": {
+  label: "Active Connection"
+  style.stroke-width: 2
+}
+
+"Developer Machine"."aigne CLI" -> "AIGNE Hubs"."Self-Hosted Hub": {
+  label: "Inactive Connection"
+  style.stroke-dash: 2
+}
+```
 
 ## Subcommands
 
 ### `hub list`
 
-Lists all the AIGNE Hubs you have previously connected to.
+Lists all the AIGNE Hubs you have previously connected to and indicates which one is currently active.
 
 **Usage**
 
@@ -21,8 +64,6 @@ aigne hub ls
 ```
 
 **Example Output**
-
-This command displays a table of all saved connections, indicating which one is currently active.
 
 ```text
 Connected AIGNE Hubs:
@@ -39,21 +80,21 @@ Use 'aigne hub use' to switch to a different hub.
 
 ### `hub connect`
 
-Establishes a connection to an AIGNE Hub instance and saves the credentials locally. This process involves authenticating through your web browser.
+Establishes a new connection to an AIGNE Hub instance. This command will open a web browser for authentication and, upon success, save the credentials to your local configuration.
 
 **Usage**
 
 ```bash
-# Interactive mode to choose between official and custom hub
+# Start an interactive prompt to choose a hub
 aigne hub connect
 
-# Direct mode with a specific URL
+# Connect directly to a specific hub URL
 aigne hub connect <hub-url>
 ```
 
 **Interactive Mode**
 
-Running `aigne hub connect` without a URL will present an interactive prompt:
+Running `aigne hub connect` without a URL provides an interactive prompt to select between the official AIGNE Hub or a custom one.
 
 ```text
 ? Choose a hub to connect: › 
@@ -61,23 +102,23 @@ Running `aigne hub connect` without a URL will present an interactive prompt:
     Custom Hub URL
 ```
 
-After selection and successful browser authentication, you will see a confirmation message:
-
-```text
-✓ Hub https://hub.aigne.io connected successfully.
-```
-
 **Direct Mode**
 
-Provide the URL as an argument to connect to a specific, often self-hosted, hub.
+To connect to a self-hosted or specific AIGNE Hub instance, provide its URL as an argument.
 
 ```bash
 aigne hub connect https://my-custom-hub.example.com
 ```
 
+Upon successful authentication in the browser, a confirmation message will be displayed in the terminal:
+
+```text
+✓ Hub https://hub.aigne.io connected successfully.
+```
+
 ### `hub use`
 
-Switches the active AIGNE Hub to one of your previously connected instances. The active hub is used for operations that require Hub services, such as running models provided by the Hub.
+Switches the active AIGNE Hub to another previously connected instance. The active hub is used by default for operations that require Hub services, such as utilizing Hub-provided models.
 
 **Usage**
 
@@ -85,9 +126,7 @@ Switches the active AIGNE Hub to one of your previously connected instances. The
 aigne hub use
 ```
 
-**Example**
-
-This command will prompt you to select from your list of saved connections.
+This command will present an interactive list of your saved connections to choose from.
 
 ```text
 ? Choose a hub to switch to: › 
@@ -95,7 +134,7 @@ This command will prompt you to select from your list of saved connections.
 ❯   https://my-custom-hub.example.com
 ```
 
-Upon selection, the active hub is changed.
+Upon selection, you'll receive a confirmation:
 
 ```text
 ✓ Switched active hub to https://my-custom-hub.example.com
@@ -103,7 +142,7 @@ Upon selection, the active hub is changed.
 
 ### `hub status`
 
-Displays the URL of the currently active AIGNE Hub.
+Displays the URL of the currently active AIGNE Hub and its connection status.
 
 **Usage**
 
@@ -121,7 +160,7 @@ Active hub: https://hub.aigne.io - online
 
 ### `hub remove`
 
-Deletes a saved AIGNE Hub connection from your local configuration file.
+Removes a saved AIGNE Hub connection from your local configuration file.
 
 **Usage**
 
@@ -131,9 +170,7 @@ aigne hub remove
 aigne hub rm
 ```
 
-**Example**
-
-You'll be prompted to choose which saved connection to remove.
+This command prompts you to select which of your saved connections you wish to delete.
 
 ```text
 ? Choose a hub to remove: › 
@@ -141,7 +178,7 @@ You'll be prompted to choose which saved connection to remove.
 ❯   https://my-custom-hub.example.com
 ```
 
-After confirming, the connection is deleted.
+After selection, the connection is removed:
 
 ```text
 ✓ Hub https://my-custom-hub.example.com removed
@@ -149,7 +186,7 @@ After confirming, the connection is deleted.
 
 ### `hub info`
 
-Fetches and displays detailed account information for a selected hub, including user details and credit balance.
+Fetches and displays detailed account information for a selected hub, including user details, credit balance, and relevant links.
 
 **Usage**
 
@@ -159,9 +196,9 @@ aigne hub info
 aigne hub i
 ```
 
-**Example Output**
+After selecting a hub from the interactive prompt, you will see a detailed status report.
 
-After selecting a hub from the interactive prompt, detailed information is displayed.
+**Example Output**
 
 ```text
 AIGNE Hub Connection
@@ -182,5 +219,3 @@ Links:
   Payment:  https://hub.aigne.io/billing
   Profile:  https://hub.aigne.io/profile
 ```
-
-This command is useful for quickly checking your account details and credit balance without leaving the terminal.

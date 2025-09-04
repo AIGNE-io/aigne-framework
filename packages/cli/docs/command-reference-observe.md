@@ -23,10 +23,10 @@ Observability server listening on: http://localhost:7890
 
 ## Options
 
-| Option | Type | Description |
-| :--- | :--- | :--- |
+| Option   | Type     | Description                                                                                                        |
+| :------- | :------- | :----------------------------------------------------------------------------------------------------------------- |
 | `--host` | `string` | Specifies the host to run the server on. Use `0.0.0.0` to expose the server to your local network. Defaults to `localhost`. |
-| `--port` | `number` | Specifies the port for the server. If not provided, it will try the `PORT` environment variable, or default to `7890`. |
+| `--port` | `number` | Specifies the port for the server. If not provided, it will try the `PORT` environment variable, or default to `7890`.       |
 
 ## Examples
 

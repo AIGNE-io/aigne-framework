@@ -6,10 +6,23 @@ labels: ["Reference"]
 
 In an AIGNE project, Agents and Skills are the fundamental executable components. An Agent is the primary entity that receives input and orchestrates work, while a Skill is a specific, reusable function that an Agent can call to accomplish its goals. Both are defined within your project—typically in `.yaml` files for agents and `.js` files for skills—and are referenced in the main project configuration. For more details on the project structure, see [Project Configuration (aigne.yaml)](./core-concepts-project-configuration.md).
 
-```mermaid
-graph TD;
-    A["Agent (e.g., Chatbot)"] -- "Uses" --> B["Skill (e.g., Code Evaluator)"];
-    A["Agent (e.g., Chatbot)"] -- "Uses" --> C["Skill (e.g., API Connector)"];
+```d2
+direction: down
+
+agent: "Agent (e.g., Chatbot)" {
+  shape: person
+}
+
+skill1: "Skill (e.g., Code Evaluator)" {
+  shape: hexagon
+}
+
+skill2: "Skill (e.g., API Connector)" {
+  shape: hexagon
+}
+
+agent -> skill1: uses
+agent -> skill2: uses
 ```
 
 ## Agents
@@ -113,21 +126,22 @@ For example, a user might ask the chat agent to perform a calculation. The agent
 
 The underlying process follows a clear sequence:
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Agent as AIGNE Engine
-    participant LLM
-    participant Skill as sandbox.js
+```d2
+shape: sequence_diagram
 
-    User->>Agent: "What is 5 * 12?"
-    Agent->>LLM: Process user prompt with agent instructions and skill descriptions
-    LLM-->>Agent: Decide to call 'sandbox.js' with code: "5 * 12"
-    Agent->>Skill: evaluateJs({ code: "5 * 12" })
-    Skill-->>Agent: Return { result: 60 }
-    Agent->>LLM: Provide skill execution result
-    LLM-->>Agent: Formulate final response based on the result
-    Agent-->>User: "The result is 60."
+User: "User"
+Agent: "AIGNE Engine"
+LLM: "LLM"
+Skill: "sandbox.js"
+
+User -> Agent: "What is 5 * 12?"
+Agent -> LLM: "Process prompt with instructions & skill descriptions"
+LLM --> Agent: "Decide to call 'sandbox.js' with code: '5 * 12'"
+Agent -> Skill: "evaluateJs({ code: '5 * 12' })"
+Skill --> Agent: "Return { result: 60 }"
+Agent -> LLM: "Provide skill execution result"
+LLM --> Agent: "Formulate final response"
+Agent --> User: "The result is 60."
 ```
 
 This flow allows agents to perform complex, multi-step tasks by breaking them down and delegating specific actions to specialized skills. You can inspect the details of these interactions, including the exact inputs and outputs of each skill call, using the observability tools.

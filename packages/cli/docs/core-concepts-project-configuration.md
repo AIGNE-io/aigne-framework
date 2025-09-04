@@ -6,6 +6,42 @@ labels: ["Reference"]
 
 The `aigne.yaml` file is the central manifest for an AIGNE project. It defines the core components, including the chat model, agents, and skills, and provides project-level metadata. This file is essential for the AIGNE CLI to understand how to run, serve, and manage your agents.
 
+```d2
+direction: down
+
+"aigne.yaml": {
+  shape: document
+  "Project Manifest": {
+    "Metadata": {
+      "name": "my-project"
+      "description": "..."
+    }
+    "chat_model": {
+      "provider": "openai"
+      "name": "gpt-4o-mini"
+    }
+    "agents": {
+      "chat.yaml ->": {
+        shape: page
+        "System Prompt, Skills, etc."
+      }
+    }
+    "skills": {
+      "sandbox.js ->": {
+        shape: page
+        "JavaScript Logic"
+      }
+      "filesystem.yaml ->": {
+        shape: page
+        "Tool Definition"
+      }
+    }
+    "mcp_server": "Expose Agents via MCP"
+    "cli": "Expose Agents via CLI"
+  }
+}
+```
+
 ## Key Configuration Sections
 
 The configuration is organized using several top-level keys. Below is a detailed look at the primary sections you will use to define your project.

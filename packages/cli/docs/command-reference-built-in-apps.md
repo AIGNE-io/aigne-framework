@@ -10,9 +10,9 @@ Built-in applications are pre-packaged AIGNE projects designed for specialized t
 
 Currently, the following built-in application is available:
 
-| Command     | Aliases           | Description                                               |
-|-------------|-------------------|-----------------------------------------------------------|
-| `doc-smith` | `docsmith`, `doc` | Generate and maintain project docs — powered by agents.   |
+| Command | Aliases | Description |
+|---|---|---|
+| `doc-smith` | `docsmith`, `doc` | Generate and maintain project docs — powered by agents. |
 
 ## Usage
 
@@ -71,14 +71,24 @@ aigne doc-smith serve-mcp
 
 When you run a built-in app for the first time, the CLI downloads it from the npm registry (e.g., `@aigne/doc-smith`) and caches it locally in `~/.aigne/registry.npmjs.org/`. Subsequent runs use the cached version. The cache is checked for updates once every 24 hours.
 
-```mermaid
-flowchart TD
-    A["User runs 'aigne doc-smith'"] --> B{"Is app cached and recent (< 24h)?"};
-    B -- "Yes" --> E["Load app from local cache"];
-    B -- "No" --> C["Fetch '@aigne/doc-smith' metadata from npm"];
-    C --> D["Download, extract, and install dependencies"];
-    D --> E;
-    E --> F["Execute 'doc-smith' command"];
+```d2
+direction: down
+
+"A": "User runs 'aigne doc-smith'"
+"B": "Is app cached and recent (< 24h)?" {
+  shape: diamond
+}
+"C": "Fetch '@aigne/doc-smith' metadata from npm"
+"D": "Download, extract, and install dependencies"
+"E": "Load app from local cache"
+"F": "Execute 'doc-smith' command"
+
+"A" -> "B"
+"B" -> "E": "Yes"
+"B" -> "C": "No"
+"C" -> "D"
+"D" -> "E"
+"E" -> "F"
 ```
 
 This process ensures that you are always using a functional and up-to-date version of the application with minimal overhead.

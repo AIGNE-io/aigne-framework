@@ -17,4 +17,3 @@
   * [Running Remote Agents](/guides-running-remote-agents.md)
   * [Deploying Agents](/guides-deploying-agents.md)
 * [Contributing](/contributing.md)
-* [Changelog](/changelog.md)

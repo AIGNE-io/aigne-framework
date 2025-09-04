@@ -4,90 +4,86 @@ labels: ["Reference"]
 
 # Getting Started
 
-This guide provides a step-by-step walkthrough to get you up and running with `@aigne/cli`. You will learn how to install the command-line tool, create a new AIGNE project from a template, and run your first agent.
+This guide will walk you through the essential steps to get up and running with `@aigne/cli`. You'll learn how to install the command-line tool, create a new agent project from a template, and run it locally in an interactive chat session.
 
-## Prerequisites
+## 1. Install the AIGNE CLI
 
-Before you begin, make sure you have the following:
+First, you need to install the `@aigne/cli` package globally using your preferred package manager. This makes the `aigne` command available in your terminal.
 
-- **Node.js**: A modern version of Node.js is required.
-- **API Key**: You'll need an API key from a supported AI model provider, such as OpenAI. The default template is configured to use OpenAI.
+### Using npm
 
-## Step 1: Install the AIGNE CLI
-
-First, install the `@aigne/cli` package globally on your system using your preferred package manager. This makes the `aigne` command available from any directory.
-
-**Using npm**
 ```bash
 npm install -g @aigne/cli
 ```
 
-**Using yarn**
+### Using yarn
+
 ```bash
 yarn global add @aigne/cli
 ```
 
-**Using pnpm**
+### Using pnpm
+
 ```bash
 pnpm add -g @aigne/cli
 ```
 
-## Step 2: Create Your First Project
+## 2. Create Your First Project
 
-Next, use the `aigne create` command to generate a new project. This command scaffolds a directory with all the necessary configuration files to get started.
+Once the CLI is installed, create a new AIGNE project using the `aigne create` command. This command scaffolds a new project with a default file structure and configuration.
 
 ```bash
 aigne create my-first-agent
 ```
 
-The CLI will launch an interactive process, prompting you to confirm the project name and select a template. For now, you can choose the `default` template.
+The CLI will guide you through an interactive process, asking for the project name (if not provided) and the template to use. For now, you can accept the default options.
 
-![Interactive project name prompt](../assets/create/create-project-interactive-project-name-prompt.png)
+![AIGNE CLI prompting for project name](../assets/create/create-project-interactive-project-name-prompt.png)
 
 Upon successful creation, you will see a confirmation message with instructions on how to proceed.
 
-![Project creation success message](../assets/create/create-project-using-default-template-success-message.png)
+![Successful project creation message](../assets/create/create-project-using-default-template-success-message.png)
 
-## Step 3: Configure Environment Variables
+## 3. Configure Your API Key
 
-Your agent needs an API key to communicate with an AI model provider. The project template includes an example environment file for this purpose.
+Before running the agent, you need to provide an API key for the AI model provider. The default template is configured to use OpenAI.
 
 First, navigate into your newly created project directory:
+
 ```bash
 cd my-first-agent
 ```
 
-Next, copy the example environment file to a new file named `.env.local`:
+Next, copy the example environment file to a new `.env.local` file. This file is used to store your secret keys and is ignored by version control.
+
 ```bash
 cp .env.local.example .env.local
 ```
 
-Now, open the `.env.local` file in your editor and add your OpenAI API key:
+Now, open the `.env.local` file and add your OpenAI API key:
 
 ```shell
 # .env.local
 
 # OpenAI
 MODEL="openai:gpt-4o-mini"
-OPENAI_API_KEY="YOUR_OPENAI_API_KEY" # Paste your key here
+OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ```
 
-## Step 4: Run the Agent
+Replace `"YOUR_OPENAI_API_KEY"` with your actual key.
 
-With your API key configured, you are ready to run the agent. Execute the `aigne run` command from within your project directory:
+## 4. Run Your Agent
+
+With the configuration in place, you are ready to run your agent. To start an interactive session, execute the `aigne run` command with the `--chat` flag from within your project directory.
 
 ```bash
-aigne run
+aigne run --chat
 ```
 
-This command initializes the AIGNE framework and starts an interactive chat session in your terminal with the default agent. You can now start sending messages to your agent.
+This command starts a chat loop with the default agent defined in your project, allowing you to interact with it directly in your terminal.
 
-![Running the agent in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
+![AIGNE CLI running the default agent in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
 
 ## Next Steps
 
-Congratulations! You have successfully installed the AIGNE CLI and run your first agent. From here, you can:
-
-- Explore the generated project files to understand how agents and skills are defined in the [Core Concepts](./core-concepts.md) section.
-- Discover all the available commands and their options in the [Command Reference](./command-reference.md).
-- Learn how to write tests for your agent with the `aigne test` command.
+You have successfully installed the AIGNE CLI, created a new project, and run your first agent. To understand the structure of the project you just created and how agents and skills are defined, head over to the [Core Concepts](./core-concepts.md) section.

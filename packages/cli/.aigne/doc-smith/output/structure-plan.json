@@ -184,12 +184,5 @@
     "path": "/contributing",
     "parentId": null,
     "sourceIds": ["package.json", "tsconfig.json", "tsconfig.build.json", "src/cli.ts"]
-  },
-  {
-    "title": "Changelog",
-    "description": "A complete history of all notable changes made to the @aigne/cli package.",
-    "path": "/changelog",
-    "parentId": null,
-    "sourceIds": ["CHANGELOG.md"]
   }
 ]

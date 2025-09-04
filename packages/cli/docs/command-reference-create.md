@@ -15,9 +15,10 @@ To create a project in a new directory, provide a path as an argument:
 aigne create my-aigne-project
 ```
 
-If you run the command without an argument, it will create a project in the current directory and prompt you for a project name.
+If you run the command without a path argument, it will prompt you for a project name and create the project in a new subdirectory within the current location.
 
 ```bash
+# Create a project in the current working directory (interactive)
 aigne create
 ```
 
@@ -25,7 +26,7 @@ aigne create
 
 When you run `aigne create` without a path, or if the target directory already contains files, the CLI guides you through an interactive process.
 
-1.  **Project Name**: If you don't specify a path, you'll be prompted for a project name.
+1.  **Project Name**: If you don't specify a path, you'll be prompted for a project name. The default is `my-aigne-project`.
 
     ![AIGNE CLI prompting for a project name during creation.](../assets/create/create-project-interactive-project-name-prompt.png)
 
@@ -52,21 +53,39 @@ When you run `aigne create` without a path, or if the target directory already c
 
 The following diagram illustrates the process flow for the `aigne create` command.
 
-```mermaid
-flowchart TD
-    A["Start: aigne create command"] --> B{"Is path provided?"};
-    B -- "No" --> C["Prompt for Project Name"];
-    C --> D["Set path to Project Name"];
-    B -- "Yes" --> D;
-    D --> E{"Directory exists and is not empty?"};
-    E -- "Yes" --> F{"Prompt to overwrite?"};
-    F -- "No" --> G["Cancel Operation"];
-    F -- "Yes" --> H["Select Template"];
-    E -- "No" --> H;
-    H --> I["Create Directory & Copy Files"];
-    I --> J["Show Success Message"];
-    J --> K["End"];
-    G --> K;
+```d2
+direction: down
+
+"start": "Start: aigne create"
+"path_provided": "Is path provided?"
+"prompt_name": "Prompt for Project Name"
+"set_path": "Set project path"
+"check_empty": "Directory not empty?"
+"prompt_overwrite": "Prompt to overwrite?"
+"cancel": "Cancel Operation"
+"select_template": "Select Template"
+"create_files": "Create Directory & Copy Files"
+"success_msg": "Show Success Message"
+"end": "End"
+
+start -> path_provided
+
+path_provided -- "No" --> prompt_name
+prompt_name -> set_path
+path_provided -- "Yes" --> set_path
+
+set_path -> check_empty
+check_empty -- "Yes" --> prompt_overwrite
+check_empty -- "No" --> select_template
+
+prompt_overwrite -- "No" --> cancel
+prompt_overwrite -- "Yes" --> select_template
+
+select_template -> create_files
+create_files -> success_msg
+
+success_msg -> end
+cancel -> end
 ```
 
 ## Output

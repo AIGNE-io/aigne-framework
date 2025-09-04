@@ -1,0 +1,13 @@
+rules:
+  - id: pref_73e3292f10fe237a
+    active: true
+    scope: structure
+    rule: 不要生成或包含与 changelog 相关的内容或文档。
+    feedback: 删除 changelog 部分文档
+    createdAt: 2025-09-04T01:38:25.796Z
+  - id: pref_1419ac4d4aa2a0f0
+    active: true
+    scope: document
+    rule: 示例代码不应使用自定义组件进行展示。
+    feedback: 示例代码不适合使用自定义组件展示
+    createdAt: 2025-08-30T09:31:32.632Z

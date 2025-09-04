@@ -19,7 +19,7 @@ aigne run --path /path/to/your/project
 aigne run https://github.com/user/repo.git
 
 # Run a specific agent within a project
-aigne run --entry-agent mySpecificAgent
+aigne run mySpecificAgent
 
 # Start an interactive chat session with an agent
 aigne run --chat
@@ -27,24 +27,47 @@ aigne run --chat
 
 ## How It Works
 
-The `run` command follows a sequence of steps to prepare the environment and execute the agent:
+The `run` command follows a sequence of steps to prepare the environment and execute the agent. This process includes parsing the path, downloading remote packages if necessary, initializing the AIGNE engine, and then running the selected agent either once or in a chat loop.
 
-```mermaid
-flowchart TD
-    A["Start aigne run [path]"] --> B{"Is path a URL?"};
-    B -- "Yes" --> C["Download package to cache"];
-    C --> D["Extract package to execution directory"];
-    B -- "No" --> E["Use local path as execution directory"];
-    D --> F["Initialize AIGNE Engine"];
-    E --> F;
-    F -- "Load aigne.yaml, .env files" --> G["Select Entry Agent"];
-    G -- "--entry-agent or first available" --> H["Parse User Input"];
-    H -- "From CLI args, --input, or stdin" --> I{"--chat mode?"};
-    I -- "Yes" --> J["Run Interactive Chat Loop"];
-    I -- "No" --> K["Execute Agent Once"];
-    J --> L["Shutdown AIGNE"];
-    K --> L;
-    L --> M["End"];
+```d2
+direction: down
+
+"start": "Start aigne run"
+
+"check_path": "Is path a URL?" {
+  shape: diamond
+}
+
+"download": "Download & Extract Package"
+"use_local": "Use Local Path"
+
+"init": "Initialize AIGNE Engine\n(Load aigne.yaml, .env)"
+"select_agent": "Select Entry Agent"
+"parse_input": "Parse User Input\n(CLI args, --input, stdin)"
+
+"check_chat": "--chat mode?" {
+  shape: diamond
+}
+
+"chat_loop": "Run Interactive Chat Loop"
+"execute_once": "Execute Agent Once"
+
+"shutdown": "Shutdown AIGNE"
+"end": "End"
+
+start -> check_path
+check_path -> download: "Yes"
+check_path -> use_local: "No"
+download -> init
+use_local -> init
+init -> select_agent
+select_agent -> parse_input
+parse_input -> check_chat
+check_chat -> chat_loop: "Yes"
+check_chat -> execute_once: "No"
+chat_loop -> shutdown
+execute_once -> shutdown
+shutdown -> end
 ```
 
 ## Options
@@ -56,9 +79,9 @@ The `run` command supports a variety of options to customize its behavior.
 | Option | Description |
 |---|---|
 | `path` | Positional argument specifying the path to the agent's directory or a URL to an AIGNE project. Defaults to the current directory (`.`). |
-| `--entry-agent <name>` | The name of the agent to run. If not specified, AIGNE runs the first agent defined in the project. |
-| `--chat` | Runs the agent in an interactive chat loop in the terminal. This mode is ideal for conversational agents. |
-| `--cache-dir <dir>` | When running from a URL, this specifies a directory to download and cache the remote package. Defaults to `~/.aigne/`. |
+| `agent` | Positional argument specifying the name of the agent to run. If not provided, AIGNE presents a list of available agents or runs the default agent if one is configured. |
+| `--chat` | Runs the agent in an interactive chat loop in the terminal. This mode is ideal for conversational agents. Default: `false`. |
+| `--cache-dir <dir>` | When running from a URL, this specifies a directory to download and cache the remote package. Defaults to `~/.aigne/<hostname>/<pathname>`. |
 
 ### Model Configuration
 
@@ -78,7 +101,7 @@ The `run` command supports a variety of options to customize its behavior.
 | `--format <format>` | | Specifies the format of the input when reading from a file or stdin. Can be `json` or `yaml`. |
 | `--output <file>` | `-o` | Saves the agent's result to the specified file instead of printing to stdout. |
 | `--output-key <key>` | | The key in the agent's result object to save to the output file. Defaults to `output`. |
-| `--force` | | If the output file already exists, this option allows overwriting it. It also creates parent directories if they don't exist. |
+| `--force` | | If the output file already exists, this option allows overwriting it. It also creates parent directories if they don't exist. Default: `false`. |
 
 ### Other Options
 
@@ -99,7 +122,7 @@ aigne run --chat
 
 This will start a session where you can type messages and receive responses from the agent. You can type `/exit` to end the session or `/help` for a list of available commands.
 
-![Running a project in chat mode](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/run/run-default-template-project-in-chat-mode.png)
+![Running a project in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
 
 ### Providing Input from a File
 
@@ -113,7 +136,7 @@ aigne run --input @prompt.txt
 aigne run --document @document.md
 ```
 
-If the file is a JSON or YAML file, the CLI can parse it automatically based on the file extension. You can also explicitly specify the format with `--format`.
+If the file is a JSON or YAML file, the CLI can parse it automatically based on the file extension (`.json`, `.yaml`, `.yml`). You can also explicitly specify the format with `--format`.
 
 ```bash
 # AIGNE will parse data.json and map its keys to the agent's input schema

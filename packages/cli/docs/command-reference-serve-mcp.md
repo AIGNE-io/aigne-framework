@@ -4,7 +4,7 @@ labels: ["Reference"]
 
 # aigne serve-mcp
 
-The `aigne serve-mcp` command launches a local HTTP server to expose your AIGNE agents as services compliant with the Model Context Protocol (MCP). This enables seamless integration with external systems, allowing them to invoke your agents as standardized tools.
+The `aigne serve-mcp` command launches a local HTTP server to expose your AIGNE agents as services compliant with the Model Context Protocol (MCP). This enables integration with external systems, allowing them to invoke your agents as standardized tools.
 
 This command is essential for deploying agents in a service-oriented architecture, where other applications can consume their capabilities over the network.
 
@@ -20,19 +20,36 @@ When you run `aigne serve-mcp`, the CLI performs the following actions:
 
 Here is a diagram illustrating the request flow:
 
-```mermaid
-sequenceDiagram
-    participant Client as External System
-    participant Server as MCP Server (aigne serve-mcp)
-    participant AIGNE as AIGNE Engine
-    participant Agent as Target Agent
+```d2
+direction: down
 
-    Client->>+Server: POST /mcp (MCP request with tool_use)
-    Server->>+AIGNE: invoke(agent, input)
-    AIGNE->>+Agent: Executes with input
-    Agent-->>-AIGNE: Returns result
-    AIGNE-->>-Server: Provides result
-    Server-->>-Client: Streams MCP response (tool_result)
+"Client": {
+  shape: person
+  label: "External System"
+}
+
+"Server": {
+  shape: rectangle
+  label: "MCP Server"
+}
+
+"Engine": {
+  shape: rectangle
+  label: "AIGNE Engine"
+}
+
+"Agent": {
+  shape: rectangle
+  label: "Target Agent"
+}
+
+"Client" -> "Server": "1. POST /mcp (tool_use)"
+"Server" -> "Engine": "2. invoke(agent, input)"
+"Engine" -> "Agent": "3. Execute"
+"Agent" -> "Engine": "4. Result"
+"Engine" -> "Server": "5. Result"
+"Server" -> "Client": "6. Stream Response (tool_result)"
+
 ```
 
 ## Usage
@@ -68,6 +85,8 @@ Upon successful startup, you will see a confirmation message:
 ```
 MCP server is running on http://localhost:3000/mcp
 ```
+
+![MCP Service Running](../assets/run-mcp-service.png)
 
 ### Run on a Specific Port and Path
 

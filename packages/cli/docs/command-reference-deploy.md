@@ -23,19 +23,28 @@ aigne deploy --path <path-to-project> --endpoint <blocklet-server-endpoint>
 
 When you run `aigne deploy`, the CLI performs a series of automated tasks to prepare and upload your application. The process is designed to be interactive on the first run and fully automated for subsequent deployments.
 
-```mermaid
-flowchart TD
-    A["Start: aigne deploy"] --> B["Prepare Environment in .deploy folder"];
-    B -- "Copy project & template files" --> C["Install npm dependencies"];
-    C --> D{"Blocklet CLI installed?"};
-    D -- "No" --> E["Prompt user to install"];
-    E --> F["Install @blocklet/cli globally"];
-    F --> G;
-    D -- "Yes" --> G["Configure blocklet.yml"];
-    G -- "Prompt for name & create DID on first run" --> H["Bundle application with 'blocklet bundle'"];
-    H --> I["Deploy bundle to endpoint with 'blocklet deploy'"];
-    I --> J["Cleanup .deploy folder"];
-    J --> K["End: Deployment Complete"];
+```d2
+direction: down
+
+"start": "aigne deploy"
+"prepare": "1. Prepare Environment\n(in .deploy folder)"
+"install_deps": "2. Install Dependencies\n(npm install)"
+"check_cli": {
+  shape: diamond
+  label: "3. Blocklet CLI\nInstalled?"
+}
+"prompt_install": "Prompt user to install"
+"install_cli": "Install @blocklet/cli"
+"configure": "4. Configure blocklet.yml\n(name & DID)"
+"bundle": "5. Bundle Application\n(blocklet bundle)"
+"deploy": "6. Deploy to Endpoint\n(blocklet deploy)"
+"cleanup": "7. Cleanup\n(remove .deploy)"
+"end": "Deployment Complete"
+
+start -> prepare -> install_deps -> check_cli
+check_cli -> "Yes": configure
+check_cli -> "No": prompt_install -> install_cli -> configure
+configure -> bundle -> deploy -> cleanup -> end
 ```
 
 Here is a breakdown of the steps involved:

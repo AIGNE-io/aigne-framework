@@ -2,105 +2,68 @@
 labels: ["Reference"]
 ---
 
-# 贡献指南
+# 贡献
 
-欢迎为 `@aigne/cli` 做出贡献。无论是修复漏洞、完善文档，还是添加新功能，我们都非常感谢你的帮助。本指南将为你提供设置开发环境和提交贡献的必要步骤。
+我们欢迎您为 `@aigne/cli` 做出贡献！您的帮助对于保持其卓越至关重要。本指南提供了开始开发所需的一切，从设置环境到提交您的第一个拉取请求。
 
-`@aigne/cli` 包是 `aigne-framework` monorepo 的一部分，托管在 GitHub 上。在进行重大变更之前，建议先提交一个 issue 来讨论你的提案。
+该项目托管在 GitHub 的 [AIGNE-io/aigne-framework](https://github.com/AIGNE-io/aigne-framework) 上。如果您发现错误或有功能请求，请在我们的 [问题跟踪器](https://github.com/AIGNE-io/aigne-framework/issues) 上提交 issue。
 
-- **问题跟踪**：[https://github.com/AIGNE-io/aigne-framework/issues](https://github.com/AIGNE-io/aigne-framework/issues)
-- **源代码**：[https://github.com/AIGNE-io/aigne-framework](https://github.com/AIGNE-io/aigne-framework)
+## 开发设置
 
-## 开发环境设置
+首先，在 GitHub 上 fork 该仓库，然后将其克隆到本地计算机：
 
-开始前，你需要 fork 仓库，将其克隆到本地计算机，并安装依赖项。
+```bash
+git clone https://github.com/<YOUR_USERNAME>/aigne-framework.git
+cd aigne-framework/packages/cli
+```
 
-1.  **Fork 和克隆仓库**
+本项目使用 Bun 进行包管理。要安装依赖项，请运行：
 
-    首先，在 GitHub 上 fork `AIGNE-io/aigne-framework` 仓库。然后，将你 fork 的仓库克隆到本地计算机：
+```bash
+bun install
+```
 
-    ```bash
-    git clone https://github.com/YOUR_USERNAME/aigne-framework.git
-    cd aigne-framework
-    ```
+## 开发工作流
 
-2.  **安装依赖**
-
-    该项目采用 monorepo 结构。请从仓库的根目录安装所有依赖项。
-
-    ```bash
-    npm install
-    ```
-
-3.  **导航到 CLI 包**
-
-    所有针对 `@aigne/cli` 的工作都将在其特定的包目录中进行。
-
-    ```bash
-    # 假设该包位于 'packages' 目录中
-    cd packages/cli 
-    ```
-
-## 构建和测试
-
-该项目包含多个用于辅助开发的脚本，包括构建、代码检查和测试。
+`package.json` 文件包含多个用于辅助开发的脚本。在提交代码前，请务必运行这些检查，以确保代码符合项目标准。
 
 ### 构建代码
 
-源代码使用 TypeScript 编写，需要编译成 JavaScript。编译后的文件会输出到 `dist/` 目录中。
-
-要构建项目，请在 `@aigne/cli` 包目录下运行以下命令：
+要将 `src/` 目录下的 TypeScript 源代码编译为 `dist/` 目录下的 JavaScript，请运行：
 
 ```bash
-npm run build
-```
-
-### 代码检查
-
-我们使用 TypeScript 编译器（`tsc`）进行静态分析和类型错误检查。要运行代码检查程序：
-
-```bash
-npm run lint
+bun run build
 ```
 
 ### 运行测试
 
-该项目使用 `bun` 运行源文件测试，使用 `node` 的原生测试运行器运行模板测试。你可以一次性运行所有测试，也可以指定运行特定的测试套件。
-
-要运行完整的测试套件：
+该项目有一个全面的测试套件。要运行所有测试（包括核心源代码和项目模板的测试），请使用：
 
 ```bash
-npm run test
+bun run test
 ```
 
-仅运行源代码测试：
+### 代码检查
+
+我们使用 TypeScript 编译器（`tsc`）检查类型错误并确保代码质量。要运行代码检查工具，请使用以下命令：
 
 ```bash
-npm run test:src
+bun run lint
 ```
 
-仅运行项目模板测试：
+在提交更改前，请确保所有测试和代码检查均通过。
 
-```bash
-npm run test:templates
-```
+## 提交拉取请求
 
-## 提交变更
+更改准备就绪后，请按照以下步骤提交拉取请求：
 
-当你准备好提交变更后，请按照以下步骤提交 pull request。
-
-1.  **创建新分支**
-
-    为你的新功能或 bug 修复创建一个具有描述性的分支。
-
+1.  **新建一个分支** 用于您的功能开发或错误修复：
     ```bash
-    git checkout -b feature/my-new-feature
+    git checkout -b my-new-feature
     ```
-
-2.  **提交你的变更**
-
-    完成修改后，使用清晰、简洁的消息提交你的变更。
-
-3.  **推送并创建 Pull Request**
-
-    将你的分支推送到你 fork 的仓库，并针对官方 `AIGNE-io/aigne-framework` 仓库的 `main` 分支创建一个 pull request。请在 pull request 中详细描述你所做的变更。
+2.  **进行更改** 并使用描述性信息提交。
+3.  **将您的分支** 推送到您 fork 的仓库：
+    ```bash
+    git push origin my-new-feature
+    ```
+4.  **针对 `AIGNE-io/aigne-framework` 仓库的 `main` 分支发起一个拉取请求**。请为您的更改提供清晰的标题和描述。

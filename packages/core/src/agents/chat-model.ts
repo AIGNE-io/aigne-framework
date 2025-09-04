@@ -3,7 +3,7 @@ import { Ajv } from "ajv";
 import { v7 } from "uuid";
 import { z } from "zod";
 import { optionalize } from "../loader/schema.js";
-import { checkArguments, type PromiseOrValue } from "../utils/type-utils.js";
+import { checkArguments, type PromiseOrValue, pick } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
@@ -251,30 +251,49 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     data: FileUnionContent,
     options: AgentInvokeOptions,
   ): Promise<FileUnionContent> {
-    if (
-      (!input.fileOutputType || input.fileOutputType === FileOutputType.local) &&
-      data.type !== "local"
-    ) {
-      const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
-      await nodejs.fs.mkdir(dir, { recursive: true });
+    const fileOutputType = input.fileOutputType || FileOutputType.local;
 
-      const ext = data.mimeType?.split("/").pop();
-      const id = v7();
-      const filename = ext ? `${id}.${ext}` : id;
-      const path = nodejs.path.join(dir, filename);
-      if (data.type === "file") {
-        await nodejs.fs.writeFile(path, data.data, "base64");
-      } else if (data.type === "url") {
-        await this.downloadFile(data.url, path);
+    if (fileOutputType === data.type) return data;
+
+    const common = pick(data, "filename", "mimeType");
+
+    switch (fileOutputType) {
+      case FileOutputType.local: {
+        const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
+        await nodejs.fs.mkdir(dir, { recursive: true });
+
+        const ext = data.mimeType?.split("/").pop();
+        const id = v7();
+        const filename = ext ? `${id}.${ext}` : id;
+        const path = nodejs.path.join(dir, filename);
+        if (data.type === "file") {
+          await nodejs.fs.writeFile(path, data.data, "base64");
+        } else if (data.type === "url") {
+          await this.downloadFile(data.url)
+            .then((res) => res.body)
+            .then((body) => body && nodejs.fs.writeFile(path, body));
+        } else {
+          throw new Error(`Unexpected file type: ${data.type}`);
+        }
+
+        return { ...common, type: "local", path };
       }
+      case FileOutputType.file: {
+        let base64: string;
+        if (data.type === "local") {
+          base64 = await nodejs.fs.readFile(data.path, "base64");
+        } else if (data.type === "url") {
+          base64 = Buffer.from(await (await this.downloadFile(data.url)).arrayBuffer()).toBase64();
+        } else {
+          throw new Error(`Unexpected file type: ${data.type}`);
+        }
 
-      return { type: "local", path, mimeType: data.mimeType };
+        return { ...common, type: "file", data: base64 };
+      }
     }
-
-    return data;
   }
 
-  protected async downloadFile(url: string, path: string) {
+  protected async downloadFile(url: string) {
     const response = await fetch(url);
     if (!response.ok) {
       const text = await response.text().catch(() => null);
@@ -282,9 +301,8 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
         `Failed to download content from ${url}, ${response.status} ${response.statusText} ${text}`,
       );
     }
-    const { body } = response;
-    if (!body) return;
-    await nodejs.fs.writeFile(path, body);
+
+    return response;
   }
 }
 

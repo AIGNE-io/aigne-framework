@@ -1,4 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
+import { AIGNE } from "@aigne/core";
 import { v7 } from "uuid";
 import {
   type AgentProcessResult,
@@ -11,6 +12,7 @@ import {
   ChatModel,
   type ChatModelInput,
   type ChatModelOutput,
+  FileOutputType,
 } from "../../src/agents/chat-model.js";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
@@ -368,4 +370,47 @@ test("ChatModel should retry after network errors or structured output validatio
     .mockReturnValueOnce({ json: { name: 30 } })
     .mockReturnValueOnce({ json: { name: "Alice", age: 25 } });
   expect(await model.invoke(input)).toEqual({ json: { name: "Alice", age: 25 } });
+});
+
+test("ChatModel should save file to local", async () => {
+  const context = new AIGNE().newContext();
+  const model = new OpenAIChatModel({});
+
+  const result = await model.processDataType(
+    { messages: [] },
+    { type: "file", data: Buffer.from("test data").toString("base64") },
+    { context },
+  );
+  expect(result).toMatchInlineSnapshot(
+    { path: expect.any(String) },
+    `
+      {
+        "path": Any<String>,
+        "type": "local",
+      }
+    `,
+  );
+});
+
+test("ChatModel should download file", async () => {
+  const context = new AIGNE().newContext();
+  const model = new OpenAIChatModel({});
+
+  const fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce(new Response("test png file"));
+
+  const result = await model.processDataType(
+    { messages: [], fileOutputType: FileOutputType.file },
+    { type: "url", url: "https://www.example.com/test.png" },
+    { context },
+  );
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "data": "dGVzdCBwbmcgZmlsZQ==",
+      "type": "file",
+    }
+  `);
+
+  expect(fetchSpy).toHaveBeenCalledWith("https://www.example.com/test.png");
+
+  fetchSpy.mockRestore();
 });

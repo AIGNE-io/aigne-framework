@@ -23,6 +23,6 @@ await runWithAIGNE(agent, {
     modalities: ["text", "image"],
   },
   chatLoopOptions: {
-    welcome: "Draw an image of a lovely cat in the space",
+    welcome: "You can ask me to draw anything! or edit image by @/path/to/image",
   },
 });

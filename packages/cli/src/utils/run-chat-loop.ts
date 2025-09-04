@@ -4,6 +4,7 @@ import type { FileUnionContent, Message, UserAgent } from "@aigne/core";
 import { isNonNullable, omit } from "@aigne/core/utils/type-utils.js";
 import inquirer from "inquirer";
 import { TerminalTracer } from "../tracer/terminal.js";
+import { getMimeTypeFromFilename } from "./mime-type.js";
 
 export const DEFAULT_CHAT_INPUT_KEY = "message";
 
@@ -90,13 +91,18 @@ async function extractFilesFromQuestion(
     await Promise.all(
       paths.map<Promise<{ path: string; file: FileUnionContent } | undefined>>(async (path) => {
         const p = path.slice(1);
+        const filename = basename(p);
+
         const data = await readFile(p, "base64").catch((error) => {
           if (error.code === "ENOENT") return null;
           throw error;
         });
         if (!data) return;
 
-        return { path, file: { type: "file", data, filename: basename(p) } };
+        return {
+          path,
+          file: { type: "file", data, filename, mimeType: getMimeTypeFromFilename(filename) },
+        };
       }),
     )
   ).filter(isNonNullable);

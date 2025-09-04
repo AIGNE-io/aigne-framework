@@ -27,6 +27,7 @@ import z, {
   ZodType,
   ZodUnknown,
 } from "zod";
+import { getMimeTypeFromFilename } from "./mime-type.js";
 
 export type InferArgv<T> = T extends Argv<infer U> ? U : never;
 
@@ -202,14 +203,6 @@ export function withAgentInputSchema(yargs: Argv, agent: Agent) {
   return withRunAgentCommonOptions(yargs);
 }
 
-const MIME_TYPES: { [key: string]: string } = {
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  gif: "image/gif",
-  webp: "image/webp",
-};
-
 export async function parseAgentInput(i: Message & AgentRunCommonOptions, agent: Agent) {
   const inputSchema: { [key: string]: ZodType } =
     agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
@@ -235,8 +228,7 @@ export async function parseAgentInput(i: Message & AgentRunCommonOptions, agent:
     for (const file of i.inputFile ?? []) {
       const raw = await readFile(file.replace(/^@/, ""), "base64");
       const filename = basename(file);
-      const ext = extname(file).toLowerCase();
-      const mimeType = MIME_TYPES[ext.slice(1)] || "application/octet-stream";
+      const mimeType = getMimeTypeFromFilename(filename) || "application/octet-stream";
       files.push({ type: "file", data: raw, filename, mimeType });
     }
 

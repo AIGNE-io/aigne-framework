@@ -43,7 +43,7 @@ test("AIAgent basic creation", async () => {
       messages: expect.arrayContaining([
         expect.objectContaining({
           role: "user",
-          content: "What is the weather today?",
+          content: [{ type: "text", text: "What is the weather today?" }],
         }),
       ]),
     }),

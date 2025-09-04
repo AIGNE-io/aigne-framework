@@ -8,6 +8,7 @@ import {
   type ChatModelOptions,
   type ChatModelOutput,
   type ChatModelOutputUsage,
+  type FileUnionContent,
   type Message,
   safeParseJSON,
 } from "@aigne/core";
@@ -21,7 +22,9 @@ import {
   isNonNullable,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import Anthropic, { type ClientOptions } from "@anthropic-ai/sdk";
+import type { Base64ImageSource } from "@anthropic-ai/sdk/resources";
 import type {
   ContentBlockParam,
   MessageParam,
@@ -184,7 +187,7 @@ export class AnthropicChatModel extends ChatModel {
       top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       // TODO: make dynamic based on model https://docs.anthropic.com/en/docs/about-claude/models/all-models
       max_tokens: this.getMaxTokens(model),
-      ...convertMessages(input),
+      ...(await convertMessages(input)),
       ...convertTools({ ...input, disableParallelToolUse }),
     };
 
@@ -363,10 +366,10 @@ export class AnthropicChatModel extends ChatModel {
   }
 }
 
-function convertMessages({ messages, responseFormat, tools }: ChatModelInput): {
+async function convertMessages({ messages, responseFormat, tools }: ChatModelInput): Promise<{
   messages: MessageParam[];
   system?: string;
-} {
+}> {
   const systemMessages: string[] = [];
   const msgs: MessageParam[] = [];
 
@@ -392,7 +395,7 @@ function convertMessages({ messages, responseFormat, tools }: ChatModelInput): {
     } else if (msg.role === "user") {
       if (!msg.content) throw new Error("User message must have content");
 
-      msgs.push({ role: "user", content: convertContent(msg.content) });
+      msgs.push({ role: "user", content: await convertContent(msg.content) });
     } else if (msg.role === "agent") {
       if (msg.toolCalls?.length) {
         msgs.push({
@@ -405,7 +408,7 @@ function convertMessages({ messages, responseFormat, tools }: ChatModelInput): {
           })),
         });
       } else if (msg.content) {
-        msgs.push({ role: "assistant", content: convertContent(msg.content) });
+        msgs.push({ role: "assistant", content: await convertContent(msg.content) });
       } else {
         throw new Error("Agent message must have content or toolCalls");
       }
@@ -431,18 +434,51 @@ function convertMessages({ messages, responseFormat, tools }: ChatModelInput): {
   return { messages: msgs, system };
 }
 
-function convertContent(content: ChatModelInputMessageContent): string | ContentBlockParam[] {
+async function convertContent(
+  content: ChatModelInputMessageContent,
+): Promise<string | ContentBlockParam[]> {
   if (typeof content === "string") return content;
 
   if (Array.isArray(content)) {
-    return content.map((item) =>
-      item.type === "image_url"
-        ? { type: "image", source: { type: "url", url: item.url } }
-        : { type: "text", text: item.text },
+    return Promise.all(
+      content.map<Promise<ContentBlockParam>>(async (item) => {
+        switch (item.type) {
+          case "text":
+            return { type: "text", text: item.text };
+          case "url":
+            return { type: "image", source: { type: "url", url: item.url } };
+          case "file":
+            return {
+              type: "image",
+              source: { type: "base64", data: item.data, media_type: getMimeType(item) },
+            };
+          case "local":
+            return {
+              type: "image",
+              source: {
+                type: "base64",
+                data: await nodejs.fs.readFile(item.path, "base64"),
+                media_type: getMimeType(item),
+              },
+            };
+        }
+      }),
     );
   }
 
   throw new Error("Invalid chat message content");
+}
+
+function getMimeType(file: FileUnionContent): Base64ImageSource["media_type"] {
+  let str = file.mimeType || file.filename;
+  if (!str && file.type === "url") str = file.url;
+
+  if (str?.match(/jpe?g/)) return "image/jpeg";
+  if (str?.match(/png/)) return "image/png";
+  if (str?.match(/gif/)) return "image/gif";
+  if (str?.match(/webp/)) return "image/webp";
+
+  throw new Error(`Unsupported image mime type: ${file.mimeType || file.filename}`);
 }
 
 function convertTools({

@@ -1,0 +1,34 @@
+{
+  "name": "@aigne/example-image",
+  "version": "0.0.0",
+  "description": "A demonstration of using AIGNE Framework for image generating or editing.",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/image",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bin": "index.ts",
+  "files": [
+    ".env.local.example",
+    "*.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "bun run index.ts",
+    "lint": "tsc --noEmit",
+    "test:llm": "exit 0"
+  },
+  "dependencies": {
+    "@aigne/agent-library": "workspace:^",
+    "@aigne/cli": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/default-memory": "workspace:^",
+    "@aigne/fs-memory": "workspace:^"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
+    "@types/bun": "^1.2.18"
+  }
+}

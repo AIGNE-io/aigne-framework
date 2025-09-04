@@ -10,15 +10,30 @@ exports[`Build first agent: setup memory for client agent 1`] = `
         "role": "system",
       },
       {
-        "content": "What is the crypto price of ABT/USD on coinbase?",
+        "content": [
+          {
+            "text": "What is the crypto price of ABT/USD on coinbase?",
+            "type": "text",
+          },
+        ],
         "role": "user",
       },
       {
-        "content": "The current price of ABT/USD on Coinbase is $0.9684.",
+        "content": [
+          {
+            "text": "The current price of ABT/USD on Coinbase is $0.9684.",
+            "type": "text",
+          },
+        ],
         "role": "agent",
       },
       {
-        "content": "What question did I just ask?",
+        "content": [
+          {
+            "text": "What question did I just ask?",
+            "type": "text",
+          },
+        ],
         "role": "user",
       },
     ],

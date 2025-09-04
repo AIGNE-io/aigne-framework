@@ -1,10 +1,17 @@
 import { fstat } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { extname } from "node:path";
+import { basename, extname } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
 import { availableModels } from "@aigne/aigne-hub";
-import { type Agent, AIAgent, DEFAULT_OUTPUT_KEY, type Message, readAllString } from "@aigne/core";
+import {
+  type Agent,
+  AIAgent,
+  DEFAULT_OUTPUT_KEY,
+  type FileUnionContent,
+  type Message,
+  readAllString,
+} from "@aigne/core";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { pick, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { parse } from "yaml";
@@ -81,6 +88,11 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
       type: "string",
       array: true,
       alias: "i",
+    })
+    .option("input-file", {
+      describe: "Input files to the agent",
+      type: "string",
+      array: true,
     })
     .option("format", {
       describe: "Input format for the agent (available: text, json, yaml default: text)",
@@ -190,10 +202,15 @@ export function withAgentInputSchema(yargs: Argv, agent: Agent) {
   return withRunAgentCommonOptions(yargs);
 }
 
-export async function parseAgentInput(
-  i: Message & { input?: string[]; format?: string },
-  agent: Agent,
-) {
+const MIME_TYPES: { [key: string]: string } = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  gif: "image/gif",
+  webp: "image/webp",
+};
+
+export async function parseAgentInput(i: Message & AgentRunCommonOptions, agent: Agent) {
   const inputSchema: { [key: string]: ZodType } =
     agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
 
@@ -212,6 +229,19 @@ export async function parseAgentInput(
       }),
     ),
   );
+
+  if (agent instanceof AIAgent && agent.fileInputKey) {
+    const files: FileUnionContent[] = [];
+    for (const file of i.inputFile ?? []) {
+      const raw = await readFile(file.replace(/^@/, ""), "base64");
+      const filename = basename(file);
+      const ext = extname(file).toLowerCase();
+      const mimeType = MIME_TYPES[ext.slice(1)] || "application/octet-stream";
+      files.push({ type: "file", data: raw, filename, mimeType });
+    }
+
+    Object.assign(input, { [agent.fileInputKey]: files });
+  }
 
   const rawInput =
     i.input ||

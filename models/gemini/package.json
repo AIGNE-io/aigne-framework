@@ -45,7 +45,9 @@
   },
   "dependencies": {
     "@aigne/openai": "workspace:^",
+    "@aigne/platform-helpers": "workspace:^",
     "@google/genai": "^1.15.0",
+    "uuid": "^11.1.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

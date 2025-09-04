@@ -1,4 +1,5 @@
 import type { Message, UserAgent } from "@aigne/core";
+import { omit } from "@aigne/core/utils/type-utils.js";
 import inquirer from "inquirer";
 import { TerminalTracer } from "../tracer/terminal.js";
 
@@ -9,7 +10,10 @@ export interface ChatLoopOptions {
   welcome?: string;
   defaultQuestion?: string;
   inputKey?: string;
+  fileInputKey?: string;
   outputKey?: string;
+  dataOutputKey?: string;
+  input?: Message;
 }
 
 export async function runChatLoopInTerminal(
@@ -23,7 +27,10 @@ export async function runChatLoopInTerminal(
   if (options?.welcome) console.log(options.welcome);
 
   if (initialCall) {
-    await callAgent(userAgent, initialCall, { ...options });
+    await callAgent(userAgent, initialCall, options);
+    if (options.input && options.fileInputKey) {
+      options.input = omit(options.input, options.fileInputKey);
+    }
   }
 
   for (let i = 0; ; i++) {
@@ -53,7 +60,10 @@ export async function runChatLoopInTerminal(
       continue;
     }
 
-    await callAgent(userAgent, question, { ...options });
+    await callAgent(userAgent, question, options);
+    if (options.input && options.fileInputKey) {
+      options.input = omit(options.input, options.fileInputKey);
+    }
   }
 }
 
@@ -62,7 +72,9 @@ async function callAgent(userAgent: UserAgent, input: Message | string, options:
 
   await tracer.run(
     userAgent,
-    typeof input === "string" ? { [options.inputKey || DEFAULT_CHAT_INPUT_KEY]: input } : input,
+    typeof input === "string"
+      ? { ...options.input, [options.inputKey || DEFAULT_CHAT_INPUT_KEY]: input }
+      : { ...options.input, ...input },
   );
 }
 

@@ -76,7 +76,12 @@ exports[`AIGNEClient should return correct process options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -240,7 +245,12 @@ exports[`AIGNEClient should return correct process options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -404,7 +414,12 @@ exports[`AIGNEClient should return correct process options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -568,7 +583,12 @@ exports[`AIGNEClient should return correct process options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -732,7 +752,12 @@ exports[`AIGNEClient should return correct process options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -877,7 +902,12 @@ exports[`AIGNEClient should return error with options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -991,7 +1021,12 @@ exports[`AIGNEClient should return error with options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -1105,7 +1140,12 @@ exports[`AIGNEClient should return error with options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -1219,7 +1259,12 @@ exports[`AIGNEClient should return error with options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -1333,7 +1378,12 @@ exports[`AIGNEClient should return error with options {
       "input": {
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -1407,15 +1457,30 @@ exports[`AIGNEClient should support custom memory for client agent 2`] = `
   {
     "messages": [
       {
-        "content": "Hello, I'm Bob!",
+        "content": [
+          {
+            "text": "Hello, I'm Bob!",
+            "type": "text",
+          },
+        ],
         "role": "user",
       },
       {
-        "content": "Hello Bob, How can I help you?",
+        "content": [
+          {
+            "text": "Hello Bob, How can I help you?",
+            "type": "text",
+          },
+        ],
         "role": "agent",
       },
       {
-        "content": "My name is?",
+        "content": [
+          {
+            "text": "My name is?",
+            "type": "text",
+          },
+        ],
         "role": "user",
       },
     ],

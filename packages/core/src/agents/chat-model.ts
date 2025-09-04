@@ -1,5 +1,8 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Ajv } from "ajv";
+import { v7 } from "uuid";
 import { z } from "zod";
+import { optionalize } from "../loader/schema.js";
 import { checkArguments, type PromiseOrValue } from "../utils/type-utils.js";
 import {
   Agent,
@@ -242,6 +245,47 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>>;
+
+  async processDataType(
+    input: ChatModelInput,
+    data: FileUnionContent,
+    options: AgentInvokeOptions,
+  ): Promise<FileUnionContent> {
+    if (
+      (!input.fileOutputType || input.fileOutputType === FileOutputType.local) &&
+      data.type !== "local"
+    ) {
+      const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
+      await nodejs.fs.mkdir(dir, { recursive: true });
+
+      const ext = data.mimeType?.split("/").pop();
+      const id = v7();
+      const filename = ext ? `${id}.${ext}` : id;
+      const path = nodejs.path.join(dir, filename);
+      if (data.type === "file") {
+        await nodejs.fs.writeFile(path, data.data, "base64");
+      } else if (data.type === "url") {
+        await this.downloadFile(data.url, path);
+      }
+
+      return { type: "local", path, mimeType: data.mimeType };
+    }
+
+    return data;
+  }
+
+  protected async downloadFile(url: string, path: string) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      const text = await response.text().catch(() => null);
+      throw new Error(
+        `Failed to download content from ${url}, ${response.status} ${response.statusText} ${text}`,
+      );
+    }
+    const { body } = response;
+    if (!body) return;
+    await nodejs.fs.writeFile(path, body);
+  }
 }
 
 /**
@@ -268,6 +312,8 @@ export interface ChatModelInput extends Message {
    * Specifies the expected response format
    */
   responseFormat?: ChatModelInputResponseFormat;
+
+  fileOutputType?: FileOutputType;
 
   /**
    * List of tools available for the model to use
@@ -337,7 +383,7 @@ export interface ChatModelInputMessage {
  *
  * Can be a simple string, or a mixed array of text and image content
  */
-export type ChatModelInputMessageContent = string | (TextContent | ImageUrlContent)[];
+export type ChatModelInputMessageContent = string | UnionContent[];
 
 /**
  * Text content type
@@ -346,26 +392,81 @@ export type ChatModelInputMessageContent = string | (TextContent | ImageUrlConte
  */
 export type TextContent = { type: "text"; text: string };
 
+export const textContentSchema = z.object({
+  type: z.literal("text"),
+  text: z.string(),
+});
+
+export interface FileContentBase {
+  filename?: string;
+  mimeType?: string;
+}
+
+export const fileContentBaseSchema = z.object({
+  filename: optionalize(z.string()),
+  mimeType: optionalize(z.string()),
+});
+
 /**
  * Image URL content type
  *
  * Used for image parts of message content, referencing images via URL
  */
-export type ImageUrlContent = { type: "image_url"; url: string };
+export interface UrlContent extends FileContentBase {
+  type: "url";
+  url: string;
+}
+
+export const urlContentSchema = fileContentBaseSchema.extend({
+  type: z.literal("url"),
+  url: z.string(),
+});
+
+export interface FileContent extends FileContentBase {
+  type: "file";
+  data: string;
+}
+
+export const fileContentSchema = fileContentBaseSchema.extend({
+  type: z.literal("file"),
+  data: z.string(),
+});
+
+export interface LocalContent extends FileContentBase {
+  type: "local";
+  path: string;
+}
+
+export const localContentSchema = fileContentBaseSchema.extend({
+  type: z.literal("local"),
+  path: z.string(),
+});
+
+export type FileUnionContent = LocalContent | UrlContent | FileContent;
+
+export const fileUnionContentSchema = z.discriminatedUnion("type", [
+  localContentSchema,
+  urlContentSchema,
+  fileContentSchema,
+]);
+
+export const fileUnionContentsSchema = z.union([
+  fileUnionContentSchema,
+  z.array(fileUnionContentSchema),
+]);
+
+export type UnionContent = TextContent | FileUnionContent;
+
+export const unionContentSchema = z.discriminatedUnion("type", [
+  textContentSchema,
+  localContentSchema,
+  urlContentSchema,
+  fileContentSchema,
+]);
 
 const chatModelInputMessageSchema = z.object({
   role: z.union([z.literal("system"), z.literal("user"), z.literal("agent"), z.literal("tool")]),
-  content: z
-    .union([
-      z.string(),
-      z.array(
-        z.union([
-          z.object({ type: z.literal("text"), text: z.string() }),
-          z.object({ type: z.literal("image_url"), url: z.string() }),
-        ]),
-      ),
-    ])
-    .optional(),
+  content: z.union([z.string(), z.array(unionContentSchema)]).optional(),
   toolCalls: z
     .array(
       z.object({
@@ -483,6 +584,8 @@ const chatModelInputToolChoiceSchema = z.union([
   chatModelInputToolSchema,
 ]);
 
+export type Modality = "text" | "image" | "audio";
+
 /**
  * Model-specific configuration options
  *
@@ -518,6 +621,8 @@ export interface ChatModelOptions {
    * Whether to allow parallel tool calls
    */
   parallelToolCalls?: boolean;
+
+  modalities?: Modality[];
 }
 
 const chatModelOptionsSchema = z.object({
@@ -527,6 +632,7 @@ const chatModelOptionsSchema = z.object({
   frequencyPenalty: z.number().optional(),
   presencePenalty: z.number().optional(),
   parallelToolCalls: z.boolean().optional().default(true),
+  modalities: z.array(z.enum(["text", "image", "audio"])).optional(),
 });
 
 const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({
@@ -575,6 +681,13 @@ export interface ChatModelOutput extends Message {
    * Model name or version used
    */
   model?: string;
+
+  files?: FileUnionContent[];
+}
+
+export enum FileOutputType {
+  local = "local",
+  file = "file",
 }
 
 /**
@@ -656,4 +769,5 @@ const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
   toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
   usage: chatModelOutputUsageSchema.optional(),
   model: z.string().optional(),
+  files: z.array(fileUnionContentSchema).optional(),
 });

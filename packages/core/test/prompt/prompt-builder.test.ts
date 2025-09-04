@@ -50,7 +50,7 @@ test("PromptBuilder should build messages correctly", async () => {
     },
     {
       role: "user",
-      content: "Hello",
+      content: [{ type: "text", text: "Hello" }],
     },
   ]);
 
@@ -328,12 +328,12 @@ test("PromptBuilder from MCP prompt result", async () => {
         {
           role: "user",
           content: [
-            { type: "image_url", url: Buffer.from("FAKE IMAGE FROM RESOURCE").toString("base64") },
+            { type: "url", url: Buffer.from("FAKE IMAGE FROM RESOURCE").toString("base64") },
           ],
         },
         {
           role: "user",
-          content: [{ type: "image_url", url: Buffer.from("FAKE IMAGE").toString("base64") }],
+          content: [{ type: "url", url: Buffer.from("FAKE IMAGE").toString("base64") }],
         },
         {
           role: "agent",

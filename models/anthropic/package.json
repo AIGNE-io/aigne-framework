@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@aigne/core": "workspace:^",
+    "@aigne/platform-helpers": "workspace:^",
     "@anthropic-ai/sdk": "^0.56.0",
     "ajv": "^8.17.1",
     "zod": "^3.25.67"

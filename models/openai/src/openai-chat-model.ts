@@ -1,4 +1,5 @@
 import {
+  type AgentInvokeOptions,
   type AgentProcessResult,
   type AgentResponse,
   type AgentResponseChunk,
@@ -21,9 +22,11 @@ import {
   isNonNullable,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Ajv } from "ajv";
 import type { ClientOptions, OpenAI } from "openai";
 import type {
+  ChatCompletionContentPart,
   ChatCompletionMessageParam,
   ChatCompletionTool,
   ResponseFormatJSONSchema,
@@ -179,7 +182,10 @@ export class OpenAIChatModel extends ChatModel {
    * @param input The input to process
    * @returns The generated response
    */
-  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+  override process(
+    input: ChatModelInput,
+    _options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     return this._process(input);
   }
 
@@ -449,36 +455,52 @@ const mapRole = createRoleMapper(STANDARD_ROLE_MAP);
 export async function contentsFromInputMessages(
   messages: ChatModelInputMessage[],
 ): Promise<ChatCompletionMessageParam[]> {
-  return messages.map(
-    (i) =>
-      ({
-        role: mapRole(i.role),
-        content:
-          typeof i.content === "string"
-            ? i.content
-            : i.content
-                ?.map((c) => {
-                  if (c.type === "text") {
-                    return { type: "text" as const, text: c.text };
-                  }
-                  if (c.type === "image_url") {
-                    return {
-                      type: "image_url" as const,
-                      image_url: { url: c.url },
-                    };
-                  }
-                })
-                .filter(isNonNullable),
-        tool_calls: i.toolCalls?.map((i) => ({
-          ...i,
-          function: {
-            ...i.function,
-            arguments: JSON.stringify(i.function.arguments),
-          },
-        })),
-        tool_call_id: i.toolCallId,
-        name: i.name,
-      }) as ChatCompletionMessageParam,
+  return Promise.all(
+    messages.map(
+      async (i) =>
+        ({
+          role: mapRole(i.role),
+          content:
+            typeof i.content === "string"
+              ? i.content
+              : i.content &&
+                (
+                  await Promise.all(
+                    i.content.map<Promise<ChatCompletionContentPart>>(async (c) => {
+                      switch (c.type) {
+                        case "text":
+                          return { type: "text", text: c.text };
+                        case "url":
+                          return { type: "image_url", image_url: { url: c.url } };
+                        case "file":
+                          return {
+                            type: "file",
+                            file: { file_data: c.data, filename: c.filename },
+                          };
+                        case "local": {
+                          return {
+                            type: "file",
+                            file: {
+                              file_data: await nodejs.fs.readFile(c.path, "base64"),
+                              filename: c.filename,
+                            },
+                          };
+                        }
+                      }
+                    }),
+                  )
+                ).filter(isNonNullable),
+          tool_calls: i.toolCalls?.map((i) => ({
+            ...i,
+            function: {
+              ...i.function,
+              arguments: JSON.stringify(i.function.arguments),
+            },
+          })),
+          tool_call_id: i.toolCallId,
+          name: i.name,
+        }) as ChatCompletionMessageParam,
+    ),
   );
 }
 

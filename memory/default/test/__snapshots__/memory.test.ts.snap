@@ -11,7 +11,12 @@ Please answer in zh."
     "role": "system",
   },
   {
-    "content": "I like blue color",
+    "content": [
+      {
+        "text": "I like blue color",
+        "type": "text",
+      },
+    ],
     "role": "user",
   },
 ]
@@ -28,15 +33,30 @@ Please answer in zh."
     "role": "system",
   },
   {
-    "content": "I like blue color",
+    "content": [
+      {
+        "text": "I like blue color",
+        "type": "text",
+      },
+    ],
     "role": "user",
   },
   {
-    "content": "Great, the blue color is nice!",
+    "content": [
+      {
+        "text": "Great, the blue color is nice!",
+        "type": "text",
+      },
+    ],
     "role": "agent",
   },
   {
-    "content": "I also like red color",
+    "content": [
+      {
+        "text": "I also like red color",
+        "type": "text",
+      },
+    ],
     "role": "user",
   },
 ]

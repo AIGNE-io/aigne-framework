@@ -21,9 +21,15 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
       },
       "event": "agentStarted",
       "input": {
+        "fileOutputType": undefined,
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],
@@ -186,9 +192,15 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       },
       "event": "agentStarted",
       "input": {
+        "fileOutputType": undefined,
         "messages": [
           {
-            "content": "hello",
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
             "role": "user",
           },
         ],

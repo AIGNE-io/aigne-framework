@@ -4,6 +4,7 @@ import { isatty } from "node:tty";
 import { exists } from "@aigne/agent-library/utils/fs.js";
 import {
   type Agent,
+  AIAgent,
   type AIGNE,
   type ChatModelOptions,
   DEFAULT_OUTPUT_KEY,
@@ -49,7 +50,11 @@ export async function parseAgentInputByCommander(
     Object.assign(
       input,
       typeof defaultInput === "string"
-        ? { [options?.inputKey || DEFAULT_CHAT_INPUT_KEY]: defaultInput }
+        ? {
+            [options?.inputKey ||
+              (agent instanceof AIAgent ? agent.inputKey : undefined) ||
+              DEFAULT_CHAT_INPUT_KEY]: defaultInput,
+          }
         : defaultInput,
     );
   }
@@ -126,10 +131,12 @@ export async function runAgentWithAIGNE(
   agent: Agent,
   {
     outputKey,
+    fileOutputKey,
     chatLoopOptions,
     ...options
   }: {
     outputKey?: string;
+    fileOutputKey?: string;
     chatLoopOptions?: ChatLoopOptions;
     input?: Message;
   } & Omit<AgentRunCommonOptions, "input"> = {},
@@ -160,12 +167,14 @@ export async function runAgentWithAIGNE(
     await runChatLoopInTerminal(userAgent, {
       ...chatLoopOptions,
       outputKey,
+      fileInputKey: agent instanceof AIAgent ? agent.fileInputKey : undefined,
+      input: options.input,
     });
 
     return;
   }
 
-  const tracer = new TerminalTracer(aigne.newContext(), { outputKey });
+  const tracer = new TerminalTracer(aigne.newContext(), { outputKey, fileOutputKey });
 
   const { result } = await tracer.run(agent, options.input ?? {});
 

@@ -8,6 +8,65 @@ We welcome contributions to `@aigne/cli`! Your help is essential for keeping it 
 
 The project is hosted on GitHub at [AIGNE-io/aigne-framework](https://github.com/AIGNE-io/aigne-framework). If you find a bug or have a feature request, please open an issue on our [issue tracker](https://github.com/AIGNE-io/aigne-framework/issues).
 
+## Contribution Workflow
+
+The following diagram illustrates the typical workflow for contributing to the project.
+
+```d2
+direction: down
+
+GitHub-Repo: {
+  label: "AIGNE-io/aigne-framework"
+  shape: package
+}
+
+Your-Fork: {
+  label: "<YOUR_USERNAME>/aigne-framework"
+  shape: package
+}
+
+Local-Machine: {
+  label: "Local Machine"
+  shape: rectangle
+
+  New-Branch: {
+    label: "Feature Branch"
+    shape: rectangle
+  }
+
+  Develop: {
+    label: "Code & Commit"
+    shape: rectangle
+  }
+
+  Checks: {
+    label: "Run Tests & Lint"
+    shape: rectangle
+  }
+}
+
+Pull-Request: {
+  label: "Pull Request"
+  shape: rectangle
+}
+
+Review-Merge: {
+  label: "Code Review & Merge"
+  shape: rectangle
+}
+
+GitHub-Repo -> Your-Fork: "1. Fork"
+Your-Fork -> Local-Machine: "2. Clone"
+Local-Machine -> Local-Machine.New-Branch: "3. Create branch"
+Local-Machine.New-Branch -> Local-Machine.Develop: "4. Make changes"
+Local-Machine.Develop -> Local-Machine.Checks: "5. Validate changes"
+Local-Machine.Checks -> Your-Fork: "6. Push changes"
+Your-Fork -> Pull-Request: "7. Create PR"
+Pull-Request -> GitHub-Repo: "Submit to main branch"
+GitHub-Repo -> Review-Merge: "8. Review & Merge"
+
+```
+
 ## Development Setup
 
 To get started, first fork the repository on GitHub and then clone it to your local machine:
@@ -23,33 +82,16 @@ This project uses Bun for package management. To install the dependencies, run:
 bun install
 ```
 
-## Development Workflow
+## Development Scripts
 
 The `package.json` file contains several scripts to help with development. It's important to run these checks before submitting your code to ensure it meets the project's standards.
 
-### Building the Code
-
-To compile the TypeScript source code from the `src/` directory into JavaScript in the `dist/` directory, run:
-
-```bash
-bun run build
-```
-
-### Running Tests
-
-The project has a comprehensive test suite. To run all tests, including those for the core source code and project templates, use:
-
-```bash
-bun run test
-```
-
-### Linting
-
-We use the TypeScript compiler (`tsc`) to check for type errors and ensure code quality. To run the linter, use the following command:
-
-```bash
-bun run lint
-```
+| Script | Description |
+|---|---|
+| `bun run build` | Compiles the TypeScript source from `src/` into JavaScript in `dist/`. |
+| `bun run test` | Runs the complete test suite for source code and templates. |
+| `bun run lint` | Checks for type errors using the TypeScript compiler (`tsc`). |
+| `bun run clean` | Removes the `dist` and `coverage` directories. |
 
 Please ensure all tests and lint checks pass before submitting your changes.
 

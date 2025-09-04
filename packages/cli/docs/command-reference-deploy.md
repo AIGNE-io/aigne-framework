@@ -2,8 +2,6 @@
 labels: ["Reference"]
 ---
 
-# aigne deploy
-
 The `aigne deploy` command packages and deploys an AIGNE application as a Blocklet to a specified endpoint. This process automates the configuration, bundling, and deployment steps required to run your agent in a production environment.
 
 ## Usage
@@ -26,25 +24,83 @@ When you run `aigne deploy`, the CLI performs a series of automated tasks to pre
 ```d2
 direction: down
 
-"start": "aigne deploy"
-"prepare": "1. Prepare Environment\n(in .deploy folder)"
-"install_deps": "2. Install Dependencies\n(npm install)"
-"check_cli": {
-  shape: diamond
-  label: "3. Blocklet CLI\nInstalled?"
+start: {
+  label: "aigne deploy\n--path <...>\n--endpoint <...>"
+  shape: step
 }
-"prompt_install": "Prompt user to install"
-"install_cli": "Install @blocklet/cli"
-"configure": "4. Configure blocklet.yml\n(name & DID)"
-"bundle": "5. Bundle Application\n(blocklet bundle)"
-"deploy": "6. Deploy to Endpoint\n(blocklet deploy)"
-"cleanup": "7. Cleanup\n(remove .deploy)"
-"end": "Deployment Complete"
 
-start -> prepare -> install_deps -> check_cli
+prepare: {
+  label: "1. Prepare Environment"
+  shape: rectangle
+  
+  sub-tasks: {
+    grid-columns: 1
+    "Create .deploy dir": {}
+    "Copy project & template files": {}
+    "Run npm install": {}
+  }
+}
+
+check_cli: {
+  label: "2. Check @blocklet/cli"
+  shape: diamond
+}
+
+prompt_install: {
+  label: "Prompt user to install"
+  shape: parallelogram
+}
+
+install_cli: {
+  label: "Install @blocklet/cli"
+  shape: rectangle
+}
+
+configure: {
+  label: "3. Configure Blocklet"
+  shape: rectangle
+  
+  sub-tasks: {
+    grid-columns: 1
+    "Read ~/.aigne/deployed.yaml": {}
+    "Prompt for name (if new)": {}
+    "Create DID (if new)": {}
+    "Update blocklet.yml": {}
+    "Save info to deployed.yaml": {}
+  }
+}
+
+bundle: {
+  label: "4. Bundle Application\n(blocklet bundle)"
+  shape: rectangle
+}
+
+deploy: {
+  label: "5. Deploy to Endpoint\n(blocklet deploy)"
+  shape: rectangle
+}
+
+cleanup: {
+  label: "6. Cleanup\n(remove .deploy dir)"
+  shape: rectangle
+}
+
+end: {
+  label: "Deployment Complete"
+  shape: oval
+  style.fill: "#d4edda"
+}
+
+start -> prepare
+prepare -> check_cli
 check_cli -> "Yes": configure
-check_cli -> "No": prompt_install -> install_cli -> configure
-configure -> bundle -> deploy -> cleanup -> end
+check_cli -> "No": prompt_install
+prompt_install -> install_cli
+install_cli -> configure
+configure -> bundle
+bundle -> deploy
+deploy -> cleanup
+cleanup -> end
 ```
 
 Here is a breakdown of the steps involved:

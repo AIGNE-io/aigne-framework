@@ -15,40 +15,62 @@ When you run `aigne serve-mcp`, the CLI performs the following actions:
 1.  It loads the AIGNE project configuration from the specified path.
 2.  It identifies the agents designated for MCP exposure (typically defined in your `aigne.yaml` file).
 3.  It starts an Express.js web server that listens for HTTP requests.
-4.  Each designated agent is registered as a "tool" within the MCP server instance.
-5.  The server listens for `POST` requests at the configured endpoint (e.g., `/mcp`). When a valid MCP request to use a tool is received, the server invokes the corresponding agent, passes the input, and streams the agent's output back to the client in the MCP format.
+4.  The server uses the `@modelcontextprotocol/sdk` to handle incoming requests. A `StreamableHTTPServerTransport` receives the HTTP request and passes it to an `McpServer` instance.
+5.  The `McpServer` instance registers each designated agent as a "tool".
+6.  When a valid MCP request to use a tool is received, the server invokes the corresponding agent via the AIGNE engine, passes the input, and streams the agent's output back to the client in the MCP format.
 
 Here is a diagram illustrating the request flow:
 
 ```d2
 direction: down
 
-"Client": {
-  shape: person
+client: {
   label: "External System"
+  shape: person
 }
 
-"Server": {
-  shape: rectangle
-  label: "MCP Server"
+aigne-serve-mcp-process: {
+  label: "`aigne serve-mcp` Process"
+  shape: package
+  grid-columns: 1
+
+  http-server: {
+    label: "HTTP Server\n(Express.js)"
+    shape: rectangle
+
+    transport: {
+      label: "StreamableHTTPServerTransport"
+      shape: rectangle
+    }
+  }
+
+  mcp-server: {
+    label: "MCP Server Logic\n(@modelcontextprotocol/sdk)"
+    shape: rectangle
+  }
+
+  aigne-engine: {
+    label: "AIGNE Engine\n(@aigne/core)"
+    shape: rectangle
+
+    agent: {
+      label: "Target Agent"
+      shape: rectangle
+    }
+  }
+
+  # Define connections within the process
+  http-server.transport -> mcp-server: "2. Forwards request"
+  mcp-server -> aigne-engine: "3. Invokes tool (agent)"
+  aigne-engine -> agent: "4. Executes agent logic"
+  agent -> aigne-engine: "5. Returns result"
+  aigne-engine -> mcp-server: "6. Sends result to handler"
+  mcp-server -> http-server.transport: "7. Formats MCP response"
 }
 
-"Engine": {
-  shape: rectangle
-  label: "AIGNE Engine"
-}
-
-"Agent": {
-  shape: rectangle
-  label: "Target Agent"
-}
-
-"Client" -> "Server": "1. POST /mcp (tool_use)"
-"Server" -> "Engine": "2. invoke(agent, input)"
-"Engine" -> "Agent": "3. Execute"
-"Agent" -> "Engine": "4. Result"
-"Engine" -> "Server": "5. Result"
-"Server" -> "Client": "6. Stream Response (tool_result)"
+# Define external connections
+client -> aigne-serve-mcp-process.http-server.transport: "1. POST /mcp\n(tool_use request)"
+aigne-serve-mcp-process.http-server.transport -> client: "8. Streams HTTP response"
 
 ```
 

@@ -74,21 +74,42 @@ When you run a built-in app for the first time, the CLI downloads it from the np
 ```d2
 direction: down
 
-"A": "User runs 'aigne doc-smith'"
-"B": "Is app cached and recent (< 24h)?" {
+start: {
+  label: "User runs 'aigne doc-smith'"
+  shape: oval
+}
+
+check_cache: {
+  label: "Is app cached and\nrecent (< 24h)?"
   shape: diamond
 }
-"C": "Fetch '@aigne/doc-smith' metadata from npm"
-"D": "Download, extract, and install dependencies"
-"E": "Load app from local cache"
-"F": "Execute 'doc-smith' command"
 
-"A" -> "B"
-"B" -> "E": "Yes"
-"B" -> "C": "No"
-"C" -> "D"
-"D" -> "E"
-"E" -> "F"
+load_from_cache: {
+  label: "Load app from local cache"
+  shape: rectangle
+}
+
+install_flow: {
+  label: "Download and Install"
+  shape: package
+
+  fetch_metadata: { label: "Fetch '@aigne/doc-smith' metadata" }
+  download: { label: "Download and extract package" }
+  install_deps: { label: "Install dependencies" }
+
+  fetch_metadata -> download -> install_deps
+}
+
+execute: {
+  label: "Execute agent command"
+  shape: oval
+}
+
+start -> check_cache
+check_cache -> load_from_cache: "Yes"
+check_cache -> install_flow: "No"
+install_flow -> load_from_cache
+load_from_cache -> execute
 ```
 
 This process ensures that you are always using a functional and up-to-date version of the application with minimal overhead.

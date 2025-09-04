@@ -6,7 +6,7 @@ labels: ["Reference"]
 
 You can package and deploy your AIGNE project as a Blocklet, a self-contained application format that runs on a Blocklet Server. This guide walks you through using the `aigne deploy` command to prepare, configure, and publish your agent for production use.
 
-For a detailed breakdown of all available options for the deploy command, see the [aigne deploy command reference](./command-reference-deploy.md).
+For a detailed breakdown of all available options for the deploy command, see the [`aigne deploy` command reference](./command-reference-deploy.md).
 
 ## Prerequisites
 
@@ -38,80 +38,101 @@ When you run `aigne deploy`, the CLI performs a series of automated steps to pac
 ```d2
 direction: down
 
-"start": "Start: aigne deploy" {
+start: {
+  label: "Start: aigne deploy"
   shape: oval
 }
 
-"cli_check": "Check for Blocklet CLI" {
+prep-env: {
+  label: "1. Prepare Environment"
+  shape: package
+  grid-columns: 1
+  copy-files: "Copy project files to .deploy"
+  npm-install: "Run npm install in .deploy"
+}
+
+check-cli: {
+  label: "2. Check Blocklet CLI"
   shape: diamond
 }
 
-"prompt_install": "Prompt to install CLI" {
+prompt-install: {
+  label: "Prompt to install\n@blocklet/cli"
   shape: parallelogram
 }
 
-"install_cli": "Install @blocklet/cli globally" {
-  style.animated: true
+install-cli: {
+  label: "npm install -g @blocklet/cli"
 }
 
-"prep_env": {
-  label: "Prepare Build Environment"
+configure-blocklet: {
+  label: "3. Configure Blocklet"
   shape: package
   grid-columns: 1
 
-  "copy_files": "Copy project & template files"
-  "npm_install": "Run npm install"
+  check-config: {
+    label: "Config exists in\n~/.aigne/deployed.yaml?"
+    shape: diamond
+  }
+
+  interactive-setup: {
+    label: "First-Time Setup"
+    grid-columns: 1
+    prompt-name: "Prompt for Blocklet Name"
+    create-did: "Create new DID"
+    save-config: "Save Name & DID to config"
+  }
+
+  update-yml: {
+    label: "Update blocklet.yml\nwith Name & DID"
+  }
+
+  check-config -> interactive-setup: "No"
+  check-config -> update-yml: "Yes"
+  interactive-setup -> update-yml
 }
 
-"config_check": "Saved config exists in ~/.aigne/deployed.yaml?" {
-  shape: diamond
+bundle: {
+  label: "4. Bundle Blocklet\n(blocklet bundle)"
 }
 
-"interactive_setup": {
-  label: "First-Time Setup"
-  shape: package
-  grid-columns: 1
-
-  "prompt_name": "Prompt for Blocklet Name"
-  "gen_did": "Generate new DID"
-  "save_config": "Save Name & DID to config file"
+deploy: {
+  label: "5. Deploy to Endpoint\n(blocklet deploy)"
 }
 
+cleanup: {
+  label: "6. Clean Up\n(.deploy directory)"
+}
 
-"update_yml": "Update blocklet.yml with Name & DID"
-"bundle": "Bundle project into a Blocklet"
-"deploy": "Deploy bundle to endpoint"
-"cleanup": "Clean up temporary directory"
-
-"success": "✅ Deployment Succeeded" {
+success: {
+  label: "✅ Deployment Succeeded"
   shape: oval
   style.fill: "#D4EDDA"
 }
 
-"failure": "❌ Deployment Failed" {
+failure: {
+  label: "❌ Deployment Failed"
   shape: oval
   style.fill: "#F8D7DA"
 }
 
-start -> cli_check
-cli_check -> prompt_install: "Not found"
-cli_check -> prep_env: "Found"
-prompt_install -> install_cli: "User agrees"
-install_cli -> prep_env
+start -> prep-env
+prep-env -> check-cli
 
-prep_env -> config_check
+check-cli -> configure-blocklet: "Found"
+check-cli -> prompt-install: "Not Found"
 
-config_check -> interactive_setup: "No"
-config_check -> update_yml: "Yes"
+prompt-install -> install-cli: "User Agrees"
+prompt-install -> failure: "User Declines"
+install-cli -> configure-blocklet
 
-interactive_setup -> update_yml
+configure-blocklet -> bundle -> deploy -> cleanup -> success
 
-update_yml -> bundle -> deploy -> cleanup -> success
-
-# Error paths
-prompt_install -> failure: "User declines"
-deploy -> failure: "Error"
+# Failure paths from any step
+prep-env -> failure: "Error"
+configure-blocklet -> failure: "Error"
 bundle -> failure: "Error"
+deploy -> failure: "Error"
 ```
 
 ### Step-by-Step Guide

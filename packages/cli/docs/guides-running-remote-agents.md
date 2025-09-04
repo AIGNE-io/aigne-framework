@@ -33,22 +33,37 @@ This process ensures that subsequent runs of the same URL can use the local cach
 ```d2
 direction: down
 
-shape: sequence_diagram
+User: { 
+  shape: person 
+}
 
-User: { shape: person }
-AIGNE_CLI: "AIGNE CLI"
-RemoteServer: "Remote Server"
-FileSystem: "Local Filesystem"
-AIGNE_Engine: "AIGNE Engine"
+AIGNE-CLI: {
+  label: "AIGNE CLI"
+  shape: rectangle
+}
 
-User -> AIGNE_CLI: "aigne run https://.../project.tar.gz"
-AIGNE_CLI -> AIGNE_CLI: "Determines cache path (~/.aigne/...)"
-AIGNE_CLI -> RemoteServer: "GET /project.tar.gz"
-RemoteServer -> AIGNE_CLI: "Returns tarball stream"
-AIGNE_CLI -> FileSystem: "Downloads and extracts package to cache directory"
-FileSystem -> AIGNE_CLI: "Extraction complete"
-AIGNE_CLI -> AIGNE_Engine: "Initializes AIGNE from extracted files"
-AIGNE_Engine -> User: "Starts agent interaction loop"
+Remote-Server: {
+  label: "Remote Server\n(e.g., GitHub)"
+  shape: cylinder
+}
+
+Local-Cache: {
+  label: "Local Filesystem\n(~/.aigne/cache)"
+  shape: stored_data
+}
+
+AIGNE-Engine: {
+  label: "AIGNE Engine"
+  shape: rectangle
+}
+
+User -> AIGNE-CLI: "1. aigne run <URL>"
+AIGNE-CLI -> Remote-Server: "2. Download package"
+Remote-Server -> AIGNE-CLI: "3. Returns tarball"
+AIGNE-CLI -> Local-Cache: "4. Extract package to cache"
+AIGNE-CLI -> AIGNE-Engine: "5. Load agent from cache"
+AIGNE-Engine -> User: "6. Start interactive session"
+
 ```
 
 ## Practical Example: Running from a GitHub Repository

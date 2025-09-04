@@ -4,17 +4,17 @@ labels: ["Reference"]
 
 # 部署 Agent
 
-你可以将你的 AIGNE 项目打包并部署为一个 Blocklet，这是一种在 Blocklet Server 上运行的自包含应用程序格式。本指南将引导你使用 `aigne deploy` 命令来准备、配置和发布你的 Agent 以供生产使用。
+你可以将你的 AIGNE 项目打包并部署为 Blocklet，这是一种在 Blocklet Server 上运行的自包含应用程序格式。本指南将引导你使用 `aigne deploy` 命令来准备、配置和发布你的 agent，以供生产环境使用。
 
-有关 deploy 命令所有可用选项的详细说明，请参阅 [aigne deploy 命令参考](./command-reference-deploy.md)。
+有关 deploy 命令所有可用选项的详细说明，请参阅 [`aigne deploy` 命令参考](./command-reference-deploy.md)。
 
 ## 前提条件
 
-在开始之前，请确保你已具备以下条件：
+在开始之前，请确保你具备以下条件：
 
 - 一个包含 `aigne.yaml` 文件的现有 AIGNE 项目。
 - 你拥有部署权限的目标 Blocklet Server 端点的 URL。
-- Blocklet CLI (`@blocklet/cli`)。如果你尚未安装，部署过程将提示你进行安装。
+- Blocklet CLI (`@blocklet/cli`)。如果未安装，部署过程将提示你进行安装。
 
 ## 部署命令
 
@@ -26,92 +26,113 @@ aigne deploy --path <project-path> --endpoint <deployment-endpoint>
 
 **参数**
 
-| 参数 | 说明 |
-|---|---|
-| `--path` | 必需。你的 AIGNE 项目目录的本地路径。 |
-| `--endpoint` | 必需。要部署到的 Blocklet Server 的 URL。 |
+| Parameter  | Description                                                 |
+|------------|-------------------------------------------------------------|
+| `--path`   | 必需。你的 AIGNE 项目目录的本地路径。     |
+| `--endpoint` | 必需。要部署到的 Blocklet Server 的 URL。      |
 
 ## 部署工作流
 
-当你运行 `aigne deploy` 时，CLI 会执行一系列自动化步骤来打包和发布你的 Agent。对于新项目，首次运行该过程是交互式的；对于后续更新，该过程是非交互式的。下图说明了高级工作流程。
+当你运行 `aigne deploy` 时，CLI 会执行一系列自动化步骤来打包和发布你的 agent。对于新项目，首次运行该过程是交互式的；对于后续更新，该过程是非交互式的。下图说明了高级工作流。
 
 ```d2
 direction: down
 
-"start": "开始: aigne deploy" {
+start: {
+  label: "开始: aigne deploy"
   shape: oval
 }
 
-"cli_check": "检查 Blocklet CLI" {
+prep-env: {
+  label: "1. 准备环境"
+  shape: package
+  grid-columns: 1
+  copy-files: "将项目文件复制到 .deploy"
+  npm-install: "在 .deploy 中运行 npm install"
+}
+
+check-cli: {
+  label: "2. 检查 Blocklet CLI"
   shape: diamond
 }
 
-"prompt_install": "提示安装 CLI" {
+prompt-install: {
+  label: "提示安装\n@blocklet/cli"
   shape: parallelogram
 }
 
-"install_cli": "全局安装 @blocklet/cli" {
-  style.animated: true
+install-cli: {
+  label: "npm install -g @blocklet/cli"
 }
 
-"prep_env": {
-  label: "准备构建环境"
+configure-blocklet: {
+  label: "3. 配置 Blocklet"
   shape: package
   grid-columns: 1
 
-  "copy_files": "复制项目和模板文件"
-  "npm_install": "运行 npm install"
+  check-config: {
+    label: "配置是否存在于\n~/.aigne/deployed.yaml？"
+    shape: diamond
+  }
+
+  interactive-setup: {
+    label: "首次设置"
+    grid-columns: 1
+    prompt-name: "提示输入 Blocklet 名称"
+    create-did: "创建新的 DID"
+    save-config: "将名称和 DID 保存到配置中"
+  }
+
+  update-yml: {
+    label: "使用名称和 DID\n更新 blocklet.yml"
+  }
+
+  check-config -> interactive-setup: "否"
+  check-config -> update-yml: "是"
+  interactive-setup -> update-yml
 }
 
-"config_check": "在 ~/.aigne/deployed.yaml 中是否存在已保存的配置？" {
-  shape: diamond
+bundle: {
+  label: "4. 打包 Blocklet\n(blocklet bundle)"
 }
 
-"interactive_setup": {
-  label: "首次设置"
-  shape: package
-  grid-columns: 1
-
-  "prompt_name": "提示输入 Blocklet 名称"
-  "gen_did": "生成新的 DID"
-  "save_config": "将名称和 DID 保存到配置文件"
+deploy: {
+  label: "5. 部署到端点\n(blocklet deploy)"
 }
 
+cleanup: {
+  label: "6. 清理\n(.deploy 目录)"
+}
 
-"update_yml": "使用名称和 DID 更新 blocklet.yml"
-"bundle": "将项目打包成 Blocklet"
-"deploy": "将包部署到端点"
-"cleanup": "清理临时目录"
-
-"success": "✅ 部署成功" {
+success: {
+  label: "✅ 部署成功"
   shape: oval
   style.fill: "#D4EDDA"
 }
 
-"failure": "❌ 部署失败" {
+failure: {
+  label: "❌ 部署失败"
   shape: oval
   style.fill: "#F8D7DA"
 }
 
-start -> cli_check
-cli_check -> prompt_install: "未找到"
-cli_check -> prep_env: "已找到"
-prompt_install -> install_cli: "用户同意"
-install_cli -> prep_env
+start -> prep-env
+prep-env -> check-cli
 
-prep_env -> config_check
+check-cli -> configure-blocklet: "已找到"
+check-cli -> prompt-install: "未找到"
 
-config_check -> interactive_setup: "否"
-config_check -> update_yml: "是"
+prompt-install -> install-cli: "用户同意"
+prompt-install -> failure: "用户拒绝"
+install-cli -> configure-blocklet
 
-interactive_setup -> update_yml
+configure-blocklet -> bundle -> deploy -> cleanup -> success
 
-update_yml -> bundle -> deploy -> cleanup -> success
-
-# Error paths
-prompt_install -> failure: "用户拒绝"
-deploy -> failure: "错误"
+# 任何步骤的失败路径
+prep-env -> failure: "错误"
+configure-blocklet -> failure: "错误"
 bundle -> failure: "错误"
+deploy -> failure: "错误"
 ```
 
 ### 分步指南
@@ -126,10 +147,10 @@ bundle -> failure: "错误"
 
 2.  **首次配置（交互式）**
 
-    如果这是你首次从你的计算机部署此特定项目，CLI 将引导你完成一次性设置：
+    如果这是你首次从你的机器部署此特定项目，CLI 将引导你完成一次性设置：
 
-    -   **Blocklet CLI 安装**：如果在你的环境中未找到 `@blocklet/cli`，系统将提示你进行全局安装。
-    -   **Blocklet 名称**：系统将要求你为你的 Agent Blocklet 提供一个名称。此名称将在 Blocklet Server 上使用。系统会根据你的项目文件夹或 `aigne.yaml` 配置建议一个默认名称，你可以接受或覆盖该名称。
+    -   **Blocklet CLI 安装**：如果在你的环境中未找到 `@blocklet/cli`，系统将提示你全局安装它。
+    -   **Blocklet 名称**：系统将要求你为你的 agent Blocklet 提供一个名称。此名称将在 Blocklet Server 上使用。系统会根据你的项目文件夹或 `aigne.yaml` 配置建议一个默认名称，你可以接受或覆盖该名称。
 
 3.  **打包和发布**
 
@@ -137,12 +158,12 @@ bundle -> failure: "错误"
 
 4.  **后续部署**
 
-    首次成功部署后，CLI 会将你选择的 Blocklet 名称及其唯一的 DID (Decentralized Identifier) 保存到位于 `~/.aigne/deployed.yaml` 的配置文件中。对于同一项目（通过其绝对路径识别）的所有未来部署，CLI 将使用此已保存的信息，从而使该过程非交互式，并适用于 CI/CD 管道。
+    首次成功部署后，CLI 会将你选择的 Blocklet 名称及其唯一的 DID（去中心化标识符）保存到位于 `~/.aigne/deployed.yaml` 的配置文件中。对于同一项目（通过其绝对路径识别）的所有未来部署，CLI 将使用此保存的信息，使该过程变为非交互式，并适用于 CI/CD 管道。
 
-完成后，一条成功消息将确认部署已完成。
+完成后，将显示一条成功消息，确认部署已完成。
 
 ```bash
-✅ 部署完成: /path/to/your/project -> https://my-blocklet-server.com
+✅ 部署完成：/path/to/your/project -> https://my-blocklet-server.com
 ```
 
-如果该过程失败，将显示一条错误消息，指出失败原因以帮助诊断问题。
+如果过程失败，将显示一条错误消息，指出失败原因，以帮助诊断问题。

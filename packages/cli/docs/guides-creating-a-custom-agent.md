@@ -12,7 +12,64 @@ Following this guide, you will learn to:
 - Register the new skill in your project configuration.
 - Test the skill directly and use it within a larger agent.
 
----
+## How It Works: An Overview
+
+Before diving in, it's helpful to understand how a custom skill fits into the AIGNE ecosystem. The diagram below illustrates the relationship between your custom skill file, the project configuration, and the AIGNE runtime engine. When you run your project, the engine loads your skill, making it available for the Large Language Model (LLM) to use when responding to user prompts.
+
+```d2
+direction: down
+
+"AIGNE-Project-Structure": {
+    label: "AIGNE Project Structure"
+    shape: package
+
+    "Configuration": {
+        shape: document
+        label: "aigne.yaml"
+    }
+
+    "Custom-Skill": {
+        shape: document
+        label: "skills/calculator.js"
+    }
+
+    "Agent": {
+        shape: document
+        label: "chat.yaml"
+    }
+
+    "Configuration" -> "Custom-Skill": "Registers"
+    "Configuration" -> "Agent": "Provides skills to"
+}
+
+"Execution-Flow": {
+    "User": {
+        shape: person
+    }
+    
+    "CLI": {
+        label: "aigne run --chat"
+        shape: rectangle
+    }
+
+    "AIGNE-Engine": {
+        label: "AIGNE Engine"
+        shape: hexagon
+    }
+
+    "LLM": {
+        label: "LLM"
+        shape: cloud
+    }
+
+    "User" -> "CLI": "1. Runs command"
+    "CLI" -> "AIGNE-Engine": "2. Starts session"
+    "AIGNE-Engine" -> "AIGNE-Project-Structure": "3. Loads project"
+    "AIGNE-Engine" <-> "LLM": "4. Orchestrates"
+    "LLM" -> "AIGNE-Project-Structure.Custom-Skill": "5. Selects & uses skill"
+}
+
+```
 
 ## Step 1: Create the JavaScript Skill File
 

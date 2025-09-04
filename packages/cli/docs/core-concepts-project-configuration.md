@@ -6,40 +6,47 @@ labels: ["Reference"]
 
 The `aigne.yaml` file is the central manifest for an AIGNE project. It defines the core components, including the chat model, agents, and skills, and provides project-level metadata. This file is essential for the AIGNE CLI to understand how to run, serve, and manage your agents.
 
-```d2
-direction: down
+The following diagram illustrates how the `aigne.yaml` manifest references and orchestrates other project files like agent and skill definitions:
 
-"aigne.yaml": {
+```d2
+direction: right
+
+aigne-yaml: "aigne.yaml (Manifest)" {
   shape: document
-  "Project Manifest": {
-    "Metadata": {
-      "name": "my-project"
-      "description": "..."
-    }
-    "chat_model": {
-      "provider": "openai"
-      "name": "gpt-4o-mini"
-    }
-    "agents": {
-      "chat.yaml ->": {
-        shape: page
-        "System Prompt, Skills, etc."
-      }
-    }
-    "skills": {
-      "sandbox.js ->": {
-        shape: page
-        "JavaScript Logic"
-      }
-      "filesystem.yaml ->": {
-        shape: page
-        "Tool Definition"
-      }
-    }
-    "mcp_server": "Expose Agents via MCP"
-    "cli": "Expose Agents via CLI"
+
+  sections: {
+    shape: package
+    grid-columns: 2
+
+    metadata: { label: "Metadata\n(name, description)" }
+    chat_model: { label: "chat_model\n(provider, name)" }
+    agents_list: { label: "agents:\n- chat.yaml" }
+    skills_list: { label: "skills:\n- sandbox.js" }
+    exposure: { label: "Exposure\n(mcp_server, cli)" }
   }
 }
+
+referenced_files: "Project Files" {
+  shape: package
+  grid-columns: 1
+
+  agent_def: "chat.yaml (Agent)" {
+    shape: document
+  }
+  skill_js: "sandbox.js (JS Skill)" {
+    shape: code
+  }
+  skill_yaml: "filesystem.yaml (Tool Skill)" {
+    shape: document
+  }
+}
+
+aigne-yaml.sections.agents_list -> referenced_files.agent_def: references
+aigne-yaml.sections.skills_list -> referenced_files.skill_js: references
+aigne-yaml.sections.skills_list -> referenced_files.skill_yaml: references
+
+referenced_files.agent_def -> referenced_files.skill_js: uses
+referenced_files.agent_def -> referenced_files.skill_yaml: uses
 ```
 
 ## Key Configuration Sections

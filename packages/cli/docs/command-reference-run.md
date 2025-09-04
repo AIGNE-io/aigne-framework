@@ -2,6 +2,8 @@
 labels: ["Reference"]
 ---
 
+---labels: ["Reference"]---
+
 # aigne run
 
 The `aigne run` command executes an agent from a local directory or a remote URL. It is the primary command for testing and interacting with your agents during development, offering features like interactive chat mode, dynamic model selection, and flexible input/output handling.
@@ -32,41 +34,77 @@ The `run` command follows a sequence of steps to prepare the environment and exe
 ```d2
 direction: down
 
-"start": "Start aigne run"
+start: {
+  label: "Start: aigne run [path]"
+  shape: circle
+}
 
-"check_path": "Is path a URL?" {
+check_path: {
+  label: "Is path a remote URL?"
   shape: diamond
 }
 
-"download": "Download & Extract Package"
-"use_local": "Use Local Path"
+handle_remote: {
+  label: "Handle Remote Project"
+  shape: package
 
-"init": "Initialize AIGNE Engine\n(Load aigne.yaml, .env)"
-"select_agent": "Select Entry Agent"
-"parse_input": "Parse User Input\n(CLI args, --input, stdin)"
-
-"check_chat": "--chat mode?" {
-  shape: diamond
+  download: "Download & Extract Package\nto local cache (~/.aigne)"
 }
 
-"chat_loop": "Run Interactive Chat Loop"
-"execute_once": "Execute Agent Once"
+handle_local: {
+  label: "Handle Local Project"
+  shape: package
 
-"shutdown": "Shutdown AIGNE"
-"end": "End"
+  resolve_path: "Resolve local directory path"
+}
+
+init_aigne: {
+  label: "Initialize AIGNE Engine"
+  shape: rectangle
+
+  load_env: "Load .env files"
+  load_config: "Load aigne.yaml"
+  init_engine: "Instantiate models, agents, skills"
+}
+
+build_commands: {
+  label: "Build Agent Commands"
+  shape: rectangle
+
+  sub_parser: "Create sub-parser for agents"
+  add_agents: "Add each agent as a subcommand"
+}
+
+parse_args: {
+  label: "Parse Agent & Options"
+  shape: parallelogram
+}
+
+execute_agent: {
+  label: "Execute Selected Agent"
+  shape: rectangle
+}
+
+shutdown: {
+  label: "Shutdown AIGNE Engine"
+  shape: rectangle
+}
+
+end: {
+  label: "End"
+  shape: circle
+}
+
 
 start -> check_path
-check_path -> download: "Yes"
-check_path -> use_local: "No"
-download -> init
-use_local -> init
-init -> select_agent
-select_agent -> parse_input
-parse_input -> check_chat
-check_chat -> chat_loop: "Yes"
-check_chat -> execute_once: "No"
-chat_loop -> shutdown
-execute_once -> shutdown
+check_path -> handle_remote: "Yes"
+check_path -> handle_local: "No"
+handle_remote -> init_aigne
+handle_local -> init_aigne
+init_aigne -> build_commands
+build_commands -> parse_args
+parse_args -> execute_agent
+execute_agent -> shutdown
 shutdown -> end
 ```
 

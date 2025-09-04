@@ -13,24 +13,43 @@ The `aigne` command-line tool is organized into several subcommands, each respon
 ```d2
 direction: down
 
-"aigne": {
+aigne: {
+  label: "aigne"
   shape: hexagon
-  style.fill: "#fce7c6"
 }
 
-"Commands": {
-  grid-columns: 4
-  "create": "Scaffolds a new project"
-  "run": "Executes an agent"
-  "test": "Runs automated tests"
-  "serve-mcp": "Serves agents as an MCP server"
-  "observe": "Starts observability server"
-  "hub": "Manages AIGNE Hub connection"
-  "deploy": "Deploys application as a Blocklet"
-  "app": "Executes built-in apps"
+Development: {
+  shape: package
+  grid-columns: 3
+  create: { label: "create" }
+  run: { label: "run" }
+  test: { label: "test" }
 }
 
-"aigne" -> "Commands"
+Integration: {
+  shape: package
+  grid-columns: 2
+  serve-mcp: { label: "serve-mcp" }
+  observe: { label: "observe" }
+}
+
+Platform: {
+  shape: package
+  grid-columns: 2
+  hub: { label: "hub" }
+  deploy: { label: "deploy" }
+}
+
+Built-in-Apps: {
+  label: "Built-in Apps"
+  shape: package
+  app: { label: "app" }
+}
+
+aigne -> Development
+aigne -> Integration
+aigne -> Platform
+aigne -> Built-in-Apps
 ```
 
 Here is a summary of the primary commands. Select a command to view its detailed documentation, including all available options and usage examples.

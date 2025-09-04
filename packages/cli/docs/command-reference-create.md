@@ -56,25 +56,68 @@ The following diagram illustrates the process flow for the `aigne create` comman
 ```d2
 direction: down
 
-"start": "Start: aigne create"
-"path_provided": "Is path provided?"
-"prompt_name": "Prompt for Project Name"
-"set_path": "Set project path"
-"check_empty": "Directory not empty?"
-"prompt_overwrite": "Prompt to overwrite?"
-"cancel": "Cancel Operation"
-"select_template": "Select Template"
-"create_files": "Create Directory & Copy Files"
-"success_msg": "Show Success Message"
-"end": "End"
+start: {
+  label: "Start: aigne create"
+  shape: circle
+}
 
-start -> path_provided
+check_path: {
+  label: "Path argument provided?"
+  shape: diamond
+}
 
-path_provided -- "No" --> prompt_name
-prompt_name -> set_path
-path_provided -- "Yes" --> set_path
+prompt_name: {
+  label: "Prompt for Project Name"
+  shape: rectangle
+}
 
-set_path -> check_empty
+resolve_path: {
+  label: "Resolve Project Path"
+  shape: rectangle
+}
+
+check_empty: {
+  label: "Directory not empty?"
+  shape: diamond
+}
+
+prompt_overwrite: {
+  label: "Confirm Overwrite?"
+  shape: diamond
+}
+
+cancel: {
+  label: "Operation Cancelled"
+  shape: rectangle
+}
+
+select_template: {
+  label: "Select Template"
+  shape: rectangle
+}
+
+create_files: {
+  label: "Create Directory & Copy Files"
+  shape: rectangle
+}
+
+success_msg: {
+  label: "Display Success Message"
+  shape: rectangle
+}
+
+end: {
+  label: "End"
+  shape: circle
+}
+
+start -> check_path
+
+check_path -- "No" --> prompt_name
+prompt_name -> resolve_path
+check_path -- "Yes" --> resolve_path
+
+resolve_path -> check_empty
 check_empty -- "Yes" --> prompt_overwrite
 check_empty -- "No" --> select_template
 
@@ -96,4 +139,4 @@ Upon successful creation, the CLI prints a confirmation message and provides the
 
 After creating your project, you can start the agent by navigating into the new directory and using the `aigne run` command.
 
-For more details on running an agent, see the [aigne run](./command-reference-run.md) command reference.
+For more details on running an agent, see the [`aigne run`](./command-reference-run.md) command reference.

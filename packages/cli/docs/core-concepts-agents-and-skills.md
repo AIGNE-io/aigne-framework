@@ -9,20 +9,23 @@ In an AIGNE project, Agents and Skills are the fundamental executable components
 ```d2
 direction: down
 
-agent: "Agent (e.g., Chatbot)" {
+agent: {
+  label: "Agent\n(e.g., Chatbot)"
   shape: person
 }
 
-skill1: "Skill (e.g., Code Evaluator)" {
+code-evaluator: {
+  label: "Skill\n(Code Evaluator)"
   shape: hexagon
 }
 
-skill2: "Skill (e.g., API Connector)" {
+api-connector: {
+  label: "Skill\n(API Connector)"
   shape: hexagon
 }
 
-agent -> skill1: uses
-agent -> skill2: uses
+agent -> code-evaluator: uses
+agent -> api-connector: uses
 ```
 
 ## Agents
@@ -129,19 +132,19 @@ The underlying process follows a clear sequence:
 ```d2
 shape: sequence_diagram
 
-User: "User"
-Agent: "AIGNE Engine"
-LLM: "LLM"
-Skill: "sandbox.js"
+User: User
+AIGNE-Engine: "AIGNE Engine"
+LLM: LLM
+Sandbox-Skill: "sandbox.js Skill"
 
-User -> Agent: "What is 5 * 12?"
-Agent -> LLM: "Process prompt with instructions & skill descriptions"
-LLM --> Agent: "Decide to call 'sandbox.js' with code: '5 * 12'"
-Agent -> Skill: "evaluateJs({ code: '5 * 12' })"
-Skill --> Agent: "Return { result: 60 }"
-Agent -> LLM: "Provide skill execution result"
-LLM --> Agent: "Formulate final response"
-Agent --> User: "The result is 60."
+User -> AIGNE-Engine: "What is 5 * 12?"
+AIGNE-Engine -> LLM: "1. Prompt with skills"
+LLM --> AIGNE-Engine: "2. Decide to call skill"
+AIGNE-Engine -> Sandbox-Skill: "3. Execute `evaluateJs`"
+Sandbox-Skill --> AIGNE-Engine: "4. Return `{ result: 60 }`"
+AIGNE-Engine -> LLM: "5. Send skill result"
+LLM --> AIGNE-Engine: "6. Formulate response"
+AIGNE-Engine -> User: "7. Respond to user"
 ```
 
 This flow allows agents to perform complex, multi-step tasks by breaking them down and delegating specific actions to specialized skills. You can inspect the details of these interactions, including the exact inputs and outputs of each skill call, using the observability tools.

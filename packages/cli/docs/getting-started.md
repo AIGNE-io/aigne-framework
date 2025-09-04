@@ -6,6 +6,51 @@ labels: ["Reference"]
 
 This guide will walk you through the essential steps to get up and running with `@aigne/cli`. You'll learn how to install the command-line tool, create a new agent project from a template, and run it locally in an interactive chat session.
 
+### Development Workflow
+
+The typical workflow for getting started with a new AIGNE project involves four main steps: installing the CLI, creating a project, configuring your environment, and running the agent.
+
+```d2
+direction: down
+
+User-Terminal: {
+  label: "User's Terminal"
+  shape: rectangle
+}
+
+AIGNE-Agent: {
+  label: "Interactive Agent Session"
+  shape: rectangle
+}
+
+Installation: {
+  label: "1. Install CLI\n`npm install -g @aigne/cli`"
+  shape: step
+}
+
+Project-Creation: {
+  label: "2. Create Project\n`aigne create my-first-agent`"
+  shape: step
+}
+
+Configuration: {
+  label: "3. Configure API Key\n`cd my-first-agent`\n`cp .env.local.example .env.local`"
+  shape: step
+}
+
+Execution: {
+  label: "4. Run Agent\n`aigne run --chat`"
+  shape: step
+}
+
+
+User-Terminal -> Installation: "Execute"
+Installation -> Project-Creation: "Execute"
+Project-Creation -> Configuration: "Execute"
+Configuration -> Execution: "Execute"
+Execution -> AIGNE-Agent: "Starts"
+```
+
 ## 1. Install the AIGNE CLI
 
 First, you need to install the `@aigne/cli` package globally using your preferred package manager. This makes the `aigne` command available in your terminal.

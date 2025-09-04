@@ -9,23 +9,35 @@ To build effectively with AIGNE, it's essential to understand the fundamental co
 ```d2
 direction: down
 
-"AIGNE Project": {
-  "aigne.yaml (Project Config)": { 
-    shape: document 
-  }
-  "Agents (*.yaml)": { 
-    shape: document
-    style.multiple: true 
-  }
-  "Skills (*.js, *.yaml, etc.)": { 
-    shape: document
-    style.multiple: true 
-  }
-}
+AIGNE-Project: {
+  shape: package
+  label: "AIGNE Project"
 
-"AIGNE Project"."aigne.yaml (Project Config)" -> "AIGNE Project"."Agents (*.yaml)": "Defines & Registers"
-"AIGNE Project"."aigne.yaml (Project Config)" -> "AIGNE Project"."Skills (*.js, *.yaml, etc.)": "Registers"
-"AIGNE Project"."Agents (*.yaml)" -> "AIGNE Project"."Skills (*.js, *.yaml, etc.)": "Uses"
+  aigne-yaml: {
+    shape: document
+    label: "aigne.yaml\n(Project Manifest)"
+  }
+
+  Agents: {
+    shape: package
+    chat-yaml: {
+      shape: document
+      label: "chat.yaml"
+    }
+  }
+
+  Skills: {
+    shape: package
+    sandbox-js: {
+      shape: document
+      label: "sandbox.js"
+    }
+  }
+
+  aigne-yaml -> Agents.chat-yaml: "Registers"
+  aigne-yaml -> Skills.sandbox-js: "Registers"
+  Agents.chat-yaml -> Skills.sandbox-js: "Uses"
+}
 ```
 
 ## Project Structure and Configuration

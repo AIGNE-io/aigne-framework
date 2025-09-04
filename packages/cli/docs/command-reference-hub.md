@@ -2,50 +2,62 @@
 labels: ["Reference"]
 ---
 
+---labels: ["Reference"]---
+
 # aigne hub
 
 The `aigne hub` command provides a suite of tools for managing your connections to AIGNE Hub. This allows you to easily connect to the official AIGNE Hub or self-hosted instances, switch between them, and check your account status and credit balance directly from your terminal.
 
-Your connections are stored locally in the `~/.aigne/aigne-hub-connected.yaml` file.
+Your connection details are stored locally in the `~/.aigne/aigne-hub-connected.yaml` file.
 
 ```d2
 direction: down
 
-"Developer Machine": {
+Developer-Machine: {
+  label: "Developer Machine"
   shape: rectangle
 
-  "aigne CLI": {
+  aigne-CLI: {
+    label: "aigne hub <command>"
     shape: rectangle
   }
 
-  "Local Config (~/.aigne/)": {
+  Local-Config: {
+    label: "~/.aigne/aigne-hub-connected.yaml"
     shape: document
   }
 
-  "aigne CLI" <-> "Local Config (~/.aigne/)": "Reads/Writes Connections"
-}
-
-"AIGNE Hubs": {
-  shape: package
-  grid-columns: 2
-
-  "Official Hub (hub.aigne.io)": {
-    shape: cylinder
-  }
-
-  "Self-Hosted Hub": {
-    shape: cylinder
+  aigne-CLI -> Local-Config: {
+    label: "Reads/Writes\n(list, use, connect, rm)"
+    style.stroke-dash: 2
   }
 }
 
-"Developer Machine"."aigne CLI" -> "AIGNE Hubs"."Official Hub (hub.aigne.io)": {
-  label: "Active Connection"
+AIGNE-Hub: {
+  label: "AIGNE Hub (Remote)"
+  shape: cylinder
+}
+
+Browser: {
+  label: "Web Browser\n(for Authentication)"
+  shape: rectangle
+}
+
+Developer-Machine.aigne-CLI -> Browser: {
+  label: "1. `connect` opens auth page"
+}
+
+Browser -> AIGNE-Hub: {
+  label: "2. User authenticates"
+}
+
+AIGNE-Hub -> Developer-Machine.aigne-CLI: {
+  label: "3. CLI polls for & receives API Key"
+}
+
+Developer-Machine.aigne-CLI -> AIGNE-Hub: {
+  label: "API Calls (info, status)"
   style.stroke-width: 2
-}
-
-"Developer Machine"."aigne CLI" -> "AIGNE Hubs"."Self-Hosted Hub": {
-  label: "Inactive Connection"
-  style.stroke-dash: 2
 }
 ```
 

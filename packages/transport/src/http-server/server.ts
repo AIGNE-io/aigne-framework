@@ -66,7 +66,9 @@ export interface AIGNEHTTPServerOptions {
 }
 
 export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext>
-  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories" | "hooks"> {}
+  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories" | "hooks"> {
+  onError?: (error: Error) => void;
+}
 
 /**
  * AIGNEHTTPServer provides HTTP API access to AIGNE capabilities.
@@ -148,7 +150,7 @@ export class AIGNEHTTPServer {
     });
 
     if (response instanceof ServerResponse) {
-      await this._writeResponse(result, response, opts?.hooks);
+      await this._writeResponse(result, response, { onError: opts?.onError });
       return;
     }
 
@@ -290,7 +292,9 @@ export class AIGNEHTTPServer {
   async _writeResponse(
     response: Response,
     res: ServerResponse,
-    hooks?: AIGNEHTTPServerInvokeOptions["hooks"],
+    hooks?: {
+      onError?: AIGNEHTTPServerInvokeOptions["onError"];
+    },
   ): Promise<void> {
     try {
       res.writeHead(response.status, Object.fromEntries(response.headers.entries()));
@@ -307,13 +311,7 @@ export class AIGNEHTTPServer {
         }
       }
     } catch (error) {
-      if (Array.isArray(hooks)) {
-        // @ts-ignore
-        hooks.forEach((hook) => hook.onError?.({ error }));
-      } else {
-        // @ts-ignore
-        hooks?.onError?.({ error });
-      }
+      hooks?.onError?.(error);
 
       if (!res.headersSent) {
         res.writeHead(error instanceof ServerError ? error.status : 500, {

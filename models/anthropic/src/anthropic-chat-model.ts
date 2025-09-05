@@ -21,7 +21,6 @@ import {
   isNonNullable,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import Anthropic, { type ClientOptions } from "@anthropic-ai/sdk";
 import type { Base64ImageSource } from "@anthropic-ai/sdk/resources";
 import type {
@@ -456,14 +455,9 @@ async function convertContent(
               source: { type: "base64", data: item.data, media_type },
             };
           case "local":
-            return {
-              type: "image",
-              source: {
-                type: "base64",
-                data: await nodejs.fs.readFile(item.path, "base64"),
-                media_type,
-              },
-            };
+            throw new Error(
+              `Unsupported local file: ${item.path}, it should be converted to base64 at ChatModel`,
+            );
         }
       }),
     );

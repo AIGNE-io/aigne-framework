@@ -22,7 +22,6 @@ import {
   isNonNullable,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Ajv } from "ajv";
 import type { ClientOptions, OpenAI } from "openai";
 import type {
@@ -478,13 +477,9 @@ export async function contentsFromInputMessages(
                             file: { file_data: c.data, filename: c.filename },
                           };
                         case "local": {
-                          return {
-                            type: "file",
-                            file: {
-                              file_data: await nodejs.fs.readFile(c.path, "base64"),
-                              filename: c.filename,
-                            },
-                          };
+                          throw new Error(
+                            `Unsupported local file: ${c.path}, it should be converted to base64 at ChatModel`,
+                          );
                         }
                       }
                     }),

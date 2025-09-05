@@ -171,6 +171,31 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
         enumerable: false,
       });
     }
+
+    input.messages = await Promise.all(
+      input.messages.map(async (message) => {
+        if (!Array.isArray(message.content)) return message;
+
+        return {
+          ...message,
+          content: await Promise.all(
+            message.content.map(async (item) => {
+              if (item.type === "local") {
+                return {
+                  ...item,
+                  type: "file" as const,
+                  data: await nodejs.fs.readFile(item.path, "base64"),
+                  path: undefined,
+                  mimeType: item.mimeType || ChatModel.getMimeType(item.filename || item.path),
+                };
+              }
+
+              return item;
+            }),
+          ),
+        };
+      }),
+    );
   }
 
   /**

@@ -12,7 +12,6 @@ import {
 } from "@aigne/core";
 import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import {
   type Content,
   type FunctionCallingConfig,
@@ -277,12 +276,9 @@ export class GeminiChatModel extends OpenAIChatModel {
                   case "file":
                     return { inlineData: { data: item.data, mimeType: item.mimeType } };
                   case "local":
-                    return {
-                      inlineData: {
-                        data: await nodejs.fs.readFile(item.path, "base64"),
-                        mimeType: item.mimeType,
-                      },
-                    };
+                    throw new Error(
+                      `Unsupported local file: ${item.path}, it should be converted to base64 at ChatModel`,
+                    );
                 }
               }),
             );

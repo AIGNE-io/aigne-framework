@@ -40,7 +40,7 @@ git clone https://github.com/AIGNE-io/aigne-framework
 ### Install Dependencies
 
 ```bash
-cd aigne-framework/examples/image
+cd aigne-framework/examples/nano-banana
 
 pnpm install
 ```

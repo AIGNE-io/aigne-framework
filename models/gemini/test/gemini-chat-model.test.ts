@@ -229,6 +229,10 @@ test("GeminiChatModel should support image mode", async () => {
         },
       ],
       "text": "hello world",
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+      },
     }
   `,
   );

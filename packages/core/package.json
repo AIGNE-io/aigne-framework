@@ -93,6 +93,7 @@
     "is-network-error": "^1.1.0",
     "jaison": "^2.0.2",
     "jsonata": "^2.0.6",
+    "mime": "^4.0.7",
     "nunjucks": "^3.2.4",
     "p-retry": "^6.2.1",
     "raw-body": "^3.0.0",

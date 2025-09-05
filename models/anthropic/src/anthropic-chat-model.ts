@@ -8,7 +8,6 @@ import {
   type ChatModelOptions,
   type ChatModelOutput,
   type ChatModelOutputUsage,
-  type FileUnionContent,
   type Message,
   safeParseJSON,
 } from "@aigne/core";
@@ -442,15 +441,19 @@ async function convertContent(
   if (Array.isArray(content)) {
     return Promise.all(
       content.map<Promise<ContentBlockParam>>(async (item) => {
+        if (item.type === "text") return { type: "text", text: item.text };
+
+        const media_type = ChatModel.getMimeType(
+          item.mimeType || item.filename || "",
+        ) as Base64ImageSource["media_type"];
+
         switch (item.type) {
-          case "text":
-            return { type: "text", text: item.text };
           case "url":
             return { type: "image", source: { type: "url", url: item.url } };
           case "file":
             return {
               type: "image",
-              source: { type: "base64", data: item.data, media_type: getMimeType(item) },
+              source: { type: "base64", data: item.data, media_type },
             };
           case "local":
             return {
@@ -458,7 +461,7 @@ async function convertContent(
               source: {
                 type: "base64",
                 data: await nodejs.fs.readFile(item.path, "base64"),
-                media_type: getMimeType(item),
+                media_type,
               },
             };
         }
@@ -467,18 +470,6 @@ async function convertContent(
   }
 
   throw new Error("Invalid chat message content");
-}
-
-function getMimeType(file: FileUnionContent): Base64ImageSource["media_type"] {
-  let str = file.mimeType || file.filename;
-  if (!str && file.type === "url") str = file.url;
-
-  if (str?.match(/jpe?g/)) return "image/jpeg";
-  if (str?.match(/png/)) return "image/png";
-  if (str?.match(/gif/)) return "image/gif";
-  if (str?.match(/webp/)) return "image/webp";
-
-  throw new Error(`Unsupported image mime type: ${file.mimeType || file.filename}`);
 }
 
 function convertTools({

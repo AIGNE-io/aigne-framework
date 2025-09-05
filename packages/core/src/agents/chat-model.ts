@@ -1,5 +1,6 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Ajv } from "ajv";
+import mime from "mime";
 import { v7 } from "uuid";
 import { z } from "zod";
 import { optionalize } from "../loader/schema.js";
@@ -246,7 +247,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>>;
 
-  async processDataType(
+  async transformFileOutput(
     input: ChatModelInput,
     data: FileUnionContent,
     options: AgentInvokeOptions,
@@ -262,7 +263,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
         const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
         await nodejs.fs.mkdir(dir, { recursive: true });
 
-        const ext = data.mimeType?.split("/").pop();
+        const ext = ChatModel.getFileExtension(data.mimeType || data.filename || "");
         const id = v7();
         const filename = ext ? `${id}.${ext}` : id;
         const path = nodejs.path.join(dir, filename);
@@ -293,6 +294,14 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
         return { ...common, type: "file", data: base64 };
       }
     }
+  }
+
+  static getFileExtension(type: string) {
+    return mime.getExtension(type) || undefined;
+  }
+
+  static getMimeType(filename: string) {
+    return mime.getType(filename) || undefined;
   }
 
   protected async downloadFile(url: string) {

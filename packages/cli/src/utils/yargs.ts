@@ -7,6 +7,7 @@ import { availableModels } from "@aigne/aigne-hub";
 import {
   type Agent,
   AIAgent,
+  ChatModel,
   DEFAULT_OUTPUT_KEY,
   type FileUnionContent,
   type Message,
@@ -27,7 +28,6 @@ import z, {
   ZodType,
   ZodUnknown,
 } from "zod";
-import { getMimeTypeFromFilename } from "./mime-type.js";
 
 export type InferArgv<T> = T extends Argv<infer U> ? U : never;
 
@@ -228,7 +228,7 @@ export async function parseAgentInput(i: Message & AgentRunCommonOptions, agent:
     for (const file of i.inputFile ?? []) {
       const raw = await readFile(file.replace(/^@/, ""), "base64");
       const filename = basename(file);
-      const mimeType = getMimeTypeFromFilename(filename) || "application/octet-stream";
+      const mimeType = ChatModel.getMimeType(filename) || "application/octet-stream";
       files.push({ type: "file", data: raw, filename, mimeType });
     }
 

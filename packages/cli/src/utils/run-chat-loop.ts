@@ -1,10 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
-import type { FileUnionContent, Message, UserAgent } from "@aigne/core";
+import { ChatModel, type FileUnionContent, type Message, type UserAgent } from "@aigne/core";
 import { isNonNullable, omit } from "@aigne/core/utils/type-utils.js";
 import inquirer from "inquirer";
 import { TerminalTracer } from "../tracer/terminal.js";
-import { getMimeTypeFromFilename } from "./mime-type.js";
 
 export const DEFAULT_CHAT_INPUT_KEY = "message";
 
@@ -101,7 +100,7 @@ async function extractFilesFromQuestion(
 
         return {
           path,
-          file: { type: "file", data, filename, mimeType: getMimeTypeFromFilename(filename) },
+          file: { type: "file", data, filename, mimeType: ChatModel.getMimeType(filename) },
         };
       }),
     )

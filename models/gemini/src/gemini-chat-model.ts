@@ -133,7 +133,7 @@ export class GeminiChatModel extends OpenAIChatModel {
             }
             if (part.inlineData?.data) {
               files.push(
-                await this.processDataType(
+                await this.transformFileOutput(
                   input,
                   {
                     type: "file",

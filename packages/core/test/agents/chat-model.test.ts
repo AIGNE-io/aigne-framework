@@ -376,7 +376,7 @@ test("ChatModel should save file to local", async () => {
   const context = new AIGNE().newContext();
   const model = new OpenAIChatModel({});
 
-  const result = await model.processDataType(
+  const result = await model.transformFileOutput(
     { messages: [] },
     { type: "file", data: Buffer.from("test data").toString("base64") },
     { context },
@@ -398,7 +398,7 @@ test("ChatModel should download file", async () => {
 
   const fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce(new Response("test png file"));
 
-  const result = await model.processDataType(
+  const result = await model.transformFileOutput(
     { messages: [], fileOutputType: FileOutputType.file },
     { type: "url", url: "https://www.example.com/test.png" },
     { context },

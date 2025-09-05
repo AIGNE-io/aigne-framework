@@ -1,7 +1,4 @@
-import {
-  DecoratorBlockNode,
-  type SerializedDecoratorBlockNode,
-} from "@lexical/react/LexicalDecoratorBlockNode";
+import { DecoratorBlockNode, type SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -102,6 +99,7 @@ export class CustomComponentNode extends DecoratorBlockNode {
 
   static override importDOM(): DOMConversionMap | null {
     return {
+      "x-code": () => ({ conversion: convertCustomComponentElement, priority: 1 }),
       "x-card": () => ({ conversion: convertCustomComponentElement, priority: 1 }),
       "x-cards": () => ({ conversion: convertCustomComponentElement, priority: 1 }),
       "x-code-group": () => ({ conversion: convertCustomComponentElement, priority: 1 }),
@@ -146,8 +144,6 @@ export function $createCustomComponentNode(data: CustomComponentData): CustomCom
   return customComponentNode;
 }
 
-export function $isCustomComponentNode(
-  node: LexicalNode | null | undefined,
-): node is CustomComponentNode {
+export function $isCustomComponentNode(node: LexicalNode | null | undefined): node is CustomComponentNode {
   return node instanceof CustomComponentNode;
 }

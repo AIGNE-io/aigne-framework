@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.1...openai-v0.14.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* **model:** transform local file to base64 before request llm ([#462](https://github.com/AIGNE-io/aigne-framework/issues/462)) ([58ef5d7](https://github.com/AIGNE-io/aigne-framework/commit/58ef5d77046c49f3c4eed15b7f0cc283cbbcd74a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.46
+
 ## [0.14.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.0...openai-v0.14.1) (2025-09-05)
 
 

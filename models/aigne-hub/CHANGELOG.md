@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.8.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.8...aigne-hub-v0.8.9) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.12.2
+    * @aigne/bedrock bumped to 0.9.20
+    * @aigne/core bumped to 1.58.2
+    * @aigne/deepseek bumped to 0.7.39
+    * @aigne/doubao bumped to 1.0.33
+    * @aigne/gemini bumped to 0.12.2
+    * @aigne/ideogram bumped to 0.3.9
+    * @aigne/ollama bumped to 0.7.39
+    * @aigne/open-router bumped to 0.7.39
+    * @aigne/openai bumped to 0.14.2
+    * @aigne/poe bumped to 1.0.19
+    * @aigne/transport bumped to 0.15.2
+    * @aigne/xai bumped to 0.7.39
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.46
+
 ## [0.8.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.7...aigne-hub-v0.8.8) (2025-09-05)
 
 

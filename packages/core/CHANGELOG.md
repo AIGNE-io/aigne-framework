@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.58.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.57.5...core-v1.58.0) (2025-09-05)
+
+
+### Features
+
+* add modalities support for chat model ([#454](https://github.com/AIGNE-io/aigne-framework/issues/454)) ([70d1bf6](https://github.com/AIGNE-io/aigne-framework/commit/70d1bf631f4e711235d89c6df8ee210a19179b30))
+
+
+### Bug Fixes
+
+* add disabled observability env ([#453](https://github.com/AIGNE-io/aigne-framework/issues/453)) ([3e01107](https://github.com/AIGNE-io/aigne-framework/commit/3e01107deb07d3e4eb6fbe49a7b39919fa412df1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.10.2
+
 ## [1.57.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.57.4...core-v1.57.5) (2025-09-01)
 
 

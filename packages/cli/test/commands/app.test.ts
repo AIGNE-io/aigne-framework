@@ -121,6 +121,7 @@ test("app command should register doc-smith to yargs", async () => {
       -v, --version     Show version number                                [boolean]
           --chat        Run chat loop in terminal         [boolean] [default: false]
       -i, --input       Input to the agent, use @<file> to read from a file  [array]
+          --input-file  Input files to the agent                             [array]
           --format      Input format for the agent (available: text, json, yaml
                         default: text)    [string] [choices: "text", "json", "yaml"]
       -o, --output      Output file to save the result (default: stdout)    [string]

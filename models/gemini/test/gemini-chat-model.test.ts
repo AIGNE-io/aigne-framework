@@ -10,6 +10,7 @@ import {
   createWeatherToolExpected,
   createWeatherToolMessages,
 } from "@aigne/test-utils/utils/openai-like-utils.js";
+import type { GenerateContentResponse } from "@google/genai";
 
 test("Gemini chat model basic usage", async () => {
   // #region example-gemini-chat-model
@@ -169,4 +170,104 @@ test("GeminiChatModel should reset last message role from system to user", async
       ],
     }),
   );
+});
+
+test("GeminiChatModel should support image mode", async () => {
+  const generateSpy = spyOn(
+    model.googleClient.models,
+    "generateContentStream",
+  ).mockResolvedValueOnce(
+    (async function* (): AsyncGenerator<GenerateContentResponse> {
+      const common = {
+        text: undefined,
+        data: undefined,
+        functionCalls: undefined,
+        executableCode: undefined,
+        codeExecutionResult: undefined,
+      };
+      yield { ...common, candidates: [{ content: { parts: [{ text: "hello" }] } }] };
+      yield { ...common, candidates: [{ content: { parts: [{ text: " world" }] } }] };
+      yield {
+        ...common,
+        candidates: [
+          {
+            content: {
+              parts: [{ inlineData: { data: Buffer.from("test image").toString("base64") } }],
+            },
+          },
+        ],
+      };
+    })(),
+  );
+
+  const result = await model.invoke({
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "Remove background form following image" },
+          { type: "file", data: Buffer.from("hello").toString("base64") },
+        ],
+      },
+    ],
+    modelOptions: {
+      model: "gemini-2.5-flash-image-preview",
+      modalities: ["text", "image"],
+    },
+  });
+
+  expect(result).toMatchInlineSnapshot(
+    { files: [{ path: expect.any(String) }] },
+    `
+    {
+      "files": [
+        {
+          "filename": undefined,
+          "mimeType": undefined,
+          "path": Any<String>,
+          "type": "local",
+        },
+      ],
+      "text": "hello world",
+    }
+  `,
+  );
+  expect(generateSpy.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      {
+        "config": {
+          "frequencyPenalty": undefined,
+          "presencePenalty": undefined,
+          "responseModalities": [
+            "text",
+            "image",
+          ],
+          "systemInstruction": [],
+          "temperature": undefined,
+          "toolConfig": {
+            "functionCallingConfig": undefined,
+          },
+          "tools": [],
+          "topP": undefined,
+        },
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "Remove background form following image",
+              },
+              {
+                "inlineData": {
+                  "data": "aGVsbG8=",
+                  "mimeType": undefined,
+                },
+              },
+            ],
+            "role": "user",
+          },
+        ],
+        "model": "gemini-2.5-flash-image-preview",
+      },
+    ]
+  `);
 });

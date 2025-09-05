@@ -480,6 +480,8 @@ export class AIGNEContext implements Context {
     args: Args<K, ContextEmitEventMap>,
     b: AgentEvent,
   ): Promise<void> {
+    if (process.env.AIGNE_OBSERVABILITY_DISABLED) return;
+
     const span = this.span;
     if (!span) return;
 

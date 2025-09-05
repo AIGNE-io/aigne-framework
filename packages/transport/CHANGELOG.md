@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.15.0](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.14.16...transport-v0.15.0) (2025-09-05)
+
+
+### Features
+
+* add modalities support for chat model ([#454](https://github.com/AIGNE-io/aigne-framework/issues/454)) ([70d1bf6](https://github.com/AIGNE-io/aigne-framework/commit/70d1bf631f4e711235d89c6df8ee210a19179b30))
+
+
+### Bug Fixes
+
+* support error hooks for AIGNEHTTPServer ([#456](https://github.com/AIGNE-io/aigne-framework/issues/456)) ([37197c8](https://github.com/AIGNE-io/aigne-framework/commit/37197c8f2db757974f35ce836be12f07b568b4c6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.14.0
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.37
+    * @aigne/core bumped to 1.58.0
+    * @aigne/default-memory bumped to 1.2.0
+    * @aigne/test-utils bumped to 0.5.44
+
 ## [0.14.16](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.14.15...transport-v0.14.16) (2025-09-01)
 
 

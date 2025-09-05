@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.1...observability-api-v0.10.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* delete all observability data ([#451](https://github.com/AIGNE-io/aigne-framework/issues/451)) ([4176743](https://github.com/AIGNE-io/aigne-framework/commit/4176743afbd2aadf6777e39c29b45d65d21b751a))
+
 ## [0.10.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.0...observability-api-v0.10.1) (2025-08-26)
 
 

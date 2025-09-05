@@ -1,9 +1,9 @@
 {
-  "name": "@aigne/example-workflow-concurrency",
-  "version": "1.16.57",
-  "description": "A demonstration of using AIGNE Framework to build a concurrency workflow",
+  "name": "@aigne/example-nano-banana",
+  "version": "1.0.0",
+  "description": "A demonstration of using AIGNE Framework for image generating or editing.",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
-  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-concurrency",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/nano-banana",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -18,13 +18,14 @@
   "scripts": {
     "start": "bun run index.ts",
     "lint": "tsc --noEmit",
-    "test:llm": "bun test"
+    "test:llm": "exit 0"
   },
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "@aigne/openai": "workspace:^"
+    "@aigne/default-memory": "workspace:^",
+    "@aigne/fs-memory": "workspace:^"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

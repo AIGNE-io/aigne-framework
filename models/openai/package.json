@@ -1,6 +1,6 @@
 {
   "name": "@aigne/openai",
-  "version": "0.13.7",
+  "version": "0.14.0",
   "description": "AIGNE OpenAI SDK for integrating with OpenAI's GPT models and API services",
   "publishConfig": {
     "access": "public"
@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@aigne/core": "workspace:^",
+    "@aigne/platform-helpers": "workspace:^",
     "ajv": "^8.17.1",
     "openai": "^5.8.3",
     "uuid": "^11.1.0",

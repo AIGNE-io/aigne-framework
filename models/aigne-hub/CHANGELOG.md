@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.8.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.6...aigne-hub-v0.8.7) (2025-09-05)
+
+
+### Bug Fixes
+
+* add model for image mode input params ([#450](https://github.com/AIGNE-io/aigne-framework/issues/450)) ([3500a5a](https://github.com/AIGNE-io/aigne-framework/commit/3500a5ae5d420c7e735f2fa57729a9fe524320e8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.12.0
+    * @aigne/bedrock bumped to 0.9.18
+    * @aigne/core bumped to 1.58.0
+    * @aigne/deepseek bumped to 0.7.37
+    * @aigne/doubao bumped to 1.0.31
+    * @aigne/gemini bumped to 0.12.0
+    * @aigne/ideogram bumped to 0.3.7
+    * @aigne/ollama bumped to 0.7.37
+    * @aigne/open-router bumped to 0.7.37
+    * @aigne/openai bumped to 0.14.0
+    * @aigne/poe bumped to 1.0.17
+    * @aigne/transport bumped to 0.15.0
+    * @aigne/xai bumped to 0.7.37
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.44
+
 ## [0.8.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.5...aigne-hub-v0.8.6) (2025-09-01)
 
 

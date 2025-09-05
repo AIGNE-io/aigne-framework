@@ -14,7 +14,7 @@ test("AIGNEListr should work with default renderer", async () => {
         return "test request message";
       },
       formatResult: (result) => {
-        return [JSON.stringify(result, null, 2)];
+        return JSON.stringify(result, null, 2);
       },
     },
     [],
@@ -33,7 +33,7 @@ test("AIGNEListr should work with fallback renderer", async () => {
         return "test request message";
       },
       formatResult: (result) => {
-        return [JSON.stringify(result, null, 2)];
+        return JSON.stringify(result, null, 2);
       },
     },
     [

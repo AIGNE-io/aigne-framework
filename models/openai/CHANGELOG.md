@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.13.7...openai-v0.14.0) (2025-09-05)
+
+
+### Features
+
+* add modalities support for chat model ([#454](https://github.com/AIGNE-io/aigne-framework/issues/454)) ([70d1bf6](https://github.com/AIGNE-io/aigne-framework/commit/70d1bf631f4e711235d89c6df8ee210a19179b30))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.44
+
 ## [0.13.7](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.13.6...openai-v0.13.7) (2025-09-01)
 
 

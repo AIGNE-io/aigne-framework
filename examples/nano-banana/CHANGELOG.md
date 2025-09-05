@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.1](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.0...example-nano-banana-v1.0.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* should not return local path from aigne hub service ([#460](https://github.com/AIGNE-io/aigne-framework/issues/460)) ([c959717](https://github.com/AIGNE-io/aigne-framework/commit/c95971774f7e84dbeb3313f60b3e6464e2bb22e4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.38
+    * @aigne/cli bumped to 1.44.1
+    * @aigne/core bumped to 1.58.1
+    * @aigne/default-memory bumped to 1.2.1
+    * @aigne/fs-memory bumped to 1.0.38
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.45
+
 ## 1.0.0 (2025-09-05)
 
 

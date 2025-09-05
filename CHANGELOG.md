@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.74.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.74.0...aigne-framework-v1.74.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* should not return local path from aigne hub service ([#460](https://github.com/AIGNE-io/aigne-framework/issues/460)) ([c959717](https://github.com/AIGNE-io/aigne-framework/commit/c95971774f7e84dbeb3313f60b3e6464e2bb22e4))
+
 ## [1.74.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.73.1...aigne-framework-v1.74.0) (2025-09-05)
 
 

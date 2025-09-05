@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.8.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.7...aigne-hub-v0.8.8) (2025-09-05)
+
+
+### Bug Fixes
+
+* should not return local path from aigne hub service ([#460](https://github.com/AIGNE-io/aigne-framework/issues/460)) ([c959717](https://github.com/AIGNE-io/aigne-framework/commit/c95971774f7e84dbeb3313f60b3e6464e2bb22e4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.12.1
+    * @aigne/bedrock bumped to 0.9.19
+    * @aigne/core bumped to 1.58.1
+    * @aigne/deepseek bumped to 0.7.38
+    * @aigne/doubao bumped to 1.0.32
+    * @aigne/gemini bumped to 0.12.1
+    * @aigne/ideogram bumped to 0.3.8
+    * @aigne/ollama bumped to 0.7.38
+    * @aigne/open-router bumped to 0.7.38
+    * @aigne/openai bumped to 0.14.1
+    * @aigne/poe bumped to 1.0.18
+    * @aigne/transport bumped to 0.15.1
+    * @aigne/xai bumped to 0.7.38
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.45
+
 ## [0.8.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.6...aigne-hub-v0.8.7) (2025-09-05)
 
 

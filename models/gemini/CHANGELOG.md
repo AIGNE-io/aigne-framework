@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.12.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.12.0...gemini-v0.12.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* should not return local path from aigne hub service ([#460](https://github.com/AIGNE-io/aigne-framework/issues/460)) ([c959717](https://github.com/AIGNE-io/aigne-framework/commit/c95971774f7e84dbeb3313f60b3e6464e2bb22e4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.14.1
+  * devDependencies
+    * @aigne/core bumped to 1.58.1
+    * @aigne/test-utils bumped to 0.5.45
+
 ## [0.12.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.11.6...gemini-v0.12.0) (2025-09-05)
 
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.44.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.44.0...cli-v1.44.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* should not return local path from aigne hub service ([#460](https://github.com/AIGNE-io/aigne-framework/issues/460)) ([c959717](https://github.com/AIGNE-io/aigne-framework/commit/c95971774f7e84dbeb3313f60b3e6464e2bb22e4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.38
+    * @aigne/agentic-memory bumped to 1.0.38
+    * @aigne/aigne-hub bumped to 0.8.8
+    * @aigne/core bumped to 1.58.1
+    * @aigne/default-memory bumped to 1.2.1
+    * @aigne/openai bumped to 0.14.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.45
+
 ## [1.44.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.43.1...cli-v1.44.0) (2025-09-05)
 
 

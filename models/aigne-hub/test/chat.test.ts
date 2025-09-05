@@ -150,6 +150,7 @@ describe("AIGNEHubChatModel", async () => {
     expect(text).toEqual("Hello world!");
     expect(processSpy.mock.calls.at(-1)?.[0]).toMatchInlineSnapshot(`
       {
+        "fileOutputType": "file",
         "messages": [
           {
             "content": "hello",

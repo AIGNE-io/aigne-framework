@@ -148,7 +148,7 @@ export class AIGNEHTTPServer {
     });
 
     if (response instanceof ServerResponse) {
-      await this._writeResponse(result, response);
+      await this._writeResponse(result, response, opts?.hooks);
       return;
     }
 
@@ -284,9 +284,14 @@ export class AIGNEHTTPServer {
    *
    * @param response - The web standard Response object to write
    * @param res - The Node.js ServerResponse to write to
+   * @param callbacks - Optional callbacks for error and end events
    * @private
    */
-  async _writeResponse(response: Response, res: ServerResponse): Promise<void> {
+  async _writeResponse(
+    response: Response,
+    res: ServerResponse,
+    hooks?: AIGNEHTTPServerInvokeOptions["hooks"],
+  ): Promise<void> {
     try {
       res.writeHead(response.status, Object.fromEntries(response.headers.entries()));
       res.flushHeaders();
@@ -302,6 +307,14 @@ export class AIGNEHTTPServer {
         }
       }
     } catch (error) {
+      if (Array.isArray(hooks)) {
+        // @ts-ignore
+        hooks.forEach((hook) => hook.onError?.({ error }));
+      } else {
+        // @ts-ignore
+        hooks?.onError?.({ error });
+      }
+
       if (!res.headersSent) {
         res.writeHead(error instanceof ServerError ? error.status : 500, {
           "Content-Type": "application/json",

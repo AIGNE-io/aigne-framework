@@ -10,6 +10,8 @@ import {
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
+  type AgentResponse,
+  type AgentResponseStream,
   agentOptionsSchema,
   type Message,
 } from "./agent.js";
@@ -246,6 +248,24 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>>;
+
+  protected override async processAgentOutput(
+    input: ChatModelInput,
+    output: Exclude<AgentResponse<ChatModelOutput>, AgentResponseStream<ChatModelOutput>>,
+    options: AgentInvokeOptions,
+  ): Promise<ChatModelOutput> {
+    if (output.files) {
+      const files = z.array(fileUnionContentSchema).parse(output.files);
+      output = {
+        ...output,
+        files: await Promise.all(
+          files.map((file) => this.transformFileOutput(input, file, options)),
+        ),
+      };
+    }
+
+    return super.processAgentOutput(input, output, options);
+  }
 
   async transformFileOutput(
     input: ChatModelInput,

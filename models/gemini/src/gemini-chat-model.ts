@@ -78,12 +78,11 @@ export class GeminiChatModel extends OpenAIChatModel {
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     const model = input.modelOptions?.model || this.credential.model;
     if (!model.includes("image")) return super.process(input, options);
-    return this.handleImageModelProcessing(input, options);
+    return this.handleImageModelProcessing(input);
   }
 
   private async *handleImageModelProcessing(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<ChatModelOutput> {
     const model = input.modelOptions?.model || this.credential.model;
     const { contents, config } = await this.buildContents(input);
@@ -132,19 +131,12 @@ export class GeminiChatModel extends OpenAIChatModel {
               }
             }
             if (part.inlineData?.data) {
-              files.push(
-                await this.transformFileOutput(
-                  input,
-                  {
-                    type: "file",
-                    data: part.inlineData.data,
-                    filename: part.inlineData.displayName,
-                    mimeType: part.inlineData.mimeType,
-                  },
-                  options,
-                ),
-              );
-              yield { delta: { json: { files } } };
+              files.push({
+                type: "file",
+                data: part.inlineData.data,
+                filename: part.inlineData.displayName,
+                mimeType: part.inlineData.mimeType,
+              });
             }
 
             if (part.functionCall?.name) {
@@ -166,14 +158,14 @@ export class GeminiChatModel extends OpenAIChatModel {
       if (chunk.usageMetadata) {
         usage.inputTokens += chunk.usageMetadata.promptTokenCount || 0;
         usage.outputTokens += chunk.usageMetadata.candidatesTokenCount || 0;
-
-        yield { delta: { json: { usage } } };
       }
     }
 
     if (input.responseFormat?.type === "json_schema") {
       yield { delta: { json: { json: safeParseJSON(text) } } };
     }
+
+    yield { delta: { json: { usage, files } } };
   }
 
   private async buildConfig(input: ChatModelInput): Promise<GenerateContentParameters["config"]> {

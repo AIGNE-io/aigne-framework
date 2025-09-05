@@ -852,7 +852,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    * @param options Invocation options
    * @returns Final processed output
    */
-  private async processAgentOutput(
+  protected async processAgentOutput(
     input: I,
     output: Exclude<AgentResponse<O>, AgentResponseStream<O>>,
     options: AgentInvokeOptions,

@@ -2,7 +2,7 @@
 
 import { join } from "node:path";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
-import { AIAgent } from "@aigne/core";
+import { AIAgent, FileOutputType } from "@aigne/core";
 import { DefaultMemory } from "@aigne/default-memory";
 
 const agent = AIAgent.from({
@@ -15,11 +15,12 @@ const agent = AIAgent.from({
   ],
   inputKey: "message",
   fileInputKey: "files",
+  fileOutputType: FileOutputType.local,
 });
 
 await runWithAIGNE(agent, {
   modelOptions: {
-    model: "aignehub:gemini/gemini-2.5-flash-image-preview",
+    model: "aignehub:google/gemini-2.5-flash-image-preview",
     modalities: ["text", "image"],
   },
   chatLoopOptions: {

@@ -119,6 +119,12 @@ export async function runWithAIGNE(
     )
     .alias("h", "help")
     .alias("v", "version")
+    .fail((message, error, yargs) => {
+      if (!error) yargs.showHelp();
+
+      console.error(`\n${message || error?.message}`);
+      process.exit(1);
+    })
     .parseAsync(hideBin(argv))
     .catch((error) => {
       console.error(`${chalk.red("Error:")} ${error.message}`);

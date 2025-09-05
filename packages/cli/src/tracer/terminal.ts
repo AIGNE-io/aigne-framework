@@ -310,10 +310,12 @@ export class TerminalTracer {
       return retry;
     })();
 
-    return this.buyCreditsPromptPromise.finally(() => {
-      // Clear the promise so that we can show the prompt again if needed
-      this.buyCreditsPromptPromise = undefined;
-    });
+    return this.buyCreditsPromptPromise
+      .catch(() => "exit")
+      .finally(() => {
+        // Clear the promise so that we can show the prompt again if needed
+        this.buyCreditsPromptPromise = undefined;
+      });
   }
 
   formatTokenUsage(usage: Partial<ContextUsage>, extra?: { [key: string]: string }) {

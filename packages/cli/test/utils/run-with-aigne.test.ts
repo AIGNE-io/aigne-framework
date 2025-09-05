@@ -80,6 +80,9 @@ test("runWithAIGNE should exit with error code when run --chat in non-tty enviro
 
   expect(exit).toHaveBeenCalledWith(1);
   expect(exit).toHaveBeenLastCalledWith(1);
+
+  error.mockRestore();
+  exit.mockRestore();
 });
 
 test.each([
@@ -119,6 +122,9 @@ test.each([
 
     expect(exit).toHaveBeenCalledWith(1);
     expect(exit).toHaveBeenLastCalledWith(1);
+
+    error.mockRestore();
+    exit.mockRestore();
   },
 );
 

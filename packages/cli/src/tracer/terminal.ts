@@ -26,6 +26,7 @@ import chalk from "chalk";
 import { Marked } from "marked";
 import terminalImage from "terminal-image";
 import terminalLink from "terminal-link";
+import { withProtocol } from "ufo";
 import { AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE } from "../constants.js";
 import checkbox from "../utils/inquirer/checkbox.js";
 import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
@@ -466,7 +467,11 @@ export class TerminalTracer {
                 : undefined;
 
           const link =
-            item.type === "local" ? item.path : item.type === "url" ? item.url : undefined;
+            item.type === "local"
+              ? withProtocol(item.path, "file://")
+              : item.type === "url"
+                ? item.url
+                : undefined;
           const text = [
             link ? chalk.cyan(terminalLink(link, link)) : undefined,
             item.filename,

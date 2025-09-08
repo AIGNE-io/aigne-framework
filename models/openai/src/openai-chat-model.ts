@@ -444,6 +444,11 @@ export class OpenAIChatModel extends ChatModel {
     return streaming ? result : await agentResponseStreamToObject(result);
   }
 
+  /**
+   * Controls how optional fields are handled in JSON schema conversion
+   * - "anyOf": All fields are required but can be null (default)
+   * - "optional": Fields marked as optional in schema remain optional
+   */
   protected optionalFieldMode?: "anyOf" | "optional" = "anyOf";
 
   protected jsonSchemaToOpenAIJsonSchema(schema: Record<string, unknown>): Record<string, unknown> {

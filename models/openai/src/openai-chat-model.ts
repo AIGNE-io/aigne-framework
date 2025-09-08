@@ -458,7 +458,7 @@ export class OpenAIChatModel extends ChatModel {
         properties: Record<string, unknown>;
       };
 
-      const required = this.optionalFieldMode === "anyOf" ? Object.keys(s.properties) : [];
+      const required = this.optionalFieldMode === "anyOf" ? Object.keys(s.properties) : s.required;
 
       return {
         ...schema,

@@ -222,8 +222,6 @@ test("GeminiChatModel should support image mode", async () => {
     {
       "files": [
         {
-          "filename": undefined,
-          "mimeType": undefined,
           "path": Any<String>,
           "type": "local",
         },

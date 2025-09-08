@@ -50,3 +50,8 @@ export function ensureZodUnionArray<T extends z.ZodType>(union: T[]): [T, T, ...
   }
   return union as [T, T, ...T[]];
 }
+
+export function isZodSchema(schema: ZodType): schema is ZodType {
+  if (!schema || typeof schema !== "object") return false;
+  return typeof schema.parse === "function" && typeof schema.safeParse === "function";
+}

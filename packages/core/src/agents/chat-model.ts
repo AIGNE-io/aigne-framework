@@ -4,7 +4,13 @@ import mime from "mime";
 import { v7 } from "uuid";
 import { z } from "zod";
 import { optionalize } from "../loader/schema.js";
-import { checkArguments, type PromiseOrValue, pick } from "../utils/type-utils.js";
+import {
+  checkArguments,
+  isNil,
+  omitByDeep,
+  type PromiseOrValue,
+  pick,
+} from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
@@ -227,19 +233,6 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       }
     }
 
-    if (
-      input.responseFormat?.type === "json_schema" &&
-      // NOTE: Should not validate if there are tool calls
-      !output.toolCalls?.length
-    ) {
-      const ajv = new Ajv();
-      if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
-        throw new StructuredOutputError(
-          `Output JSON does not conform to the provided JSON schema: ${ajv.errorsText()}`,
-        );
-      }
-    }
-
     super.postprocess(input, output, options);
     const { usage } = output;
     if (usage) {
@@ -287,6 +280,22 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
           files.map((file) => this.transformFileOutput(input, file, options)),
         ),
       };
+    }
+
+    // Remove fields with `null` value for validation
+    output = omitByDeep(output, (value) => isNil(value));
+
+    if (
+      input.responseFormat?.type === "json_schema" &&
+      // NOTE: Should not validate if there are tool calls
+      !(output as ChatModelOutput).toolCalls?.length
+    ) {
+      const ajv = new Ajv();
+      if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
+        throw new StructuredOutputError(
+          `Output JSON does not conform to the provided JSON schema: ${ajv.errorsText()}`,
+        );
+      }
     }
 
     return super.processAgentOutput(input, output, options);

@@ -2,7 +2,7 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type * as prompts from "@inquirer/prompts";
 import equal from "fast-deep-equal";
 import nunjucks from "nunjucks";
-import { ZodObject, type ZodType, z } from "zod";
+import { type ZodObject, type ZodType, z } from "zod";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { ContextUsage } from "../aigne/usage.js";
@@ -10,6 +10,7 @@ import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
 import { sortHooks } from "../utils/agent-utils.js";
+import { isZodSchema } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
 import {
   agentResponseStreamToObject,
@@ -1457,7 +1458,7 @@ function checkAgentInputOutputSchema<I extends Message>(
 ): asserts schema is
   | ZodObject<{ [key in keyof I]: ZodType<I[key]> }>
   | ((agent: Agent) => ZodType<I>) {
-  if (!(schema instanceof ZodObject) && typeof schema !== "function") {
+  if (typeof schema !== "function" && !isZodSchema(schema)) {
     throw new Error(
       `schema must be a zod object or function return a zod object, got: ${typeof schema}`,
     );

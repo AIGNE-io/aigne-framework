@@ -297,7 +297,7 @@ export class OpenAIChatModel extends ChatModel {
           type: "json_schema",
           json_schema: {
             ...input.responseFormat.jsonSchema,
-            schema: jsonSchemaToOpenAIJsonSchema(input.responseFormat.jsonSchema.schema),
+            schema: this.jsonSchemaToOpenAIJsonSchema(input.responseFormat.jsonSchema.schema),
           },
         },
       };
@@ -443,6 +443,48 @@ export class OpenAIChatModel extends ChatModel {
 
     return streaming ? result : await agentResponseStreamToObject(result);
   }
+
+  protected optionalFieldMode?: "anyOf" | "optional" = "anyOf";
+
+  protected jsonSchemaToOpenAIJsonSchema(schema: Record<string, unknown>): Record<string, unknown> {
+    if (schema?.type === "object") {
+      const s = schema as {
+        required?: string[];
+        properties: Record<string, unknown>;
+      };
+
+      const required = this.optionalFieldMode === "anyOf" ? Object.keys(s.properties) : [];
+
+      return {
+        ...schema,
+        properties: Object.fromEntries(
+          Object.entries(s.properties).map(([key, value]) => {
+            const valueSchema = this.jsonSchemaToOpenAIJsonSchema(value as Record<string, unknown>);
+
+            // NOTE: All fields must be required https://platform.openai.com/docs/guides/structured-outputs/all-fields-must-be-required
+            return [
+              key,
+              this.optionalFieldMode === "optional" || s.required?.includes(key)
+                ? valueSchema
+                : { anyOf: [valueSchema, { type: ["null"] }] },
+            ];
+          }),
+        ),
+        required,
+      };
+    }
+
+    if (schema?.type === "array") {
+      const { items } = schema as { items: Record<string, unknown> };
+
+      return {
+        ...schema,
+        items: this.jsonSchemaToOpenAIJsonSchema(items),
+      };
+    }
+
+    return schema;
+  }
 }
 
 // Create role mapper for OpenAI (uses standard mapping)
@@ -522,47 +564,6 @@ export function toolsFromInputTools(
         };
       })
     : undefined;
-}
-
-/**
- * @hidden
- */
-export function jsonSchemaToOpenAIJsonSchema(
-  schema: Record<string, unknown>,
-): Record<string, unknown> {
-  if (schema?.type === "object") {
-    const { required, properties } = schema as {
-      required?: string[];
-      properties: Record<string, unknown>;
-    };
-
-    return {
-      ...schema,
-      properties: Object.fromEntries(
-        Object.entries(properties).map(([key, value]) => {
-          const valueSchema = jsonSchemaToOpenAIJsonSchema(value as Record<string, unknown>);
-
-          // NOTE: All fields must be required https://platform.openai.com/docs/guides/structured-outputs/all-fields-must-be-required
-          return [
-            key,
-            required?.includes(key) ? valueSchema : { anyOf: [valueSchema, { type: ["null"] }] },
-          ];
-        }),
-      ),
-      required: Object.keys(properties),
-    };
-  }
-
-  if (schema?.type === "array") {
-    const { items } = schema as { items: Record<string, unknown> };
-
-    return {
-      ...schema,
-      items: jsonSchemaToOpenAIJsonSchema(items),
-    };
-  }
-
-  return schema;
 }
 
 function handleToolCallDelta(

@@ -53,6 +53,7 @@ export class GeminiChatModel extends OpenAIChatModel {
   protected override supportsToolsUseWithJsonSchema = false;
   protected override supportsParallelToolCalls = false;
   protected override supportsToolStreaming = false;
+  protected override optionalFieldMode = "optional" as const;
 
   protected _googleClient?: GoogleGenAI;
 

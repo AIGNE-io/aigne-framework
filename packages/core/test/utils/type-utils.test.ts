@@ -12,6 +12,7 @@ import {
   isRecord,
   omit,
   omitBy,
+  omitByDeep,
   omitDeep,
   pick,
   remove,
@@ -112,6 +113,18 @@ test("type-utils.omitBy", async () => {
   expect(omitBy({ foo: 1, bar: 2 }, (value) => value === 1)).toEqual({ bar: 2 });
 
   expect(omitBy({ foo: 1, bar: 2 }, (_, key) => key === "foo")).toEqual({ bar: 2 });
+});
+
+test("type-utils.omitByDeep", async () => {
+  expect(omitByDeep({ foo: { bar: 1, baz: 2 }, qux: 3 }, (value) => value === 1)).toEqual({
+    foo: { baz: 2 },
+    qux: 3,
+  });
+
+  expect(omitByDeep([{ foo: { bar: 1, baz: 2 } }, { qux: 3 }], (value) => value === 1)).toEqual([
+    { foo: { baz: 2 } },
+    { qux: 3 },
+  ]);
 });
 
 test("type-utils.flat", async () => {

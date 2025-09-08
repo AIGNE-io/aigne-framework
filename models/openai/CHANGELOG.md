@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.3](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.2...openai-v0.14.3) (2025-09-08)
+
+
+### Bug Fixes
+
+* support optional field sturectured output for gemini ([#468](https://github.com/AIGNE-io/aigne-framework/issues/468)) ([70c6279](https://github.com/AIGNE-io/aigne-framework/commit/70c62795039a2862e3333f26707329489bf938de))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.47
+
 ## [0.14.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.1...openai-v0.14.2) (2025-09-05)
 
 

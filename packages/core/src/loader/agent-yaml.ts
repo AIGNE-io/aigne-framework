@@ -178,6 +178,7 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
             inputKey: optionalize(z.string()),
             outputKey: optionalize(z.string()),
             toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
+            structuredStreamMode: optionalize(z.boolean()),
           })
           .extend(baseAgentSchema.shape),
         z

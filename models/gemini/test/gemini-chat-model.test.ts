@@ -273,3 +273,72 @@ test("GeminiChatModel should support image mode", async () => {
     ]
   `);
 });
+
+test("GeminiChatModel should support optional schema", async () => {
+  const createSpy = spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
+    createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-3.txt") }),
+  );
+
+  const result = await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: `\
+What is the weather in New York?
+
+<context>
+{
+  "city": "New York",
+  "temperature": 20
+}
+</context>
+`,
+      },
+    ],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "output",
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            text: {
+              type: "string",
+              description: "Your answer",
+            },
+          },
+          required: [],
+        },
+        strict: true,
+      },
+    },
+  });
+
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The temperature in New York is 20 degrees." },
+    }),
+  );
+
+  expect(createSpy.mock.calls[0]?.[0].response_format).toMatchInlineSnapshot(`
+    {
+      "json_schema": {
+        "name": "output",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "description": "Your answer",
+              "type": "string",
+            },
+          },
+          "required": [],
+          "type": "object",
+        },
+        "strict": true,
+      },
+      "type": "json_schema",
+    }
+  `);
+});

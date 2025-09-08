@@ -308,3 +308,90 @@ What is the weather in New York?
     }),
   );
 });
+
+test("OpenAIChatModel should convert optional schema to nullable", async () => {
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_API_KEY",
+    model: "gpt-4o-mini",
+  });
+
+  const createSpy = spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
+    createMockEventStream({
+      path: join(import.meta.dirname, "openai-streaming-response-2.txt"),
+    }),
+  );
+
+  const result = await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: `\
+What is the weather in New York?
+
+<context>
+{
+  "city": "New York",
+  "temperature": 20
+}
+</context>
+`,
+      },
+    ],
+    responseFormat: {
+      type: "json_schema",
+      jsonSchema: {
+        name: "output",
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            text: {
+              type: "string",
+              description: "Your answer",
+            },
+          },
+          required: [],
+        },
+        strict: true,
+      },
+    },
+  });
+
+  expect(result).toEqual(
+    expect.objectContaining({
+      json: { text: "The current temperature in New York is 20°C." },
+    }),
+  );
+
+  expect(createSpy.mock.calls[0]?.[0].response_format).toMatchInlineSnapshot(`
+    {
+      "json_schema": {
+        "name": "output",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "anyOf": [
+                {
+                  "description": "Your answer",
+                  "type": "string",
+                },
+                {
+                  "type": [
+                    "null",
+                  ],
+                },
+              ],
+            },
+          },
+          "required": [
+            "text",
+          ],
+          "type": "object",
+        },
+        "strict": true,
+      },
+      "type": "json_schema",
+    }
+  `);
+});

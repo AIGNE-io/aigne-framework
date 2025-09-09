@@ -5,7 +5,10 @@ import { sql } from "drizzle-orm";
 import type { TraceFormatSpans } from "../../core/type.js";
 import { isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
+import getAIGNEHomePath from "../../server/utils/image-home-path.js";
+import saveFiles from "../../server/utils/save-files.js";
 import { validateTraceSpans } from "./util.js";
+
 export interface HttpExporterInterface extends SpanExporter {
   export(
     spans: ReadableSpan[],
@@ -50,6 +53,11 @@ class HttpExporter implements HttpExporterInterface {
     if (!db) throw new Error("Database not initialized");
 
     for (const trace of validatedData) {
+      if (trace.attributes?.output?.files) {
+        const dataDir = await getAIGNEHomePath();
+        trace.attributes.output.files = await saveFiles(trace.attributes.output.files, { dataDir });
+      }
+
       const insertSql = sql`
         INSERT INTO Trace (
           id,

@@ -11,3 +11,5 @@ declare namespace Express {
     };
   }
 }
+
+declare module "@abtnode/util/*";

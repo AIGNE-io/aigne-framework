@@ -8,6 +8,7 @@ import { parse, stringify } from "yaml";
 import { z } from "zod";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
+import saveFiles from "../utils/save-files.js";
 
 const router = express.Router();
 
@@ -35,9 +36,11 @@ import { createTraceBatchSchema } from "../../core/schema.js";
 export default ({
   sse,
   middleware,
+  options,
 }: {
   sse: SSE;
   middleware: express.RequestHandler[];
+  options?: { dataDir?: string };
 }): Router => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
@@ -314,6 +317,13 @@ export default ({
 
     for (const trace of validatedTraces) {
       try {
+        if (trace.attributes?.output?.files) {
+          const files = trace.attributes.output.files || [];
+          if (options?.dataDir) {
+            trace.attributes.output.files = await saveFiles(files, { dataDir: options.dataDir });
+          }
+        }
+
         const insertSql = sql`
           INSERT INTO Trace (
             id,

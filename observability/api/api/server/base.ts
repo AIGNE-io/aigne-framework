@@ -23,9 +23,12 @@ const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
   traceTreeMiddleware: z.array(expressMiddlewareSchema).optional(),
+  dataDir: z.string().optional(),
 });
 
 export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
+
+const REQUEST_ENTITY_SIZE_LIMIT = process.env.REQUEST_ENTITY_SIZE_LIMIT || "30 mb";
 
 export async function startServer(
   options: StartServerOptions,
@@ -45,14 +48,17 @@ export async function startServer(
   app.set("trust proxy", true);
   // @ts-ignore
   app.use(cookieParser());
-  app.use(express.json({ limit: "1 mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "1 mb" }));
+
+  app.use(express.json({ limit: REQUEST_ENTITY_SIZE_LIMIT }));
+  app.use(express.urlencoded({ extended: true, limit: REQUEST_ENTITY_SIZE_LIMIT }));
+
   app.use(cors());
 
   app.get("/api/sse", sse.init);
   app.use(
     "/api/trace",
     traceRouter({
+      options,
       sse,
       middleware: Array.isArray(middleware) ? middleware : [middleware],
     }),

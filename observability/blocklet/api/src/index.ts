@@ -26,6 +26,7 @@ const startServer = async () => {
     port: Number(process.env.BLOCKLET_PORT) || 3000,
     dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
     traceTreeMiddleware: [middleware.session({ accessKey: true }), requireAdminRole],
+    dataDir: process.env.BLOCKLET_DATA_DIR || "",
   });
 
   const BLOCKLET_APP_DIR = process.env.BLOCKLET_APP_DIR;

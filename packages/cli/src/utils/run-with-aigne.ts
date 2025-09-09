@@ -6,9 +6,9 @@ import {
   type Agent,
   AIAgent,
   type AIGNE,
-  type ChatModelOptions,
   DEFAULT_OUTPUT_KEY,
   type Message,
+  type ModelOptions,
   UserAgent,
 } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
@@ -72,7 +72,7 @@ export async function runWithAIGNE(
   }: {
     argv?: typeof process.argv;
     chatLoopOptions?: ChatLoopOptions;
-    modelOptions?: ChatModelOptions;
+    modelOptions?: ModelOptions;
     outputKey?: string;
   } = {},
 ) {

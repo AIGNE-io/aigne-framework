@@ -1,5 +1,5 @@
 import { AIGNE_HUB_DEFAULT_MODEL, findModel } from "@aigne/aigne-hub";
-import type { ChatModel, ChatModelOptions } from "@aigne/core";
+import type { ChatModel, ModelOptions } from "@aigne/core";
 import { flat, pick } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import inquirer from "inquirer";
@@ -71,7 +71,7 @@ export const formatModelName = async (
 };
 
 export async function loadChatModel(
-  options?: ChatModelOptions & LoadCredentialOptions,
+  options?: ModelOptions & LoadCredentialOptions,
 ): Promise<ChatModel> {
   const { provider, model } = await formatModelName(
     options?.model || process.env.MODEL || "",
@@ -79,7 +79,7 @@ export async function loadChatModel(
       (inquirer.prompt as NonNullable<LoadCredentialOptions["inquirerPromptFn"]>),
   );
 
-  const params: ChatModelOptions = {
+  const params: ModelOptions = {
     model,
     ...pick(options ?? {}, [
       "modalities",

@@ -20,7 +20,7 @@ export class AIGNEHubChatModel extends ChatModel {
     return new AIGNEHubChatModel(options);
   }
 
-  constructor(public options: AIGNEHubChatModelOptions) {
+  constructor(public override options: AIGNEHubChatModelOptions) {
     const provider = process.env.BLOCKLET_AIGNE_API_PROVIDER || AIGNEHubChatModel.name;
 
     const { match, all } = findModel(provider);

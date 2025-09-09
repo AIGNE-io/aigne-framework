@@ -290,7 +290,7 @@ export class GeminiChatModel extends OpenAIChatModel {
       )
     ).filter(isNonNullable);
 
-    if (systemParts) {
+    if (systemParts.length) {
       result.config ??= {};
       result.config.systemInstruction = systemParts;
     }

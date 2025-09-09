@@ -21,7 +21,7 @@ import {
 import { type AIGNEHubChatModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
 export class AIGNEHubChatModel extends ChatModel {
-  constructor(public options: AIGNEHubChatModelOptions) {
+  constructor(public override options: AIGNEHubChatModelOptions) {
     checkArguments("AIGNEHubChatModel", aigneHubModelOptionsSchema, options);
     super();
   }

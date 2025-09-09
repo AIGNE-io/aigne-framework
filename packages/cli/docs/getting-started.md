@@ -4,56 +4,11 @@ labels: ["Reference"]
 
 # Getting Started
 
-This guide will walk you through the essential steps to get up and running with `@aigne/cli`. You'll learn how to install the command-line tool, create a new agent project from a template, and run it locally in an interactive chat session.
+This guide will walk you through the essential steps to install the AIGNE CLI, create a new project, and run your first AI agent. By the end, you'll have a functioning agent running locally.
 
-### Development Workflow
+## Step 1: Install the AIGNE CLI
 
-The typical workflow for getting started with a new AIGNE project involves four main steps: installing the CLI, creating a project, configuring your environment, and running the agent.
-
-```d2
-direction: down
-
-User-Terminal: {
-  label: "User's Terminal"
-  shape: rectangle
-}
-
-AIGNE-Agent: {
-  label: "Interactive Agent Session"
-  shape: rectangle
-}
-
-Installation: {
-  label: "1. Install CLI\n`npm install -g @aigne/cli`"
-  shape: step
-}
-
-Project-Creation: {
-  label: "2. Create Project\n`aigne create my-first-agent`"
-  shape: step
-}
-
-Configuration: {
-  label: "3. Configure API Key\n`cd my-first-agent`\n`cp .env.local.example .env.local`"
-  shape: step
-}
-
-Execution: {
-  label: "4. Run Agent\n`aigne run --chat`"
-  shape: step
-}
-
-
-User-Terminal -> Installation: "Execute"
-Installation -> Project-Creation: "Execute"
-Project-Creation -> Configuration: "Execute"
-Configuration -> Execution: "Execute"
-Execution -> AIGNE-Agent: "Starts"
-```
-
-## 1. Install the AIGNE CLI
-
-First, you need to install the `@aigne/cli` package globally using your preferred package manager. This makes the `aigne` command available in your terminal.
+First, you need to install the `@aigne/cli` package globally on your system. You can use your preferred JavaScript package manager.
 
 ### Using npm
 
@@ -73,43 +28,39 @@ yarn global add @aigne/cli
 pnpm add -g @aigne/cli
 ```
 
-## 2. Create Your First Project
+## Step 2: Create a New Project
 
-Once the CLI is installed, create a new AIGNE project using the `aigne create` command. This command scaffolds a new project with a default file structure and configuration.
+Once the CLI is installed, you can create a new AIGNE project using the `aigne create` command. This command scaffolds a new directory with a default agent template, including all the necessary configuration files.
 
 ```bash
 aigne create my-first-agent
 ```
 
-The CLI will guide you through an interactive process, asking for the project name (if not provided) and the template to use. For now, you can accept the default options.
+The CLI will then guide you through an interactive setup process. You'll be prompted to confirm the project name and select a template. For this guide, you can accept the default options by pressing Enter.
 
-![AIGNE CLI prompting for project name](../assets/create/create-project-interactive-project-name-prompt.png)
+![Interactive project creation prompt](../assets/create/create-project-interactive-project-name-prompt.png)
 
-Upon successful creation, you will see a confirmation message with instructions on how to proceed.
+After the process completes, you'll see a success message with instructions on how to start using your new agent.
 
-![Successful project creation message](../assets/create/create-project-using-default-template-success-message.png)
+![Project creation success message](../assets/create/create-project-using-default-template-success-message.png)
 
-## 3. Configure Your API Key
+## Step 3: Set Up Environment Variables
 
-Before running the agent, you need to provide an API key for the AI model provider. The default template is configured to use OpenAI.
+Before running the agent, you need to configure your AI model provider's API key. 
 
 First, navigate into your newly created project directory:
-
 ```bash
 cd my-first-agent
 ```
 
-Next, copy the example environment file to a new `.env.local` file. This file is used to store your secret keys and is ignored by version control.
-
+The project template includes an example environment file named `.env.local.example`. Copy it to a new file named `.env.local` to create your local configuration.
 ```bash
 cp .env.local.example .env.local
 ```
 
-Now, open the `.env.local` file and add your OpenAI API key:
+Now, open the `.env.local` file in your editor. You need to add your OpenAI API key. The default template is pre-configured to use OpenAI.
 
-```shell
-# .env.local
-
+```shell .env.local icon=mdi:file-document-edit-outline
 # OpenAI
 MODEL="openai:gpt-4o-mini"
 OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
@@ -117,18 +68,20 @@ OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 
 Replace `"YOUR_OPENAI_API_KEY"` with your actual key.
 
-## 4. Run Your Agent
+## Step 4: Run Your Agent
 
-With the configuration in place, you are ready to run your agent. To start an interactive session, execute the `aigne run` command with the `--chat` flag from within your project directory.
+With the configuration in place, you can now run your agent. Execute the `aigne run` command from within your project directory.
 
 ```bash
-aigne run --chat
+aigne run
 ```
 
-This command starts a chat loop with the default agent defined in your project, allowing you to interact with it directly in your terminal.
+This command starts an interactive chat session with the default agent defined in your project. You can now start sending messages and interacting with your AI agent directly in the terminal.
 
-![AIGNE CLI running the default agent in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
+![Running the default agent in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
 
 ## Next Steps
 
-You have successfully installed the AIGNE CLI, created a new project, and run your first agent. To understand the structure of the project you just created and how agents and skills are defined, head over to the [Core Concepts](./core-concepts.md) section.
+Congratulations! You've successfully installed the AIGNE CLI, created a project, and run your first agent. 
+
+To understand the files you've just created and how an AIGNE project is structured, head over to the [Core Concepts](./core-concepts.md) section.

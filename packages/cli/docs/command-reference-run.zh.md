@@ -2,212 +2,208 @@
 labels: ["Reference"]
 ---
 
----labels: ["Reference"]---
-
 # aigne run
 
-`aigne run` 命令用于从本地目录或远程 URL 执行一个 agent。它是在开发过程中测试 agent 并与之交互的主要命令，提供了交互式聊天模式、动态模型选择以及灵活的输入/输出处理等功能。
+`aigne run` 命令是执行 AIGNE agent 的主要方式。它可以从本地项目目录或直接从远程 URL 运行 agent。它提供了一套灵活的选项，用于提供输入、配置 AI 模型和处理输出，包括用于对话式 agent 的交互式聊天模式。
 
 ## 用法
 
-```bash
-# 在当前目录中运行默认 agent
-aigne run
-
-# 从指定的本地路径运行 agent
-aigne run --path /path/to/your/project
-
-# 从远程 Git 仓库或 tarball URL 运行 agent
-aigne run https://github.com/user/repo.git
-
-# 运行项目中的特定 agent
-aigne run mySpecificAgent
-
-# 与 agent 开始交互式聊天会话
-aigne run --chat
+```bash Basic Syntax
+aigne run [path] [agent_name] [options]
 ```
+
+### 参数
+
+-   `[path]` (可选): AIGNE 项目目录的路径或远程 URL (例如，Git 仓库)。如果省略，则默认为当前目录 (`.`)。
+-   `[agent_name]` (可选): 要从项目中运行的特定 agent。如果项目在 `aigne.yaml` 中定义了默认的 `chat` agent，则将使用该 agent。否则，您必须指定要运行哪个 agent。
 
 ## 工作原理
 
-`run` 命令遵循一系列步骤来准备环境并执行 agent。此过程包括解析路径、在必要时下载远程包、初始化 AIGNE 引擎，然后单次运行或在聊天循环中运行所选的 agent。
+`run` 命令首先加载 AIGNE 应用程序。如果提供了远程 URL，它会在继续之前在本地下载并缓存项目。然后，它会解析命令行参数，并使用给定的输入和模型配置执行指定的 agent。
 
-```d2
+```d2 Remote Execution Flow icon=lucide:workflow
 direction: down
 
-start: {
-  label: "开始: aigne run [path]"
-  shape: circle
+User: {
+  shape: c4-person
+  label: "用户"
 }
 
-check_path: {
-  label: "路径是远程 URL 吗？"
-  shape: diamond
+CLI: {
+  label: "@aigne/cli"
+  
+  Download: {
+    label: "下载包"
+  }
+
+  Extract: {
+    label: "提取包"
+  }
+
+  Load: {
+    label: "加载应用程序"
+  }
+
+  Execute: {
+    label: "执行 Agent"
+  }
 }
 
-handle_remote: {
-  label: "处理远程项目"
-  shape: package
-
-  download: "下载并解压包\n至本地缓存 (~/.aigne)"
+Remote-URL: {
+  label: "远程 URL\n(例如，GitHub)"
+  shape: cylinder
 }
 
-handle_local: {
-  label: "处理本地项目"
-  shape: package
-
-  resolve_path: "解析本地目录路径"
+Cache-Dir: {
+  label: "缓存目录\n(~/.aigne/.download)"
+  shape: cylinder
 }
 
-init_aigne: {
-  label: "初始化 AIGNE 引擎"
-  shape: rectangle
-
-  load_env: "加载 .env 文件"
-  load_config: "加载 aigne.yaml"
-  init_engine: "实例化模型、agent、技能"
+Local-Dir: {
+  label: "本地目录\n(~/.aigne/<hostname>/...)"
+  shape: cylinder
 }
 
-build_commands: {
-  label: "构建 Agent 命令"
-  shape: rectangle
-
-  sub_parser: "为 agent 创建子解析器"
-  add_agents: "将每个 agent 添加为子命令"
-}
-
-parse_args: {
-  label: "解析 Agent 和选项"
-  shape: parallelogram
-}
-
-execute_agent: {
-  label: "执行所选 Agent"
-  shape: rectangle
-}
-
-shutdown: {
-  label: "关闭 AIGNE 引擎"
-  shape: rectangle
-}
-
-end: {
-  label: "结束"
-  shape: circle
-}
-
-
-start -> check_path
-check_path -> handle_remote: "是"
-check_path -> handle_local: "否"
-handle_remote -> init_aigne
-handle_local -> init_aigne
-init_aigne -> build_commands
-build_commands -> parse_args
-parse_args -> execute_agent
-execute_agent -> shutdown
-shutdown -> end
+User -> CLI: "aigne run <url>"
+CLI.Download -> Remote-URL: "1. 获取项目"
+Remote-URL -> CLI.Download: "2. 返回 tarball"
+CLI.Download -> Cache-Dir: "3. 保存 tarball"
+CLI.Extract -> Cache-Dir: "4. 读取 tarball"
+CLI.Extract -> Local-Dir: "5. 解压项目文件"
+CLI.Load -> Local-Dir: "6. 加载 aigne.yaml 和 .env"
+CLI.Execute -> CLI.Load: "7. 运行 agent"
+CLI.Execute -> User: "8. 显示输出"
 ```
 
-## 选项
+## 示例
 
-`run` 命令支持多种选项以自定义其行为。
+### 运行本地 Agent
+
+从本地文件系统上的项目执行 agent。
+
+```bash Run from current directory icon=lucide:folder-dot
+# 在当前目录中运行默认 agent
+aigne run
+```
+
+```bash Run a specific agent icon=lucide:locate-fixed
+# 运行位于特定项目路径下的 'translator' agent
+aigne run path/to/my-project translator
+```
+
+### 运行远程 Agent
+
+您可以直接从 Git 仓库或 tarball URL 运行 agent。CLI 会处理在您的主目录 (`~/.aigne`) 中下载和缓存项目的过程。
+
+```bash Run from a GitHub repository icon=lucide:github
+aigne run https://github.com/AIGNE-io/aigne-framework.git
+```
+
+### 在交互式聊天模式下运行
+
+对于对话式 agent，请使用 `--chat` 标志启动一个交互式终端会话。
+
+![在聊天模式下运行 agent](../assets/run/run-default-template-project-in-chat-mode.png)
+
+```bash Start a chat session icon=lucide:messages-square
+aigne run --chat
+```
+
+在聊天循环中，您可以使用 `/exit` 等命令退出，使用 `/help` 获取帮助。您还可以通过在路径前加上 `@` 前缀，将本地文件附加到消息中。
+
+```
+💬 告诉我关于这个文件的信息：@/path/to/my-document.pdf
+```
+
+## 为 Agent 提供输入
+
+根据 agent 在 `aigne.yaml` 中定义的输入结构，有多种方式可以为您的 agent 提供输入。
+
+#### 作为命令行选项
+
+如果一个 agent 的输入结构定义了特定参数（例如 `text`、`targetLanguage`），您可以将它们作为命令行选项传递。
+
+```bash Pass agent-specific parameters icon=lucide:terminal
+# 假设 'translator' agent 有 'text' 和 'targetLanguage' 输入
+aigne run translator --text "Hello, world!" --targetLanguage "Spanish"
+```
+
+#### 来自标准输入 (stdin)
+
+您可以将内容直接通过管道传递给 `run` 命令。这对于链接命令非常有用。
+
+```bash Pipe input to an agent icon=lucide:pipe
+echo "Summarize this important update." | aigne run summarizer
+```
+
+#### 来自文件
+
+使用 `@` 前缀从文件中读取内容并将其作为输入传递。
+
+-   **`--input @<file>`**：将整个文件内容作为主要输入读取。
+-   **`--<param> @<file>`**：为特定的 agent 参数读取文件内容。
+
+```bash Read input from a file icon=lucide:file-text
+# 使用 document.txt 的内容作为主要输入
+aigne run summarizer --input @document.txt
+
+# 为多个参数提供结构化的 JSON 输入
+aigne run translator --input @request-data.json --format json
+```
+
+#### 多媒体文件输入
+
+对于处理图像或文档等文件（例如，视觉模型）的 agent，请使用 `--input-file` 选项。
+
+```bash Attach a file for a vision agent icon=lucide:image-plus
+aigne run image-describer --input-file cat.png --input "What is in this image?"
+```
+
+## 选项参考
 
 ### 通用选项
 
 | Option | Description |
 |---|---|
-| `path` | 位置参数，指定 agent 目录的路径或 AIGNE 项目的 URL。默认为当前目录 (`.`)。 |
-| `agent` | 位置参数，指定要运行的 agent 的名称。如果未提供，AIGNE 会显示可用 agent 列表，或者如果已配置默认 agent，则运行默认 agent。 |
-| `--chat` | 在终端的交互式聊天循环中运行 agent。此模式非常适合对话式 agent。默认值：`false`。 |
-| `--cache-dir <dir>` | 从 URL 运行时，此选项指定用于下载和缓存远程包的目录。默认为 `~/.aigne/<hostname>/<pathname>`。 |
+| `--chat` | 在终端中以交互式聊天循环方式运行 agent。 |
+| `--log-level <level>` | 设置日志记录级别。可用级别：`debug`、`info`、`warn`、`error`、`silent`。默认值：`silent`。 |
 
-### 模型配置
+### 模型选项
+
+这些选项允许您覆盖在 `aigne.yaml` 中定义的模型配置。
 
 | Option | Description |
 |---|---|
-| `--model <provider[:model]>` | 指定要使用的 AI 模型，例如 'openai' 或 'openai:gpt-4o-mini'。此选项会覆盖在 `aigne.yaml` 中配置的模型。 |
-| `--temperature <value>` | 设置模型的温度 (0.0-2.0) 以控制随机性。 |
-| `--top-p <value>` | 设置模型的 top-p (核心采样) 参数 (0.0-1.0) 以控制多样性。 |
-| `--presence-penalty <value>` | 设置存在惩罚 (-2.0 到 2.0) 以阻止重复的词元。 |
-| `--frequency-penalty <value>` | 设置频率惩罚 (-2.0 到 2.0) 以阻止高频词元。 |
+| `--model <provider[:model]>` | 指定要使用的 AI 模型（例如，'openai' 或 'openai:gpt-4o-mini'）。 |
+| `--temperature <value>` | 模型温度（0.0-2.0）。值越高，随机性越大。 |
+| `--top-p <value>` | 模型 top-p / 核心采样（0.0-1.0）。控制响应的多样性。 |
+| `--presence-penalty <value>` | 存在惩罚（-2.0 到 2.0）。对重复的令牌进行惩罚。 |
+| `--frequency-penalty <value>` | 频率惩罚（-2.0 到 2.0）。对频繁出现的令牌进行惩罚。 |
+| `--aigne-hub-url <url>` | 用于获取远程模型或 agent 的自定义 AIGNE Hub 服务 URL。 |
 
-### 输入与输出
+### 输入与输出选项
 
 | Option | Alias | Description |
 |---|---|---|
-| `--input <value>` | `-i` | 为 agent 提供输入。可多次指定。使用 `@<file>` 从文件读取输入。 |
-| `--format <format>` | | 从文件或标准输入读取时，指定输入的格式。可以是 `json` 或 `yaml`。 |
-| `--output <file>` | `-o` | 将 agent 的结果保存到指定文件，而不是打印到标准输出。 |
-| `--output-key <key>` | | 要保存到输出文件的 agent 结果对象中的键。默认为 `output`。 |
-| `--force` | | 如果输出文件已存在，此选项允许覆盖它。如果父目录不存在，它也会创建父目录。默认值：`false`。 |
+| `--input <value>` | `-i` | 提供给 agent 的输入。可以多次指定。使用 `@<file>` 从文件中读取。 |
+| `--input-file <path>` | | agent 的输入文件路径（例如，用于视觉模型）。可以多次指定。 |
+| `--format <format>` | | 使用 `--input @<file>` 时的输入格式。可选值：`text`、`json`、`yaml`。 |
+| `--output <file>` | `-o` | 用于保存结果的文件路径。默认打印到标准输出。 |
+| `--output-key <key>` | | agent 结果对象中要保存到输出文件的键。默认为 `output`。 |
+| `--force` | | 如果输出文件已存在，则覆盖它。如果父目录不存在，则创建它们。 |
 
-### 其他选项
+---
 
-| Option | Description |
-|---|---|
-| `--log-level <level>` | 设置日志的详细程度。可用级别：`debug`、`info`、`warn`、`error`、`silent`。 |
-| `--aigne-hub-url <url>` | 指定用于获取远程模型或凭证的自定义 AIGNE Hub 服务 URL。 |
+## 后续步骤
 
-## 场景与示例
-
-### 交互式聊天模式
-
-要与您的 agent 进行连续对话，请使用 `--chat` 标志。这对于测试聊天机器人或助手非常有用。
-
-```bash
-aigne run --chat
-```
-
-这将启动一个会话，您可以在其中输入消息并接收来自 agent 的响应。您可以输入 `/exit` 结束会话，或输入 `/help` 查看可用命令列表。
-
-![在聊天模式下运行项目](../assets/run/run-default-template-project-in-chat-mode.png)
-
-### 从文件提供输入
-
-您可以使用 `@` 前缀将文件的内容作为输入传递给 agent。这对于复杂或冗长的输入非常有用。
-
-```bash
-# 将 'prompt.txt' 的内容作为主要输入传递
-aigne run --input @prompt.txt
-
-# 如果 agent 的输入结构 (InputSchema) 有一个名为 'document' 的字段
-aigne run --document @document.md
-```
-
-如果文件是 JSON 或 YAML 文件，CLI 可以根据文件扩展名（`.json`、`.yaml`、`.yml`）自动解析它。您也可以使用 `--format` 显式指定格式。
-
-```bash
-# AIGNE 将解析 data.json 并将其键映射到 agent 的输入结构 (InputSchema)
-aigne run --input @data.json
-
-# 显式地将 input.txt 作为 YAML 处理
-aigne run --input @input.txt --format yaml
-```
-
-### 指定模型和参数
-
-您可以直接从命令行覆盖单次运行的默认模型及其设置。
-
-```bash
-# 使用特定的 OpenAI 模型和更高的温度运行 agent，以获得更具创造性的响应
-aigne run --model openai:gpt-4o-mini --temperature 1.2
-```
-
-### 保存 Agent 输出
-
-要将 agent 执行的结果保存到文件，请使用 `--output` 标志。
-
-```bash
-# 运行 agent 并将完整的 JSON 结果保存到 result.json
-aigne run --input "Summarize the latest AI news" --output result.json
-```
-
-如果您只需要输出中的特定字段（例如，文本内容），可以使用 `--output-key`。
-
-```bash
-# 假设 agent 返回 { "summary": "...", "sources": [...] }
-# 此命令仅将摘要文本保存到 summary.txt
-aigne run --input "Summarize..." --output summary.txt --output-key summary
-```
-
-对于更高级的用例，例如将您的 agent 部署为服务，请参阅 [`aigne serve-mcp`](./command-reference-serve-mcp.md) 命令。
+<x-cards>
+  <x-card data-title="aigne observe" data-icon="lucide:monitor-dot" data-href="/command-reference/observe">
+    了解如何启动可观测性服务器以查看 agent 运行的详细跟踪记录。
+  </x-card>
+  <x-card data-title="运行远程 Agent" data-icon="lucide:cloudy" data-href="/guides/running-remote-agents">
+    深入了解直接从远程 URL 执行 agent 的具体细节。
+  </x-card>
+  <x-card data-title="创建自定义 Agent" data-icon="lucide:bot" data-href="/guides/creating-a-custom-agent">
+    开始构建您自己的 agent 和技能，以便与 AIGNE CLI 一起使用。
+  </x-card>
+</x-cards>

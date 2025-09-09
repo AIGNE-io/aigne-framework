@@ -4,73 +4,70 @@ labels: ["Reference"]
 
 # 核心概念
 
-要高效地使用 AIGNE 进行构建，理解项目的基本组件至关重要。本节将介绍几个关键概念：以 `aigne.yaml` 为核心的项目结构，以及被称为 Agents 和技能的可执行单元。这些元素共同协作，以创建模块化且功能强大的 AI 应用程序。
+AIGNE 项目为开发、测试和部署 AI Agent 提供了结构化环境。项目的核心是一个目录，其中包含定义 Agent、其可用技能以及其连接的语言模型的配置文件。本节将详细介绍这些基本构建块。
+
+## 项目结构
+
+当你使用 `aigne create` 创建新项目时，它会搭建一个标准的目录结构以保持组件的组织性。一个典型的项目如下所示：
+
+```text Project Structure icon=mdi:folder-open
+my-agent-project/
+├── aigne.yaml        # 主项目配置文件。
+├── agents/           # Agent 定义文件目录。
+│   └── chat.yaml     # Agent 定义示例。
+└── skills/           # 技能实现文件目录。
+    └── sandbox.js    # 技能实现示例。
+```
+
+这种结构将配置（`aigne.yaml`、`agents/`）与实现（`skills/`）分离开来，使你的项目模块化且易于管理。
+
+## 整体工作原理
+
+下图展示了 AIGNE 项目核心组件之间的关系。核心的 `aigne.yaml` 文件统筹全局，定义了存在的 Agent、它们可以使用的技能以及为其智能提供支持的 AI 模型。
 
 ```d2
 direction: down
 
-AIGNE-Project: {
-  shape: package
-  label: "AIGNE 项目"
-
-  aigne-yaml: {
-    shape: document
-    label: "aigne.yaml\n(项目清单)"
-  }
-
-  Agents: {
-    shape: package
-    chat-yaml: {
-      shape: document
-      label: "chat.yaml"
-    }
-  }
-
-  Skills: {
-    shape: package
-    sandbox-js: {
-      shape: document
-      label: "sandbox.js"
-    }
-  }
-
-  aigne-yaml -> Agents.chat-yaml: "注册"
-  aigne-yaml -> Skills.sandbox-js: "注册"
-  Agents.chat-yaml -> Skills.sandbox-js: "使用"
+aigne-yaml: {
+  label: "aigne.yaml"
+  shape: rectangle
 }
+
+agent: {
+  label: "Agent\n（例如，chat.yaml）"
+  shape: rectangle
+}
+
+skill: {
+  label: "技能\n（例如，sandbox.js）"
+  shape: rectangle
+}
+
+chat-model: {
+  label: "聊天模型\n（例如，gpt-4o-mini）"
+  shape: cylinder
+}
+
+aigne-yaml -> agent: "定义"
+aigne-yaml -> skill: "注册"
+aigne-yaml -> chat-model: "配置"
+agent -> skill: "使用"
+agent -> chat-model: "与之通信"
 ```
 
-## 项目结构与配置
+要理解 AIGNE 项目的工作原理，必须掌握其两个主要组成部分：核心项目配置以及可执行的 Agent 和技能。下文将对它们进行更详细的探讨。
 
-`aigne.yaml` 文件是每个 AIGNE 项目的核心清单。它作为配置的唯一真实来源，用于定义项目元数据、指定默认聊天模型以及注册所有的 Agents 和技能。通过在单一文件中管理这些关系，`aigne.yaml` 为复杂的项目提供了清晰且有组织的结构。
-
-要了解所有可用属性和配置选项的完整说明，请参阅 [项目配置 (aigne.yaml)](./core-concepts-project-configuration.md) 文档。
-
-## Agents 与技能
-
-Agents 和技能是 AIGNE 项目中的主要可执行组件，代表了 AI 应用程序的逻辑和功能。
-
-### Agents
-**Agent** 是一个旨在执行任务的实体。它由一组指令定义，能够记录交互历史，并利用一项或多项技能来实现其目标。Agents 通常在各自的 YAML 文件（例如 `chat.yaml`）中定义，用于指定其行为和可供使用的工具。
-
-### 技能
-**技能** 是 Agent 可以调用的可复用工具或函数。技能提供具体、封装的功能，例如执行 JavaScript 代码 (`sandbox.js`) 或与文件系统交互。这种模块化的方法使你能够通过组合简单、可复用且可测试的组件来构建复杂的 Agent 行为。
-
-以下是默认 `chat` agent 运行的示例，它使用其技能来响应用户输入：
-
-![一个在聊天模式下运行的 agent](../assets/run/run-default-template-project-in-chat-mode.png)
-
-若要了解如何定义和组织这些组件，请参阅详细的 [Agents 与技能](./core-concepts-agents-and-skills.md) 指南。
-
-## 后续步骤
-
-掌握了这些核心概念后，你就可以开始探索项目配置的具体细节，并学习如何构建自己的 Agents 和技能。以下各节将为每个组件提供深入的讲解。
-
-<x-cards data-columns="2">
+<x-cards>
   <x-card data-title="项目配置 (aigne.yaml)" data-icon="lucide:file-cog" data-href="/core-concepts/project-configuration">
-    深入了解主项目配置文件的详细信息及其属性。
+    这是项目的主清单文件。它定义了要使用的聊天模型，列出了可用的 Agent，并注册了这些 Agent 可以访问的技能。
   </x-card>
-  <x-card data-title="Agents 与技能" data-icon="lucide:bot" data-href="/core-concepts/agents-and-skills">
-    了解如何具体定义和创建项目的核心可执行组件。
+  <x-card data-title="Agent 和技能" data-icon="lucide:bot" data-href="/core-concepts/agents-and-skills">
+    Agent 是执行任务的核心角色，由其指令和能力定义。技能是 Agent 使用的工具，实现为提供特定功能的函数（例如，JavaScript 模块）。
   </x-card>
 </x-cards>
+
+---
+
+有了这些基础知识，你就可以深入了解如何配置项目了。
+
+**下一步**：在[项目配置 (aigne.yaml)](./core-concepts-project-configuration.md) 指南中了解有关主配置文件的更多信息。

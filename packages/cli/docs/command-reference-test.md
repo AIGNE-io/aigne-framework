@@ -4,128 +4,53 @@ labels: ["Reference"]
 
 # aigne test
 
-The `aigne test` command runs automated tests for the agents and skills within your project. It discovers and executes test files, helping to verify the functionality and correctness of your code.
-
-This command is essential for maintaining code quality and ensuring that your agents behave as expected before deployment.
+The `aigne test` command executes automated tests for your agents and skills, providing a built-in mechanism for unit and integration testing. This ensures that your agents and the tools they rely on function correctly before deployment.
 
 ## Usage
 
-To execute tests, navigate to your project's root directory or specify the path to it.
-
-```bash
-# Run tests for the project in the current directory
-aigne test
-
-# Run tests for a project at a specific path
+```bash Basic Syntax
 aigne test [path]
 ```
 
 ## Arguments
 
-| Argument | Description                                                                 |
-|----------|-----------------------------------------------------------------------------|
-| `path`   | Optional. The path to the directory containing the agents you want to test. Defaults to the current directory if not specified. |
+| Argument      | Description                                                                                                |
+|---------------|------------------------------------------------------------------------------------------------------------|
+| `[path]`      | Optional. The path to the directory containing your agents and their corresponding test files. If omitted, the command searches for tests in the current directory. |
 
-## Testing Workflow
+## Description
 
-The `aigne test` command integrates into the development lifecycle to ensure code reliability. The process involves writing code, creating corresponding tests, running the test command, and then iterating based on the results.
-
-```d2
-direction: down
-
-Dev-Cycle: {
-  shape: package
-  label: "Development Cycle"
-  grid-columns: 1
-
-  Write-Code: {
-    shape: rectangle
-    label: "1. Write/Update Code\n(e.g., sandbox.js)"
-  }
-
-  Write-Tests: {
-    shape: rectangle
-    label: "2. Write/Update Tests\n(e.g., sandbox.test.js)"
-  }
-
-  Execute-Command: {
-    shape: rectangle
-    label: "3. Run 'aigne test'"
-  }
-
-  Test-Runner: {
-    shape: package
-    label: "AIGNE Test Runner"
-    Test-Discovery: {
-      label: "Finds *.test.js files"
-      shape: rectangle
-    }
-    Test-Execution: {
-      label: "Executes tests against code"
-      shape: rectangle
-    }
-  }
-  
-  Output: {
-    shape: rectangle
-    label: "4. Review Console Output"
-  }
-
-  Decision: {
-    shape: diamond
-    label: "Tests Pass?"
-  }
-
-  Success: {
-    label: "✅ Pass"
-    style: {
-      fill: "#d4edda"
-    }
-  }
-
-  Failure: {
-    label: "❌ Fail"
-    style: {
-      fill: "#f8d7da"
-    }
-  }
-
-  Write-Code -> Write-Tests: "Alongside development"
-  Write-Tests -> Execute-Command: "To validate changes"
-  Execute-Command -> Test-Runner: "Initiates"
-  Test-Runner.Test-Discovery -> Test-Runner.Test-Execution: "Runs found tests"
-  Test-Runner -> Output: "Reports results"
-  Output -> Decision
-  Decision -> Success: "Yes"
-  Decision -> Failure: "No"
-  Failure -> Write-Code: "Debug & Refactor"
-}
-```
-
-## How It Works
-
-The test runner automatically discovers test files within the specified directory. By convention, test files should be named with a `.test.js` suffix. For example, the default project template includes a test file `sandbox.test.js` to verify the functionality of the code execution tool defined in `sandbox.js`.
+The command automatically discovers and runs test files within your project. For example, the default AIGNE project template includes a `sandbox.test.js` file designed to verify the functionality of the `sandbox.js` skill. `aigne test` will execute such files to validate your agent's capabilities.
 
 ## Examples
 
-### Run Tests in the Current Directory
+### Run tests in the current directory
 
-If you are in the root directory of your AIGNE project, you can run all tests with a single command:
+To execute test cases for the AIGNE project located in your current working directory, run the command without any arguments:
 
-```bash
+```bash icon=lucide:terminal
 aigne test
 ```
 
-### Run Tests in a Specific Directory
+### Run tests in a specific directory
 
-If your project is located elsewhere, you can provide the path to its directory:
+If your agents are located in a different directory, you can specify the path to that directory:
 
-```bash
-aigne test path/to/my-agents
+```bash icon=lucide:terminal
+aigne test path/to/agents
 ```
-
-This command will navigate to the `path/to/my-agents` directory and execute the tests found there.
 
 ---
 
-After verifying your agents with tests, you can proceed to execute them using the [`aigne run`](./command-reference-run.md) command or deploy them as a service with [`aigne serve-mcp`](./command-reference-serve-mcp.md).
+## Next Steps
+
+After ensuring your agents pass all tests, you can proceed to deploy them or integrate them into larger systems.
+
+<x-cards>
+  <x-card data-title="aigne serve-mcp" data-icon="lucide:server" data-href="/command-reference/serve-mcp">
+    Learn how to serve your agents as an MCP server for external integrations.
+  </x-card>
+  <x-card data-title="aigne deploy" data-icon="lucide:rocket" data-href="/command-reference/deploy">
+    Learn how to deploy your AIGNE application as a Blocklet.
+  </x-card>
+</x-cards>

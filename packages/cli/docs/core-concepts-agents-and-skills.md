@@ -4,39 +4,21 @@ labels: ["Reference"]
 
 # Agents and Skills
 
-In an AIGNE project, Agents and Skills are the fundamental executable components. An Agent is the primary entity that receives input and orchestrates work, while a Skill is a specific, reusable function that an Agent can call to accomplish its goals. Both are defined within your project—typically in `.yaml` files for agents and `.js` files for skills—and are referenced in the main project configuration. For more details on the project structure, see [Project Configuration (aigne.yaml)](./core-concepts-project-configuration.md).
+In the AIGNE ecosystem, Agents and Skills are the fundamental building blocks that bring your AI applications to life. They work together to create sophisticated, tool-augmented AI systems. Think of an Agent as the brain responsible for reasoning and conversation, and Skills as the tools it uses to perform actions and interact with the outside world.
 
-```d2
-direction: down
-
-agent: {
-  label: "Agent\n(e.g., Chatbot)"
-  shape: person
-}
-
-code-evaluator: {
-  label: "Skill\n(Code Evaluator)"
-  shape: hexagon
-}
-
-api-connector: {
-  label: "Skill\n(API Connector)"
-  shape: hexagon
-}
-
-agent -> code-evaluator: uses
-agent -> api-connector: uses
-```
+This section covers the definition and structure of these core components. For details on how to wire them together in your project, see the [Project Configuration (aigne.yaml)](./core-concepts-project-configuration.md) documentation.
 
 ## Agents
 
-An agent is a component designed to achieve a goal. It is guided by a set of instructions and can leverage a collection of skills to interact with users, data, or external systems.
+An Agent is the central component that processes user input, maintains context, and decides which actions to take. Its behavior is defined by a set of instructions (its core prompt) and the collection of Skills it has access to.
 
-### Standard Agent Definition
+Agents are typically defined in `.yaml` files.
 
-A standard agent is defined in a YAML file. Here is an example of a simple chat agent:
+### Agent Definition Example
 
-```yaml
+Here is a basic example of a chat agent that is equipped with a code execution skill.
+
+```yaml agent.yaml icon=mdi:robot-outline
 name: chat
 description: Chat agent
 instructions: |
@@ -48,42 +30,28 @@ skills:
   - sandbox.js
 ```
 
-**Agent Properties**
+### Agent Properties
+
+The agent's behavior is configured through several key properties in its YAML definition file:
 
 | Property       | Type      | Description                                                                                             |
 |----------------|-----------|---------------------------------------------------------------------------------------------------------|
 | `name`         | `string`  | A short, descriptive name for the agent.                                                                |
-| `description`  | `string`  | A brief summary of what the agent does.                                                                 |
-| `instructions` | `string`  | The system prompt or core instructions that guide the agent's behavior and responses.                   |
-| `input_key`    | `string`  | The key used for user input when running the agent.                                                     |
-| `memory`       | `boolean` | If `true`, the agent will maintain a memory of the conversation history.                                  |
-| `skills`       | `array`   | A list of skill files (e.g., `sandbox.js`) that this agent is equipped to use.                          |
-
-### MCP Agents
-
-Besides standard agents, AIGNE supports agents that conform to the Model Context Protocol (MCP). These are typically external tools or services wrapped as agents. They are defined with a `type` of `mcp` and specify a command to execute.
-
-```yaml
-type: mcp
-command: npx
-args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
-```
-
-This allows AIGNE to integrate with a broader ecosystem of compatible tools.
-
-![Running an MCP service](../assets/run-mcp-service.png)
+| `description`  | `string`  | A more detailed explanation of the agent's purpose.                                                     |
+| `instructions` | `string`  | The system prompt that defines the agent's personality, goals, and constraints. This is its core logic. |
+| `input_key`    | `string`  | The name of the property in the input object that contains the primary user message (e.g., `message`).   |
+| `memory`       | `boolean` | If `true`, the agent will retain conversation history, allowing for follow-up questions and context.      |
+| `skills`       | `array`   | A list of skill files (e.g., `sandbox.js`) that the agent is authorized to use.                         |
 
 ## Skills
 
-A skill is a JavaScript module that exports a function, enabling an agent to perform specific, programmatic actions like calculations, data lookups, or API calls.
+A Skill is an executable function, typically written in JavaScript, that provides an Agent with a specific capability. This could be anything from running code, fetching data from an API, or interacting with a file system. Skills are the bridge between the Large Language Model's reasoning and the execution of concrete tasks.
 
-### Skill Definition
+### Skill Definition Example
 
-Skills are defined with a clear contract, including a description and schemas for inputs and outputs. This structured approach allows the agent's underlying model to understand how and when to use the skill.
+Skills are standard Node.js modules that export a default asynchronous function. Crucially, they also export metadata that describes their purpose and defines their input/output structure, allowing the agent to understand how and when to use them.
 
-Here is an example of a `sandbox.js` skill that evaluates JavaScript code:
-
-```javascript
+```javascript sandbox.js icon=logos:javascript
 import vm from "node:vm";
 
 export default async function evaluateJs({ code }) {
@@ -112,45 +80,58 @@ evaluateJs.output_schema = {
 };
 ```
 
-**Key Components of a Skill**
+### Skill Structure
 
-*   **Default Export**: The file must export a function as its default export. This function contains the core logic of the skill.
-*   **`description`**: A string property attached to the function. It provides a natural language description of what the skill does. The agent's LLM uses this to determine when to call the function.
-*   **`input_schema`**: A JSON Schema object that defines the function's parameters. This ensures the agent calls the skill with correctly formatted data.
-*   **`output_schema`**: A JSON Schema object that defines the structure of the function's return value. This helps the agent understand the result of the skill execution.
+A skill file consists of three main parts:
+
+1.  **Default Exported Function**: The core logic of the skill. It's an `async` function that receives an object of arguments and returns a result.
+2.  **`description`**: A string property attached to the function that provides a natural language description of what the skill does. The agent's underlying LLM uses this description to determine when it's appropriate to call this skill.
+3.  **`input_schema` / `output_schema`**: JSON Schema objects that define the expected structure and types for the function's input and output. This ensures that the agent provides valid arguments and can correctly interpret the results.
 
 ## How They Work Together
 
-When a user interacts with an agent, the AIGNE engine combines the user's input, the agent's instructions, and the descriptions of its available skills into a prompt for the LLM. The LLM then decides whether to respond directly or to use a skill to gather more information or perform an action.
-
-For example, a user might ask the chat agent to perform a calculation. The agent, equipped with the `sandbox.js` skill, can evaluate the code and return the result.
-
-![A chat agent using a skill to evaluate code](../assets/run/run-default-template-project-in-chat-mode.png)
-
-The underlying process follows a clear sequence:
+The interaction between a user, an agent, and a skill follows a clear pattern. The agent acts as an intelligent orchestrator, interpreting the user's request and invoking the appropriate skill to fulfill it.
 
 ```d2
-shape: sequence_diagram
+direction: down
 
-User: User
-AIGNE-Engine: "AIGNE Engine"
-LLM: LLM
-Sandbox-Skill: "sandbox.js Skill"
+User: {
+  shape: c4-person
+}
 
-User -> AIGNE-Engine: "What is 5 * 12?"
-AIGNE-Engine -> LLM: "1. Prompt with skills"
-LLM --> AIGNE-Engine: "2. Decide to call skill"
-AIGNE-Engine -> Sandbox-Skill: "3. Execute `evaluateJs`"
-Sandbox-Skill --> AIGNE-Engine: "4. Return `{ result: 60 }`"
-AIGNE-Engine -> LLM: "5. Send skill result"
-LLM --> AIGNE-Engine: "6. Formulate response"
-AIGNE-Engine -> User: "7. Respond to user"
+AIGNE-Runtime: {
+  label: "AIGNE Runtime"
+  shape: rectangle
+
+  Chat-Agent: {
+    label: "Chat Agent"
+  }
+
+  Sandbox-Skill: {
+    label: "Sandbox Skill (sandbox.js)"
+  }
+}
+
+User -> AIGNE-Runtime.Chat-Agent: "1. Input: 'What is 5 + 7?'"
+AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Chat-Agent: "2. LLM reasons it needs to calculate"
+AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Sandbox-Skill: "3. Invokes skill with { code: '5 + 7' }"
+AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Sandbox-Skill: "4. Executes code in a sandbox"
+AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Chat-Agent: "5. Returns { result: 12 }"
+AIGNE-Runtime.Chat-Agent -> User: "6. Formulates response: 'The result is 12.'"
+
 ```
 
-This flow allows agents to perform complex, multi-step tasks by breaking them down and delegating specific actions to specialized skills. You can inspect the details of these interactions, including the exact inputs and outputs of each skill call, using the observability tools.
+By separating the reasoning (Agent) from the execution (Skill), you can build powerful and extensible AI systems that are easy to maintain and upgrade.
 
-![Viewing skill call details in the observability interface](../assets/observe/observe-view-call-details.png)
+### Next Steps
 
----
+Now that you understand the core concepts of Agents and Skills, you can proceed to the following sections:
 
-Now that you understand the core concepts of Agents and Skills, you can learn how to execute them using the CLI. For a detailed guide on running your agents, see the [aigne run command reference](./command-reference-run.md). To build your own, follow the [Creating a Custom Agent guide](./guides-creating-a-custom-agent.md).
+<x-cards>
+  <x-card data-title="Project Configuration (aigne.yaml)" data-icon="lucide:file-cog" data-href="/core-concepts/project-configuration">
+    Learn how to configure agents, skills, and models in the main project configuration file.
+  </x-card>
+  <x-card data-title="Creating a Custom Agent" data-icon="lucide:wand-sparkles" data-href="/guides/creating-a-custom-agent">
+    Follow a step-by-step guide to build your own custom agent and integrate it as a skill.
+  </x-card>
+</x-cards>

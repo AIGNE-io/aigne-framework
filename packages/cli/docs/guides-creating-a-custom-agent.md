@@ -4,136 +4,59 @@ labels: ["Reference"]
 
 # Creating a Custom Agent
 
-This guide provides a step-by-step tutorial on creating a new agent using JavaScript and integrating it as a reusable skill within your AIGNE project. Skills are the fundamental, executable components that can be orchestrated by higher-level agents to perform specific tasks.
+This guide provides a step-by-step tutorial on creating a new JavaScript agent and integrating it into your AIGNE project as a skill. Agents are the core executable components that give your application its unique capabilities. By creating custom agents, you can extend the functionality of your AI to perform specialized tasks, interact with external APIs, or manipulate local data.
 
-Following this guide, you will learn to:
-- Write a JavaScript function that acts as a skill.
-- Define its interface using standard JSON schemas for input and output.
-- Register the new skill in your project configuration.
-- Test the skill directly and use it within a larger agent.
+### Prerequisites
 
-## How It Works: An Overview
+Before you start, make sure you have an AIGNE project set up. If you don't, please follow our [Getting Started](./getting-started.md) guide to create one first.
 
-Before diving in, it's helpful to understand how a custom skill fits into the AIGNE ecosystem. The diagram below illustrates the relationship between your custom skill file, the project configuration, and the AIGNE runtime engine. When you run your project, the engine loads your skill, making it available for the Large Language Model (LLM) to use when responding to user prompts.
+### Step 1: Create the Skill File
 
-```d2
-direction: down
+A skill in AIGNE is a JavaScript module that exports a primary function and some metadata. This function contains the logic your agent will execute.
 
-"AIGNE-Project-Structure": {
-    label: "AIGNE Project Structure"
-    shape: package
+Let's create a simple agent that generates a greeting. Create a new file named `greeter.js` in the root of your AIGNE project and add the following code:
 
-    "Configuration": {
-        shape: document
-        label: "aigne.yaml"
-    }
-
-    "Custom-Skill": {
-        shape: document
-        label: "skills/calculator.js"
-    }
-
-    "Agent": {
-        shape: document
-        label: "chat.yaml"
-    }
-
-    "Configuration" -> "Custom-Skill": "Registers"
-    "Configuration" -> "Agent": "Provides skills to"
+```javascript greeter.js icon=logos:javascript
+export default async function greet({ name }) {
+  const message = `Hello, ${name}!`;
+  console.log(message);
+  return { message };
 }
 
-"Execution-Flow": {
-    "User": {
-        shape: person
-    }
-    
-    "CLI": {
-        label: "aigne run --chat"
-        shape: rectangle
-    }
+greet.description = "A simple agent that returns a greeting message.";
 
-    "AIGNE-Engine": {
-        label: "AIGNE Engine"
-        shape: hexagon
-    }
-
-    "LLM": {
-        label: "LLM"
-        shape: cloud
-    }
-
-    "User" -> "CLI": "1. Runs command"
-    "CLI" -> "AIGNE-Engine": "2. Starts session"
-    "AIGNE-Engine" -> "AIGNE-Project-Structure": "3. Loads project"
-    "AIGNE-Engine" <-> "LLM": "4. Orchestrates"
-    "LLM" -> "AIGNE-Project-Structure.Custom-Skill": "5. Selects & uses skill"
-}
-
-```
-
-## Step 1: Create the JavaScript Skill File
-
-First, create a new JavaScript file for your agent. It is a common practice to organize custom skills in a dedicated directory, such as `skills/`. We will create a simple agent that adds two numbers.
-
-Create a file named `calculator.js` in a `skills/` directory within your project:
-
-```javascript
-// skills/calculator.js
-export default async function calculator({ a, b }) {
-  const result = a + b;
-  return { result };
-}
-```
-
-This file exports a single default asynchronous function. The function accepts an object with `a` and `b` properties and returns an object containing their sum in the `result` property.
-
-## Step 2: Define Metadata and Schemas
-
-For the AIGNE engine to understand how to use your skill, you must attach metadata to the function. This includes a `description`, an `input_schema`, and an `output_schema`.
-
-Modify your `calculator.js` file to include these properties:
-
-```javascript
-// skills/calculator.js
-export default async function calculator({ a, b }) {
-  const result = a + b;
-  return { result };
-}
-
-// A human-readable description of what the skill does.
-calculator.description = "This skill calculates the sum of two numbers.";
-
-// Defines the expected input structure using JSON Schema.
-calculator.input_schema = {
+greet.input_schema = {
   type: "object",
   properties: {
-    a: { type: "number", description: "The first number" },
-    b: { type: "number", description: "The second number" },
+    name: { type: "string", description: "The name to include in the greeting." },
   },
-  required: ["a", "b"],
+  required: ["name"],
 };
 
-// Defines the expected output structure using JSON Schema.
-calculator.output_schema = {
+greet.output_schema = {
   type: "object",
   properties: {
-    result: { type: "number", description: "The sum of the two numbers" },
+    message: { type: "string", description: "The complete greeting message." },
   },
-  required: ["result"],
+  required: ["message"],
 };
 ```
 
-- **`description`**: A clear explanation of the skill's purpose. This helps language models understand when to use it.
-- **`input_schema`**: A JSON Schema object that validates the input. It specifies that the input must be an object with two required number properties, `a` and `b`.
-- **`output_schema`**: A JSON Schema object that describes the output. It specifies that the skill will return an object with a required number property called `result`.
+Let's break down this file:
 
-## Step 3: Integrate the Skill into Your Project
+- **`export default async function greet({ name })`**: This is the main function of your agent. It takes a single object as an argument, which contains the inputs defined in `input_schema`. It returns an object that should conform to the `output_schema`.
+- **`greet.description`**: A plain-text description of what the agent does. This is crucial, as the main language model uses this description to understand when and how to use your tool.
+- **`greet.input_schema`**: A JSON Schema object that defines the expected input for your agent. This ensures that data passed to your function is valid.
+- **`greet.output_schema`**: A JSON Schema object that defines the expected output from your agent.
 
-Now that the skill is defined, you need to register it with your AIGNE project. Add the file path to the `skills` list in your `aigne.yaml` configuration file.
+### Step 2: Integrate the Skill into Your Project
 
-```yaml
-# aigne.yaml
+Now that you've created the skill, you need to register it in your project's configuration file so the main chat agent can use it.
 
+1.  Open the `aigne.yaml` file in the root of your project.
+2.  Add your new `greeter.js` file to the `skills` list.
+
+```yaml aigne.yaml icon=mdi:file-cog-outline
 chat_model:
   provider: openai
   name: gpt-4o-mini
@@ -143,43 +66,49 @@ agents:
 skills:
   - sandbox.js
   - filesystem.yaml
-  - skills/calculator.js # Add your new skill here
+  - greeter.js # Add your new skill here
 ```
 
-By adding `skills/calculator.js` to the `skills` list, it becomes available for use by any agent in the project, such as the default `chat.yaml` agent.
+By adding your script to this list, you make it available as a tool that the primary chat agent can invoke during a conversation.
 
-## Step 4: Test Your Skill
+### Step 3: Test Your Agent Directly
 
-You can execute the skill directly from the command line using `aigne run`. This is useful for testing its logic in isolation before integrating it into a more complex workflow.
+With the skill created and registered, it's time to test it. You can execute any skill file directly from the command line using `aigne run`.
 
-To run the `calculator` skill, provide the required inputs using the `--input` flag:
+Run the following command in your terminal:
 
-```bash
-aigne run skills/calculator.js --input '{"a": 15, "b": 27}'
+```bash icon=mdi:console
+aigne run ./greeter.js --input '{"name": "AIGNE Developer"}'
 ```
 
-**Expected Output:**
+This command executes your `greeter.js` script and passes the JSON string from the `--input` flag as an argument to the exported function. You should see the following output, confirming your agent works as expected:
 
-The command will print the JSON output from your skill.
-
-```json
+```json icon=mdi:code-json
 {
-  "result": 42
+  "result": {
+    "message": "Hello, AIGNE Developer!"
+  }
 }
 ```
 
-This confirms that your skill is working as expected. Now you can use it as part of a larger agent.
+### Step 4: Use Your Agent in Chat Mode
 
-When you run the main chat agent, it will now be able to use your calculator to answer questions. Start a session with `aigne run --chat` and ask a question like "What is 25 + 75?" The agent will identify that the `calculator` skill can solve this and use it to provide the answer.
+The real power of skills is unlocked when the main AI agent can decide to use them dynamically. To see this in action, run your project in interactive chat mode:
 
-![Running a project in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
-*The interactive chat session where you can test your new skill.*
+```bash icon=mdi:console
+aigne run --chat
+```
 
----
+Once the chat session starts, ask the AI to use your new tool. For example:
 
-## Next Steps
+```
+> Use the greeter skill to say hello to the world.
+```
 
-You have successfully created, integrated, and tested a custom JavaScript skill. This skill can now be composed into more complex workflows by other agents in your project.
+The AI will recognize the request, find the `greeter` skill based on its description, and execute it with the correct parameters. It will then use the output from your skill to formulate its response.
 
-- To learn more about how agents and skills are structured and interact, see the [Agents and Skills](./core-concepts-agents-and-skills.md) documentation.
-- For more advanced execution options, refer to the [`aigne run`](./command-reference-run.md) command reference.
+### Next Steps
+
+Congratulations! You've successfully created a custom JavaScript agent, integrated it as a skill, and tested its functionality. You can now build more complex agents to connect to APIs, manage files, or perform any other task you can script.
+
+To learn how to share your project with others, check out our guide on [Deploying Agents](./guides-deploying-agents.md).

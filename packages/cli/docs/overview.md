@@ -4,115 +4,66 @@ labels: ["Reference"]
 
 # Overview
 
-The `@aigne/cli` is the official command-line tool for the AIGNE Framework, designed as your command center for agent development. It provides a comprehensive suite of commands to streamline the entire lifecycle of creating, testing, running, and deploying AI agents, enabling you to focus on building intelligent applications.
+<p align="center">
+  <picture>
+    <source srcset="../logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="../logo.svg" media="(prefers-color-scheme: light)">
+    <img src="../logo.svg" alt="AIGNE Logo" width="400" />
+  </picture>
 
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-cli.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-cli.png" alt="AIGNE CLI in action" />
-</picture>
+  <center>Your command center for agent development</center>
+</p>
 
-## Why @aigne/cli?
-
-Developing AI agents involves more than just writing code. You need to manage project structure, handle dependencies, run local tests, serve agents for integration, and deploy them to production. `@aigne/cli` provides a standardized and efficient workflow for these tasks, abstracting away boilerplate and letting you concentrate on agent logic and behavior.
+`@aigne/cli` is the official command-line tool for the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework), designed to streamline the entire lifecycle of agent development. It provides a comprehensive suite of commands to simplify project creation, local execution, testing, and deployment, enabling you to build, run, and manage AIGNE applications with ease.
 
 ## Key Features
+
+`@aigne/cli` is packed with features to accelerate your agent development workflow.
 
 <x-cards data-columns="3">
   <x-card data-title="Project Scaffolding" data-icon="lucide:folder-plus">
     Quickly create new AIGNE projects with predefined file structures and configurations using the `aigne create` command.
   </x-card>
   <x-card data-title="Local Agent Execution" data-icon="lucide:play-circle">
-    Easily run and interact with your agents in a local chat loop for rapid testing and debugging via the `aigne run` command.
+    Easily run and interact with your agents in a local chat loop for rapid testing and debugging via `aigne run`.
   </x-card>
-  <x-card data-title="Integrated Testing" data-icon="lucide:beaker">
-    Run unit and integration tests for your agents and skills with the built-in `aigne test` command to ensure code quality.
+  <x-card data-title="Automated Testing" data-icon="lucide:beaker">
+    Leverage the built-in `aigne test` command for running unit and integration tests to ensure your agents are robust and reliable.
   </x-card>
-  <x-card data-title="MCP Server" data-icon="lucide:server">
-    Launch agents as a Model Context Protocol (MCP) server, allowing them to be integrated with external systems and UIs.
+  <x-card data-title="MCP Server Integration" data-icon="lucide:server">
+    Launch your agents as Model Context Protocol (MCP) servers, allowing them to be integrated with external systems.
   </x-card>
-  <x-card data-title="Development Observability" data-icon="lucide:area-chart">
-    Start a local server with `aigne observe` to view, inspect, and analyze agent execution traces and data flows.
+  <x-card data-title="Rich Observability" data-icon="lucide:bar-chart-3">
+    Start a local server with `aigne observe` to view and analyze agent execution traces and performance data.
   </x-card>
-  <x-card data-title="Multi-Model Support" data-icon="lucide:boxes">
-    Connect to and utilize a variety of model providers, including OpenAI, Claude, XAI, and others, for maximum flexibility.
+  <x-card data-title="Multi-Model Support" data-icon="lucide:bot">
+    Seamlessly switch between different AI model providers, including OpenAI, Claude, XAI, and others.
   </x-card>
 </x-cards>
 
-## How It Fits in Your Workflow
+## Core Commands at a Glance
 
-`@aigne/cli` acts as the primary interface between you and the AIGNE framework, orchestrating the various components of your agent application.
+The CLI provides a set of intuitive commands to manage your AIGNE projects. Here are the main commands you'll be using:
 
-```d2
-direction: down
+```bash Basic Commands icon=lucide:terminal
+# Create a new AIGNE project
+aigne create [path]
 
-Developer: {
-  shape: person
-}
+# Run an agent locally
+aigne run --path <agent-path>
 
-CLI: {
-  label: "@aigne/cli"
-  shape: package
-  grid-columns: 3
+# Run automated tests for your agents
+aigne test --path <agent-path>
 
-  create: "aigne create"
-  run: "aigne run"
-  test: "aigne test"
-  serve-mcp: "aigne serve-mcp"
-  observe: "aigne observe"
-}
+# Serve agents as an MCP server
+aigne serve-mcp --path <agent-path>
 
-AIGNE-Project: {
-  label: "AIGNE Project"
-  shape: rectangle
-  grid-columns: 2
-
-  config: {
-    label: "aigne.yaml"
-    shape: document
-  }
-  code: {
-    label: "Agents & Skills"
-    shape: document
-  }
-}
-
-External-Systems: {
-  label: "External Systems"
-  shape: package
-  grid-columns: 2
-  
-  LLM-Providers: {
-    label: "LLM Providers\n(OpenAI, Claude, etc.)"
-    shape: cylinder
-  }
-  
-  MCP-Clients: {
-    label: "MCP Clients\n(External UIs)"
-    shape: rectangle
-  }
-}
-
-Observability-UI: {
-  label: "Observability UI"
-  shape: rectangle
-}
-
-Developer -> CLI: "Executes Commands"
-
-CLI.create -> AIGNE-Project: "Scaffolds"
-CLI.run -> AIGNE-Project: "Executes"
-CLI.test -> AIGNE-Project: "Tests"
-CLI.serve-mcp -> AIGNE-Project: "Serves"
-CLI.observe -> Observability-UI: "Starts"
-
-AIGNE-Project -> LLM-Providers: "Interacts via API"
-AIGNE-Project <-> MCP-Clients: "Connects via MCP"
-AIGNE-Project -> Observability-UI: "Sends Traces"
+# Start the observability and monitoring server
+aigne observe
 ```
 
-This workflow allows for a structured development process where the CLI handles the operational tasks, the project contains your unique logic, and external systems provide the necessary AI capabilities and user interfaces.
+This toolset forms the foundation of the AIGNE development experience, providing everything you need from inception to production.
 
-## Next Steps
+---
 
-Ready to build your first agent? Head over to the [Getting Started](./getting-started.md) guide to install the CLI and create your first AIGNE project.
+Ready to get started? Follow our [Getting Started](./getting-started.md) guide to install the CLI and create your first AIGNE agent.

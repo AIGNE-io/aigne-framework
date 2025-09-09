@@ -2,212 +2,207 @@
 labels: ["Reference"]
 ---
 
----labels: ["Reference"]---
-
 # aigne run
 
-The `aigne run` command executes an agent from a local directory or a remote URL. It is the primary command for testing and interacting with your agents during development, offering features like interactive chat mode, dynamic model selection, and flexible input/output handling.
+The `aigne run` command is the primary way to execute an AIGNE agent. It can run agents from a local project directory or directly from a remote URL. It offers a flexible set of options for providing input, configuring the AI model, and handling output, including an interactive chat mode for conversational agents.
 
 ## Usage
 
-```bash
-# Run the default agent in the current directory
-aigne run
-
-# Run an agent from a specific local path
-aigne run --path /path/to/your/project
-
-# Run an agent from a remote Git repository or tarball URL
-aigne run https://github.com/user/repo.git
-
-# Run a specific agent within a project
-aigne run mySpecificAgent
-
-# Start an interactive chat session with an agent
-aigne run --chat
+```bash Basic Syntax
+aigne run [path] [agent_name] [options]
 ```
+
+### Arguments
+
+-   `[path]` (Optional): The path to the AIGNE project directory or a remote URL (e.g., a Git repository). If omitted, it defaults to the current directory (`.`).
+-   `[agent_name]` (Optional): The specific agent to run from the project. If the project has a default `chat` agent defined in `aigne.yaml`, it will be used. Otherwise, you must specify which agent to run.
 
 ## How It Works
 
-The `run` command follows a sequence of steps to prepare the environment and execute the agent. This process includes parsing the path, downloading remote packages if necessary, initializing the AIGNE engine, and then running the selected agent either once or in a chat loop.
+The `run` command first loads the AIGNE application. If a remote URL is provided, it downloads and caches the project locally before proceeding. It then parses the command-line arguments and executes the specified agent with the given inputs and model configurations.
 
-```d2
+```d2 Remote Execution Flow icon=lucide:workflow
 direction: down
 
-start: {
-  label: "Start: aigne run [path]"
-  shape: circle
+User: {
+  shape: c4-person
 }
 
-check_path: {
-  label: "Is path a remote URL?"
-  shape: diamond
+CLI: {
+  label: "@aigne/cli"
+  
+  Download: {
+    label: "Download Package"
+  }
+
+  Extract: {
+    label: "Extract Package"
+  }
+
+  Load: {
+    label: "Load Application"
+  }
+
+  Execute: {
+    label: "Execute Agent"
+  }
 }
 
-handle_remote: {
-  label: "Handle Remote Project"
-  shape: package
-
-  download: "Download & Extract Package\nto local cache (~/.aigne)"
+Remote-URL: {
+  label: "Remote URL\n(e.g., GitHub)"
+  shape: cylinder
 }
 
-handle_local: {
-  label: "Handle Local Project"
-  shape: package
-
-  resolve_path: "Resolve local directory path"
+Cache-Dir: {
+  label: "Cache Directory\n(~/.aigne/.download)"
+  shape: cylinder
 }
 
-init_aigne: {
-  label: "Initialize AIGNE Engine"
-  shape: rectangle
-
-  load_env: "Load .env files"
-  load_config: "Load aigne.yaml"
-  init_engine: "Instantiate models, agents, skills"
+Local-Dir: {
+  label: "Local Directory\n(~/.aigne/<hostname>/...)"
+  shape: cylinder
 }
 
-build_commands: {
-  label: "Build Agent Commands"
-  shape: rectangle
-
-  sub_parser: "Create sub-parser for agents"
-  add_agents: "Add each agent as a subcommand"
-}
-
-parse_args: {
-  label: "Parse Agent & Options"
-  shape: parallelogram
-}
-
-execute_agent: {
-  label: "Execute Selected Agent"
-  shape: rectangle
-}
-
-shutdown: {
-  label: "Shutdown AIGNE Engine"
-  shape: rectangle
-}
-
-end: {
-  label: "End"
-  shape: circle
-}
-
-
-start -> check_path
-check_path -> handle_remote: "Yes"
-check_path -> handle_local: "No"
-handle_remote -> init_aigne
-handle_local -> init_aigne
-init_aigne -> build_commands
-build_commands -> parse_args
-parse_args -> execute_agent
-execute_agent -> shutdown
-shutdown -> end
+User -> CLI: "aigne run <url>"
+CLI.Download -> Remote-URL: "1. Fetch project"
+Remote-URL -> CLI.Download: "2. Return tarball"
+CLI.Download -> Cache-Dir: "3. Save tarball"
+CLI.Extract -> Cache-Dir: "4. Read tarball"
+CLI.Extract -> Local-Dir: "5. Unpack project files"
+CLI.Load -> Local-Dir: "6. Load aigne.yaml & .env"
+CLI.Execute -> CLI.Load: "7. Run agent"
+CLI.Execute -> User: "8. Display output"
 ```
 
-## Options
+## Examples
 
-The `run` command supports a variety of options to customize its behavior.
+### Running a Local Agent
+
+Execute an agent from a project on your local filesystem.
+
+```bash Run from current directory icon=lucide:folder-dot
+# Run the default agent in the current directory
+aigne run
+```
+
+```bash Run a specific agent icon=lucide:locate-fixed
+# Run the 'translator' agent located in a specific project path
+aigne run path/to/my-project translator
+```
+
+### Running a Remote Agent
+
+You can run an agent directly from a Git repository or a tarball URL. The CLI handles downloading and caching the project in your home directory (`~/.aigne`).
+
+```bash Run from a GitHub repository icon=lucide:github
+aigne run https://github.com/AIGNE-io/aigne-framework.git
+```
+
+### Running in Interactive Chat Mode
+
+For conversational agents, use the `--chat` flag to start an interactive terminal session.
+
+![Running an agent in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
+
+```bash Start a chat session icon=lucide:messages-square
+aigne run --chat
+```
+
+Inside the chat loop, you can use commands like `/exit` to quit and `/help` for assistance. You can also attach local files to your message by prefixing the path with `@`.
+
+```
+💬 Tell me about this file: @/path/to/my-document.pdf
+```
+
+## Providing Input to Agents
+
+There are multiple ways to provide input to your agents, depending on their defined input schema in `aigne.yaml`.
+
+#### As Command-Line Options
+
+If an agent's input schema defines specific parameters (e.g., `text`, `targetLanguage`), you can pass them as command-line options.
+
+```bash Pass agent-specific parameters icon=lucide:terminal
+# Assuming 'translator' agent has 'text' and 'targetLanguage' inputs
+aigne run translator --text "Hello, world!" --targetLanguage "Spanish"
+```
+
+#### From Standard Input (stdin)
+
+You can pipe content directly to the `run` command. This is useful for chaining commands.
+
+```bash Pipe input to an agent icon=lucide:pipe
+echo "Summarize this important update." | aigne run summarizer
+```
+
+#### From Files
+
+Use the `@` prefix to read content from a file and pass it as input.
+
+-   **`--input @<file>`**: Reads the entire file content as the primary input.
+-   **`--<param> @<file>`**: Reads file content for a specific agent parameter.
+
+```bash Read input from a file icon=lucide:file-text
+# Use content of document.txt as the main input
+aigne run summarizer --input @document.txt
+
+# Provide structured JSON input for multiple parameters
+aigne run translator --input @request-data.json --format json
+```
+
+#### Multimedia File Inputs
+
+For agents that process files like images or documents (e.g., vision models), use the `--input-file` option.
+
+```bash Attach a file for a vision agent icon=lucide:image-plus
+aigne run image-describer --input-file cat.png --input "What is in this image?"
+```
+
+## Options Reference
 
 ### General Options
 
 | Option | Description |
 |---|---|
-| `path` | Positional argument specifying the path to the agent's directory or a URL to an AIGNE project. Defaults to the current directory (`.`). |
-| `agent` | Positional argument specifying the name of the agent to run. If not provided, AIGNE presents a list of available agents or runs the default agent if one is configured. |
-| `--chat` | Runs the agent in an interactive chat loop in the terminal. This mode is ideal for conversational agents. Default: `false`. |
-| `--cache-dir <dir>` | When running from a URL, this specifies a directory to download and cache the remote package. Defaults to `~/.aigne/<hostname>/<pathname>`. |
+| `--chat` | Run the agent in an interactive chat loop in the terminal. |
+| `--log-level <level>` | Set the logging level. Available levels: `debug`, `info`, `warn`, `error`, `silent`. Default: `silent`. |
 
-### Model Configuration
+### Model Options
+
+These options allow you to override the model configurations defined in `aigne.yaml`.
 
 | Option | Description |
 |---|---|
-| `--model <provider[:model]>` | Specifies the AI model to use, e.g., 'openai' or 'openai:gpt-4o-mini'. This overrides the model configured in `aigne.yaml`. |
-| `--temperature <value>` | Sets the model's temperature (0.0-2.0) to control randomness. |
-| `--top-p <value>` | Sets the model's top-p (nucleus sampling) parameter (0.0-1.0) to control diversity. |
-| `--presence-penalty <value>` | Sets the presence penalty (-2.0 to 2.0) to discourage repeating tokens. |
-| `--frequency-penalty <value>` | Sets the frequency penalty (-2.0 to 2.0) to discourage frequent tokens. |
+| `--model <provider[:model]>` | Specify the AI model to use (e.g., 'openai' or 'openai:gpt-4o-mini'). |
+| `--temperature <value>` | Model temperature (0.0-2.0). Higher values increase randomness. |
+| `--top-p <value>` | Model top-p / nucleus sampling (0.0-1.0). Controls response diversity. |
+| `--presence-penalty <value>` | Presence penalty (-2.0 to 2.0). Penalizes repeating tokens. |
+| `--frequency-penalty <value>` | Frequency penalty (-2.0 to 2.0). Penalizes frequent tokens. |
+| `--aigne-hub-url <url>` | Custom AIGNE Hub service URL for fetching remote models or agents. |
 
-### Input & Output
+### Input & Output Options
 
 | Option | Alias | Description |
 |---|---|---|
-| `--input <value>` | `-i` | Provides input to the agent. Can be specified multiple times. Use `@<file>` to read input from a file. |
-| `--format <format>` | | Specifies the format of the input when reading from a file or stdin. Can be `json` or `yaml`. |
-| `--output <file>` | `-o` | Saves the agent's result to the specified file instead of printing to stdout. |
+| `--input <value>` | `-i` | Input to the agent. Can be specified multiple times. Use `@<file>` to read from a file. |
+| `--input-file <path>` | | Path to an input file for the agent (e.g., for vision models). Can be specified multiple times. |
+| `--format <format>` | | Input format when using `--input @<file>`. Choices: `text`, `json`, `yaml`. |
+| `--output <file>` | `-o` | Path to a file to save the result. Defaults to printing to standard output. |
 | `--output-key <key>` | | The key in the agent's result object to save to the output file. Defaults to `output`. |
-| `--force` | | If the output file already exists, this option allows overwriting it. It also creates parent directories if they don't exist. Default: `false`. |
+| `--force` | | Overwrite the output file if it already exists. Creates parent directories if they don't exist. |
 
-### Other Options
+---
 
-| Option | Description |
-|---|---|
-| `--log-level <level>` | Sets the verbosity of logs. Available levels: `debug`, `info`, `warn`, `error`, `silent`. |
-| `--aigne-hub-url <url>` | Specifies a custom AIGNE Hub service URL for fetching remote models or credentials. |
+## Next Steps
 
-## Scenarios & Examples
-
-### Interactive Chat Mode
-
-To have a continuous conversation with your agent, use the `--chat` flag. This is useful for testing chatbots or assistants.
-
-```bash
-aigne run --chat
-```
-
-This will start a session where you can type messages and receive responses from the agent. You can type `/exit` to end the session or `/help` for a list of available commands.
-
-![Running a project in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
-
-### Providing Input from a File
-
-You can pass the content of a file as input to an agent using the `@` prefix. This is useful for complex or lengthy inputs.
-
-```bash
-# Pass the content of 'prompt.txt' as the main input
-aigne run --input @prompt.txt
-
-# If the agent's input schema has a field named 'document'
-aigne run --document @document.md
-```
-
-If the file is a JSON or YAML file, the CLI can parse it automatically based on the file extension (`.json`, `.yaml`, `.yml`). You can also explicitly specify the format with `--format`.
-
-```bash
-# AIGNE will parse data.json and map its keys to the agent's input schema
-aigne run --input @data.json
-
-# Explicitly treat input.txt as YAML
-aigne run --input @input.txt --format yaml
-```
-
-### Specifying a Model and Parameters
-
-You can override the default model and its settings for a single run directly from the command line.
-
-```bash
-# Run the agent with a specific OpenAI model and a higher temperature for more creative responses
-aigne run --model openai:gpt-4o-mini --temperature 1.2
-```
-
-### Saving Agent Output
-
-To save the result of an agent's execution to a file, use the `--output` flag.
-
-```bash
-# Run the agent and save the entire JSON result to result.json
-aigne run --input "Summarize the latest AI news" --output result.json
-```
-
-If you only need a specific field from the output (e.g., the text content), you can use `--output-key`.
-
-```bash
-# Assume the agent returns { "summary": "...", "sources": [...] }
-# This command saves only the summary text to summary.txt
-aigne run --input "Summarize..." --output summary.txt --output-key summary
-```
-
-For more advanced use cases, such as deploying your agent as a service, see the [`aigne serve-mcp`](./command-reference-serve-mcp.md) command.
+<x-cards>
+  <x-card data-title="aigne observe" data-icon="lucide:monitor-dot" data-href="/command-reference/observe">
+    Learn how to start the observability server to view detailed traces of your agent runs.
+  </x-card>
+  <x-card data-title="Running Remote Agents" data-icon="lucide:cloudy" data-href="/guides/running-remote-agents">
+    Dive deeper into the specifics of executing agents directly from remote URLs.
+  </x-card>
+  <x-card data-title="Creating a Custom Agent" data-icon="lucide:bot" data-href="/guides/creating-a-custom-agent">
+    Get started with building your own agents and skills to use with the AIGNE CLI.
+  </x-card>
+</x-cards>

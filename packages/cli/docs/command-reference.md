@@ -4,76 +4,33 @@ labels: ["Reference"]
 
 # Command Reference
 
-This section provides a detailed reference for all `@aigne/cli` commands. The CLI is your primary tool for creating, running, testing, and managing AIGNE projects. Each command is documented on its own page with comprehensive examples and parameter descriptions.
+The AIGNE Command-Line Interface (CLI) is your primary tool for creating, managing, and deploying AIGNE agents. This section serves as a comprehensive reference for all available commands and their options, organized for quick look-up.
 
-## Command Overview
+For a more guided experience, check out our [Getting Started](./getting-started.md) guide or the practical examples in the [Guides](./guides.md) section.
 
-The `aigne` command-line tool is organized into several subcommands, each responsible for a specific stage of the agent development lifecycle.
-
-```d2
-direction: down
-
-aigne: {
-  label: "aigne"
-  shape: hexagon
-}
-
-Development: {
-  shape: package
-  grid-columns: 3
-  create: { label: "create" }
-  run: { label: "run" }
-  test: { label: "test" }
-}
-
-Integration: {
-  shape: package
-  grid-columns: 2
-  serve-mcp: { label: "serve-mcp" }
-  observe: { label: "observe" }
-}
-
-Platform: {
-  shape: package
-  grid-columns: 2
-  hub: { label: "hub" }
-  deploy: { label: "deploy" }
-}
-
-Built-in-Apps: {
-  label: "Built-in Apps"
-  shape: package
-  app: { label: "app" }
-}
-
-aigne -> Development
-aigne -> Integration
-aigne -> Platform
-aigne -> Built-in-Apps
-```
-
-Here is a summary of the primary commands. Select a command to view its detailed documentation, including all available options and usage examples.
-
-| Command                                                   | Description                                                                                                   | Preview |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------- |
-| [`aigne create`](./command-reference-create.md)               | Scaffolds a new AIGNE project from a template.                                                                | ![Creating a project with the default template](../assets/create/create-project-using-default-template-success-message.png) |
-| [`aigne run`](./command-reference-run.md)                     | Executes an agent locally or from a remote URL, with options for chat mode, model selection, and input handling. | ![Running a project in chat mode](../assets/run/run-default-template-project-in-chat-mode.png) |
-| [`aigne serve-mcp`](./command-reference-serve-mcp.md)         | Serves agents as a Model Context Protocol (MCP) server for integration with external systems.                 | ![Running the MCP server](../assets/run-mcp-service.png) |
-| [`aigne hub`](./command-reference-hub.md)                     | Manages connections to the AIGNE Hub, allowing you to switch accounts, check status, and use Hub-provided models. |         |
-| [`aigne observe`](./command-reference-observe.md)             | Starts a local server to view and analyze agent execution traces and observability data.                      | ![Viewing call details in the observability UI](../assets/observe/observe-view-call-details.png) |
-| [`aigne test`](./command-reference-test.md)                   | Runs automated tests for your agents and skills.                                                              |         |
-| [`aigne deploy`](./command-reference-deploy.md)               | Deploys an AIGNE application as a Blocklet to a specified endpoint.                                           |         |
-| [`aigne app`](./command-reference-built-in-apps.md)           | Execute pre-packaged applications like `doc-smith` for specialized, out-of-the-box agent functionality.       |         |
-
-## Global Options
-
-These options can be used with any command:
-
-| Option      | Alias | Description                                  |
-| ----------- | ----- | -------------------------------------------- |
-| `--help`    | `-h`  | Display help information for a command.      |
-| `--version` | `-v`  | Display the current version of `@aigne/cli`. |
-
----
-
-For practical, task-oriented examples of how to combine these commands in your development workflow, please see the [Guides](./guides.md) section.
+<x-cards data-columns="2">
+  <x-card data-title="aigne create" data-icon="lucide:folder-plus" data-href="/command-reference/create">
+    Scaffolds a new AIGNE project from a template.
+  </x-card>
+  <x-card data-title="aigne run" data-icon="lucide:play-circle" data-href="/command-reference/run">
+    Executes an agent locally or from a remote URL, with options for chat mode, model selection, and input handling.
+  </x-card>
+  <x-card data-title="aigne serve-mcp" data-icon="lucide:server" data-href="/command-reference/serve-mcp">
+    Serves agents as a Model Context Protocol (MCP) server for integration with external systems.
+  </x-card>
+  <x-card data-title="aigne hub" data-icon="lucide:cloud" data-href="/command-reference/hub">
+    Manages connections to the AIGNE Hub, allowing you to switch accounts, check status, and use Hub-provided models.
+  </x-card>
+  <x-card data-title="aigne observe" data-icon="lucide:eye" data-href="/command-reference/observe">
+    Starts a local server to view and analyze agent execution traces and observability data.
+  </x-card>
+  <x-card data-title="aigne test" data-icon="lucide:beaker" data-href="/command-reference/test">
+    Runs automated tests for your agents and skills.
+  </x-card>
+  <x-card data-title="aigne deploy" data-icon="lucide:rocket" data-href="/command-reference/deploy">
+    Deploys an AIGNE application as a Blocklet to a specified endpoint.
+  </x-card>
+  <x-card data-title="Built-in Apps" data-icon="lucide:box" data-href="/command-reference/built-in-apps">
+    Execute pre-packaged applications like `doc-smith` for specialized, out-of-the-box agent functionality.
+  </x-card>
+</x-cards>

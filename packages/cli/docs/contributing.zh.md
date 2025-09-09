@@ -2,110 +2,81 @@
 labels: ["Reference"]
 ---
 
-# 贡献
+# 参与贡献
 
-我们欢迎您为 `@aigne/cli` 做出贡献！您的帮助对保持其良好状态至关重要。本指南提供了开始开发所需的一切，从设置环境到提交您的第一个拉取请求。
+我们非常高兴您有兴趣为 `@aigne/cli` 做出贡献！您的帮助对于改善 AIGNE 的开发体验至关重要。无论是修复错误、提出新功能还是改进文档，我们都欢迎您的贡献。
 
-本项目托管于 GitHub 上的 [AIGNE-io/aigne-framework](https://github.com/AIGNE-io/aigne-framework)。如果您发现错误或有功能请求，请在我们的[问题跟踪器](https://github.com/AIGNE-io/aigne-framework/issues)上提出一个 issue。
+本指南将指导您如何设置开发环境、运行测试以及提交您的更改。
 
-## 贡献工作流
+## 快速入门
 
-下图展示了为本项目做出贡献的典型工作流程。
+`@aigne/cli` 包是 `aigne-framework` monorepo 的一部分。要开始使用，您需要克隆主代码库并安装其依赖项。
 
-```d2
-direction: down
+### 1. 克隆代码库
 
-GitHub-Repo: {
-  label: "AIGNE-io/aigne-framework"
-  shape: package
-}
+首先，将 `aigne-framework` 代码库从 GitHub 克隆到您的本地计算机：
 
-Your-Fork: {
-  label: "<YOUR_USERNAME>/aigne-framework"
-  shape: package
-}
-
-Local-Machine: {
-  label: "Local Machine"
-  shape: rectangle
-
-  New-Branch: {
-    label: "Feature Branch"
-    shape: rectangle
-  }
-
-  Develop: {
-    label: "Code & Commit"
-    shape: rectangle
-  }
-
-  Checks: {
-    label: "Run Tests & Lint"
-    shape: rectangle
-  }
-}
-
-Pull-Request: {
-  label: "Pull Request"
-  shape: rectangle
-}
-
-Review-Merge: {
-  label: "Code Review & Merge"
-  shape: rectangle
-}
-
-GitHub-Repo -> Your-Fork: "1. Fork"
-Your-Fork -> Local-Machine: "2. Clone"
-Local-Machine -> Local-Machine.New-Branch: "3. Create branch"
-Local-Machine.New-Branch -> Local-Machine.Develop: "4. Make changes"
-Local-Machine.Develop -> Local-Machine.Checks: "5. Validate changes"
-Local-Machine.Checks -> Your-Fork: "6. Push changes"
-Your-Fork -> Pull-Request: "7. Create PR"
-Pull-Request -> GitHub-Repo: "Submit to main branch"
-GitHub-Repo -> Review-Merge: "8. Review & Merge"
-
+```bash Git Clone icon=logos:git-icon
+git clone https://github.com/AIGNE-io/aigne-framework.git
+cd aigne-framework
 ```
 
-## 开发设置
+### 2. 安装依赖
 
-要开始开发，请先在 GitHub 上复刻该仓库，然后将其克隆到您的本地计算机：
+我们使用 `bun` 作为项目的主要包管理器。请在 monorepo 的根目录下安装所有必需的依赖项：
 
-```bash
-git clone https://github.com/<YOUR_USERNAME>/aigne-framework.git
-cd aigne-framework/packages/cli
-```
-
-本项目使用 Bun 进行包管理。要安装依赖项，请运行：
-
-```bash
+```bash Bun Install icon=logos:bun
 bun install
 ```
 
-## 开发脚本
+该命令将为 monorepo 中的所有包（包括 `@aigne/cli`）安装全部依赖项。
 
-`package.json` 文件包含多个用于辅助开发的脚本。在提交代码前，请务必运行这些检查，以确保代码符合项目标准。
+## 开发流程
 
-| Script | Description |
+所有针对 CLI 的开发命令都应在其包目录 `packages/cli` 中运行。
+
+### 构建代码
+
+要将 TypeScript 源代码编译成 JavaScript，请运行构建命令。该命令会使用 `tsconfig.build.json` 配置，并将编译后的文件输出到 `dist/` 目录。
+
+```bash Build Command icon=lucide:hammer
+bun run build
+```
+
+### 代码检查与类型检查
+
+我们使用 TypeScript 编译器进行静态分析以确保代码质量。要检查是否存在类型错误而不生成 JavaScript 文件，请运行 lint 命令：
+
+```bash Lint Command icon=lucide:check-circle
+bun run lint
+```
+
+### 运行测试
+
+我们提供了一套全面的测试套件，以确保 CLI 功能正常。可使用以下脚本进行测试：
+
+| Command | Description |
 |---|---|
-| `bun run build` | 将 `src/` 中的 TypeScript 源码编译成 `dist/` 中的 JavaScript。 |
-| `bun run test` | 运行源码和模板的完整测试套件。 |
-| `bun run lint` | 使用 TypeScript 编译器（`tsc`）检查类型错误。 |
-| `bun run clean` | 移除 `dist` 和 `coverage` 目录。 |
+| `bun run test` | 执行完整的测试套件，包括 CLI 源代码测试 (`test:src`) 和项目模板测试 (`test:templates`)。 |
+| `bun run test:src` | 仅运行 CLI 核心功能的单元测试和集成测试。 |
+| `bun run test:templates` | 专门针对由 `aigne create` 构建的项目模板运行测试。 |
+| `bun run test:coverage` | 运行完整的测试套件并生成代码覆盖率报告。 |
 
-在提交您的更改之前，请确保所有测试和代码检查都已通过。
+在提交拉取请求前，请务必确保所有测试均已通过。
+
+### 代码风格
+
+我们使用 [Prettier](https://prettier.io/) 在整个项目中保持一致的代码风格。请在提交更改前确保您的代码已经过格式化。大多数编辑器都可以配置为在保存时自动格式化文件。
 
 ## 提交拉取请求
 
-更改准备就绪后，请按照以下步骤提交拉取请求：
+当您完成更改并通过构建和测试脚本进行验证后，就可以提交拉取请求了。
 
-1.  **为您的新功能或错误修复创建一个新分支**：
-    ```bash
-    git checkout -b my-new-feature
-    ```
-2.  **进行更改**，并使用描述性的消息提交更改。
-3.  **将您的分支推送**到您复刻的仓库：
-    ```bash
-    git push origin my-new-feature
-    ```
-4.  **针对 `AIGNE-io/aigne-framework` 仓库的 `main` 分支发起拉取请求**。请为您所做的更改提供清晰的标题和描述。
+1.  在 GitHub 上 **Fork 代码库**。
+2.  为您的新功能或错误修复**创建一个新分支**：`git checkout -b your-feature-name`。
+3.  **提交您的更改**，并附上清晰、描述性的提交信息。
+4.  将您的分支**推送到您的 Fork**：`git push origin your-feature-name`。
+5.  从您的 Fork 向 `AIGNE-io/aigne-framework` 代码库的 `main` 分支**发起一个拉取请求**。
+6.  在拉取请求中**提供您所做更改的详细描述**，并引用问题跟踪器中的任何相关问题。
+
+我们会尽快审核您的贡献。感谢您帮助我们改进 AIGNE！

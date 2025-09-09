@@ -4,73 +4,70 @@ labels: ["Reference"]
 
 # Core Concepts
 
-To build effectively with AIGNE, it's essential to understand the fundamental components of a project. This section introduces the key concepts: the project structure anchored by `aigne.yaml`, and the executable units known as Agents and Skills. These elements work together to create modular and capable AI applications.
+An AIGNE project provides a structured environment for developing, testing, and deploying AI agents. At its heart, a project is a directory containing configuration files that define your agents, the skills they can use, and the language models they connect to. This section breaks down these fundamental building blocks.
+
+## Project Structure
+
+When you create a new project using `aigne create`, it scaffolds a standard directory structure to keep your components organized. A typical project looks like this:
+
+```text Project Structure icon=mdi:folder-open
+my-agent-project/
+├── aigne.yaml        # The main project configuration file.
+├── agents/           # Directory for agent definition files.
+│   └── chat.yaml     # Example agent definition.
+└── skills/           # Directory for skill implementation files.
+    └── sandbox.js    # Example skill implementation.
+```
+
+This structure separates configuration (`aigne.yaml`, `agents/`) from implementation (`skills/`), making your project modular and easy to manage.
+
+## How It All Fits Together
+
+The following diagram illustrates the relationship between the core components of an AIGNE project. The central `aigne.yaml` file orchestrates everything, defining which agents exist, what skills they can use, and which AI model powers their intelligence.
 
 ```d2
 direction: down
 
-AIGNE-Project: {
-  shape: package
-  label: "AIGNE Project"
-
-  aigne-yaml: {
-    shape: document
-    label: "aigne.yaml\n(Project Manifest)"
-  }
-
-  Agents: {
-    shape: package
-    chat-yaml: {
-      shape: document
-      label: "chat.yaml"
-    }
-  }
-
-  Skills: {
-    shape: package
-    sandbox-js: {
-      shape: document
-      label: "sandbox.js"
-    }
-  }
-
-  aigne-yaml -> Agents.chat-yaml: "Registers"
-  aigne-yaml -> Skills.sandbox-js: "Registers"
-  Agents.chat-yaml -> Skills.sandbox-js: "Uses"
+aigne-yaml: {
+  label: "aigne.yaml"
+  shape: rectangle
 }
+
+agent: {
+  label: "Agent\n(e.g., chat.yaml)"
+  shape: rectangle
+}
+
+skill: {
+  label: "Skill\n(e.g., sandbox.js)"
+  shape: rectangle
+}
+
+chat-model: {
+  label: "Chat Model\n(e.g., gpt-4o-mini)"
+  shape: cylinder
+}
+
+aigne-yaml -> agent: "Defines"
+aigne-yaml -> skill: "Registers"
+aigne-yaml -> chat-model: "Configures"
+agent -> skill: "Uses"
+agent -> chat-model: "Communicates with"
 ```
 
-## Project Structure and Configuration
+To understand how an AIGNE project works, it's essential to grasp its two primary components: the central project configuration and the executable agents and skills. Explore them in more detail below.
 
-The `aigne.yaml` file is the central manifest of every AIGNE project. It serves as the single source of truth for configuration, defining project metadata, specifying the default chat model, and registering all agents and skills. By managing these relationships in one place, `aigne.yaml` provides a clear and organized structure for complex projects.
-
-For a complete breakdown of all available properties and configuration options, see the [Project Configuration (aigne.yaml)](./core-concepts-project-configuration.md) documentation.
-
-## Agents and Skills
-
-Agents and Skills are the primary executable components in an AIGNE project. They represent the logic and capabilities of your AI application.
-
-### Agents
-An **Agent** is an entity designed to perform tasks. It is defined by a set of instructions, can maintain a memory of its interactions, and utilizes one or more Skills to accomplish its goals. Agents are typically defined in their own YAML files (e.g., `chat.yaml`), which specify their behavior and the tools they have access to.
-
-### Skills
-A **Skill** is a reusable tool or function that an Agent can call upon. Skills provide specific, encapsulated capabilities, such as executing JavaScript code (`sandbox.js`) or interacting with a filesystem. This modular approach allows you to compose complex agent behaviors from simple, reusable, and testable components.
-
-Here is an example of the default `chat` agent running, which uses its skills to respond to user input:
-
-![An agent running in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
-
-To learn how to define and structure these components, see the detailed [Agents and Skills](./core-concepts-agents-and-skills.md) guide.
-
-## Next Steps
-
-With a grasp of these core concepts, you are ready to explore the specifics of project configuration and how to build your own agents and skills. The following sections provide in-depth details for each component.
-
-<x-cards data-columns="2">
+<x-cards>
   <x-card data-title="Project Configuration (aigne.yaml)" data-icon="lucide:file-cog" data-href="/core-concepts/project-configuration">
-    Dive into the details of the main project configuration file and its properties.
+    This is the main manifest for your project. It defines the chat model to be used, lists the available agents, and registers the skills that those agents can access.
   </x-card>
   <x-card data-title="Agents and Skills" data-icon="lucide:bot" data-href="/core-concepts/agents-and-skills">
-    Learn the specifics of defining and creating the core executable components of your project.
+    Agents are the core actors that perform tasks, defined by their instructions and capabilities. Skills are the tools agents use, implemented as functions (e.g., JavaScript modules) that provide specific functionalities.
   </x-card>
 </x-cards>
+
+---
+
+With this foundational understanding, you're ready to dive deeper into how to configure your project.
+
+**Next**: Learn more about the main configuration file in the [Project Configuration (aigne.yaml)](./core-concepts-project-configuration.md) guide.

@@ -4,166 +4,98 @@ labels: ["Reference"]
 
 # Deploying Agents
 
-You can package and deploy your AIGNE project as a Blocklet, a self-contained application format that runs on a Blocklet Server. This guide walks you through using the `aigne deploy` command to prepare, configure, and publish your agent for production use.
+Deploying your AIGNE project transforms it from a local development setup into a self-contained, distributable application known as a Blocklet. This allows your agent to run in a production environment, be shared with others, and integrate seamlessly into the broader Blocklet ecosystem. The `aigne deploy` command automates this entire packaging and deployment process.
 
-For a detailed breakdown of all available options for the deploy command, see the [`aigne deploy` command reference](./command-reference-deploy.md).
+This guide will walk you through the deployment workflow. For a detailed breakdown of all available command options, please see the [`aigne deploy` command reference](./command-reference-deploy.md).
 
-## Prerequisites
+## The Deployment Process
 
-Before you begin, ensure you have the following:
+The `aigne deploy` command orchestrates a series of steps to prepare, configure, bundle, and deploy your agent. It leverages the `@blocklet/cli` under the hood to handle the complexities of Blocklet creation.
 
-- An existing AIGNE project containing an `aigne.yaml` file.
-- The URL of a target Blocklet Server endpoint where you have deployment permissions.
-- The Blocklet CLI (`@blocklet/cli`). If you do not have it installed, the deployment process will offer to install it for you.
-
-## The Deployment Command
-
-The primary tool for deployment is the `aigne deploy` command. Its basic syntax requires specifying the project path and the target endpoint.
-
-```bash
-aigne deploy --path <project-path> --endpoint <deployment-endpoint>
-```
-
-**Parameters**
-
-| Parameter  | Description                                                 |
-|------------|-------------------------------------------------------------|
-| `--path`   | Required. The local path to your AIGNE project directory.     |
-| `--endpoint` | Required. The URL of the Blocklet Server to deploy to.      |
-
-## Deployment Workflow
-
-When you run `aigne deploy`, the CLI performs a series of automated steps to package and publish your agent. The process is interactive on the first run for a new project and non-interactive for subsequent updates. The diagram below illustrates the high-level workflow.
+Here is a high-level overview of the deployment flow:
 
 ```d2
 direction: down
 
-start: {
-  label: "Start: aigne deploy"
-  shape: oval
+Developer: {
+  shape: c4-person
 }
 
-prep-env: {
-  label: "1. Prepare Environment"
-  shape: package
-  grid-columns: 1
-  copy-files: "Copy project files to .deploy"
-  npm-install: "Run npm install in .deploy"
+AIGNE-CLI: {
+  label: "AIGNE CLI"
 }
 
-check-cli: {
-  label: "2. Check Blocklet CLI"
-  shape: diamond
+Blocklet-CLI: {
+  label: "Blocklet CLI"
 }
 
-prompt-install: {
-  label: "Prompt to install\n@blocklet/cli"
-  shape: parallelogram
+Deployment-Endpoint: {
+  label: "Deployment Endpoint"
+  shape: cylinder
 }
 
-install-cli: {
-  label: "npm install -g @blocklet/cli"
-}
-
-configure-blocklet: {
-  label: "3. Configure Blocklet"
-  shape: package
-  grid-columns: 1
-
-  check-config: {
-    label: "Config exists in\n~/.aigne/deployed.yaml?"
-    shape: diamond
+Local-Project: {
+  label: "Your AIGNE Project"
+  shape: rectangle
+  aigne-yaml: {
+    label: "aigne.yaml"
   }
-
-  interactive-setup: {
-    label: "First-Time Setup"
-    grid-columns: 1
-    prompt-name: "Prompt for Blocklet Name"
-    create-did: "Create new DID"
-    save-config: "Save Name & DID to config"
+  source-code: {
+    label: "Source Code"
   }
-
-  update-yml: {
-    label: "Update blocklet.yml\nwith Name & DID"
-  }
-
-  check-config -> interactive-setup: "No"
-  check-config -> update-yml: "Yes"
-  interactive-setup -> update-yml
 }
 
-bundle: {
-  label: "4. Bundle Blocklet\n(blocklet bundle)"
-}
+Developer -> AIGNE-CLI: "1. Run `aigne deploy`"
+AIGNE-CLI -> Local-Project.aigne-yaml: "2. Read project config"
+AIGNE-CLI -> AIGNE-CLI: "3. Prepare temp .deploy dir"
+AIGNE-CLI -> Blocklet-CLI: "4. Check for CLI / Prompt install"
+AIGNE-CLI -> Developer: "5. Prompt for Blocklet name"
+Developer -> AIGNE-CLI: "6. Provide name"
+AIGNE-CLI -> Blocklet-CLI: "7. Create Blocklet DID"
+Blocklet-CLI -> AIGNE-CLI: "8. Return DID"
+AIGNE-CLI -> AIGNE-CLI: "9. Configure blocklet.yml"
+AIGNE-CLI -> Blocklet-CLI: "10. Bundle project"
+Blocklet-CLI -> Deployment-Endpoint: "11. Deploy bundle"
+AIGNE-CLI -> Developer: "12. Show success message"
 
-deploy: {
-  label: "5. Deploy to Endpoint\n(blocklet deploy)"
-}
-
-cleanup: {
-  label: "6. Clean Up\n(.deploy directory)"
-}
-
-success: {
-  label: "✅ Deployment Succeeded"
-  shape: oval
-  style.fill: "#D4EDDA"
-}
-
-failure: {
-  label: "❌ Deployment Failed"
-  shape: oval
-  style.fill: "#F8D7DA"
-}
-
-start -> prep-env
-prep-env -> check-cli
-
-check-cli -> configure-blocklet: "Found"
-check-cli -> prompt-install: "Not Found"
-
-prompt-install -> install-cli: "User Agrees"
-prompt-install -> failure: "User Declines"
-install-cli -> configure-blocklet
-
-configure-blocklet -> bundle -> deploy -> cleanup -> success
-
-# Failure paths from any step
-prep-env -> failure: "Error"
-configure-blocklet -> failure: "Error"
-bundle -> failure: "Error"
-deploy -> failure: "Error"
 ```
 
-### Step-by-Step Guide
+### Step-by-Step Walkthrough
 
-1.  **Initiate Deployment**
+To deploy your project, navigate to your project's root directory and run the deployment command, specifying the path to your project and the target endpoint.
 
-    From your project's root directory, execute the `deploy` command. For a project in the current directory, you can use `.` for the path.
+```bash Command icon=lucide:terminal
+aigne deploy --path . --endpoint <your-endpoint-url>
+```
 
-    ```bash
-    aigne deploy --path . --endpoint https://my-blocklet-server.com
+Let's break down what happens when you execute this command:
+
+1.  **Environment Preparation**: The CLI first creates a temporary `.deploy` directory. It copies your project files into it, along with a standard Blocklet template. It then runs `npm install` inside this directory to fetch any necessary dependencies.
+
+2.  **Blocklet CLI Check**: The process verifies if `@blocklet/cli` is installed on your system. If not, it will prompt you for permission to install it globally. This is a one-time setup.
+
+    ```
+    ? Install Blocklet CLI? ›
+    ❯ yes
+      no
     ```
 
-2.  **First-Time Configuration (Interactive)**
+3.  **Blocklet Configuration (First-time Deployment)**: If this is the first time you're deploying this project, the CLI will ask you for a name for your Blocklet. It suggests a default based on your agent's name in `aigne.yaml` or the project's folder name.
 
-    If this is the first time you are deploying this specific project from your machine, the CLI will guide you through a one-time setup:
+    ```
+    ? Please input agent blocklet name: › my-awesome-agent
+    ```
 
-    -   **Blocklet CLI Installation**: If `@blocklet/cli` is not found in your environment, you will be prompted to install it globally.
-    -   **Blocklet Name**: You will be asked to provide a name for your agent Blocklet. This name will be used on the Blocklet Server. A default name based on your project folder or `aigne.yaml` configuration is suggested, which you can accept or override.
+    After you provide a name, it automatically generates a new Decentralized Identifier (DID) for your Blocklet. This name and DID are saved locally in `~/.aigne/deployed.yaml`, so you won't be prompted for them on subsequent deployments of the same project.
 
-3.  **Bundling and Publishing**
+4.  **Bundling**: The CLI then invokes `blocklet bundle --create-release`, which packages your agent, its dependencies, and all necessary configuration into a single, deployable `.blocklet/bundle` file.
 
-    The CLI will then proceed with the automated tasks shown in the workflow diagram: preparing files, bundling the application, and uploading it to the specified endpoint. You will see progress indicators for each major step in your terminal.
+5.  **Deployment**: Finally, the bundled application is pushed to your specified `--endpoint` using the `blocklet deploy` command.
 
-4.  **Subsequent Deployments**
+Once the process is complete, you'll see a confirmation message in your terminal.
 
-    After the first successful deployment, the CLI saves your chosen Blocklet name and its unique DID (Decentralized Identifier) to a configuration file located at `~/.aigne/deployed.yaml`. For all future deployments of the same project (identified by its absolute path), the CLI will use this saved information, making the process non-interactive and suitable for CI/CD pipelines.
-
-Upon completion, a success message will confirm that the deployment is finished.
-
-```bash
-✅ Deploy completed: /path/to/your/project -> https://my-blocklet-server.com
+```
+✅ Deploy completed: /path/to/your/project -> <your-endpoint-url>
 ```
 
-If the process fails, an error message will indicate the cause of the failure to help diagnose the issue.
+Your AIGNE agent is now live as a Blocklet, ready to be run in a production environment.

@@ -4,139 +4,65 @@ labels: ["Reference"]
 
 # aigne create
 
-`aigne create` 命令可根据模板搭建一个新的 AIGNE 项目。该命令会设置好必要的目录结构和配置文件，让您能够立即开始开发您的 Agent。
+`aigne create` 命令可根据模板构建一个新的 AIGNE 项目。它会设置必要的目录结构和配置文件，让你能够立即开始开发你的 agent。
 
 ## 用法
 
-要在新目录中创建项目，请提供一个路径作为参数：
-
-```bash
-# 在 'my-aigne-project' 目录中创建一个项目
-aigne create my-aigne-project
+```bash 基本用法 icon=lucide:terminal
+aigne create [path]
 ```
-
-如果您未提供路径参数并运行该命令，系统将提示您输入项目名称，并在当前位置的新子目录中创建项目。
-
-```bash
-# 在当前工作目录中创建一个项目（交互式）
-aigne create
-```
-
-## 交互式流程
-
-当您运行 `aigne create` 时未提供路径，或者目标目录已包含文件时，CLI 将引导您完成一个交互式流程。
-
-1.  **项目名称**：如果您未指定路径，系统将提示您输入项目名称。默认名称为 `my-aigne-project`。
-
-    ![AIGNE CLI 在创建过程中提示输入项目名称。](../assets/create/create-project-interactive-project-name-prompt.png)
-
-2.  **覆盖确认**：如果目标目录已存在且不为空，CLI 将在继续操作前请求确认，以避免意外丢失数据。
-
-    ```bash
-    ? The directory "/path/to/your/my-aigne-project" is not empty. Do you want to remove its contents? › (y/N)
-    ```
-
-3.  **模板选择**：系统将要求您选择一个项目模板。目前提供了一个 `default` 模板。
-
-    ```bash
-    ? Select a template: › - Use arrow-keys. Return to submit.
-    ❯   default
-    ```
 
 ## 参数
 
-| 参数 | 描述 |
-| :------- | :------------------------------------------- |
-| `[path]` | 可选参数。用于创建项目目录的路径。默认为当前目录（`.`），如果未提供，则会提示输入项目名称。 |
+| 参数 | 描述 | 默认值 |
+| :------- | :---------------------------------------------------------------------------------------------------------------- | :------ |
+| `[path]` | 新项目目录的创建路径。如果省略，则默认为当前目录并触发交互模式。 | `.` |
 
-## 命令流程
+## 交互模式
 
-下图阐释了 `aigne create` 命令的处理流程。
+如果你在运行 `aigne create` 时未指定路径，或使用 `.` 代表当前目录，CLI 将进入交互模式以引导你完成设置过程。系统将提示你输入以下信息：
 
-```d2
-direction: down
+*   **项目名称**：新项目目录的名称。
+*   **模板**：要使用的项目模板（目前支持 `default`）。
 
-start: {
-  label: "Start: aigne create"
-  shape: circle
-}
+![项目名称的交互式提示](../assets/create/create-project-interactive-project-name-prompt.png)
 
-check_path: {
-  label: "Path argument provided?"
-  shape: diamond
-}
+### 覆盖确认
 
-prompt_name: {
-  label: "Prompt for Project Name"
-  shape: rectangle
-}
+为安全起见，如果目标目录已存在且不为空，CLI 会在继续操作前请求你的确认。如果你选择不继续，操作将被安全取消。
 
-resolve_path: {
-  label: "Resolve Project Path"
-  shape: rectangle
-}
-
-check_empty: {
-  label: "Directory not empty?"
-  shape: diamond
-}
-
-prompt_overwrite: {
-  label: "Confirm Overwrite?"
-  shape: diamond
-}
-
-cancel: {
-  label: "Operation Cancelled"
-  shape: rectangle
-}
-
-select_template: {
-  label: "Select Template"
-  shape: rectangle
-}
-
-create_files: {
-  label: "Create Directory & Copy Files"
-  shape: rectangle
-}
-
-success_msg: {
-  label: "Display Success Message"
-  shape: rectangle
-}
-
-end: {
-  label: "End"
-  shape: circle
-}
-
-start -> check_path
-
-check_path -- "No" --> prompt_name
-prompt_name -> resolve_path
-check_path -- "Yes" --> resolve_path
-
-resolve_path -> check_empty
-check_empty -- "Yes" --> prompt_overwrite
-check_empty -- "No" --> select_template
-
-prompt_overwrite -- "No" --> cancel
-prompt_overwrite -- "Yes" --> select_template
-
-select_template -> create_files
-create_files -> success_msg
-
-success_msg -> end
-cancel -> end
+```text
+? 目录 "/path/to/my-aigne-project" 不为空。是否要删除其内容？ (y/N)
 ```
 
-## 输出
+## 示例
 
-成功创建后，CLI 会打印一条确认信息，并提供用于运行 Agent 的下一步命令。
+### 以交互方式创建项目
 
-![AIGNE CLI 创建项目后的成功消息。](../assets/create/create-project-using-default-template-success-message.png)
+要通过引导完成创建过程，请在不带任何参数的情况下运行该命令。
 
-创建项目后，您可以进入新目录并使用 `aigne run` 命令来启动 Agent。
+```bash 在当前目录中创建 icon=lucide:terminal
+aigne create
+```
 
-有关运行 Agent 的更多详细信息，请参阅 [`aigne run`](./command-reference-run.md) 命令参考。
+这将启动交互式向导，提示你输入项目名称和模板。
+
+### 在特定目录中创建项目
+
+要在当前位置名为 `my-awesome-agent` 的新目录中创建项目，请将其作为参数提供。
+
+```bash 在新的 'my-awesome-agent' 目录中创建 icon=lucide:terminal
+aigne create my-awesome-agent
+```
+
+此命令会创建新目录并在其中构建项目。你仍需要选择一个模板。
+
+## 成功输出
+
+成功创建后，你将看到一条确认消息以及运行新 agent 的后续步骤说明。
+
+![项目创建成功消息](../assets/create/create-project-using-default-template-success-message.png)
+
+---
+
+创建项目后，下一步是执行你的 agent。有关更多详细信息，请参阅 [`aigne run`](./command-reference-run.md) 命令参考。

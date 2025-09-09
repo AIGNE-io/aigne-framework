@@ -2,232 +2,191 @@
 labels: ["Reference"]
 ---
 
----labels: ["Reference"]---
-
 # aigne hub
 
-The `aigne hub` command provides a suite of tools for managing your connections to AIGNE Hub. This allows you to easily connect to the official AIGNE Hub or self-hosted instances, switch between them, and check your account status and credit balance directly from your terminal.
+The `aigne hub` command is your central tool for managing connections to the AIGNE Hub. The Hub provides access to managed large language models, handles API key management, and tracks your credit usage. Properly configuring your Hub connection is essential for running agents that utilize Hub-provided models.
 
-Your connection details are stored locally in the `~/.aigne/aigne-hub-connected.yaml` file.
+This command set allows you to connect to new Hubs (both the official Arcblock Hub and self-hosted instances), list your existing connections, switch between them, and monitor your account status.
 
-```d2
-direction: down
+## Usage
 
-Developer-Machine: {
-  label: "Developer Machine"
-  shape: rectangle
-
-  aigne-CLI: {
-    label: "aigne hub <command>"
-    shape: rectangle
-  }
-
-  Local-Config: {
-    label: "~/.aigne/aigne-hub-connected.yaml"
-    shape: document
-  }
-
-  aigne-CLI -> Local-Config: {
-    label: "Reads/Writes\n(list, use, connect, rm)"
-    style.stroke-dash: 2
-  }
-}
-
-AIGNE-Hub: {
-  label: "AIGNE Hub (Remote)"
-  shape: cylinder
-}
-
-Browser: {
-  label: "Web Browser\n(for Authentication)"
-  shape: rectangle
-}
-
-Developer-Machine.aigne-CLI -> Browser: {
-  label: "1. `connect` opens auth page"
-}
-
-Browser -> AIGNE-Hub: {
-  label: "2. User authenticates"
-}
-
-AIGNE-Hub -> Developer-Machine.aigne-CLI: {
-  label: "3. CLI polls for & receives API Key"
-}
-
-Developer-Machine.aigne-CLI -> AIGNE-Hub: {
-  label: "API Calls (info, status)"
-  style.stroke-width: 2
-}
+```bash Basic Command Structure
+aigne hub <subcommand>
 ```
 
-## Subcommands
+## Commands
 
-### `hub list`
+The `aigne hub` command includes several subcommands to manage different aspects of your Hub connections.
 
-Lists all the AIGNE Hubs you have previously connected to and indicates which one is currently active.
+| Command | Alias | Description |
+|---|---|---|
+| `connect [url]` | | Connect to a new AIGNE Hub. |
+| `list` | `ls` | List all configured AIGNE Hub connections. |
+| `use` | | Switch the active AIGNE Hub. |
+| `status` | `st` | Display the currently active AIGNE Hub. |
+| `remove` | `rm` | Remove a configured AIGNE Hub connection. |
+| `info` | `i` | Show detailed information for a specific Hub connection. |
+
+---
+
+### `connect [url]`
+
+Connects your local CLI to an AIGNE Hub instance. This process authenticates your machine and stores an API key for future requests in the `~/.aigne/aigne-hub-connected.yaml` file.
 
 **Usage**
 
-```bash
+```bash Connect to a Hub
+aigne hub connect [url]
+```
+
+**Behavior**
+
+- **Interactive Mode**: If you run the command without a URL, an interactive prompt will appear, allowing you to choose between the official AIGNE Hub or a custom, self-hosted Hub URL.
+
+  ```bash Interactive Connection icon=mdi:console
+  $ aigne hub connect
+  ? Choose a hub to connect: › - Use arrow-keys. Return to submit.
+  ❯   Official Hub (https://hub.aigne.io)
+      Custom Hub URL
+  ```
+
+- **Direct Mode**: If you provide a URL, the CLI will attempt to connect to that specific Hub directly.
+
+  ```bash Direct Connection icon=mdi:console
+  $ aigne hub connect https://my-hub.example.com
+  ```
+
+In both cases, a browser window will open for you to authenticate and authorize the CLI connection. Once completed, the credentials will be saved locally.
+
+### `list`
+
+Displays a table of all AIGNE Hubs you have previously connected to. It also indicates which Hub is currently active.
+
+**Usage**
+
+```bash List Connections
 aigne hub list
-# Alias
+# or using the alias
 aigne hub ls
 ```
 
 **Example Output**
 
-```text
+```bash icon=mdi:table
+$ aigne hub ls
 Connected AIGNE Hubs:
 
-┌────────────────────────────────────────────────────────────────────┬──────────┐
-│ URL                                                                │ ACTIVE   │
-├────────────────────────────────────────────────────────────────────┼──────────┤
-│ https://hub.aigne.io                                               │ YES      │
-├────────────────────────────────────────────────────────────────────┼──────────┤
-│ https://my-custom-hub.example.com                                  │ NO       │
-└────────────────────────────────────────────────────────────────────┴──────────┘
+┌───────────────────────────────────────────────────┬────────┐
+│ URL                                               │ ACTIVE │
+├───────────────────────────────────────────────────┼────────┤
+│ https://hub.aigne.io                              │ YES    │
+├───────────────────────────────────────────────────┼────────┤
+│ https://my-hub.example.com                        │ NO     │
+└───────────────────────────────────────────────────┴────────┘
 Use 'aigne hub use' to switch to a different hub.
 ```
 
-### `hub connect`
+### `use`
 
-Establishes a new connection to an AIGNE Hub instance. This command will open a web browser for authentication and, upon success, save the credentials to your local configuration.
-
-**Usage**
-
-```bash
-# Start an interactive prompt to choose a hub
-aigne hub connect
-
-# Connect directly to a specific hub URL
-aigne hub connect <hub-url>
-```
-
-**Interactive Mode**
-
-Running `aigne hub connect` without a URL provides an interactive prompt to select between the official AIGNE Hub or a custom one.
-
-```text
-? Choose a hub to connect: › 
-❯   Official Hub (https://hub.aigne.io)
-    Custom Hub URL
-```
-
-**Direct Mode**
-
-To connect to a self-hosted or specific AIGNE Hub instance, provide its URL as an argument.
-
-```bash
-aigne hub connect https://my-custom-hub.example.com
-```
-
-Upon successful authentication in the browser, a confirmation message will be displayed in the terminal:
-
-```text
-✓ Hub https://hub.aigne.io connected successfully.
-```
-
-### `hub use`
-
-Switches the active AIGNE Hub to another previously connected instance. The active hub is used by default for operations that require Hub services, such as utilizing Hub-provided models.
+Switches the active AIGNE Hub. This command is useful when you have multiple Hub connections (e.g., a personal account and a team account) and need to change which one is used by default for commands like `aigne run`.
 
 **Usage**
 
-```bash
+```bash Switch Active Hub
 aigne hub use
 ```
 
-This command will present an interactive list of your saved connections to choose from.
+**Behavior**
 
-```text
-? Choose a hub to switch to: › 
+Running this command will present an interactive list of your saved Hub connections. Select the one you wish to make active.
+
+```bash Interactive Switch icon=mdi:console
+$ aigne hub use
+? Choose a hub to switch to: › - Use arrow-keys. Return to submit.
     https://hub.aigne.io
-❯   https://my-custom-hub.example.com
+❯   https://my-hub.example.com
+
+✓ Switched active hub to https://my-hub.example.com
 ```
 
-Upon selection, you'll receive a confirmation:
+### `status`
 
-```text
-✓ Switched active hub to https://my-custom-hub.example.com
-```
-
-### `hub status`
-
-Displays the URL of the currently active AIGNE Hub and its connection status.
+Quickly shows the URL of the currently active AIGNE Hub and its connection status.
 
 **Usage**
 
-```bash
+```bash Check Status
 aigne hub status
-# Alias
+# or using the alias
 aigne hub st
 ```
 
 **Example Output**
 
-```text
+```bash icon=mdi:console
+$ aigne hub status
 Active hub: https://hub.aigne.io - online
 ```
 
-### `hub remove`
+### `remove`
 
 Removes a saved AIGNE Hub connection from your local configuration file.
 
 **Usage**
 
-```bash
+```bash Remove a Hub
 aigne hub remove
-# Alias
+# or using the alias
 aigne hub rm
 ```
 
-This command prompts you to select which of your saved connections you wish to delete.
+**Behavior**
 
-```text
-? Choose a hub to remove: › 
-    https://hub.aigne.io
-❯   https://my-custom-hub.example.com
+This command will interactively prompt you to select which of your saved Hub connections you want to remove.
+
+```bash Interactive Removal icon=mdi:console
+$ aigne hub remove
+? Choose a hub to remove: › https://my-hub.example.com
+
+✓ Hub https://my-hub.example.com removed
 ```
 
-After selection, the connection is removed:
+### `info`
 
-```text
-✓ Hub https://my-custom-hub.example.com removed
-```
-
-### `hub info`
-
-Fetches and displays detailed account information for a selected hub, including user details, credit balance, and relevant links.
+Fetches and displays detailed account information for a selected Hub connection. This includes user details, credit balance, and important links.
 
 **Usage**
 
-```bash
+```bash Get Hub Info
 aigne hub info
-# Alias
+# or using the alias
 aigne hub i
 ```
 
-After selecting a hub from the interactive prompt, you will see a detailed status report.
+**Behavior**
+
+First, you will be prompted to select a configured Hub. Then, the CLI will display its connection status and your account details.
 
 **Example Output**
 
-```text
+```bash icon=mdi:information-outline
+$ aigne hub info
+
 AIGNE Hub Connection
 ──────────────────────────────────────────────
-Hub:        https://hub.aigne.io
-Status:     Connected ✅
+Hub:       https://hub.aigne.io
+Status:    Connected ✅
 
 User:
-  Name:     John Doe
-  DID:      z2qA...p9Y
-  Email:    john.doe@example.com
+  Name:    John Doe
+  DID:     z2qa...w9vM
+  Email:   john.doe@example.com
 
 Credits:
-  Used:     15,000
-  Total:    1,000,000
+  Used:    1,234
+  Total:   100,000
 
 Links:
-  Payment:  https://hub.aigne.io/billing
-  Profile:  https://hub.aigne.io/profile
+  Payment: https://hub.aigne.io/payment/...
+  Profile: https://hub.aigne.io/profile/...
 ```

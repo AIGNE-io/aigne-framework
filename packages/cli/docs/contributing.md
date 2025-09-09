@@ -4,108 +4,79 @@ labels: ["Reference"]
 
 # Contributing
 
-We welcome contributions to `@aigne/cli`! Your help is essential for keeping it great. This guide provides everything you need to get started with development, from setting up your environment to submitting your first pull request.
+We're thrilled that you're interested in contributing to `@aigne/cli`! Your help is invaluable in making the AIGNE development experience better for everyone. Whether you're fixing a bug, proposing a new feature, or improving documentation, your contributions are welcome.
 
-The project is hosted on GitHub at [AIGNE-io/aigne-framework](https://github.com/AIGNE-io/aigne-framework). If you find a bug or have a feature request, please open an issue on our [issue tracker](https://github.com/AIGNE-io/aigne-framework/issues).
+This guide provides instructions for setting up your development environment, running tests, and submitting your changes.
 
-## Contribution Workflow
+## Getting Started
 
-The following diagram illustrates the typical workflow for contributing to the project.
+The `@aigne/cli` package is part of the `aigne-framework` monorepo. To get started, you'll need to clone the main repository and install its dependencies.
 
-```d2
-direction: down
+### 1. Clone the Repository
 
-GitHub-Repo: {
-  label: "AIGNE-io/aigne-framework"
-  shape: package
-}
+First, clone the `aigne-framework` repository from GitHub to your local machine:
 
-Your-Fork: {
-  label: "<YOUR_USERNAME>/aigne-framework"
-  shape: package
-}
-
-Local-Machine: {
-  label: "Local Machine"
-  shape: rectangle
-
-  New-Branch: {
-    label: "Feature Branch"
-    shape: rectangle
-  }
-
-  Develop: {
-    label: "Code & Commit"
-    shape: rectangle
-  }
-
-  Checks: {
-    label: "Run Tests & Lint"
-    shape: rectangle
-  }
-}
-
-Pull-Request: {
-  label: "Pull Request"
-  shape: rectangle
-}
-
-Review-Merge: {
-  label: "Code Review & Merge"
-  shape: rectangle
-}
-
-GitHub-Repo -> Your-Fork: "1. Fork"
-Your-Fork -> Local-Machine: "2. Clone"
-Local-Machine -> Local-Machine.New-Branch: "3. Create branch"
-Local-Machine.New-Branch -> Local-Machine.Develop: "4. Make changes"
-Local-Machine.Develop -> Local-Machine.Checks: "5. Validate changes"
-Local-Machine.Checks -> Your-Fork: "6. Push changes"
-Your-Fork -> Pull-Request: "7. Create PR"
-Pull-Request -> GitHub-Repo: "Submit to main branch"
-GitHub-Repo -> Review-Merge: "8. Review & Merge"
-
+```bash Git Clone icon=logos:git-icon
+git clone https://github.com/AIGNE-io/aigne-framework.git
+cd aigne-framework
 ```
 
-## Development Setup
+### 2. Install Dependencies
 
-To get started, first fork the repository on GitHub and then clone it to your local machine:
+We use `bun` as the primary package manager for the project. Install all the necessary dependencies from the root of the monorepo:
 
-```bash
-git clone https://github.com/<YOUR_USERNAME>/aigne-framework.git
-cd aigne-framework/packages/cli
-```
-
-This project uses Bun for package management. To install the dependencies, run:
-
-```bash
+```bash Bun Install icon=logos:bun
 bun install
 ```
 
-## Development Scripts
+This will install all dependencies for every package in the monorepo, including `@aigne/cli`.
 
-The `package.json` file contains several scripts to help with development. It's important to run these checks before submitting your code to ensure it meets the project's standards.
+## Development Workflow
 
-| Script | Description |
+All development commands for the CLI should be run from within its package directory: `packages/cli`.
+
+### Building the Code
+
+To compile the TypeScript source code into JavaScript, run the build command. This uses the `tsconfig.build.json` configuration and outputs the compiled files to the `dist/` directory.
+
+```bash Build Command icon=lucide:hammer
+bun run build
+```
+
+### Linting and Type Checking
+
+We use the TypeScript compiler to perform static analysis and ensure code quality. To check for any type errors without emitting JavaScript files, run the lint command:
+
+```bash Lint Command icon=lucide:check-circle
+bun run lint
+```
+
+### Running Tests
+
+We have a comprehensive test suite to ensure the CLI functions correctly. The following scripts are available for testing:
+
+| Command | Description |
 |---|---|
-| `bun run build` | Compiles the TypeScript source from `src/` into JavaScript in `dist/`. |
-| `bun run test` | Runs the complete test suite for source code and templates. |
-| `bun run lint` | Checks for type errors using the TypeScript compiler (`tsc`). |
-| `bun run clean` | Removes the `dist` and `coverage` directories. |
+| `bun run test` | Executes the complete test suite, including tests for the CLI source (`test:src`) and the project templates (`test:templates`). |
+| `bun run test:src` | Runs only the unit and integration tests for the CLI's core functionality. |
+| `bun run test:templates` | Runs tests specifically for the project templates scaffolded by `aigne create`. |
+| `bun run test:coverage` | Runs the entire test suite and generates a code coverage report. |
 
-Please ensure all tests and lint checks pass before submitting your changes.
+It's important to ensure all tests pass before submitting a pull request.
+
+### Code Style
+
+We use [Prettier](https://prettier.io/) to maintain a consistent code style across the project. Please ensure your code is formatted before committing your changes. Most editors can be configured to format files automatically on save.
 
 ## Submitting a Pull Request
 
-Once your changes are ready, follow these steps to submit a pull request:
+Once you've made your changes and verified them with the build and test scripts, you're ready to submit a pull request.
 
-1.  **Create a new branch** for your feature or bug fix:
-    ```bash
-    git checkout -b my-new-feature
-    ```
-2.  **Make your changes** and commit them with a descriptive message.
-3.  **Push your branch** to your forked repository:
-    ```bash
-    git push origin my-new-feature
-    ```
-4.  **Open a pull request** against the `main` branch of the `AIGNE-io/aigne-framework` repository. Provide a clear title and description of the changes you've made.
+1.  **Fork the repository** on GitHub.
+2.  **Create a new branch** for your feature or bug fix: `git checkout -b your-feature-name`.
+3.  **Commit your changes** with a clear and descriptive commit message.
+4.  **Push your branch** to your fork: `git push origin your-feature-name`.
+5.  **Open a pull request** from your fork to the `main` branch of the `AIGNE-io/aigne-framework` repository.
+6.  **Provide a detailed description** of your changes in the pull request, referencing any related issues from the issue tracker.
+
+We'll review your contribution as soon as possible. Thank you for helping us improve AIGNE!

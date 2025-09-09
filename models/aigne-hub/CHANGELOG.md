@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.10...aigne-hub-v0.9.0) (2025-09-09)
+
+
+### Features
+
+* support custom prefer input file type ([#469](https://github.com/AIGNE-io/aigne-framework/issues/469)) ([db0161b](https://github.com/AIGNE-io/aigne-framework/commit/db0161bbac52542c771ee2f40f361636b0668075))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.13.0
+    * @aigne/bedrock bumped to 0.10.0
+    * @aigne/core bumped to 1.59.0
+    * @aigne/deepseek bumped to 0.7.41
+    * @aigne/doubao bumped to 1.0.35
+    * @aigne/gemini bumped to 0.13.0
+    * @aigne/ideogram bumped to 0.3.11
+    * @aigne/ollama bumped to 0.7.41
+    * @aigne/open-router bumped to 0.7.41
+    * @aigne/openai bumped to 0.15.0
+    * @aigne/poe bumped to 1.0.21
+    * @aigne/transport bumped to 0.15.4
+    * @aigne/xai bumped to 0.7.41
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.48
+
 ## [0.8.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.9...aigne-hub-v0.8.10) (2025-09-08)
 
 

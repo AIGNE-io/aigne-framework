@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.59.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.58.3...core-v1.59.0) (2025-09-09)
+
+
+### Features
+
+* support custom prefer input file type ([#469](https://github.com/AIGNE-io/aigne-framework/issues/469)) ([db0161b](https://github.com/AIGNE-io/aigne-framework/commit/db0161bbac52542c771ee2f40f361636b0668075))
+
 ## [1.58.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.58.2...core-v1.58.3) (2025-09-08)
 
 

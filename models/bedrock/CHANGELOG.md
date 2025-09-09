@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.0](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.9.21...bedrock-v0.10.0) (2025-09-09)
+
+
+### Features
+
+* support custom prefer input file type ([#469](https://github.com/AIGNE-io/aigne-framework/issues/469)) ([db0161b](https://github.com/AIGNE-io/aigne-framework/commit/db0161bbac52542c771ee2f40f361636b0668075))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.59.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.48
+
 ## [0.9.21](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.9.20...bedrock-v0.9.21) (2025-09-08)
 
 

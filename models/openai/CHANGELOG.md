@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.15.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.3...openai-v0.15.0) (2025-09-09)
+
+
+### Features
+
+* support custom prefer input file type ([#469](https://github.com/AIGNE-io/aigne-framework/issues/469)) ([db0161b](https://github.com/AIGNE-io/aigne-framework/commit/db0161bbac52542c771ee2f40f361636b0668075))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.59.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.48
+
 ## [0.14.3](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.2...openai-v0.14.3) (2025-09-08)
 
 

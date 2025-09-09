@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.45.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.44.3...cli-v1.45.0) (2025-09-09)
+
+
+### Features
+
+* support custom prefer input file type ([#469](https://github.com/AIGNE-io/aigne-framework/issues/469)) ([db0161b](https://github.com/AIGNE-io/aigne-framework/commit/db0161bbac52542c771ee2f40f361636b0668075))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.41
+    * @aigne/agentic-memory bumped to 1.0.41
+    * @aigne/aigne-hub bumped to 0.9.0
+    * @aigne/core bumped to 1.59.0
+    * @aigne/default-memory bumped to 1.2.4
+    * @aigne/openai bumped to 0.15.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.48
+
 ## [1.44.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.44.2...cli-v1.44.3) (2025-09-08)
 
 

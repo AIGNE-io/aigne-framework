@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.13.0](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.12.3...gemini-v0.13.0) (2025-09-09)
+
+
+### Features
+
+* support custom prefer input file type ([#469](https://github.com/AIGNE-io/aigne-framework/issues/469)) ([db0161b](https://github.com/AIGNE-io/aigne-framework/commit/db0161bbac52542c771ee2f40f361636b0668075))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.15.0
+  * devDependencies
+    * @aigne/core bumped to 1.59.0
+    * @aigne/test-utils bumped to 0.5.48
+
 ## [0.12.3](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.12.2...gemini-v0.12.3) (2025-09-08)
 
 

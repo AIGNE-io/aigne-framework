@@ -244,7 +244,6 @@ test("GeminiChatModel should support image mode", async () => {
             "text",
             "image",
           ],
-          "systemInstruction": [],
           "temperature": undefined,
           "toolConfig": {
             "functionCallingConfig": undefined,

@@ -13,6 +13,7 @@ import {
   type ChatModelInput,
   type ChatModelOutput,
   FileOutputType,
+  type ModelOptions,
 } from "../../src/agents/chat-model.js";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 
@@ -415,15 +416,17 @@ test("ChatModel should download file", async () => {
   fetchSpy.mockRestore();
 });
 
-test("ChatModel should auto convert image url to base64 image data", async () => {
+test.each<[ModelOptions]>([
+  [{}],
+  [{ preferFileInputType: "file" }],
+  [{ preferFileInputType: "url" }],
+])("ChatModel should auto convert image url to base64 image data %p", async (modelOptions) => {
   const model = new OpenAIChatModel({
-    modelOptions: {
-      preferFileInputType: "file",
-    },
+    modelOptions,
   });
 
-  const processSpy = spyOn(model, "process").mockReturnValueOnce({ json: { files: {} } });
-  const fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce(new Response("test png file"));
+  const processSpy = spyOn(model, "process").mockReturnValue({ json: { files: {} } });
+  const fetchSpy = spyOn(globalThis, "fetch").mockResolvedValue(new Response("test png file"));
 
   await model.invoke({
     messages: [
@@ -437,28 +440,7 @@ test("ChatModel should auto convert image url to base64 image data", async () =>
     ],
   });
 
-  expect(fetchSpy).toHaveBeenCalledWith("https://www.example.com/test.png");
-  expect(processSpy.mock.lastCall?.at(0)).toMatchInlineSnapshot(`
-    {
-      "messages": [
-        {
-          "content": [
-            {
-              "text": "convert image to cartoon styles",
-              "type": "text",
-            },
-            {
-              "data": "dGVzdCBwbmcgZmlsZQ==",
-              "mimeType": "image/png",
-              "type": "file",
-              "url": undefined,
-            },
-          ],
-          "role": "user",
-        },
-      ],
-    }
-  `);
+  expect(processSpy.mock.lastCall?.at(0)).toMatchSnapshot();
 
   fetchSpy.mockRestore();
 });

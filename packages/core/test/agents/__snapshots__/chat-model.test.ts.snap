@@ -1,0 +1,69 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`ChatModel should auto convert image url to base64 image data {} 1`] = `
+{
+  "messages": [
+    {
+      "content": [
+        {
+          "text": "convert image to cartoon styles",
+          "type": "text",
+        },
+        {
+          "data": "dGVzdCBwbmcgZmlsZQ==",
+          "mimeType": "image/png",
+          "type": "file",
+          "url": undefined,
+        },
+      ],
+      "role": "user",
+    },
+  ],
+}
+`;
+
+exports[`ChatModel should auto convert image url to base64 image data {
+  preferFileInputType: "file",
+} 1`] = `
+{
+  "messages": [
+    {
+      "content": [
+        {
+          "text": "convert image to cartoon styles",
+          "type": "text",
+        },
+        {
+          "data": "dGVzdCBwbmcgZmlsZQ==",
+          "mimeType": "image/png",
+          "type": "file",
+          "url": undefined,
+        },
+      ],
+      "role": "user",
+    },
+  ],
+}
+`;
+
+exports[`ChatModel should auto convert image url to base64 image data {
+  preferFileInputType: "url",
+} 1`] = `
+{
+  "messages": [
+    {
+      "content": [
+        {
+          "text": "convert image to cartoon styles",
+          "type": "text",
+        },
+        {
+          "type": "url",
+          "url": "https://www.example.com/test.png",
+        },
+      ],
+      "role": "user",
+    },
+  ],
+}
+`;

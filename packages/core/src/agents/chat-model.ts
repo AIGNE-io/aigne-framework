@@ -203,7 +203,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
 
               if (
                 (input.modelOptions?.preferFileInputType ||
-                  this.options?.modelOptions?.preferFileInputType) === "file"
+                  this.options?.modelOptions?.preferFileInputType) !== "url"
               ) {
                 if (item.type === "url") {
                   return {

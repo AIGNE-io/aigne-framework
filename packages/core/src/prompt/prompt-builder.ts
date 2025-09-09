@@ -4,19 +4,22 @@ import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
-import type { AIAgent } from "../agents/ai-agent.js";
-import type {
-  ChatModel,
-  ChatModelInput,
-  ChatModelInputMessage,
-  ChatModelInputResponseFormat,
-  ChatModelInputTool,
-  ChatModelInputToolChoice,
-  ChatModelOptions,
+import { type AIAgent, DEFAULT_FILE_OUTPUT_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
+import {
+  type ChatModel,
+  type ChatModelInput,
+  type ChatModelInputMessage,
+  type ChatModelInputMessageContent,
+  type ChatModelInputResponseFormat,
+  type ChatModelInputTool,
+  type ChatModelInputToolChoice,
+  type ChatModelOptions,
+  fileUnionContentsSchema,
 } from "../agents/chat-model.js";
+import { optionalize } from "../loader/schema.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { isNil, isRecord, unique } from "../utils/type-utils.js";
+import { checkArguments, flat, isRecord, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import {
@@ -72,10 +75,10 @@ export class PromptBuilder {
             if (typeof resource.text === "string") {
               content = resource.text;
             } else if (typeof resource.blob === "string") {
-              content = [{ type: "image_url", url: resource.blob }];
+              content = [{ type: "url", url: resource.blob }];
             }
           } else if (i.content.type === "image") {
-            content = [{ type: "image_url", url: i.content.data }];
+            content = [{ type: "url", url: i.content.data }];
           }
 
           if (!content) throw new Error(`Unsupported content type ${i.content.type}`);
@@ -104,6 +107,7 @@ export class PromptBuilder {
       responseFormat: options.agent?.structuredStreamMode
         ? undefined
         : this.buildResponseFormat(options),
+      fileOutputType: options.agent?.fileOutputType,
       ...this.buildTools(options),
     };
   }
@@ -131,6 +135,17 @@ export class PromptBuilder {
         ? ChatMessagesTemplate.from([SystemMessageTemplate.from(this.instructions)])
         : this.instructions
       )?.format(options.input, { workingDir: this.workingDir })) ?? [];
+
+    const fileInputKey = options.agent?.fileInputKey;
+    const files = flat(
+      fileInputKey
+        ? checkArguments(
+            "Check input files",
+            optionalize(fileUnionContentsSchema),
+            input?.[fileInputKey],
+          )
+        : null,
+    );
 
     const memories: Pick<Memory, "content">[] = [];
 
@@ -167,11 +182,12 @@ export class PromptBuilder {
       );
     }
 
-    if (message) {
-      messages.push({
-        role: "user",
-        content: message,
-      });
+    if (message || files.length) {
+      const content: Exclude<ChatModelInputMessageContent, "string"> = [];
+      if (message) content.push({ type: "text", text: message });
+      if (files.length) content.push(...files);
+
+      messages.push({ role: "user", content });
     }
 
     return messages;
@@ -184,17 +200,86 @@ export class PromptBuilder {
     const messages: ChatModelInputMessage[] = [];
     const other: unknown[] = [];
 
-    const stringOrStringify = (value: unknown): string =>
+    const inputKey = options.agent?.inputKey;
+    const fileInputKey = options.agent?.fileInputKey;
+
+    const outputKey = options.agent?.outputKey || DEFAULT_OUTPUT_KEY;
+    const fileOutputKey = options.agent?.fileOutputKey || DEFAULT_FILE_OUTPUT_KEY;
+
+    const stringOrStringify = (value: unknown) =>
       typeof value === "string" ? value : stringify(value);
 
+    const convertMemoryToMessage = async (content: {
+      input?: unknown;
+      output?: unknown;
+    }): Promise<ChatModelInputMessage[]> => {
+      const { input, output } = content;
+      if (!input || !output) return [];
+
+      const result: ChatModelInputMessage[] = [];
+
+      const userMessageContent: ChatModelInputMessageContent = [];
+      if (typeof input === "object") {
+        const inputMessage: unknown = inputKey ? Reflect.get(input, inputKey) : undefined;
+        const inputFiles: unknown = fileInputKey ? Reflect.get(input, fileInputKey) : undefined;
+
+        if (inputMessage) {
+          userMessageContent.push({ type: "text", text: stringOrStringify(inputMessage) });
+        }
+        if (inputFiles) {
+          userMessageContent.push(
+            ...flat(
+              checkArguments(
+                "Check memory input files",
+                optionalize(fileUnionContentsSchema),
+                inputFiles,
+              ),
+            ),
+          );
+        }
+      }
+      if (!userMessageContent.length) {
+        userMessageContent.push({ type: "text", text: stringOrStringify(input) });
+      }
+      result.push({ role: "user", content: userMessageContent });
+
+      const agentMessageContent: ChatModelInputMessageContent = [];
+      if (typeof output === "object") {
+        const outputMessage: unknown = Reflect.get(output, outputKey);
+        const outputFiles: unknown = Reflect.get(output, fileOutputKey);
+        if (outputMessage) {
+          agentMessageContent.push({ type: "text", text: stringOrStringify(outputMessage) });
+        }
+        if (outputFiles) {
+          agentMessageContent.push(
+            ...flat(
+              checkArguments(
+                "Check memory output files",
+                optionalize(fileUnionContentsSchema),
+                outputFiles,
+              ),
+            ),
+          );
+        }
+      }
+      if (!agentMessageContent.length) {
+        agentMessageContent.push({ type: "text", text: stringOrStringify(output) });
+      }
+
+      result.push({ role: "agent", content: agentMessageContent });
+
+      return result;
+    };
+
     for (const { content } of memories) {
-      if (isRecord(content) && "input" in content && "output" in content) {
-        if (!isNil(content.input) && content.input !== "") {
-          messages.push({ role: "user", content: stringOrStringify(content.input) });
-        }
-        if (!isNil(content.output) && content.output !== "") {
-          messages.push({ role: "agent", content: stringOrStringify(content.output) });
-        }
+      if (
+        isRecord(content) &&
+        "input" in content &&
+        content.input &&
+        "output" in content &&
+        content.output
+      ) {
+        messages.push(...(await convertMemoryToMessage(content)));
       } else {
         other.push(content);
       }

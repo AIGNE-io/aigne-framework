@@ -1,6 +1,6 @@
 import { AIGNE_HUB_DEFAULT_MODEL, findModel } from "@aigne/aigne-hub";
 import type { ChatModel, ChatModelOptions } from "@aigne/core";
-import { flat } from "@aigne/core/utils/type-utils.js";
+import { flat, pick } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import inquirer from "inquirer";
 import { AIGNE_HUB_PROVIDER } from "./constants.js";
@@ -81,10 +81,13 @@ export async function loadChatModel(
 
   const params: ChatModelOptions = {
     model,
-    temperature: options?.temperature,
-    topP: options?.topP,
-    frequencyPenalty: options?.frequencyPenalty,
-    presencePenalty: options?.presencePenalty,
+    ...pick(options ?? {}, [
+      "modalities",
+      "temperature",
+      "topP",
+      "frequencyPenalty",
+      "presencePenalty",
+    ]),
   };
 
   const { match, all } = findModel(provider);

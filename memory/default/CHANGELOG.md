@@ -1,5 +1,54 @@
 # Changelog
 
+## [1.2.3](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.2...default-memory-v1.2.3) (2025-09-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.3
+  * devDependencies
+    * @aigne/openai bumped to 0.14.3
+
+## [1.2.2](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.1...default-memory-v1.2.2) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.2
+  * devDependencies
+    * @aigne/openai bumped to 0.14.2
+
+## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.0...default-memory-v1.2.1) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.1
+  * devDependencies
+    * @aigne/openai bumped to 0.14.1
+
+## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.1.18...default-memory-v1.2.0) (2025-09-05)
+
+
+### Features
+
+* add modalities support for chat model ([#454](https://github.com/AIGNE-io/aigne-framework/issues/454)) ([70d1bf6](https://github.com/AIGNE-io/aigne-framework/commit/70d1bf631f4e711235d89c6df8ee210a19179b30))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.0
+  * devDependencies
+    * @aigne/openai bumped to 0.14.0
+
 ## [1.1.18](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.1.17...default-memory-v1.1.18) (2025-09-01)
 
 

@@ -2,6 +2,7 @@
 
 exports[`PromptBuilder from file 1`] = `
 {
+  "fileOutputType": undefined,
   "messages": [
     {
       "content": 

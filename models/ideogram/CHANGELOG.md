@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.3.10](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.9...ideogram-v0.3.10) (2025-09-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.3
+
+## [0.3.9](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.8...ideogram-v0.3.9) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.2
+
+## [0.3.8](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.7...ideogram-v0.3.8) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.1
+
+## [0.3.7](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.6...ideogram-v0.3.7) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.0
+
 ## [0.3.6](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.5...ideogram-v0.3.6) (2025-09-01)
 
 

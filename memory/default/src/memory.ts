@@ -11,7 +11,7 @@ import {
   type MemoryRetrieverInput,
   type MemoryRetrieverOutput,
 } from "@aigne/core";
-import { flat, isRecord, pick } from "@aigne/core/utils/type-utils.js";
+import { flat, pick } from "@aigne/core/utils/type-utils.js";
 import {
   DefaultMemoryStorage,
   type DefaultMemoryStorageOptions,
@@ -61,10 +61,7 @@ export interface DefaultMemoryRetrieverOptions
   retrieveMemoryCount?: number;
   retrieveRecentMemoryCount?: number;
   inputKey?: string | string[];
-  outputKey?: string | string[];
   getSearchPattern?: DefaultMemoryRetriever["getSearchPattern"];
-  formatMessage?: DefaultMemoryRetriever["formatMessage"];
-  formatMemory?: DefaultMemoryRetriever["formatMemory"];
 }
 
 export class DefaultMemoryRetriever extends MemoryRetriever {
@@ -74,10 +71,7 @@ export class DefaultMemoryRetriever extends MemoryRetriever {
     this.retrieveMemoryCount = options.retrieveMemoryCount;
     this.retrieveRecentMemoryCount = options.retrieveRecentMemoryCount;
     this.inputKey = flat(options.inputKey);
-    this.outputKey = flat(options.outputKey);
     if (options.getSearchPattern) this.getSearchPattern = options.getSearchPattern;
-    if (options.formatMessage) this.formatMessage = options.formatMessage;
-    if (options.formatMemory) this.formatMemory = options.formatMemory;
   }
 
   private storage: MemoryStorage;
@@ -88,8 +82,6 @@ export class DefaultMemoryRetriever extends MemoryRetriever {
 
   private inputKey?: string[];
 
-  private outputKey?: string[];
-
   private getSearchPattern = (search: MemoryRetrieverInput["search"]): string | undefined => {
     if (!search || typeof search === "string") return search;
 
@@ -98,28 +90,6 @@ export class DefaultMemoryRetriever extends MemoryRetriever {
     return Object.values(obj)
       .map((v) => (typeof v === "string" ? v : undefined))
       .join("\n");
-  };
-
-  private formatMessage = (content: unknown, key?: string[]): unknown => {
-    if (!isRecord(content)) return content;
-
-    const obj = !key?.length ? content : pick(content, key);
-
-    return Object.values(obj)
-      .map((v) => (typeof v === "string" ? v : undefined))
-      .join("\n");
-  };
-
-  private formatMemory = (content: unknown): unknown => {
-    if (isRecord(content) && "input" in content && "output" in content) {
-      return {
-        input: this.formatMessage(content.input, this.inputKey),
-        output: this.formatMessage(content.output, this.outputKey),
-        source: content.source,
-      };
-    }
-
-    return content;
   };
 
   override async process(
@@ -150,12 +120,7 @@ export class DefaultMemoryRetriever extends MemoryRetriever {
       .concat(recent)
       .slice(-limit);
 
-    return {
-      memories: memories.map((i) => ({
-        ...i,
-        content: this.formatMemory(i.content),
-      })),
-    };
+    return { memories };
   }
 }
 

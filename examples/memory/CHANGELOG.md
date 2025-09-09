@@ -1,5 +1,65 @@
 # Changelog
 
+## [0.10.51](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.50...example-memory-v0.10.51) (2025-09-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.40
+    * @aigne/cli bumped to 1.44.3
+    * @aigne/core bumped to 1.58.3
+    * @aigne/default-memory bumped to 1.2.3
+    * @aigne/fs-memory bumped to 1.0.40
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.47
+
+## [0.10.50](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.49...example-memory-v0.10.50) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.39
+    * @aigne/cli bumped to 1.44.2
+    * @aigne/core bumped to 1.58.2
+    * @aigne/default-memory bumped to 1.2.2
+    * @aigne/fs-memory bumped to 1.0.39
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.46
+
+## [0.10.49](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.48...example-memory-v0.10.49) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.38
+    * @aigne/cli bumped to 1.44.1
+    * @aigne/core bumped to 1.58.1
+    * @aigne/default-memory bumped to 1.2.1
+    * @aigne/fs-memory bumped to 1.0.38
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.45
+
+## [0.10.48](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.47...example-memory-v0.10.48) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.37
+    * @aigne/cli bumped to 1.44.0
+    * @aigne/core bumped to 1.58.0
+    * @aigne/default-memory bumped to 1.2.0
+    * @aigne/fs-memory bumped to 1.0.37
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.44
+
 ## [0.10.47](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.46...example-memory-v0.10.47) (2025-09-01)
 
 

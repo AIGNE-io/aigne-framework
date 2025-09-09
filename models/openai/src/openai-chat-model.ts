@@ -1,4 +1,5 @@
 import {
+  type AgentInvokeOptions,
   type AgentProcessResult,
   type AgentResponse,
   type AgentResponseChunk,
@@ -24,6 +25,7 @@ import {
 import { Ajv } from "ajv";
 import type { ClientOptions, OpenAI } from "openai";
 import type {
+  ChatCompletionContentPart,
   ChatCompletionMessageParam,
   ChatCompletionTool,
   ResponseFormatJSONSchema,
@@ -179,7 +181,10 @@ export class OpenAIChatModel extends ChatModel {
    * @param input The input to process
    * @returns The generated response
    */
-  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+  override process(
+    input: ChatModelInput,
+    _options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
     return this._process(input);
   }
 
@@ -292,7 +297,7 @@ export class OpenAIChatModel extends ChatModel {
           type: "json_schema",
           json_schema: {
             ...input.responseFormat.jsonSchema,
-            schema: jsonSchemaToOpenAIJsonSchema(input.responseFormat.jsonSchema.schema),
+            schema: this.jsonSchemaToOpenAIJsonSchema(input.responseFormat.jsonSchema.schema),
           },
         },
       };
@@ -438,6 +443,53 @@ export class OpenAIChatModel extends ChatModel {
 
     return streaming ? result : await agentResponseStreamToObject(result);
   }
+
+  /**
+   * Controls how optional fields are handled in JSON schema conversion
+   * - "anyOf": All fields are required but can be null (default)
+   * - "optional": Fields marked as optional in schema remain optional
+   */
+  protected optionalFieldMode?: "anyOf" | "optional" = "anyOf";
+
+  protected jsonSchemaToOpenAIJsonSchema(schema: Record<string, unknown>): Record<string, unknown> {
+    if (schema?.type === "object") {
+      const s = schema as {
+        required?: string[];
+        properties: Record<string, unknown>;
+      };
+
+      const required = this.optionalFieldMode === "anyOf" ? Object.keys(s.properties) : s.required;
+
+      return {
+        ...schema,
+        properties: Object.fromEntries(
+          Object.entries(s.properties).map(([key, value]) => {
+            const valueSchema = this.jsonSchemaToOpenAIJsonSchema(value as Record<string, unknown>);
+
+            // NOTE: All fields must be required https://platform.openai.com/docs/guides/structured-outputs/all-fields-must-be-required
+            return [
+              key,
+              this.optionalFieldMode === "optional" || s.required?.includes(key)
+                ? valueSchema
+                : { anyOf: [valueSchema, { type: ["null"] }] },
+            ];
+          }),
+        ),
+        required,
+      };
+    }
+
+    if (schema?.type === "array") {
+      const { items } = schema as { items: Record<string, unknown> };
+
+      return {
+        ...schema,
+        items: this.jsonSchemaToOpenAIJsonSchema(items),
+      };
+    }
+
+    return schema;
+  }
 }
 
 // Create role mapper for OpenAI (uses standard mapping)
@@ -449,36 +501,48 @@ const mapRole = createRoleMapper(STANDARD_ROLE_MAP);
 export async function contentsFromInputMessages(
   messages: ChatModelInputMessage[],
 ): Promise<ChatCompletionMessageParam[]> {
-  return messages.map(
-    (i) =>
-      ({
-        role: mapRole(i.role),
-        content:
-          typeof i.content === "string"
-            ? i.content
-            : i.content
-                ?.map((c) => {
-                  if (c.type === "text") {
-                    return { type: "text" as const, text: c.text };
-                  }
-                  if (c.type === "image_url") {
-                    return {
-                      type: "image_url" as const,
-                      image_url: { url: c.url },
-                    };
-                  }
-                })
-                .filter(isNonNullable),
-        tool_calls: i.toolCalls?.map((i) => ({
-          ...i,
-          function: {
-            ...i.function,
-            arguments: JSON.stringify(i.function.arguments),
-          },
-        })),
-        tool_call_id: i.toolCallId,
-        name: i.name,
-      }) as ChatCompletionMessageParam,
+  return Promise.all(
+    messages.map(
+      async (i) =>
+        ({
+          role: mapRole(i.role),
+          content:
+            typeof i.content === "string"
+              ? i.content
+              : i.content &&
+                (
+                  await Promise.all(
+                    i.content.map<Promise<ChatCompletionContentPart>>(async (c) => {
+                      switch (c.type) {
+                        case "text":
+                          return { type: "text", text: c.text };
+                        case "url":
+                          return { type: "image_url", image_url: { url: c.url } };
+                        case "file":
+                          return {
+                            type: "file",
+                            file: { file_data: c.data, filename: c.filename },
+                          };
+                        case "local": {
+                          throw new Error(
+                            `Unsupported local file: ${c.path}, it should be converted to base64 at ChatModel`,
+                          );
+                        }
+                      }
+                    }),
+                  )
+                ).filter(isNonNullable),
+          tool_calls: i.toolCalls?.map((i) => ({
+            ...i,
+            function: {
+              ...i.function,
+              arguments: JSON.stringify(i.function.arguments),
+            },
+          })),
+          tool_call_id: i.toolCallId,
+          name: i.name,
+        }) as ChatCompletionMessageParam,
+    ),
   );
 }
 
@@ -505,47 +569,6 @@ export function toolsFromInputTools(
         };
       })
     : undefined;
-}
-
-/**
- * @hidden
- */
-export function jsonSchemaToOpenAIJsonSchema(
-  schema: Record<string, unknown>,
-): Record<string, unknown> {
-  if (schema?.type === "object") {
-    const { required, properties } = schema as {
-      required?: string[];
-      properties: Record<string, unknown>;
-    };
-
-    return {
-      ...schema,
-      properties: Object.fromEntries(
-        Object.entries(properties).map(([key, value]) => {
-          const valueSchema = jsonSchemaToOpenAIJsonSchema(value as Record<string, unknown>);
-
-          // NOTE: All fields must be required https://platform.openai.com/docs/guides/structured-outputs/all-fields-must-be-required
-          return [
-            key,
-            required?.includes(key) ? valueSchema : { anyOf: [valueSchema, { type: ["null"] }] },
-          ];
-        }),
-      ),
-      required: Object.keys(properties),
-    };
-  }
-
-  if (schema?.type === "array") {
-    const { items } = schema as { items: Record<string, unknown> };
-
-    return {
-      ...schema,
-      items: jsonSchemaToOpenAIJsonSchema(items),
-    };
-  }
-
-  return schema;
 }
 
 function handleToolCallDelta(

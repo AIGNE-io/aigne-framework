@@ -1,5 +1,61 @@
 # Changelog
 
+## [1.13.61](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.13.60...example-workflow-orchestrator-v1.13.61) (2025-09-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.40
+    * @aigne/cli bumped to 1.44.3
+    * @aigne/core bumped to 1.58.3
+    * @aigne/openai bumped to 0.14.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.47
+
+## [1.13.60](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.13.59...example-workflow-orchestrator-v1.13.60) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.39
+    * @aigne/cli bumped to 1.44.2
+    * @aigne/core bumped to 1.58.2
+    * @aigne/openai bumped to 0.14.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.46
+
+## [1.13.59](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.13.58...example-workflow-orchestrator-v1.13.59) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.38
+    * @aigne/cli bumped to 1.44.1
+    * @aigne/core bumped to 1.58.1
+    * @aigne/openai bumped to 0.14.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.45
+
+## [1.13.58](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.13.57...example-workflow-orchestrator-v1.13.58) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.37
+    * @aigne/cli bumped to 1.44.0
+    * @aigne/core bumped to 1.58.0
+    * @aigne/openai bumped to 0.14.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.44
+
 ## [1.13.57](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.13.56...example-workflow-orchestrator-v1.13.57) (2025-09-01)
 
 

@@ -129,6 +129,29 @@ export function omitBy<T extends object, K extends keyof T>(
   ) as Partial<T>;
 }
 
+export function omitByDeep(obj: any, predicate: (value: any, key: any) => boolean): any {
+  if (obj === null || obj === undefined) return obj;
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => omitByDeep(item, predicate));
+  }
+
+  if (typeof obj === "object") {
+    const result: any = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+      const newValue = omitByDeep(value, predicate);
+
+      if (!predicate(newValue, key)) {
+        result[key] = newValue;
+      }
+    }
+    return result;
+  }
+
+  return obj;
+}
+
 export function flat<T>(...value: (T | T[])[]): NonNullable<T>[] {
   return value.flat().filter(isNonNullable) as NonNullable<T>[];
 }

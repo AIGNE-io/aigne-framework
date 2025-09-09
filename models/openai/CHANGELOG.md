@@ -1,5 +1,64 @@
 # Changelog
 
+## [0.14.3](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.2...openai-v0.14.3) (2025-09-08)
+
+
+### Bug Fixes
+
+* support optional field sturectured output for gemini ([#468](https://github.com/AIGNE-io/aigne-framework/issues/468)) ([70c6279](https://github.com/AIGNE-io/aigne-framework/commit/70c62795039a2862e3333f26707329489bf938de))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.47
+
+## [0.14.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.1...openai-v0.14.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* **model:** transform local file to base64 before request llm ([#462](https://github.com/AIGNE-io/aigne-framework/issues/462)) ([58ef5d7](https://github.com/AIGNE-io/aigne-framework/commit/58ef5d77046c49f3c4eed15b7f0cc283cbbcd74a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.46
+
+## [0.14.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.14.0...openai-v0.14.1) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.45
+
+## [0.14.0](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.13.7...openai-v0.14.0) (2025-09-05)
+
+
+### Features
+
+* add modalities support for chat model ([#454](https://github.com/AIGNE-io/aigne-framework/issues/454)) ([70d1bf6](https://github.com/AIGNE-io/aigne-framework/commit/70d1bf631f4e711235d89c6df8ee210a19179b30))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.58.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.44
+
 ## [0.13.7](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.13.6...openai-v0.13.7) (2025-09-01)
 
 

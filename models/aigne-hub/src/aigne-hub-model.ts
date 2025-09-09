@@ -3,6 +3,7 @@ import {
   ChatModel,
   type ChatModelInput,
   type ChatModelOutput,
+  FileOutputType,
 } from "@aigne/core";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
@@ -93,6 +94,8 @@ export class AIGNEHubChatModel extends ChatModel {
           ...input.modelOptions,
           model: input.modelOptions?.model || (await this.credential).model,
         },
+        // Shouldn't use `local` output type for remote AIGNE Hub call, client can not access the remote filesystem
+        fileOutputType: FileOutputType.file,
       },
       {
         ...options,

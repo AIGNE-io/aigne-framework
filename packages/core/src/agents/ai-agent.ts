@@ -20,11 +20,13 @@ import type {
   ChatModelInputMessage,
   ChatModelOutput,
   ChatModelOutputToolCall,
+  FileOutputType,
 } from "./chat-model.js";
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
 import { isTransferAgentOutput } from "./types.js";
 
 export const DEFAULT_OUTPUT_KEY = "message";
+export const DEFAULT_FILE_OUTPUT_KEY = "files";
 
 /**
  * Configuration options for an AI Agent
@@ -57,12 +59,18 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    */
   inputKey?: string;
 
+  fileInputKey?: string;
+
   /**
    * Custom key to use for text output in the response
    *
    * Defaults to `message` if not specified
    */
   outputKey?: string;
+
+  fileOutputKey?: string;
+
+  fileOutputType?: FileOutputType;
 
   /**
    * Controls how the agent uses tools during execution
@@ -265,8 +273,10 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         ? PromptBuilder.from(options.instructions)
         : (options.instructions ?? new PromptBuilder());
     this.inputKey = options.inputKey;
-
+    this.fileInputKey = options.fileInputKey;
     this.outputKey = options.outputKey || DEFAULT_OUTPUT_KEY;
+    this.fileOutputKey = options.fileOutputKey || DEFAULT_FILE_OUTPUT_KEY;
+    this.fileOutputType = options.fileOutputType;
     this.toolChoice = options.toolChoice;
     this.memoryAgentsAsTools = options.memoryAgentsAsTools;
     this.memoryPromptTemplate = options.memoryPromptTemplate;
@@ -313,6 +323,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    */
   inputKey?: string;
 
+  fileInputKey?: string;
+
   /**
    * Custom key to use for text output in the response
    *
@@ -321,6 +333,10 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-custom-output-key}
    */
   outputKey: string;
+
+  fileOutputKey: string;
+
+  fileOutputType?: FileOutputType;
 
   /**
    * Controls how the agent uses tools during execution
@@ -463,7 +479,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         }
       }
 
-      const { toolCalls, json, text } = modelOutput;
+      const { toolCalls, json, text, files } = modelOutput;
 
       if (toolCalls?.length) {
         const executedToolCalls: {
@@ -527,6 +543,9 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       }
       if (text) {
         Object.assign(result, { [outputKey]: text });
+      }
+      if (files) {
+        Object.assign(result, { [this.fileOutputKey]: files });
       }
 
       if (!isEmpty(result)) {

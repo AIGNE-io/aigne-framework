@@ -22,6 +22,7 @@ import {
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import Anthropic, { type ClientOptions } from "@anthropic-ai/sdk";
+import type { Base64ImageSource } from "@anthropic-ai/sdk/resources";
 import type {
   ContentBlockParam,
   MessageParam,
@@ -184,7 +185,7 @@ export class AnthropicChatModel extends ChatModel {
       top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
       // TODO: make dynamic based on model https://docs.anthropic.com/en/docs/about-claude/models/all-models
       max_tokens: this.getMaxTokens(model),
-      ...convertMessages(input),
+      ...(await convertMessages(input)),
       ...convertTools({ ...input, disableParallelToolUse }),
     };
 
@@ -363,10 +364,10 @@ export class AnthropicChatModel extends ChatModel {
   }
 }
 
-function convertMessages({ messages, responseFormat, tools }: ChatModelInput): {
+async function convertMessages({ messages, responseFormat, tools }: ChatModelInput): Promise<{
   messages: MessageParam[];
   system?: string;
-} {
+}> {
   const systemMessages: string[] = [];
   const msgs: MessageParam[] = [];
 
@@ -392,7 +393,7 @@ function convertMessages({ messages, responseFormat, tools }: ChatModelInput): {
     } else if (msg.role === "user") {
       if (!msg.content) throw new Error("User message must have content");
 
-      msgs.push({ role: "user", content: convertContent(msg.content) });
+      msgs.push({ role: "user", content: await convertContent(msg.content) });
     } else if (msg.role === "agent") {
       if (msg.toolCalls?.length) {
         msgs.push({
@@ -405,7 +406,7 @@ function convertMessages({ messages, responseFormat, tools }: ChatModelInput): {
           })),
         });
       } else if (msg.content) {
-        msgs.push({ role: "assistant", content: convertContent(msg.content) });
+        msgs.push({ role: "assistant", content: await convertContent(msg.content) });
       } else {
         throw new Error("Agent message must have content or toolCalls");
       }
@@ -431,14 +432,34 @@ function convertMessages({ messages, responseFormat, tools }: ChatModelInput): {
   return { messages: msgs, system };
 }
 
-function convertContent(content: ChatModelInputMessageContent): string | ContentBlockParam[] {
+async function convertContent(
+  content: ChatModelInputMessageContent,
+): Promise<string | ContentBlockParam[]> {
   if (typeof content === "string") return content;
 
   if (Array.isArray(content)) {
-    return content.map((item) =>
-      item.type === "image_url"
-        ? { type: "image", source: { type: "url", url: item.url } }
-        : { type: "text", text: item.text },
+    return Promise.all(
+      content.map<Promise<ContentBlockParam>>(async (item) => {
+        if (item.type === "text") return { type: "text", text: item.text };
+
+        const media_type = ChatModel.getMimeType(
+          item.mimeType || item.filename || "",
+        ) as Base64ImageSource["media_type"];
+
+        switch (item.type) {
+          case "url":
+            return { type: "image", source: { type: "url", url: item.url } };
+          case "file":
+            return {
+              type: "image",
+              source: { type: "base64", data: item.data, media_type },
+            };
+          case "local":
+            throw new Error(
+              `Unsupported local file: ${item.path}, it should be converted to base64 at ChatModel`,
+            );
+        }
+      }),
     );
   }
 

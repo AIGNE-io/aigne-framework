@@ -1,11 +1,23 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Ajv } from "ajv";
+import mime from "mime";
+import { v7 } from "uuid";
 import { z } from "zod";
-import { checkArguments, type PromiseOrValue } from "../utils/type-utils.js";
+import { optionalize } from "../loader/schema.js";
+import {
+  checkArguments,
+  isNil,
+  omitByDeep,
+  type PromiseOrValue,
+  pick,
+} from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
+  type AgentResponse,
+  type AgentResponseStream,
   agentOptionsSchema,
   type Message,
 } from "./agent.js";
@@ -165,6 +177,31 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
         enumerable: false,
       });
     }
+
+    input.messages = await Promise.all(
+      input.messages.map(async (message) => {
+        if (!Array.isArray(message.content)) return message;
+
+        return {
+          ...message,
+          content: await Promise.all(
+            message.content.map(async (item) => {
+              if (item.type === "local") {
+                return {
+                  ...item,
+                  type: "file" as const,
+                  data: await nodejs.fs.readFile(item.path, "base64"),
+                  path: undefined,
+                  mimeType: item.mimeType || ChatModel.getMimeType(item.filename || item.path),
+                };
+              }
+
+              return item;
+            }),
+          ),
+        };
+      }),
+    );
   }
 
   /**
@@ -193,19 +230,6 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
 
           toolCall.function.name = originalTool.function.name;
         }
-      }
-    }
-
-    if (
-      input.responseFormat?.type === "json_schema" &&
-      // NOTE: Should not validate if there are tool calls
-      !output.toolCalls?.length
-    ) {
-      const ajv = new Ajv();
-      if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
-        throw new StructuredOutputError(
-          `Output JSON does not conform to the provided JSON schema: ${ajv.errorsText()}`,
-        );
       }
     }
 
@@ -242,6 +266,109 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>>;
+
+  protected override async processAgentOutput(
+    input: ChatModelInput,
+    output: Exclude<AgentResponse<ChatModelOutput>, AgentResponseStream<ChatModelOutput>>,
+    options: AgentInvokeOptions,
+  ): Promise<ChatModelOutput> {
+    if (output.files) {
+      const files = z.array(fileUnionContentSchema).parse(output.files);
+      output = {
+        ...output,
+        files: await Promise.all(
+          files.map((file) => this.transformFileOutput(input, file, options)),
+        ),
+      };
+    }
+
+    // Remove fields with `null` value for validation
+    output = omitByDeep(output, (value) => isNil(value));
+
+    if (
+      input.responseFormat?.type === "json_schema" &&
+      // NOTE: Should not validate if there are tool calls
+      !(output as ChatModelOutput).toolCalls?.length
+    ) {
+      const ajv = new Ajv();
+      if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
+        throw new StructuredOutputError(
+          `Output JSON does not conform to the provided JSON schema: ${ajv.errorsText()}`,
+        );
+      }
+    }
+
+    return super.processAgentOutput(input, output, options);
+  }
+
+  async transformFileOutput(
+    input: ChatModelInput,
+    data: FileUnionContent,
+    options: AgentInvokeOptions,
+  ): Promise<FileUnionContent> {
+    const fileOutputType = input.fileOutputType || FileOutputType.local;
+
+    if (fileOutputType === data.type) return data;
+
+    const common = pick(data, "filename", "mimeType");
+
+    switch (fileOutputType) {
+      case FileOutputType.local: {
+        const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
+        await nodejs.fs.mkdir(dir, { recursive: true });
+
+        const ext = ChatModel.getFileExtension(data.mimeType || data.filename || "");
+        const id = v7();
+        const filename = ext ? `${id}.${ext}` : id;
+        const path = nodejs.path.join(dir, filename);
+        if (data.type === "file") {
+          await nodejs.fs.writeFile(path, data.data, "base64");
+        } else if (data.type === "url") {
+          await this.downloadFile(data.url)
+            .then((res) => res.body)
+            .then((body) => body && nodejs.fs.writeFile(path, body));
+        } else {
+          throw new Error(`Unexpected file type: ${data.type}`);
+        }
+
+        return { ...common, type: "local", path };
+      }
+      case FileOutputType.file: {
+        let base64: string;
+        if (data.type === "local") {
+          base64 = await nodejs.fs.readFile(data.path, "base64");
+        } else if (data.type === "url") {
+          base64 = Buffer.from(await (await this.downloadFile(data.url)).arrayBuffer()).toString(
+            "base64",
+          );
+        } else {
+          throw new Error(`Unexpected file type: ${data.type}`);
+        }
+
+        return { ...common, type: "file", data: base64 };
+      }
+    }
+  }
+
+  static getFileExtension(type: string) {
+    return mime.getExtension(type) || undefined;
+  }
+
+  static getMimeType(filename: string) {
+    return mime.getType(filename) || undefined;
+  }
+
+  protected async downloadFile(url: string) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      const text = await response.text().catch(() => null);
+      throw new Error(
+        `Failed to download content from ${url}, ${response.status} ${response.statusText} ${text}`,
+      );
+    }
+
+    return response;
+  }
 }
 
 /**
@@ -268,6 +395,8 @@ export interface ChatModelInput extends Message {
    * Specifies the expected response format
    */
   responseFormat?: ChatModelInputResponseFormat;
+
+  fileOutputType?: FileOutputType;
 
   /**
    * List of tools available for the model to use
@@ -337,7 +466,7 @@ export interface ChatModelInputMessage {
  *
  * Can be a simple string, or a mixed array of text and image content
  */
-export type ChatModelInputMessageContent = string | (TextContent | ImageUrlContent)[];
+export type ChatModelInputMessageContent = string | UnionContent[];
 
 /**
  * Text content type
@@ -346,26 +475,81 @@ export type ChatModelInputMessageContent = string | (TextContent | ImageUrlConte
  */
 export type TextContent = { type: "text"; text: string };
 
+export const textContentSchema = z.object({
+  type: z.literal("text"),
+  text: z.string(),
+});
+
+export interface FileContentBase {
+  filename?: string;
+  mimeType?: string;
+}
+
+export const fileContentBaseSchema = z.object({
+  filename: optionalize(z.string()),
+  mimeType: optionalize(z.string()),
+});
+
 /**
  * Image URL content type
  *
  * Used for image parts of message content, referencing images via URL
  */
-export type ImageUrlContent = { type: "image_url"; url: string };
+export interface UrlContent extends FileContentBase {
+  type: "url";
+  url: string;
+}
+
+export const urlContentSchema = fileContentBaseSchema.extend({
+  type: z.literal("url"),
+  url: z.string(),
+});
+
+export interface FileContent extends FileContentBase {
+  type: "file";
+  data: string;
+}
+
+export const fileContentSchema = fileContentBaseSchema.extend({
+  type: z.literal("file"),
+  data: z.string(),
+});
+
+export interface LocalContent extends FileContentBase {
+  type: "local";
+  path: string;
+}
+
+export const localContentSchema = fileContentBaseSchema.extend({
+  type: z.literal("local"),
+  path: z.string(),
+});
+
+export type FileUnionContent = LocalContent | UrlContent | FileContent;
+
+export const fileUnionContentSchema = z.discriminatedUnion("type", [
+  localContentSchema,
+  urlContentSchema,
+  fileContentSchema,
+]);
+
+export const fileUnionContentsSchema = z.union([
+  fileUnionContentSchema,
+  z.array(fileUnionContentSchema),
+]);
+
+export type UnionContent = TextContent | FileUnionContent;
+
+export const unionContentSchema = z.discriminatedUnion("type", [
+  textContentSchema,
+  localContentSchema,
+  urlContentSchema,
+  fileContentSchema,
+]);
 
 const chatModelInputMessageSchema = z.object({
   role: z.union([z.literal("system"), z.literal("user"), z.literal("agent"), z.literal("tool")]),
-  content: z
-    .union([
-      z.string(),
-      z.array(
-        z.union([
-          z.object({ type: z.literal("text"), text: z.string() }),
-          z.object({ type: z.literal("image_url"), url: z.string() }),
-        ]),
-      ),
-    ])
-    .optional(),
+  content: z.union([z.string(), z.array(unionContentSchema)]).optional(),
   toolCalls: z
     .array(
       z.object({
@@ -483,6 +667,8 @@ const chatModelInputToolChoiceSchema = z.union([
   chatModelInputToolSchema,
 ]);
 
+export type Modality = "text" | "image" | "audio";
+
 /**
  * Model-specific configuration options
  *
@@ -518,6 +704,8 @@ export interface ChatModelOptions {
    * Whether to allow parallel tool calls
    */
   parallelToolCalls?: boolean;
+
+  modalities?: Modality[];
 }
 
 const chatModelOptionsSchema = z.object({
@@ -527,6 +715,7 @@ const chatModelOptionsSchema = z.object({
   frequencyPenalty: z.number().optional(),
   presencePenalty: z.number().optional(),
   parallelToolCalls: z.boolean().optional().default(true),
+  modalities: z.array(z.enum(["text", "image", "audio"])).optional(),
 });
 
 const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({
@@ -575,6 +764,13 @@ export interface ChatModelOutput extends Message {
    * Model name or version used
    */
   model?: string;
+
+  files?: FileUnionContent[];
+}
+
+export enum FileOutputType {
+  local = "local",
+  file = "file",
 }
 
 /**
@@ -656,4 +852,5 @@ const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
   toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
   usage: chatModelOutputUsageSchema.optional(),
   model: z.string().optional(),
+  files: z.array(fileUnionContentSchema).optional(),
 });

@@ -10,7 +10,6 @@
     "packages/cli": {},
     "packages/test-utils": {},
     "packages/transport": {},
-    "packages/publish-docs": {},
     "models/anthropic": {},
     "models/bedrock": {},
     "models/deepseek": {},
@@ -55,6 +54,7 @@
     "examples/workflow-sequential": {},
     "examples/chat-bot": {},
     "examples/memory": {},
+    "examples/nano-banana": {},
     "blocklets/aigne-runtime": {
       "package-name": "aigne-runtime",
       "extra-files": [

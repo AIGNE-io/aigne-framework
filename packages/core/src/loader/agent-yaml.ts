@@ -160,7 +160,11 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
       .transform((v) =>
         typeof v === "string"
           ? { content: v, path }
-          : Promise.resolve(nodejs.path.join(nodejs.path.dirname(path), v.url)).then((path) =>
+          : Promise.resolve(
+              nodejs.path.isAbsolute(v.url)
+                ? v.url
+                : nodejs.path.join(nodejs.path.dirname(path), v.url),
+            ).then((path) =>
               nodejs.fs.readFile(path, "utf8").then((content) => ({ content, path })),
             ),
       ) as unknown as ZodType<Instructions>;
@@ -174,6 +178,7 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
             inputKey: optionalize(z.string()),
             outputKey: optionalize(z.string()),
             toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
+            structuredStreamMode: optionalize(z.boolean()),
           })
           .extend(baseAgentSchema.shape),
         z

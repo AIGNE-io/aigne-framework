@@ -1,5 +1,86 @@
 # Changelog
 
+## [1.44.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.44.2...cli-v1.44.3) (2025-09-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.40
+    * @aigne/agentic-memory bumped to 1.0.40
+    * @aigne/aigne-hub bumped to 0.8.10
+    * @aigne/core bumped to 1.58.3
+    * @aigne/default-memory bumped to 1.2.3
+    * @aigne/openai bumped to 0.14.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.47
+
+## [1.44.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.44.1...cli-v1.44.2) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.39
+    * @aigne/agentic-memory bumped to 1.0.39
+    * @aigne/aigne-hub bumped to 0.8.9
+    * @aigne/core bumped to 1.58.2
+    * @aigne/default-memory bumped to 1.2.2
+    * @aigne/openai bumped to 0.14.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.46
+
+## [1.44.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.44.0...cli-v1.44.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* should not return local path from aigne hub service ([#460](https://github.com/AIGNE-io/aigne-framework/issues/460)) ([c959717](https://github.com/AIGNE-io/aigne-framework/commit/c95971774f7e84dbeb3313f60b3e6464e2bb22e4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.38
+    * @aigne/agentic-memory bumped to 1.0.38
+    * @aigne/aigne-hub bumped to 0.8.8
+    * @aigne/core bumped to 1.58.1
+    * @aigne/default-memory bumped to 1.2.1
+    * @aigne/openai bumped to 0.14.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.45
+
+## [1.44.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.43.1...cli-v1.44.0) (2025-09-05)
+
+
+### Features
+
+* add modalities support for chat model ([#454](https://github.com/AIGNE-io/aigne-framework/issues/454)) ([70d1bf6](https://github.com/AIGNE-io/aigne-framework/commit/70d1bf631f4e711235d89c6df8ee210a19179b30))
+* **cli:** unify `run` and apps command arguments ([#436](https://github.com/AIGNE-io/aigne-framework/issues/436)) ([9c6b632](https://github.com/AIGNE-io/aigne-framework/commit/9c6b6323f8cfc2afe632d8ae392eab446981fc64))
+
+
+### Bug Fixes
+
+* add file protocol to local file links in terminal tracer ([#455](https://github.com/AIGNE-io/aigne-framework/issues/455)) ([14890f9](https://github.com/AIGNE-io/aigne-framework/commit/14890f9ead679f38a7cc0b1ff31a97d2fe9056cb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.37
+    * @aigne/agentic-memory bumped to 1.0.37
+    * @aigne/aigne-hub bumped to 0.8.7
+    * @aigne/core bumped to 1.58.0
+    * @aigne/default-memory bumped to 1.2.0
+    * @aigne/observability-api bumped to 0.10.2
+    * @aigne/openai bumped to 0.14.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.44
+
 ## [1.43.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.43.0...cli-v1.43.1) (2025-09-01)
 
 

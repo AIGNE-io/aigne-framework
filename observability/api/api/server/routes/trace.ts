@@ -317,7 +317,7 @@ export default ({
 
     for (const trace of validatedTraces) {
       try {
-        if (trace.attributes?.output?.files) {
+        if (trace.attributes?.output?.files?.length) {
           const files = trace.attributes.output.files || [];
           if (options?.dataDir) {
             trace.attributes.output.files = await saveFiles(files, { dataDir: options.dataDir });

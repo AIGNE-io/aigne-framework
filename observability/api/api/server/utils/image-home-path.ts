@@ -1,10 +1,10 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
-import path, { join } from "node:path";
+import { join } from "node:path";
 import dayjs from "@abtnode/util/lib/dayjs";
 
-const getAIGNEHomePath = async () => {
-  const folder = path.join("images", dayjs().format("YYYY-MM-DD"));
+const getAIGNEHomePath = () => {
+  const folder = join("images", dayjs().format("YYYY-MM-DD"));
 
   const AIGNE_OBSERVER_IMAGE_DIR = join(homedir(), ".aigne", "observability", folder);
 

@@ -30,7 +30,7 @@ const engineComponentId = Config.env.componentDid;
 const isProduction =
   process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
 
-const REQUEST_ENTITY_SIZE_LIMIT = process.env.REQUEST_ENTITY_SIZE_LIMIT || "30 mb";
+const MAX_REQUEST_BODY_SIZE = process.env.MAX_REQUEST_BODY_SIZE || "30 mb";
 
 const OBSERVABILITY_DID = "z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh";
 AIGNEObserver.setExportFn(async (spans) => {
@@ -56,8 +56,8 @@ AIGNEObserver.setExportFn(async (spans) => {
 app.set("trust proxy", true);
 app.use(cookieParser());
 
-app.use(express.json({ limit: REQUEST_ENTITY_SIZE_LIMIT }));
-app.use(express.urlencoded({ extended: true, limit: REQUEST_ENTITY_SIZE_LIMIT }));
+app.use(express.json({ limit: MAX_REQUEST_BODY_SIZE }));
+app.use(express.urlencoded({ extended: true, limit: MAX_REQUEST_BODY_SIZE }));
 
 app.use(cors());
 

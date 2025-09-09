@@ -10,14 +10,17 @@ const getFileExtension = (type: string) => {
   return mime.getExtension(type) || "png";
 };
 
-const saveFiles = async (
-  files: {
-    mimeType: string;
-    type: string;
-    data: string;
-  }[],
-  options: { dataDir: string },
-) => {
+interface FileData {
+  mimeType: string;
+  type: string;
+  data: string;
+}
+
+interface SaveOptions {
+  dataDir: string;
+}
+
+const saveFiles = async (files: FileData[], options: SaveOptions): Promise<FileData[]> => {
   return await Promise.all(
     files.map(async (file) => {
       if (!isBase64(file.data)) return file;
@@ -28,7 +31,7 @@ const saveFiles = async (
         mkdirSync(folderWithDataDir, { recursive: true });
       }
 
-      const ext = getFileExtension(file.mimeType || "png");
+      const ext = getFileExtension(file.mimeType || "image/png");
       const id = v7();
       const filename = ext ? `${id}.${ext}` : id;
 

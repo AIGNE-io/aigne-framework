@@ -136,7 +136,7 @@ test("load should process path correctly", async () => {
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
   expect(load("foo", { model: loadModel })).resolves.toEqual(
     expect.objectContaining({
-      chatModel: expect.anything(),
+      model: expect.anything(),
       agents: [],
       skills: [],
     }),
@@ -154,7 +154,7 @@ test("load should process path correctly", async () => {
   readFile.mockReturnValueOnce(Promise.resolve("chat_model: gpt-4o-mini"));
   expect(load("bar", { model: loadModel })).resolves.toEqual(
     expect.objectContaining({
-      chatModel: expect.anything(),
+      model: expect.anything(),
       agents: [],
       skills: [],
     }),

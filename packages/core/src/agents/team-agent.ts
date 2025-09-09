@@ -373,7 +373,10 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
       );
       Object.assign(previousOutput, output);
 
-      const reviewOutput = await options.context.invoke(this.reflection.reviewer, previousOutput);
+      const reviewOutput = await this.invokeChildAgent(this.reflection.reviewer, previousOutput, {
+        ...options,
+        streaming: false,
+      });
       Object.assign(previousOutput, reviewOutput);
 
       const { isApproved } = this.reflection;
@@ -485,7 +488,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     const output: Message = {};
 
     for (const agent of this.skills) {
-      const o = await options.context.invoke(
+      const o = await this.invokeChildAgent(
         agent,
         { ...input, ...output },
         { ...options, streaming: true },
@@ -524,7 +527,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
   ): PromiseOrValue<AgentProcessResult<O>> {
     const streams = await Promise.all(
       this.skills.map((agent) =>
-        options.context.invoke(agent, input, { ...options, streaming: true }),
+        this.invokeChildAgent(agent, input, { ...options, streaming: true }),
       ),
     );
 

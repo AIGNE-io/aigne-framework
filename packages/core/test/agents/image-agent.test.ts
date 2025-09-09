@@ -4,17 +4,17 @@ import { z } from "zod";
 import { OpenAIImageModel } from "../_mocks/mock-models.js";
 
 test("ImageAgent should work correctly", async () => {
-  const model = new OpenAIImageModel();
+  const imageModel = new OpenAIImageModel();
 
   const agent = new ImageAgent({
-    model,
+    imageModel,
     instructions: "Draw an image about {{topic}}",
     inputSchema: z.object({
       topic: z.string(),
     }),
   });
 
-  const modelProcess = spyOn(model, "process").mockReturnValueOnce({
+  const modelProcess = spyOn(imageModel, "process").mockReturnValueOnce({
     images: [{ url: "https://example.com/image.png" }],
   });
 

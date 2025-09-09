@@ -31,7 +31,10 @@ const CHAT_MODEL_DEFAULT_RETRY_OPTIONS: Agent["retryOnError"] = {
 export class StructuredOutputError extends Error {}
 
 export interface ChatModelOptions
-  extends Omit<AgentOptions<ChatModelInput, ChatModelOutput>, "inputSchema" | "outputSchema"> {
+  extends Omit<
+    AgentOptions<ChatModelInput, ChatModelOutput>,
+    "model" | "inputSchema" | "outputSchema"
+  > {
   model?: string;
 
   modelOptions?: Omit<ModelOptions, "model">;
@@ -81,6 +84,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       inputSchema: chatModelInputSchema,
       outputSchema: chatModelOutputSchema,
       retryOnError,
+      model: undefined,
     });
   }
 

@@ -17,12 +17,15 @@ beforeEach(() => {
   }
 });
 
+const base64Image =
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+
 test("should save files with type 'file' and return absolute paths", async () => {
   const files = [
     {
       mimeType: "image/png",
       type: "file",
-      data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      data: base64Image,
     },
   ];
 
@@ -41,7 +44,7 @@ test("should skip files with type other than 'file'", async () => {
     {
       mimeType: "image/png",
       type: "image",
-      data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      data: base64Image,
     },
   ];
 
@@ -49,9 +52,7 @@ test("should skip files with type other than 'file'", async () => {
 
   expect(result).toHaveLength(1);
   const fileData = result[0] as any;
-  expect(fileData?.data).toBe(
-    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
-  );
+  expect(fileData?.data).toBe(base64Image);
 });
 
 test("should handle different mime types correctly", async () => {
@@ -59,12 +60,12 @@ test("should handle different mime types correctly", async () => {
     {
       mimeType: "image/png",
       type: "file",
-      data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      data: base64Image,
     },
     {
       mimeType: "image/jpeg",
       type: "file",
-      data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      data: base64Image,
     },
   ];
 
@@ -84,7 +85,7 @@ test("should handle unknown mime type with default extension", async () => {
     {
       mimeType: "unknown/type",
       type: "file",
-      data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      data: base64Image,
     },
   ];
 
@@ -100,7 +101,7 @@ test("should generate unique filenames", async () => {
   const files = Array.from({ length: 3 }, () => ({
     mimeType: "image/png",
     type: "file",
-    data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+    data: base64Image,
   }));
 
   const result = await saveFiles(files, { dataDir: testDataDir });
@@ -127,12 +128,12 @@ test("should handle mixed file types correctly", async () => {
     {
       mimeType: "image/png",
       type: "file",
-      data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      data: base64Image,
     },
     {
       mimeType: "image/jpeg",
       type: "image",
-      data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      data: base64Image,
     },
     {
       mimeType: "text/plain",
@@ -152,9 +153,7 @@ test("should handle mixed file types correctly", async () => {
 
   // Second file should be skipped (type: "image")
   const fileData2 = result[1] as any;
-  expect(fileData2?.data).toBe(
-    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
-  );
+  expect(fileData2?.data).toBe(base64Image);
 
   // Third file should be saved (type: "file")
   const fileData3 = result[2] as any;
@@ -165,8 +164,7 @@ test("should handle mixed file types correctly", async () => {
 test("should handle ImageData with base64 field", async () => {
   const files = [
     {
-      base64:
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      base64: base64Image,
     },
   ];
 
@@ -176,12 +174,7 @@ test("should handle ImageData with base64 field", async () => {
   const imageData = result[0] as any;
   expect(imageData).toHaveProperty("base64");
   expect(imageData).toHaveProperty("path");
-  expect(imageData?.base64).toBe(
-    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==".slice(
-      0,
-      20,
-    ) + "...",
-  );
+  expect(imageData?.base64).toBe(`${base64Image.slice(0, 20)}...`);
   expect(imageData?.path).toMatch(createPathRegex("png"));
   expect(existsSync(imageData?.path as string)).toBe(true);
 });
@@ -191,11 +184,10 @@ test("should handle mixed FileData and ImageData types", async () => {
     {
       mimeType: "image/png",
       type: "file",
-      data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      data: base64Image,
     },
     {
-      base64:
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      base64: base64Image,
     },
   ];
 
@@ -203,12 +195,10 @@ test("should handle mixed FileData and ImageData types", async () => {
 
   expect(result).toHaveLength(2);
 
-  // First file (FileData)
   const fileData = result[0] as any;
   expect(fileData?.data).toMatch(createPathRegex("png"));
   expect(existsSync(fileData?.data as string)).toBe(true);
 
-  // Second file (ImageData)
   const imageData = result[1] as any;
   expect(imageData).toHaveProperty("base64");
   expect(imageData).toHaveProperty("path");

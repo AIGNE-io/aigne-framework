@@ -2,8 +2,7 @@ import { beforeEach, expect, test } from "bun:test";
 import { existsSync, rmSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import dayjs from "@abtnode/util/lib/dayjs";
-import getAIGNEHomePath from "../../../api/server/utils/image-home-path.js";
+import getAIGNEHomePath, { formatDate } from "../../../api/server/utils/image-home-path.js";
 
 const observerDir = join(homedir(), ".aigne", "observability");
 
@@ -15,13 +14,7 @@ beforeEach(() => {
 
 test("should create the observability directory structure if not exists", () => {
   const result = getAIGNEHomePath();
-  const expectedPath = join(
-    homedir(),
-    ".aigne",
-    "observability",
-    "images",
-    dayjs().format("YYYY-MM-DD"),
-  );
+  const expectedPath = join(homedir(), ".aigne", "observability", "images", formatDate());
 
   expect(result).toBe(expectedPath);
   expect(existsSync(result)).toBe(true);
@@ -41,7 +34,7 @@ test("should return existing directory path if already exists", () => {
 
 test("should create directory with correct date format", () => {
   const result = getAIGNEHomePath();
-  const today = dayjs().format("YYYY-MM-DD");
+  const today = formatDate();
   const expectedPath = join(homedir(), ".aigne", "observability", "images", today);
 
   expect(result).toBe(expectedPath);

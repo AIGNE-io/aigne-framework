@@ -8,7 +8,6 @@ import { parse, stringify } from "yaml";
 import { z } from "zod";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
-import saveFiles from "../utils/save-files.js";
 
 const router = express.Router();
 
@@ -32,6 +31,7 @@ const traceTreeQuerySchema = z.object({
 });
 
 import { createTraceBatchSchema } from "../../core/schema.js";
+import type { FileData } from "../base.js";
 
 export default ({
   sse,
@@ -40,7 +40,7 @@ export default ({
 }: {
   sse: SSE;
   middleware: express.RequestHandler[];
-  options?: { dataDir?: string };
+  options?: { formatOutputFiles?: (files: FileData[]) => Promise<FileData[]> };
 }): Router => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
@@ -317,11 +317,9 @@ export default ({
 
     for (const trace of validatedTraces) {
       try {
-        if (trace.attributes?.output?.files?.length) {
+        if (trace?.attributes?.output?.files?.length && options?.formatOutputFiles) {
           const files = trace.attributes.output.files || [];
-          if (options?.dataDir) {
-            trace.attributes.output.files = await saveFiles(files, { dataDir: options.dataDir });
-          }
+          trace.attributes.output.files = await options?.formatOutputFiles?.(files);
         }
 
         const insertSql = sql`

@@ -19,11 +19,43 @@ dotenv.config({ silent: true });
 const expressMiddlewareSchema =
   z.custom<(req: Request, res: Response, next: NextFunction) => void>();
 
+export interface FileData {
+  mimeType: string;
+  type: string;
+  data: string;
+}
+
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
   traceTreeMiddleware: z.array(expressMiddlewareSchema).optional(),
-  dataDir: z.string().optional(),
+  options: z
+    .object({
+      formatOutputFiles: z
+        .function()
+        .args(
+          z.array(
+            z.object({
+              mimeType: z.string(),
+              type: z.string(),
+              data: z.string(),
+            }),
+          ),
+        )
+        .returns(
+          z.promise(
+            z.array(
+              z.object({
+                mimeType: z.string(),
+                type: z.string(),
+                data: z.string(),
+              }),
+            ),
+          ),
+        )
+        .optional(),
+    })
+    .optional(),
 });
 
 export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
@@ -58,7 +90,7 @@ export async function startServer(
   app.use(
     "/api/trace",
     traceRouter({
-      options,
+      options: options.options,
       sse,
       middleware: Array.isArray(middleware) ? middleware : [middleware],
     }),

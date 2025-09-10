@@ -12,7 +12,7 @@ import { type ChatModelOutputUsage, chatModelOutputUsageSchema } from "./chat-mo
 export interface ImageModelOptions<
   I extends ImageModelInput = ImageModelInput,
   O extends ImageModelOutput = ImageModelOutput,
-> extends AgentOptions<I, O> {}
+> extends Omit<AgentOptions<I, O>, "model"> {}
 
 export abstract class ImageModel<
   I extends ImageModelInput = ImageModelInput,

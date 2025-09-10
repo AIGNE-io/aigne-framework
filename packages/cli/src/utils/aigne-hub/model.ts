@@ -15,7 +15,8 @@ export function maskApiKey(apiKey?: string) {
 }
 
 export const parseModelOption = (model: string) => {
-  const { provider, name } = model.match(/(?<provider>[^:]*)(:(?<name>.*))?/)?.groups ?? {};
+  model = model.replace(":", "/");
+  const { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
   return { provider: provider?.replace(/-/g, ""), model: name };
 };
 

@@ -41,7 +41,8 @@ const startServer = async () => {
         return Promise.all(
           files.map(async (file) => {
             if (file.type === "file" && typeof file.data === "string") {
-              if (!getComponentMountPoint(MEDIA_KIT_DID)) {
+              const mountPoint = getComponentMountPoint(MEDIA_KIT_DID);
+              if (!mountPoint) {
                 return file;
               }
 
@@ -51,15 +52,11 @@ const startServer = async () => {
 
               try {
                 const { data } = await uploadToMediaKit({ base64: file.data, fileName });
+                console.log(data);
 
                 return {
                   ...file,
-                  data: joinURL(
-                    new URL(data.url).origin,
-                    getComponentMountPoint(MEDIA_KIT_DID),
-                    "uploads",
-                    data.filename,
-                  ),
+                  data: joinURL(new URL(data.url).origin, mountPoint, "uploads", data.filename),
                 };
               } catch {
                 return file;

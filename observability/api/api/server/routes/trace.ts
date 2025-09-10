@@ -320,14 +320,16 @@ export default ({
 
     for (const trace of validatedTraces) {
       try {
-        if (trace?.attributes?.output?.files?.length && options?.formatOutputFiles) {
-          const files = trace.attributes.output.files || [];
-          trace.attributes.output.files = await options?.formatOutputFiles?.(files);
-        }
+        const mapping = {
+          files: options?.formatOutputFiles,
+          images: options?.formatOutputImages,
+        };
 
-        if (trace?.attributes?.output?.images?.length && options?.formatOutputImages) {
-          const images = trace.attributes.output.images || [];
-          trace.attributes.output.images = await options?.formatOutputImages?.(images);
+        for (const [key, formatter] of Object.entries(mapping)) {
+          const items = trace?.attributes?.output?.[key];
+          if (items?.length && formatter) {
+            trace.attributes.output[key] = await formatter(items);
+          }
         }
 
         const insertSql = sql`

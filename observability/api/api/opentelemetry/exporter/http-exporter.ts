@@ -53,16 +53,13 @@ class HttpExporter implements HttpExporterInterface {
     if (!db) throw new Error("Database not initialized");
 
     for (const trace of validatedData) {
-      if (trace.attributes?.output?.files?.length) {
-        const dataDir = getAIGNEHomePath();
-        const files = trace.attributes.output.files || [];
-        trace.attributes.output.files = await saveFiles(files, { dataDir });
-      }
+      const dataDir = getAIGNEHomePath();
 
-      if (trace.attributes?.output?.images?.length) {
-        const dataDir = getAIGNEHomePath();
-        const images = trace.attributes.output.images || [];
-        trace.attributes.output.images = await saveFiles(images, { dataDir });
+      for (const key of ["files", "images"]) {
+        const items = trace.attributes?.output?.[key];
+        if (trace?.attributes?.output?.[key] && items?.length) {
+          trace.attributes.output[key] = await saveFiles(items, { dataDir });
+        }
       }
 
       const insertSql = sql`

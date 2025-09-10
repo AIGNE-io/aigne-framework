@@ -29,54 +29,32 @@ export interface ImageData {
   base64: string;
 }
 
+function formatFn<T extends z.ZodTypeAny>(schema: T) {
+  return z
+    .function()
+    .args(z.array(schema))
+    .returns(z.promise(z.array(schema)))
+    .optional();
+}
+
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
   traceTreeMiddleware: z.array(expressMiddlewareSchema).optional(),
   options: z
     .object({
-      formatOutputFiles: z
-        .function()
-        .args(
-          z.array(
-            z.object({
-              mimeType: z.string(),
-              type: z.string(),
-              data: z.string(),
-            }),
-          ),
-        )
-        .returns(
-          z.promise(
-            z.array(
-              z.object({
-                mimeType: z.string(),
-                type: z.string(),
-                data: z.string(),
-              }),
-            ),
-          ),
-        )
-        .optional(),
-      formatOutputImages: z
-        .function()
-        .args(
-          z.array(
-            z.object({
-              base64: z.string(),
-            }),
-          ),
-        )
-        .returns(
-          z.promise(
-            z.array(
-              z.object({
-                base64: z.string(),
-              }),
-            ),
-          ),
-        )
-        .optional(),
+      formatOutputFiles: formatFn(
+        z.object({
+          mimeType: z.string(),
+          type: z.string(),
+          data: z.string(),
+        }),
+      ),
+      formatOutputImages: formatFn(
+        z.object({
+          base64: z.string(),
+        }),
+      ),
     })
     .optional(),
 });

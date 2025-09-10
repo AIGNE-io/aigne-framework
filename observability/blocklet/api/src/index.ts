@@ -6,7 +6,8 @@ import fallback from "@blocklet/sdk/lib/middlewares/fallback";
 import dotenv from "dotenv-flow";
 import express, { type NextFunction, type Request, type Response } from "express";
 import mime from "mime";
-import { joinURL, v7 } from "ufo";
+import { joinURL } from "ufo";
+import { v7 } from "uuid";
 
 dotenv.config({ silent: true });
 const { uploadToMediaKit } = require("@blocklet/uploader-server");
@@ -50,6 +51,7 @@ const startServer = async () => {
 
               try {
                 const { data } = await uploadToMediaKit({ base64: file.data, fileName });
+                console.log(data);
 
                 return {
                   ...file,

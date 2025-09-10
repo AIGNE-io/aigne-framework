@@ -6,7 +6,6 @@ import fallback from "@blocklet/sdk/lib/middlewares/fallback";
 import dotenv from "dotenv-flow";
 import express, { type NextFunction, type Request, type Response } from "express";
 import mime from "mime";
-import { joinURL } from "ufo";
 import { v7 } from "uuid";
 
 dotenv.config({ silent: true });
@@ -23,9 +22,7 @@ function requireAdminRole(req: Request, res: Response, next: NextFunction) {
   return;
 }
 
-const getFileExtension = (type: string) => {
-  return mime.getExtension(type) || "png";
-};
+const getFileExtension = (type: string) => mime.getExtension(type) || "png";
 
 const isProduction =
   process.env.NODE_ENV === "production" || process.env.ABT_NODE_SERVICE_ENV === "production";
@@ -42,22 +39,15 @@ const startServer = async () => {
           files.map(async (file) => {
             if (file.type === "file" && typeof file.data === "string") {
               const mountPoint = getComponentMountPoint(MEDIA_KIT_DID);
-              if (!mountPoint) {
-                return file;
-              }
+              if (!mountPoint) return file;
 
-              const ext = getFileExtension(file.mimeType || "image/png");
               const id = v7();
+              const ext = getFileExtension(file.mimeType || "image/png");
               const fileName = ext ? `${id}.${ext}` : id;
 
               try {
                 const { data } = await uploadToMediaKit({ base64: file.data, fileName });
-                console.log(data);
-
-                return {
-                  ...file,
-                  data: joinURL(new URL(data.url).origin, mountPoint, "uploads", data.filename),
-                };
+                return { ...file, data: data.filename };
               } catch {
                 return file;
               }

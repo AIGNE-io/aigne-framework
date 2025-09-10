@@ -51,7 +51,6 @@ const startServer = async () => {
 
               try {
                 const { data } = await uploadToMediaKit({ base64: file.data, fileName });
-                console.log(data);
 
                 return {
                   ...file,

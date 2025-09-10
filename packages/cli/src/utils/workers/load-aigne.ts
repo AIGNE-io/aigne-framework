@@ -12,8 +12,8 @@ export async function safeLoadAIGNE(
       "message",
       ({ method, message, status }: { method: string; message?: string; status: string }) => {
         if (method !== "AIGNE.load") reject(new Error(`Unknown method: ${method}`));
-        if (status === "error") reject(new Error(`Failed to load AIGNE: ${message}`));
-        if (status === "success") resolve();
+        else if (status === "error") reject(new Error(`Failed to load AIGNE: ${message}`));
+        else if (status === "success") resolve();
       },
     );
 

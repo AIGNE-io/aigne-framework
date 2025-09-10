@@ -28,6 +28,7 @@ afterEach(() => {
 });
 
 test("run command should call run chat loop correctly", async () => {
+  const exit = spyOn(process, "exit").mockImplementation((() => {}) as any);
   const runAgentWithAIGNE = mock();
 
   await using _ = await mockModule(
@@ -72,6 +73,8 @@ test("run command should call run chat loop correctly", async () => {
     expect.anything(),
     expect.objectContaining({}),
   );
+
+  exit.mockRestore();
 });
 
 test("run command should download package and run correctly", async () => {

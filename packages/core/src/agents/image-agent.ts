@@ -52,7 +52,7 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
   modelOptions?: Record<string, any>;
 
   override async process(input: I, options: AgentInvokeOptions): Promise<O> {
-    const imageModel = this.imageModel ?? options.context.imageModel;
+    const imageModel = this.imageModel || options.imageModel || options.context.imageModel;
     if (!imageModel) throw new Error("image model is required to run ImageAgent");
 
     const { prompt } = await this.instructions.buildImagePrompt({ input });

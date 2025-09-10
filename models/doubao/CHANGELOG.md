@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.36](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.35...doubao-v1.0.36) (2025-09-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.15.1
+  * devDependencies
+    * @aigne/core bumped to 1.60.0
+    * @aigne/test-utils bumped to 0.5.49
+
 ## [1.0.35](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.34...doubao-v1.0.35) (2025-09-09)
 
 

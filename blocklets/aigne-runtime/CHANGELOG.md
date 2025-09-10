@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.13](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.12...aigne-runtime-v1.4.13) (2025-09-10)
+
+
+### Bug Fixes
+
+* **observability:** convert base64 image output into mekia kit image file ([#471](https://github.com/AIGNE-io/aigne-framework/issues/471)) ([ce05713](https://github.com/AIGNE-io/aigne-framework/commit/ce057131a2308eb73bbe49dff534749e68c268d9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.1
+    * @aigne/core bumped to 1.60.0
+    * @aigne/observability-api bumped to 0.10.3
+    * @aigne/transport bumped to 0.15.5
+
 ## [1.4.12](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.11...aigne-runtime-v1.4.12) (2025-09-09)
 
 

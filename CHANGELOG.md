@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.76.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.75.0...aigne-framework-v1.76.0) (2025-09-10)
+
+
+### Features
+
+* support custom model for every agents ([#472](https://github.com/AIGNE-io/aigne-framework/issues/472)) ([0bda78a](https://github.com/AIGNE-io/aigne-framework/commit/0bda78a2ebf537e953d855882d68cb37d94d1d10))
+
+
+### Bug Fixes
+
+* **cli:** load AIGNE in a child process to ensure app is available ([#475](https://github.com/AIGNE-io/aigne-framework/issues/475)) ([c8201b5](https://github.com/AIGNE-io/aigne-framework/commit/c8201b51accc4a9d047394f235df53725733f726))
+* **cli:** run default agent if `entry-agent` argument not present ([#473](https://github.com/AIGNE-io/aigne-framework/issues/473)) ([8c46672](https://github.com/AIGNE-io/aigne-framework/commit/8c4667206a2336e74db07442dc296ef9f9265a0b))
+* **observability:** convert base64 image output into mekia kit image file ([#471](https://github.com/AIGNE-io/aigne-framework/issues/471)) ([ce05713](https://github.com/AIGNE-io/aigne-framework/commit/ce057131a2308eb73bbe49dff534749e68c268d9))
+
 ## [1.75.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.74.3...aigne-framework-v1.75.0) (2025-09-09)
 
 

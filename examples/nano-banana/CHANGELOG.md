@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.5](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.4...example-nano-banana-v1.0.5) (2025-09-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.42
+    * @aigne/cli bumped to 1.46.0
+    * @aigne/core bumped to 1.60.0
+    * @aigne/default-memory bumped to 1.2.5
+    * @aigne/fs-memory bumped to 1.0.42
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.49
+
 ## [1.0.4](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.3...example-nano-banana-v1.0.4) (2025-09-09)
 
 

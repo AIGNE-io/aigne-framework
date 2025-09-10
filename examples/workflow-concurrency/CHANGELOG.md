@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.16.62](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.61...example-workflow-concurrency-v1.16.62) (2025-09-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.42
+    * @aigne/cli bumped to 1.46.0
+    * @aigne/core bumped to 1.60.0
+    * @aigne/openai bumped to 0.15.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.49
+
 ## [1.16.61](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.60...example-workflow-concurrency-v1.16.61) (2025-09-09)
 
 

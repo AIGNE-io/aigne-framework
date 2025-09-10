@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.2...observability-api-v0.10.3) (2025-09-10)
+
+
+### Bug Fixes
+
+* **observability:** convert base64 image output into mekia kit image file ([#471](https://github.com/AIGNE-io/aigne-framework/issues/471)) ([ce05713](https://github.com/AIGNE-io/aigne-framework/commit/ce057131a2308eb73bbe49dff534749e68c268d9))
+
 ## [0.10.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.1...observability-api-v0.10.2) (2025-09-05)
 
 

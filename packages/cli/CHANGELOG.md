@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.46.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.45.0...cli-v1.46.0) (2025-09-10)
+
+
+### Features
+
+* support custom model for every agents ([#472](https://github.com/AIGNE-io/aigne-framework/issues/472)) ([0bda78a](https://github.com/AIGNE-io/aigne-framework/commit/0bda78a2ebf537e953d855882d68cb37d94d1d10))
+
+
+### Bug Fixes
+
+* **cli:** load AIGNE in a child process to ensure app is available ([#475](https://github.com/AIGNE-io/aigne-framework/issues/475)) ([c8201b5](https://github.com/AIGNE-io/aigne-framework/commit/c8201b51accc4a9d047394f235df53725733f726))
+* **cli:** run default agent if `entry-agent` argument not present ([#473](https://github.com/AIGNE-io/aigne-framework/issues/473)) ([8c46672](https://github.com/AIGNE-io/aigne-framework/commit/8c4667206a2336e74db07442dc296ef9f9265a0b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.42
+    * @aigne/agentic-memory bumped to 1.0.42
+    * @aigne/aigne-hub bumped to 0.9.1
+    * @aigne/core bumped to 1.60.0
+    * @aigne/default-memory bumped to 1.2.5
+    * @aigne/observability-api bumped to 0.10.3
+    * @aigne/openai bumped to 0.15.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.49
+
 ## [1.45.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.44.3...cli-v1.45.0) (2025-09-09)
 
 

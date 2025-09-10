@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.60.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.59.0...core-v1.60.0) (2025-09-10)
+
+
+### Features
+
+* support custom model for every agents ([#472](https://github.com/AIGNE-io/aigne-framework/issues/472)) ([0bda78a](https://github.com/AIGNE-io/aigne-framework/commit/0bda78a2ebf537e953d855882d68cb37d94d1d10))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.10.3
+
 ## [1.59.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.58.3...core-v1.59.0) (2025-09-09)
 
 

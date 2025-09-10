@@ -74,6 +74,40 @@ export const defaultInputSchema = z.record(
   ]),
 );
 
+const chatModelObjectSchema = camelizeSchema(
+  z.object({
+    model: optionalize(z.string()),
+    temperature: optionalize(z.number().min(0).max(2)),
+    topP: optionalize(z.number().min(0)),
+    frequencyPenalty: optionalize(z.number().min(-2).max(2)),
+    presencePenalty: optionalize(z.number().min(-2).max(2)),
+  }),
+);
+
+export const chatModelSchema = z
+  .preprocess(
+    (v) => {
+      if (!isRecord(v)) return v;
+      return { ...v, model: v.model || `${v.provider || ""}:${v.name || ""}` };
+    },
+    z.union([z.string(), chatModelObjectSchema]),
+  )
+  .transform((v) =>
+    typeof v === "string" ? { model: v } : v,
+  ) as unknown as typeof chatModelObjectSchema;
+
+const imageModelObjectSchema = camelizeSchema(
+  z.object({
+    model: optionalize(z.string()),
+  }),
+);
+
+export const imageModelSchema = z
+  .union([z.string(), imageModelObjectSchema])
+  .transform((v) =>
+    typeof v === "string" ? { model: v } : v,
+  ) as unknown as typeof imageModelObjectSchema;
+
 export function optionalize<T>(schema: ZodType<T>): ZodType<T | undefined> {
   return schema.nullish().transform((v) => v ?? undefined) as ZodType<T | undefined>;
 }

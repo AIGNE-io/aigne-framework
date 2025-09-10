@@ -684,6 +684,8 @@ class AIGNEContextShared {
           hooks: options.hooks,
           context,
           streaming: true,
+          model: options.model,
+          imageModel: options.imageModel,
         });
         for await (const value of stream) {
           if (isAgentResponseDelta(value)) {

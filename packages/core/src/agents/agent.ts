@@ -32,7 +32,9 @@ import {
   type PromiseOrValue,
   type XOr,
 } from "../utils/type-utils.js";
+import type { ChatModel } from "./chat-model.js";
 import type { GuideRailAgent, GuideRailAgentOutput } from "./guide-rail-agent.js";
+import type { ImageModel } from "./image-model.js";
 import {
   replaceTransferAgentToName,
   type TransferAgentOutput,
@@ -120,6 +122,10 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    * for documentation and debugging
    */
   description?: string;
+
+  model?: ChatModel;
+
+  imageModel?: ImageModel;
 
   taskTitle?: string | ((input: I) => PromiseOrValue<string | undefined>);
 
@@ -243,6 +249,10 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
    */
   context: Context<U>;
 
+  model?: ChatModel;
+
+  imageModel?: ImageModel;
+
   /**
    * Whether to enable streaming response
    *
@@ -299,6 +309,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     this.name = options.name || this.constructor.name;
     this.alias = options.alias;
     this.description = options.description;
+    this.model = options.model;
+    this.imageModel = options.imageModel;
     this.taskTitle = options.taskTitle as Agent<I, O>["taskTitle"];
     this.taskRenderMode = options.taskRenderMode;
 
@@ -416,6 +428,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
    * each other's roles in a multi-agent system
    */
   readonly description?: string;
+
+  model?: ChatModel;
+
+  imageModel?: ImageModel;
 
   taskTitle?: string | ((input: Message) => PromiseOrValue<string | undefined>);
 
@@ -826,12 +842,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     input: I & Message,
     options: AgentInvokeOptions,
   ): Promise<O> {
-    const { context } = options;
-
     await this.callHooks("onSkillStart", { skill, input }, options);
 
     try {
-      const output = await context.invoke(skill, input);
+      const output = await this.invokeChildAgent(skill, input, { ...options, streaming: false });
 
       await this.callHooks("onSkillEnd", { skill, input, output }, options);
 
@@ -842,6 +856,18 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
       throw error;
     }
   }
+
+  protected invokeChildAgent = ((
+    agent: Agent<I, O>,
+    input: I & Message,
+    options: AgentInvokeOptions,
+  ) => {
+    return options.context.invoke(agent, input, {
+      ...options,
+      model: this.model || options.model,
+      imageModel: this.imageModel || options.imageModel,
+    });
+  }) as Context["invoke"];
 
   /**
    * Process agent output
@@ -975,7 +1001,9 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     options: AgentInvokeOptions,
   ): Promise<(GuideRailAgentOutput & { abort: true }) | undefined> {
     const result = await Promise.all(
-      (this.guideRails ?? []).map((i) => options.context.invoke(i, { input, output })),
+      (this.guideRails ?? []).map((i) =>
+        this.invokeChildAgent(i, { input, output }, { ...options, streaming: false }),
+      ),
     );
     return result.find((i): i is GuideRailAgentOutput & { abort: true } => !!i.abort);
   }

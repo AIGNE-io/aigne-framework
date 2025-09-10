@@ -6,7 +6,14 @@ import type { AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agen
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
-import { camelizeSchema, defaultInputSchema, inputOutputSchema, optionalize } from "./schema.js";
+import {
+  camelizeSchema,
+  chatModelSchema,
+  defaultInputSchema,
+  imageModelSchema,
+  inputOutputSchema,
+  optionalize,
+} from "./schema.js";
 
 export interface HooksSchema {
   priority?: AgentHooks["priority"];
@@ -27,6 +34,8 @@ export type NestAgentSchema =
 export interface BaseAgentSchema {
   name?: string;
   description?: string;
+  model?: z.infer<typeof chatModelSchema>;
+  imageModel?: z.infer<typeof imageModelSchema>;
   taskTitle?: string;
   taskRenderMode?: TaskRenderMode;
   inputSchema?: ZodType<Record<string, any>>;
@@ -93,7 +102,7 @@ export type AgentSchema =
   | TransformAgentSchema
   | FunctionAgentSchema;
 
-export async function parseAgentFile(path: string, data: object): Promise<AgentSchema> {
+export async function parseAgentFile(path: string, data: any): Promise<AgentSchema> {
   const agentSchema: ZodType<AgentSchema> = z.lazy(() => {
     const nestAgentSchema: ZodType<NestAgentSchema> = z.lazy(() =>
       z.union([
@@ -126,6 +135,8 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
       name: optionalize(z.string()),
       alias: optionalize(z.array(z.string())),
       description: optionalize(z.string()),
+      model: optionalize(chatModelSchema),
+      imageModel: optionalize(imageModelSchema),
       taskTitle: optionalize(z.string()),
       taskRenderMode: optionalize(z.union([z.literal("hide"), z.literal("collapse")])),
       inputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
@@ -232,7 +243,10 @@ export async function parseAgentFile(path: string, data: object): Promise<AgentS
     );
   });
 
-  return agentSchema.parseAsync(data);
+  return agentSchema.parseAsync({
+    ...data,
+    model: data.model || data.chatModel || data.chat_model,
+  });
 }
 
 export async function loadAgentFromYamlFile(path: string) {

@@ -57,6 +57,29 @@ const startServer = async () => {
           }),
         );
       },
+      formatOutputImages: async (images) => {
+        return Promise.all(
+          images.map(async (image) => {
+            if (image.base64) {
+              const mountPoint = getComponentMountPoint(MEDIA_KIT_DID);
+              if (!mountPoint) return image;
+
+              const id = v7();
+              const ext = getFileExtension("image/png");
+              const fileName = ext ? `${id}.${ext}` : id;
+
+              try {
+                const { data } = await uploadToMediaKit({ base64: image.base64, fileName });
+                return { ...image, base64: `${image.base64.slice(0, 20)}...`, path: data.filename };
+              } catch {
+                return image;
+              }
+            }
+
+            return image;
+          }),
+        );
+      },
     },
   });
 

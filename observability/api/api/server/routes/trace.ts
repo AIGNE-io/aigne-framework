@@ -6,6 +6,7 @@ import express, { type Request, type Response, type Router } from "express";
 import type SSE from "express-sse";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
+import type { FileData, ImageData } from "../base.js";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
 
@@ -31,7 +32,6 @@ const traceTreeQuerySchema = z.object({
 });
 
 import { createTraceBatchSchema } from "../../core/schema.js";
-import type { FileData } from "../base.js";
 
 export default ({
   sse,
@@ -40,7 +40,10 @@ export default ({
 }: {
   sse: SSE;
   middleware: express.RequestHandler[];
-  options?: { formatOutputFiles?: (files: FileData[]) => Promise<FileData[]> };
+  options?: {
+    formatOutputFiles?: (files: FileData[]) => Promise<FileData[]>;
+    formatOutputImages?: (images: ImageData[]) => Promise<ImageData[]>;
+  };
 }): Router => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
@@ -320,6 +323,11 @@ export default ({
         if (trace?.attributes?.output?.files?.length && options?.formatOutputFiles) {
           const files = trace.attributes.output.files || [];
           trace.attributes.output.files = await options?.formatOutputFiles?.(files);
+        }
+
+        if (trace?.attributes?.output?.images?.length && options?.formatOutputImages) {
+          const images = trace.attributes.output.images || [];
+          trace.attributes.output.images = await options?.formatOutputImages?.(images);
         }
 
         const insertSql = sql`

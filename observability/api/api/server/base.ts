@@ -25,6 +25,10 @@ export interface FileData {
   data: string;
 }
 
+export interface ImageData {
+  base64: string;
+}
+
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
@@ -49,6 +53,25 @@ const startServerOptionsSchema = z.object({
                 mimeType: z.string(),
                 type: z.string(),
                 data: z.string(),
+              }),
+            ),
+          ),
+        )
+        .optional(),
+      formatOutputImages: z
+        .function()
+        .args(
+          z.array(
+            z.object({
+              base64: z.string(),
+            }),
+          ),
+        )
+        .returns(
+          z.promise(
+            z.array(
+              z.object({
+                base64: z.string(),
               }),
             ),
           ),

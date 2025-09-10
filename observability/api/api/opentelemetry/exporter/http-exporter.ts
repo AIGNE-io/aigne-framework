@@ -59,6 +59,12 @@ class HttpExporter implements HttpExporterInterface {
         trace.attributes.output.files = await saveFiles(files, { dataDir });
       }
 
+      if (trace.attributes?.output?.images?.length) {
+        const dataDir = getAIGNEHomePath();
+        const images = trace.attributes.output.images || [];
+        trace.attributes.output.images = await saveFiles(images, { dataDir });
+      }
+
       const insertSql = sql`
         INSERT INTO Trace (
           id,

@@ -3,7 +3,6 @@ import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import mime from "mime";
 import { v7 } from "uuid";
-import { formatDate } from "./image-home-path.js";
 
 const getFileExtension = (type: string) => mime.getExtension(type) || "png";
 
@@ -13,29 +12,49 @@ interface FileData {
   data: string;
 }
 
+interface ImageData {
+  base64: string;
+}
 interface SaveOptions {
   dataDir: string;
 }
 
-const saveFiles = async (files: FileData[], options: SaveOptions): Promise<FileData[]> => {
+const saveFiles = async (
+  files: (FileData | ImageData)[],
+  options: SaveOptions,
+): Promise<(FileData | ImageData)[]> => {
   return await Promise.all(
     files.map(async (file) => {
-      if (file.type === "file" && typeof file.data === "string") {
-        const folder = path.join("files", formatDate());
-        const folderWithDataDir = path.join(options.dataDir, folder);
-        if (!existsSync(folderWithDataDir)) {
-          mkdirSync(folderWithDataDir, { recursive: true });
-        }
+      if (options.dataDir && !existsSync(options.dataDir)) {
+        mkdirSync(options.dataDir, { recursive: true });
+      }
 
+      if ("type" in file && file.type === "file" && typeof file.data === "string") {
         const ext = getFileExtension(file.mimeType || "image/png");
         const id = v7();
         const filename = ext ? `${id}.${ext}` : id;
 
-        const imagePath = path.join(folderWithDataDir, filename);
+        const imagePath = path.join(options.dataDir, filename);
 
         await writeFile(imagePath, file.data, "base64");
 
-        return { ...file, data: path.join(folder, filename) };
+        return { ...file, data: imagePath };
+      }
+
+      if ("base64" in file && file.base64) {
+        const ext = getFileExtension("image/png");
+        const id = v7();
+        const filename = ext ? `${id}.${ext}` : id;
+
+        const imagePath = path.join(options.dataDir, filename);
+
+        await writeFile(imagePath, file.base64, "base64");
+
+        return {
+          ...file,
+          base64: `${file.base64.slice(0, 20)}...`,
+          path: imagePath,
+        };
       }
 
       return file;

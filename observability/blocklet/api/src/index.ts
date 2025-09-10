@@ -65,7 +65,7 @@ const startServer = async () => {
         formatAndUpload(
           files,
           (file) => (file.type === "file" && typeof file.data === "string" ? file.data : undefined),
-          (file, filename) => ({ ...file, data: filename }),
+          (file, filename) => ({ ...file, data: `${file.data.slice(0, 20)}...`, path: filename }),
         ),
 
       formatOutputImages: (images) =>

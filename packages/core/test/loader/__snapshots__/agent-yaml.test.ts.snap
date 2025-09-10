@@ -12,6 +12,7 @@ exports[`loadAgentFromYaml should load AIAgent correctly 1`] = `
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 "
 ,
+  "model": "google/gemini-2.5-flash",
   "name": "chat",
   "skills": [
     {

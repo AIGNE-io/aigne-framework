@@ -1,4 +1,5 @@
 name: chat
+model: google/gemini-2.5-flash
 task_title: "process: {{message}}"
 alias:
   - chat-bot

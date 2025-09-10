@@ -136,6 +136,8 @@ export const agentCommandModule = ({
       if (options.logLevel) logger.level = options.logLevel;
 
       await invokeCLIAgentFromDir({ dir, agent: agent.name, input: options });
+
+      process.exit(0);
     },
   };
 };

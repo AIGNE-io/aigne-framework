@@ -1,6 +1,7 @@
 import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
+import { exists } from "@aigne/agent-library/utils/fs.js";
 import { flat, isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { config } from "dotenv-flow";
@@ -9,15 +10,16 @@ import yargs from "yargs";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
+import { isUrl } from "../utils/url.js";
 import { agentCommandModule } from "./app.js";
 
 export function createRunCommand({
   aigneFilePath,
 }: {
   aigneFilePath?: string;
-} = {}): CommandModule<unknown, { path?: string }> {
+} = {}): CommandModule<unknown, { path?: string; entryAgent?: string }> {
   return {
-    command: "run [path]",
+    command: "run [path] [entry-agent]",
     describe: "Run AIGNE for the specified path",
     builder: async (yargs) => {
       return yargs
@@ -26,15 +28,23 @@ export function createRunCommand({
           describe: "Path to the agents directory or URL to an aigne project",
           default: ".",
         })
+        .positional("entry-agent", {
+          type: "string",
+          describe: "Name of the agent to run (defaults to the entry agent if not specified)",
+        })
         .help(false)
         .version(false)
         .strict(false);
     },
     handler: async (options) => {
-      const p = aigneFilePath || options.path;
-      if (!p) throw new Error("No path specified");
+      if (!options.entryAgent && options.path) {
+        if (!(await exists(options.path)) && !isUrl(options.path)) {
+          options.entryAgent = options.path;
+          options.path = undefined;
+        }
+      }
 
-      const { aigne, path } = await loadApplication(p);
+      const { aigne, path } = await loadApplication(aigneFilePath || options.path || ".");
 
       const subYargs = yargs().scriptName("").usage("aigne run <path> <agent> [...options]");
 
@@ -46,13 +56,14 @@ export function createRunCommand({
       }
 
       // Allow user to run all of agents in the AIGNE instances
-      for (const agent of flat(
+      const allAgents = flat(
         aigne.cli.agents,
         aigne.agents,
         aigne.skills,
         aigne.cli.chat,
         aigne.mcpServer.agents,
-      )) {
+      );
+      for (const agent of allAgents) {
         subYargs.command(agentCommandModule({ dir: path, agent }));
       }
 
@@ -63,6 +74,9 @@ export function createRunCommand({
       if (argv[0] === "--path" || argv[0] === "--url") argv.shift(); // remove --path flag
       if (argv[0] === options.path) argv.shift(); // remove path/url args
       if (argv[0] === "--entry-agent") argv.shift();
+
+      const firstAgent = aigne.agents[0]?.name;
+      if (!options.entryAgent && firstAgent) argv.unshift(firstAgent);
 
       await subYargs
         .strict()

@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { type Agent, AIGNE, type Message } from "@aigne/core";
+import type { Agent, AIGNE, Message } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
@@ -11,6 +11,7 @@ import type { CommandModule } from "yargs";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { runAgentWithAIGNE } from "../utils/run-with-aigne.js";
+import { safeLoadAIGNE } from "../utils/workers/load-aigne.js";
 import {
   type AgentRunCommonOptions,
   parseAgentInput,
@@ -187,7 +188,7 @@ export async function loadApplication({
 
   let check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
   if (check?.available) {
-    const aigne = await AIGNE.load(dir).catch((error) => {
+    const aigne = await safeLoadAIGNE(dir).catch((error) => {
       console.warn(`⚠️ Failed to load ${name}, trying to reinstall:`, error.message);
     });
     if (aigne) {
@@ -246,7 +247,7 @@ export async function loadApplication({
   ).run();
 
   return {
-    aigne: await AIGNE.load(dir),
+    aigne: await safeLoadAIGNE(dir),
     dir,
     version: result.version,
   };

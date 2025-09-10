@@ -30,7 +30,7 @@ export function createRunCommand({
         })
         .positional("entry-agent", {
           type: "string",
-          describe: "Name of the agent to run (if not specified, the entry agent will be used)",
+          describe: "Name of the agent to run (defaults to the entry agent if not specified)",
         })
         .help(false)
         .version(false)

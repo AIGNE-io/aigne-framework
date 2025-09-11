@@ -205,3 +205,146 @@ test("should handle mixed FileData and ImageData types", async () => {
   expect(imageData?.path).toMatch(createPathRegex("png"));
   expect(existsSync(imageData?.path as string)).toBe(true);
 });
+
+test("should handle invalid base64 data gracefully", async () => {
+  const files = [
+    {
+      mimeType: "image/png",
+      type: "file",
+      data: "invalid-base64-data",
+    },
+  ];
+
+  // Should not throw error, but may create invalid file
+  const result = await saveFiles(files, { dataDir: testDataDir });
+  expect(result).toHaveLength(1);
+  const fileData = result[0] as any;
+  expect(existsSync(fileData?.data as string)).toBe(true);
+});
+
+test("should handle null/undefined file data", async () => {
+  const files = [
+    {
+      mimeType: "image/png",
+      type: "file",
+      data: null as any,
+    },
+    {
+      mimeType: "image/png",
+      type: "file",
+      data: undefined as any,
+    },
+  ];
+
+  // Should handle gracefully without crashing
+  const result = await saveFiles(files, { dataDir: testDataDir });
+  expect(result).toHaveLength(2);
+});
+
+test("should handle empty base64 string", async () => {
+  const files = [
+    {
+      base64: "",
+    },
+  ];
+
+  const result = await saveFiles(files, { dataDir: testDataDir });
+  expect(result).toHaveLength(1);
+  const imageData = result[0] as any;
+  expect(imageData?.base64).toBe("");
+});
+
+test("should handle files with missing mimeType", async () => {
+  const files = [
+    {
+      type: "file",
+      data: base64Image,
+    } as any,
+  ];
+
+  const result = await saveFiles(files, { dataDir: testDataDir });
+  expect(result).toHaveLength(1);
+  const fileData = result[0] as any;
+  expect(fileData?.data).toMatch(createPathRegex("png")); // Should default to png
+});
+
+test("should handle files with invalid mimeType", async () => {
+  const files = [
+    {
+      mimeType: "",
+      type: "file",
+      data: base64Image,
+    },
+  ];
+
+  const result = await saveFiles(files, { dataDir: testDataDir });
+  expect(result).toHaveLength(1);
+  const fileData = result[0] as any;
+  expect(fileData?.data).toMatch(createPathRegex("png")); // Should default to png
+});
+
+test("should handle files with very long base64 data", async () => {
+  const longBase64 = base64Image.repeat(1000); // Create a very long base64 string
+  const files = [
+    {
+      mimeType: "image/png",
+      type: "file",
+      data: longBase64,
+    },
+  ];
+
+  const result = await saveFiles(files, { dataDir: testDataDir });
+  expect(result).toHaveLength(1);
+  const fileData = result[0] as any;
+  expect(fileData?.data).toMatch(createPathRegex("png"));
+  expect(existsSync(fileData?.data as string)).toBe(true);
+});
+
+test("should handle concurrent file operations", async () => {
+  const files = Array.from({ length: 10 }, () => ({
+    mimeType: "image/png",
+    type: "file",
+    data: base64Image,
+  }));
+
+  // Run multiple save operations concurrently
+  const promises = Array.from({ length: 3 }, () => saveFiles(files, { dataDir: testDataDir }));
+  const results = await Promise.all(promises);
+
+  expect(results).toHaveLength(3);
+  results.forEach((result) => {
+    expect(result).toHaveLength(10);
+    result.forEach((file) => {
+      expect(existsSync((file as any).data as string)).toBe(true);
+    });
+  });
+});
+
+test("should handle files with special characters in mimeType", async () => {
+  const files = [
+    {
+      mimeType: "image/png; charset=utf-8",
+      type: "file",
+      data: base64Image,
+    },
+  ];
+
+  const result = await saveFiles(files, { dataDir: testDataDir });
+  expect(result).toHaveLength(1);
+  const fileData = result[0] as any;
+  expect(fileData?.data).toMatch(createPathRegex("png"));
+});
+
+test("should handle ImageData with null base64", async () => {
+  const files = [
+    {
+      base64: null as any,
+    },
+  ];
+
+  const result = await saveFiles(files, { dataDir: testDataDir });
+  expect(result).toHaveLength(1);
+  // Should return original file unchanged
+  const imageData = result[0] as any;
+  expect(imageData).toEqual({ base64: null });
+});

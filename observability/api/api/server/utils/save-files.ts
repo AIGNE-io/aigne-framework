@@ -29,7 +29,13 @@ const saveFiles = async (
         mkdirSync(options.dataDir, { recursive: true });
       }
 
-      if ("type" in file && file.type === "file" && typeof file.data === "string") {
+      if (
+        typeof file === "object" &&
+        file !== null &&
+        "type" in file &&
+        file.type === "file" &&
+        typeof file.data === "string"
+      ) {
         const ext = getFileExtension(file.mimeType || "image/png");
         const id = v7();
         const filename = ext ? `${id}.${ext}` : id;
@@ -41,7 +47,7 @@ const saveFiles = async (
         return { ...file, data: imagePath };
       }
 
-      if ("base64" in file && file.base64) {
+      if (typeof file === "object" && file !== null && "base64" in file && file.base64) {
         const ext = getFileExtension("image/png");
         const id = v7();
         const filename = ext ? `${id}.${ext}` : id;

@@ -27,6 +27,11 @@ const builtinApps = [
     describe: "Generate and maintain project docs — powered by agents.",
     aliases: ["docsmith", "doc"],
   },
+  {
+    name: "web-smith",
+    describe: "Generate and maintain project website pages — powered by agents.",
+    aliases: ["websmith", "web"],
+  },
 ];
 
 export function createAppCommands(): CommandModule[] {
@@ -35,7 +40,9 @@ export function createAppCommands(): CommandModule[] {
     describe: app.describe,
     aliases: app.aliases,
     builder: async (yargs) => {
-      const { aigne, dir, version, isCache } = await loadApplication({ name: app.name });
+      const { aigne, dir, version, isCache } = await loadApplication({
+        name: app.name,
+      });
 
       yargs
         .option("model", {
@@ -44,10 +51,20 @@ export function createAppCommands(): CommandModule[] {
             "Model to use for the application, example: openai:gpt-4.1 or google:gemini-2.5-flash",
         })
         .command(serveMcpCommandModule({ name: app.name, dir }))
-        .command(upgradeCommandModule({ name: app.name, dir, isLatest: !isCache, version }));
+        .command(
+          upgradeCommandModule({
+            name: app.name,
+            dir,
+            isLatest: !isCache,
+            version,
+          }),
+        );
 
       if (aigne.cli.chat) {
-        yargs.command({ ...agentCommandModule({ dir, agent: aigne.cli.chat }), command: "$0" });
+        yargs.command({
+          ...agentCommandModule({ dir, agent: aigne.cli.chat }),
+          command: "$0",
+        });
       }
 
       for (const agent of aigne.cli.agents) {

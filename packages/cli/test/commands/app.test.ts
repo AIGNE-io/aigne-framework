@@ -26,6 +26,8 @@ test("app command should register applications to yargs", async () => {
     Commands:
       aigne doc-smith  Generate and maintain project docs — powered by agents.
                                                             [aliases: docsmith, doc]
+      aigne web-smith  Generate and maintain project website pages — powered by
+                       agents.                              [aliases: websmith, web]
 
     Options:
       --help     Show help                                                 [boolean]

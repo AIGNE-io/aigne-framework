@@ -6,7 +6,7 @@ env:
 on:
   push:
     branches:
-      - main
+      - dev
 
 permissions:
   contents: write
@@ -19,7 +19,9 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN}}
+          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN }}
+          target-branch: dev
+          config-file: release-please-config.json
 
       - name: Checkout
         uses: actions/checkout@v4

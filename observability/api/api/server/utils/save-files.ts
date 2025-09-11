@@ -30,11 +30,12 @@ const saveFiles = async (
       }
 
       if (
+        file &&
         typeof file === "object" &&
-        file !== null &&
         "type" in file &&
         file.type === "file" &&
-        typeof file.data === "string"
+        typeof file.data === "string" &&
+        file.data.length > 90
       ) {
         const ext = getFileExtension(file.mimeType || "image/png");
         const id = v7();
@@ -42,25 +43,36 @@ const saveFiles = async (
 
         const imagePath = path.join(options.dataDir, filename);
 
-        await writeFile(imagePath, file.data, "base64");
-
-        return { ...file, data: imagePath };
+        try {
+          await writeFile(imagePath, file.data, "base64");
+          return { ...file, data: imagePath };
+        } catch (error) {
+          console.error("save files error", error);
+          return file;
+        }
       }
 
-      if (typeof file === "object" && file !== null && "base64" in file && file.base64) {
+      if (
+        file &&
+        typeof file === "object" &&
+        "base64" in file &&
+        file.base64 &&
+        file.base64.length > 90
+      ) {
         const ext = getFileExtension("image/png");
         const id = v7();
         const filename = ext ? `${id}.${ext}` : id;
 
         const imagePath = path.join(options.dataDir, filename);
 
-        await writeFile(imagePath, file.base64, "base64");
+        try {
+          await writeFile(imagePath, file.base64, "base64");
 
-        return {
-          ...file,
-          base64: `${file.base64.slice(0, 20)}...`,
-          path: imagePath,
-        };
+          return { ...file, base64: `${file.base64.slice(0, 20)}...`, path: imagePath };
+        } catch (error) {
+          console.error("save files error", error);
+          return file;
+        }
       }
 
       return file;

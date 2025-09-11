@@ -154,8 +154,8 @@ test("should handle mixed file types correctly", async () => {
   expect(fileData2?.data).toBe(base64Image);
 
   const fileData3 = result[2] as any;
-  expect(fileData3?.data).toMatch(createPathRegex("txt"));
-  expect(existsSync(fileData3?.data as string)).toBe(true);
+  expect(fileData3?.data).toMatch("SGVsbG8gV29ybGQ=");
+  expect(existsSync(fileData3?.data as string)).toBe(false);
 });
 
 test("should handle ImageData with base64 field", async () => {
@@ -215,7 +215,7 @@ test("should handle invalid base64 data gracefully", async () => {
   const result = await saveFiles(files, { dataDir: testDataDir });
   expect(result).toHaveLength(1);
   const fileData = result[0] as any;
-  expect(existsSync(fileData?.data as string)).toBe(true);
+  expect(existsSync(fileData?.data as string)).toBe(false);
 });
 
 test("should handle null/undefined file data", async () => {

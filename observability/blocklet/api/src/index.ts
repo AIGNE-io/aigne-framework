@@ -67,8 +67,10 @@ const startServer = async () => {
           (file) =>
             file &&
             typeof file === "object" &&
+            "type" in file &&
             file.type === "file" &&
-            typeof file.data === "string"
+            typeof file.data === "string" &&
+            file.data.length > 200
               ? file.data
               : undefined,
           (file, filename) => ({ ...file, data: `${file.data.slice(0, 20)}...`, path: filename }),
@@ -78,7 +80,13 @@ const startServer = async () => {
         formatAndUpload(
           images,
           (image) =>
-            image && typeof image === "object" && image.base64 ? image.base64 : undefined,
+            image &&
+            typeof image === "object" &&
+            "base64" in image &&
+            image.base64 &&
+            image.base64.length > 200
+              ? image.base64
+              : undefined,
           (image, filename) => ({
             ...image,
             base64: `${image.base64.slice(0, 20)}...`,

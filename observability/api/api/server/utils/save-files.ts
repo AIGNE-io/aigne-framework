@@ -35,7 +35,7 @@ const saveFiles = async (
         "type" in file &&
         file.type === "file" &&
         typeof file.data === "string" &&
-        file.data.length > 90
+        file.data.length > 200
       ) {
         const ext = getFileExtension(file.mimeType || "image/png");
         const id = v7();
@@ -57,7 +57,7 @@ const saveFiles = async (
         typeof file === "object" &&
         "base64" in file &&
         file.base64 &&
-        file.base64.length > 90
+        file.base64.length > 200
       ) {
         const ext = getFileExtension("image/png");
         const id = v7();

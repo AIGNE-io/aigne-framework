@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.14](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.13...aigne-runtime-v1.4.14) (2025-09-11)
+
+
+### Bug Fixes
+
+* rename chatModel to model ([13ad16b](https://github.com/AIGNE-io/aigne-framework/commit/13ad16b2935d706173c7596015dac8eaefd03b43))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.2
+    * @aigne/core bumped to 1.60.1
+    * @aigne/observability-api bumped to 0.10.4
+    * @aigne/transport bumped to 0.15.6
+
 ## [1.4.13](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.12...aigne-runtime-v1.4.13) (2025-09-10)
 
 

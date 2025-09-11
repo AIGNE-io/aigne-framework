@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - release
+      - dev
 
 permissions:
   contents: write
@@ -23,128 +24,133 @@ jobs:
       STORE_ACCESS_TOKEN: ${{ github.ref_name == 'release' && secrets.STORE_ACCESS_TOKEN_PROD || secrets.STORE_ACCESS_TOKEN_TEST }}
     steps:
       - uses: googleapis/release-please-action@v4
-        if: ${{ env.IS_RELEASE != 'true' }}
+        # if: ${{ env.IS_RELEASE != 'true' }}
         id: release
         with:
-          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN}}
+          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN }}
+          target-branch: dev
 
 
-      - name: Check if need to publish
-        if: ${{ env.IS_RELEASE == 'true' || steps.release.outputs.release_created }}
-        id: publish
-        run: |
-            echo "publish=true" >> $GITHUB_OUTPUT
+      # - name: Check if need to publish
+      #   if: ${{ env.IS_RELEASE == 'true' || steps.release.outputs.release_created }}
+      #   id: publish
+      #   run: |
+      #       echo "publish=true" >> $GITHUB_OUTPUT
 
-      - name: Checkout
-        if: ${{ steps.publish.outputs.publish }}
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+      # - name: Checkout
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   uses: actions/checkout@v4
+      #   with:
+      #     fetch-depth: 2
 
-      - uses: pnpm/action-setup@v3
-        if: ${{ steps.publish.outputs.publish }}
-        with:
-          version: 10
+      # - uses: pnpm/action-setup@v3
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   with:
+      #     version: 10
 
-      - name: Setup node
-        if: ${{ steps.publish.outputs.publish }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          cache: pnpm
+      # - name: Setup node
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 23
+      #     cache: pnpm
 
-      - name: Setup bun
-        if: ${{ steps.publish.outputs.publish }}
-        uses: oven-sh/setup-bun@v2
+      # - name: Setup bun
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   uses: oven-sh/setup-bun@v2
 
-      - name: Install dependencies
-        if: ${{ steps.publish.outputs.publish }}
-        run: |
-          pnpm install
-          pnpm exec playwright install --with-deps
+      # - name: Install dependencies
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   run: |
+      #     pnpm install
+      #     pnpm exec playwright install --with-deps
 
-      - name: Build
-        if: ${{ steps.publish.outputs.publish }}
-        run: pnpm build
+      # - name: Build
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   run: pnpm build
 
-      - name: Lint
-        if: ${{ steps.publish.outputs.publish }}
-        run: pnpm lint
+      # - name: Lint
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   run: pnpm lint
 
-      - name: Test
-        if: ${{ steps.publish.outputs.publish }}
-        run: pnpm test:coverage
+      # - name: Test
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   run: pnpm test:coverage
 
-      - uses: codecov/codecov-action@v5
-        if: ${{ steps.publish.outputs.publish }}
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+      # - uses: codecov/codecov-action@v5
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Publish to NPM
-        if: ${{ steps.publish.outputs.publish }}
-        run: |
-          npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
-          pnpm -F "@aigne/*" publish --access public --no-git-checks --tag ${{ env.NPM_TAG }}
+      # - name: Publish to NPM
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   run: |
+      #     npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
+      #     if [ "${{ env.IS_RELEASE }}" == "true" ]; then
+      #       pnpm -F "@aigne/*" dist-tag add ${{ env.NPM_TAG }}
+      #     else
+      #       pnpm -F "@aigne/*" publish --access public --no-git-checks --tag ${{ env.NPM_TAG }}
+      #     fi
 
-      - name: Check if observability/blocklet version changed
-        if: ${{ steps.publish.outputs.publish }}
-        id: blocklets-observability-version-check
-        run: |
-          if git diff HEAD~1 HEAD -- observability/blocklet/package.json | grep '"version"'; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
+      # - name: Check if observability/blocklet version changed
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   id: blocklets-observability-version-check
+      #   run: |
+      #     if git diff HEAD~1 HEAD -- observability/blocklet/package.json | grep '"version"'; then
+      #       echo "changed=true" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "changed=false" >> $GITHUB_OUTPUT
+      #     fi
 
-      - name: Blocklet workflow for observability
-        if: ${{ steps.publish.outputs.publish && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
-        env:
-          COMPONENT_STORE_URL: ${{ env.STORE_ENDPOINT }}
-        uses: blocklet/action-workflow@v1
-        with:
-          deps-server-version: beta
-          skip-deps: false
-          skip-upload: false
-          skip-deploy: true
-          skip-release: true
-          working-directory: observability/blocklet
-          bundle-command: pnpm bundle
-          store-endpoint: ${{ env.STORE_ENDPOINT }}
-          store-access-token: ${{ env.STORE_ACCESS_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Blocklet workflow for observability
+      #   if: ${{ steps.publish.outputs.publish && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
+      #   env:
+      #     COMPONENT_STORE_URL: ${{ env.STORE_ENDPOINT }}
+      #   uses: blocklet/action-workflow@v1
+      #   with:
+      #     deps-server-version: beta
+      #     skip-deps: false
+      #     skip-upload: false
+      #     skip-deploy: true
+      #     skip-release: true
+      #     working-directory: observability/blocklet
+      #     bundle-command: pnpm bundle
+      #     store-endpoint: ${{ env.STORE_ENDPOINT }}
+      #     store-access-token: ${{ env.STORE_ACCESS_TOKEN }}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Check if aigne-runtime version changed
-        if: ${{ steps.publish.outputs.publish }}
-        id: blocklets-aigne-runtime-version-check
-        run: |
-          if git diff HEAD~1 HEAD -- blocklets/aigne-runtime/package.json | grep '"version"'; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
+      # - name: Check if aigne-runtime version changed
+      #   if: ${{ steps.publish.outputs.publish }}
+      #   id: blocklets-aigne-runtime-version-check
+      #   run: |
+      #     if git diff HEAD~1 HEAD -- blocklets/aigne-runtime/package.json | grep '"version"'; then
+      #       echo "changed=true" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "changed=false" >> $GITHUB_OUTPUT
+      #     fi
 
-      - name: Blocklet workflow for aigne-runtime
-        if: ${{ steps.publish.outputs.publish && steps.blocklets-aigne-runtime-version-check.outputs.changed == 'true'  }}
-        env:
-          COMPONENT_STORE_URL: ${{ env.STORE_ENDPOINT }}
-        uses: blocklet/action-workflow@v1
-        with:
-          deps-server-version: beta
-          skip-deps: false
-          skip-upload: false
-          skip-deploy: true
-          skip-release: true
-          working-directory: blocklets/aigne-runtime
-          bundle-command: pnpm bundle
-          store-endpoint: ${{ env.STORE_ENDPOINT }}
-          store-access-token: ${{ env.STORE_ACCESS_TOKEN}}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Blocklet workflow for aigne-runtime
+      #   if: ${{ steps.publish.outputs.publish && steps.blocklets-aigne-runtime-version-check.outputs.changed == 'true'  }}
+      #   env:
+      #     COMPONENT_STORE_URL: ${{ env.STORE_ENDPOINT }}
+      #   uses: blocklet/action-workflow@v1
+      #   with:
+      #     deps-server-version: beta
+      #     skip-deps: false
+      #     skip-upload: false
+      #     skip-deploy: true
+      #     skip-release: true
+      #     working-directory: blocklets/aigne-runtime
+      #     bundle-command: pnpm bundle
+      #     store-endpoint: ${{ env.STORE_ENDPOINT }}
+      #     store-access-token: ${{ env.STORE_ACCESS_TOKEN}}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish Docs
-        if: ${{ steps.release.outputs.release_created }}
-        run: pnpm publish:docs
-        env:
-          DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_DISCUSS_KIT_ACCESS_TOKEN }}
-          DOC_DISCUSS_KIT_URL: ${{ vars.DOC_DISCUSS_KIT_URL }}
-          DOC_DISCUSS_KIT_BOARD_ID: ${{ vars.DOC_DISCUSS_KIT_BOARD_ID }}
+      # - name: Publish Docs
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   run: pnpm publish:docs
+      #   env:
+      #     DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_DISCUSS_KIT_ACCESS_TOKEN }}
+      #     DOC_DISCUSS_KIT_URL: ${{ vars.DOC_DISCUSS_KIT_URL }}
+      #     DOC_DISCUSS_KIT_BOARD_ID: ${{ vars.DOC_DISCUSS_KIT_BOARD_ID }}

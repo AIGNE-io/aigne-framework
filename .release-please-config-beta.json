@@ -1,0 +1,163 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "prerelease": true,
+  "versioning": "prerelease",
+  "packages": {
+    ".": {},
+    "packages/platform-helpers": {
+      "prerelease-type": "beta"
+    },
+    "packages/sqlite": {
+      "prerelease-type": "beta"
+    },
+    "packages/agent-library": {
+      "prerelease-type": "beta"
+    },
+    "packages/core": {
+      "prerelease-type": "beta"
+    },
+    "packages/cli": {
+      "prerelease-type": "beta"
+    },
+    "packages/test-utils": {
+      "prerelease-type": "beta"
+    },
+    "packages/transport": {
+      "prerelease-type": "beta"
+    },
+    "models/anthropic": {
+      "prerelease-type": "beta"
+    },
+    "models/bedrock": {
+      "prerelease-type": "beta"
+    },
+    "models/deepseek": {
+      "prerelease-type": "beta"
+    },
+    "models/doubao": {
+      "prerelease-type": "beta"
+    },
+    "models/poe": {
+      "prerelease-type": "beta"
+    },
+    "models/gemini": {
+      "prerelease-type": "beta"
+    },
+    "models/ideogram": {
+      "prerelease-type": "beta"
+    },
+    "models/ollama": {
+      "prerelease-type": "beta"
+    },
+    "models/open-router": {
+      "prerelease-type": "beta"
+    },
+    "models/openai": {
+      "prerelease-type": "beta"
+    },
+    "models/xai": {
+      "prerelease-type": "beta"
+    },
+    "models/aigne-hub": {
+      "prerelease-type": "beta"
+    },
+    "models/lmstudio": {
+      "prerelease-type": "beta"
+    },
+    "memory/default": {
+      "prerelease-type": "beta"
+    },
+    "memory/agentic": {
+      "prerelease-type": "beta"
+    },
+    "memory/fs": {
+      "prerelease-type": "beta"
+    },
+    "memory/did-space": {
+      "prerelease-type": "beta"
+    },
+    "observability/blocklet": {
+      "prerelease-type": "beta",
+      "package-name": "blocklet-observability",
+      "extra-files": [
+        {
+          "type": "yaml",
+          "path": "blocklet.yml",
+          "jsonpath": "$.version"
+        }
+      ]
+    },
+    "observability/api": {
+      "prerelease-type": "beta"
+    },
+    "observability/ui": {
+      "prerelease-type": "beta"
+    },
+    "examples/mcp-server": {
+      "prerelease-type": "beta"
+    },
+    "examples/mcp-github": {
+      "prerelease-type": "beta"
+    },
+    "examples/mcp-puppeteer": {
+      "prerelease-type": "beta"
+    },
+    "examples/mcp-sqlite": {
+      "prerelease-type": "beta"
+    },
+    "examples/mcp-blocklet": {
+      "prerelease-type": "beta"
+    },
+    "examples/workflow-code-execution": {
+      "prerelease-type": "beta"
+    },
+    "examples/workflow-concurrency": {
+      "prerelease-type": "beta"
+    },
+    "examples/workflow-group-chat": {
+      "prerelease-type": "beta"
+    },
+    "examples/workflow-handoff": {
+      "prerelease-type": "beta"
+    },
+    "examples/workflow-orchestrator": {
+      "prerelease-type": "beta"
+    },
+    "examples/workflow-reflection": {
+      "prerelease-type": "beta"
+    },
+    "examples/workflow-router": {
+      "prerelease-type": "beta"
+    },
+    "examples/workflow-sequential": {
+      "prerelease-type": "beta"
+    },
+    "examples/chat-bot": {
+      "prerelease-type": "beta"
+    },
+    "examples/memory": {
+      "prerelease-type": "beta"
+    },
+    "examples/nano-banana": {
+      "prerelease-type": "beta"
+    },
+    "blocklets/aigne-runtime": {
+      "prerelease-type": "beta",
+      "package-name": "aigne-runtime",
+      "extra-files": [
+        {
+          "type": "yaml",
+          "path": "blocklet.yml",
+          "jsonpath": "$.version"
+        }
+      ]
+    }
+  },
+  "plugins": [
+    {
+      "type": "node-workspace",
+      "updatePeerDependencies": true
+    }
+  ]
+}

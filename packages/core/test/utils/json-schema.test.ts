@@ -130,7 +130,7 @@ test("convertNullableToOptional should convert all nullable properties to option
                 "type": "string",
               },
             },
-            "required": undefined,
+            "required": [],
             "type": "object",
           },
           "type": "array",
@@ -165,6 +165,8 @@ test("convertNullableToOptional should convert all nullable properties to option
       },
       "required": [
         "name",
+        "collections",
+        "tags",
       ],
       "type": "object",
     }

@@ -146,16 +146,13 @@ test("should handle mixed file types correctly", async () => {
 
   expect(result).toHaveLength(3);
 
-  // First file should be saved (type: "file")
   const fileData1 = result[0] as any;
   expect(fileData1?.data).toMatch(createPathRegex("png"));
   expect(existsSync(fileData1?.data as string)).toBe(true);
 
-  // Second file should be skipped (type: "image")
   const fileData2 = result[1] as any;
   expect(fileData2?.data).toBe(base64Image);
 
-  // Third file should be saved (type: "file")
   const fileData3 = result[2] as any;
   expect(fileData3?.data).toMatch(createPathRegex("txt"));
   expect(existsSync(fileData3?.data as string)).toBe(true);
@@ -215,7 +212,6 @@ test("should handle invalid base64 data gracefully", async () => {
     },
   ];
 
-  // Should not throw error, but may create invalid file
   const result = await saveFiles(files, { dataDir: testDataDir });
   expect(result).toHaveLength(1);
   const fileData = result[0] as any;
@@ -236,7 +232,6 @@ test("should handle null/undefined file data", async () => {
     },
   ];
 
-  // Should handle gracefully without crashing
   const result = await saveFiles(files, { dataDir: testDataDir });
   expect(result).toHaveLength(2);
 });
@@ -265,7 +260,7 @@ test("should handle files with missing mimeType", async () => {
   const result = await saveFiles(files, { dataDir: testDataDir });
   expect(result).toHaveLength(1);
   const fileData = result[0] as any;
-  expect(fileData?.data).toMatch(createPathRegex("png")); // Should default to png
+  expect(fileData?.data).toMatch(createPathRegex("png"));
 });
 
 test("should handle files with invalid mimeType", async () => {
@@ -280,11 +275,11 @@ test("should handle files with invalid mimeType", async () => {
   const result = await saveFiles(files, { dataDir: testDataDir });
   expect(result).toHaveLength(1);
   const fileData = result[0] as any;
-  expect(fileData?.data).toMatch(createPathRegex("png")); // Should default to png
+  expect(fileData?.data).toMatch(createPathRegex("png"));
 });
 
 test("should handle files with very long base64 data", async () => {
-  const longBase64 = base64Image.repeat(1000); // Create a very long base64 string
+  const longBase64 = base64Image.repeat(1000);
   const files = [
     {
       mimeType: "image/png",
@@ -307,7 +302,6 @@ test("should handle concurrent file operations", async () => {
     data: base64Image,
   }));
 
-  // Run multiple save operations concurrently
   const promises = Array.from({ length: 3 }, () => saveFiles(files, { dataDir: testDataDir }));
   const results = await Promise.all(promises);
 
@@ -344,7 +338,6 @@ test("should handle ImageData with null base64", async () => {
 
   const result = await saveFiles(files, { dataDir: testDataDir });
   expect(result).toHaveLength(1);
-  // Should return original file unchanged
   const imageData = result[0] as any;
   expect(imageData).toEqual({ base64: null });
 });

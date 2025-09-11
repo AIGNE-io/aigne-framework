@@ -64,14 +64,21 @@ const startServer = async () => {
       formatOutputFiles: (files) =>
         formatAndUpload(
           files,
-          (file) => (file.type === "file" && typeof file.data === "string" ? file.data : undefined),
+          (file) =>
+            file &&
+            typeof file === "object" &&
+            file.type === "file" &&
+            typeof file.data === "string"
+              ? file.data
+              : undefined,
           (file, filename) => ({ ...file, data: `${file.data.slice(0, 20)}...`, path: filename }),
         ),
 
       formatOutputImages: (images) =>
         formatAndUpload(
           images,
-          (image) => image.base64,
+          (image) =>
+            image && typeof image === "object" && image.base64 ? image.base64 : undefined,
           (image, filename) => ({
             ...image,
             base64: `${image.base64.slice(0, 20)}...`,

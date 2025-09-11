@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.76.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.76.1...aigne-framework-v1.76.2) (2025-09-11)
+
+
+### Bug Fixes
+
+* **core:** add nullish or nullable support for output schema ([#482](https://github.com/AIGNE-io/aigne-framework/issues/482)) ([bf80c29](https://github.com/AIGNE-io/aigne-framework/commit/bf80c29e10d3fef654c830df8dc7f3b7939fa58d))
+
 ## [1.76.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.76.0...aigne-framework-v1.76.1) (2025-09-11)
 
 

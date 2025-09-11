@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.60.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.60.2...core-v1.60.3-beta) (2025-09-11)
+
+
+### Bug Fixes
+
+* test beta version ([1428e32](https://github.com/AIGNE-io/aigne-framework/commit/1428e32297ab34d16dc1bf096a1c6fb3b3f922f4))
+
 ## [1.60.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.60.1...core-v1.60.2) (2025-09-11)
 
 

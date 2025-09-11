@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.3...observability-api-v0.10.4) (2025-09-11)
+
+
+### Bug Fixes
+
+* add compatibility for incorrect file object input ([#477](https://github.com/AIGNE-io/aigne-framework/issues/477)) ([b8fa75d](https://github.com/AIGNE-io/aigne-framework/commit/b8fa75d28faeadaea76036838abbc5f2aae42aba))
+
 ## [0.10.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.2...observability-api-v0.10.3) (2025-09-10)
 
 

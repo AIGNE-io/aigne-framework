@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.13](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.12...ideogram-v0.3.13) (2025-09-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.60.1
+
 ## [0.3.12](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.11...ideogram-v0.3.12) (2025-09-10)
 
 

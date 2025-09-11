@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.76.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.76.0...aigne-framework-v1.76.1) (2025-09-11)
+
+
+### Bug Fixes
+
+* add compatibility for incorrect file object input ([#477](https://github.com/AIGNE-io/aigne-framework/issues/477)) ([b8fa75d](https://github.com/AIGNE-io/aigne-framework/commit/b8fa75d28faeadaea76036838abbc5f2aae42aba))
+* rename chatModel to model ([13ad16b](https://github.com/AIGNE-io/aigne-framework/commit/13ad16b2935d706173c7596015dac8eaefd03b43))
+
 ## [1.76.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.75.0...aigne-framework-v1.76.0) (2025-09-10)
 
 

@@ -72,16 +72,16 @@ function convertNullableToOptional(schema: any): [typeof schema, boolean] {
         return [key, property];
       }),
     );
-    const required =
-      "required" in schema && Array.isArray(schema.required)
-        ? schema.required.filter((key) => !optionalProperties.includes(key))
-        : schema.required;
+    const currentRequired =
+      "required" in schema && Array.isArray(schema.required) ? schema.required : [];
+    const required = currentRequired.filter((key) => !optionalProperties.includes(key));
 
-    return [{ ...schema, properties, required }, true];
+    return [{ ...schema, properties, required }, false];
   }
 
   if (schema.type === "array" && "items" in schema && isRecord(schema.items)) {
-    return [{ ...schema, items: convertNullableToOptional(schema.items)[0] }, true];
+    const [items, _] = convertNullableToOptional(schema.items);
+    return [{ ...schema, items }, false];
   }
 
   if (Array.isArray(schema.type)) {
@@ -102,7 +102,6 @@ function convertNullableToOptional(schema: any): [typeof schema, boolean] {
     );
     const optional = anyOf.length !== schema.anyOf.length;
     if (anyOf.length === 1) return [convertNullableToOptional(anyOf[0])[0], optional];
-    console.log(anyOf);
   }
 
   return [schema, false];

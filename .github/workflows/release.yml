@@ -6,7 +6,7 @@ env:
 on:
   push:
     branches:
-      - main
+      - test-main
       - release
 
 permissions:
@@ -26,11 +26,22 @@ jobs:
         if: ${{ env.IS_RELEASE != 'true' }}
         id: release
         with:
-          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN}}
+          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN }}
+          target-branch: ${{ github.ref_name }}
+          skip-github-pull-request: ${{ env.IS_RELEASE == 'true' }}
+          config-file: ${{ env.IS_RELEASE == 'true' && '.release-please-config-release.json' || '.release-please-config-beta.json' }}
 
+      - name: Create Pull Request
+        if: ${{ env.IS_RELEASE == 'true' && steps.release.outputs.release_created }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "chore: sync release branch back to main"
+          commit-message: "chore: sync release branch back to main"
+          branch: sync/release-to-main
+          base: main
 
       - name: Check if need to publish
-        if: ${{ env.IS_RELEASE == 'true' || steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
         id: publish
         run: |
             echo "publish=true" >> $GITHUB_OUTPUT
@@ -84,7 +95,11 @@ jobs:
         if: ${{ steps.publish.outputs.publish }}
         run: |
           npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
-          pnpm -F "@aigne/*" publish --access public --no-git-checks --tag ${{ env.NPM_TAG }}
+          if [ "${{ env.IS_RELEASE }}" == "true" ]; then
+            pnpm -F "@aigne/*" dist-tag add ${{ env.NPM_TAG }}
+          else
+            pnpm -F "@aigne/*" publish --access public --no-git-checks --tag ${{ env.NPM_TAG }}
+          fi
 
       - name: Check if observability/blocklet version changed
         if: ${{ steps.publish.outputs.publish }}
@@ -138,7 +153,7 @@ jobs:
           working-directory: blocklets/aigne-runtime
           bundle-command: pnpm bundle
           store-endpoint: ${{ env.STORE_ENDPOINT }}
-          store-access-token: ${{ env.STORE_ACCESS_TOKEN}}
+          store-access-token: ${{ env.STORE_ACCESS_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Docs

@@ -1,33 +1,86 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
+  "prerelease": true,
+  "versioning": "prerelease",
   "packages": {
-    ".": {},
-    "packages/platform-helpers": {},
-    "packages/sqlite": {},
-    "packages/agent-library": {},
-    "packages/core": {},
-    "packages/cli": {},
-    "packages/test-utils": {},
-    "packages/transport": {},
-    "models/anthropic": {},
-    "models/bedrock": {},
-    "models/deepseek": {},
-    "models/doubao": {},
-    "models/poe": {},
-    "models/gemini": {},
-    "models/ideogram": {},
-    "models/ollama": {},
-    "models/open-router": {},
-    "models/openai": {},
-    "models/xai": {},
-    "models/aigne-hub": {},
-    "models/lmstudio": {},
-    "memory/default": {},
-    "memory/agentic": {},
-    "memory/fs": {},
-    "memory/did-space": {},
+    ".": {
+      "prerelease-type": "pre"
+    },
+    "packages/platform-helpers": {
+      "prerelease-type": "pre"
+    },
+    "packages/sqlite": {
+      "prerelease-type": "pre"
+    },
+    "packages/agent-library": {
+      "prerelease-type": "pre"
+    },
+    "packages/core": {
+      "prerelease-type": "pre"
+    },
+    "packages/cli": {
+      "prerelease-type": "pre"
+    },
+    "packages/test-utils": {
+      "prerelease-type": "pre"
+    },
+    "packages/transport": {
+      "prerelease-type": "pre"
+    },
+    "models/anthropic": {
+      "prerelease-type": "pre"
+    },
+    "models/bedrock": {
+      "prerelease-type": "pre"
+    },
+    "models/deepseek": {
+      "prerelease-type": "pre"
+    },
+    "models/doubao": {
+      "prerelease-type": "pre"
+    },
+    "models/poe": {
+      "prerelease-type": "pre"
+    },
+    "models/gemini": {
+      "prerelease-type": "pre"
+    },
+    "models/ideogram": {
+      "prerelease-type": "pre"
+    },
+    "models/ollama": {
+      "prerelease-type": "pre"
+    },
+    "models/open-router": {
+      "prerelease-type": "pre"
+    },
+    "models/openai": {
+      "prerelease-type": "pre"
+    },
+    "models/xai": {
+      "prerelease-type": "pre"
+    },
+    "models/aigne-hub": {
+      "prerelease-type": "pre"
+    },
+    "models/lmstudio": {
+      "prerelease-type": "pre"
+    },
+    "memory/default": {
+      "prerelease-type": "pre"
+    },
+    "memory/agentic": {
+      "prerelease-type": "pre"
+    },
+    "memory/fs": {
+      "prerelease-type": "pre"
+    },
+    "memory/did-space": {
+      "prerelease-type": "pre"
+    },
     "observability/blocklet": {
+      "prerelease-type": "pre",
       "package-name": "blocklet-observability",
       "extra-files": [
         {
@@ -37,25 +90,62 @@
         }
       ]
     },
-    "observability/api": {},
-    "observability/ui": {},
-    "examples/mcp-server": {},
-    "examples/mcp-github": {},
-    "examples/mcp-puppeteer": {},
-    "examples/mcp-sqlite": {},
-    "examples/mcp-blocklet": {},
-    "examples/workflow-code-execution": {},
-    "examples/workflow-concurrency": {},
-    "examples/workflow-group-chat": {},
-    "examples/workflow-handoff": {},
-    "examples/workflow-orchestrator": {},
-    "examples/workflow-reflection": {},
-    "examples/workflow-router": {},
-    "examples/workflow-sequential": {},
-    "examples/chat-bot": {},
-    "examples/memory": {},
-    "examples/nano-banana": {},
+    "observability/api": {
+      "prerelease-type": "pre"
+    },
+    "observability/ui": {
+      "prerelease-type": "pre"
+    },
+    "examples/mcp-server": {
+      "prerelease-type": "pre"
+    },
+    "examples/mcp-github": {
+      "prerelease-type": "pre"
+    },
+    "examples/mcp-puppeteer": {
+      "prerelease-type": "pre"
+    },
+    "examples/mcp-sqlite": {
+      "prerelease-type": "pre"
+    },
+    "examples/mcp-blocklet": {
+      "prerelease-type": "pre"
+    },
+    "examples/workflow-code-execution": {
+      "prerelease-type": "pre"
+    },
+    "examples/workflow-concurrency": {
+      "prerelease-type": "pre"
+    },
+    "examples/workflow-group-chat": {
+      "prerelease-type": "pre"
+    },
+    "examples/workflow-handoff": {
+      "prerelease-type": "pre"
+    },
+    "examples/workflow-orchestrator": {
+      "prerelease-type": "pre"
+    },
+    "examples/workflow-reflection": {
+      "prerelease-type": "pre"
+    },
+    "examples/workflow-router": {
+      "prerelease-type": "pre"
+    },
+    "examples/workflow-sequential": {
+      "prerelease-type": "pre"
+    },
+    "examples/chat-bot": {
+      "prerelease-type": "pre"
+    },
+    "examples/memory": {
+      "prerelease-type": "pre"
+    },
+    "examples/nano-banana": {
+      "prerelease-type": "pre"
+    },
     "blocklets/aigne-runtime": {
+      "prerelease-type": "pre",
       "package-name": "aigne-runtime",
       "extra-files": [
         {

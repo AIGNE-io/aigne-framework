@@ -1,0 +1,93 @@
+name: Release Stable
+
+env:
+  NODE_OPTIONS: "--max_old_space_size=6144"
+
+on:
+  push:
+    branches:
+      - release
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-beta:
+    runs-on: ubuntu-latest
+    env:
+      NPM_TAG: latest
+      STORE_ENDPOINT: ${{ secrets.STORE_ENDPOINT_PROD }}
+      STORE_ACCESS_TOKEN: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: pnpm
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: |
+          pnpm install
+          pnpm exec playwright install --with-deps
+
+      - name: Build
+        run: pnpm build
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test:coverage
+
+      - name: Publish to NPM
+        run: |
+          npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
+          pnpm -F "@aigne/*" publish --access public --no-git-checks --tag ${{ env.NPM_TAG }}
+
+      - name: Blocklet workflow for observability
+        env:
+          COMPONENT_STORE_URL: ${{ env.STORE_ENDPOINT }}
+        uses: blocklet/action-workflow@v1
+        continue-on-error: true
+        with:
+          deps-server-version: beta
+          skip-deps: false
+          skip-upload: false
+          skip-deploy: true
+          skip-release: true
+          working-directory: observability/blocklet
+          bundle-command: pnpm bundle
+          store-endpoint: ${{ env.STORE_ENDPOINT }}
+          store-access-token: ${{ env.STORE_ACCESS_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Blocklet workflow for aigne-runtime
+        env:
+          COMPONENT_STORE_URL: ${{ env.STORE_ENDPOINT }}
+        uses: blocklet/action-workflow@v1
+        continue-on-error: true
+        with:
+          deps-server-version: beta
+          skip-deps: false
+          skip-upload: false
+          skip-deploy: true
+          skip-release: true
+          working-directory: blocklets/aigne-runtime
+          bundle-command: pnpm bundle
+          store-endpoint: ${{ env.STORE_ENDPOINT }}
+          store-access-token: ${{ env.STORE_ACCESS_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

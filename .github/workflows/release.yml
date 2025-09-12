@@ -1,4 +1,4 @@
-name: Release
+name: Release Beta
 
 env:
   NODE_OPTIONS: "--max_old_space_size=6144"
@@ -6,31 +6,28 @@ env:
 on:
   push:
     branches:
-      - main
-      - release
+      - test-main
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  release:
+  release-beta:
     runs-on: ubuntu-latest
     env:
-      IS_RELEASE: ${{ github.ref_name == 'release' && 'true' || 'false' }}
-      NPM_TAG: ${{ github.ref_name == 'release' && 'latest' || 'beta' }}
-      STORE_ENDPOINT: ${{ github.ref_name == 'release' && secrets.STORE_ENDPOINT_PROD || secrets.STORE_ENDPOINT_TEST }}
-      STORE_ACCESS_TOKEN: ${{ github.ref_name == 'release' && secrets.STORE_ACCESS_TOKEN_PROD || secrets.STORE_ACCESS_TOKEN_TEST }}
+      NPM_TAG: beta
+      STORE_ENDPOINT: ${{ secrets.STORE_ENDPOINT_TEST }}
+      STORE_ACCESS_TOKEN: ${{ secrets.STORE_ACCESS_TOKEN_TEST }}
     steps:
       - uses: googleapis/release-please-action@v4
-        if: ${{ env.IS_RELEASE != 'true' }}
         id: release
         with:
-          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN}}
-
+          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN }}
+          target-branch: ${{ github.ref_name }}
 
       - name: Check if need to publish
-        if: ${{ env.IS_RELEASE == 'true' || steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
         id: publish
         run: |
             echo "publish=true" >> $GITHUB_OUTPUT
@@ -138,11 +135,11 @@ jobs:
           working-directory: blocklets/aigne-runtime
           bundle-command: pnpm bundle
           store-endpoint: ${{ env.STORE_ENDPOINT }}
-          store-access-token: ${{ env.STORE_ACCESS_TOKEN}}
+          store-access-token: ${{ env.STORE_ACCESS_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Docs
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.publish.outputs.publish }}
         run: pnpm publish:docs
         env:
           DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_DISCUSS_KIT_ACCESS_TOKEN }}

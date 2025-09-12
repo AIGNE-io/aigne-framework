@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.77.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.76.2...aigne-framework-v1.77.0-beta) (2025-09-12)
+
+
+### Features
+
+* **cli:** add web-smith command to @aigne/cli ([#486](https://github.com/AIGNE-io/aigne-framework/issues/486)) ([3f6d51a](https://github.com/AIGNE-io/aigne-framework/commit/3f6d51a24a505c6b0a520b1775164a3456fd9fd5))
+
 ## [1.76.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.76.1...aigne-framework-v1.76.2) (2025-09-11)
 
 

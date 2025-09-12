@@ -263,6 +263,19 @@ const Table = ({
               padding: "6px 0px !important",
             }
           : {},
+        td: isMobile
+          ? {
+              padding: "0",
+              paddingTop: "16px",
+
+              "&:last-of-type": {
+                paddingBottom: "16px",
+              },
+            }
+          : {
+              paddingTop: 0.5,
+              paddingBottom: 0.5,
+            },
         ".MuiTableCell-body": isMobile
           ? {
               alignItems: "center",

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.68-pre](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.67...example-mcp-server-v0.3.68-pre) (2025-09-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.0-pre
+
 ## [0.3.67](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.66...example-mcp-server-v0.3.67) (2025-09-11)
 
 

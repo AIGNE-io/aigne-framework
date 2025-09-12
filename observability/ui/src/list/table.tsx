@@ -30,7 +30,7 @@ const Table = ({
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
-  const isMobile = useMediaQuery("(max-width: 600px)");
+  const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
 
   const columns = compact([
     {

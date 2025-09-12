@@ -22,7 +22,7 @@ const PcSearch = ({
 }: {
   components: { data: string[] };
   search: SearchState;
-  setSearch: (search: SearchState) => void;
+  setSearch: (search: SearchState | ((search: SearchState) => SearchState)) => void;
   onDateRangeChange: (dateRange: [Date, Date]) => void;
   live: boolean;
   setLive: (live: boolean) => void;
@@ -41,7 +41,6 @@ const PcSearch = ({
           sx={{ minWidth: 240 }}
           options={components?.data || []}
           value={search.componentId || null}
-          //@ts-ignore
           onChange={(_, value) => setSearch((x) => ({ ...x, componentId: value || "" }))}
           getOptionLabel={(option) => {
             if (!option) return "";

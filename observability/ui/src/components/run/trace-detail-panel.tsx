@@ -37,7 +37,7 @@ export default function TraceDetailPanel({
   const getPrices = useGetTokenPrice();
   const { view, renderView } = useSwitchView();
   const [trace, setTrace] = useState<TraceData | undefined | null>(originalTrace);
-  const isMobile = useMediaQuery("(max-width: 1440px)");
+  const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
 
   const hasError = trace?.status?.code === 2;
   const hasUserContext =

@@ -24,7 +24,8 @@ export default function RunDetailDrawer({
   const [selectedTrace, setSelectedTrace] = useState(trace);
   const [traceInfo, setTraces] = useState(trace);
   const [loading, setLoading] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 600px)");
+  const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
+
   const init = async () => {
     setLoading(true);
 

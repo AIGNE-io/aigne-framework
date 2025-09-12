@@ -5,14 +5,7 @@ import { useEffect, useState } from "react";
 import { joinURL } from "ufo";
 import { origin } from "../utils/index.ts";
 
-const SwitchComponent = ({
-  isMobile,
-  ...props
-}: {
-  live: boolean;
-  setLive: (live: boolean) => void;
-  isMobile?: boolean;
-}) => {
+const SwitchComponent = ({ ...props }: { live: boolean; setLive: (live: boolean) => void }) => {
   const { t } = useLocaleContext();
   const [loading, setLoading] = useState(false);
   const { live, setLive } = props;

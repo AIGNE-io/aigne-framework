@@ -25,7 +25,7 @@ const MobileSearch = ({
   toggleDrawer: (open: boolean) => () => void;
   components: { data: string[] };
   search: SearchState;
-  setSearch: (search: SearchState) => void;
+  setSearch: (search: SearchState | ((search: SearchState) => SearchState)) => void;
   onDateRangeChange: (dateRange: [Date, Date]) => void;
   live: boolean;
   setLive: (live: boolean) => void;
@@ -66,7 +66,6 @@ const MobileSearch = ({
               options={components?.data || []}
               value={search.componentId || null}
               onChange={(_, value) =>
-                //@ts-ignore
                 setSearch((x: SearchState) => ({ ...x, componentId: value || "" }))
               }
               getOptionLabel={(option) => {
@@ -101,7 +100,7 @@ const MobileSearch = ({
         </Box> */}
 
         <Box sx={{ mb: 3 }}>
-          <SwitchComponent live={live} setLive={setLive} isMobile={true} />
+          <SwitchComponent live={live} setLive={setLive} />
         </Box>
       </Box>
 

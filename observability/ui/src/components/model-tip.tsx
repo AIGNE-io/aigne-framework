@@ -6,7 +6,6 @@ import Decimal from "decimal.js";
 function toPlainString(val: number) {
   const d = new Decimal(val);
 
-  // 转换为每百万 token 的价格
   const pricePerMillionTokens = d.mul(1000000);
 
   if (Math.abs(pricePerMillionTokens.toNumber()) < 1 && pricePerMillionTokens.toNumber() !== 0) {

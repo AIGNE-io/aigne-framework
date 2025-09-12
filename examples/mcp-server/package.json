@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-mcp-server",
-  "version": "0.3.68-pre",
+  "version": "0.3.68",
   "description": "A demonstration of using AIGNE CLI to build a MCP server",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-server",

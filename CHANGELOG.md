@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.77.0-pre.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.77.0-pre...aigne-framework-v1.77.0-pre.1) (2025-09-12)
+
+
+### Bug Fixes
+
+* test prev 1 ([#500](https://github.com/AIGNE-io/aigne-framework/issues/500)) ([412cd9c](https://github.com/AIGNE-io/aigne-framework/commit/412cd9c79b41802aa1c0de75df81cd728095950e))
+
 ## [1.77.0-pre](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.76.2...aigne-framework-v1.77.0-pre) (2025-09-12)
 
 

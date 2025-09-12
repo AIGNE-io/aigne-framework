@@ -17,7 +17,6 @@ const Delete = ({
   const deleteTraces = async () => {
     try {
       await fetch(joinURL(origin, "/api/trace/tree"), { method: "DELETE" });
-      setDialogOpen(false);
       fetchTraces();
     } finally {
       setDialogOpen(false);
@@ -41,10 +40,7 @@ const Delete = ({
       }}
       open={dialogOpen}
       title={t("delete.restConfirmTitle")}
-      onConfirm={async () => {
-        await deleteTraces();
-        setDialogOpen(false);
-      }}
+      onConfirm={deleteTraces}
       onCancel={() => setDialogOpen(false)}
     >
       <p>{t("delete.restConfirmDesc")}</p>

@@ -54,7 +54,7 @@ const Table = ({
       name: "input",
       minWidth: 120,
       options: {
-        customBodyRender: (_: any, { rowIndex }: { rowIndex: number }) => {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
           const input = item.attributes?.input;
           return (
@@ -76,7 +76,7 @@ const Table = ({
       label: t("output"),
       name: "output",
       options: {
-        customBodyRender: (_: any, { rowIndex }: { rowIndex: number }) => {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
           const output = item.attributes?.output;
           return (
@@ -97,9 +97,9 @@ const Table = ({
     {
       label: t("latency"),
       name: "latency",
-      align: "right",
+      align: "right" as const,
       options: {
-        customBodyRender: (_: any, { rowIndex }: { rowIndex: number }) => {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
           return <Box>{parseDuration(item.startTime, item.endTime)}</Box>;
         },
@@ -109,9 +109,9 @@ const Table = ({
       label: t("status"),
       name: "status",
       minWidth: 150,
-      align: "center",
+      align: "center" as const,
       options: {
-        customBodyRender: (_: any, { rowIndex }: { rowIndex: number }) => {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
           const map: Record<
             number,
@@ -165,7 +165,7 @@ const Table = ({
           name: "userId",
           width: 100,
           options: {
-            customBodyRender: (_: any, { rowIndex }: { rowIndex: number }) => {
+            customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
               const item = traces[rowIndex];
               if (item.userId) {
                 return (
@@ -199,7 +199,7 @@ const Table = ({
       minWidth: 180,
       align: "right" as const,
       options: {
-        customBodyRender: (_: any, { rowIndex }: { rowIndex: number }) => {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
           return item.startTime ? (
             <RelativeTime value={item.startTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
@@ -215,7 +215,7 @@ const Table = ({
       minWidth: 180,
       align: "right" as const,
       options: {
-        customBodyRender: (_: any, { rowIndex }: { rowIndex: number }) => {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
           return item.endTime ? (
             <RelativeTime value={item.endTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
@@ -233,7 +233,7 @@ const Table = ({
       name: "component",
       minWidth: 180,
       options: {
-        customBodyRender: (_: any, { rowIndex }: { rowIndex: number }) => {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
           if (!item.componentId) return <Box>-</Box>;
 

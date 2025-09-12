@@ -19,8 +19,8 @@ import RunDetailDrawer from "../components/run/trace-detail-drawer.tsx";
 import type { TraceData } from "../components/run/types.ts";
 import { watchSSE } from "../utils/event.ts";
 import { origin } from "../utils/index.ts";
+import DesktopSearch from "./search/desktop.tsx";
 import MobileSearch from "./search/mobile.tsx";
-import PcSearch from "./search/pc.tsx";
 import Table from "./table.tsx";
 
 interface ListRef {
@@ -242,7 +242,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               <TuneIcon />
             </IconButton>
           ) : (
-            <PcSearch
+            <DesktopSearch
               components={components || { data: [] }}
               search={search}
               setSearch={setSearch}

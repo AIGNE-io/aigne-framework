@@ -4,8 +4,8 @@ import Drawer from "@mui/material/Drawer";
 import { useEffect, useState } from "react";
 import { joinURL } from "ufo";
 import { origin } from "../../utils/index.ts";
+import TraceDetailDrawerDesktop from "./trace-detail-drawer-desktop.tsx";
 import TraceDetailDrawerMobile from "./trace-detail-drawer-mobile.tsx";
-import TraceDetailDrawerPC from "./trace-detail-drawer-pc.tsx";
 import type { TraceData } from "./types.ts";
 
 interface RunDetailDrawerProps {
@@ -59,9 +59,7 @@ export default function RunDetailDrawer({
   };
 
   const renderContent = () => {
-    if (!traceInfo) return null;
-    if (!traceId) return null;
-    if (!selectedTrace) return null;
+    if (!traceInfo || !traceId || !selectedTrace) return null;
 
     if (isMobile) {
       return (
@@ -76,7 +74,7 @@ export default function RunDetailDrawer({
     }
 
     return (
-      <TraceDetailDrawerPC
+      <TraceDetailDrawerDesktop
         traceId={traceId}
         traceInfo={traceInfo}
         selectedTrace={selectedTrace}

@@ -48,7 +48,7 @@ export default flatten({
     maxTokens: "Max Tokens",
     inputCostPerToken: "Input Cost",
     outputCostPerToken: "Output Cost",
-    inputCostPerTokenPerMillion: "{cost} / Million Tokens",
+    costPerTokenPerMillion: "{cost} / Million Tokens",
     provider: "Provider",
     supports: "Supports",
     functionCalling: "Function Calling",

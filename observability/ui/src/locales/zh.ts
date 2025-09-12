@@ -48,7 +48,7 @@ export default flatten({
     maxTokens: "最大 Tokens",
     inputCostPerToken: "输入 Token 成本",
     outputCostPerToken: "输出 Token 成本",
-    inputCostPerTokenPerMillion: "{cost} / 百万",
+    costPerTokenPerMillion: "{cost} / 百万",
     provider: "提供商",
     supports: "支持",
     functionCalling: "Function Calling",

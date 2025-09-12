@@ -69,13 +69,13 @@ export default function ModelInfoTip({ modelInfo }: { modelInfo: any }) {
       </Typography>
       <Typography variant="body2">
         • {t("models.inputCostPerToken")}: $
-        {t("models.inputCostPerTokenPerMillion", {
+        {t("models.costPerTokenPerMillion", {
           cost: toPlainString(modelInfo.input_cost_per_token).toString(),
         })}
       </Typography>
       <Typography variant="body2">
         • {t("models.outputCostPerToken")}: $
-        {t("models.inputCostPerTokenPerMillion", {
+        {t("models.costPerTokenPerMillion", {
           cost: toPlainString(modelInfo.output_cost_per_token).toString(),
         })}
       </Typography>

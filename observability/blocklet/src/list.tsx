@@ -1,5 +1,4 @@
 import List from "@aigne/observability-ui/list";
-import { Box } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useSessionContext } from "./contexts/session.js";
 
@@ -16,9 +15,5 @@ export default function ListPage() {
     }
   }, [session?.user]);
 
-  return (
-    <Box sx={{ my: 3 }}>
-      <List ref={appRef} />
-    </Box>
-  );
+  return <List ref={appRef} />;
 }

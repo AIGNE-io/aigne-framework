@@ -2,6 +2,7 @@ import InfoRow from "@arcblock/ux/lib/InfoRow";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import Tag from "@arcblock/ux/lib/Tag";
+import type { SxProps } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
@@ -24,7 +25,13 @@ import YamlView from "../yaml-view.tsx";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
 
-export default function TraceDetailPanel({ trace: originalTrace }: { trace?: TraceData | null }) {
+export default function TraceDetailPanel({
+  trace: originalTrace,
+  sx,
+}: {
+  trace?: TraceData | null;
+  sx?: SxProps;
+}) {
   const [tab, setTab] = useState("input");
   const { t } = useLocaleContext();
   const getPrices = useGetTokenPrice();
@@ -131,7 +138,7 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
   const ComponentView = mapViews[view as keyof typeof mapViews] || JsonView;
 
   return (
-    <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", ...sx }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <Typography
           sx={{
@@ -338,6 +345,8 @@ export default function TraceDetailPanel({ trace: originalTrace }: { trace?: Tra
 const InfoRowBox = styled(InfoRow)`
   margin-bottom: 8px;
   width: 100%;
+  flex-direction: row !important;
+  align-items: center !important;
 
   .info-row__name {
     font-size: 13px;

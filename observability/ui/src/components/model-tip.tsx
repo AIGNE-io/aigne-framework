@@ -6,16 +6,19 @@ import Decimal from "decimal.js";
 function toPlainString(val: number) {
   const d = new Decimal(val);
 
-  if (Math.abs(d.toNumber()) < 1 && d.toNumber() !== 0) {
-    const match = d.toString().match(/e-(\d+)/);
+  // 转换为每百万 token 的价格
+  const pricePerMillionTokens = d.mul(1000000);
+
+  if (Math.abs(pricePerMillionTokens.toNumber()) < 1 && pricePerMillionTokens.toNumber() !== 0) {
+    const match = pricePerMillionTokens.toString().match(/e-(\d+)/);
     if (match) {
-      return d.toFixed(Number(match[1]));
+      return pricePerMillionTokens.toFixed(Number(match[1]));
     }
 
-    return d.toString();
+    return pricePerMillionTokens.toString();
   }
 
-  return d.toString();
+  return pricePerMillionTokens.toString();
 }
 
 export default function ModelInfoTip({ modelInfo }: { modelInfo: any }) {
@@ -67,11 +70,15 @@ export default function ModelInfoTip({ modelInfo }: { modelInfo: any }) {
       </Typography>
       <Typography variant="body2">
         • {t("models.inputCostPerToken")}: $
-        {toPlainString(modelInfo.input_cost_per_token).toString()}
+        {t("models.inputCostPerTokenPerMillion", {
+          cost: toPlainString(modelInfo.input_cost_per_token).toString(),
+        })}
       </Typography>
       <Typography variant="body2">
         • {t("models.outputCostPerToken")}: $
-        {toPlainString(modelInfo.output_cost_per_token).toString()}
+        {t("models.inputCostPerTokenPerMillion", {
+          cost: toPlainString(modelInfo.output_cost_per_token).toString(),
+        })}
       </Typography>
       <Typography variant="body2">
         • {t("models.provider")}: {modelInfo.litellm_provider}

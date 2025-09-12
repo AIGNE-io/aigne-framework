@@ -91,14 +91,16 @@ function TraceItem({
           </Box>
         )}
 
-        <Typography variant="caption" sx={{ minWidth: 60, flexShrink: 0, ml: "auto", mr: 1 }}>
-          {parseDurationTime(duration * 1000)}
-        </Typography>
+        {!isMobile && (
+          <Typography variant="caption" sx={{ minWidth: 60, flexShrink: 0, ml: "auto", mr: 1 }}>
+            {parseDurationTime(duration * 1000)}
+          </Typography>
+        )}
 
         <Box
           sx={{
             width: "100%",
-            maxWidth: "200px",
+            maxWidth: isMobile ? "100px" : "200px",
             minWidth: "100px",
             position: "relative",
             height: 10,
@@ -251,6 +253,7 @@ export default function TraceItemList({
 }) {
   const traceSteps = formatTraceStepsAndTotalDuration({ steps, start: 0, selectedTrace });
   const { t } = useLocaleContext();
+  const isMobile = useMediaQuery("(max-width: 1440px)");
 
   return (
     <Box>
@@ -279,7 +282,7 @@ export default function TraceItemList({
         <Box
           sx={{
             width: "100%",
-            maxWidth: "200px",
+            maxWidth: isMobile ? "120px" : "200px",
             position: "relative",
             borderRadius: 5,
             fontWeight: 500,

@@ -3,6 +3,7 @@ import type * as prompts from "@inquirer/prompts";
 import equal from "fast-deep-equal";
 import nunjucks from "nunjucks";
 import { type ZodObject, type ZodType, z } from "zod";
+import { AFS } from "../afs/afs.js";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { ContextUsage } from "../aigne/usage.js";
@@ -179,6 +180,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   memory?: MemoryAgent | MemoryAgent[];
 
+  afs?: AFS | ((afs: AFS) => AFS);
+
   asyncMemoryRecord?: boolean;
 
   /**
@@ -330,6 +333,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     } else if (options.memory) {
       this.memories.push(options.memory);
     }
+    this.afs =
+      typeof options.afs === "function" ? options.afs(new AFS()) : options.afs || new AFS();
     this.asyncMemoryRecord = options.asyncMemoryRecord;
 
     this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
@@ -346,8 +351,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
   /**
    * List of memories this agent can use
+   *
+   * @deprecated use afs instead
    */
   readonly memories: MemoryAgent[] = [];
+
+  afs: AFS;
 
   asyncMemoryRecord?: boolean;
 

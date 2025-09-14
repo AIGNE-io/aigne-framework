@@ -1,5 +1,6 @@
 import type { Emitter } from "strict-event-emitter";
-import type { ContextEventMap } from "../aigne/context.js";
+import type { Context, ContextEventMap } from "../aigne/context.js";
+import type { AFSStorage } from "./storage/type.js";
 
 export interface AFSListOptions {
   filter?: {
@@ -16,23 +17,31 @@ export interface AFSSearchOptions {
   limit?: number;
 }
 
+export interface AFSWriteEntryPayload extends Omit<AFSEntry, "id" | "path"> {}
+
 export interface AFSModule {
-  onMount?(root: AFSRoot, mountPath: string): void;
+  readonly moduleId: string;
+
+  readonly path: string;
+
+  onMount?(root: AFSRoot): void;
 
   list?(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }>;
 
   read?(path: string): Promise<AFSEntry | undefined>;
 
-  write?(path: string, content: Omit<AFSEntry, "path">): Promise<AFSEntry>;
+  write?(path: string, content: AFSWriteEntryPayload): Promise<AFSEntry>;
 
   search?(path: string, query: string, options?: AFSSearchOptions): Promise<{ list: AFSEntry[] }>;
 }
 
 export type AFSRootEvents = ContextEventMap & {
-  historyCreated: [AFSEntry];
+  historyCreated: [{ context: Context; entry: AFSEntry }];
 };
 
-export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {}
+export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {
+  storage(module: AFSModule): AFSStorage;
+}
 
 export interface AFSEntry<T = any> {
   id: string;

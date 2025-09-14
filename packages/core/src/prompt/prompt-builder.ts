@@ -3,8 +3,7 @@ import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { AFS } from "../afs/afs.js";
-import type { AFSEntry } from "../afs/type.js";
+import { type AFSEntry, AFSHistory } from "../afs/index.js";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
 import { type AIAgent, DEFAULT_FILE_OUTPUT_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
 import {
@@ -165,7 +164,10 @@ export class PromptBuilder {
     }
 
     if (options.agent?.afs) {
-      const history = await options.agent.afs.list(AFS.HistoryModulePath);
+      const history = await options.agent.afs.list(AFSHistory.Path, {
+        limit: options.agent.maxRetrieveMemoryCount || 1,
+        orderBy: [["createdAt", "desc"]],
+      });
 
       if (message) {
         const result = await options.agent.afs.search("/", message);

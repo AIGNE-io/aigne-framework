@@ -59,6 +59,7 @@ import { type ContextLimits, type ContextUsage, newEmptyContextUsage } from "./u
  * @hidden
  */
 export interface AgentEvent {
+  context: Context;
   parentContextId?: string;
   contextId: string;
   timestamp: number;
@@ -80,7 +81,7 @@ export type ContextEventMap = {
 export type ContextEmitEventMap = {
   [K in keyof ContextEventMap]: OmitPropertiesFromArrayFirstElement<
     ContextEventMap[K],
-    "contextId" | "parentContextId" | "timestamp"
+    "context" | "contextId" | "parentContextId" | "timestamp"
   >;
 };
 
@@ -465,6 +466,7 @@ export class AIGNEContext implements Context {
   ): boolean {
     const b: AgentEvent = {
       ...args[0],
+      context: this,
       contextId: this.id,
       parentContextId: this.parentId,
       timestamp: Date.now(),

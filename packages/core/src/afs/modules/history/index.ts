@@ -1,28 +1,40 @@
 import { joinURL } from "ufo";
 import { v7 } from "uuid";
 import { logger } from "../../../utils/logger.js";
-import type { AFSEntry, AFSListOptions, AFSModule, AFSRoot } from "../../type.js";
-import { DefaultHistoryStorage } from "./storage/index.js";
-import type { HistoryStorage } from "./type.js";
-
-export * from "./type.js";
+import type {
+  AFSEntry,
+  AFSListOptions,
+  AFSModule,
+  AFSRoot,
+  AFSWriteEntryPayload,
+} from "../../type.js";
 
 export class AFSHistory implements AFSModule {
-  storage: HistoryStorage;
+  static Path = "/history";
 
-  constructor() {
-    this.storage = new DefaultHistoryStorage();
+  path = AFSHistory.Path;
+
+  moduleId: string = "AFSHistory";
+
+  private _afs?: AFSRoot;
+
+  get afs() {
+    if (!this._afs) throw new Error("AFSHistory module is not mounted");
+    return this._afs;
   }
 
-  onMount(root: AFSRoot, _mountPath: string): void {
-    root.on("agentSucceed", ({ input, output }) => {
-      this.storage
+  onMount(afs: AFSRoot): void {
+    this._afs = afs;
+
+    afs.on("agentSucceed", ({ context, input, output }) => {
+      this.afs
+        .storage(this)
         .create({
           path: joinURL("/", v7()),
           content: { input, output },
         })
         .then((entry) => {
-          root.emit("historyCreated", entry);
+          afs.emit("historyCreated", { context, entry });
         })
         .catch((error) => {
           logger.error("Failed to store history entry", error);
@@ -33,14 +45,14 @@ export class AFSHistory implements AFSModule {
   async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }> {
     if (path !== "/") return { list: [] };
 
-    return this.storage.list(options);
+    return this.afs.storage(this).list(options);
   }
 
   async read(path: string): Promise<AFSEntry | undefined> {
-    return this.storage.read(path);
+    return this.afs.storage(this).read(path);
   }
 
-  async write(path: string, content: Omit<AFSEntry, "path">): Promise<AFSEntry> {
-    return this.storage.create({ ...content, path });
+  async write(path: string, content: AFSWriteEntryPayload): Promise<AFSEntry> {
+    return this.afs.storage(this).create({ ...content, path });
   }
 }

@@ -2,6 +2,8 @@ import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
 import { logger } from "../utils/logger.js";
 import { AFSHistory } from "./modules/history/index.js";
+import { SharedAFSStorage, type SharedAFSStorageOptions } from "./storage/index.js";
+import type { AFSStorage } from "./storage/type.js";
 import type {
   AFSEntry,
   AFSListOptions,
@@ -13,20 +15,37 @@ import type {
 
 const DEFAULT_MAX_DEPTH = 5;
 
+export interface AFSOptions {
+  storage?: SharedAFSStorage | SharedAFSStorageOptions;
+}
+
 export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
-  static HistoryModulePath = "/history";
+  moduleId: string = "AFSRoot";
+
+  path = "/";
+
+  constructor(options?: AFSOptions) {
+    super();
+
+    this._storage =
+      options?.storage instanceof SharedAFSStorage
+        ? options.storage
+        : new SharedAFSStorage(options?.storage);
+
+    this.use(new AFSHistory());
+  }
+
+  private _storage: SharedAFSStorage;
+
+  storage(module: AFSModule): AFSStorage {
+    return this._storage.withModule(module);
+  }
 
   private modules = new Map<string, AFSModule>();
 
-  constructor() {
-    super();
-
-    this.use(AFS.HistoryModulePath, new AFSHistory());
-  }
-
-  use(path: string, module: AFSModule) {
-    this.modules.set(path, module);
-    module.onMount?.(this, path);
+  use(module: AFSModule) {
+    this.modules.set(module.path, module);
+    module.onMount?.(this);
     return this;
   }
 

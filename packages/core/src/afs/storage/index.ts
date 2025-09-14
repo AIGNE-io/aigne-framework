@@ -29,7 +29,7 @@ export class SharedAFSStorage {
   }
 }
 
-class AFSStorageWithModule implements AFSStorage {
+export class AFSStorageWithModule implements AFSStorage {
   constructor(
     private db: ReturnType<typeof initDatabase>,
     private table: Promise<ReturnType<typeof entriesTable>>,

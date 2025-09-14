@@ -11,6 +11,7 @@ import type {
   AFSRoot,
   AFSRootEvents,
   AFSSearchOptions,
+  AFSWriteEntryPayload,
 } from "./type.js";
 
 const DEFAULT_MAX_DEPTH = 5;
@@ -55,7 +56,9 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     const results: AFSEntry[] = [];
 
-    for (const { module, subpath, mountPath } of this.findModules(path)) {
+    const modules = this.findModules(path);
+
+    for (const { module, subpath, mountPath } of modules) {
       if (!module.list) continue;
 
       try {
@@ -80,7 +83,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
   private findModules(
     fullPath: string,
-  ): { module: AFSModule; mountPath: string; subpath: string; parentDepth: number }[] {
+  ): { module: AFSModule; mountPath: string; subpath: string; matchedDepth: number }[] {
     const modules: ReturnType<typeof this.findModules> = [];
 
     for (const [mountPath, module] of this.modules) {
@@ -90,20 +93,28 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       modules.push({ ...match, module, mountPath });
     }
 
-    return modules.sort((a, b) => b.parentDepth - a.parentDepth);
+    return modules.sort((a, b) => b.matchedDepth - a.matchedDepth);
   }
 
   private isSubpath(
     fullPath: string,
     mountPath: string,
-  ): { subpath: string; parentDepth: number } | undefined {
+  ): { subpath: string; matchedDepth: number } | undefined {
     const fullPathSegments = fullPath.split("/").filter(Boolean);
     const mountPathSegments = mountPath.split("/").filter(Boolean);
 
-    if (fullPathSegments.join("/").startsWith(mountPathSegments.join("/"))) {
+    const fp = fullPathSegments.join("/");
+    const mp = mountPathSegments.join("/");
+
+    if (fp.startsWith(mp)) {
       return {
-        parentDepth: mountPathSegments.length,
+        matchedDepth: mountPathSegments.length,
         subpath: joinURL("/", ...fullPathSegments.slice(mountPathSegments.length)),
+      };
+    } else if (mp.startsWith(fp)) {
+      return {
+        matchedDepth: fullPathSegments.length,
+        subpath: joinURL("/", ...mountPathSegments.slice(fullPathSegments.length)),
       };
     }
   }
@@ -123,7 +134,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     }
   }
 
-  async write(path: string, content: Omit<AFSEntry, "path">): Promise<AFSEntry> {
+  async write(path: string, content: AFSWriteEntryPayload): Promise<AFSEntry> {
     const module = this.findModules(path)[0];
     if (!module?.module.write) throw new Error(`No module found for path: ${path}`);
 

@@ -117,6 +117,19 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "output": {
         "text": "Hello world!",
       },
@@ -141,6 +154,9 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "message": "hello",
+      },
       "output": {
         "message": "Hello world!",
       },
@@ -286,6 +302,19 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "output": {
         "text": "Hello world!",
       },
@@ -310,6 +339,9 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "message": "hello",
+      },
       "output": {
         "message": "Hello world!",
       },
@@ -455,6 +487,19 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "output": {
         "text": "Hello world!",
       },
@@ -479,6 +524,9 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "message": "hello",
+      },
       "output": {
         "message": "Hello world!",
       },
@@ -624,6 +672,19 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "output": {
         "text": "Hello world!",
       },
@@ -648,6 +709,9 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "message": "hello",
+      },
       "output": {
         "message": "Hello world!",
       },
@@ -793,6 +857,19 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "output": {
         "text": "Hello world!",
       },
@@ -817,6 +894,9 @@ exports[`AIGNEClient should return correct process options {
       },
       "contextId": "TEST_CONTEXT_ID",
       "event": "agentSucceed",
+      "input": {
+        "message": "hello",
+      },
       "output": {
         "message": "Hello world!",
       },
@@ -924,6 +1004,19 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -956,6 +1049,9 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "message": "hello",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -1043,6 +1139,19 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -1075,6 +1184,9 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "message": "hello",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -1162,6 +1274,19 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -1194,6 +1319,9 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "message": "hello",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -1281,6 +1409,19 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -1313,6 +1454,9 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "message": "hello",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -1400,6 +1544,19 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },
@@ -1432,6 +1589,9 @@ exports[`AIGNEClient should return error with options {
       "contextId": "TEST_CONTEXT_ID",
       "error": [Error: test llm model error],
       "event": "agentFailed",
+      "input": {
+        "message": "hello",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
     },

@@ -1400,7 +1400,7 @@ export interface AgentResponseProgress {
         error: Error;
       }
   ) &
-    Omit<AgentEvent, "agent"> & { agent: { name: string } };
+    Omit<AgentEvent, "agent" | "context"> & { agent: { name: string } };
 }
 
 export function isAgentResponseProgress<T>(

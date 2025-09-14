@@ -5,6 +5,7 @@ import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
 import { z } from "zod";
+import type { AFSRootEvents } from "../afs/type.js";
 import {
   type Agent,
   type AgentHooks,
@@ -67,11 +68,11 @@ export interface AgentEvent {
 /**
  * @hidden
  */
-export interface ContextEventMap {
+export type ContextEventMap = {
   agentStarted: [AgentEvent & { input: Message; taskTitle?: string }];
-  agentSucceed: [AgentEvent & { output: Message }];
-  agentFailed: [AgentEvent & { error: Error }];
-}
+  agentSucceed: [AgentEvent & { input: Message; output: Message }];
+  agentFailed: [AgentEvent & { input: Message; error: Error }];
+};
 
 /**
  * @hidden
@@ -472,6 +473,7 @@ export class AIGNEContext implements Context {
     const newArgs = [b, ...args.slice(1)] as Args<K, ContextEventMap>;
 
     this.trace(eventName, args, b);
+    b.agent.afs?.emit(eventName, ...(newArgs as AFSRootEvents[typeof eventName]));
     return this.internal.events.emit(eventName, ...newArgs);
   }
 

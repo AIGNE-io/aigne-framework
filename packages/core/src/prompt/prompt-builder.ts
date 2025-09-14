@@ -3,6 +3,8 @@ import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { AFS } from "../afs/afs.js";
+import type { AFSEntry } from "../afs/type.js";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
 import { type AIAgent, DEFAULT_FILE_OUTPUT_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
 import {
@@ -19,7 +21,7 @@ import {
 import { optionalize } from "../loader/schema.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { checkArguments, flat, isRecord, unique } from "../utils/type-utils.js";
+import { checkArguments, flat, isNonNullable, isRecord, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import {
@@ -160,6 +162,20 @@ export class PromptBuilder {
 
     if (options.agent?.useMemoriesFromContext && options.context?.memories?.length) {
       memories.push(...options.context.memories);
+    }
+
+    if (options.agent?.afs) {
+      const history = await options.agent.afs.list(AFS.HistoryModulePath);
+
+      if (message) {
+        const result = await options.agent.afs.search("/", message);
+        const ms = result.list.map((entry) => ({ content: stringify(entry.content) }));
+        memories.push(...ms);
+      }
+
+      memories.push(
+        ...history.list.filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
+      );
     }
 
     if (memories.length)

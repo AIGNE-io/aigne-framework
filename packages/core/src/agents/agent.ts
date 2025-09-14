@@ -3,6 +3,7 @@ import type * as prompts from "@inquirer/prompts";
 import equal from "fast-deep-equal";
 import nunjucks from "nunjucks";
 import { type ZodObject, type ZodType, z } from "zod";
+import { AFS } from "../afs/afs.js";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { ContextUsage } from "../aigne/usage.js";
@@ -179,6 +180,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   memory?: MemoryAgent | MemoryAgent[];
 
+  afs?: true | AFS | ((afs: AFS) => AFS);
+
   asyncMemoryRecord?: boolean;
 
   /**
@@ -330,6 +333,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     } else if (options.memory) {
       this.memories.push(options.memory);
     }
+    this.afs =
+      options.afs === true
+        ? new AFS()
+        : typeof options.afs === "function"
+          ? options.afs(new AFS())
+          : options.afs || new AFS();
     this.asyncMemoryRecord = options.asyncMemoryRecord;
 
     this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
@@ -346,8 +355,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
   /**
    * List of memories this agent can use
+   *
+   * @deprecated use afs instead
    */
   readonly memories: MemoryAgent[] = [];
+
+  afs?: AFS;
 
   asyncMemoryRecord?: boolean;
 
@@ -550,7 +563,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     try {
       await context.invoke(this, message as I, { newContext: false });
     } catch (error) {
-      context.emit("agentFailed", { agent: this, error });
+      context.emit("agentFailed", { agent: this, input: message, error });
     }
   }
 
@@ -907,7 +920,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     const o = await this.callHooks(["onSuccess", "onEnd"], { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
 
-    if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
+    if (!this.disableEvents)
+      context.emit("agentSucceed", { agent: this, input, output: finalOutput });
 
     return finalOutput;
   }
@@ -926,7 +940,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     options: AgentInvokeOptions,
   ): Promise<{ retry?: boolean; error?: Error }> {
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
-    if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
+    if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, input, error });
 
     const res = (await this.callHooks(["onError", "onEnd"], { input, error }, options)) ?? {};
 

@@ -94,16 +94,16 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   }
 
   private isSubpath(
-    path: string,
     fullPath: string,
+    mountPath: string,
   ): { subpath: string; parentDepth: number } | undefined {
-    const pathSegments = path.split("/").filter(Boolean);
     const fullPathSegments = fullPath.split("/").filter(Boolean);
+    const mountPathSegments = mountPath.split("/").filter(Boolean);
 
-    if (fullPathSegments.join("/").startsWith(pathSegments.join("/"))) {
+    if (fullPathSegments.join("/").startsWith(mountPathSegments.join("/"))) {
       return {
-        parentDepth: pathSegments.length,
-        subpath: joinURL("/", ...fullPathSegments.slice(pathSegments.length)),
+        parentDepth: mountPathSegments.length,
+        subpath: joinURL("/", ...fullPathSegments.slice(mountPathSegments.length)),
       };
     }
   }

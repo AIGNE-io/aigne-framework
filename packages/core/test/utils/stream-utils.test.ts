@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { EventEmitter } from "node:stream";
+import { EventEmitter } from "node:events";
 import {
   agentResponseStreamToObject,
   arrayToAgentProcessAsyncGenerator,

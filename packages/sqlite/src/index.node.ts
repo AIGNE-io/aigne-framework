@@ -4,6 +4,8 @@ import type { SQLiteSession } from "drizzle-orm/sqlite-core";
 import type { InitDatabaseOptions } from "./index.js";
 import { withRetry } from "./retry.js";
 
+export * from "./reexport.js";
+
 export async function initDatabase({
   url = ":memory:",
   wal = false,

@@ -131,6 +131,23 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
         "name": "OpenAIChatModel",
       },
       "event": "agentSucceed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+        "modelOptions": undefined,
+        "responseFormat": undefined,
+        "toolChoice": undefined,
+        "tools": undefined,
+      },
       "output": {
         "text": "Hello, How can I assist you today?",
       },
@@ -156,6 +173,9 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
         "name": "chat",
       },
       "event": "agentSucceed",
+      "input": {
+        "message": "hello",
+      },
       "output": {
         "message": "Hello, How can I assist you today?",
       },
@@ -233,6 +253,23 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       },
       "error": [Error: Test error],
       "event": "agentFailed",
+      "input": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text",
+              },
+            ],
+            "role": "user",
+          },
+        ],
+        "modelOptions": undefined,
+        "responseFormat": undefined,
+        "toolChoice": undefined,
+        "tools": undefined,
+      },
     },
   },
   {
@@ -242,6 +279,9 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       },
       "error": [Error: Test error],
       "event": "agentFailed",
+      "input": {
+        "message": "hello",
+      },
     },
   },
   [Error: Test error],

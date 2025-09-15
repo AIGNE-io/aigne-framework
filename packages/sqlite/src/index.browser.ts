@@ -4,6 +4,8 @@ import { SQLocalDrizzle } from "sqlocal/drizzle";
 import type { InitDatabaseOptions } from "./index.js";
 import { promiseWithResolvers } from "./promise.js";
 
+export * from "./reexport.js";
+
 export async function initDatabase({
   url = ":memory:",
 }: InitDatabaseOptions = {}): Promise<SqliteRemoteDatabase> {

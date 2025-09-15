@@ -5,6 +5,7 @@ import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
 import { v7 } from "uuid";
 import { z } from "zod";
+import type { AFSRootEvents } from "../afs/type.js";
 import {
   type Agent,
   type AgentHooks,
@@ -58,6 +59,7 @@ import { type ContextLimits, type ContextUsage, newEmptyContextUsage } from "./u
  * @hidden
  */
 export interface AgentEvent {
+  context: Context;
   parentContextId?: string;
   contextId: string;
   timestamp: number;
@@ -67,11 +69,11 @@ export interface AgentEvent {
 /**
  * @hidden
  */
-export interface ContextEventMap {
+export type ContextEventMap = {
   agentStarted: [AgentEvent & { input: Message; taskTitle?: string }];
-  agentSucceed: [AgentEvent & { output: Message }];
-  agentFailed: [AgentEvent & { error: Error }];
-}
+  agentSucceed: [AgentEvent & { input: Message; output: Message }];
+  agentFailed: [AgentEvent & { input: Message; error: Error }];
+};
 
 /**
  * @hidden
@@ -79,7 +81,7 @@ export interface ContextEventMap {
 export type ContextEmitEventMap = {
   [K in keyof ContextEventMap]: OmitPropertiesFromArrayFirstElement<
     ContextEventMap[K],
-    "contextId" | "parentContextId" | "timestamp"
+    "context" | "contextId" | "parentContextId" | "timestamp"
   >;
 };
 
@@ -464,6 +466,7 @@ export class AIGNEContext implements Context {
   ): boolean {
     const b: AgentEvent = {
       ...args[0],
+      context: this,
       contextId: this.id,
       parentContextId: this.parentId,
       timestamp: Date.now(),
@@ -472,6 +475,7 @@ export class AIGNEContext implements Context {
     const newArgs = [b, ...args.slice(1)] as Args<K, ContextEventMap>;
 
     this.trace(eventName, args, b);
+    b.agent.afs?.emit(eventName, ...(newArgs as AFSRootEvents[typeof eventName]));
     return this.internal.events.emit(eventName, ...newArgs);
   }
 

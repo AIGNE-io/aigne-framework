@@ -6,6 +6,7 @@ import express, { type Request, type Response, type Router } from "express";
 import type SSE from "express-sse";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
+import type { FileData, ImageData } from "../base.js";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
 
@@ -35,9 +36,14 @@ import { createTraceBatchSchema } from "../../core/schema.js";
 export default ({
   sse,
   middleware,
+  options,
 }: {
   sse: SSE;
   middleware: express.RequestHandler[];
+  options?: {
+    formatOutputFiles?: (files: FileData[]) => Promise<FileData[]>;
+    formatOutputImages?: (images: ImageData[]) => Promise<ImageData[]>;
+  };
 }): Router => {
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
@@ -314,6 +320,18 @@ export default ({
 
     for (const trace of validatedTraces) {
       try {
+        const mapping = {
+          files: options?.formatOutputFiles,
+          images: options?.formatOutputImages,
+        };
+
+        for (const [key, formatter] of Object.entries(mapping)) {
+          const items = trace?.attributes?.output?.[key];
+          if (items?.length && formatter) {
+            trace.attributes.output[key] = await formatter(items);
+          }
+        }
+
         const insertSql = sql`
           INSERT INTO Trace (
             id,

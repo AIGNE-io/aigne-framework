@@ -59,3 +59,116 @@ test("parseJSON should throw error if the json is invalid", async () => {
 
   error.mockRestore();
 });
+
+test("convertNullableToOptional should convert all nullable properties to optional", async () => {
+  const schema = z.object({
+    name: z.string(),
+    name_nullable: z.string().nullable(),
+    name_nullish: z.string().nullish(),
+
+    collections: z.array(z.object({ name: z.string() })),
+    collections_nullable: z
+      .array(
+        z.object({
+          name: z.string().nullable(),
+        }),
+      )
+      .nullable(),
+    collections_nullish: z
+      .array(
+        z.object({
+          name: z.string().nullish(),
+        }),
+      )
+      .nullish(),
+
+    tags: z.array(z.string()),
+    tags_nullable: z.array(z.string().nullable()).nullable(),
+    tags_nullish: z.array(z.string().nullish()).nullish(),
+  });
+
+  const jsonSchema = outputSchemaToResponseFormatSchema(schema);
+
+  expect(jsonSchema).toMatchInlineSnapshot(`
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "collections": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "name",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "collections_nullable": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+              },
+            },
+            "required": [],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "collections_nullish": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+              },
+            },
+            "required": [],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "name": {
+          "type": "string",
+        },
+        "name_nullable": {
+          "type": "string",
+        },
+        "name_nullish": {
+          "type": "string",
+        },
+        "tags": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "tags_nullable": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "tags_nullish": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "name",
+        "collections",
+        "tags",
+      ],
+      "type": "object",
+    }
+  `);
+});

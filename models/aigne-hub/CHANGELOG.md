@@ -1,5 +1,102 @@
 # Changelog
 
+## [0.9.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.2...aigne-hub-v0.9.3) (2025-09-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.13.3
+    * @aigne/bedrock bumped to 0.10.3
+    * @aigne/core bumped to 1.60.2
+    * @aigne/deepseek bumped to 0.7.44
+    * @aigne/doubao bumped to 1.0.38
+    * @aigne/gemini bumped to 0.13.3
+    * @aigne/ideogram bumped to 0.3.14
+    * @aigne/ollama bumped to 0.7.44
+    * @aigne/open-router bumped to 0.7.44
+    * @aigne/openai bumped to 0.15.3
+    * @aigne/poe bumped to 1.0.24
+    * @aigne/transport bumped to 0.15.7
+    * @aigne/xai bumped to 0.7.44
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.51
+
+## [0.9.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.1...aigne-hub-v0.9.2) (2025-09-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.13.2
+    * @aigne/bedrock bumped to 0.10.2
+    * @aigne/core bumped to 1.60.1
+    * @aigne/deepseek bumped to 0.7.43
+    * @aigne/doubao bumped to 1.0.37
+    * @aigne/gemini bumped to 0.13.2
+    * @aigne/ideogram bumped to 0.3.13
+    * @aigne/ollama bumped to 0.7.43
+    * @aigne/open-router bumped to 0.7.43
+    * @aigne/openai bumped to 0.15.2
+    * @aigne/poe bumped to 1.0.23
+    * @aigne/transport bumped to 0.15.6
+    * @aigne/xai bumped to 0.7.43
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.50
+
+## [0.9.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.0...aigne-hub-v0.9.1) (2025-09-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.13.1
+    * @aigne/bedrock bumped to 0.10.1
+    * @aigne/core bumped to 1.60.0
+    * @aigne/deepseek bumped to 0.7.42
+    * @aigne/doubao bumped to 1.0.36
+    * @aigne/gemini bumped to 0.13.1
+    * @aigne/ideogram bumped to 0.3.12
+    * @aigne/ollama bumped to 0.7.42
+    * @aigne/open-router bumped to 0.7.42
+    * @aigne/openai bumped to 0.15.1
+    * @aigne/poe bumped to 1.0.22
+    * @aigne/transport bumped to 0.15.5
+    * @aigne/xai bumped to 0.7.42
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.49
+
+## [0.9.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.10...aigne-hub-v0.9.0) (2025-09-09)
+
+
+### Features
+
+* support custom prefer input file type ([#469](https://github.com/AIGNE-io/aigne-framework/issues/469)) ([db0161b](https://github.com/AIGNE-io/aigne-framework/commit/db0161bbac52542c771ee2f40f361636b0668075))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.13.0
+    * @aigne/bedrock bumped to 0.10.0
+    * @aigne/core bumped to 1.59.0
+    * @aigne/deepseek bumped to 0.7.41
+    * @aigne/doubao bumped to 1.0.35
+    * @aigne/gemini bumped to 0.13.0
+    * @aigne/ideogram bumped to 0.3.11
+    * @aigne/ollama bumped to 0.7.41
+    * @aigne/open-router bumped to 0.7.41
+    * @aigne/openai bumped to 0.15.0
+    * @aigne/poe bumped to 1.0.21
+    * @aigne/transport bumped to 0.15.4
+    * @aigne/xai bumped to 0.7.41
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.48
+
 ## [0.8.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.8.9...aigne-hub-v0.8.10) (2025-09-08)
 
 

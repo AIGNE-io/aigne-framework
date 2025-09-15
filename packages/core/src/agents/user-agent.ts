@@ -63,7 +63,8 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
     }
 
     if (this.activeAgent) {
-      const [output, agent] = await options.context.invoke(this.activeAgent, input, {
+      const [output, agent] = await this.invokeChildAgent(this.activeAgent, input, {
+        ...options,
         returnActiveAgent: true,
         streaming: true,
         // Do not create a new context for the nested agent invocation,

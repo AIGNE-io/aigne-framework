@@ -1,4 +1,4 @@
-import { AIGNE, type ChatModel, type ChatModelOptions } from "@aigne/core";
+import { AIGNE, type ChatModel, type ModelOptions } from "@aigne/core";
 import { isNil, omitBy } from "@aigne/core/utils/type-utils.js";
 import { OpenAIImageModel } from "@aigne/openai";
 import boxen from "boxen";
@@ -47,7 +47,7 @@ export async function loadAIGNE({
   modelOptions,
 }: {
   path?: string;
-  modelOptions?: ChatModelOptions & LoadCredentialOptions;
+  modelOptions?: ModelOptions & LoadCredentialOptions;
 }) {
   let aigne: AIGNE;
 

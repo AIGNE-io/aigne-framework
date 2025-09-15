@@ -72,7 +72,7 @@ router.post("/chat", async (req, res) => {
     const { aigne } = await loadAIGNEFile(req.mainDir).catch(() => ({
       aigne: null,
     }));
-    const defaultModel = aigne?.chatModel?.model?.split(":");
+    const defaultModel = aigne?.model?.model?.split(":");
     if (defaultModel?.length !== 2) {
       return res
         .status(400)
@@ -81,7 +81,7 @@ router.post("/chat", async (req, res) => {
         );
     }
 
-    const chatModel = aigne?.chatModel?.model?.split(":")?.join("/");
+    const chatModel = aigne?.model?.model?.split(":")?.join("/");
     logger.info("chatModel", chatModel);
 
     const model = new AIGNEHubChatModel({ model: chatModel });

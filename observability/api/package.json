@@ -1,6 +1,6 @@
 {
   "name": "@aigne/observability-api",
-  "version": "0.10.2",
+  "version": "0.10.4",
   "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -120,6 +120,7 @@
     "drizzle-orm": "^0.44.2",
     "express": "^5.1.0",
     "express-sse": "^1.0.0",
+    "mime": "^4.0.7",
     "terminal-link": "^4.0.0",
     "ufo": "^1.6.1",
     "uuid": "^11.1.0",

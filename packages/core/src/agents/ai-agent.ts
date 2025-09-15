@@ -40,13 +40,6 @@ export const DEFAULT_FILE_OUTPUT_KEY = "files";
 export interface AIAgentOptions<I extends Message = Message, O extends Message = Message>
   extends AgentOptions<I, O> {
   /**
-   * The language model to use for this agent
-   *
-   * If not provided, the agent will use the model from the context
-   */
-  model?: ChatModel;
-
-  /**
    * Instructions to guide the AI model's behavior
    *
    * Can be a simple string or a full PromptBuilder instance for
@@ -267,7 +260,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     super(options);
     checkArguments("AIAgent", aiAgentOptionsSchema, options);
 
-    this.model = options.model;
     this.instructions =
       typeof options.instructions === "string"
         ? PromptBuilder.from(options.instructions)
@@ -298,13 +290,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       throw new Error("AIAgent requires either inputKey or instructions to be set");
     }
   }
-
-  /**
-   * The language model used by this agent
-   *
-   * If not set on the agent, the model from the context will be used
-   */
-  model?: ChatModel;
 
   /**
    * Instructions for the language model
@@ -422,7 +407,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    * @protected
    */
   async *process(input: I, options: AgentInvokeOptions): AgentProcessAsyncGenerator<O> {
-    const model = this.model ?? options.context.model;
+    const model = this.model || options.model || options.context.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
     const { toolAgents, ...modelInput } = await this.instructions.build({
@@ -444,7 +429,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     for (;;) {
       const modelOutput: ChatModelOutput = {};
 
-      let stream = await options.context.invoke(
+      let stream = await this.invokeChildAgent(
         model,
         { ...modelInput, messages: modelInput.messages.concat(toolCallMessages) },
         { ...options, streaming: true },
@@ -579,7 +564,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     options: AgentInvokeOptions,
     toolsMap: Map<string, Agent>,
   ): AgentProcessAsyncGenerator<O> {
-    const { toolCalls: [call] = [] } = await options.context.invoke(model, modelInput, {
+    const { toolCalls: [call] = [] } = await this.invokeChildAgent(model, modelInput, {
       ...options,
       streaming: false,
     });
@@ -591,7 +576,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     const tool = toolsMap.get(call.function.name);
     if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
-    const stream = await options.context.invoke(
+    const stream = await this.invokeChildAgent(
       tool,
       { ...call.function.arguments, ...input },
       { ...options, streaming: true, sourceAgent: this },

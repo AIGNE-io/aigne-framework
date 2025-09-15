@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+// Bun Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`aigne command should print help if no any subcommand 1`] = `
 [
@@ -17,14 +17,15 @@ exports[`aigne command should print help if no any subcommand 1`] = `
 aigne <command> [options]
 
 Commands:
-  aigne run [path]     Run AIGNE for the specified path
-  aigne test           Run tests in the specified agents directory
-  aigne create [path]  Create a new aigne project with agent config files
-  aigne serve-mcp      Serve the agents in the specified directory as a MCP server (streamable http)
-  aigne observe        Start the observability server
-  aigne doc-smith      Generate and maintain project docs — powered by agents.  [aliases: docsmith, doc]
-  aigne hub <command>  Manage AIGNE Hub connections
-  aigne deploy         Deploy an aigne application
+  aigne run [path] [entry-agent]  Run AIGNE for the specified path
+  aigne test                      Run tests in the specified agents directory
+  aigne create [path]             Create a new aigne project with agent config files
+  aigne serve-mcp                 Serve the agents in the specified directory as a MCP server (streamable http)
+  aigne observe                   Start the observability server
+  aigne doc-smith                 Generate and maintain project docs — powered by agents.  [aliases: docsmith, doc]
+  aigne web-smith                 Generate and maintain project website pages — powered by agents.  [aliases: websmith, web]
+  aigne hub <command>             Manage AIGNE Hub connections
+  aigne deploy                    Deploy an aigne application
 
 Options:
   -h, --help     Show help  [boolean]

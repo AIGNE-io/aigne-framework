@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { type Agent, AIGNE, type Message } from "@aigne/core";
+import type { Agent, AIGNE, Message } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
@@ -11,6 +11,7 @@ import type { CommandModule } from "yargs";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { runAgentWithAIGNE } from "../utils/run-with-aigne.js";
+import { safeLoadAIGNE } from "../utils/workers/load-aigne.js";
 import {
   type AgentRunCommonOptions,
   parseAgentInput,
@@ -26,6 +27,11 @@ const builtinApps = [
     describe: "Generate and maintain project docs — powered by agents.",
     aliases: ["docsmith", "doc"],
   },
+  {
+    name: "web-smith",
+    describe: "Generate and maintain project website pages — powered by agents.",
+    aliases: ["websmith", "web"],
+  },
 ];
 
 export function createAppCommands(): CommandModule[] {
@@ -34,7 +40,9 @@ export function createAppCommands(): CommandModule[] {
     describe: app.describe,
     aliases: app.aliases,
     builder: async (yargs) => {
-      const { aigne, dir, version, isCache } = await loadApplication({ name: app.name });
+      const { aigne, dir, version, isCache } = await loadApplication({
+        name: app.name,
+      });
 
       yargs
         .option("model", {
@@ -43,10 +51,20 @@ export function createAppCommands(): CommandModule[] {
             "Model to use for the application, example: openai:gpt-4.1 or google:gemini-2.5-flash",
         })
         .command(serveMcpCommandModule({ name: app.name, dir }))
-        .command(upgradeCommandModule({ name: app.name, dir, isLatest: !isCache, version }));
+        .command(
+          upgradeCommandModule({
+            name: app.name,
+            dir,
+            isLatest: !isCache,
+            version,
+          }),
+        );
 
       if (aigne.cli.chat) {
-        yargs.command({ ...agentCommandModule({ dir, agent: aigne.cli.chat }), command: "$0" });
+        yargs.command({
+          ...agentCommandModule({ dir, agent: aigne.cli.chat }),
+          command: "$0",
+        });
       }
 
       for (const agent of aigne.cli.agents) {
@@ -135,6 +153,8 @@ export const agentCommandModule = ({
       if (options.logLevel) logger.level = options.logLevel;
 
       await invokeCLIAgentFromDir({ dir, agent: agent.name, input: options });
+
+      process.exit(0);
     },
   };
 };
@@ -187,7 +207,7 @@ export async function loadApplication({
 
   let check = forceUpgrade ? undefined : await isInstallationAvailable(dir);
   if (check?.available) {
-    const aigne = await AIGNE.load(dir).catch((error) => {
+    const aigne = await safeLoadAIGNE(dir).catch((error) => {
       console.warn(`⚠️ Failed to load ${name}, trying to reinstall:`, error.message);
     });
     if (aigne) {
@@ -246,7 +266,7 @@ export async function loadApplication({
   ).run();
 
   return {
-    aigne: await AIGNE.load(dir),
+    aigne: await safeLoadAIGNE(dir),
     dir,
     version: result.version,
   };

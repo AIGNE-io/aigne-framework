@@ -25,11 +25,11 @@
     "logo.svg"
   ],
   "type": "module",
-  "main": "./src/list.tsx",
-  "module": "./src/list.tsx",
+  "main": "./src/list/index.tsx",
+  "module": "./src/list/index.tsx",
   "exports": {
     "./list": {
-      "default": "./src/list.tsx"
+      "default": "./src/list/index.tsx"
     },
     "./translations": {
       "default": "./src/locales/index.ts"

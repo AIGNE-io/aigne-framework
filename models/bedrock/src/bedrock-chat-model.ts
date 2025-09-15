@@ -45,12 +45,10 @@ export function extractLastJsonObject(text: string): string | null {
 
 const BEDROCK_DEFAULT_CHAT_MODEL = "us.amazon.nova-lite-v1:0";
 
-export interface BedrockChatModelOptions {
+export interface BedrockChatModelOptions extends ChatModelOptions {
   accessKeyId?: string;
   secretAccessKey?: string;
   region?: string;
-  model?: string;
-  modelOptions?: ChatModelOptions;
   clientOptions?: Partial<BedrockRuntimeClientConfig>;
 }
 
@@ -73,7 +71,7 @@ export const bedrockChatModelOptionsSchema = z.object({
 });
 
 export class BedrockChatModel extends ChatModel {
-  constructor(public options?: BedrockChatModelOptions) {
+  constructor(public override options?: BedrockChatModelOptions) {
     if (options) checkArguments("BedrockChatModel", bedrockChatModelOptionsSchema, options);
     super();
   }
@@ -116,7 +114,7 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
       secretAccessKey,
       region,
       apiKey: secretAccessKey,
-      model: this.modelOptions?.model ?? BEDROCK_DEFAULT_CHAT_MODEL,
+      model: this.options?.model ?? BEDROCK_DEFAULT_CHAT_MODEL,
     };
   }
 

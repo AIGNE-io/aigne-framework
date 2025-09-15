@@ -55,7 +55,7 @@ const OPENAI_CHAT_MODEL_CAPABILITIES: Record<string, Partial<OpenAIChatModelCapa
 /**
  * Configuration options for OpenAI Chat Model
  */
-export interface OpenAIChatModelOptions {
+export interface OpenAIChatModelOptions extends ChatModelOptions {
   /**
    * API key for OpenAI API
    *
@@ -69,18 +69,6 @@ export interface OpenAIChatModelOptions {
    * Useful for proxies or alternate endpoints
    */
   baseURL?: string;
-
-  /**
-   * OpenAI model to use
-   *
-   * Defaults to 'gpt-4o-mini'
-   */
-  model?: string;
-
-  /**
-   * Additional model options to control behavior
-   */
-  modelOptions?: ChatModelOptions;
 
   /**
    * Client options for OpenAI API
@@ -127,7 +115,7 @@ export const openAIChatModelOptionsSchema = z.object({
  * {@includeCode ../test/openai-chat-model.test.ts#example-openai-chat-model-stream}
  */
 export class OpenAIChatModel extends ChatModel {
-  constructor(public options?: OpenAIChatModelOptions) {
+  constructor(public override options?: OpenAIChatModelOptions) {
     super();
     if (options) checkArguments(this.name, openAIChatModelOptionsSchema, options);
 

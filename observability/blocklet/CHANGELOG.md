@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.13.4](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.13.3...blocklet-observability-v1.13.4) (2025-09-11)
+
+
+### Bug Fixes
+
+* add compatibility for incorrect file object input ([#477](https://github.com/AIGNE-io/aigne-framework/issues/477)) ([b8fa75d](https://github.com/AIGNE-io/aigne-framework/commit/b8fa75d28faeadaea76036838abbc5f2aae42aba))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.10.4
+
+## [1.13.3](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.13.2...blocklet-observability-v1.13.3) (2025-09-10)
+
+
+### Bug Fixes
+
+* **observability:** convert base64 image output into mekia kit image file ([#471](https://github.com/AIGNE-io/aigne-framework/issues/471)) ([ce05713](https://github.com/AIGNE-io/aigne-framework/commit/ce057131a2308eb73bbe49dff534749e68c268d9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.10.3
+
 ## [1.13.2](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.13.1...blocklet-observability-v1.13.2) (2025-09-05)
 
 

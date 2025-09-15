@@ -1,11 +1,11 @@
 {
   "name": "aigne-runtime",
   "private": true,
-  "version": "1.4.11",
+  "version": "1.4.15",
   "scripts": {
     "dev": "blocklet dev",
-    "lint": "tsc --noEmit && biome check",
-    "lint:fix": "biome check --write && pnpm run lint",
+    "lint": "tsc --noEmit && tsc -p tsconfig.api.json --noEmit && biome check",
+    "lint:fix": "biome check --write && npm run lint",
     "start": "cross-env NODE_ENV=development nodemon --exec tsx api/dev.ts -w api",
     "clean": "node scripts/build-clean.mjs",
     "bundle": "tsc --noEmit && npm run bundle:client && npm run bundle:api",

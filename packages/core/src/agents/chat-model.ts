@@ -30,6 +30,16 @@ const CHAT_MODEL_DEFAULT_RETRY_OPTIONS: Agent["retryOnError"] = {
 
 export class StructuredOutputError extends Error {}
 
+export interface ChatModelOptions
+  extends Omit<
+    AgentOptions<ChatModelInput, ChatModelOutput>,
+    "model" | "inputSchema" | "outputSchema"
+  > {
+  model?: string;
+
+  modelOptions?: Omit<ModelOptions, "model">;
+}
+
 /**
  * ChatModel is an abstract base class for interacting with Large Language Models (LLMs).
  *
@@ -56,10 +66,8 @@ export class StructuredOutputError extends Error {}
 export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
   override tag = "ChatModelAgent";
 
-  constructor(
-    options?: Omit<AgentOptions<ChatModelInput, ChatModelOutput>, "inputSchema" | "outputSchema">,
-  ) {
-    if (options) checkArguments("ChatModel", agentOptionsSchema, options);
+  constructor(public options?: ChatModelOptions) {
+    if (options) checkArguments("ChatModel", chatModelOptionsSchema, options);
 
     const retryOnError =
       options?.retryOnError === false
@@ -76,6 +84,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       inputSchema: chatModelInputSchema,
       outputSchema: chatModelOutputSchema,
       retryOnError,
+      model: undefined,
     });
   }
 
@@ -194,6 +203,23 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
                   path: undefined,
                   mimeType: item.mimeType || ChatModel.getMimeType(item.filename || item.path),
                 };
+              }
+
+              if (
+                (input.modelOptions?.preferFileInputType ||
+                  this.options?.modelOptions?.preferFileInputType) !== "url"
+              ) {
+                if (item.type === "url") {
+                  return {
+                    ...item,
+                    type: "file" as const,
+                    data: Buffer.from(
+                      await (await this.downloadFile(item.url)).arrayBuffer(),
+                    ).toString("base64"),
+                    url: undefined,
+                    mimeType: item.mimeType || ChatModel.getMimeType(item.filename || item.url),
+                  };
+                }
               }
 
               return item;
@@ -411,7 +437,7 @@ export interface ChatModelInput extends Message {
   /**
    * Model-specific configuration options
    */
-  modelOptions?: ChatModelOptions;
+  modelOptions?: ModelOptions;
 }
 
 /**
@@ -674,7 +700,7 @@ export type Modality = "text" | "image" | "audio";
  *
  * Contains various parameters for controlling model behavior, such as model name, temperature, etc.
  */
-export interface ChatModelOptions {
+export interface ModelOptions {
   /**
    * Model name or version
    */
@@ -706,9 +732,11 @@ export interface ChatModelOptions {
   parallelToolCalls?: boolean;
 
   modalities?: Modality[];
+
+  preferFileInputType?: "file" | "url";
 }
 
-const chatModelOptionsSchema = z.object({
+const modelOptionsSchema = z.object({
   model: z.string().optional(),
   temperature: z.number().optional(),
   topP: z.number().optional(),
@@ -718,12 +746,17 @@ const chatModelOptionsSchema = z.object({
   modalities: z.array(z.enum(["text", "image", "audio"])).optional(),
 });
 
+const chatModelOptionsSchema = agentOptionsSchema.extend({
+  model: z.string().optional(),
+  modelOptions: modelOptionsSchema.optional(),
+});
+
 const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({
   messages: z.array(chatModelInputMessageSchema),
   responseFormat: chatModelInputResponseFormatSchema.optional(),
   tools: z.array(chatModelInputToolSchema).optional(),
   toolChoice: chatModelInputToolChoiceSchema.optional(),
-  modelOptions: chatModelOptionsSchema.optional(),
+  modelOptions: modelOptionsSchema.optional(),
 });
 
 /**

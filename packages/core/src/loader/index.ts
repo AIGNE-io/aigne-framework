@@ -12,16 +12,10 @@ import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
-import {
-  flat,
-  isNonNullable,
-  isRecord,
-  type PromiseOrValue,
-  tryOrThrow,
-} from "../utils/type-utils.js";
+import { flat, isNonNullable, type PromiseOrValue, tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
-import { camelizeSchema, optionalize } from "./schema.js";
+import { camelizeSchema, chatModelSchema, imageModelSchema, optionalize } from "./schema.js";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
@@ -29,9 +23,7 @@ export interface LoadOptions {
   memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
   model?:
     | ChatModel
-    | ((
-        model?: z.infer<typeof aigneFileSchema>["chatModel"],
-      ) => PromiseOrValue<ChatModel | undefined>);
+    | ((model?: z.infer<typeof aigneFileSchema>["model"]) => PromiseOrValue<ChatModel | undefined>);
   imageModel?:
     | ImageModel
     | ((
@@ -66,8 +58,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
   return {
     ...aigne,
     rootDir,
-    model:
-      typeof options.model === "function" ? await options.model(aigne.chatModel) : options.model,
+    model: typeof options.model === "function" ? await options.model(aigne.model) : options.model,
     imageModel:
       typeof options.imageModel === "function"
         ? await options.imageModel(aigne.imageModel)
@@ -170,9 +161,20 @@ async function parseAgent(
         )
       : undefined;
 
+  const model =
+    agent.model && typeof options?.model === "function"
+      ? await options.model(agent.model)
+      : undefined;
+  const imageModel =
+    agent.imageModel && typeof options?.imageModel === "function"
+      ? await options.imageModel(agent.imageModel)
+      : undefined;
+
   const baseOptions: AgentOptions<any, any> = {
     ...agentOptions,
     ...agent,
+    model,
+    imageModel,
     skills,
     memory,
     hooks: [
@@ -263,38 +265,8 @@ const aigneFileSchema = camelizeSchema(
   z.object({
     name: optionalize(z.string()),
     description: optionalize(z.string()),
-    chatModel: z
-      .preprocess(
-        (v) => {
-          if (!isRecord(v)) return v;
-          return { ...v, model: v.model || `${v.provider || ""}:${v.name || ""}` };
-        },
-        optionalize(
-          z.union([
-            z.string(),
-            camelizeSchema(
-              z.object({
-                model: optionalize(z.string()),
-                temperature: optionalize(z.number().min(0).max(2)),
-                topP: optionalize(z.number().min(0)),
-                frequencyPenalty: optionalize(z.number().min(-2).max(2)),
-                presencePenalty: optionalize(z.number().min(-2).max(2)),
-              }),
-            ),
-          ]),
-        ),
-      )
-      .transform((v) => (typeof v === "string" ? { model: v } : v)),
-    imageModel: optionalize(
-      z.union([
-        z.string(),
-        camelizeSchema(
-          z.object({
-            model: optionalize(z.string()),
-          }),
-        ),
-      ]),
-    ).transform((v) => (typeof v === "string" ? { model: v } : v)),
+    model: optionalize(chatModelSchema),
+    imageModel: optionalize(imageModelSchema),
     agents: optionalize(z.array(z.string())),
     skills: optionalize(z.array(z.string())),
     mcpServer: optionalize(
@@ -328,7 +300,8 @@ export async function loadAIGNEFile(path: string): Promise<{
   );
 
   const aigne = tryOrThrow(
-    () => aigneFileSchema.parse(json),
+    () =>
+      aigneFileSchema.parse({ ...json, model: json.model || json.chatModel || json.chat_model }),
     (error) => new Error(`Failed to validate aigne.yaml from ${file}: ${error.message}`),
   );
 

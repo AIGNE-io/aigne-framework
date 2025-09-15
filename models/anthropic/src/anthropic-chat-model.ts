@@ -39,25 +39,13 @@ const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
 /**
  * Configuration options for Claude Chat Model
  */
-export interface AnthropicChatModelOptions {
+export interface AnthropicChatModelOptions extends ChatModelOptions {
   /**
    * API key for Anthropic's Claude API
    *
    * If not provided, will look for ANTHROPIC_API_KEY or CLAUDE_API_KEY in environment variables
    */
   apiKey?: string;
-
-  /**
-   * Claude model to use
-   *
-   * Defaults to 'claude-3-7-sonnet-latest'
-   */
-  model?: string;
-
-  /**
-   * Additional model options to control behavior
-   */
-  modelOptions?: ChatModelOptions;
 
   /**
    * Optional client options for the Anthropic SDK
@@ -102,7 +90,7 @@ export const claudeChatModelOptionsSchema = z.object({
  * {@includeCode ../test/anthropic-chat-model.test.ts#example-anthropic-chat-model-streaming-async-generator}
  */
 export class AnthropicChatModel extends ChatModel {
-  constructor(public options?: AnthropicChatModelOptions) {
+  constructor(public override options?: AnthropicChatModelOptions) {
     if (options) checkArguments("AnthropicChatModel", claudeChatModelOptionsSchema, options);
     super();
   }

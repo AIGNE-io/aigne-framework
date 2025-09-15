@@ -19,13 +19,49 @@ dotenv.config({ silent: true });
 const expressMiddlewareSchema =
   z.custom<(req: Request, res: Response, next: NextFunction) => void>();
 
+export interface FileData {
+  mimeType: string;
+  type: string;
+  data: string;
+}
+
+export interface ImageData {
+  base64: string;
+}
+
+function formatFn<T extends z.ZodTypeAny>(schema: T) {
+  return z
+    .function()
+    .args(z.array(schema))
+    .returns(z.promise(z.array(schema)))
+    .optional();
+}
+
 const startServerOptionsSchema = z.object({
   port: z.number().int().positive(),
   dbUrl: z.string().min(1),
   traceTreeMiddleware: z.array(expressMiddlewareSchema).optional(),
+  options: z
+    .object({
+      formatOutputFiles: formatFn(
+        z.object({
+          mimeType: z.string(),
+          type: z.string(),
+          data: z.string(),
+        }),
+      ),
+      formatOutputImages: formatFn(
+        z.object({
+          base64: z.string(),
+        }),
+      ),
+    })
+    .optional(),
 });
 
 export type StartServerOptions = z.infer<typeof startServerOptionsSchema>;
+
+const MAX_REQUEST_BODY_SIZE = process.env.MAX_REQUEST_BODY_SIZE || "30 mb";
 
 export async function startServer(
   options: StartServerOptions,
@@ -45,14 +81,17 @@ export async function startServer(
   app.set("trust proxy", true);
   // @ts-ignore
   app.use(cookieParser());
-  app.use(express.json({ limit: "1 mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "1 mb" }));
+
+  app.use(express.json({ limit: MAX_REQUEST_BODY_SIZE }));
+  app.use(express.urlencoded({ extended: true, limit: MAX_REQUEST_BODY_SIZE }));
+
   app.use(cors());
 
   app.get("/api/sse", sse.init);
   app.use(
     "/api/trace",
     traceRouter({
+      options: options.options,
       sse,
       middleware: Array.isArray(middleware) ? middleware : [middleware],
     }),

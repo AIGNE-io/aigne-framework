@@ -13,8 +13,8 @@ import {
   type ChatModelInputResponseFormat,
   type ChatModelInputTool,
   type ChatModelInputToolChoice,
-  type ChatModelOptions,
   fileUnionContentsSchema,
+  type ModelOptions,
 } from "../agents/chat-model.js";
 import { optionalize } from "../loader/schema.js";
 import type { Memory } from "../memory/memory.js";
@@ -339,7 +339,7 @@ export class PromptBuilder {
     }));
 
     let toolChoice: ChatModelInputToolChoice | undefined;
-    const modelOptions: ChatModelOptions = {};
+    const modelOptions: ModelOptions = {};
 
     // use manual choice if configured in the agent
     const manualChoice = options.agent?.toolChoice;

@@ -30,7 +30,27 @@ OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ### Start the Project
 
 ```bash
-aigne run
+aigne run --input "Hello, what can you help me with?"
+```
+
+use the following command to pipe input from the terminal:
+
+```bash
+echo "Hello, what can you help me with?" | aigne run
+```
+
+use the following command to start an interactive chat session:
+
+```bash
+aigne run --chat
+```
+
+help:
+
+```bash
+aigne run -h # show help of project
+
+aigne run chat -h # show help of agent
 ```
 
 ## Testing

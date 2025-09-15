@@ -87,7 +87,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
           const obj = JSON.parse(jsonPart);
           dataObjects.push(obj);
         } catch (e) {
-          console.warn("Failed to parse JSON:", jsonPart, e);
+          console.warn("Failed to parse JSON data object:", jsonPart, e);
         }
       }
     }

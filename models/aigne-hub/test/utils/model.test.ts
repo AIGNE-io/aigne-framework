@@ -125,7 +125,7 @@ describe("findImageModel", async () => {
       const result = findImageModel("OpenAI");
       expect(result.match).toBeDefined();
       expect(result.match?.name).toBe("OpenAIImageModel");
-      expect(result.all).toHaveLength(4);
+      expect(result.all).toHaveLength(5);
     });
 
     test("should find partial image model match", () => {
@@ -153,12 +153,12 @@ describe("findImageModel", async () => {
     test("should return undefined for non-matching provider", () => {
       const result = findImageModel("nonexistent");
       expect(result.match).toBeUndefined();
-      expect(result.all).toHaveLength(4);
+      expect(result.all).toHaveLength(5);
     });
 
     test("should return all available image models", () => {
       const result = findImageModel("any");
-      expect(result.all).toHaveLength(4);
+      expect(result.all).toHaveLength(5);
       expect(result.all).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ name: "OpenAIImageModel" }),

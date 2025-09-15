@@ -15,7 +15,7 @@ aigne run [path] [agent_name] [options]
 ### Arguments
 
 -   `[path]` (Optional): The path to the AIGNE project directory or a remote URL (e.g., a Git repository). If omitted, it defaults to the current directory (`.`).
--   `[agent_name]` (Optional): The specific agent to run from the project. If the project has a default `chat` agent defined in `aigne.yaml`, it will be used. Otherwise, you must specify which agent to run.
+-   `[agent_name]` (Optional): The specific agent to run from the project. If not specified, the CLI will use the `entry-agent` or the default `chat` agent defined in `aigne.yaml`, falling back to the first agent listed.
 
 ## How It Works
 
@@ -95,7 +95,7 @@ aigne run path/to/my-project translator
 You can run an agent directly from a Git repository or a tarball URL. The CLI handles downloading and caching the project in your home directory (`~/.aigne`).
 
 ```bash Run from a GitHub repository icon=lucide:github
-aigne run https://github.com/AIGNE-io/aigne-framework.git
+aigne run https://github.com/AIGNE-io/aigne-framework/tree/main/examples/default
 ```
 
 ### Running in Interactive Chat Mode

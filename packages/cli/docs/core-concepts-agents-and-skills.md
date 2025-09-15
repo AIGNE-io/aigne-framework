@@ -18,7 +18,7 @@ Agents are typically defined in `.yaml` files.
 
 Here is a basic example of a chat agent that is equipped with a code execution skill.
 
-```yaml agent.yaml icon=mdi:robot-outline
+```yaml chat.yaml icon=mdi:robot-outline
 name: chat
 description: Chat agent
 instructions: |
@@ -118,7 +118,6 @@ AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Sandbox-Skill: "3. Invokes skill with 
 AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Sandbox-Skill: "4. Executes code in a sandbox"
 AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Chat-Agent: "5. Returns { result: 12 }"
 AIGNE-Runtime.Chat-Agent -> User: "6. Formulates response: 'The result is 12.'"
-
 ```
 
 By separating the reasoning (Agent) from the execution (Skill), you can build powerful and extensible AI systems that are easy to maintain and upgrade.

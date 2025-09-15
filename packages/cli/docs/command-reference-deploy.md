@@ -14,14 +14,13 @@ aigne deploy --path <path-to-project> --endpoint <deploy-endpoint>
 
 ## Options
 
-| Option | Description | Required |
-| --- | --- | --- |
-| `--path <string>` | Specifies the path to the AIGNE project directory that contains the `aigne.yaml` file. | Yes |
-| `--endpoint <string>` | The URL of the Blocklet Server endpoint where the application will be deployed. | Yes |
+<x-field data-name="--path" data-type="string" data-required="true" data-desc="Specifies the path to the AIGNE project directory that contains the aigne.yaml file."></x-field>
+
+<x-field data-name="--endpoint" data-type="string" data-required="true" data-desc="The URL of the Blocklet Server endpoint where the application will be deployed."></x-field>
 
 ## Deployment Process
 
-The `deploy` command automates several steps to ensure your agent is packaged correctly and deployed to the target environment. The process is designed to be interactive on the first run and non-interactive for subsequent updates.
+The `deploy` command automates several steps to package your agent correctly and deploy it to the target environment. The process is interactive on the first run for a given project and non-interactive for subsequent updates.
 
 ```d2 Deployment Workflow
 direction: down
@@ -30,13 +29,16 @@ Developer: {
   shape: c4-person 
 }
 
-AIGNE-Project: {
-  label: "Local AIGNE Project"
-  shape: rectangle
-}
-
 CLI: {
   label: "`aigne deploy`"
+  
+  task-1: { label: "1. Prepare Environment" }
+  task-2: { label: "2. Check Blocklet CLI" }
+  task-3: { label: "3. Configure Blocklet\n(Name & DID)" }
+  task-4: { label: "4. Bundle Project" }
+  task-5: { label: "5. Deploy to Server" }
+
+  task-1 -> task-2 -> task-3 -> task-4 -> task-5
 }
 
 Blocklet-Server: {
@@ -48,28 +50,27 @@ Deployed-Blocklet: {
   label: "Deployed Agent\n(as Blocklet)"
 }
 
-Developer -> CLI: "1. Run command with path & endpoint"
-CLI -> AIGNE-Project: "2. Prepare & package"
-CLI -> Blocklet-Server: "3. Deploy bundle"
-Blocklet-Server -> Deployed-Blocklet: "4. Host agent"
+Developer -> CLI: "Run command with path & endpoint"
+CLI.task-5 -> Blocklet-Server: "Upload bundle"
+Blocklet-Server -> Deployed-Blocklet: "Host agent"
 ```
 
 Here is a step-by-step breakdown of what happens when you run the command:
 
-1.  **Environment Preparation**: A temporary `.deploy` directory is created in your project root. The command copies your agent's source files and a standard Blocklet template into this directory.
+1.  **Environment Preparation**: A temporary `.deploy` directory is created in your project root. The command copies your agent's source files and a standard Blocklet template into this directory to prepare for packaging.
 
-2.  **Dependency Installation**: It runs `npm install` within the temporary directory to fetch all necessary dependencies listed in your project's `package.json`.
+2.  **Dependency Installation**: If a `package.json` file is present, it runs `npm install` within the temporary directory to fetch all necessary dependencies.
 
 3.  **Blocklet CLI Check**: The command verifies that the `@blocklet/cli` is installed globally. If it's missing, you will be prompted to install it automatically, as it is required for packaging and deploying Blocklets.
 
 4.  **Configuration (First-Time Deploy)**: On the first deployment of a project, the CLI will guide you through a brief interactive setup:
     *   **Blocklet Name**: You will be asked to provide a name for your Blocklet. It suggests a default based on the `name` field in your `aigne.yaml` or the project's directory name.
-    *   **DID Generation**: A new Decentralized Identifier (DID) is automatically generated for your Blocklet, giving it a unique, verifiable identity.
-    *   This configuration (name and DID) is saved locally in `~/.aigne/deployed.yaml`. For subsequent deployments of the same project, these saved values will be used, making the process non-interactive.
+    *   **DID Generation**: A new Decentralized Identifier (DID) is automatically generated for your Blocklet using `blocklet create --did-only`, giving it a unique, verifiable identity.
+    *   This configuration (name and DID) is saved locally in `~/.aigne/deployed.yaml`. For subsequent deployments of the same project, these saved values are used automatically, making the process non-interactive.
 
 5.  **Bundling**: The CLI executes `blocklet bundle --create-release` to package all your application files into a single, deployable artifact.
 
-6.  **Deployment**: The final bundle is uploaded to the `--endpoint` you specified.
+6.  **Deployment**: The final bundle is uploaded to the `--endpoint` you specified using `blocklet deploy`.
 
 7.  **Cleanup**: After a successful deployment, the temporary `.deploy` directory is automatically removed.
 

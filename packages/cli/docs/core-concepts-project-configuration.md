@@ -16,8 +16,8 @@ Let's break down the primary sections you'll find in a typical `aigne.yaml` file
 
 These fields provide basic information about your project.
 
-- `name`: A unique identifier for your project.
-- `description`: A brief summary of what your project does.
+<x-field data-name="name" data-type="string" data-required="true" data-desc="A unique identifier for your project."></x-field>
+<x-field data-name="description" data-type="string" data-required="false" data-desc="A brief summary of what your project does."></x-field>
 
 ```yaml aigne.yaml icon=mdi:file-document
 name: test_aigne_project

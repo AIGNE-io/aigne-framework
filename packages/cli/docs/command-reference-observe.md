@@ -4,9 +4,7 @@ labels: ["Reference"]
 
 # aigne observe
 
-The `aigne observe` command launches a local web server designed for monitoring and analyzing agent execution data. It provides a user-friendly interface to inspect traces, view detailed call information, and understand the behavior of your agents during their runs.
-
-This tool is essential for debugging, performance tuning, and gaining deep insights into how your agents process information and interact with various tools and models.
+The `aigne observe` command launches a local web server for monitoring and analyzing agent execution data. It provides a user-friendly interface to inspect traces, view detailed call information, and understand your agents' behavior during runs. This tool is essential for debugging, performance tuning, and gaining deep insights into how your agents process information and interact with various tools and models.
 
 ## Usage
 
@@ -22,7 +20,7 @@ Upon starting, the CLI will print the server URL and the path to the local obser
 
 ## How It Works
 
-The `observe` command spins up a web application that reads from a local SQLite database where AIGNE stores all execution traces. Each time you run an agent (using `aigne run` or `aigne serve-mcp`), the framework automatically records detailed logs of the execution flow, which then become available for inspection in the observability UI.
+The `observe` command starts a web application that reads from a local SQLite database where AIGNE stores all execution traces. Each time you run an agent (using `aigne run` or `aigne serve-mcp`), the framework automatically records detailed logs of the execution flow. These logs then become available for inspection in the observability UI.
 
 The UI allows you to browse a list of all recorded traces and drill down into specific ones to see a step-by-step breakdown of the agent's operations, including inputs, outputs, tool calls, and model responses.
 
@@ -30,18 +28,14 @@ The UI allows you to browse a list of all recorded traces and drill down into sp
 
 ## Options
 
-The `observe` command accepts the following options to customize its behavior:
-
-| Option   | Description                                                                                                                           | Default                                                              |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `--host` | Specifies the host address for the server. Use `0.0.0.0` to expose the server to other devices on your local network.                 | `localhost`                                                          |
-| `--port` | Sets the port number for the server to listen on. If the specified port is unavailable, it will attempt to find the next available one. | `7890` (Can be overridden by the `PORT` environment variable)        |
+<x-field data-name="--host" data-type="string" data-default="localhost" data-desc="Specifies the host address for the server. Use `0.0.0.0` to expose the server to other devices on your local network."></x-field>
+<x-field data-name="--port" data-type="number" data-default="7890" data-desc="Sets the port number for the server to listen on. If the specified port is unavailable, it will attempt to find the next available one. Can also be set via the `PORT` environment variable."></x-field>
 
 ## Examples
 
 ### Start the server on the default port
 
-Running the command without any options will start the server with the default settings.
+Running the command without any options starts the server with the default settings.
 
 ```bash Start with default settings icon=lucide:play
 aigne observe
@@ -64,7 +58,7 @@ Use the `--port` option to specify a different port.
 aigne observe --port 8080
 ```
 
-This will start the server on `http://localhost:8080`.
+This will start the server on `http://localhost:8080` (or the next available port if 8080 is in use).
 
 ### Expose the server to your local network
 

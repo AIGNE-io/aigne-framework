@@ -4,11 +4,11 @@ labels: ["Reference"]
 
 # aigne test
 
-The `aigne test` command executes automated tests for your agents and skills, providing a built-in mechanism for unit and integration testing. This ensures that your agents and the tools they rely on function correctly before deployment.
+The `aigne test` command executes automated tests for your agents and skills. It provides a built-in mechanism for unit and integration testing to ensure your agents and the tools they rely on function correctly before deployment.
 
 ## Usage
 
-```bash Basic Syntax
+```bash Basic Syntax icon=lucide:terminal
 aigne test [path]
 ```
 
@@ -20,7 +20,7 @@ aigne test [path]
 
 ## Description
 
-The command automatically discovers and runs test files within your project. For example, the default AIGNE project template includes a `sandbox.test.js` file designed to verify the functionality of the `sandbox.js` skill. `aigne test` will execute such files to validate your agent's capabilities.
+The command automatically discovers and runs test files within your project. For instance, the default AIGNE project template includes a `sandbox.test.js` file designed to verify the functionality of the `sandbox.js` skill. The `aigne test` command will execute such files to validate your agent's capabilities.
 
 ## Examples
 
@@ -44,7 +44,7 @@ aigne test path/to/agents
 
 ## Next Steps
 
-After ensuring your agents pass all tests, you can proceed to deploy them or integrate them into larger systems.
+After ensuring your agents pass all tests, you can proceed to serve them for integration or deploy them as a service.
 
 <x-cards>
   <x-card data-title="aigne serve-mcp" data-icon="lucide:server" data-href="/command-reference/serve-mcp">

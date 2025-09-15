@@ -69,3 +69,5 @@ sourcesPath:  # Source code paths to analyze
 lastGitHead: 0e78e6bd2f5602448e8558f363e6b68d6a873108
 appUrl: https://docsmith.aigne.io
 boardId: "aigne-cli"
+# Checkout ID for document deployment service
+checkoutId: ""

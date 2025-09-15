@@ -14,48 +14,44 @@ aigne create [path]
 
 ## Arguments
 
-| Argument | Description                                                                                                       | Default |
-| :------- | :---------------------------------------------------------------------------------------------------------------- | :------ |
-| `[path]` | The path where the new project directory will be created. If omitted, it defaults to the current directory and triggers interactive mode. | `.`     |
+<x-field data-name="path" data-type="string" data-default="." data-required="false" data-desc="The path where the new project directory will be created. If omitted, it defaults to the current directory and triggers an interactive mode to prompt for the project name."></x-field>
 
 ## Interactive Mode
 
-If you run `aigne create` without specifying a path, or by using `.` for the current directory, the CLI will enter an interactive mode to guide you through the setup process. You will be prompted for the following information:
+If you run `aigne create` without specifying a path, or by using `.` for the current directory, the CLI enters an interactive mode to guide you through the setup process. You will be prompted for the following information:
 
 *   **Project name**: The name for your new project directory.
-*   **Template**: The project template to use (currently supports `default`).
+*   **Template**: The project template to use. Currently, only a `default` template is available.
 
 ![Interactive prompt for project name](../assets/create/create-project-interactive-project-name-prompt.png)
 
 ### Overwrite Confirmation
 
-For safety, if the target directory already exists and is not empty, the CLI will ask for your confirmation before proceeding. If you choose not to proceed, the operation will be safely cancelled.
+For safety, if the target directory already exists and is not empty, the CLI will ask for your confirmation before proceeding to remove its contents. If you choose not to proceed, the operation will be safely cancelled.
 
-```text
+```text Confirmation Prompt
 ? The directory "/path/to/my-aigne-project" is not empty. Do you want to remove its contents? (y/N)
 ```
 
 ## Examples
 
-### Creating a Project Interactively
+### Create a Project Interactively
 
-To be guided through the creation process, run the command without any arguments.
+To be guided through the creation process, run the command without any arguments. The CLI will prompt you for a project name.
 
 ```bash Create in the current directory icon=lucide:terminal
 aigne create
 ```
 
-This will start the interactive wizard, prompting you for the project name and template.
+### Create a Project in a Specific Directory
 
-### Creating a Project in a Specific Directory
-
-To create a project in a new directory named `my-awesome-agent` in the current location, provide it as an argument.
+To create a project in a new directory named `my-awesome-agent`, provide the name as an argument.
 
 ```bash Create in a new 'my-awesome-agent' directory icon=lucide:terminal
 aigne create my-awesome-agent
 ```
 
-This command creates the new directory and scaffolds the project inside it. You will still be prompted to select a template.
+This command creates the `my-awesome-agent` directory and scaffolds the project inside it. You will still be prompted to select a template.
 
 ## Successful Output
 

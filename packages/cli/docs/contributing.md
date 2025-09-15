@@ -37,7 +37,7 @@ All development commands for the CLI should be run from within its package direc
 
 ### Building the Code
 
-To compile the TypeScript source code into JavaScript, run the build command. This uses the `tsconfig.build.json` configuration and outputs the compiled files to the `dist/` directory.
+To compile the TypeScript source code from `src/` into JavaScript in the `dist/` directory, run the build command. This process is configured by `tsconfig.build.json`.
 
 ```bash Build Command icon=lucide:hammer
 bun run build
@@ -55,12 +55,12 @@ bun run lint
 
 We have a comprehensive test suite to ensure the CLI functions correctly. The following scripts are available for testing:
 
-| Command | Description |
-|---|---|
-| `bun run test` | Executes the complete test suite, including tests for the CLI source (`test:src`) and the project templates (`test:templates`). |
-| `bun run test:src` | Runs only the unit and integration tests for the CLI's core functionality. |
-| `bun run test:templates` | Runs tests specifically for the project templates scaffolded by `aigne create`. |
-| `bun run test:coverage` | Runs the entire test suite and generates a code coverage report. |
+| Command                 | Description                                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run test`            | Executes the complete test suite, including tests for the CLI source (`test:src`) and the project templates (`test:templates`).   |
+| `bun run test:src`        | Runs only the unit and integration tests for the CLI's core functionality.                                                      |
+| `bun run test:templates`  | Runs tests specifically for the project templates scaffolded by `aigne create`.                                                   |
+| `bun run test:coverage`   | Runs the entire test suite and generates a code coverage report.                                                                |
 
 It's important to ensure all tests pass before submitting a pull request.
 
@@ -77,6 +77,6 @@ Once you've made your changes and verified them with the build and test scripts,
 3.  **Commit your changes** with a clear and descriptive commit message.
 4.  **Push your branch** to your fork: `git push origin your-feature-name`.
 5.  **Open a pull request** from your fork to the `main` branch of the `AIGNE-io/aigne-framework` repository.
-6.  **Provide a detailed description** of your changes in the pull request, referencing any related issues from the issue tracker.
+6.  **Provide a detailed description** of your changes in the pull request, referencing any related issues from the [issue tracker](https://github.com/AIGNE-io/aigne-framework/issues).
 
 We'll review your contribution as soon as possible. Thank you for helping us improve AIGNE!

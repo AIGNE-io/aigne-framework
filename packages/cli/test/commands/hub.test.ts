@@ -23,7 +23,7 @@ describe("hub command", () => {
         email: "test@test.com",
         did: "z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ",
       },
-      creditBalance: { balance: 100, total: 100 },
+      creditBalance: { balance: 10, total: 1000 },
       paymentLink: "https://test.com",
       profileLink: "https://test.com/profile",
       enableCredit: true,
@@ -63,12 +63,6 @@ describe("hub command", () => {
     test("should handle status command", async () => {
       const command = yargs().command(createHubCommand());
       await command.parseAsync(["hub", "status"]);
-    });
-
-    test("should handle info command", async () => {
-      mockInquirerPrompt.mockResolvedValue({ hubApiKey: "https://hub.aigne.io/ai-kit" });
-      const command = yargs().command(createHubCommand());
-      await command.parseAsync(["hub", "info"]);
     });
 
     test("should handle remove command", async () => {
@@ -111,11 +105,6 @@ describe("hub command", () => {
       const command = yargs().command(createHubCommand());
       await command.parseAsync(["hub", "list"]);
     });
-
-    test("should show status when no active hub", async () => {
-      const command = yargs().command(createHubCommand());
-      await command.parseAsync(["hub", "status"]);
-    });
   });
 
   describe("hub command with existing configuration", () => {
@@ -141,11 +130,6 @@ describe("hub command", () => {
     test("should list existing hubs", async () => {
       const command = yargs().command(createHubCommand());
       await command.parseAsync(["hub", "list"]);
-    });
-
-    test("should show current status", async () => {
-      const command = yargs().command(createHubCommand());
-      await command.parseAsync(["hub", "status"]);
     });
 
     test("should allow switching between hubs", async () => {
@@ -175,13 +159,13 @@ describe("hub command", () => {
       expect(mockInquirerPrompt).toHaveBeenCalled();
     });
 
-    test("should show hub info", async () => {
+    test("should show hub status", async () => {
       mockInquirerPrompt.mockResolvedValue({
         hubApiKey: "https://hub.aigne.io/ai-kit",
       });
 
       const command = yargs().command(createHubCommand());
-      await command.parseAsync(["hub", "info"]);
+      await command.parseAsync(["hub", "status"]);
 
       expect(mockInquirerPrompt).toHaveBeenCalled();
     });
@@ -195,11 +179,6 @@ describe("hub command", () => {
     test("should list existing hubs", async () => {
       const command = yargs().command(createHubCommand());
       await command.parseAsync(["hub", "list"]);
-    });
-
-    test("should show current status", async () => {
-      const command = yargs().command(createHubCommand());
-      await command.parseAsync(["hub", "status"]);
     });
 
     test("should allow switching between hubs", async () => {
@@ -220,13 +199,13 @@ describe("hub command", () => {
       await command.parseAsync(["hub", "remove"]);
     });
 
-    test("should show hub info", async () => {
+    test("should show hub status", async () => {
       mockInquirerPrompt.mockResolvedValue({
         hubApiKey: "https://hub.aigne.io/ai-kit",
       });
 
       const command = yargs().command(createHubCommand());
-      await command.parseAsync(["hub", "info"]);
+      await command.parseAsync(["hub", "status"]);
     });
   });
 });

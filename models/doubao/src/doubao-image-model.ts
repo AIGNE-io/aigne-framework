@@ -115,7 +115,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
         "responseFormat",
         "watermark",
       ],
-      "doubao-seedream-3.0-t2i": [
+      "doubao-seedream-3-0-t2i": [
         "model",
         "prompt",
         "size",
@@ -124,7 +124,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
         "responseFormat",
         "watermark",
       ],
-      "doubao-seededit-3.0-i2i": [
+      "doubao-seededit-3-0-i2i": [
         "model",
         "prompt",
         "image",

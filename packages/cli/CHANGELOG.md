@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.48.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.47.1...cli-v1.48.0) (2025-09-16)
+
+
+### Features
+
+* **cli:** support using beta apps with environments ([#511](https://github.com/AIGNE-io/aigne-framework/issues/511)) ([141b11a](https://github.com/AIGNE-io/aigne-framework/commit/141b11a7757f8a441489c9e7ab5e10df1fafe26f))
+
+
+### Bug Fixes
+
+* **cli:** tune aigne hub status and deprecate aigne hub info ([#513](https://github.com/AIGNE-io/aigne-framework/issues/513)) ([25ca2a9](https://github.com/AIGNE-io/aigne-framework/commit/25ca2a9c402e9cb2d895737c32e25e957fdefd91))
+
 ## [1.47.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.47.0...cli-v1.47.1) (2025-09-16)
 
 

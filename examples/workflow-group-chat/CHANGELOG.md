@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.17.17](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.16...example-workflow-group-chat-v1.17.17) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.0
+
 ## [1.17.16](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.15...example-workflow-group-chat-v1.17.16) (2025-09-16)
 
 

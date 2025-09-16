@@ -29,6 +29,10 @@ const formatNumber = (balance: string) => {
   return chalk.yellow((balanceNum || "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 };
 
+function formatHubInfoName(name: string) {
+  return chalk.bold(`${name}:`.padEnd(10));
+}
+
 function printHubStatus(data: {
   hub: string;
   status: string;
@@ -64,24 +68,24 @@ function printHubStatus(data: {
   console.log("");
 
   console.log(chalk.bold("User:"));
-  console.log(`  ${chalk.bold("Name:".padEnd(8))} ${data.user.name}`);
-  console.log(`  ${chalk.bold("DID:".padEnd(8))} ${data.user.did}`);
-  console.log(`  ${chalk.bold("Email:".padEnd(8))} ${data.user.email}`);
+  console.log(`  ${formatHubInfoName("Name")} ${data.user.name}`);
+  console.log(`  ${formatHubInfoName("DID")} ${data.user.did}`);
+  console.log(`  ${formatHubInfoName("Email")} ${data.user.email}`);
   console.log("");
 
   if (data.enableCredit) {
     console.log(chalk.bold("Credits:"));
-    console.log(`  ${chalk.bold("Total:".padEnd(8))} ${formatNumber(data.credits.total)}`);
-    console.log(`  ${chalk.bold("Used:".padEnd(8))} ${formatNumber(data.credits.used)}`);
-    console.log(`  ${chalk.bold("Available:".padEnd(8))} ${formatNumber(data.credits.available)}`);
+    console.log(`  ${formatHubInfoName("Total")} ${formatNumber(data.credits.total)}`);
+    console.log(`  ${formatHubInfoName("Used")} ${formatNumber(data.credits.used)}`);
+    console.log(`  ${formatHubInfoName("Available")} ${formatNumber(data.credits.available)}`);
     console.log("");
 
     console.log(chalk.bold("Links:"));
     if (data.links.payment) {
-      console.log(`  ${chalk.bold("Payment:".padEnd(8))} ${data.links.payment}`);
+      console.log(`  ${formatHubInfoName("Payment")} ${data.links.payment}`);
     }
     if (data.links.profile) {
-      console.log(`  ${chalk.bold("Profile:".padEnd(8))} ${data.links.profile}`);
+      console.log(`  ${formatHubInfoName("Profile")} ${data.links.profile}`);
     }
   }
 }

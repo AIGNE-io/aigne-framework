@@ -85,7 +85,7 @@ function printHubStatus(data: {
       console.log(`  ${formatHubInfoName("Payment")} ${data.links.payment}`);
     }
     if (data.links.profile) {
-      console.log(`  ${formatHubInfoName("Profile")} ${data.links.profile}`);
+      console.log(`  ${formatHubInfoName("Credits")} ${data.links.profile}`);
     }
   }
 }

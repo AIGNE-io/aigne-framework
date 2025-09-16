@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.3...aigne-hub-v0.9.4) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/doubao bumped to 1.0.39
+
 ## [0.9.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.2...aigne-hub-v0.9.3) (2025-09-11)
 
 

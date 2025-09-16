@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.16.57](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-github-v1.16.56...example-mcp-github-v1.16.57) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.1
+
 ## [1.16.56](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-github-v1.16.55...example-mcp-github-v1.16.56) (2025-09-14)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.39](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.38...doubao-v1.0.39) (2025-09-16)
+
+
+### Bug Fixes
+
+* release new version ([#509](https://github.com/AIGNE-io/aigne-framework/issues/509)) ([822ccd2](https://github.com/AIGNE-io/aigne-framework/commit/822ccd2c374cdcef187066e102dc79230e2eebff))
+
 ## [1.0.38](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.37...doubao-v1.0.38) (2025-09-11)
 
 

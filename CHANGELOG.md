@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.77.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.77.0...aigne-framework-v1.77.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* release new version ([#509](https://github.com/AIGNE-io/aigne-framework/issues/509)) ([822ccd2](https://github.com/AIGNE-io/aigne-framework/commit/822ccd2c374cdcef187066e102dc79230e2eebff))
+
 ## [1.77.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.76.2...aigne-framework-v1.77.0) (2025-09-14)
 
 

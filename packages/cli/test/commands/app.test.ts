@@ -387,20 +387,23 @@ test("beta version support should work with AIGNE_USE_BETA_APPS environment vari
   // Mock fetch to return package info with beta version
   const mockFetch = mock().mockResolvedValue({
     ok: true,
-    json: () => Promise.resolve({
-      "dist-tags": {
-        latest: "1.0.0",
-        beta: "1.1.0-beta.1"
-      },
-      versions: {
-        "1.0.0": {
-          dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz" }
+    json: () =>
+      Promise.resolve({
+        "dist-tags": {
+          latest: "1.0.0",
+          beta: "1.1.0-beta.1",
         },
-        "1.1.0-beta.1": {
-          dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.1.0-beta.1.tgz" }
-        }
-      }
-    })
+        versions: {
+          "1.0.0": {
+            dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz" },
+          },
+          "1.1.0-beta.1": {
+            dist: {
+              tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.1.0-beta.1.tgz",
+            },
+          },
+        },
+      }),
   });
 
   global.fetch = mockFetch as any;
@@ -437,17 +440,18 @@ test("beta version support should fallback to latest when no beta available", as
   // Mock fetch to return package info without beta version
   const mockFetch = mock().mockResolvedValue({
     ok: true,
-    json: () => Promise.resolve({
-      "dist-tags": {
-        latest: "1.0.0"
-        // No beta tag
-      },
-      versions: {
-        "1.0.0": {
-          dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz" }
-        }
-      }
-    })
+    json: () =>
+      Promise.resolve({
+        "dist-tags": {
+          latest: "1.0.0",
+          // No beta tag
+        },
+        versions: {
+          "1.0.0": {
+            dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz" },
+          },
+        },
+      }),
   });
 
   global.fetch = mockFetch as any;

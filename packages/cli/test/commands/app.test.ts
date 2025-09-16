@@ -382,3 +382,85 @@ test("loadApplication should load doc-smith correctly", async () => {
 
   await fs.rm(tmp, { recursive: true, force: true });
 }, 60e3);
+
+test("beta version support should work with AIGNE_USE_BETA_APPS environment variable", async () => {
+  // Mock fetch to return package info with beta version
+  const mockFetch = mock().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve({
+      "dist-tags": {
+        latest: "1.0.0",
+        beta: "1.1.0-beta.1"
+      },
+      versions: {
+        "1.0.0": {
+          dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz" }
+        },
+        "1.1.0-beta.1": {
+          dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.1.0-beta.1.tgz" }
+        }
+      }
+    })
+  });
+
+  global.fetch = mockFetch as any;
+
+  // Test without beta flag - should use latest
+  delete process.env.AIGNE_USE_BETA_APPS;
+  const { getNpmTgzInfo } = await import("@aigne/cli/commands/app");
+  const latestInfo = await getNpmTgzInfo("@aigne/doc-smith");
+  expect(latestInfo.version).toBe("1.0.0");
+  expect(latestInfo.url).toContain("doc-smith-1.0.0.tgz");
+
+  // Test with beta flag set to "true" - should use beta
+  process.env.AIGNE_USE_BETA_APPS = "true";
+  // Need to reimport to pick up environment variable change
+  delete require.cache[require.resolve("@aigne/cli/commands/app")];
+  const { getNpmTgzInfo: getNpmTgzInfoBeta } = await import("@aigne/cli/commands/app");
+  const betaInfo = await getNpmTgzInfoBeta("@aigne/doc-smith");
+  expect(betaInfo.version).toBe("1.1.0-beta.1");
+  expect(betaInfo.url).toContain("doc-smith-1.1.0-beta.1.tgz");
+
+  // Test with beta flag set to "1" - should use beta
+  process.env.AIGNE_USE_BETA_APPS = "1";
+  delete require.cache[require.resolve("@aigne/cli/commands/app")];
+  const { getNpmTgzInfo: getNpmTgzInfoOne } = await import("@aigne/cli/commands/app");
+  const betaInfo2 = await getNpmTgzInfoOne("@aigne/doc-smith");
+  expect(betaInfo2.version).toBe("1.1.0-beta.1");
+
+  // Cleanup
+  delete process.env.AIGNE_USE_BETA_APPS;
+  mockFetch.mockRestore();
+});
+
+test("beta version support should fallback to latest when no beta available", async () => {
+  // Mock fetch to return package info without beta version
+  const mockFetch = mock().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve({
+      "dist-tags": {
+        latest: "1.0.0"
+        // No beta tag
+      },
+      versions: {
+        "1.0.0": {
+          dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz" }
+        }
+      }
+    })
+  });
+
+  global.fetch = mockFetch as any;
+
+  // Test with beta flag but no beta version available - should fallback to latest
+  process.env.AIGNE_USE_BETA_APPS = "true";
+  delete require.cache[require.resolve("@aigne/cli/commands/app")];
+  const { getNpmTgzInfo } = await import("@aigne/cli/commands/app");
+  const info = await getNpmTgzInfo("@aigne/doc-smith");
+  expect(info.version).toBe("1.0.0");
+  expect(info.url).toContain("doc-smith-1.0.0.tgz");
+
+  // Cleanup
+  delete process.env.AIGNE_USE_BETA_APPS;
+  mockFetch.mockRestore();
+});

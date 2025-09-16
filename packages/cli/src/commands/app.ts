@@ -21,6 +21,14 @@ import { serveMCPServerFromDir } from "./serve-mcp.js";
 
 const NPM_PACKAGE_CACHE_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
 
+/**
+ * Check if beta applications should be used based on environment variables
+ */
+function shouldUseBetaApps(): boolean {
+  const envVar = process.env.AIGNE_USE_BETA_APPS;
+  return envVar === "true" || envVar === "1";
+}
+
 const builtinApps = [
   {
     name: "doc-smith",
@@ -229,15 +237,27 @@ export async function loadApplication({
     [
       {
         title: `Fetching ${name} metadata`,
-        task: async (ctx) => {
+        task: async (ctx, task) => {
           const info = await getNpmTgzInfo(name);
           Object.assign(ctx, info);
+
+          // Update task title to show if beta version is being used
+          const useBeta = shouldUseBetaApps();
+          if (useBeta && ctx.version.includes("beta")) {
+            task.title = `Fetching ${name} metadata (using beta version)`;
+          }
         },
       },
       {
         title: `Downloading ${name}`,
         skip: (ctx) => ctx.version === check?.version,
-        task: async (ctx) => {
+        task: async (ctx, task) => {
+          // Update task title to show version being downloaded
+          const versionInfo = ctx.version.includes("beta")
+            ? ` (beta v${ctx.version})`
+            : ` (v${ctx.version})`;
+          task.title = `Downloading ${name}${versionInfo}`;
+
           await rm(dir, { force: true, recursive: true });
           await mkdir(dir, { recursive: true });
 
@@ -333,15 +353,26 @@ async function installDependencies(dir: string, { log }: { log?: (log: string) =
   );
 }
 
-async function getNpmTgzInfo(name: string) {
+export async function getNpmTgzInfo(name: string) {
   const res = await fetch(joinURL("https://registry.npmjs.org", name));
   if (!res.ok) throw new Error(`Failed to fetch package info for ${name}: ${res.statusText}`);
   const data = await res.json();
-  const latestVersion = data["dist-tags"].latest;
-  const url = data.versions[latestVersion].dist.tarball;
+
+  const useBeta = shouldUseBetaApps();
+  let targetVersion: string;
+
+  if (useBeta && data["dist-tags"].beta) {
+    // Use beta version if available and beta flag is set
+    targetVersion = data["dist-tags"].beta;
+  } else {
+    // Fall back to latest version
+    targetVersion = data["dist-tags"].latest;
+  }
+
+  const url = data.versions[targetVersion].dist.tarball;
 
   return {
-    version: latestVersion,
+    version: targetVersion,
     url,
   };
 }

@@ -241,7 +241,6 @@ export async function loadApplication({
           const info = await getNpmTgzInfo(name);
           Object.assign(ctx, info);
 
-          // Update task title to show if beta version is being used
           const useBeta = shouldUseBetaApps();
           if (useBeta && ctx.version.includes("beta")) {
             task.title = `Fetching ${name} metadata (using beta version)`;
@@ -252,11 +251,7 @@ export async function loadApplication({
         title: `Downloading ${name}`,
         skip: (ctx) => ctx.version === check?.version,
         task: async (ctx, task) => {
-          // Update task title to show version being downloaded
-          const versionInfo = ctx.version.includes("beta")
-            ? ` (beta v${ctx.version})`
-            : ` (v${ctx.version})`;
-          task.title = `Downloading ${name}${versionInfo}`;
+          task.title = `Downloading ${name}(v${ctx.version})`;
 
           await rm(dir, { force: true, recursive: true });
           await mkdir(dir, { recursive: true });

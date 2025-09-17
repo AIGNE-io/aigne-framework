@@ -63,6 +63,18 @@ export abstract class ImageModel<
     input: I,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<O>>;
+
+  protected async downloadFile(url: string) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      const text = await response.text().catch(() => null);
+      throw new Error(
+        `Failed to download content from ${url}, ${response.status} ${response.statusText} ${text}`,
+      );
+    }
+
+    return response;
+  }
 }
 
 export interface ImageModelInput extends Message {

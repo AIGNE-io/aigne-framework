@@ -79,6 +79,29 @@ export class AIGNEHubImageModel extends ImageModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
+    // Convert local image to base64
+    if (input.image) {
+      const images = Array.isArray(input.image) ? input.image : [input.image];
+      input.image = await Promise.all(
+        images.map(async (image) => {
+          if (image.startsWith("http")) {
+            try {
+              const response = await this.downloadFile(image);
+              const buffer = await response.arrayBuffer();
+              const mime = response.headers.get("content-type") || "image/png";
+              const base64 = Buffer.from(buffer).toString("base64");
+
+              return `data:${mime};base64,${base64}`;
+            } catch {
+              return image;
+            }
+          }
+
+          return image;
+        }),
+      );
+    }
+
     const response = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
       undefined,
       {

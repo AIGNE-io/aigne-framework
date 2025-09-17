@@ -18,7 +18,7 @@ export async function createHonoServer() {
   });
 
   honoApp.get("/api/access-key/session", async (c) => {
-    const requestCount = parseInt(c.req.header("X-Request-Count") || "0");
+    const requestCount = parseInt(c.req.header("X-Request-Count") || "0", 10);
     if (requestCount === 0) {
       return c.json({});
     } else {

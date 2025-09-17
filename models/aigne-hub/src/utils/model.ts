@@ -27,7 +27,7 @@ const getClientOptions = () => {
     "fetchOptions"
   > = {
     fetchOptions: {
-      // @ts-expect-error
+      // @ts-ignore
       agent: httpAgent,
     },
   };

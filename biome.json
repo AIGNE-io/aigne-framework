@@ -29,7 +29,8 @@
       "suspicious": {
         "noConfusingVoidType": "off",
         "noExplicitAny": "off",
-        "useIterableCallbackReturn": "off"
+        "useIterableCallbackReturn": "off",
+        "noTsIgnore": "off"
       },
       "complexity": {
         "noForEach": "off",

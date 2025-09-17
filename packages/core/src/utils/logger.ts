@@ -29,14 +29,14 @@ export class Logger {
     this.level = getLevelFromEnv(options.ns) || options.level;
 
     for (const logger of [this.debugLogger, this.infoLogger, this.warnLogger]) {
-      // @ts-ignore
+      // @ts-expect-error
       logger.useColors = nodejs.isStdoutATTY;
       logger.enabled = true;
       logger.log = (...args: unknown[]) => this.logMessage(...args);
     }
 
     this.errorLogger.log = (...args: unknown[]) => this.logError(...args);
-    // @ts-ignore
+    // @ts-expect-error
     this.errorLogger.useColors = nodejs.isStderrATTY;
     this.errorLogger.enabled = true;
   }

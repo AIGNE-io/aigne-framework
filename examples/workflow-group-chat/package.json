@@ -25,11 +25,11 @@
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
     "@aigne/openai": "workspace:^",
-    "inquirer": "^12.9.4",
+    "inquirer": "^12.9.6",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",
-    "@types/bun": "^1.2.18"
+    "@types/bun": "^1.2.22"
   }
 }

@@ -24,9 +24,9 @@
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
-    "@modelcontextprotocol/sdk": "^1.15.0",
+    "@modelcontextprotocol/sdk": "^1.18.0",
     "jsonwebtoken": "^9.0.2",
-    "open": "^10.1.2",
+    "open": "^10.2.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

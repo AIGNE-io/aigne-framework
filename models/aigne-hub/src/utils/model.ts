@@ -22,9 +22,12 @@ const getClientOptions = () => {
     .filter(Boolean)[0];
 
   const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
-  const clientOptions: OpenAIChatModelOptions["clientOptions"] = {
+  const clientOptions: Pick<
+    NonNullable<OpenAIChatModelOptions["clientOptions"]>,
+    "fetchOptions"
+  > = {
     fetchOptions: {
-      // @ts-ignore
+      // @ts-expect-error
       agent: httpAgent,
     },
   };

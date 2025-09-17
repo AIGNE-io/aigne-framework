@@ -532,7 +532,7 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     );
 
     type Reader = ReadableStreamDefaultReader<AgentResponseChunk<Message>>;
-    type ReaderResult = ReadableStreamReadResult<AgentResponseChunk<Message>>;
+    type ReaderResult = Partial<ReadableStreamReadResult<AgentResponseChunk<Message>>>;
 
     type Task = Promise<{ index: number; reader: Reader } & ReaderResult>;
 

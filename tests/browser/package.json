@@ -27,18 +27,18 @@
     "@aigne/default-memory": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/transport": "workspace:^",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.18",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.6.0",
+    "@types/bun": "^1.2.22",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.3",
     "detect-port": "^2.1.0",
-    "hono": "^4.8.4",
-    "playwright": "^1.54.0",
+    "hono": "^4.9.7",
+    "playwright": "^1.55.0",
     "rimraf": "^6.0.1",
-    "vite": "^7.0.4"
+    "vite": "^7.1.5"
   }
 }

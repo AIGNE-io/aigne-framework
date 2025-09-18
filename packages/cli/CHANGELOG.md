@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.48.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.0...cli-v1.48.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* use aigne hub model when aigne hub connected ([#516](https://github.com/AIGNE-io/aigne-framework/issues/516)) ([a0493d0](https://github.com/AIGNE-io/aigne-framework/commit/a0493d0ad453afd3c3734ee2730636c6bd1e08ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.45
+    * @aigne/agentic-memory bumped to 1.0.45
+    * @aigne/aigne-hub bumped to 0.9.5
+    * @aigne/core bumped to 1.60.3
+    * @aigne/default-memory bumped to 1.2.8
+    * @aigne/openai bumped to 0.15.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
 ## [1.48.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.47.1...cli-v1.48.0) (2025-09-16)
 
 

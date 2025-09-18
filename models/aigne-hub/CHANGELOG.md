@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.9.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.4...aigne-hub-v0.9.5) (2025-09-18)
+
+
+### Bug Fixes
+
+* **models:** convert local image to base64 for image model ([#517](https://github.com/AIGNE-io/aigne-framework/issues/517)) ([c0bc971](https://github.com/AIGNE-io/aigne-framework/commit/c0bc971087ef6e1caa641a699aed391a24feb40d))
+* **models:** convert local image to base64 for image model ([#517](https://github.com/AIGNE-io/aigne-framework/issues/517)) ([c0bc971](https://github.com/AIGNE-io/aigne-framework/commit/c0bc971087ef6e1caa641a699aed391a24feb40d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.13.4
+    * @aigne/bedrock bumped to 0.10.4
+    * @aigne/core bumped to 1.60.3
+    * @aigne/deepseek bumped to 0.7.45
+    * @aigne/doubao bumped to 1.0.40
+    * @aigne/gemini bumped to 0.13.4
+    * @aigne/ideogram bumped to 0.3.15
+    * @aigne/ollama bumped to 0.7.45
+    * @aigne/open-router bumped to 0.7.45
+    * @aigne/openai bumped to 0.15.4
+    * @aigne/poe bumped to 1.0.25
+    * @aigne/transport bumped to 0.15.8
+    * @aigne/xai bumped to 0.7.45
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
 ## [0.9.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.3...aigne-hub-v0.9.4) (2025-09-16)
 
 

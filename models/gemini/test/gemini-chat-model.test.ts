@@ -154,7 +154,7 @@ test("GeminiChatModel should reset last message role from system to user", async
     createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-2.txt") }),
   );
 
-  const _result = await model.invoke({
+  await model.invoke({
     messages: [
       {
         role: "system",
@@ -163,13 +163,80 @@ test("GeminiChatModel should reset last message role from system to user", async
     ],
   });
 
-  expect(create).toHaveBeenLastCalledWith(
-    expect.objectContaining({
-      messages: [
-        { role: "user", content: "This is a system message that should be treated as user input." },
-      ],
-    }),
+  expect(create.mock.lastCall?.[0].messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": "This is a system message that should be treated as user input.",
+        "name": undefined,
+        "role": "user",
+        "tool_call_id": undefined,
+        "tool_calls": undefined,
+      },
+    ]
+  `);
+
+  create.mockReturnValueOnce(
+    createMockEventStream({ path: join(import.meta.dirname, "gemini-streaming-response-3.txt") }),
   );
+
+  await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: "How is the weather today in New York?",
+      },
+      {
+        role: "agent",
+        toolCalls: [
+          {
+            id: "123",
+            type: "function",
+            function: { name: "get_current_weather", arguments: { location: "New York" } },
+          },
+        ],
+      },
+      {
+        role: "tool",
+        toolCallId: "123",
+        content: '{"temperature":20,"unit":"celsius","description":"Sunny"}',
+      },
+    ],
+  });
+
+  expect(create.mock.lastCall?.[0].messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": "How is the weather today in New York?",
+        "name": undefined,
+        "role": "user",
+        "tool_call_id": undefined,
+        "tool_calls": undefined,
+      },
+      {
+        "content": undefined,
+        "name": undefined,
+        "role": "assistant",
+        "tool_call_id": undefined,
+        "tool_calls": [
+          {
+            "function": {
+              "arguments": "{"location":"New York"}",
+              "name": "get_current_weather",
+            },
+            "id": "123",
+            "type": "function",
+          },
+        ],
+      },
+      {
+        "content": "{"temperature":20,"unit":"celsius","description":"Sunny"}",
+        "name": undefined,
+        "role": "tool",
+        "tool_call_id": "123",
+        "tool_calls": undefined,
+      },
+    ]
+  `);
 });
 
 test("GeminiChatModel should support image mode", async () => {

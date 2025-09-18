@@ -54,18 +54,18 @@
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/sqlite": "workspace:^",
-    "drizzle-orm": "^0.44.2",
+    "drizzle-orm": "^0.44.5",
     "fastq": "^1.19.1",
-    "jsonata": "^2.0.6",
+    "jsonata": "^2.1.0",
     "jsonschema": "^1.5.0",
-    "uuid": "^11.1.0",
-    "yaml": "^2.8.0",
+    "uuid": "^13.0.0",
+    "yaml": "^2.8.1",
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.18",
+    "@types/bun": "^1.2.22",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   }
 }

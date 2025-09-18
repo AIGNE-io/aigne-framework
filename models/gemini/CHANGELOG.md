@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.5](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.13.4...gemini-v0.13.5) (2025-09-18)
+
+
+### Bug Fixes
+
+* **gemini:** should include at least one user message ([#521](https://github.com/AIGNE-io/aigne-framework/issues/521)) ([eb2752e](https://github.com/AIGNE-io/aigne-framework/commit/eb2752ed7d78f59c435ecc3ccb7227e804e3781e))
+
 ## [0.13.4](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.13.3...gemini-v0.13.4) (2025-09-18)
 
 

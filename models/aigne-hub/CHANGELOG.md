@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.5...aigne-hub-v0.9.6) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/gemini bumped to 0.13.5
+
 ## [0.9.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.4...aigne-hub-v0.9.5) (2025-09-18)
 
 

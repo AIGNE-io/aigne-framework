@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.78.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.78.1...aigne-framework-v1.78.2) (2025-09-18)
+
+
+### Bug Fixes
+
+* correct flat import, remove default import error ([#519](https://github.com/AIGNE-io/aigne-framework/issues/519)) ([6e8fd30](https://github.com/AIGNE-io/aigne-framework/commit/6e8fd30b89be1300ab6214f13fd273e51e25329b))
+* correct flat import, remove default import error ([#519](https://github.com/AIGNE-io/aigne-framework/issues/519)) ([6e8fd30](https://github.com/AIGNE-io/aigne-framework/commit/6e8fd30b89be1300ab6214f13fd273e51e25329b))
+* **gemini:** should include at least one user message ([#521](https://github.com/AIGNE-io/aigne-framework/issues/521)) ([eb2752e](https://github.com/AIGNE-io/aigne-framework/commit/eb2752ed7d78f59c435ecc3ccb7227e804e3781e))
+
 ## [1.78.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.78.0...aigne-framework-v1.78.1) (2025-09-18)
 
 

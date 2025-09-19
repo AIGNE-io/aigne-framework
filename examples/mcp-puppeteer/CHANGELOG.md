@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.18.61](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.18.60...example-mcp-puppeteer-v1.18.61) (2025-09-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3
+
 ## [1.18.60](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.18.59...example-mcp-puppeteer-v1.18.60) (2025-09-18)
 
 

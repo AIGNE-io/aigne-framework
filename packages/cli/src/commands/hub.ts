@@ -24,9 +24,19 @@ interface AIGNEEnv {
   };
 }
 
-const formatNumber = (balance: string) => {
-  const balanceNum = String(balance).split(".")[0];
-  return chalk.yellow((balanceNum || "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+export const formatNumber = (balance: string) => {
+  const cleanNumber = String(balance).replace(/[^\d.-]/g, "");
+  const balanceNum = cleanNumber.split(".")[0];
+
+  if (!balanceNum) {
+    return "0";
+  }
+
+  return (balanceNum || "").trim().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+const formatNumberWithColor = (balance: string) => {
+  return chalk.yellow(formatNumber(balance));
 };
 
 function formatHubInfoName(name: string) {
@@ -75,9 +85,11 @@ function printHubStatus(data: {
 
   if (data.enableCredit) {
     console.log(chalk.bold("Credits:"));
-    console.log(`  ${formatHubInfoName("Total")} ${formatNumber(data.credits.total)}`);
-    console.log(`  ${formatHubInfoName("Used")} ${formatNumber(data.credits.used)}`);
-    console.log(`  ${formatHubInfoName("Available")} ${formatNumber(data.credits.available)}`);
+    console.log(`  ${formatHubInfoName("Total")} ${formatNumberWithColor(data.credits.total)}`);
+    console.log(`  ${formatHubInfoName("Used")} ${formatNumberWithColor(data.credits.used)}`);
+    console.log(
+      `  ${formatHubInfoName("Available")} ${formatNumberWithColor(data.credits.available)}`,
+    );
     console.log("");
 
     console.log(chalk.bold("Links:"));
@@ -374,13 +386,11 @@ async function printHubDetails(url: string) {
       email: userInfo?.user.email || "",
     },
     credits: {
-      available: formatNumber(userInfo?.creditBalance?.balance || "0"),
-      total: formatNumber(userInfo?.creditBalance?.total || "0"),
-      used: formatNumber(
-        String(
-          parseFloat(userInfo?.creditBalance?.total || "0") -
-            parseFloat(userInfo?.creditBalance?.balance || "0"),
-        ),
+      available: userInfo?.creditBalance?.balance || "0",
+      total: userInfo?.creditBalance?.total || "0",
+      used: String(
+        parseFloat(userInfo?.creditBalance?.total || "0") -
+          parseFloat(userInfo?.creditBalance?.balance || "0"),
       ),
     },
     links: {

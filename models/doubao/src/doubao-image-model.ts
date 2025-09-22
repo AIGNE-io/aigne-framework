@@ -164,6 +164,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
       ...snakelize(pick(mergeInput, map[key])),
       model,
       response_format: "b64_json",
+      watermark: mergeInput.watermark ?? false,
       image: image.length ? image : undefined,
     };
 

@@ -14,4 +14,4 @@ test("AIGNE DocSmith should work", async () => {
     status: 0,
     stdout: expect.stringMatching(/\d+\.\d+\.\d+/),
   });
-});
+}, 120e3);

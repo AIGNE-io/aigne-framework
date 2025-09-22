@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.15...ideogram-v0.4.0-beta) (2025-09-22)
+
+
+### Features
+
+* improve image model architecture and file handling ([#527](https://github.com/AIGNE-io/aigne-framework/issues/527)) ([4db50aa](https://github.com/AIGNE-io/aigne-framework/commit/4db50aa0387a1a0f045ca11aaa61613e36ca7597))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta
+
 ## [0.3.15](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.3.14...ideogram-v0.3.15) (2025-09-18)
 
 

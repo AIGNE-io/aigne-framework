@@ -1,6 +1,6 @@
 {
   "name": "@aigne/lmstudio",
-  "version": "1.0.14",
+  "version": "1.0.15-beta",
   "description": "AIGNE LM Studio model adapter for integrating with locally hosted AI models via LM Studio",
   "publishConfig": {
     "access": "public"

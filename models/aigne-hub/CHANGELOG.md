@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.10.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.6...aigne-hub-v0.10.0-beta) (2025-09-22)
+
+
+### Features
+
+* improve image model architecture and file handling ([#527](https://github.com/AIGNE-io/aigne-framework/issues/527)) ([4db50aa](https://github.com/AIGNE-io/aigne-framework/commit/4db50aa0387a1a0f045ca11aaa61613e36ca7597))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.13.5-beta
+    * @aigne/bedrock bumped to 0.10.5-beta
+    * @aigne/core bumped to 1.61.0-beta
+    * @aigne/deepseek bumped to 0.7.46-beta
+    * @aigne/doubao bumped to 1.1.0-beta
+    * @aigne/gemini bumped to 0.14.0-beta
+    * @aigne/ideogram bumped to 0.4.0-beta
+    * @aigne/ollama bumped to 0.7.46-beta
+    * @aigne/open-router bumped to 0.7.46-beta
+    * @aigne/openai bumped to 0.16.0-beta
+    * @aigne/platform-helpers bumped to 0.6.3-beta
+    * @aigne/poe bumped to 1.0.26-beta
+    * @aigne/transport bumped to 0.15.9-beta
+    * @aigne/xai bumped to 0.7.46-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta
+
 ## [0.9.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.5...aigne-hub-v0.9.6) (2025-09-18)
 
 

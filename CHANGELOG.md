@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.79.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.78.3...aigne-framework-v1.79.0-beta) (2025-09-22)
+
+
+### Features
+
+* improve image model architecture and file handling ([#527](https://github.com/AIGNE-io/aigne-framework/issues/527)) ([4db50aa](https://github.com/AIGNE-io/aigne-framework/commit/4db50aa0387a1a0f045ca11aaa61613e36ca7597))
+
+
+### Bug Fixes
+
+* resolve Windows file import URI issues ([#528](https://github.com/AIGNE-io/aigne-framework/issues/528)) ([bf807c5](https://github.com/AIGNE-io/aigne-framework/commit/bf807c5a3563c4423dc82fddff7fba280ef57957))
+
 ## [1.78.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.78.3-beta...aigne-framework-v1.78.3) (2025-09-22)
 
 ## [1.78.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.78.2...aigne-framework-v1.78.3-beta) (2025-09-22)

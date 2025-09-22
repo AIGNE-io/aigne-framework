@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.61.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.60.3...core-v1.61.0-beta) (2025-09-22)
+
+
+### Features
+
+* improve image model architecture and file handling ([#527](https://github.com/AIGNE-io/aigne-framework/issues/527)) ([4db50aa](https://github.com/AIGNE-io/aigne-framework/commit/4db50aa0387a1a0f045ca11aaa61613e36ca7597))
+
+
+### Bug Fixes
+
+* resolve Windows file import URI issues ([#528](https://github.com/AIGNE-io/aigne-framework/issues/528)) ([bf807c5](https://github.com/AIGNE-io/aigne-framework/commit/bf807c5a3563c4423dc82fddff7fba280ef57957))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/platform-helpers bumped to 0.6.3-beta
+
 ## [1.60.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.60.2...core-v1.60.3) (2025-09-18)
 
 

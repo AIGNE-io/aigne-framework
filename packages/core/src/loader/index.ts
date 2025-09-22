@@ -29,12 +29,9 @@ export interface LoadOptions {
     | ((
         model?: z.infer<typeof aigneFileSchema>["imageModel"],
       ) => PromiseOrValue<ImageModel | undefined>);
-  key?: string | number;
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
-  options.key ??= Date.now();
-
   const { aigne, rootDir } = await loadAIGNEFile(path);
 
   const allAgentPaths = new Set(
@@ -81,7 +78,7 @@ export async function loadAgent(
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
-    const agent = await loadAgentFromJsFile(path, options);
+    const agent = await loadAgentFromJsFile(path);
     if (agent instanceof Agent) return agent;
     return parseAgent(path, agent, options, agentOptions);
   }

@@ -1,5 +1,5 @@
 import { sql } from "@aigne/sqlite";
-import type { AFSModule } from "../../type.ts";
+import type { AFSModule } from "../../type.js";
 import { entriesTableName } from "../models/entries.js";
 import type { AFSStorageMigrations } from "../type.js";
 

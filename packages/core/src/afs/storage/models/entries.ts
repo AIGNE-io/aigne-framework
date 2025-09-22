@@ -1,6 +1,6 @@
 import { datetime, json, sqliteTable, text } from "@aigne/sqlite";
 import { v7 } from "uuid";
-import type { AFSModule } from "../../type.ts";
+import type { AFSModule } from "../../type.js";
 
 export const entriesTableName = (module: AFSModule): string => `Entries_${module.moduleId}`;
 

@@ -6,7 +6,7 @@ import { parseAgentFile } from "./agent-yaml.js";
 const importFn = new Function("path", "return import(path)");
 
 export async function loadAgentFromJsFile(path: string) {
-  path = nodejs.url.pathToFileURL(path).toString();
+  if (nodejs.path.isAbsolute(path)) path = nodejs.url.pathToFileURL(path).toString();
 
   const { default: agent } = await tryOrThrow(
     () => importFn(path),

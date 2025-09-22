@@ -3,6 +3,7 @@ import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import url from "node:url";
 import { inspect } from "node:util";
 
 export const nodejs = {
@@ -38,5 +39,9 @@ export const nodejs = {
 
   get crypto(): typeof import("node:crypto") {
     return crypto;
+  },
+
+  get url(): typeof import("node:url") {
+    return url;
   },
 };

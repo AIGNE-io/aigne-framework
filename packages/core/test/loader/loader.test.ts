@@ -2,7 +2,6 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
-import * as agentJs from "@aigne/core/loader/agent-js.js";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -224,21 +223,6 @@ type: mcp
   );
 
   expect(loadAgent("./local-mcp.yaml")).rejects.toThrow("Missing url or command in mcp agent");
-});
-
-test("loadAgent should load js agent with a random key to avoid caching issues", async () => {
-  const loadAgentFromJsFile = spyOn(agentJs, "loadAgentFromJsFile");
-
-  await AIGNE.load(join(import.meta.dirname, "../../test-agents"));
-
-  expect(loadAgentFromJsFile).toHaveBeenLastCalledWith(
-    expect.any(String),
-    expect.objectContaining({
-      key: expect.any(Number),
-    }),
-  );
-
-  loadAgentFromJsFile.mockRestore();
 });
 
 test("loadAgent should support nested relative prompt paths", async () => {

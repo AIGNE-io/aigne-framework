@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.48.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.3-beta...cli-v1.48.3) (2025-09-22)
+
+## [1.48.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.2...cli-v1.48.3-beta) (2025-09-22)
+
+
+### Bug Fixes
+
+* improved number formatting for credit balance display in hub commands ([c5ec419](https://github.com/AIGNE-io/aigne-framework/commit/c5ec41910435b58957611fe48105ed3c69c56e17))
+
+## [1.48.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.1...cli-v1.48.2) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.6
+
+## [1.48.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.0...cli-v1.48.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* use aigne hub model when aigne hub connected ([#516](https://github.com/AIGNE-io/aigne-framework/issues/516)) ([a0493d0](https://github.com/AIGNE-io/aigne-framework/commit/a0493d0ad453afd3c3734ee2730636c6bd1e08ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.45
+    * @aigne/agentic-memory bumped to 1.0.45
+    * @aigne/aigne-hub bumped to 0.9.5
+    * @aigne/core bumped to 1.60.3
+    * @aigne/default-memory bumped to 1.2.8
+    * @aigne/openai bumped to 0.15.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
+## [1.48.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.47.1...cli-v1.48.0) (2025-09-16)
+
+
+### Features
+
+* **cli:** support using beta apps with environments ([#511](https://github.com/AIGNE-io/aigne-framework/issues/511)) ([141b11a](https://github.com/AIGNE-io/aigne-framework/commit/141b11a7757f8a441489c9e7ab5e10df1fafe26f))
+
+
+### Bug Fixes
+
+* **cli:** tune aigne hub status and deprecate aigne hub info ([#513](https://github.com/AIGNE-io/aigne-framework/issues/513)) ([25ca2a9](https://github.com/AIGNE-io/aigne-framework/commit/25ca2a9c402e9cb2d895737c32e25e957fdefd91))
+
+## [1.47.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.47.0...cli-v1.47.1) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.4
+
 ## [1.47.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.46.2...cli-v1.47.0) (2025-09-14)
 
 

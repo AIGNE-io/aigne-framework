@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.16.61](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.61-beta...example-workflow-handoff-v1.16.61) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3
+
+## [1.16.61-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.60...example-workflow-handoff-v1.16.61-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3-beta
+
+## [1.16.60](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.59...example-workflow-handoff-v1.16.60) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.2
+
+## [1.16.59](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.58...example-workflow-handoff-v1.16.59) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.45
+    * @aigne/cli bumped to 1.48.1
+    * @aigne/core bumped to 1.60.3
+    * @aigne/default-memory bumped to 1.2.8
+    * @aigne/openai bumped to 0.15.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
+## [1.16.58](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.57...example-workflow-handoff-v1.16.58) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.0
+
+## [1.16.57](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.56...example-workflow-handoff-v1.16.57) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.1
+
 ## [1.16.56](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.55...example-workflow-handoff-v1.16.56) (2025-09-14)
 
 

@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.17.20](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.20-beta...example-workflow-group-chat-v1.17.20) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3
+
+## [1.17.20-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.19...example-workflow-group-chat-v1.17.20-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3-beta
+
+## [1.17.19](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.18...example-workflow-group-chat-v1.17.19) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.2
+
+## [1.17.18](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.17...example-workflow-group-chat-v1.17.18) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.45
+    * @aigne/cli bumped to 1.48.1
+    * @aigne/core bumped to 1.60.3
+    * @aigne/default-memory bumped to 1.2.8
+    * @aigne/openai bumped to 0.15.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
+## [1.17.17](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.16...example-workflow-group-chat-v1.17.17) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.0
+
+## [1.17.16](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.15...example-workflow-group-chat-v1.17.16) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.1
+
 ## [1.17.15](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.14...example-workflow-group-chat-v1.17.15) (2025-09-14)
 
 

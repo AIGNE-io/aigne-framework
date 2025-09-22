@@ -16,10 +16,10 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: AIGNE-io/release-please-action@v4.3.0
         id: release
         with:
-          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN}}
+          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,7 +70,10 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: |
           npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
-          pnpm -F "@aigne/*" publish --access public --no-git-checks
+          pnpm -r exec -- bash -c '
+            TAG=$(node -p "require(\"./package.json\").version.includes(\"beta\") ? \"beta\" : \"latest\"")
+            pnpm publish --access public --no-git-checks --tag $TAG || true
+          '
 
       - name: Check if observability/blocklet version changed
         if: ${{ steps.release.outputs.release_created }}
@@ -80,14 +83,6 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Remove h3 from observability/blocklet/CHANGELOG.md
-        if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
-        run: |
-          if [ -f observability/blocklet/CHANGELOG.md ]; then
-            sed -E -i "s/^### (.*)$/**\1**/" observability/blocklet/CHANGELOG.md
-            sed -E -i "/^# Changelog$/d" observability/blocklet/CHANGELOG.md
           fi
 
       - name: Blocklet workflow for observability
@@ -116,15 +111,6 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Remove h3 from blocklets/aigne-runtime/CHANGELOG.md
-        id: blocklets-aigne-runtime-changelog-check
-        if: ${{ steps.release.outputs.release_created && steps.blocklets-aigne-runtime-version-check.outputs.changed == 'true'  }}
-        run: |
-          if [ -f blocklets/aigne-runtime/CHANGELOG.md ]; then
-            sed -E -i "s/^### (.*)$/**\1**/" blocklets/aigne-runtime/CHANGELOG.md
-            sed -E -i "/^# Changelog$/d" blocklets/aigne-runtime/CHANGELOG.md
           fi
 
       - name: Blocklet workflow for aigne-runtime

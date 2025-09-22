@@ -1,5 +1,64 @@
 # Changelog
 
+## [1.15.71](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.71-beta...example-workflow-reflection-v1.15.71) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3
+
+## [1.15.71-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.70...example-workflow-reflection-v1.15.71-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3-beta
+
+## [1.15.70](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.69...example-workflow-reflection-v1.15.70) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.2
+
+## [1.15.69](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.68...example-workflow-reflection-v1.15.69) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.45
+    * @aigne/cli bumped to 1.48.1
+    * @aigne/core bumped to 1.60.3
+    * @aigne/openai bumped to 0.15.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
+## [1.15.68](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.67...example-workflow-reflection-v1.15.68) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.0
+
+## [1.15.67](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.66...example-workflow-reflection-v1.15.67) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.1
+
 ## [1.15.66](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.65...example-workflow-reflection-v1.15.66) (2025-09-14)
 
 

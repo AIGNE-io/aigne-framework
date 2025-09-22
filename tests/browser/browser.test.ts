@@ -1,6 +1,5 @@
 import { afterAll, beforeAll, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { exists, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { AIAgent, AIGNE, type Message } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
@@ -14,9 +13,9 @@ import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
 import detectPort from "detect-port";
 import { Hono } from "hono";
+import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
-import { serveStatic } from "hono/serve-static";
 import { type Browser, chromium, type Page, webkit } from "playwright";
 
 let browsers: {
@@ -142,20 +141,10 @@ async function startServer() {
     return aigneServer.invoke(c.req.raw);
   });
 
-  honoApp.use(
+  honoApp.get(
     "*",
     serveStatic({
-      getContent: async (path) => {
-        const root = join(import.meta.dirname, "dist");
-        const index = join(root, "index.html");
-        const p = join(root, path);
-
-        if (await exists(p)) {
-          return await readFile(p);
-        }
-
-        return await readFile(index);
-      },
+      root: join(import.meta.dirname, "dist"),
     }),
   );
 

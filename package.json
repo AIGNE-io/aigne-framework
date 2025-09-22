@@ -1,6 +1,6 @@
 {
   "name": "aigne-framework",
-  "version": "1.77.0",
+  "version": "1.78.3",
   "description": "AIGNE framework is a collection of libraries and tools for building AI-powered applications",
   "private": true,
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
@@ -26,26 +26,26 @@
     "build:markdown": "remark ./*.md docs/ examples/**/*.md packages/**/*.md memory/**/*.md models/**/*.md blocklets/**/*.md -o --silently-ignore"
   },
   "devDependencies": {
-    "@aigne/publish-docs": "^0.9.2",
-    "@biomejs/biome": "^2.1.2",
-    "@biomejs/js-api": "^2.0.3",
-    "@biomejs/wasm-nodejs": "^2.1.2",
+    "@aigne/publish-docs": "^0.10.0",
+    "@biomejs/biome": "^2.2.4",
+    "@biomejs/js-api": "^3.0.0",
+    "@biomejs/wasm-nodejs": "^2.2.4",
     "fenceparser": "^2.2.0",
     "mdast": "^3.0.0",
     "remark-cli": "^12.0.1",
     "remark-frontmatter": "^5.0.0",
     "remark-preset-lint-consistent": "^6.0.1",
     "remark-preset-lint-recommended": "^7.0.1",
-    "simple-git-hooks": "^2.13.0",
-    "ts-morph": "^26.0.0",
-    "typedoc": "^0.28.7",
-    "typedoc-plugin-markdown": "^4.7.0",
+    "simple-git-hooks": "^2.13.1",
+    "ts-morph": "^27.0.0",
+    "typedoc": "^0.28.13",
+    "typedoc-plugin-markdown": "^4.8.1",
     "typedoc-plugin-no-inherit": "^1.6.1",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "unist-util-visit": "^5.0.0",
     "vfile": "^6.0.3",
     "zod": "^3.25.67",
-    "zx": "^8.6.2"
+    "zx": "^8.8.1"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

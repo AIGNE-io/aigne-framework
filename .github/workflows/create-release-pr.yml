@@ -1,0 +1,21 @@
+name: Create Release PR
+
+env:
+  NODE_OPTIONS: "--max_old_space_size=6144"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: AIGNE-io/release-please-action@v4.3.0
+        id: release
+        with:
+          token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN }}
+          release-stable: true

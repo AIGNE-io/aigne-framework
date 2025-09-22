@@ -1,5 +1,65 @@
 # Changelog
 
+## [0.10.61](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.61-beta...example-memory-v0.10.61) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3
+
+## [0.10.61-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.60...example-memory-v0.10.61-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3-beta
+
+## [0.10.60](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.59...example-memory-v0.10.60) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.2
+
+## [0.10.59](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.58...example-memory-v0.10.59) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.45
+    * @aigne/cli bumped to 1.48.1
+    * @aigne/core bumped to 1.60.3
+    * @aigne/default-memory bumped to 1.2.8
+    * @aigne/fs-memory bumped to 1.0.45
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
+## [0.10.58](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.57...example-memory-v0.10.58) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.0
+
+## [0.10.57](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.56...example-memory-v0.10.57) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.1
+
 ## [0.10.56](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.55...example-memory-v0.10.56) (2025-09-14)
 
 

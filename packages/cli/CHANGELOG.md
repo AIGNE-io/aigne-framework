@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.48.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.3-beta...cli-v1.48.3) (2025-09-22)
+
 ## [1.48.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.2...cli-v1.48.3-beta) (2025-09-22)
 
 

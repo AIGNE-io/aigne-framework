@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.16.61-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.16.60...example-mcp-blocklet-v1.16.61-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3-beta
+
 ## [1.16.60](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-blocklet-v1.16.59...example-mcp-blocklet-v1.16.60) (2025-09-18)
 
 

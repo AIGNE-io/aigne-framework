@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.48.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.2...cli-v1.48.3-beta) (2025-09-22)
+
+
+### Bug Fixes
+
+* improved number formatting for credit balance display in hub commands ([c5ec419](https://github.com/AIGNE-io/aigne-framework/commit/c5ec41910435b58957611fe48105ed3c69c56e17))
+
 ## [1.48.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.1...cli-v1.48.2) (2025-09-18)
 
 

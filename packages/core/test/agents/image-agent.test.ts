@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { ImageAgent } from "@aigne/core";
+import { FileOutputType, ImageAgent } from "@aigne/core";
 import { z } from "zod";
 import { OpenAIImageModel } from "../_mocks/mock-models.js";
 
@@ -12,17 +12,25 @@ test("ImageAgent should work correctly", async () => {
     inputSchema: z.object({
       topic: z.string(),
     }),
+    outputType: FileOutputType.file,
   });
 
   const modelProcess = spyOn(imageModel, "process").mockReturnValueOnce({
-    images: [{ url: "https://example.com/image.png" }],
+    images: [{ type: "file", data: Buffer.from("test image").toString("base64") }],
   });
 
   const result = await agent.invoke({ topic: "a cat" });
 
-  expect(result).toEqual({
-    images: [{ url: "https://example.com/image.png" }],
-  });
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "images": [
+        {
+          "data": "dGVzdCBpbWFnZQ==",
+          "type": "file",
+        },
+      ],
+    }
+  `);
 
   expect(modelProcess).toHaveBeenLastCalledWith(
     expect.objectContaining({

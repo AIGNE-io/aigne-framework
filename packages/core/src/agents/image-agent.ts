@@ -9,12 +9,15 @@ import {
   type Message,
 } from "./agent.js";
 import { type ImageModelOutput, imageModelOutputSchema } from "./image-model.js";
+import type { FileOutputType } from "./model.js";
 
 export interface ImageAgentOptions<I extends Message = any, O extends ImageModelOutput = any>
   extends Omit<AgentOptions<I, O>, "outputSchema"> {
   instructions: string | PromptBuilder;
 
   modelOptions?: Record<string, any>;
+
+  outputType?: FileOutputType;
 }
 
 export const imageAgentOptionsSchema: ZodObject<{
@@ -45,11 +48,14 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
         ? PromptBuilder.from(options.instructions)
         : options.instructions;
     this.modelOptions = options.modelOptions;
+    this.outputType = options.outputType;
   }
 
   instructions: PromptBuilder;
 
   modelOptions?: Record<string, any>;
+
+  outputType?: FileOutputType;
 
   override async process(input: I, options: AgentInvokeOptions): Promise<O> {
     const imageModel = this.imageModel || options.imageModel || options.context.imageModel;
@@ -59,7 +65,7 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
 
     return (await this.invokeChildAgent(
       imageModel,
-      { ...input, ...this.modelOptions, prompt },
+      { ...input, ...this.modelOptions, prompt, outputType: this.outputType },
       { ...options, streaming: false },
     )) as O;
   }

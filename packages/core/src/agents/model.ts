@@ -86,7 +86,7 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
     return mime.getType(filename) || undefined;
   }
 
-  protected async downloadFile(url: string) {
+  async downloadFile(url: string) {
     const response = await fetch(url);
     if (!response.ok) {
       const text = await response.text().catch(() => null);

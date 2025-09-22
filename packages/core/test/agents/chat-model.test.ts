@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { AIGNE } from "@aigne/core";
+import { AIGNE, FileOutputType } from "@aigne/core";
 import { v7 } from "uuid";
 import {
   type AgentProcessResult,
@@ -12,7 +12,6 @@ import {
   ChatModel,
   type ChatModelInput,
   type ChatModelOutput,
-  FileOutputType,
   type ModelOptions,
 } from "../../src/agents/chat-model.js";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
@@ -378,7 +377,7 @@ test("ChatModel should save file to local", async () => {
   const model = new OpenAIChatModel({});
 
   const result = await model.transformFileOutput(
-    { messages: [] },
+    undefined,
     { type: "file", data: Buffer.from("test data").toString("base64") },
     { context },
   );
@@ -386,6 +385,7 @@ test("ChatModel should save file to local", async () => {
     { path: expect.any(String) },
     `
       {
+        "mimeType": undefined,
         "path": Any<String>,
         "type": "local",
       }
@@ -400,13 +400,14 @@ test("ChatModel should download file", async () => {
   const fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce(new Response("test png file"));
 
   const result = await model.transformFileOutput(
-    { messages: [], fileOutputType: FileOutputType.file },
+    FileOutputType.file,
     { type: "url", url: "https://www.example.com/test.png" },
     { context },
   );
   expect(result).toMatchInlineSnapshot(`
     {
       "data": "dGVzdCBwbmcgZmlsZQ==",
+      "mimeType": "image/png",
       "type": "file",
     }
   `);

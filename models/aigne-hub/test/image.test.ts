@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { FileOutputType } from "@aigne/core";
 import { joinURL } from "ufo";
 import { AIGNEHubImageModel as AIGNEHubImageModel2 } from "../src/aigne-hub-image-model.js";
 import { AIGNEHubImageModel } from "../src/index.js";
@@ -103,16 +104,23 @@ describe("AIGNEHubImageModel", async () => {
       model: "openai/dall-e-3",
     });
 
-    const response = await client.invoke({ prompt: "hello" });
-    expect(response).toEqual({
-      images: [{ url: "https://example.com/image.png" }],
-      usage: {
-        aigneHubCredits: 100,
-        inputTokens: 0,
-        outputTokens: 0,
-      },
-      model: "openai/dall-e-3",
-    });
+    const response = await client.invoke({ prompt: "hello", outputType: FileOutputType.file });
+    expect(response).toMatchInlineSnapshot(`
+      {
+        "images": [
+          {
+            "data": "test image base64",
+            "type": "file",
+          },
+        ],
+        "model": "openai/dall-e-3",
+        "usage": {
+          "aigneHubCredits": 100,
+          "inputTokens": 0,
+          "outputTokens": 0,
+        },
+      }
+    `);
   });
 
   test("AIGNEHubImageModel2 example simple", async () => {
@@ -122,15 +130,22 @@ describe("AIGNEHubImageModel", async () => {
       model: "openai/dall-e-3",
     });
 
-    const response = await client.invoke({ prompt: "hello" });
-    expect(response).toEqual({
-      images: [{ url: "https://example.com/image.png" }],
-      usage: {
-        aigneHubCredits: 100,
-        inputTokens: 0,
-        outputTokens: 0,
-      },
-      model: "openai/dall-e-3",
-    });
+    const response = await client.invoke({ prompt: "hello", outputType: FileOutputType.file });
+    expect(response).toMatchInlineSnapshot(`
+      {
+        "images": [
+          {
+            "data": "test image base64",
+            "type": "file",
+          },
+        ],
+        "model": "openai/dall-e-3",
+        "usage": {
+          "aigneHubCredits": 100,
+          "inputTokens": 0,
+          "outputTokens": 0,
+        },
+      }
+    `);
   });
 });

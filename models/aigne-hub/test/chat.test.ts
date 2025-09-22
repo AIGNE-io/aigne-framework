@@ -22,11 +22,13 @@ describe("AIGNEHubChatModel", async () => {
       process.env[key] = value;
     });
     process.env.BLOCKLET_AIGNE_API_URL = url;
+    process.env.AIGNE_HUB_API_KEY = "test-api-key";
   });
 
   afterEach(() => {
     Object.keys(mockEnv).forEach((key) => delete process.env[key]);
     delete process.env.BLOCKLET_AIGNE_API_URL;
+    delete process.env.AIGNE_HUB_API_KEY;
   });
 
   afterAll(async () => {

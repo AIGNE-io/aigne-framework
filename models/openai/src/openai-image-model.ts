@@ -1,4 +1,7 @@
 import {
+  type AgentInvokeOptions,
+  FileOutputType,
+  type FileUnionContent,
   ImageModel,
   type ImageModelInput,
   type ImageModelOptions,
@@ -13,10 +16,16 @@ import { type ZodType, z } from "zod";
 import { CustomOpenAI } from "./openai.js";
 
 const DEFAULT_MODEL = "dall-e-2";
+const OUTPUT_MIME_TYPE = "image/png";
 
 export interface OpenAIImageModelInput
   extends ImageModelInput,
-    Camelize<Omit<OpenAI.ImageGenerateParams, "prompt" | "model" | "n" | "response_format">> {}
+    Camelize<
+      Omit<
+        OpenAI.ImageGenerateParams | OpenAI.ImageEditParams,
+        "prompt" | "model" | "n" | "response_format"
+      >
+    > {}
 
 export interface OpenAIImageModelOutput extends ImageModelOutput {}
 
@@ -116,7 +125,10 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
    * @param input The input to process
    * @returns The generated response
    */
-  override async process(input: OpenAIImageModelInput): Promise<OpenAIImageModelOutput> {
+  override async process(
+    input: OpenAIImageModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<OpenAIImageModelOutput> {
     const model = input.model || this.credential.model;
 
     const map: { [key: string]: any[] } = {
@@ -141,18 +153,34 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
       responseFormat = input.responseFormat === "base64" ? "b64_json" : "url";
     }
 
-    const body: OpenAI.ImageGenerateParams = {
+    const body: OpenAI.ImageGenerateParams | OpenAI.ImageEditParams = {
       ...snakelize(pick({ ...this.modelOptions, ...input }, map[model] || map["dall-e-2"])),
       response_format: responseFormat,
       model,
     };
 
-    const response = await this.client.images.generate({ ...body, stream: false });
+    const response = input.image?.length
+      ? await this.client.images.edit({
+          ...(body as OpenAI.ImageEditParams),
+          image: await Promise.all(
+            input.image.map((image) =>
+              this.transformFileOutput(FileOutputType.file, image, options).then(
+                (file) =>
+                  new File([Buffer.from(file.data, "base64")], file.filename || "image.png", {
+                    type: file.mimeType,
+                  }),
+              ),
+            ),
+          ),
+          stream: false,
+        })
+      : await this.client.images.generate({ ...body, stream: false });
 
     return {
-      images: (response.data ?? []).map((image) => {
-        if (image.url) return { url: image.url };
-        if (image.b64_json) return { base64: image.b64_json };
+      images: (response.data ?? []).map<FileUnionContent>((image) => {
+        if (image.url) return { type: "url", url: image.url, mimeType: OUTPUT_MIME_TYPE };
+        if (image.b64_json)
+          return { type: "file", data: image.b64_json, mimeType: OUTPUT_MIME_TYPE };
         throw new Error("Image response does not contain a valid URL or base64 data");
       }),
       usage: {

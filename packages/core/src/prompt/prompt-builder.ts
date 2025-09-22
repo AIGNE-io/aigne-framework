@@ -5,17 +5,17 @@ import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
 import { type AIAgent, DEFAULT_FILE_OUTPUT_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
-import {
-  type ChatModel,
-  type ChatModelInput,
-  type ChatModelInputMessage,
-  type ChatModelInputMessageContent,
-  type ChatModelInputResponseFormat,
-  type ChatModelInputTool,
-  type ChatModelInputToolChoice,
-  fileUnionContentsSchema,
-  type ModelOptions,
+import type {
+  ChatModel,
+  ChatModelInput,
+  ChatModelInputMessage,
+  ChatModelInputMessageContent,
+  ChatModelInputResponseFormat,
+  ChatModelInputTool,
+  ChatModelInputToolChoice,
+  ModelOptions,
 } from "../agents/chat-model.js";
+import { fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";

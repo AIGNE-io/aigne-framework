@@ -20,9 +20,9 @@ import type {
   ChatModelInputMessage,
   ChatModelOutput,
   ChatModelOutputToolCall,
-  FileOutputType,
 } from "./chat-model.js";
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
+import type { FileOutputType } from "./model.js";
 import { isTransferAgentOutput } from "./types.js";
 
 export const DEFAULT_OUTPUT_KEY = "message";

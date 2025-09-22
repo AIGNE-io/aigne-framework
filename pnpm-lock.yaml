@@ -476,6 +476,9 @@ importers:
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../../packages/agent-library
+      '@aigne/aigne-hub':
+        specifier: workspace:^
+        version: link:../../models/aigne-hub
       '@aigne/cli':
         specifier: workspace:^
         version: link:../../packages/cli

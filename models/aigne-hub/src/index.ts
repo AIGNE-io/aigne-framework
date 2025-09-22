@@ -8,7 +8,7 @@ import {
   type ImageModelOutput,
 } from "@aigne/core";
 import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
-import { findImageModel, findModel } from "./utils/model.js";
+import { findImageModel, findModel, parseModel } from "./utils/model.js";
 import type { AIGNEHubChatModelOptions, AIGNEHubImageModelOptions } from "./utils/type.js";
 
 export * from "./utils/blocklet.js";
@@ -21,7 +21,17 @@ export class AIGNEHubChatModel extends ChatModel {
   }
 
   constructor(public override options: AIGNEHubChatModelOptions) {
-    const provider = process.env.BLOCKLET_AIGNE_API_PROVIDER || AIGNEHubChatModel.name;
+    let provider = process.env.BLOCKLET_AIGNE_API_PROVIDER;
+
+    if (!provider && options.model) {
+      const parsed = parseModel(options.model);
+      if (parsed.provider && parsed.model) {
+        provider = parsed.provider;
+        options.model = parsed.model;
+      }
+    }
+
+    provider ||= AIGNEHubChatModel.name;
 
     const { match, all } = findModel(provider);
 
@@ -59,7 +69,17 @@ export class AIGNEHubImageModel extends ImageModel {
   }
 
   constructor(public options: AIGNEHubImageModelOptions) {
-    const provider = process.env.BLOCKLET_AIGNE_API_PROVIDER || AIGNEHubImageModel.name;
+    let provider = process.env.BLOCKLET_AIGNE_API_PROVIDER;
+
+    if (!provider && options.model) {
+      const parsed = parseModel(options.model);
+      if (parsed.provider && parsed.model) {
+        provider = parsed.provider;
+        options.model = parsed.model;
+      }
+    }
+
+    provider ||= AIGNEHubImageModel.name;
 
     const { match, all } = findImageModel(provider);
 

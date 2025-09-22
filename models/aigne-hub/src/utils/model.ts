@@ -118,7 +118,7 @@ export function availableModels(): LoadableModel[] {
 }
 
 export interface LoadableImageModel {
-  name: string;
+  name: string | string[];
   apiKeyEnvName: string;
   create: (options: {
     apiKey?: string;
@@ -138,7 +138,7 @@ export function availableImageModels(): LoadableImageModel[] {
       create: (params) => new OpenAIImageModel({ ...params, clientOptions }),
     },
     {
-      name: GeminiImageModel.name,
+      name: [GeminiImageModel.name, "google"],
       apiKeyEnvName: "GEMINI_API_KEY",
       create: (params) => new GeminiImageModel({ ...params, clientOptions }),
     },
@@ -187,7 +187,19 @@ export function findImageModel(provider: string): {
 
   const all = availableImageModels();
 
-  const match = all.find((m) => m.name.toLowerCase().includes(provider));
+  const match = all.find((m) => {
+    if (typeof m.name === "string") {
+      return m.name.toLowerCase().includes(provider);
+    }
+
+    return m.name.some((n) => n.toLowerCase().includes(provider));
+  });
 
   return { all, match };
 }
+
+export const parseModel = (model: string) => {
+  model = model.replace(":", "/");
+  const { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
+  return { provider: provider?.replace(/-/g, ""), model: name };
+};

@@ -1,18 +1,9 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Ajv } from "ajv";
-import mime from "mime";
-import { v7 } from "uuid";
 import { z } from "zod";
-import { optionalize } from "../loader/schema.js";
+import { checkArguments, isNil, omitByDeep, type PromiseOrValue } from "../utils/type-utils.js";
 import {
-  checkArguments,
-  isNil,
-  omitByDeep,
-  type PromiseOrValue,
-  pick,
-} from "../utils/type-utils.js";
-import {
-  Agent,
+  type Agent,
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessResult,
@@ -21,6 +12,15 @@ import {
   agentOptionsSchema,
   type Message,
 } from "./agent.js";
+import {
+  type FileOutputType,
+  type FileUnionContent,
+  fileContentSchema,
+  fileUnionContentSchema,
+  localContentSchema,
+  Model,
+  urlContentSchema,
+} from "./model.js";
 
 const CHAT_MODEL_DEFAULT_RETRY_OPTIONS: Agent["retryOnError"] = {
   retries: 3,
@@ -63,7 +63,7 @@ export interface ChatModelOptions
  * Here's an example with tool calls:
  * {@includeCode ../../test/agents/chat-model.test.ts#example-chat-model-tools}
  */
-export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
+export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
   override tag = "ChatModelAgent";
 
   constructor(public options?: ChatModelOptions) {
@@ -303,7 +303,7 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
       output = {
         ...output,
         files: await Promise.all(
-          files.map((file) => this.transformFileOutput(input, file, options)),
+          files.map((file) => this.transformFileOutput(input.fileOutputType, file, options)),
         ),
       };
     }
@@ -325,75 +325,6 @@ export abstract class ChatModel extends Agent<ChatModelInput, ChatModelOutput> {
     }
 
     return super.processAgentOutput(input, output, options);
-  }
-
-  async transformFileOutput(
-    input: ChatModelInput,
-    data: FileUnionContent,
-    options: AgentInvokeOptions,
-  ): Promise<FileUnionContent> {
-    const fileOutputType = input.fileOutputType || FileOutputType.local;
-
-    if (fileOutputType === data.type) return data;
-
-    const common = pick(data, "filename", "mimeType");
-
-    switch (fileOutputType) {
-      case FileOutputType.local: {
-        const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
-        await nodejs.fs.mkdir(dir, { recursive: true });
-
-        const ext = ChatModel.getFileExtension(data.mimeType || data.filename || "");
-        const id = v7();
-        const filename = ext ? `${id}.${ext}` : id;
-        const path = nodejs.path.join(dir, filename);
-        if (data.type === "file") {
-          await nodejs.fs.writeFile(path, data.data, "base64");
-        } else if (data.type === "url") {
-          await this.downloadFile(data.url)
-            .then((res) => res.body)
-            .then((body) => body && nodejs.fs.writeFile(path, body));
-        } else {
-          throw new Error(`Unexpected file type: ${data.type}`);
-        }
-
-        return { ...common, type: "local", path };
-      }
-      case FileOutputType.file: {
-        let base64: string;
-        if (data.type === "local") {
-          base64 = await nodejs.fs.readFile(data.path, "base64");
-        } else if (data.type === "url") {
-          base64 = Buffer.from(await (await this.downloadFile(data.url)).arrayBuffer()).toString(
-            "base64",
-          );
-        } else {
-          throw new Error(`Unexpected file type: ${data.type}`);
-        }
-
-        return { ...common, type: "file", data: base64 };
-      }
-    }
-  }
-
-  static getFileExtension(type: string) {
-    return mime.getExtension(type) || undefined;
-  }
-
-  static getMimeType(filename: string) {
-    return mime.getType(filename) || undefined;
-  }
-
-  protected async downloadFile(url: string) {
-    const response = await fetch(url);
-    if (!response.ok) {
-      const text = await response.text().catch(() => null);
-      throw new Error(
-        `Failed to download content from ${url}, ${response.status} ${response.statusText} ${text}`,
-      );
-    }
-
-    return response;
   }
 }
 
@@ -505,64 +436,6 @@ export const textContentSchema = z.object({
   type: z.literal("text"),
   text: z.string(),
 });
-
-export interface FileContentBase {
-  filename?: string;
-  mimeType?: string;
-}
-
-export const fileContentBaseSchema = z.object({
-  filename: optionalize(z.string()),
-  mimeType: optionalize(z.string()),
-});
-
-/**
- * Image URL content type
- *
- * Used for image parts of message content, referencing images via URL
- */
-export interface UrlContent extends FileContentBase {
-  type: "url";
-  url: string;
-}
-
-export const urlContentSchema = fileContentBaseSchema.extend({
-  type: z.literal("url"),
-  url: z.string(),
-});
-
-export interface FileContent extends FileContentBase {
-  type: "file";
-  data: string;
-}
-
-export const fileContentSchema = fileContentBaseSchema.extend({
-  type: z.literal("file"),
-  data: z.string(),
-});
-
-export interface LocalContent extends FileContentBase {
-  type: "local";
-  path: string;
-}
-
-export const localContentSchema = fileContentBaseSchema.extend({
-  type: z.literal("local"),
-  path: z.string(),
-});
-
-export type FileUnionContent = LocalContent | UrlContent | FileContent;
-
-export const fileUnionContentSchema = z.discriminatedUnion("type", [
-  localContentSchema,
-  urlContentSchema,
-  fileContentSchema,
-]);
-
-export const fileUnionContentsSchema = z.union([
-  fileUnionContentSchema,
-  z.array(fileUnionContentSchema),
-]);
 
 export type UnionContent = TextContent | FileUnionContent;
 
@@ -799,11 +672,6 @@ export interface ChatModelOutput extends Message {
   model?: string;
 
   files?: FileUnionContent[];
-}
-
-export enum FileOutputType {
-  local = "local",
-  file = "file",
 }
 
 /**

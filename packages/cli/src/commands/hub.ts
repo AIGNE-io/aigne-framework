@@ -24,10 +24,24 @@ interface AIGNEEnv {
   };
 }
 
-const formatNumber = (balance: string) => {
-  const balanceNum = String(balance).split(".")[0];
-  return chalk.yellow((balanceNum || "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+export const formatNumber = (balance: string) => {
+  const cleanNumber = String(balance).replace(/[^\d.-]/g, "");
+  const balanceNum = cleanNumber.split(".")[0];
+
+  if (!balanceNum) {
+    return "0";
+  }
+
+  return (balanceNum || "").trim().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+
+const formatNumberWithColor = (balance: string) => {
+  return chalk.yellow(formatNumber(balance));
+};
+
+function formatHubInfoName(name: string) {
+  return chalk.bold(`${name}:`.padEnd(10));
+}
 
 function printHubStatus(data: {
   hub: string;
@@ -38,6 +52,7 @@ function printHubStatus(data: {
     email: string;
   };
   credits: {
+    available: string;
     used: string;
     total: string;
   };
@@ -63,23 +78,26 @@ function printHubStatus(data: {
   console.log("");
 
   console.log(chalk.bold("User:"));
-  console.log(`  ${chalk.bold("Name:".padEnd(8))} ${data.user.name}`);
-  console.log(`  ${chalk.bold("DID:".padEnd(8))} ${data.user.did}`);
-  console.log(`  ${chalk.bold("Email:".padEnd(8))} ${data.user.email}`);
+  console.log(`  ${formatHubInfoName("Name")} ${data.user.name}`);
+  console.log(`  ${formatHubInfoName("DID")} ${data.user.did}`);
+  console.log(`  ${formatHubInfoName("Email")} ${data.user.email}`);
   console.log("");
 
   if (data.enableCredit) {
     console.log(chalk.bold("Credits:"));
-    console.log(`  ${chalk.bold("Used:".padEnd(8))} ${data.credits.used.toLocaleString()}`);
-    console.log(`  ${chalk.bold("Total:".padEnd(8))} ${data.credits.total.toLocaleString()}`);
+    console.log(`  ${formatHubInfoName("Total")} ${formatNumberWithColor(data.credits.total)}`);
+    console.log(`  ${formatHubInfoName("Used")} ${formatNumberWithColor(data.credits.used)}`);
+    console.log(
+      `  ${formatHubInfoName("Available")} ${formatNumberWithColor(data.credits.available)}`,
+    );
     console.log("");
 
     console.log(chalk.bold("Links:"));
     if (data.links.payment) {
-      console.log(`  ${chalk.bold("Payment:".padEnd(8))} ${data.links.payment}`);
+      console.log(`  ${formatHubInfoName("Payment")} ${data.links.payment}`);
     }
     if (data.links.profile) {
-      console.log(`  ${chalk.bold("Profile:".padEnd(8))} ${data.links.profile}`);
+      console.log(`  ${formatHubInfoName("Credits")} ${data.links.profile}`);
     }
   }
 }
@@ -170,9 +188,8 @@ export function createHubCommand(): CommandModule {
           },
         })
         .command("use", "Switch to a different AIGNE Hub", useHub)
-        .command(["status", "st"], "Show current active hub", showStatus)
+        .command(["status", "st"], "Show details of a connected hub", showInfo)
         .command(["remove", "rm"], "Remove a connected hub", removeHub)
-        .command(["info", "i"], "Show details of a connected hub", showInfo)
         .demandCommand(1, "Please provide a valid hub command"),
     handler: () => {},
   };
@@ -231,15 +248,6 @@ async function useHub() {
   await setDefaultHub(hubApiKey);
 }
 
-async function showStatus() {
-  const active = await getDefaultHub();
-  if (!active) {
-    console.log(chalk.red("No active hub."));
-    return;
-  }
-  console.log(`Active hub: ${getUrlOrigin(active)} - online`);
-}
-
 async function removeHub() {
   const hubs = await getHubs();
   if (!hubs.length) {
@@ -267,12 +275,17 @@ async function showInfo() {
     return;
   }
 
+  const defaultHub = await getDefaultHub();
+  const defaultHubIndex = hubs.findIndex(
+    (h) => getUrlOrigin(h.apiUrl) === getUrlOrigin(defaultHub),
+  );
+
   const { hubApiKey } = await inquirer.prompt({
     type: "select",
     name: "hubApiKey",
     message: `Choose a hub to view info:`,
-    choices: hubs.map((h) => ({
-      name: getUrlOrigin(h.apiUrl),
+    choices: hubs.map((h, index) => ({
+      name: `${getUrlOrigin(h.apiUrl)} ${defaultHubIndex === index ? "(connected)" : ""}`,
       value: h.apiUrl,
     })),
   });
@@ -373,8 +386,12 @@ async function printHubDetails(url: string) {
       email: userInfo?.user.email || "",
     },
     credits: {
-      used: formatNumber(userInfo?.creditBalance?.balance || "0"),
-      total: formatNumber(userInfo?.creditBalance?.total || "0"),
+      available: userInfo?.creditBalance?.balance || "0",
+      total: userInfo?.creditBalance?.total || "0",
+      used: String(
+        parseFloat(userInfo?.creditBalance?.total || "0") -
+          parseFloat(userInfo?.creditBalance?.balance || "0"),
+      ),
     },
     links: {
       payment: userInfo?.paymentLink || "",

@@ -15,6 +15,8 @@ import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
 import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_IMAGE_MODEL, AIGNE_HUB_URL } from "./utils/constants.js";
 import { type AIGNEHubImageModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
+const AIGNE_HUB_DEFAULT_IMAGE_MIME = "image/png";
+
 export class AIGNEHubImageModel extends ImageModel {
   constructor(public options: AIGNEHubImageModelOptions) {
     checkArguments("AIGNEHubImageModel", aigneHubModelOptionsSchema, options);
@@ -78,6 +80,47 @@ export class AIGNEHubImageModel extends ImageModel {
       BLOCKLET_APP_PID ||
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
+
+    // Convert local image to base64
+    if (input.image) {
+      const images = Array.isArray(input.image) ? input.image : [input.image];
+      input.image = await Promise.all(
+        images.map(async (image) => {
+          if (image.startsWith("http")) {
+            try {
+              const response = await this.downloadFile(image);
+              const buffer = await response.arrayBuffer();
+              const mime = response.headers.get("content-type") || AIGNE_HUB_DEFAULT_IMAGE_MIME;
+              const base64 = Buffer.from(buffer).toString("base64");
+
+              return `data:${mime};base64,${base64}`;
+            } catch {
+              return image;
+            }
+          }
+
+          if (image.startsWith("file://")) {
+            const filePath = image.replace("file://", "");
+
+            if (nodejs.fsSync.existsSync(filePath)) {
+              const mime = AIGNE_HUB_DEFAULT_IMAGE_MIME;
+              const base64 = await nodejs.fs.readFile(filePath, "base64");
+              return `data:${mime};base64,${base64}`;
+            }
+
+            throw new Error(`Local file not found: ${filePath}`);
+          }
+
+          if (nodejs.fsSync.existsSync(image)) {
+            const mime = AIGNE_HUB_DEFAULT_IMAGE_MIME;
+            const base64 = await nodejs.fs.readFile(image, "base64");
+            return `data:${mime};base64,${base64}`;
+          }
+
+          return image;
+        }),
+      );
+    }
 
     const response = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
       undefined,

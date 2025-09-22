@@ -1,5 +1,74 @@
 # Changelog
 
+## [1.0.13](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.13-beta...example-nano-banana-v1.0.13) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3
+
+## [1.0.13-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.12...example-nano-banana-v1.0.13-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3-beta
+
+## [1.0.12](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.11...example-nano-banana-v1.0.12) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.2
+
+## [1.0.11](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.10...example-nano-banana-v1.0.11) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.45
+    * @aigne/cli bumped to 1.48.1
+    * @aigne/core bumped to 1.60.3
+    * @aigne/default-memory bumped to 1.2.8
+    * @aigne/fs-memory bumped to 1.0.45
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
+## [1.0.10](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.9...example-nano-banana-v1.0.10) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.0
+
+## [1.0.9](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.8...example-nano-banana-v1.0.9) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.1
+
+## [1.0.8](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.7...example-nano-banana-v1.0.8) (2025-09-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.0
+
 ## [1.0.7](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.0.6...example-nano-banana-v1.0.7) (2025-09-11)
 
 

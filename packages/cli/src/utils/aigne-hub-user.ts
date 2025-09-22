@@ -21,9 +21,7 @@ export async function getUserInfo({
   apiKey: string;
 }): Promise<UserInfoResult> {
   const response = await fetch(joinURL(baseUrl, "/api/user/info"), {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
+    headers: { Authorization: `Bearer ${apiKey}` },
   });
 
   if (!response.ok) throw new Error(`Failed to fetch user info: ${response.statusText}`);

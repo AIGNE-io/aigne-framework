@@ -16,7 +16,7 @@ export const DEFAULT_PORT = () =>
     () => {
       const { PORT } = process.env;
       if (!PORT) return 3000;
-      const port = Number.parseInt(PORT);
+      const port = Number.parseInt(PORT, 10);
       if (!port || !Number.isInteger(port)) throw new Error(`Invalid PORT: ${PORT}`);
       return port;
     },

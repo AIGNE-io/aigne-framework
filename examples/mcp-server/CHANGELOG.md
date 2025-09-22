@@ -1,5 +1,68 @@
 # Changelog
 
+## [0.3.73](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.73-beta...example-mcp-server-v0.3.73) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3
+
+## [0.3.73-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.72...example-mcp-server-v0.3.73-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.3-beta
+
+## [0.3.72](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.71...example-mcp-server-v0.3.72) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.2
+
+## [0.3.71](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.70...example-mcp-server-v0.3.71) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.1
+
+## [0.3.70](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.69...example-mcp-server-v0.3.70) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.48.0
+
+## [0.3.69](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.68...example-mcp-server-v0.3.69) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.1
+
+## [0.3.68](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.67...example-mcp-server-v0.3.68) (2025-09-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.47.0
+
 ## [0.3.67](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-server-v0.3.66...example-mcp-server-v0.3.67) (2025-09-11)
 
 

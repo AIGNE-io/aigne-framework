@@ -20,6 +20,7 @@ import type {
   ReadResourceResult,
   Request,
 } from "@modelcontextprotocol/sdk/types.js";
+import type { RetryContext } from "p-retry";
 import { type ZodType, z } from "zod";
 import { logger } from "../utils/logger.js";
 import {
@@ -369,7 +370,7 @@ class ClientWithReconnect extends Client {
     super(info, options);
   }
 
-  private shouldReconnect(error: Error): boolean {
+  private shouldReconnect({ error }: RetryContext): boolean {
     const { transportCreator, shouldReconnect, maxReconnects } = this.reconnectOptions || {};
 
     if (!transportCreator || maxReconnects === 0) return false;

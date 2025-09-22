@@ -303,10 +303,14 @@ export class GeminiChatModel extends OpenAIChatModel {
   ): ReturnType<OpenAIChatModel["getRunMessages"]> {
     const messages = await super.getRunMessages(input);
 
-    const lastMessage = messages.at(-1);
-
-    if (lastMessage?.role === "system") {
-      (lastMessage as ChatModelInputMessage).role = "user"; // Ensure the last message is from the user
+    if (!messages.some((i) => i.role === "user")) {
+      for (const msg of messages) {
+        if (msg.role === "system") {
+          // Ensure the last message is from the user
+          (msg as ChatModelInputMessage).role = "user";
+          break;
+        }
+      }
     }
 
     return messages;

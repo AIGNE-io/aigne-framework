@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 
 import Layout from "./layout.tsx";
-import List from "./list.tsx";
+import List from "./list/index.tsx";
 import { translations } from "./locales/index.ts";
 
 export default function App() {

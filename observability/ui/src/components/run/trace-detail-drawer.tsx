@@ -1,15 +1,11 @@
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Decimal from "decimal.js";
 import { useEffect, useState } from "react";
 import { joinURL } from "ufo";
-import useGetTokenPrice from "../../hooks/get-token-price.ts";
 import { origin } from "../../utils/index.ts";
-import { parseDuration } from "../../utils/latency.ts";
-import TraceDetailPanel from "./trace-detail-panel.tsx";
-import TraceItemList from "./trace-item.tsx";
-import RunStatsHeader from "./trace-stats-header.tsx";
+import TraceDetailDrawerDesktop from "./trace-detail-drawer-desktop.tsx";
+import TraceDetailDrawerMobile from "./trace-detail-drawer-mobile.tsx";
 import type { TraceData } from "./types.ts";
 
 interface RunDetailDrawerProps {
@@ -28,7 +24,7 @@ export default function RunDetailDrawer({
   const [selectedTrace, setSelectedTrace] = useState(trace);
   const [traceInfo, setTraces] = useState(trace);
   const [loading, setLoading] = useState(false);
-  const getPrices = useGetTokenPrice();
+  const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
 
   const init = async () => {
     setLoading(true);
@@ -51,9 +47,7 @@ export default function RunDetailDrawer({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
-    if (traceId) {
-      init();
-    }
+    if (traceId) init();
 
     setSelectedTrace(trace);
   }, [trace, traceId]);
@@ -64,108 +58,50 @@ export default function RunDetailDrawer({
     onCloseDrawer();
   };
 
-  const getRunStats = (run: TraceData | null) => {
-    let count = 0;
-    let inputTokens = 0;
-    let outputTokens = 0;
-    let inputCost = new Decimal(0);
-    let outputCost = new Decimal(0);
-
-    function traverse(node: TraceData | null) {
-      if (!node) return;
-      count += 1;
-      if (node.attributes.output?.usage) {
-        inputTokens += node.attributes.output?.usage?.inputTokens || 0;
-        outputTokens += node.attributes.output?.usage?.outputTokens || 0;
-        inputCost = inputCost.add(
-          getPrices({
-            model: node.attributes.output?.model,
-            inputTokens: node.attributes.output?.usage?.inputTokens || 0,
-            outputTokens: node.attributes.output?.usage?.outputTokens || 0,
-          }).inputCost,
-        );
-        outputCost = outputCost.add(
-          getPrices({
-            model: node.attributes.output?.model,
-            inputTokens: node.attributes.output?.usage?.inputTokens || 0,
-            outputTokens: node.attributes.output?.usage?.outputTokens || 0,
-          }).outputCost,
-        );
-      }
-      if (node.children) node.children.forEach(traverse);
-    }
-    traverse(run);
-
-    return {
-      count,
-      inputTokens,
-      outputTokens,
-      totalTokens: inputTokens + outputTokens,
-      inputCost: inputCost.gt(new Decimal(0)) ? `($${inputCost.toString()})` : "",
-      outputCost: outputCost.gt(new Decimal(0)) ? `($${outputCost.toString()})` : "",
-      totalCost: inputCost.add(outputCost).gt(new Decimal(0))
-        ? `($${inputCost.add(outputCost).toString()})`
-        : "",
-    };
-  };
-
   const renderContent = () => {
-    if (!traceInfo) return null;
+    if (!traceInfo || !traceId || !selectedTrace) return null;
 
-    const stats = getRunStats(traceInfo);
-    const latency = parseDuration(traceInfo.startTime, traceInfo.endTime);
-    const timestamp = new Date(traceInfo.startTime || Date.now()).toLocaleString();
-
-    return (
-      <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
-        <RunStatsHeader
-          inputTokens={stats.inputTokens}
-          inputCost={stats.inputCost}
-          outputTokens={stats.outputTokens}
-          outputCost={stats.outputCost}
-          totalTokens={stats.totalTokens}
-          totalCost={stats.totalCost}
-          count={stats.count}
-          latency={latency}
-          timestamp={timestamp}
+    if (isMobile) {
+      return (
+        <TraceDetailDrawerMobile
+          traceId={traceId}
+          traceInfo={traceInfo}
+          selectedTrace={selectedTrace}
+          setSelectedTrace={setSelectedTrace}
           onClose={onClose}
         />
+      );
+    }
 
-        <Box sx={{ flex: 1, display: "flex", height: 0, overflow: "hidden" }}>
-          <Box
-            sx={{
-              flex: 1,
-              py: 3,
-              px: 2,
-              borderRight: (theme) => `1px solid ${theme.palette.divider}`,
-              minWidth: 300,
-              overflow: "auto",
-            }}
-          >
-            <TraceItemList
-              traceId={traceId ?? ""}
-              steps={[traceInfo]}
-              onSelect={(trace) => setSelectedTrace(trace ?? null)}
-              selectedTrace={selectedTrace}
-            />
-          </Box>
-
-          <Box sx={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
-            <TraceDetailPanel trace={selectedTrace} />
-          </Box>
-        </Box>
-      </Box>
+    return (
+      <TraceDetailDrawerDesktop
+        traceId={traceId}
+        traceInfo={traceInfo}
+        selectedTrace={selectedTrace}
+        setSelectedTrace={setSelectedTrace}
+        onClose={onClose}
+      />
     );
   };
 
   return (
     <Drawer
-      anchor="right"
+      anchor={"right"}
       open={open}
       onClose={onClose}
-      slotProps={{ paper: { sx: { width: "85vw", p: 0, boxSizing: "border-box" } } }}
+      slotProps={{
+        paper: { sx: { width: isMobile ? "100vw" : "85vw", p: 0, boxSizing: "border-box" } },
+      }}
     >
-      <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
+      <Box
+        sx={{
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
         {renderContent()}
 
         {loading && (

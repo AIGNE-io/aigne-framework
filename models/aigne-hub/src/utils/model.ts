@@ -3,7 +3,7 @@ import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
 import type { ChatModel, ImageModel, ModelOptions } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
-import { DoubaoChatModel } from "@aigne/doubao";
+import { DoubaoChatModel, DoubaoImageModel } from "@aigne/doubao";
 import { GeminiChatModel, GeminiImageModel } from "@aigne/gemini";
 import { IdeogramImageModel } from "@aigne/ideogram";
 import { OllamaChatModel } from "@aigne/ollama";
@@ -22,7 +22,10 @@ const getClientOptions = () => {
     .filter(Boolean)[0];
 
   const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
-  const clientOptions: OpenAIChatModelOptions["clientOptions"] = {
+  const clientOptions: Pick<
+    NonNullable<OpenAIChatModelOptions["clientOptions"]>,
+    "fetchOptions"
+  > = {
     fetchOptions: {
       // @ts-ignore
       agent: httpAgent,
@@ -143,6 +146,11 @@ export function availableImageModels(): LoadableImageModel[] {
       name: IdeogramImageModel.name,
       apiKeyEnvName: "IDEOGRAM_API_KEY",
       create: (params) => new IdeogramImageModel({ ...params }),
+    },
+    {
+      name: DoubaoImageModel.name,
+      apiKeyEnvName: "DOUBAO_API_KEY",
+      create: (params) => new DoubaoImageModel({ ...params, clientOptions }),
     },
     {
       name: AIGNEHubImageModel.name,

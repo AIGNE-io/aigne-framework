@@ -63,6 +63,25 @@ export abstract class ImageModel<
     input: I,
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<O>>;
+
+  protected async downloadFile(url: string, timeout = 30000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      if (!response.ok) {
+        const text = await response.text().catch(() => null);
+        throw new Error(
+          `Failed to download content from ${url}, ${response.status} ${response.statusText} ${text}`,
+        );
+      }
+
+      return response;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
 }
 
 export interface ImageModelInput extends Message {

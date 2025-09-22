@@ -147,7 +147,7 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
       model,
     };
 
-    const response = await this.client.images.generate({ ...body });
+    const response = await this.client.images.generate({ ...body, stream: false });
 
     return {
       images: (response.data ?? []).map((image) => {

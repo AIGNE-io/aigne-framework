@@ -14,13 +14,13 @@ const mockEnv = {
 };
 
 describe("AIGNEHubImageModel", async () => {
-  const { url, close } = await createHonoServer();
+  const { url: baseURL, close } = await createHonoServer();
 
   beforeEach(() => {
     Object.entries(mockEnv).forEach(([key, value]) => {
       process.env[key] = value;
     });
-    process.env.BLOCKLET_AIGNE_API_URL = url;
+    process.env.BLOCKLET_AIGNE_API_URL = baseURL;
   });
 
   afterEach(() => {
@@ -34,8 +34,8 @@ describe("AIGNEHubImageModel", async () => {
 
   describe("constructor", () => {
     test("should create instance with options", () => {
-      const model = new AIGNEHubImageModel({ url });
-      expect(model.options.url).toBe(url);
+      const model = new AIGNEHubImageModel({ baseURL });
+      expect(model.options.baseURL).toBe(baseURL);
       expect(model.options.apiKey).toBeUndefined();
       expect(model.options.model).toBeUndefined();
     });
@@ -43,23 +43,23 @@ describe("AIGNEHubImageModel", async () => {
 
   describe("client", () => {
     test("should create client on first call", async () => {
-      const model = new AIGNEHubImageModel({ url });
+      const model = new AIGNEHubImageModel({ baseURL });
       const client = model["client"];
       expect(client).toBeDefined();
     });
 
     test("should throw error for unsupported provider", async () => {
       process.env.BLOCKLET_AIGNE_API_PROVIDER = "unsupported";
-      expect(() => new AIGNEHubImageModel({ url })).toThrowError(/Unsupported model provider/);
+      expect(() => new AIGNEHubImageModel({ baseURL })).toThrowError(/Unsupported model provider/);
     });
   });
 
   describe("credential", () => {
     test("should return credentials from environment variables", async () => {
-      const model = new AIGNEHubImageModel({ url });
+      const model = new AIGNEHubImageModel({ baseURL });
       const credential = await model.credential;
 
-      expect(credential.url).toBe(joinURL(url, "ai-kit/api/v2/image"));
+      expect(credential.url).toBe(joinURL(baseURL, "ai-kit/api/v2/image"));
       expect(credential.apiKey).toBe("test-api-key");
       expect(credential.model).toBe("openai/gpt-image-1");
     });
@@ -69,7 +69,7 @@ describe("AIGNEHubImageModel", async () => {
     test("should handle credential parsing errors gracefully", async () => {
       process.env.BLOCKLET_AIGNE_API_CREDENTIAL = '{"invalid": "json"';
 
-      const model = new AIGNEHubImageModel({ url });
+      const model = new AIGNEHubImageModel({ baseURL });
 
       const credential = await model.credential;
       expect(credential).toBeDefined();
@@ -81,17 +81,17 @@ describe("AIGNEHubImageModel", async () => {
       delete process.env.BLOCKLET_AIGNE_API_CREDENTIAL;
       delete process.env.BLOCKLET_AIGNE_API_URL;
 
-      const model = new AIGNEHubImageModel({ url });
+      const model = new AIGNEHubImageModel({ baseURL });
 
       const credential = await model.credential;
-      expect(credential.url).toBe(joinURL(url, "ai-kit/api/v2/image"));
+      expect(credential.url).toBe(joinURL(baseURL, "ai-kit/api/v2/image"));
     });
   });
 
   describe("other model options", () => {
     test("imagen-4.0-generate-001", async () => {
       process.env.BLOCKLET_AIGNE_API_MODEL = "google/imagen-4.0-generate-001";
-      const model = new AIGNEHubImageModel({ url: url });
+      const model = new AIGNEHubImageModel({ baseURL });
       const credential = await model.credential;
       expect(credential.model).toBe("google/imagen-4.0-generate-001");
     });
@@ -99,7 +99,7 @@ describe("AIGNEHubImageModel", async () => {
 
   test("AIGNEHubImageModel example simple", async () => {
     const client = new AIGNEHubImageModel({
-      url,
+      baseURL,
       apiKey: "123",
       model: "openai/dall-e-3",
     });
@@ -125,7 +125,7 @@ describe("AIGNEHubImageModel", async () => {
 
   test("AIGNEHubImageModel2 example simple", async () => {
     const client = new AIGNEHubImageModel2({
-      url,
+      baseURL,
       apiKey: "123",
       model: "openai/dall-e-3",
     });

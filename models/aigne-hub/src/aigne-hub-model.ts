@@ -16,7 +16,7 @@ import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
 import {
   AIGNE_HUB_BLOCKLET_DID,
   AIGNE_HUB_DEFAULT_MODEL,
-  AIGNE_HUB_URL,
+  aigneHubBaseUrl,
 } from "./utils/constants.js";
 import { getModels } from "./utils/hub.js";
 import { type AIGNEHubChatModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
@@ -28,7 +28,7 @@ export class AIGNEHubChatModel extends ChatModel {
   }
 
   async models() {
-    return getModels({ url: (await this.credential).url, type: "chat" });
+    return getModels({ baseURL: (await this.credential).url, type: "chat" });
   }
 
   protected _client?: Promise<BaseClient>;
@@ -49,10 +49,7 @@ export class AIGNEHubChatModel extends ChatModel {
 
   override get credential() {
     this._credential ??= getAIGNEHubMountPoint(
-      this.options.baseURL ||
-        process.env.BLOCKLET_AIGNE_API_URL ||
-        process.env.AIGNE_HUB_API_URL ||
-        AIGNE_HUB_URL,
+      this.options.baseURL || aigneHubBaseUrl(),
       AIGNE_HUB_BLOCKLET_DID,
     ).then((url) => {
       const path = "/api/v2/chat";

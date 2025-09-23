@@ -13,7 +13,11 @@ import {
 } from "@aigne/transport/http-client/base-client.js";
 import { joinURL } from "ufo";
 import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
-import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_IMAGE_MODEL, AIGNE_HUB_URL } from "./utils/constants.js";
+import {
+  AIGNE_HUB_BLOCKLET_DID,
+  AIGNE_HUB_IMAGE_MODEL,
+  aigneHubBaseUrl,
+} from "./utils/constants.js";
 import { getModels } from "./utils/hub.js";
 import { type AIGNEHubImageModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
@@ -24,7 +28,7 @@ export class AIGNEHubImageModel extends ImageModel {
   }
 
   async models() {
-    return getModels({ url: (await this.credential).url, type: "image" });
+    return getModels({ baseURL: (await this.credential).url, type: "image" });
   }
 
   protected _client?: Promise<BaseClient>;
@@ -45,10 +49,7 @@ export class AIGNEHubImageModel extends ImageModel {
 
   override get credential() {
     this._credential ??= getAIGNEHubMountPoint(
-      this.options.baseURL ||
-        process.env.BLOCKLET_AIGNE_API_URL ||
-        process.env.AIGNE_HUB_API_URL ||
-        AIGNE_HUB_URL,
+      this.options.baseURL || aigneHubBaseUrl(),
       AIGNE_HUB_BLOCKLET_DID,
     ).then((url) => {
       const path = "/api/v2/image";

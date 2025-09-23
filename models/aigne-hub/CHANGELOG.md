@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.0-beta.1...aigne-hub-v0.10.0-beta.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* standardize file parameter naming across models ([#534](https://github.com/AIGNE-io/aigne-framework/issues/534)) ([f159a9d](https://github.com/AIGNE-io/aigne-framework/commit/f159a9d6af21ec0e99641996b150560929845845))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.13.5-beta.1
+    * @aigne/bedrock bumped to 0.10.5-beta.1
+    * @aigne/core bumped to 1.61.0-beta.1
+    * @aigne/deepseek bumped to 0.7.46-beta.2
+    * @aigne/doubao bumped to 1.1.0-beta.2
+    * @aigne/gemini bumped to 0.14.0-beta.2
+    * @aigne/ideogram bumped to 0.4.0-beta.1
+    * @aigne/ollama bumped to 0.7.46-beta.2
+    * @aigne/open-router bumped to 0.7.46-beta.2
+    * @aigne/openai bumped to 0.16.0-beta.2
+    * @aigne/poe bumped to 1.0.26-beta.2
+    * @aigne/transport bumped to 0.15.9-beta.2
+    * @aigne/xai bumped to 0.7.46-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.1
+
 ## [0.10.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.0-beta...aigne-hub-v0.10.0-beta.1) (2025-09-23)
 
 

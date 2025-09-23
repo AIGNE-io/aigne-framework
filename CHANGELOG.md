@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.79.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.1...aigne-framework-v1.79.0-beta.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* remove useless parameter ([efb0690](https://github.com/AIGNE-io/aigne-framework/commit/efb0690cf1ada6de95896e160c7cc5ffc7524ab2))
+* standardize file parameter naming across models ([#534](https://github.com/AIGNE-io/aigne-framework/issues/534)) ([f159a9d](https://github.com/AIGNE-io/aigne-framework/commit/f159a9d6af21ec0e99641996b150560929845845))
+
 ## [1.79.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta...aigne-framework-v1.79.0-beta.1) (2025-09-23)
 
 

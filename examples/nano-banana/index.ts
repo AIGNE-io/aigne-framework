@@ -2,7 +2,7 @@
 
 import { join } from "node:path";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
-import { AIAgent, FileOutputType } from "@aigne/core";
+import { AIAgent } from "@aigne/core";
 import { DefaultMemory } from "@aigne/default-memory";
 
 const agent = AIAgent.from({
@@ -15,7 +15,7 @@ const agent = AIAgent.from({
   ],
   inputKey: "message",
   fileInputKey: "files",
-  fileOutputType: FileOutputType.local,
+  outputFileType: "local",
 });
 
 await runWithAIGNE(agent, {

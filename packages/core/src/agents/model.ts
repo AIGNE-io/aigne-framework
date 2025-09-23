@@ -8,32 +8,32 @@ import { pick } from "../utils/type-utils.js";
 import { Agent, type AgentInvokeOptions, type Message } from "./agent.js";
 
 export abstract class Model<I extends Message = any, O extends Message = any> extends Agent<I, O> {
-  async transformFileOutput(
-    fileOutputType: FileOutputType.file,
+  async transformFileType(
+    fileType: "file",
     data: FileUnionContent,
     options: AgentInvokeOptions,
   ): Promise<FileContent>;
-  async transformFileOutput(
-    fileOutputType: FileOutputType.local | undefined,
+  async transformFileType(
+    fileType: "local" | undefined,
     data: FileUnionContent,
     options: AgentInvokeOptions,
   ): Promise<LocalContent>;
-  async transformFileOutput(
-    fileOutputType: FileOutputType | undefined,
+  async transformFileType(
+    fileType: FileType | undefined,
     data: FileUnionContent,
     options: AgentInvokeOptions,
   ): Promise<FileUnionContent>;
-  async transformFileOutput(
-    fileOutputType: FileOutputType | undefined = FileOutputType.local,
+  async transformFileType(
+    fileType: FileType | undefined = "local",
     data: FileUnionContent,
     options: AgentInvokeOptions,
   ): Promise<FileUnionContent> {
-    if (fileOutputType === data.type) return data;
+    if (fileType === data.type) return data;
 
     const common = pick(data, "filename", "mimeType");
 
-    switch (fileOutputType) {
-      case FileOutputType.local: {
+    switch (fileType) {
+      case "local": {
         const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
         await nodejs.fs.mkdir(dir, { recursive: true });
 
@@ -57,7 +57,7 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
 
         return { ...common, type: "local", path, mimeType };
       }
-      case FileOutputType.file: {
+      case "file": {
         let base64: string;
         let mimeType = data.mimeType;
 
@@ -99,10 +99,9 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
   }
 }
 
-export enum FileOutputType {
-  local = "local",
-  file = "file",
-}
+export type FileType = "local" | "file";
+
+export const fileTypeSchema = z.enum(["local", "file"]);
 
 export interface FileContentBase {
   filename?: string;

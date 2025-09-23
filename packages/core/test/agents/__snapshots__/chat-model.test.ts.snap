@@ -23,7 +23,7 @@ exports[`ChatModel should auto convert image url to base64 image data {} 1`] = `
 `;
 
 exports[`ChatModel should auto convert image url to base64 image data {
-  preferFileInputType: "file",
+  preferInputFileType: "file",
 } 1`] = `
 {
   "messages": [
@@ -47,7 +47,7 @@ exports[`ChatModel should auto convert image url to base64 image data {
 `;
 
 exports[`ChatModel should auto convert image url to base64 image data {
-  preferFileInputType: "url",
+  preferInputFileType: "url",
 } 1`] = `
 {
   "messages": [

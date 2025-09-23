@@ -1,5 +1,4 @@
 import { expect, spyOn, test } from "bun:test";
-import { FileOutputType } from "@aigne/core";
 import { GeminiImageModel } from "@aigne/gemini";
 
 test("GeminiImageModel imagen model should work correctly", async () => {
@@ -20,7 +19,7 @@ test("GeminiImageModel imagen model should work correctly", async () => {
 
   const result = await model.invoke({
     prompt: "Draw an image about a cat",
-    outputType: FileOutputType.file,
+    outputFileType: "file",
   });
 
   expect(result).toMatchInlineSnapshot(`
@@ -70,7 +69,7 @@ test("GeminiImageModel imagen model should work correctly", async () => {
 
   const result = await model.invoke({
     prompt: "Draw an image about a cat",
-    outputType: FileOutputType.file,
+    outputFileType: "file",
   });
 
   expect(result).toMatchInlineSnapshot(`

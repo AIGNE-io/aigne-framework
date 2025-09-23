@@ -22,11 +22,11 @@ import type {
   ChatModelOutputToolCall,
 } from "./chat-model.js";
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
-import type { FileOutputType } from "./model.js";
+import type { FileType } from "./model.js";
 import { isTransferAgentOutput } from "./types.js";
 
 export const DEFAULT_OUTPUT_KEY = "message";
-export const DEFAULT_FILE_OUTPUT_KEY = "files";
+export const DEFAULT_OUTPUT_FILE_KEY = "files";
 
 /**
  * Configuration options for an AI Agent
@@ -52,7 +52,7 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    */
   inputKey?: string;
 
-  fileInputKey?: string;
+  inputFileKey?: string;
 
   /**
    * Custom key to use for text output in the response
@@ -61,9 +61,9 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    */
   outputKey?: string;
 
-  fileOutputKey?: string;
+  outputFileKey?: string;
 
-  fileOutputType?: FileOutputType;
+  outputFileType?: FileType;
 
   /**
    * Controls how the agent uses tools during execution
@@ -265,10 +265,10 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         ? PromptBuilder.from(options.instructions)
         : (options.instructions ?? new PromptBuilder());
     this.inputKey = options.inputKey;
-    this.fileInputKey = options.fileInputKey;
+    this.inputFileKey = options.inputFileKey;
     this.outputKey = options.outputKey || DEFAULT_OUTPUT_KEY;
-    this.fileOutputKey = options.fileOutputKey || DEFAULT_FILE_OUTPUT_KEY;
-    this.fileOutputType = options.fileOutputType;
+    this.outputFileKey = options.outputFileKey || DEFAULT_OUTPUT_FILE_KEY;
+    this.outputFileType = options.outputFileType;
     this.toolChoice = options.toolChoice;
     this.memoryAgentsAsTools = options.memoryAgentsAsTools;
     this.memoryPromptTemplate = options.memoryPromptTemplate;
@@ -308,7 +308,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    */
   inputKey?: string;
 
-  fileInputKey?: string;
+  inputFileKey?: string;
 
   /**
    * Custom key to use for text output in the response
@@ -319,9 +319,9 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    */
   outputKey: string;
 
-  fileOutputKey: string;
+  outputFileKey: string;
 
-  fileOutputType?: FileOutputType;
+  outputFileType?: FileType;
 
   /**
    * Controls how the agent uses tools during execution
@@ -530,7 +530,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         Object.assign(result, { [outputKey]: text });
       }
       if (files) {
-        Object.assign(result, { [this.fileOutputKey]: files });
+        Object.assign(result, { [this.outputFileKey]: files });
       }
 
       if (!isEmpty(result)) {

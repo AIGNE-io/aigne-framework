@@ -10,7 +10,13 @@ import type {
   Message,
 } from "./agent.js";
 import { type ChatModelOutputUsage, chatModelOutputUsageSchema } from "./chat-model.js";
-import { FileOutputType, type FileUnionContent, fileUnionContentSchema, Model } from "./model.js";
+import {
+  type FileType,
+  type FileUnionContent,
+  fileTypeSchema,
+  fileUnionContentSchema,
+  Model,
+} from "./model.js";
 
 export interface ImageModelOptions<
   I extends ImageModelInput = ImageModelInput,
@@ -94,7 +100,7 @@ export abstract class ImageModel<
       output = {
         ...output,
         images: await Promise.all(
-          images.map((image) => this.transformFileOutput(input.outputType, image, options)),
+          images.map((image) => this.transformFileType(input.outputFileType, image, options)),
         ),
       };
     }
@@ -106,23 +112,27 @@ export abstract class ImageModel<
 export type ImageModelInputImage = FileUnionContent[];
 
 export interface ImageModelInput extends Message {
-  model?: string;
+  prompt: string;
 
   image?: ImageModelInputImage;
 
-  prompt: string;
-
   n?: number;
 
-  outputType?: FileOutputType;
+  outputFileType?: FileType;
+
+  modelOptions?: ImageModelInputOptions;
+}
+
+export interface ImageModelInputOptions extends Record<string, unknown> {
+  model?: string;
 }
 
 export const imageModelInputSchema = z.object({
-  model: z.string().optional(),
-  image: z.array(fileUnionContentSchema).optional().describe("Images used for editing"),
   prompt: z.string(),
+  image: z.array(fileUnionContentSchema).optional().describe("Images used for editing"),
   n: z.number().int().min(1).optional(),
-  outputType: z.nativeEnum(FileOutputType).optional(),
+  outputFileType: fileTypeSchema.optional(),
+  modelOptions: z.record(z.unknown()).optional(),
 });
 
 export interface ImageModelOutput extends Message {

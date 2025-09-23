@@ -1,6 +1,5 @@
 import {
   type AgentInvokeOptions,
-  FileOutputType,
   type FileUnionContent,
   ImageModel,
   type ImageModelInput,
@@ -95,7 +94,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     input: GeminiImageModelInput,
     options: AgentInvokeOptions,
   ): Promise<ImageModelOutput> {
-    const model = input.model || this.credential.model;
+    const model = input.modelOptions?.model || this.credential.model;
     const responseFormat = input.responseFormat || "base64";
     if (responseFormat === "url") {
       throw new Error("Gemini image models currently only support base64 format");
@@ -111,7 +110,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
   private async generateImageByImagenModel(
     input: GeminiImageModelInput,
   ): Promise<ImageModelOutput> {
-    const model = input.model || this.credential.model;
+    const model = input.modelOptions?.model || this.credential.model;
 
     const mergedInput = { ...this.modelOptions, ...input };
 
@@ -133,7 +132,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     ];
 
     const response = await this.client.models.generateImages({
-      model: model,
+      model,
       prompt: mergedInput.prompt,
       config: { numberOfImages: mergedInput.n || 1, ...pick(mergedInput, inputKeys) },
     });
@@ -159,7 +158,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     input: GeminiImageModelInput,
     options: AgentInvokeOptions,
   ): Promise<ImageModelOutput> {
-    const model = input.model || this.credential.model;
+    const model = input.modelOptions?.model || this.credential.model;
 
     const mergedInput = { ...this.modelOptions, ...input };
 
@@ -196,17 +195,13 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
 
     const images = await Promise.all(
       flat(input.image).map<Promise<PartUnion>>(async (image) => {
-        const { data, mimeType } = await this.transformFileOutput(
-          FileOutputType.file,
-          image,
-          options,
-        );
+        const { data, mimeType } = await this.transformFileType("file", image, options);
         return { inlineData: { data, mimeType } };
       }),
     );
 
     const response = await this.client.models.generateContent({
-      model: model,
+      model,
       contents: [{ text: input.prompt }, ...images],
       config: {
         responseModalities: [Modality.TEXT, Modality.IMAGE],

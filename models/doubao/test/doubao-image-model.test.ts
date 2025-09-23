@@ -1,5 +1,4 @@
 import { expect, spyOn, test } from "bun:test";
-import { FileOutputType } from "@aigne/core";
 import { DoubaoImageModel } from "@aigne/doubao";
 import { serve } from "bun";
 import { detect } from "detect-port";
@@ -95,7 +94,7 @@ test("DoubaoImageModel should generate images successfully with non-streaming", 
   const result = await model.invoke({
     prompt: "Draw an image about a cat",
     model: "doubao-seedream-4-0-250828",
-    outputType: FileOutputType.file,
+    outputFileType: "file",
   });
 
   expect(result).toMatchInlineSnapshot(`
@@ -133,7 +132,7 @@ test("DoubaoImageModel should generate images successfully with streaming", asyn
     prompt: "Draw an image about a cat",
     model: "doubao-seedream-4-0-250828",
     stream: true,
-    outputType: FileOutputType.file,
+    outputFileType: "file",
   });
 
   expect(result).toMatchInlineSnapshot(`

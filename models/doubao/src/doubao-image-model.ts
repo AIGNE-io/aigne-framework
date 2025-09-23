@@ -1,6 +1,5 @@
 import {
   type AgentInvokeOptions,
-  FileOutputType,
   type FileUnionContent,
   ImageModel,
   type ImageModelInput,
@@ -102,7 +101,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
     input: DoubaoImageModelInput,
     options: AgentInvokeOptions,
   ): Promise<ImageModelOutput> {
-    const model = input.model || this.credential.model;
+    const model = input.modelOptions?.model || this.credential.model;
     const { url, apiKey } = this.credential;
     if (!apiKey) {
       throw new Error(
@@ -154,7 +153,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
 
     const image = await Promise.all(
       flat(input.image).map((image) =>
-        this.transformFileOutput(FileOutputType.file, image, options).then(
+        this.transformFileType("file", image, options).then(
           (file) => `data:${file.mimeType || "image/png"};base64,${file.data}`,
         ),
       ),

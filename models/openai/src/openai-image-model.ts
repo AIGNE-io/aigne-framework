@@ -1,6 +1,5 @@
 import {
   type AgentInvokeOptions,
-  FileOutputType,
   type FileUnionContent,
   ImageModel,
   type ImageModelInput,
@@ -147,7 +146,7 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
     input: OpenAIImageModelInput,
     options: AgentInvokeOptions,
   ): Promise<OpenAIImageModelOutput> {
-    const model = input.model || this.credential.model;
+    const model = input.modelOptions?.model || this.credential.model;
 
     if (input.image?.length && !SUPPORT_EDIT_MODELS.includes(model)) {
       throw new Error(`Model ${model} does not support image editing`);
@@ -169,7 +168,7 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
             ...(body as OpenAI.ImageEditParams),
             image: await Promise.all(
               input.image.map((image) =>
-                this.transformFileOutput(FileOutputType.file, image, options).then(
+                this.transformFileType("file", image, options).then(
                   (file) =>
                     new File([Buffer.from(file.data, "base64")], file.filename || "image.png", {
                       type: file.mimeType,

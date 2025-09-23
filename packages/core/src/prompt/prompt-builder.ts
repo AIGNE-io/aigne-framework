@@ -4,16 +4,16 @@ import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
-import { type AIAgent, DEFAULT_FILE_OUTPUT_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
+import { type AIAgent, DEFAULT_OUTPUT_FILE_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
 import type {
   ChatModel,
   ChatModelInput,
   ChatModelInputMessage,
   ChatModelInputMessageContent,
+  ChatModelInputOptions,
   ChatModelInputResponseFormat,
   ChatModelInputTool,
   ChatModelInputToolChoice,
-  ModelOptions,
 } from "../agents/chat-model.js";
 import { fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
@@ -107,7 +107,7 @@ export class PromptBuilder {
       responseFormat: options.agent?.structuredStreamMode
         ? undefined
         : this.buildResponseFormat(options),
-      fileOutputType: options.agent?.fileOutputType,
+      outputFileType: options.agent?.outputFileType,
       ...this.buildTools(options),
     };
   }
@@ -136,7 +136,7 @@ export class PromptBuilder {
         : this.instructions
       )?.format(options.input, { workingDir: this.workingDir })) ?? [];
 
-    const fileInputKey = options.agent?.fileInputKey;
+    const fileInputKey = options.agent?.inputFileKey;
     const files = flat(
       fileInputKey
         ? checkArguments(
@@ -201,10 +201,10 @@ export class PromptBuilder {
     const other: unknown[] = [];
 
     const inputKey = options.agent?.inputKey;
-    const fileInputKey = options.agent?.fileInputKey;
+    const fileInputKey = options.agent?.inputFileKey;
 
     const outputKey = options.agent?.outputKey || DEFAULT_OUTPUT_KEY;
-    const fileOutputKey = options.agent?.fileOutputKey || DEFAULT_FILE_OUTPUT_KEY;
+    const outputFileKey = options.agent?.outputFileKey || DEFAULT_OUTPUT_FILE_KEY;
 
     const stringOrStringify = (value: unknown) =>
       typeof value === "string" ? value : stringify(value);
@@ -246,7 +246,7 @@ export class PromptBuilder {
       const agentMessageContent: ChatModelInputMessageContent = [];
       if (typeof output === "object") {
         const outputMessage: unknown = Reflect.get(output, outputKey);
-        const outputFiles: unknown = Reflect.get(output, fileOutputKey);
+        const outputFiles: unknown = Reflect.get(output, outputFileKey);
         if (outputMessage) {
           agentMessageContent.push({ type: "text", text: stringOrStringify(outputMessage) });
         }
@@ -339,7 +339,7 @@ export class PromptBuilder {
     }));
 
     let toolChoice: ChatModelInputToolChoice | undefined;
-    const modelOptions: ModelOptions = {};
+    const modelOptions: ChatModelInputOptions = {};
 
     // use manual choice if configured in the agent
     const manualChoice = options.agent?.toolChoice;

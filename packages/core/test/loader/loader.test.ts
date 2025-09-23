@@ -234,7 +234,6 @@ test("loadAgent should support nested relative prompt paths", async () => {
 
   expect(await agent.instructions.build({})).toMatchInlineSnapshot(`
     {
-      "fileOutputType": undefined,
       "messages": [
         {
           "content": 
@@ -254,6 +253,7 @@ test("loadAgent should support nested relative prompt paths", async () => {
         },
       ],
       "modelOptions": undefined,
+      "outputFileType": undefined,
       "responseFormat": undefined,
       "toolAgents": undefined,
       "toolChoice": undefined,

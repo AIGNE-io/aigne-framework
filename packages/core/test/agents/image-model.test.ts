@@ -2,7 +2,6 @@ import { expect, test } from "bun:test";
 import {
   type AgentInvokeOptions,
   type AgentProcessResult,
-  FileOutputType,
   ImageModel,
   type ImageModelInput,
   type ImageModelOutput,
@@ -30,7 +29,7 @@ test("ImageModel should work correctly", async () => {
 
   expect(model.credential).toBeTruthy();
   expect(
-    await model.invoke({ prompt: "Draw an image about a cat", outputType: FileOutputType.file }),
+    await model.invoke({ prompt: "Draw an image about a cat", outputFileType: "file" }),
   ).toMatchInlineSnapshot(`
     {
       "images": [

@@ -1,6 +1,5 @@
 import {
   type AgentProcessResult,
-  FileOutputType,
   ImageModel,
   type ImageModelInput,
   type ImageModelOutput,
@@ -91,10 +90,10 @@ export class AIGNEHubImageModel extends ImageModel {
         ...input,
         modelOptions: {
           ...this.options.modelOptions,
-          model: input.model || (await this.credential).model,
+          model: input.modelOptions?.model || (await this.credential).model,
         },
         // Shouldn't use `local` output type for remote AIGNE Hub call, client can not access the remote filesystem
-        outputType: FileOutputType.file,
+        outputType: "file",
       },
       {
         ...options,

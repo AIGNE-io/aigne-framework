@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { FileOutputType, ImageAgent } from "@aigne/core";
+import { ImageAgent } from "@aigne/core";
 import { z } from "zod";
 import { OpenAIImageModel } from "../_mocks/mock-models.js";
 
@@ -12,7 +12,7 @@ test("ImageAgent should work correctly", async () => {
     inputSchema: z.object({
       topic: z.string(),
     }),
-    outputType: FileOutputType.file,
+    outputFileType: "file",
   });
 
   const modelProcess = spyOn(imageModel, "process").mockReturnValueOnce({

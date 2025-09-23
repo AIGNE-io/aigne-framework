@@ -9,7 +9,7 @@ import {
   type Message,
 } from "./agent.js";
 import { type ImageModelOutput, imageModelOutputSchema } from "./image-model.js";
-import type { FileOutputType } from "./model.js";
+import { type FileType, fileTypeSchema } from "./model.js";
 
 export interface ImageAgentOptions<I extends Message = any, O extends ImageModelOutput = any>
   extends Omit<AgentOptions<I, O>, "outputSchema"> {
@@ -17,7 +17,7 @@ export interface ImageAgentOptions<I extends Message = any, O extends ImageModel
 
   modelOptions?: Record<string, any>;
 
-  outputType?: FileOutputType;
+  outputFileType?: FileType;
 }
 
 export const imageAgentOptionsSchema: ZodObject<{
@@ -25,6 +25,7 @@ export const imageAgentOptionsSchema: ZodObject<{
 }> = agentOptionsSchema.extend({
   instructions: z.union([z.string(), z.custom<PromptBuilder>()]),
   modelOptions: z.record(z.any()).optional(),
+  outputFileType: fileTypeSchema.optional(),
 });
 
 export class ImageAgent<I extends Message = any, O extends ImageModelOutput = any> extends Agent<
@@ -48,14 +49,14 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
         ? PromptBuilder.from(options.instructions)
         : options.instructions;
     this.modelOptions = options.modelOptions;
-    this.outputType = options.outputType;
+    this.outputFileType = options.outputFileType;
   }
 
   instructions: PromptBuilder;
 
   modelOptions?: Record<string, any>;
 
-  outputType?: FileOutputType;
+  outputFileType?: FileType;
 
   override async process(input: I, options: AgentInvokeOptions): Promise<O> {
     const imageModel = this.imageModel || options.imageModel || options.context.imageModel;
@@ -65,7 +66,7 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
 
     return (await this.invokeChildAgent(
       imageModel,
-      { ...input, ...this.modelOptions, prompt, outputType: this.outputType },
+      { ...input, modelOptions: this.modelOptions, prompt, outputFileType: this.outputFileType },
       { ...options, streaming: false },
     )) as O;
   }

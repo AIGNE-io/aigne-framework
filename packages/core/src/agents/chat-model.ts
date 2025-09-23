@@ -13,7 +13,7 @@ import {
   type Message,
 } from "./agent.js";
 import {
-  type FileOutputType,
+  type FileType,
   type FileUnionContent,
   fileContentSchema,
   fileUnionContentSchema,
@@ -37,7 +37,7 @@ export interface ChatModelOptions
   > {
   model?: string;
 
-  modelOptions?: Omit<ModelOptions, "model">;
+  modelOptions?: Omit<ChatModelInputOptions, "model">;
 }
 
 /**
@@ -206,8 +206,8 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
               }
 
               if (
-                (input.modelOptions?.preferFileInputType ||
-                  this.options?.modelOptions?.preferFileInputType) !== "url"
+                (input.modelOptions?.preferInputFileType ||
+                  this.options?.modelOptions?.preferInputFileType) !== "url"
               ) {
                 if (item.type === "url") {
                   return {
@@ -303,7 +303,7 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
       output = {
         ...output,
         files: await Promise.all(
-          files.map((file) => this.transformFileOutput(input.fileOutputType, file, options)),
+          files.map((file) => this.transformFileType(input.outputFileType, file, options)),
         ),
       };
     }
@@ -353,7 +353,7 @@ export interface ChatModelInput extends Message {
    */
   responseFormat?: ChatModelInputResponseFormat;
 
-  fileOutputType?: FileOutputType;
+  outputFileType?: FileType;
 
   /**
    * List of tools available for the model to use
@@ -368,7 +368,7 @@ export interface ChatModelInput extends Message {
   /**
    * Model-specific configuration options
    */
-  modelOptions?: ModelOptions;
+  modelOptions?: ChatModelInputOptions;
 }
 
 /**
@@ -573,7 +573,7 @@ export type Modality = "text" | "image" | "audio";
  *
  * Contains various parameters for controlling model behavior, such as model name, temperature, etc.
  */
-export interface ModelOptions {
+export interface ChatModelInputOptions {
   /**
    * Model name or version
    */
@@ -606,7 +606,7 @@ export interface ModelOptions {
 
   modalities?: Modality[];
 
-  preferFileInputType?: "file" | "url";
+  preferInputFileType?: "file" | "url";
 }
 
 const modelOptionsSchema = z.object({

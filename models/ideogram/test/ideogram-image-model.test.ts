@@ -1,5 +1,4 @@
 import { expect, spyOn, test } from "bun:test";
-import { FileOutputType } from "@aigne/core";
 import { IdeogramImageModel } from "@aigne/ideogram";
 import { serve } from "bun";
 import { detect } from "detect-port";
@@ -38,7 +37,7 @@ test("IdeogramImageModel should generate images successfully", async () => {
   const result = await model.invoke({
     model: "ideogram-v3",
     prompt: "Draw an image about a cat",
-    outputType: FileOutputType.file,
+    outputFileType: "file",
   });
 
   expect(result).toMatchInlineSnapshot(`

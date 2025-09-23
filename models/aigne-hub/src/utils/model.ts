@@ -1,7 +1,12 @@
 import type { Agent } from "node:https";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
-import type { ChatModel, ImageModel, ModelOptions } from "@aigne/core";
+import type {
+  ChatModel,
+  ChatModelInputOptions,
+  ImageModel,
+  ImageModelInputOptions,
+} from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { DoubaoChatModel, DoubaoImageModel } from "@aigne/doubao";
 import { GeminiChatModel, GeminiImageModel } from "@aigne/gemini";
@@ -42,7 +47,7 @@ export interface LoadableModel {
   apiKeyEnvName?: string | string[];
   create: (options: {
     model?: string;
-    modelOptions?: ModelOptions;
+    modelOptions?: ChatModelInputOptions;
     apiKey?: string;
     url?: string;
   }) => ChatModel;
@@ -124,7 +129,7 @@ export interface LoadableImageModel {
     apiKey?: string;
     url?: string;
     model?: string;
-    modelOptions?: any;
+    modelOptions?: ImageModelInputOptions;
   }) => ImageModel;
 }
 

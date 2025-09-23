@@ -1,5 +1,4 @@
 import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { FileOutputType } from "@aigne/core";
 import { joinURL } from "ufo";
 import { AIGNEHubImageModel as AIGNEHubImageModel2 } from "../src/aigne-hub-image-model.js";
 import { AIGNEHubImageModel } from "../src/index.js";
@@ -104,7 +103,7 @@ describe("AIGNEHubImageModel", async () => {
       model: "openai/dall-e-3",
     });
 
-    const response = await client.invoke({ prompt: "hello", outputType: FileOutputType.file });
+    const response = await client.invoke({ prompt: "hello", outputFileType: "file" });
     expect(response).toMatchInlineSnapshot(`
       {
         "images": [
@@ -130,7 +129,7 @@ describe("AIGNEHubImageModel", async () => {
       model: "openai/dall-e-3",
     });
 
-    const response = await client.invoke({ prompt: "hello", outputType: FileOutputType.file });
+    const response = await client.invoke({ prompt: "hello", outputFileType: "file" });
     expect(response).toMatchInlineSnapshot(`
       {
         "images": [

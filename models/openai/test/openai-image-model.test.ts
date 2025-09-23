@@ -1,5 +1,4 @@
 import { expect, spyOn, test } from "bun:test";
-import { FileOutputType } from "@aigne/core";
 import { OpenAIImageModel } from "@aigne/openai";
 
 test("ImageAgent should work correctly", async () => {
@@ -14,7 +13,7 @@ test("ImageAgent should work correctly", async () => {
 
   const result = await model.invoke({
     prompt: "Draw an image about a cat",
-    outputType: FileOutputType.file,
+    outputFileType: "file",
   });
 
   expect(result).toMatchInlineSnapshot(`
@@ -39,7 +38,6 @@ test("ImageAgent should work correctly", async () => {
       {
         "model": "dall-e-2",
         "prompt": "Draw an image about a cat",
-        "response_format": "b64_json",
       },
       {
         "stream": false,

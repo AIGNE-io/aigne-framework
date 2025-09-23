@@ -4,18 +4,16 @@ import type {
   Dataset,
   DatasetItem,
   Evaluation,
+  EvaluationResult,
   EvaluationSummary,
   Evaluator,
   Report,
   Reporter,
   Runner,
   RunOptions,
-  RunResult,
 } from "./type.ts";
 
-function aggregateSummary(
-  results: (RunResult & { evaluations: Evaluation[]; error?: any })[],
-): EvaluationSummary {
+function aggregateSummary(results: EvaluationResult[]): EvaluationSummary {
   const total = results.length;
   const scores = results.flatMap((r) => r.evaluations.map((e) => e.score));
   const successRate = Number(
@@ -53,7 +51,7 @@ function aggregateSummary(
 
 type EvaluationPipelineContext = {
   items: DatasetItem[];
-  results: (RunResult & { evaluations: Evaluation[] })[];
+  results: EvaluationResult[];
 };
 
 export async function runEvaluationPipeline(params: {
@@ -82,11 +80,11 @@ export async function runEvaluationPipeline(params: {
     items.map((item) => {
       const input = JSON.stringify(item.input);
       return {
-        title: `Run evaluations with input: ${input.length > 100 ? `${input.slice(0, 100)}...` : input}...`,
+        title: `Run evaluations with input: ${input.length > 100 ? `${input.slice(0, 100)}...` : input}`,
         task: async (ctx, task) => {
           task.output = `Start running agent with input: ${JSON.stringify(item.input, null, 2)}`;
 
-          const runnerResults = runner.run([item], options);
+          const runnerResults = await runner.run([item], options);
 
           for await (const result of runnerResults) {
             task.output = `Start running evaluation with: ${JSON.stringify(

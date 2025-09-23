@@ -3,14 +3,14 @@ import { z } from "zod";
 import type { DatasetItem, Evaluation, Evaluator } from "./type.ts";
 
 const EVALUATOR_PROMPT = `
-# Instruction
+# Instructions
 You are an expert evaluator. Your task is to evaluate the quality of AI-generated responses.
 You will be given:
 1. User Input (Prompt)
 2. AI-generated Output
 3. Expected Output
 
-## Evaluation Method
+## Evaluation Methods
 Follow these three correlation checks before assigning a score:
 1. **AI Output vs User Input**: Check if the AI response is relevant to the user input.
 2. **Expected Output vs User Input**: Check if the expected output is relevant to the user input.
@@ -111,7 +111,7 @@ export class LLMAsJudgeEvaluator implements Evaluator {
         rating: result.rating,
         score: result.score,
         reason: result.reasoning,
-        usage: result?.$meta?.usage || {},
+        usage: result?.$meta?.usage ?? {},
       },
     ];
   }

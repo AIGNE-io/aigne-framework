@@ -40,7 +40,7 @@ export function createEvalCommand({
 > {
   return {
     command: "eval [path] [entry-agent]",
-    describe: "Evaluation AIGNE for the specified path",
+    describe: "Evaluate AIGNE for the specified path",
     builder: async (yargs) => {
       return yargs
         .positional("path", {
@@ -50,7 +50,7 @@ export function createEvalCommand({
         })
         .positional("entry-agent", {
           type: "string",
-          describe: "Name of the agent to run (defaults to the entry agent if not specified)",
+          describe: "Name of the agent to evaluate",
         })
         .positional("dataset", {
           type: "string",
@@ -96,7 +96,7 @@ export function createEvalCommand({
 
       const { chat } = aigne.cli;
       const agent =
-        chat && chat.name === options.agent
+        chat && chat.name === entryAgent
           ? chat
           : aigne.cli.agents[entryAgent] ||
             aigne.agents[entryAgent] ||

@@ -25,9 +25,21 @@ export class FileDataset implements Dataset {
   }
 
   async load(): Promise<DatasetItem[]> {
-    const list = await fs.readFile(this.filePath, "utf-8");
-    const result = await datasetSchema.safeParseAsync(JSON.parse(list));
+    let list: string;
+    try {
+      list = await fs.readFile(this.filePath, "utf-8");
+    } catch (err) {
+      throw new Error(`Failed to read dataset file: ${err.message}`);
+    }
 
+    let parsed: DatasetItem[];
+    try {
+      parsed = JSON.parse(list);
+    } catch (err) {
+      throw new Error(`Invalid JSON in dataset file: ${err.message}`);
+    }
+
+    const result = await datasetSchema.safeParseAsync(parsed);
     if (!result.success) {
       throw new Error(`Invalid dataset file: ${JSON.stringify(result.error.format())}`);
     }

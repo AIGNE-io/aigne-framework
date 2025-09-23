@@ -59,9 +59,12 @@ export interface EvaluationSummary {
   [key: string]: any;
 }
 
+export interface EvaluationResult extends RunResult {
+  evaluations: Evaluation[];
+}
 export interface Report {
   dataset: string;
-  results: (RunResult & { evaluations: Evaluation[] })[];
+  results: EvaluationResult[];
   summary: EvaluationSummary;
 }
 

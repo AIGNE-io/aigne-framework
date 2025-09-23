@@ -3,8 +3,6 @@ import Table from "cli-table3";
 import { Workbook } from "exceljs";
 import type { Report, Reporter } from "./type.ts";
 
-const truncate = (str: string, _max = 50) => str;
-
 const borderColor = chalk.green;
 const chars = {
   top: borderColor("─"),
@@ -83,9 +81,7 @@ export class BaseReporter implements Reporter {
           key: "Tokens",
           width: 40,
           value: r.usage
-            ? truncate(
-                `${(r.usage.inputTokens || 0) + (r.usage.outputTokens || 0)} (input:${r.usage.inputTokens || 0}, output:${r.usage.outputTokens || 0})`,
-              )
+            ? `${(r.usage.inputTokens || 0) + (r.usage.outputTokens || 0)} (input:${r.usage.inputTokens || 0}, output:${r.usage.outputTokens || 0})`
             : "-",
         },
       ];
@@ -108,7 +104,7 @@ export class ConsoleReporter extends BaseReporter {
 
     summaryTable.push([
       summary.total,
-      summary.successRate >= 4 ? chalk.green(summary.successRate) : chalk.red(summary.successRate),
+      chalk.green(summary.successRate),
       summary.avgLatency ? `${summary.avgLatency.toFixed(3)}s` : "-",
       summary.totalTokens ?? "-",
       summary.errorCount ?? 0,
@@ -138,11 +134,9 @@ export class ConsoleReporter extends BaseReporter {
       console.log(chalk.red("\n=== ❌ Failed Cases ==="));
       for (const f of failed) {
         console.log(
-          `#${f.id} Input: ${truncate(JSON.stringify(f.input))}\n  Expected: ${
-            f.expected ? truncate(JSON.stringify(f.expected)) : "-"
-          }\n  Output: ${f.output ? truncate(JSON.stringify(f.output)) : "-"}\n  Error: ${
-            f.error ?? "-"
-          }\n`,
+          `#${f.id} Input: ${JSON.stringify(f.input)}\n  Expected: ${
+            f.expected ? JSON.stringify(f.expected) : "-"
+          }\n  Output: ${f.output ? JSON.stringify(f.output) : "-"}\n  Error: ${f.error ?? "-"}\n`,
         );
       }
     }

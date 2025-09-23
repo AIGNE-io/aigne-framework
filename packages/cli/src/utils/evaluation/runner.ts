@@ -117,7 +117,8 @@ export class DefaultRunnerWithConcurrency implements Runner {
           if (currentIndex >= dataset.length) break;
 
           const item = dataset[currentIndex];
-          const res = await runTask(item!);
+          if (!item) continue;
+          const res = await runTask(item);
 
           yieldQueue.push(res);
           waitingResolve?.();
@@ -132,7 +133,8 @@ export class DefaultRunnerWithConcurrency implements Runner {
 
     while (yieldQueue.length > 0 || activeWorkers > 0) {
       if (yieldQueue.length > 0) {
-        yield yieldQueue.shift()!;
+        const result = yieldQueue.shift();
+        if (result) yield result;
       } else {
         await new Promise<void>((resolve) => {
           waitingResolve = resolve;

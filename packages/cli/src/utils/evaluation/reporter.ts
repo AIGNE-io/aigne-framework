@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import Table from "cli-table3";
-import { Workbook } from "exceljs";
+import * as XLSX from "xlsx";
 import type { Report, Reporter } from "./type.ts";
 
 const borderColor = chalk.green;
@@ -188,37 +188,24 @@ export class ExcelReporter extends BaseReporter {
   }
 
   override async report(report: Report): Promise<void> {
-    const workbook = new Workbook();
+    const wb = XLSX.utils.book_new();
 
-    const summarySheet = workbook.addWorksheet("Summary");
+    // Summary sheet
     const summaryList = this.formatSummary(report.summary);
-    summarySheet.columns = summaryList.map((h) => ({
-      header: h.header,
-      key: h.key,
-      width: h.width,
-    }));
-    summarySheet.addRow(summaryList.map((h) => h.value));
+    const summaryData = [summaryList.map((h) => h.header), summaryList.map((h) => h.value)];
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
 
-    const resultsSheet = workbook.addWorksheet("Results");
+    // Results sheet
     const list = this.formatReport(report);
-    if (!list.length) return;
-
-    resultsSheet.columns =
-      list[0]?.map((h) => ({ header: h.header, key: h.key, width: h.width })) ?? [];
-
-    for (const r of list) {
-      resultsSheet.addRow(
-        r.reduce(
-          (acc, h) => {
-            acc[h.key] = h.value;
-            return acc;
-          },
-          {} as Record<string, string | number>,
-        ),
-      );
+    if (list.length > 0) {
+      const headers: (string | number)[] = list[0]?.map((h) => h.header) ?? [];
+      const rows: (string | number)[][] = list.map((row) => row.map((h) => h.value));
+      const resultsSheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      XLSX.utils.book_append_sheet(wb, resultsSheet, "Results");
     }
 
-    await workbook.xlsx.writeFile(this.filePath);
+    XLSX.writeFile(wb, this.filePath);
     console.log(`✅ Excel report saved to ${this.filePath}`);
   }
 }

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.14.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.0-beta...gemini-v0.14.0-beta.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* improve image model parameters ([#530](https://github.com/AIGNE-io/aigne-framework/issues/530)) ([d66b5ca](https://github.com/AIGNE-io/aigne-framework/commit/d66b5ca01e14baad2712cc1a84930cdb63703232))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.1
+
 ## [0.14.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.13.5...gemini-v0.14.0-beta) (2025-09-22)
 
 

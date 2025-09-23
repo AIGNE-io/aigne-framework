@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.10.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.0-beta...aigne-hub-v0.10.0-beta.1) (2025-09-23)
+
+
+### Features
+
+* add models method to get available models for aigne hub model ([#532](https://github.com/AIGNE-io/aigne-framework/issues/532)) ([3248646](https://github.com/AIGNE-io/aigne-framework/commit/3248646d248aef5419273adc556bb1f13a7b2a02))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/deepseek bumped to 0.7.46-beta.1
+    * @aigne/doubao bumped to 1.1.0-beta.1
+    * @aigne/gemini bumped to 0.14.0-beta.1
+    * @aigne/ollama bumped to 0.7.46-beta.1
+    * @aigne/open-router bumped to 0.7.46-beta.1
+    * @aigne/openai bumped to 0.16.0-beta.1
+    * @aigne/poe bumped to 1.0.26-beta.1
+    * @aigne/transport bumped to 0.15.9-beta.1
+    * @aigne/xai bumped to 0.7.46-beta.1
+
 ## [0.10.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.9.6...aigne-hub-v0.10.0-beta) (2025-09-22)
 
 

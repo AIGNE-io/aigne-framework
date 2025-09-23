@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.79.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta...aigne-framework-v1.79.0-beta.1) (2025-09-23)
+
+
+### Features
+
+* add models method to get available models for aigne hub model ([#532](https://github.com/AIGNE-io/aigne-framework/issues/532)) ([3248646](https://github.com/AIGNE-io/aigne-framework/commit/3248646d248aef5419273adc556bb1f13a7b2a02))
+
+
+### Bug Fixes
+
+* improve image model parameters ([#530](https://github.com/AIGNE-io/aigne-framework/issues/530)) ([d66b5ca](https://github.com/AIGNE-io/aigne-framework/commit/d66b5ca01e14baad2712cc1a84930cdb63703232))
+
 ## [1.79.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.78.3...aigne-framework-v1.79.0-beta) (2025-09-22)
 
 

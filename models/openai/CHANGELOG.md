@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.0-beta...openai-v0.16.0-beta.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* improve image model parameters ([#530](https://github.com/AIGNE-io/aigne-framework/issues/530)) ([d66b5ca](https://github.com/AIGNE-io/aigne-framework/commit/d66b5ca01e14baad2712cc1a84930cdb63703232))
+
 ## [0.16.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.15.4...openai-v0.16.0-beta) (2025-09-22)
 
 

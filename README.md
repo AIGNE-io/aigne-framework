@@ -18,19 +18,19 @@ AIGNE Framework \[ ˈei dʒən ] is a functional AI application development fram
 
 ## Key Features
 
-* **Modular Design**: With a clear modular structure, developers can easily organize code, improve development efficiency, and simplify maintenance.
-* **TypeScript Support**: Comprehensive TypeScript type definitions are provided, ensuring type safety and enhancing the developer experience.
-* **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, Nova and other mainstream AI models, easily extensible to support additional models.
-* **Flexible Workflow Patterns**: Support for sequential, concurrent, routing, handoff and other workflow patterns to meet various complex application requirements.
-* **MCP Protocol Integration**: Seamless integration with external systems and services through the Model Context Protocol.
-* **Code Execution Capabilities**: Support for executing dynamically generated code in a secure sandbox, enabling more powerful automation capabilities.
-* **Blocklet Ecosystem Integration**: Closely integrated with ArcBlock's Blocklet ecosystem, providing developers with a one-stop solution for development and deployment.
+- **Modular Design**: With a clear modular structure, developers can easily organize code, improve development efficiency, and simplify maintenance.
+- **TypeScript Support**: Comprehensive TypeScript type definitions are provided, ensuring type safety and enhancing the developer experience.
+- **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, Nova and other mainstream AI models, easily extensible to support additional models.
+- **Flexible Workflow Patterns**: Support for sequential, concurrent, routing, handoff and other workflow patterns to meet various complex application requirements.
+- **MCP Protocol Integration**: Seamless integration with external systems and services through the Model Context Protocol.
+- **Code Execution Capabilities**: Support for executing dynamically generated code in a secure sandbox, enabling more powerful automation capabilities.
+- **Blocklet Ecosystem Integration**: Closely integrated with ArcBlock's Blocklet ecosystem, providing developers with a one-stop solution for development and deployment.
 
 ## Quick Start
 
 ### Environment Requirements
 
-* Node.js version 20.0 or higher
+- Node.js version 20.0 or higher
 
 ### Installation
 
@@ -116,14 +116,14 @@ The AIGNE Framework offers multiple workflow patterns, each tailored to address 
 
 ### Workflow Patterns
 
-* [Workflow Router](./examples/workflow-router/README.md) - Implement intelligent routing logic to direct requests to appropriate handlers based on content.
-* [Workflow Sequential](./examples/workflow-sequential/README.md) - Build step-by-step processing pipelines with guaranteed execution order.
-* [Workflow Concurrency](./examples/workflow-concurrency/README.md) - Optimize performance by processing multiple tasks simultaneously with parallel execution.
-* [Workflow Handoff](./examples/workflow-handoff/README.md) - Create seamless transitions between specialized agents to solve complex problems.
-* [Workflow Reflection](./examples/workflow-reflection/README.md) - Enable self-improvement through output evaluation and refinement capabilities.
-* [Workflow Orchestration](./examples/workflow-orchestration/README.md) - Coordinate multiple agents working together in sophisticated processing pipelines.
-* [Workflow Code Execution](./examples/workflow-code-execution/README.md) - Safely execute dynamically generated code within AI-driven workflows.
-* [Workflow Group Chat](./examples/workflow-group-chat/README.md) - Share messages and interact with multiple agents in a group chat environment.
+- [Workflow Router](./examples/workflow-router/README.md) - Implement intelligent routing logic to direct requests to appropriate handlers based on content.
+- [Workflow Sequential](./examples/workflow-sequential/README.md) - Build step-by-step processing pipelines with guaranteed execution order.
+- [Workflow Concurrency](./examples/workflow-concurrency/README.md) - Optimize performance by processing multiple tasks simultaneously with parallel execution.
+- [Workflow Handoff](./examples/workflow-handoff/README.md) - Create seamless transitions between specialized agents to solve complex problems.
+- [Workflow Reflection](./examples/workflow-reflection/README.md) - Enable self-improvement through output evaluation and refinement capabilities.
+- [Workflow Orchestration](./examples/workflow-orchestration/README.md) - Coordinate multiple agents working together in sophisticated processing pipelines.
+- [Workflow Code Execution](./examples/workflow-code-execution/README.md) - Safely execute dynamically generated code within AI-driven workflows.
+- [Workflow Group Chat](./examples/workflow-group-chat/README.md) - Share messages and interact with multiple agents in a group chat environment.
 
 ### Sequential
 
@@ -294,40 +294,42 @@ Built-in MCP support allows the AIGNE framework to effortlessly run its own MCP 
 
 ### Implement MCP Server
 
-* [MCP Server](./examples/mcp-server/README.md) - Build a MCP server using AIGNE CLI to provide MCP services.
+- [MCP Server](./examples/mcp-server/README.md) - Build a MCP server using AIGNE CLI to provide MCP services.
 
 ### Use MCP Servers
 
-* [Puppeteer MCP Server](./examples/mcp-puppeteer/README.md) - Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.
-* [SQLite MCP Server](./examples/mcp-sqlite/README.md) - Explore database operations by connecting to SQLite through the Model Context Protocol.
-* [Github](./examples/mcp-github/README.md) - Interact with GitHub repositories using the GitHub MCP Server.
+- [Puppeteer MCP Server](./examples/mcp-puppeteer/README.md) - Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.
+- [SQLite MCP Server](./examples/mcp-sqlite/README.md) - Explore database operations by connecting to SQLite through the Model Context Protocol.
+- [Github](./examples/mcp-github/README.md) - Interact with GitHub repositories using the GitHub MCP Server.
 
 ## Packages
 
-* [examples](./examples/README.md) - Example project demonstrating how to use different agents to handle various tasks.
-* [packages/core](./packages/core/README.md) - Core package providing the foundation for building AIGNE applications.
-* [packages/agent-library](./packages/agent-library/README.md) - AIGNE agent library, providing a variety of specialized agents for different tasks.
-* [packages/cli](./packages/cli/README.md) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
-* models - AIGNE Framework's built-in models, including OpenAI, Gemini, Claude, and Nova.
-  * [models/openai](./models/openai/README.md) - OpenAI model implementation, supporting OpenAI's API and function calling.
-  * [models/anthropic](./models/anthropic/README.md) - Anthropic model implementation, supporting Anthropic's API and function calling.
-  * [models/bedrock](./models/bedrock/README.md) - Bedrock model implementation, supporting Bedrock's API and function calling.
-  * [models/deepseek](./models/deepseek/README.md) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
-  * [models/gemini](./models/gemini/README.md) - Gemini model implementation, supporting Gemini's API and function calling.
-  * [models/ollama](./models/ollama/README.md) - Ollama model implementation, supporting Ollama's API and function calling.
-  * [models/open-router](./models/open-router/README.md) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
-  * [models/xai](./models/xai/README.md) - XAI model implementation, supporting XAI's API and function calling.
+- [examples](./examples/README.md) - Example project demonstrating how to use different agents to handle various tasks.
+- [packages/core](./packages/core/README.md) - Core package providing the foundation for building AIGNE applications.
+- [packages/agent-library](./packages/agent-library/README.md) - AIGNE agent library, providing a variety of specialized agents for different tasks.
+- [packages/cli](./packages/cli/README.md) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
+- models - AIGNE Framework's built-in models, including OpenAI, Gemini, Claude, and Nova.
+  - [models/openai](./models/openai/README.md) - OpenAI model implementation, supporting OpenAI's API and function calling.
+  - [models/anthropic](./models/anthropic/README.md) - Anthropic model implementation, supporting Anthropic's API and function calling.
+  - [models/bedrock](./models/bedrock/README.md) - Bedrock model implementation, supporting Bedrock's API and function calling.
+  - [models/deepseek](./models/deepseek/README.md) - DeepSeek model implementation, supporting DeepSeek's API and function calling.
+  - [models/gemini](./models/gemini/README.md) - Gemini model implementation, supporting Gemini's API and function calling.
+  - [models/ollama](./models/ollama/README.md) - Ollama model implementation, supporting Ollama's API and function calling.
+  - [models/open-router](./models/open-router/README.md) - OpenRouter model implementation, supporting OpenRouter's API and function calling.
+  - [models/xai](./models/xai/README.md) - XAI model implementation, supporting XAI's API and function calling.
 
 ## Documentation
 
 [AIGNE Framework Documentation](https://www.arcblock.io/docs/aigne-framework) provides comprehensive guides and API references to help developers quickly get started and master the framework.
 
+👉 For detailed explanation, see [Architecture.md](./architecture.md)
+
 ## Contributing and Releasing
 
 AIGNE Framework is an open source project and welcomes community contributions. We use [release-please](https://github.com/googleapis/release-please) for version management and release automation.
 
-* Contributing Guidelines: See [CONTRIBUTING.md](./CONTRIBUTING.md)
-* Release Process: See [RELEASING.md](./RELEASING.md)
+- Contributing Guidelines: See [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Release Process: See [RELEASING.md](./RELEASING.md)
 
 ## License
 
@@ -339,19 +341,19 @@ This project is licensed under the [Elastic-2.0](./LICENSE.md) - see the [LICENS
 \[ ˈei dʒən ] — like "agent" without the t
 
 🔤 **Pronunciation**
-It's pronounced **\[ ˈei dʒən ]** — like *"agent" without the "t."*
+It's pronounced **\[ ˈei dʒən ]** — like _"agent" without the "t."_
 
 🏞️ **Origin**
-*Aigne* is a small medieval village in southern France.
-In **Old Irish**, *aigne* means **"spirit"** — a perfect metaphor for agents that think and act.
+_Aigne_ is a small medieval village in southern France.
+In **Old Irish**, _aigne_ means **"spirit"** — a perfect metaphor for agents that think and act.
 
 🔡 **Acronym**
-**AIGNE** = *Artificial Intelligence & Generative Natural-Language Ecosystem*
+**AIGNE** = _Artificial Intelligence & Generative Natural-Language Ecosystem_
 An open framework for building real AI agents that live across cloud, browser, and edge.
 
 ## Community and Support
 
 AIGNE Framework has a vibrant developer community offering various support channels:
 
-* [Documentation Center](https://www.arcblock.io/docs/aigne-framework): Comprehensive official documentation to help developers get started quickly.
-* [Technical Forum](https://community.arcblock.io/discussions/boards/aigne): Exchange experiences with global developers and solve technical problems.
+- [Documentation Center](https://www.arcblock.io/docs/aigne-framework): Comprehensive official documentation to help developers get started quickly.
+- [Technical Forum](https://community.arcblock.io/discussions/boards/aigne): Exchange experiences with global developers and solve technical problems.

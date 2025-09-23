@@ -1,0 +1,101 @@
+- title: AIGNE Framework | Build Modern AI Applications
+  description: Landing page for AIGNE Framework, highlighting its key features
+    like modular design, multi-model support, and flexible workflows. Includes a
+    quick start example and calls-to-action for developers.
+  path: /home
+  sourceIds:
+    - README.md
+  parentId: ""
+- title: Get Started
+  description: A step-by-step guide for developers to install and start using the
+    AIGNE Framework, including environment requirements, installation commands,
+    and a basic usage example.
+  path: /get-started
+  sourceIds:
+    - README.md
+  parentId: ""
+- title: Documentation
+  description: Central hub for all AIGNE Framework technical documentation,
+    providing access to core concepts, architecture diagrams, workflow patterns,
+    and the complete API reference.
+  path: /docs
+  sourceIds:
+    - README.md
+    - architecture.md
+  parentId: ""
+- title: Core Concepts
+  description: Explore the fundamental principles of the AIGNE Framework,
+    including its modular design, agent system, TypeScript support, multiple AI
+    model integration, and the Model Context Protocol (MCP).
+  path: /docs/concepts
+  sourceIds:
+    - README.md
+    - packages/core/README.md
+  parentId: /docs
+- title: Architecture
+  description: An overview of the AIGNE Framework's three-layer architecture,
+    detailing the Tools, Framework Core, and Hub & LLM Provider layers,
+    illustrated with a clear diagram.
+  path: /docs/architecture
+  sourceIds:
+    - README.md
+    - architecture.md
+  parentId: /docs
+- title: Workflow Patterns
+  description: A detailed guide to the various workflow patterns supported by
+    AIGNE, such as Sequential, Concurrent, Router, Handoff, Reflection, and Code
+    Execution, with diagrams and use cases.
+  path: /docs/workflows
+  sourceIds:
+    - README.md
+    - examples/workflow-router/README.md
+    - examples/workflow-sequential/README.md
+    - examples/workflow-concurrency/README.md
+    - examples/workflow-handoff/README.md
+    - examples/workflow-reflection/README.md
+    - examples/workflow-orchestrator/README.md
+    - examples/workflow-code-execution/README.md
+    - examples/workflow-group-chat/README.md
+  parentId: /docs
+- title: API Reference
+  description: Comprehensive reference for all packages within the AIGNE Framework
+    ecosystem, including @aigne/core, @aigne/transport, various model
+    integrations, and the agent library.
+  path: /docs/api
+  sourceIds:
+    - README.md
+    - packages/core/README.md
+    - packages/agent-library/README.md
+    - packages/cli/README.md
+    - models/openai/README.md
+    - models/anthropic/README.md
+    - models/bedrock/README.md
+    - models/deepseek/README.md
+    - models/gemini/README.md
+    - models/ollama/README.md
+    - models/open-router/README.md
+    - models/xai/README.md
+    - packages/transport/README.md
+  parentId: /docs
+- title: Examples
+  description: A collection of practical examples demonstrating how to use the
+    AIGNE Framework for various tasks, including chatbots, MCP integration,
+    memory management, and different workflow patterns.
+  path: /examples
+  sourceIds:
+    - examples/README.md
+    - examples/chat-bot/README.md
+    - examples/mcp-server/README.md
+    - examples/memory/README.md
+    - examples/mcp-github/README.md
+    - examples/mcp-puppeteer/README.md
+    - examples/mcp-sqlite/README.md
+  parentId: ""
+- title: Community & Support
+  description: Join the AIGNE developer community. Find information on
+    contributing to the project, links to the technical forum, and details about
+    the project's Elastic-2.0 license.
+  path: /community
+  sourceIds:
+    - README.md
+  parentId: ""

@@ -1,0 +1,46 @@
+meta:
+  title: "AIGNE 社区与支持 | 加入讨论"
+  description: "深入 AIGNE 开发者社区。获取支持、参与贡献并与其他开发者连接。一起创建出色的 AI 应用。"
+  image: "mediakit://aigne-framework.png"
+sections:
+  - name: "heroCommunity"
+    summary: "一个充满活力且友好的主视觉区，旨在激励开发者，让他们立即觉得自己是 AIGNE 社区的一员，并鼓励其参与讨论。"
+    title: "欢迎加入 AIGNE 社区！"
+    description: "你来对地方了。本处是交流核心。与其他开发者建立联系，分享想法，并获得构建优秀 AI 应用所需的支持。让我们共同构建未来。"
+    action:
+      text: "加入讨论"
+      link: "https://community.arcblock.io/discussions/boards/aigne"
+  - name: "getInvolved"
+    summary: "一个以行动为导向的部分，清晰展示社区参与的主要渠道——论坛、贡献与问题跟踪，便于开发者快速参与。"
+    title: "立即参与"
+    description: "准备好发挥影响了吗？有多种参与方式，从提问到贡献代码。找到适合你的方式并开始协作。"
+    list:
+      - title: "技术论坛"
+        description: "有问题吗？需要别人帮忙查看代码？加入我们的技术论坛，与专家和其他 AIGNE 爱好者交流。"
+        action:
+          text: "提问"
+          link: "https://community.arcblock.io/discussions/boards/aigne"
+      - title: "为项目做贡献"
+        description: "为 AIGNE 的未来出力。我们是一个开源项目，欢迎所有贡献。查看指引以开始。"
+        action:
+          text: "查看贡献指南"
+          link: "https://github.com/AIGNE-io/aigne-framework/blob/main/CONTRIBUTING.md"
+      - title: "报告问题"
+        description: "发现漏洞或有新功能建议？在 GitHub 上创建 issue。你的反馈有助于提升框架对所有人的价值。"
+        action:
+          text: "创建 Issue"
+          link: "https://github.com/AIGNE-io/aigne-framework/issues"
+  - name: "licensingInfo"
+    summary: "一个清晰且令人安心的部分，解释项目的开源许可，强调开发者在使用 AIGNE 构建时所拥有的自由与灵活性。"
+    title: "自由构建"
+    description: "AIGNE Framework 是在 Elastic-2.0 许可下的开源项目。这意味着你可以自由地创新、构建并部署你的解决方案。请开始创建出色的项目。"
+    action:
+      text: "阅读完整许可"
+      link: "https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md"
+  - name: "connectOnGithub"
+    summary: "最后的号召性用语，鼓励开发者在 GitHub 上与项目建立联系，促进持续的社区互动并跟踪最新动态。"
+    title: "在 GitHub 上与我们联系！"
+    description: "欢迎关注并参与。为仓库点星以表示支持并获取最新进展。期待看到你的成果。"
+    action:
+      text: "为仓库点星"
+      link: "https://github.com/AIGNE-io/aigne-framework"

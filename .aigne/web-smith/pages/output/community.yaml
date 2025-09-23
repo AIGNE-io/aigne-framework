@@ -1,0 +1,1234 @@
+id: 423f8449a3d5581e
+createdAt: 2025-09-23T09:24:51.888Z
+updatedAt: 2025-09-23T09:24:51.888Z
+publishedAt: 2025-09-23T09:24:51.888Z
+isPublic: true
+locales:
+  en:
+    backgroundColor: ""
+    style:
+      maxWidth: custom:1560px
+      paddingY: normal
+      paddingX: large
+    title: AIGNE Community & Support | Join the Conversation
+    description: Dive into the AIGNE developer community! Find support, get involved
+      with contributions, and connect with other builders. Let's create amazing
+      AI apps together.
+    image: mediakit://aigne-framework.png
+    header:
+      sticky: true
+  zh:
+    backgroundColor: ""
+    style:
+      maxWidth: custom:1560px
+      paddingY: normal
+      paddingX: large
+    title: AIGNE 社区与支持 | 加入讨论
+    description: 深入 AIGNE 开发者社区。获取支持、参与贡献并与其他开发者连接。一起创建出色的 AI 应用。
+    image: mediakit://aigne-framework.png
+    header:
+      sticky: true
+sections:
+  ac2db44709499959:
+    id: ac2db44709499959
+    component: layout-block
+    name: heroCommunity
+    config:
+      gridSettings:
+        desktop:
+          b4eebe893d78b443:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          70387f7ae8e9f129:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          2d8793e0b923e3a5:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+        mobile:
+          b4eebe893d78b443:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          70387f7ae8e9f129:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          2d8793e0b923e3a5:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+      gap: normal
+      paddingX: normal
+      paddingY: large
+      alignContent: center
+      justifyContent: center
+      background: grey.100
+      borderRadius: medium
+    sections:
+      b4eebe893d78b443:
+        id: b4eebe893d78b443
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      70387f7ae8e9f129:
+        id: 70387f7ae8e9f129
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      2d8793e0b923e3a5:
+        id: 2d8793e0b923e3a5
+        name: ActionButton
+        component: custom-component
+        config:
+          componentId: a44r0SiGV9AFn2Fj
+          useCache: true
+    sectionIds:
+      - b4eebe893d78b443
+      - 70387f7ae8e9f129
+      - 2d8793e0b923e3a5
+  30cbfd3c017da2f2:
+    id: 30cbfd3c017da2f2
+    component: layout-block
+    name: getInvolved
+    config:
+      gridSettings:
+        desktop:
+          0eacbca20450d4db:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          a591d0f1442de7b5:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          d90cc1e62660e3e6:
+            x: 0
+            y: 2
+            w: 4
+            h: 1
+          096e6874dd3f1fbf:
+            x: 4
+            y: 2
+            w: 4
+            h: 1
+          4dba86cfc5c31cb2:
+            x: 8
+            y: 2
+            w: 4
+            h: 1
+        mobile:
+          0eacbca20450d4db:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          a591d0f1442de7b5:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          d90cc1e62660e3e6:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+          096e6874dd3f1fbf:
+            x: 0
+            y: 3
+            w: 12
+            h: 1
+          4dba86cfc5c31cb2:
+            x: 0
+            y: 4
+            w: 12
+            h: 1
+      gap: normal
+      paddingX: normal
+      paddingY: large
+    sections:
+      0eacbca20450d4db:
+        id: 0eacbca20450d4db
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      a591d0f1442de7b5:
+        id: a591d0f1442de7b5
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      d90cc1e62660e3e6:
+        id: d90cc1e62660e3e6
+        component: layout-block
+        name: HeroSection
+        config:
+          gridSettings:
+            desktop:
+              d790eb50eab979da:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              9ea8327da3887531:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+              3f3be22db227f4ff:
+                x: 0
+                y: 2
+                w: 12
+                h: 1
+            mobile:
+              d790eb50eab979da:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              9ea8327da3887531:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+              3f3be22db227f4ff:
+                x: 0
+                y: 2
+                w: 12
+                h: 1
+          gap: normal
+          paddingX: normal
+          paddingY: large
+          alignContent: center
+          justifyContent: center
+          background: grey.100
+          borderRadius: medium
+        sections:
+          d790eb50eab979da:
+            id: d790eb50eab979da
+            name: RichTextTitle
+            component: custom-component
+            config:
+              componentId: xoHu0J44322kDYc-
+              useCache: true
+          9ea8327da3887531:
+            id: 9ea8327da3887531
+            name: RichTextDescription
+            component: custom-component
+            config:
+              componentId: xoHu0J44322kDYc-
+              useCache: true
+          3f3be22db227f4ff:
+            id: 3f3be22db227f4ff
+            name: ActionButton
+            component: custom-component
+            config:
+              componentId: a44r0SiGV9AFn2Fj
+              useCache: true
+        sectionIds:
+          - d790eb50eab979da
+          - 9ea8327da3887531
+          - 3f3be22db227f4ff
+      096e6874dd3f1fbf:
+        id: 096e6874dd3f1fbf
+        component: layout-block
+        name: HeroSection
+        config:
+          gridSettings:
+            desktop:
+              3595c6b0feaf245d:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              199a434921b05746:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+              cd32487a96ea116e:
+                x: 0
+                y: 2
+                w: 12
+                h: 1
+            mobile:
+              3595c6b0feaf245d:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              199a434921b05746:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+              cd32487a96ea116e:
+                x: 0
+                y: 2
+                w: 12
+                h: 1
+          gap: normal
+          paddingX: normal
+          paddingY: large
+          alignContent: center
+          justifyContent: center
+          background: grey.100
+          borderRadius: medium
+        sections:
+          3595c6b0feaf245d:
+            id: 3595c6b0feaf245d
+            name: RichTextTitle
+            component: custom-component
+            config:
+              componentId: xoHu0J44322kDYc-
+              useCache: true
+          199a434921b05746:
+            id: 199a434921b05746
+            name: RichTextDescription
+            component: custom-component
+            config:
+              componentId: xoHu0J44322kDYc-
+              useCache: true
+          cd32487a96ea116e:
+            id: cd32487a96ea116e
+            name: ActionButton
+            component: custom-component
+            config:
+              componentId: a44r0SiGV9AFn2Fj
+              useCache: true
+        sectionIds:
+          - 3595c6b0feaf245d
+          - 199a434921b05746
+          - cd32487a96ea116e
+      4dba86cfc5c31cb2:
+        id: 4dba86cfc5c31cb2
+        component: layout-block
+        name: HeroSection
+        config:
+          gridSettings:
+            desktop:
+              9b0f79fee72a4e39:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              4c41275d8eb9e400:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+              5bd70c749c18c4fa:
+                x: 0
+                y: 2
+                w: 12
+                h: 1
+            mobile:
+              9b0f79fee72a4e39:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              4c41275d8eb9e400:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+              5bd70c749c18c4fa:
+                x: 0
+                y: 2
+                w: 12
+                h: 1
+          gap: normal
+          paddingX: normal
+          paddingY: large
+          alignContent: center
+          justifyContent: center
+          background: grey.100
+          borderRadius: medium
+        sections:
+          9b0f79fee72a4e39:
+            id: 9b0f79fee72a4e39
+            name: RichTextTitle
+            component: custom-component
+            config:
+              componentId: xoHu0J44322kDYc-
+              useCache: true
+          4c41275d8eb9e400:
+            id: 4c41275d8eb9e400
+            name: RichTextDescription
+            component: custom-component
+            config:
+              componentId: xoHu0J44322kDYc-
+              useCache: true
+          5bd70c749c18c4fa:
+            id: 5bd70c749c18c4fa
+            name: ActionButton
+            component: custom-component
+            config:
+              componentId: a44r0SiGV9AFn2Fj
+              useCache: true
+        sectionIds:
+          - 9b0f79fee72a4e39
+          - 4c41275d8eb9e400
+          - 5bd70c749c18c4fa
+    sectionIds:
+      - 0eacbca20450d4db
+      - a591d0f1442de7b5
+      - d90cc1e62660e3e6
+      - 096e6874dd3f1fbf
+      - 4dba86cfc5c31cb2
+  9fc6874b61cdf137:
+    id: 9fc6874b61cdf137
+    component: layout-block
+    name: licensingInfo
+    config:
+      gridSettings:
+        desktop:
+          b819ec520c314058:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          1ae4cf5c18dd09a3:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          e24e85741bbc32cb:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+        mobile:
+          b819ec520c314058:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          1ae4cf5c18dd09a3:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          e24e85741bbc32cb:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+      gap: normal
+      paddingX: normal
+      paddingY: large
+      alignContent: center
+      justifyContent: center
+      background: grey.100
+      borderRadius: medium
+    sections:
+      b819ec520c314058:
+        id: b819ec520c314058
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      1ae4cf5c18dd09a3:
+        id: 1ae4cf5c18dd09a3
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      e24e85741bbc32cb:
+        id: e24e85741bbc32cb
+        name: ActionButton
+        component: custom-component
+        config:
+          componentId: a44r0SiGV9AFn2Fj
+          useCache: true
+    sectionIds:
+      - b819ec520c314058
+      - 1ae4cf5c18dd09a3
+      - e24e85741bbc32cb
+  548f2fb290d68281:
+    id: 548f2fb290d68281
+    component: layout-block
+    name: connectOnGithub
+    config:
+      gridSettings:
+        desktop:
+          7c8c2459d1333ae9:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          e4e54bd828125a92:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          71fa7b74e96b3a01:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+        mobile:
+          7c8c2459d1333ae9:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          e4e54bd828125a92:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          71fa7b74e96b3a01:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+      gap: normal
+      paddingX: normal
+      paddingY: large
+      alignContent: center
+      justifyContent: center
+      background: grey.100
+      borderRadius: medium
+    sections:
+      7c8c2459d1333ae9:
+        id: 7c8c2459d1333ae9
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      e4e54bd828125a92:
+        id: e4e54bd828125a92
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      71fa7b74e96b3a01:
+        id: 71fa7b74e96b3a01
+        name: ActionButton
+        component: custom-component
+        config:
+          componentId: a44r0SiGV9AFn2Fj
+          useCache: true
+    sectionIds:
+      - 7c8c2459d1333ae9
+      - e4e54bd828125a92
+      - 71fa7b74e96b3a01
+sectionIds:
+  - ac2db44709499959
+  - 30cbfd3c017da2f2
+  - 9fc6874b61cdf137
+  - 548f2fb290d68281
+dataSource:
+  b4eebe893d78b443:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Welcome to the AIGNE Community!
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 欢迎加入 AIGNE 社区！
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  70387f7ae8e9f129:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: You're in the right place! This is where the magic happens. Connect with
+              fellow developers, share your brilliant ideas, and get the support
+              you need to build incredible AI applications. Let's build the
+              future, together!
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 你来对地方了。本处是交流核心。与其他开发者建立联系，分享想法，并获得构建优秀 AI 应用所需的支持。让我们共同构建未来。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  2d8793e0b923e3a5:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: Join the Discussion
+              url: https://community.arcblock.io/discussions/boards/aigne
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: 加入讨论
+              url: https://community.arcblock.io/discussions/boards/aigne
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+  0eacbca20450d4db:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Jump Right In!
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 立即参与
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  a591d0f1442de7b5:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Ready to make your mark? There are so many ways to get involved, from
+              asking questions to contributing code. Find your fit and start
+              collaborating!
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 准备好发挥影响了吗？有多种参与方式，从提问到贡献代码。找到适合你的方式并开始协作。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  d790eb50eab979da:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Technical Forum
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 技术论坛
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  9ea8327da3887531:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Have a question? Need a second pair of eyes on your code? Jump into our
+              technical forum to chat with experts and fellow AIGNE enthusiasts.
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 有问题吗？需要别人帮忙查看代码？加入我们的技术论坛，与专家和其他 AIGNE 爱好者交流。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  3f3be22db227f4ff:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: Ask a Question
+              url: https://community.arcblock.io/discussions/boards/aigne
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: 提问
+              url: https://community.arcblock.io/discussions/boards/aigne
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+  3595c6b0feaf245d:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Contribute to the Project
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 为项目做贡献
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  199a434921b05746:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Help shape the future of AIGNE! We're an open-source project and welcome
+              all contributions. Check out our guidelines to get started.
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 为 AIGNE 的未来出力。我们是一个开源项目，欢迎所有贡献。查看指引以开始。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  cd32487a96ea116e:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: See Contribution Guide
+              url: https://github.com/AIGNE-io/aigne-framework/blob/main/CONTRIBUTING.md
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: 查看贡献指南
+              url: https://github.com/AIGNE-io/aigne-framework/blob/main/CONTRIBUTING.md
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+  9b0f79fee72a4e39:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Report an Issue
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 报告问题
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  4c41275d8eb9e400:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Found a bug or have an idea for a new feature? Open an issue on GitHub.
+              Your feedback is what makes the framework better for everyone.
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 发现漏洞或有新功能建议？在 GitHub 上创建 issue。你的反馈有助于提升框架对所有人的价值。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  5bd70c749c18c4fa:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: Open an Issue
+              url: https://github.com/AIGNE-io/aigne-framework/issues
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: 创建 Issue
+              url: https://github.com/AIGNE-io/aigne-framework/issues
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+  b819ec520c314058:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Build with Freedom
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 自由构建
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  1ae4cf5c18dd09a3:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: AIGNE Framework is an open source project licensed under Elastic-2.0. This
+              means you have the freedom to innovate, build, and deploy your
+              solutions with confidence. Go ahead, create something amazing!
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: AIGNE Framework 是在 Elastic-2.0
+              许可下的开源项目。这意味着你可以自由地创新、构建并部署你的解决方案。请开始创建出色的项目。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  e24e85741bbc32cb:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: Read the Full License
+              url: https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: 阅读完整许可
+              url: https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+  7c8c2459d1333ae9:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Let's Connect on GitHub!
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 在 GitHub 上与我们联系！
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  e4e54bd828125a92:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Don't be a stranger! Star the repository to show your support and stay
+              up-to-date with the latest developments. We can't wait to see what
+              you'll build!
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 欢迎关注并参与。为仓库点星以表示支持并获取最新进展。期待看到你的成果。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  71fa7b74e96b3a01:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: Star us on GitHub
+              url: https://github.com/AIGNE-io/aigne-framework
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: 为仓库点星
+              url: https://github.com/AIGNE-io/aigne-framework
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center

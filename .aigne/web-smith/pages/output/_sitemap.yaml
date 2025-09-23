@@ -1,0 +1,20 @@
+sitemap:
+  - title: AIGNE Framework | Build Modern AI Applications
+    path: /home
+  - title: Get Started
+    path: /get-started
+  - title: Documentation
+    path: /docs
+    children:
+      - title: Core Concepts
+        path: /docs/concepts
+      - title: Architecture
+        path: /docs/architecture
+      - title: Workflow Patterns
+        path: /docs/workflows
+      - title: API Reference
+        path: /docs/api
+  - title: Examples
+    path: /examples
+  - title: Community & Support
+    path: /community

@@ -1,0 +1,1627 @@
+id: 3ebe07bc5a54388e
+createdAt: 2025-09-23T09:24:51.928Z
+updatedAt: 2025-09-23T09:24:51.928Z
+publishedAt: 2025-09-23T09:24:51.928Z
+isPublic: true
+locales:
+  en:
+    backgroundColor: ""
+    style:
+      maxWidth: custom:1560px
+      paddingY: normal
+      paddingX: large
+    title: AIGNE Workflow Patterns | Sequential, Concurrent, Router & More
+    description: Discover AIGNE's powerful workflow patterns. Learn how to build
+      sophisticated AI applications using Sequential, Concurrent, Router,
+      Handoff, Reflection, and Code Execution patterns with clear diagrams and
+      code examples.
+    image: mediakit://aigne-framework.png
+    header:
+      sticky: true
+  zh:
+    backgroundColor: ""
+    style:
+      maxWidth: custom:1560px
+      paddingY: normal
+      paddingX: large
+    title: AIGNE 工作流模式 | 顺序、并行、路由等
+    description: 探索 AIGNE 强大的工作流模式。学习如何使用顺序、并行、路由、交接、反思与代码执行等模式，通过清晰的图示和代码示例构建复杂的 AI 应用。
+    image: mediakit://aigne-framework.png
+    header:
+      sticky: true
+sections:
+  a282db71dbe1b6c2:
+    id: a282db71dbe1b6c2
+    component: layout-block
+    name: hero
+    config:
+      gridSettings:
+        desktop:
+          6b685ef99c692af1:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          e7c1e08d7e9f9ed4:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          d2a9d7beea5c9401:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+        mobile:
+          6b685ef99c692af1:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          e7c1e08d7e9f9ed4:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          d2a9d7beea5c9401:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+      gap: normal
+      paddingX: normal
+      paddingY: large
+      alignContent: center
+      justifyContent: center
+      background: grey.100
+      borderRadius: medium
+    sections:
+      6b685ef99c692af1:
+        id: 6b685ef99c692af1
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      e7c1e08d7e9f9ed4:
+        id: e7c1e08d7e9f9ed4
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      d2a9d7beea5c9401:
+        id: d2a9d7beea5c9401
+        name: ActionButton
+        component: custom-component
+        config:
+          componentId: a44r0SiGV9AFn2Fj
+          useCache: true
+    sectionIds:
+      - 6b685ef99c692af1
+      - e7c1e08d7e9f9ed4
+      - d2a9d7beea5c9401
+  42969fb65e2703dd:
+    id: 42969fb65e2703dd
+    component: layout-block
+    name: sequentialPattern
+    config:
+      gridSettings:
+        desktop:
+          c74597c5b5ea643a:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          26d6ddfb964b7425:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          81e6b5dd7acf27db:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+        mobile:
+          c74597c5b5ea643a:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          26d6ddfb964b7425:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          81e6b5dd7acf27db:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+      gap: normal
+      paddingX: normal
+      paddingY: large
+    sections:
+      c74597c5b5ea643a:
+        id: c74597c5b5ea643a
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      26d6ddfb964b7425:
+        id: 26d6ddfb964b7425
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      81e6b5dd7acf27db:
+        id: 81e6b5dd7acf27db
+        name: CodeBlock
+        component: custom-component
+        config:
+          componentId: 2EHGy3vwxlS9JGr2
+          useCache: true
+    sectionIds:
+      - c74597c5b5ea643a
+      - 26d6ddfb964b7425
+      - 81e6b5dd7acf27db
+  d508821b1282f513:
+    id: d508821b1282f513
+    component: layout-block
+    name: concurrentPattern
+    config:
+      gridSettings:
+        desktop:
+          aa33300f7903ebfa:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          ed7aeb3ccf74fba1:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          b1de040b36b4dc56:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+        mobile:
+          aa33300f7903ebfa:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          ed7aeb3ccf74fba1:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          b1de040b36b4dc56:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+      gap: normal
+      paddingX: normal
+      paddingY: large
+    sections:
+      aa33300f7903ebfa:
+        id: aa33300f7903ebfa
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      ed7aeb3ccf74fba1:
+        id: ed7aeb3ccf74fba1
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      b1de040b36b4dc56:
+        id: b1de040b36b4dc56
+        name: CodeBlock
+        component: custom-component
+        config:
+          componentId: 2EHGy3vwxlS9JGr2
+          useCache: true
+    sectionIds:
+      - aa33300f7903ebfa
+      - ed7aeb3ccf74fba1
+      - b1de040b36b4dc56
+  452a820988562923:
+    id: 452a820988562923
+    component: layout-block
+    name: routerPattern
+    config:
+      gridSettings:
+        desktop:
+          f9c1d11ac57615e0:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          5c71699d5dc8866a:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          0e5f612e558390da:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+        mobile:
+          f9c1d11ac57615e0:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          5c71699d5dc8866a:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          0e5f612e558390da:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+      gap: normal
+      paddingX: normal
+      paddingY: large
+    sections:
+      f9c1d11ac57615e0:
+        id: f9c1d11ac57615e0
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      5c71699d5dc8866a:
+        id: 5c71699d5dc8866a
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      0e5f612e558390da:
+        id: 0e5f612e558390da
+        name: CodeBlock
+        component: custom-component
+        config:
+          componentId: 2EHGy3vwxlS9JGr2
+          useCache: true
+    sectionIds:
+      - f9c1d11ac57615e0
+      - 5c71699d5dc8866a
+      - 0e5f612e558390da
+  7a0fba448cfb614d:
+    id: 7a0fba448cfb614d
+    component: layout-block
+    name: handoffPattern
+    config:
+      gridSettings:
+        desktop:
+          2f6ee7bf61f0b8cd:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          1f9d9c36bc29a4e1:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          8d045e0093b1dbf0:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+        mobile:
+          2f6ee7bf61f0b8cd:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          1f9d9c36bc29a4e1:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          8d045e0093b1dbf0:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+      gap: normal
+      paddingX: normal
+      paddingY: large
+    sections:
+      2f6ee7bf61f0b8cd:
+        id: 2f6ee7bf61f0b8cd
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      1f9d9c36bc29a4e1:
+        id: 1f9d9c36bc29a4e1
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      8d045e0093b1dbf0:
+        id: 8d045e0093b1dbf0
+        name: CodeBlock
+        component: custom-component
+        config:
+          componentId: 2EHGy3vwxlS9JGr2
+          useCache: true
+    sectionIds:
+      - 2f6ee7bf61f0b8cd
+      - 1f9d9c36bc29a4e1
+      - 8d045e0093b1dbf0
+  124c1878c34ea8a3:
+    id: 124c1878c34ea8a3
+    component: layout-block
+    name: reflectionPattern
+    config:
+      gridSettings:
+        desktop:
+          416535b11e6dac98:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          c59cab3aaf9fc036:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          f9e00fde321877ef:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+        mobile:
+          416535b11e6dac98:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          c59cab3aaf9fc036:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          f9e00fde321877ef:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+      gap: normal
+      paddingX: normal
+      paddingY: large
+    sections:
+      416535b11e6dac98:
+        id: 416535b11e6dac98
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      c59cab3aaf9fc036:
+        id: c59cab3aaf9fc036
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      f9e00fde321877ef:
+        id: f9e00fde321877ef
+        name: CodeBlock
+        component: custom-component
+        config:
+          componentId: 2EHGy3vwxlS9JGr2
+          useCache: true
+    sectionIds:
+      - 416535b11e6dac98
+      - c59cab3aaf9fc036
+      - f9e00fde321877ef
+  5b87b9391718ceeb:
+    id: 5b87b9391718ceeb
+    component: layout-block
+    name: codeExecutionPattern
+    config:
+      gridSettings:
+        desktop:
+          2bf2b1b91e5675d2:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          9229f684f8ede7a0:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          578be92fd5cb25f0:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+        mobile:
+          2bf2b1b91e5675d2:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          9229f684f8ede7a0:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          578be92fd5cb25f0:
+            x: 0
+            y: 2
+            w: 12
+            h: 2
+      gap: normal
+      paddingX: normal
+      paddingY: large
+    sections:
+      2bf2b1b91e5675d2:
+        id: 2bf2b1b91e5675d2
+        name: RichTextTitle
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      9229f684f8ede7a0:
+        id: 9229f684f8ede7a0
+        name: RichTextDescription
+        component: custom-component
+        config:
+          componentId: xoHu0J44322kDYc-
+          useCache: true
+      578be92fd5cb25f0:
+        id: 578be92fd5cb25f0
+        name: CodeBlock
+        component: custom-component
+        config:
+          componentId: 2EHGy3vwxlS9JGr2
+          useCache: true
+    sectionIds:
+      - 2bf2b1b91e5675d2
+      - 9229f684f8ede7a0
+      - 578be92fd5cb25f0
+sectionIds:
+  - a282db71dbe1b6c2
+  - 42969fb65e2703dd
+  - d508821b1282f513
+  - 452a820988562923
+  - 7a0fba448cfb614d
+  - 124c1878c34ea8a3
+  - 5b87b9391718ceeb
+dataSource:
+  6b685ef99c692af1:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Master Your AI with Powerful Workflow Patterns
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 用强大的工作流模式掌控你的 AI
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  e7c1e08d7e9f9ed4:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Stop wrestling with complex logic! AIGNE gives you a dynamic toolkit of
+              workflow patterns to build sophisticated, multi-agent applications
+              with incredible ease. Think of them as your secret playbook for
+              creating AI that just *works*. Let's dive in and see how you can
+              bring your most ambitious ideas to life!
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 无需再为复杂逻辑烦恼。AIGNE 为你提供一套动态的工作流模式工具，便于构建复杂的多代理应用。将这些模式视为创建可靠 AI
+              系统的实用手册。下面一起查看如何将最具野心的想法变为现实。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  d2a9d7beea5c9401:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: Explore All Examples
+              url: link:///examples
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: ""
+              type: link
+              text: 查看所有示例
+              url: link:///examples
+              variant: contained
+              size: medium
+              target: _self
+              needLogin: false
+        v5utpm7bu9yvdpnq:
+          value: center
+        h4g7j2k8l9m5n3p6:
+          value: row
+        r8t5y6u7i1o2p3a4:
+          value: 1
+        jjq9864c7hqkr0uj:
+          value: nowrap
+        v9979xeclpsbvn0n:
+          value: center
+  c74597c5b5ea643a:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Sequential: The Step-by-Step Powerhouse"
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 顺序（Sequential）：逐步执行的强大模式
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  26d6ddfb964b7425:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Need things done in a perfect, specific order? The Sequential pattern is
+              your new best friend! It creates a clean, predictable pipeline
+              where each agent completes its task before passing the baton to
+              the next. It's fantastic for content creation workflows,
+              multi-stage data processing, and any task that needs a clear,
+              linear flow. You'll love the control and clarity it brings!
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 需要按特定顺序完成任务？顺序模式适合你。它创建一个清晰、可预测的管道，每个代理在将控制权传递给下一个之前完成其任务。非常适合内容创建工作流、多阶段数据处理以及任何需要线性流程的场景，带来更多可控性和清晰性。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  81e6b5dd7acf27db:
+    en:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE, ProcessMode, TeamAgent } from
+            "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+
+            const model = new OpenAIChatModel({
+              apiKey: OPENAI_API_KEY,
+            });
+
+
+            const conceptExtractor = AIAgent.from({
+              instructions: `\
+            You are a marketing analyst. Give a product description,
+            identity:\n- Key features\n- Target audience\n- Unique selling
+            points\n\nProduct description:\n{{product}}`,
+              outputKey: "concept",
+            });
+
+
+            const writer = AIAgent.from({
+              instructions: `\
+            You are a marketing copywriter. Given a block of text describing
+            features, audience, and USPs,\ncompose a compelling marketing copy
+            (like a newsletter section) that highlights these points.\nOutput
+            should be short (around 150 words), output just the copy as a single
+            text block.\n\nProduct description:\n{{product}}\n\nBelow is the
+            info about the product:\n{{concept}}`,
+              outputKey: "draft",
+            });
+
+
+            const formatProof = AIAgent.from({
+              instructions: `\
+            You are an editor. Given the draft copy, correct grammar, improve
+            clarity, ensure consistent tone,\ngive format and make it polished.
+            Output the final improved copy as a single text block.\n\nProduct
+            description:\n{{product}}\n\nBelow is the info about the
+            product:\n{{concept}}\n\nDraft copy:\n{{draft}}`,
+              outputKey: "content",
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const teamAgent = TeamAgent.from({
+              skills: [conceptExtractor, writer, formatProof],
+              mode: ProcessMode.sequential, // This ensures tasks run one after another
+            });
+
+
+            const result = await aigne.invoke(teamAgent, {
+              product: "AIGNE is a No-code Generative AI Apps Engine",
+            });
+
+
+            console.log(result.content);
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-sequential/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+    zh:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE, ProcessMode, TeamAgent } from
+            "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+
+            const model = new OpenAIChatModel({
+              apiKey: OPENAI_API_KEY,
+            });
+
+
+            const conceptExtractor = AIAgent.from({
+              instructions: `\
+            You are a marketing analyst. Give a product description,
+            identity:\n- Key features\n- Target audience\n- Unique selling
+            points\n\nProduct description:\n{{product}}`,
+              outputKey: "concept",
+            });
+
+
+            const writer = AIAgent.from({
+              instructions: `\
+            You are a marketing copywriter. Given a block of text describing
+            features, audience, and USPs,\ncompose a compelling marketing copy
+            (like a newsletter section) that highlights these points.\nOutput
+            should be short (around 150 words), output just the copy as a single
+            text block.\n\nProduct description:\n{{product}}\n\nBelow is the
+            info about the product:\n{{concept}}`,
+              outputKey: "draft",
+            });
+
+
+            const formatProof = AIAgent.from({
+              instructions: `\
+            You are an editor. Given the draft copy, correct grammar, improve
+            clarity, ensure consistent tone,\ngive format and make it polished.
+            Output the final improved copy as a single text block.\n\nProduct
+            description:\n{{product}}\n\nBelow is the info about the
+            product:\n{{concept}}\n\nDraft copy:\n{{draft}}`,
+              outputKey: "content",
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const teamAgent = TeamAgent.from({
+              skills: [conceptExtractor, writer, formatProof],
+              mode: ProcessMode.sequential, // This ensures tasks run one after another
+            });
+
+
+            const result = await aigne.invoke(teamAgent, {
+              product: "AIGNE is a No-code Generative AI Apps Engine",
+            });
+
+
+            console.log(result.content);
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-sequential/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+  aa33300f7903ebfa:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Concurrency: Unleash Parallel Power"
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 并行（Concurrency）：释放并行处理能力
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  ed7aeb3ccf74fba1:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Why wait when you can do it all at once? The Concurrency pattern runs
+              multiple independent tasks at the same time, slashing processing
+              time and supercharging your app's efficiency. It's a game-changer
+              for parallel data analysis, multi-dimensional content evaluation,
+              or any scenario where speed is king. Get ready to see your
+              performance soar!
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 无需等待序列完成即可同时处理多个任务。并行模式可同时运行多个相互独立的任务，显著减少处理时间并提升应用效率。适用于并行数据分析、多维内容评估或任何以速度为核心的场景。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  b1de040b36b4dc56:
+    en:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE, ProcessMode, TeamAgent } from
+            "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+
+            const model = new OpenAIChatModel({
+              apiKey: OPENAI_API_KEY,
+            });
+
+
+            const featureExtractor = AIAgent.from({
+              instructions: `\
+            You are a product analyst. Extract and summarize the key features of
+            the product.\n\nProduct description:\n{{product}}`,
+              outputKey: "features",
+            });
+
+
+            const audienceAnalyzer = AIAgent.from({
+              instructions: `\
+            You are a market researcher. Identify the target audience for the
+            product.\n\nProduct description:\n{{product}}`,
+              outputKey: "audience",
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const teamAgent = TeamAgent.from({
+              skills: [featureExtractor, audienceAnalyzer],
+              mode: ProcessMode.parallel, // This runs both agents at the same time
+            });
+
+
+            const result = await aigne.invoke(teamAgent, {
+              product: "AIGNE is a No-code Generative AI Apps Engine",
+            });
+
+
+            console.log(result);
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-concurrency/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+    zh:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE, ProcessMode, TeamAgent } from
+            "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+
+            const model = new OpenAIChatModel({
+              apiKey: OPENAI_API_KEY,
+            });
+
+
+            const featureExtractor = AIAgent.from({
+              instructions: `\
+            You are a product analyst. Extract and summarize the key features of
+            the product.\n\nProduct description:\n{{product}}`,
+              outputKey: "features",
+            });
+
+
+            const audienceAnalyzer = AIAgent.from({
+              instructions: `\
+            You are a market researcher. Identify the target audience for the
+            product.\n\nProduct description:\n{{product}}`,
+              outputKey: "audience",
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const teamAgent = TeamAgent.from({
+              skills: [featureExtractor, audienceAnalyzer],
+              mode: ProcessMode.parallel, // This runs both agents at the same time
+            });
+
+
+            const result = await aigne.invoke(teamAgent, {
+              product: "AIGNE is a No-code Generative AI Apps Engine",
+            });
+
+
+            console.log(result);
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-concurrency/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+  f9c1d11ac57615e0:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Router: Your Intelligent Traffic Director"
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 路由（Router）：智能流量调度器
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  5c71699d5dc8866a:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Direct incoming requests like a pro! The Router pattern acts as a smart
+              triage agent, analyzing user input and sending it to the perfect
+              specialized agent for the job. You can build intelligent customer
+              support bots, multi-functional assistants, and dynamic systems
+              that always know the right move. It's effortless, intelligent
+              routing at its best.
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 将传入请求智能分发到合适处理方。路由模式充当智能分诊代理，分析用户输入并将其发送到最合适的专用代理。可用于构建智能客服机器人、多功能助手以及始终能做出正确选择的动态系统。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  0e5f612e558390da:
+    en:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE } from "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+            const model = new OpenAIChatModel({ apiKey: OPENAI_API_KEY });
+
+
+            const productSupport = AIAgent.from({ name: "product_support",
+            description: "Agent to assist with any product-related questions."
+            });
+
+            const feedback = AIAgent.from({ name: "feedback", description:
+            "Agent to assist with any feedback-related questions." });
+
+            const other = AIAgent.from({ name: "other", description: "Agent to
+            assist with any general questions." });
+
+
+            const triage = AIAgent.from({
+              name: "triage",
+              instructions: `You are an agent capable of routing questions to the appropriate agent.` ,
+              skills: [productSupport, feedback, other],
+              toolChoice: "router", // Set toolChoice to "router" to enable router mode
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const result = await aigne.invoke(triage, "How to use this
+            product?");
+
+            console.log(result);
+
+            // { product_support: '...' }
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-router/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+    zh:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE } from "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+            const model = new OpenAIChatModel({ apiKey: OPENAI_API_KEY });
+
+
+            const productSupport = AIAgent.from({ name: "product_support",
+            description: "Agent to assist with any product-related questions."
+            });
+
+            const feedback = AIAgent.from({ name: "feedback", description:
+            "Agent to assist with any feedback-related questions." });
+
+            const other = AIAgent.from({ name: "other", description: "Agent to
+            assist with any general questions." });
+
+
+            const triage = AIAgent.from({
+              name: "triage",
+              instructions: `You are an agent capable of routing questions to the appropriate agent.` ,
+              skills: [productSupport, feedback, other],
+              toolChoice: "router", // Set toolChoice to "router" to enable router mode
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const result = await aigne.invoke(triage, "How to use this
+            product?");
+
+            console.log(result);
+
+            // { product_support: '...' }
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-router/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+  2f6ee7bf61f0b8cd:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Handoff: Create Your Agent Dream Team"
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 交接（Handoff）：构建代理协作团队
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  1f9d9c36bc29a4e1:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Some problems need a team of experts. The Handoff pattern lets you
+              seamlessly transfer control from one specialized agent to another.
+              Imagine a customer support query being handed from a generalist to
+              a technical expert without a hitch. It’s all about creating
+              smooth, collaborative workflows that solve complex problems,
+              together.
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 某些问题需要多个专家协作。交接模式允许你在专用代理之间顺畅地转移控制。例如，将客户支持查询从通用代理转交给技术专家。旨在创建平滑、协作的工作流，以共同解决复杂问题。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  8d045e0093b1dbf0:
+    en:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE } from "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+            const model = new OpenAIChatModel({ apiKey: OPENAI_API_KEY });
+
+
+            function transfer_to_b() {
+              return agentB;
+            }
+
+
+            const agentA = AIAgent.from({
+              name: "AgentA",
+              instructions: "You are a helpful agent.",
+              outputKey: "A",
+              skills: [transfer_to_b],
+            });
+
+
+            const agentB = AIAgent.from({
+              name: "AgentB",
+              instructions: "Only speak in Haikus.",
+              outputKey: "B",
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+            const userAgent = aigne.invoke(agentA);
+
+
+            const result = await userAgent.invoke("transfer to agent b");
+
+            console.log(result);
+
+            // { B: 'Transfer now complete...' }
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-handoff/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+    zh:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE } from "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+            const model = new OpenAIChatModel({ apiKey: OPENAI_API_KEY });
+
+
+            function transfer_to_b() {
+              return agentB;
+            }
+
+
+            const agentA = AIAgent.from({
+              name: "AgentA",
+              instructions: "You are a helpful agent.",
+              outputKey: "A",
+              skills: [transfer_to_b],
+            });
+
+
+            const agentB = AIAgent.from({
+              name: "AgentB",
+              instructions: "Only speak in Haikus.",
+              outputKey: "B",
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+            const userAgent = aigne.invoke(agentA);
+
+
+            const result = await userAgent.invoke("transfer to agent b");
+
+            console.log(result);
+
+            // { B: 'Transfer now complete...' }
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-handoff/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+  416535b11e6dac98:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Reflection: Build Self-Improving Agents"
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 反思（Reflection）：构建自我改进的代理
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  c59cab3aaf9fc036:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Give your agents the power of self-correction! The Reflection pattern
+              creates an iterative loop where one agent's work is reviewed and
+              refined by another. It’s perfect for generating high-quality code,
+              polishing written content, and building systems that learn and
+              improve over time. Watch your AI get smarter with every single
+              task!
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 赋予代理自我纠正的能力。反思模式创建一个迭代循环，由另一个代理审查并改进先前代理的工作。非常适合生成高质量代码、润色文本内容，并构建随着时间改进的系统。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  f9e00fde321877ef:
+    en:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from
+            "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+            import { z } from "zod";
+
+
+            const model = new OpenAIChatModel({ apiKey:
+            process.env.OPENAI_API_KEY });
+
+
+            const coder = AIAgent.from({
+              subscribeTopic: [UserInputTopic, "rewrite_request"],
+              publishTopic: "review_request",
+              instructions: `You are a proficient coder. You write code to solve problems...`
+            });
+
+
+            const reviewer = AIAgent.from({
+              subscribeTopic: "review_request",
+              publishTopic: (output) =>
+                output.approval ? UserOutputTopic : "rewrite_request",
+              instructions: `You are a code reviewer. You focus on correctness, efficiency and safety of the code...`
+            });
+
+
+            const aigne = new AIGNE({ model, agents: [coder, reviewer] });
+
+            aigne.publish(UserInputTopic, "Write a function to find the sum of
+            all even numbers in a list.");
+
+
+            const { message } = await aigne.subscribe(UserOutputTopic);
+
+            console.log(message);
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-reflection/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+    zh:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from
+            "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+            import { z } from "zod";
+
+
+            const model = new OpenAIChatModel({ apiKey:
+            process.env.OPENAI_API_KEY });
+
+
+            const coder = AIAgent.from({
+              subscribeTopic: [UserInputTopic, "rewrite_request"],
+              publishTopic: "review_request",
+              instructions: `You are a proficient coder. You write code to solve problems...`
+            });
+
+
+            const reviewer = AIAgent.from({
+              subscribeTopic: "review_request",
+              publishTopic: (output) =>
+                output.approval ? UserOutputTopic : "rewrite_request",
+              instructions: `You are a code reviewer. You focus on correctness, efficiency and safety of the code...`
+            });
+
+
+            const aigne = new AIGNE({ model, agents: [coder, reviewer] });
+
+            aigne.publish(UserInputTopic, "Write a function to find the sum of
+            all even numbers in a list.");
+
+
+            const { message } = await aigne.subscribe(UserOutputTopic);
+
+            console.log(message);
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-reflection/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+  2bf2b1b91e5675d2:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Code Execution: Let Your AI Write and Run Code"
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 代码执行（Code Execution）：让 AI 编写并运行代码
+            style:
+              color: text.primary
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  9229f684f8ede7a0:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Unlock the ultimate level of automation! The Code Execution pattern gives
+              your AI the ability to write and run its own code in a secure
+              sandbox. Let it solve complex calculations, perform data analysis,
+              or tackle algorithmic problems on the fly. This isn't just
+              automation; it's dynamic, intelligent problem-solving in
+              real-time.
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 解锁高级自动化能力。代码执行模式允许 AI
+              在安全沙箱中编写并运行自身代码。可用于解决复杂计算、执行数据分析或实时处理算法问题。这不仅是自动化，更是实时的动态智能问题解决。
+            style:
+              color: text.secondary
+              variant: body1
+              fontSize: 18
+        v5utpm7bu9yvdpnq:
+          value: center
+        e8f3k7m2n9p4q1s5:
+          value: false
+        kyg0hdy5uqq4gc1o:
+          value: center
+  578be92fd5cb25f0:
+    en:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+            import { z } from "zod";
+
+
+            const model = new OpenAIChatModel({ apiKey:
+            process.env.OPENAI_API_KEY });
+
+
+            const sandbox = FunctionAgent.from({
+              name: "evaluateJs",
+              description: "A js sandbox for running javascript code",
+              inputSchema: z.object({ code: z.string() }),
+              process: async (input) => {
+                const { code } = input;
+                const result = eval(code);
+                return { result };
+              },
+            });
+
+
+            const coder = AIAgent.from({
+              name: "coder",
+              instructions: `You are a proficient coder. You write code to solve problems and use the sandbox to execute it.` ,
+              skills: [sandbox],
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const result = await aigne.invoke(coder, "10! = ?");
+
+            console.log(result);
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-code-execution/example.ts
+        c4kvf6b7zyskk8m:
+          value: true
+    zh:
+      properties:
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
+
+            import { OpenAIChatModel } from
+            "@aigne/core/models/openai-chat-model.js";
+
+            import { z } from "zod";
+
+
+            const model = new OpenAIChatModel({ apiKey:
+            process.env.OPENAI_API_KEY });
+
+
+            const sandbox = FunctionAgent.from({
+              name: "evaluateJs",
+              description: "A js sandbox for running javascript code",
+              inputSchema: z.object({ code: z.string() }),
+              process: async (input) => {
+                const { code } = input;
+                const result = eval(code);
+                return { result };
+              },
+            });
+
+
+            const coder = AIAgent.from({
+              name: "coder",
+              instructions: `You are a proficient coder. You write code to solve problems and use the sandbox to execute it.` ,
+              skills: [sandbox],
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const result = await aigne.invoke(coder, "10! = ?");
+
+            console.log(result);
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-code-execution/example.ts
+        c4kvf6b7zyskk8m:
+          value: true

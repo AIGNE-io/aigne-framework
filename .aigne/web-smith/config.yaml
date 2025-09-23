@@ -1,0 +1,71 @@
+# Project information for page publishing
+projectName: aigne-framework-0923
+projectDesc: The functional, composable, and typescript-first AI Agent framework
+  for real-world LLM Apps.
+projectLogo: https://avatars.githubusercontent.com/u/143965177?v=4
+projectId: 7ebfbec4-8316-47a1-b38c-a7a1e0802cef
+projectSlug: aigne-framework-0923
+
+# =============================================================================
+# Website Configuration
+# =============================================================================
+
+# Purpose: What's the main outcome you want readers to achieve?
+# Available options (uncomment and modify as needed):
+#   landingPage      - Landing page / Homepage: Convert visitors into users or customers
+#   ecommerce        - E-commerce / Online store: Sell products or services online
+#   portfolio        - Portfolio / Showcase: Display creative work, projects, or achievements
+#   corporate        - Corporate / Business: Professional business website with company information
+#   blog             - Blog / Content site: Share articles, news, and regular content updates
+#   saas             - SaaS / Software product: Promote and onboard users to software services
+#   nonprofit        - Non-profit / Community: Promote causes, accept donations, engage volunteers
+#   education        - Educational / Learning: Provide courses, tutorials, or educational content
+#   mixedPurpose     - Multi-purpose website: Comprehensive website covering multiple needs
+pagePurpose:
+  - landingPage
+
+# Target Audience: Who will be reading this most often?
+# Available options (uncomment and modify as needed):
+#   customers        - Customers / End users: People who buy or use your products/services
+#   businessOwners   - Business owners / Entrepreneurs: People running businesses looking for solutions
+#   marketers        - Marketing teams: People promoting products or managing campaigns
+#   designers        - Designers / Creative professionals: People focused on visual design and user experience
+#   developers       - Developers / Technical users: People building or integrating technical solutions
+#   investors        - Investors / Stakeholders: People evaluating business potential and growth
+#   jobSeekers       - Job seekers / Potential employees: People looking for career opportunities
+#   students         - Students / Learners: People seeking educational content or resources
+#   generalPublic    - General public / Mixed audience: Broad audience with varied interests and backgrounds
+targetAudienceTypes:
+  - developers
+
+# Website Scale: How many pages should your website have?
+# Available options (uncomment and modify as needed):
+#   singlePage         - Single Page (only 1 page): All content consolidated into 1 page
+#   minimal            - Minimal (2-6 pages): Core pages only - quick to launch
+#   standard           - Standard (7-12 pages): Complete website with main sections [RECOMMENDED]
+#   comprehensive      - Comprehensive (12+ pages): Full-featured website with detailed sections
+#   aiDecide           - Let AI decide: Analyze project complexity and suggest appropriate scale
+websiteScale: standard
+
+# Custom Rules: Define specific page generation rules and requirements
+rules: ""
+
+# Glossary: Define project-specific terms and definitions
+# glossary: "@glossary.md"  # Path to markdown file containing glossary definitions
+
+locale: en
+translateLanguages:
+  - zh
+pagesDir: .aigne/web-smith/pages # Directory to save generated pages
+sourcesPath: # Source code paths to analyze
+  - ./assets/*
+  - ./README.md
+  - ./blocklets/**/README.md
+  - ./examples/**/README.md
+  - ./memory/**/README.md
+  - ./models/**/README.md
+  - ./observability/**/README.md
+  - ./packages/**/README.md
+  - ./architecture.md
+lastGitHead: ef433bc57ebfa44443ed167c9fe687d5125a2a6c
+appUrl: https://staging.websmith.aigne.io

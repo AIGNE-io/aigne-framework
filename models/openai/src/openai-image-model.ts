@@ -18,6 +18,24 @@ import { CustomOpenAI } from "./openai.js";
 const DEFAULT_MODEL = "dall-e-2";
 const OUTPUT_MIME_TYPE = "image/png";
 
+const SUPPORTED_PARAMS: { [key: string]: any[] } = {
+  "dall-e-2": ["prompt", "size", "n"],
+  "dall-e-3": ["prompt", "size", "n", "quality", "style", "user"],
+  "gpt-image-1": [
+    "prompt",
+    "size",
+    "background",
+    "moderation",
+    "outputCompression",
+    "outputFormat",
+    "quality",
+    "user",
+    "stream",
+  ],
+};
+
+const SUPPORT_EDIT_MODELS = ["gpt-image-1"];
+
 export interface OpenAIImageModelInput
   extends ImageModelInput,
     Camelize<
@@ -131,50 +149,42 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
   ): Promise<OpenAIImageModelOutput> {
     const model = input.model || this.credential.model;
 
-    const map: { [key: string]: any[] } = {
-      "dall-e-2": ["prompt", "size", "n"],
-      "dall-e-3": ["prompt", "size", "n", "quality", "style", "user"],
-      "gpt-image-1": [
-        "prompt",
-        "size",
-        "background",
-        "moderation",
-        "outputCompression",
-        "outputFormat",
-        "quality",
-        "user",
-        "stream",
-      ],
-    };
-
-    let responseFormat: OpenAI.ImageGenerateParams["response_format"];
-
-    if (model !== "gpt-image-1") {
-      responseFormat = input.responseFormat === "base64" ? "b64_json" : "url";
+    if (input.image?.length && !SUPPORT_EDIT_MODELS.includes(model)) {
+      throw new Error(`Model ${model} does not support image editing`);
     }
 
     const body: OpenAI.ImageGenerateParams | OpenAI.ImageEditParams = {
-      ...snakelize(pick({ ...this.modelOptions, ...input }, map[model] || map["dall-e-2"])),
-      response_format: responseFormat,
+      ...snakelize(
+        pick(
+          { ...this.modelOptions, ...input },
+          SUPPORTED_PARAMS[model] || SUPPORTED_PARAMS[DEFAULT_MODEL],
+        ),
+      ),
+      response_format: "b64_json",
       model,
     };
 
     const response = input.image?.length
-      ? await this.client.images.edit({
-          ...(body as OpenAI.ImageEditParams),
-          image: await Promise.all(
-            input.image.map((image) =>
-              this.transformFileOutput(FileOutputType.file, image, options).then(
-                (file) =>
-                  new File([Buffer.from(file.data, "base64")], file.filename || "image.png", {
-                    type: file.mimeType,
-                  }),
+      ? ((await this.client.images.edit(
+          {
+            ...(body as OpenAI.ImageEditParams),
+            image: await Promise.all(
+              input.image.map((image) =>
+                this.transformFileOutput(FileOutputType.file, image, options).then(
+                  (file) =>
+                    new File([Buffer.from(file.data, "base64")], file.filename || "image.png", {
+                      type: file.mimeType,
+                    }),
+                ),
               ),
             ),
-          ),
-          stream: false,
-        })
-      : await this.client.images.generate({ ...body, stream: false });
+          },
+          { stream: false },
+        )) as OpenAI.ImagesResponse)
+      : ((await this.client.images.generate(
+          { ...body },
+          { stream: false },
+        )) as OpenAI.ImagesResponse);
 
     return {
       images: (response.data ?? []).map<FileUnionContent>((image) => {

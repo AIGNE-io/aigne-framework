@@ -209,7 +209,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
       model: model,
       contents: [{ text: input.prompt }, ...images],
       config: {
-        responseModalities: [Modality.IMAGE],
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
         candidateCount: input.n || 1,
         ...pick(mergedInput, inputKeys),
       },

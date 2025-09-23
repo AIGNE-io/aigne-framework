@@ -34,9 +34,16 @@ test("ImageAgent should work correctly", async () => {
     }
   `);
 
-  expect(generateSpy).toHaveBeenLastCalledWith(
-    expect.objectContaining({
-      prompt: "Draw an image about a cat",
-    }),
-  );
+  expect(generateSpy.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      {
+        "model": "dall-e-2",
+        "prompt": "Draw an image about a cat",
+        "response_format": "b64_json",
+      },
+      {
+        "stream": false,
+      },
+    ]
+  `);
 });

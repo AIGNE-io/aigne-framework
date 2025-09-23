@@ -51,7 +51,7 @@ export class IdeogramImageModel extends ImageModel<
   IdeogramImageModelInput,
   IdeogramImageModelOutput
 > {
-  constructor(public options?: IdeogramImageModelOptions) {
+  constructor(public override options?: IdeogramImageModelOptions) {
     super({
       ...options,
       inputSchema: ideogramImageModelInputSchema,

@@ -1,4 +1,4 @@
-import type { ChatModelOptions } from "@aigne/core";
+import type { ChatModelOptions, ImageModelOptions } from "@aigne/core";
 import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { z } from "zod";
 
@@ -25,6 +25,8 @@ export interface AIGNEHubChatModelOptions extends ChatModelOptions {
   clientOptions?: OpenAIChatModelOptions["clientOptions"] & { clientId?: string };
 }
 
-export type AIGNEHubImageModelOptions = Omit<AIGNEHubChatModelOptions, "modelOptions"> & {
-  modelOptions?: { [key: string]: any };
-};
+export interface AIGNEHubImageModelOptions extends ImageModelOptions {
+  baseURL?: string;
+  apiKey?: string;
+  clientOptions?: OpenAIChatModelOptions["clientOptions"] & { clientId?: string };
+}

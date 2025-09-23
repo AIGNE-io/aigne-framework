@@ -21,7 +21,7 @@ import { getModels } from "./utils/hub.js";
 import { type AIGNEHubImageModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
 export class AIGNEHubImageModel extends ImageModel {
-  constructor(public options: AIGNEHubImageModelOptions) {
+  constructor(public override options: AIGNEHubImageModelOptions) {
     checkArguments("AIGNEHubImageModel", aigneHubModelOptionsSchema, options);
     super();
   }

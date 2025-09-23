@@ -13,7 +13,7 @@ const agent = AIAgent.from({
   model,
   instructions: "You are a drawer who creates images based on user descriptions.",
   inputKey: "message",
-  fileInputKey: "files",
+  inputFileKey: "files",
   outputFileType: "local",
 });
 

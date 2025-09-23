@@ -103,7 +103,9 @@ export class IdeogramImageModel extends ImageModel<
       "styleType",
     ];
 
-    const mergedInput = snakelize(pick({ ...this.modelOptions, ...input }, inputKeys));
+    const mergedInput = snakelize(
+      pick({ ...this.modelOptions, ...input.modelOptions, ...input }, inputKeys),
+    );
 
     Object.keys(mergedInput).forEach((key) => {
       if (mergedInput[key]) {

@@ -136,13 +136,13 @@ export class PromptBuilder {
         : this.instructions
       )?.format(options.input, { workingDir: this.workingDir })) ?? [];
 
-    const fileInputKey = options.agent?.inputFileKey;
+    const inputFileKey = options.agent?.inputFileKey;
     const files = flat(
-      fileInputKey
+      inputFileKey
         ? checkArguments(
             "Check input files",
             optionalize(fileUnionContentsSchema),
-            input?.[fileInputKey],
+            input?.[inputFileKey],
           )
         : null,
     );
@@ -201,7 +201,7 @@ export class PromptBuilder {
     const other: unknown[] = [];
 
     const inputKey = options.agent?.inputKey;
-    const fileInputKey = options.agent?.inputFileKey;
+    const inputFileKey = options.agent?.inputFileKey;
 
     const outputKey = options.agent?.outputKey || DEFAULT_OUTPUT_KEY;
     const outputFileKey = options.agent?.outputFileKey || DEFAULT_OUTPUT_FILE_KEY;
@@ -221,7 +221,7 @@ export class PromptBuilder {
       const userMessageContent: ChatModelInputMessageContent = [];
       if (typeof input === "object") {
         const inputMessage: unknown = inputKey ? Reflect.get(input, inputKey) : undefined;
-        const inputFiles: unknown = fileInputKey ? Reflect.get(input, fileInputKey) : undefined;
+        const inputFiles: unknown = inputFileKey ? Reflect.get(input, inputFileKey) : undefined;
 
         if (inputMessage) {
           userMessageContent.push({ type: "text", text: stringOrStringify(inputMessage) });

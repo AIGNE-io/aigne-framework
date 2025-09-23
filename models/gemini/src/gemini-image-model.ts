@@ -112,7 +112,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
   ): Promise<ImageModelOutput> {
     const model = input.modelOptions?.model || this.credential.model;
 
-    const mergedInput = { ...this.modelOptions, ...input };
+    const mergedInput = { ...this.modelOptions, ...input.modelOptions, ...input };
 
     const inputKeys = [
       "seed",
@@ -160,7 +160,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
   ): Promise<ImageModelOutput> {
     const model = input.modelOptions?.model || this.credential.model;
 
-    const mergedInput = { ...this.modelOptions, ...input };
+    const mergedInput = { ...this.modelOptions, ...input.modelOptions, ...input };
 
     const inputKeys = [
       "abortSignal",

@@ -155,7 +155,7 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
     const body: OpenAI.ImageGenerateParams | OpenAI.ImageEditParams = {
       ...snakelize(
         pick(
-          { ...this.modelOptions, ...input },
+          { ...this.modelOptions, ...input.modelOptions, ...input },
           SUPPORTED_PARAMS[model] || SUPPORTED_PARAMS[DEFAULT_MODEL],
         ),
       ),

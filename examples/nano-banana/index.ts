@@ -14,7 +14,7 @@ const agent = AIAgent.from({
     }),
   ],
   inputKey: "message",
-  fileInputKey: "files",
+  inputFileKey: "files",
   outputFileType: "local",
 });
 

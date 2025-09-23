@@ -149,7 +149,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
       throw new Error(`${this.name} only support ${Object.keys(map).join(", ")}`);
     }
 
-    const mergeInput = { ...this.modelOptions, ...input };
+    const mergeInput = { ...this.modelOptions, ...input.modelOptions, ...input };
 
     const image = await Promise.all(
       flat(input.image).map((image) =>

@@ -173,7 +173,7 @@ export async function runAgentWithAIGNE(
     await runChatLoopInTerminal(userAgent, {
       ...chatLoopOptions,
       outputKey,
-      fileInputKey: agent instanceof AIAgent ? agent.inputFileKey : undefined,
+      inputFileKey: agent instanceof AIAgent ? agent.inputFileKey : undefined,
       input: options.input,
     });
 

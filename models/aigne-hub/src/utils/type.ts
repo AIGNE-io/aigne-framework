@@ -20,7 +20,6 @@ export const aigneHubModelOptionsSchema = z.object({
 });
 
 export interface AIGNEHubChatModelOptions extends ChatModelOptions {
-  url?: string;
   baseURL?: string;
   apiKey?: string;
   clientOptions?: OpenAIChatModelOptions["clientOptions"] & { clientId?: string };

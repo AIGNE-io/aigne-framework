@@ -8,6 +8,7 @@ import {
   type ImageModelOutput,
 } from "@aigne/core";
 import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
+import { getModels } from "./utils/hub.js";
 import { findImageModel, findModel, parseModel } from "./utils/model.js";
 import type { AIGNEHubChatModelOptions, AIGNEHubImageModelOptions } from "./utils/type.js";
 
@@ -18,6 +19,14 @@ export * from "./utils/model.js";
 export class AIGNEHubChatModel extends ChatModel {
   static async load(options: AIGNEHubChatModelOptions) {
     return new AIGNEHubChatModel(options);
+  }
+
+  static async models() {
+    return getModels({ type: "chat" });
+  }
+
+  models() {
+    return getModels({ type: "chat" });
   }
 
   constructor(public override options: AIGNEHubChatModelOptions) {
@@ -66,6 +75,14 @@ export class AIGNEHubChatModel extends ChatModel {
 export class AIGNEHubImageModel extends ImageModel {
   static async load(options: AIGNEHubImageModelOptions) {
     return new AIGNEHubImageModel(options);
+  }
+
+  static async models() {
+    return getModels({ type: "image" });
+  }
+
+  models() {
+    return getModels({ type: "image" });
   }
 
   constructor(public options: AIGNEHubImageModelOptions) {

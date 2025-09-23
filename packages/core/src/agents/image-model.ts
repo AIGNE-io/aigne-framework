@@ -21,7 +21,11 @@ import {
 export interface ImageModelOptions<
   I extends ImageModelInput = ImageModelInput,
   O extends ImageModelOutput = ImageModelOutput,
-> extends Omit<AgentOptions<I, O>, "model"> {}
+> extends Omit<AgentOptions<I, O>, "model"> {
+  model?: string;
+
+  modelOptions?: Omit<ImageModelInputOptions, "model">;
+}
 
 export abstract class ImageModel<
   I extends ImageModelInput = ImageModelInput,
@@ -29,11 +33,12 @@ export abstract class ImageModel<
 > extends Model<I, O> {
   override tag = "ImageModelAgent";
 
-  constructor(options?: ImageModelOptions<I, O>) {
+  constructor(public options?: ImageModelOptions<I, O>) {
     super({
       inputSchema: imageModelInputSchema as ZodType<I>,
       outputSchema: imageModelOutputSchema as ZodType<O>,
       ...options,
+      model: undefined,
     });
   }
 
@@ -65,6 +70,24 @@ export abstract class ImageModel<
               mimeType: item.mimeType || ImageModel.getMimeType(item.filename || item.path),
             };
           }
+
+          if (
+            (input.modelOptions?.preferInputFileType ||
+              this.options?.modelOptions?.preferInputFileType) !== "url"
+          ) {
+            if (item.type === "url") {
+              return {
+                ...item,
+                type: "file" as const,
+                data: Buffer.from(await (await this.downloadFile(item.url)).arrayBuffer()).toString(
+                  "base64",
+                ),
+                url: undefined,
+                mimeType: item.mimeType || ImageModel.getMimeType(item.filename || item.url),
+              };
+            }
+          }
+
           return item;
         }),
       );
@@ -125,6 +148,8 @@ export interface ImageModelInput extends Message {
 
 export interface ImageModelInputOptions extends Record<string, unknown> {
   model?: string;
+
+  preferInputFileType?: "file" | "url";
 }
 
 export const imageModelInputSchema = z.object({

@@ -87,6 +87,49 @@ export class BaseReporter implements Reporter {
       ];
     });
   }
+
+  protected formatSummary(
+    summary: Report["summary"],
+  ): { header: string; key: string; width: number; value: string | number }[] {
+    return [
+      {
+        header: "Total",
+        key: "Total",
+        width: 10,
+        value: summary.total,
+      },
+      {
+        header: "Success Rate",
+        key: "SuccessRate",
+        width: 15,
+        value: summary.successRate,
+      },
+      {
+        header: "Total Duration",
+        key: "Duration",
+        width: 15,
+        value: summary.duration ? `${summary.duration.toFixed(3)}s` : "-",
+      },
+      {
+        header: "Avg Latency",
+        key: "AvgLatency",
+        width: 15,
+        value: summary.avgLatency ? `${summary.avgLatency.toFixed(3)}s` : "-",
+      },
+      {
+        header: "Total Tokens",
+        key: "TotalTokens",
+        width: 15,
+        value: summary.totalTokens ?? "-",
+      },
+      {
+        header: "Errors",
+        key: "Errors",
+        width: 8,
+        value: summary.errorCount ?? 0,
+      },
+    ];
+  }
 }
 
 export class ConsoleReporter extends BaseReporter {
@@ -96,19 +139,14 @@ export class ConsoleReporter extends BaseReporter {
     const summary = report.summary;
 
     console.log("\n=== 📊 Evaluation Summary ===");
+    const summaryList = this.formatSummary(summary);
     const summaryTable = new Table({
-      head: ["Total", "Success Rate", "Avg Latency", "Total Tokens", "Errors"],
-      colWidths: [8, 15, 15, 15, 8],
+      head: summaryList.map((h) => h.header),
+      colWidths: summaryList.map((h) => h.width),
       chars,
     });
 
-    summaryTable.push([
-      summary.total,
-      chalk.green(summary.successRate),
-      summary.avgLatency ? `${summary.avgLatency.toFixed(3)}s` : "-",
-      summary.totalTokens ?? "-",
-      summary.errorCount ?? 0,
-    ]);
+    summaryTable.push(summaryList.map((h) => h.value));
     console.log(summaryTable.toString());
 
     const list = this.formatReport(report);
@@ -153,19 +191,13 @@ export class ExcelReporter extends BaseReporter {
     const workbook = new Workbook();
 
     const summarySheet = workbook.addWorksheet("Summary");
-    summarySheet.columns = [
-      { header: "Total", key: "Total", width: 10 },
-      { header: "Success Rate", key: "SuccessRate", width: 15 },
-      { header: "Avg Latency", key: "AvgLatency", width: 15 },
-      { header: "Total Tokens", key: "TotalTokens", width: 15 },
-    ];
-
-    summarySheet.addRow({
-      Total: report.summary.total,
-      SuccessRate: `${(report.summary.successRate * 100).toFixed(2)}%`,
-      AvgLatency: report.summary.avgLatency ? `${report.summary.avgLatency.toFixed(3)}s` : "-",
-      TotalTokens: report.summary.totalTokens ?? "-",
-    });
+    const summaryList = this.formatSummary(report.summary);
+    summarySheet.columns = summaryList.map((h) => ({
+      header: h.header,
+      key: h.key,
+      width: h.width,
+    }));
+    summarySheet.addRow(summaryList.map((h) => h.value));
 
     const resultsSheet = workbook.addWorksheet("Results");
     const list = this.formatReport(report);

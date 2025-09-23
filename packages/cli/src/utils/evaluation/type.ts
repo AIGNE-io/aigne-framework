@@ -62,6 +62,7 @@ export interface EvaluationSummary {
 export interface EvaluationResult extends RunResult {
   evaluations: Evaluation[];
 }
+
 export interface Report {
   dataset: string;
   results: EvaluationResult[];

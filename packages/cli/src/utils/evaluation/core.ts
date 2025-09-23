@@ -13,7 +13,7 @@ import type {
   RunOptions,
 } from "./type.ts";
 
-function aggregateSummary(results: EvaluationResult[]): EvaluationSummary {
+function aggregateSummary(results: EvaluationResult[], duration: number): EvaluationSummary {
   const total = results.length;
   const scores = results.flatMap((r) => r.evaluations.map((e) => e.score));
   const successRate = Number(
@@ -31,6 +31,7 @@ function aggregateSummary(results: EvaluationResult[]): EvaluationSummary {
   return {
     total,
     successRate,
+    duration: Number(duration.toFixed(3)),
     avgLatency: latencies.reduce((a, b) => a + b, 0) / (latencies.length || 1),
     maxLatency: Math.max(...latencies, 0),
     minLatency: Math.min(...latencies, 0),
@@ -61,6 +62,7 @@ export async function runEvaluationPipeline(params: {
   reporters?: Reporter[];
   options?: RunOptions;
 }) {
+  const now = Date.now();
   const { dataset, runner, evaluators, reporters = [new ConsoleReporter()], options } = params;
 
   const results: EvaluationPipelineContext["results"] = [];
@@ -123,7 +125,7 @@ export async function runEvaluationPipeline(params: {
 
   await task2.run();
 
-  const summary: EvaluationSummary = aggregateSummary(results);
+  const summary: EvaluationSummary = aggregateSummary(results, (Date.now() - now) / 1000);
   const report: Report = { dataset: dataset.name, results, summary };
 
   for (const reporter of reporters) {

@@ -10,6 +10,17 @@ on:
   push:
     branches:
       - master
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+    branches:
+      - master
+      - main
+      - dev
 
 jobs:
   publish-docs:

@@ -17,6 +17,7 @@ const IDEOGRAM_DEFAULT_IMAGE_MODEL = "ideogram-v3";
 
 export interface IdeogramImageModelInput extends ImageModelInput {
   seed?: number;
+  imageWeight?: number;
   resolution?: string;
   aspectRatio?: string;
   renderingSpeed?: string;
@@ -26,6 +27,7 @@ export interface IdeogramImageModelInput extends ImageModelInput {
   colorPalette?: any;
   styleCodes?: string[];
   styleType?: string;
+  stylePreset?: string;
 }
 
 export interface IdeogramImageModelOutput extends ImageModelOutput {}
@@ -92,6 +94,7 @@ export class IdeogramImageModel extends ImageModel<
 
     const inputKeys = [
       "prompt",
+      "imageWeight",
       "seed",
       "resolution",
       "aspectRatio",
@@ -101,6 +104,7 @@ export class IdeogramImageModel extends ImageModel<
       "colorPalette",
       "styleCodes",
       "styleType",
+      "stylePreset",
     ];
 
     const mergedInput = snakelize(

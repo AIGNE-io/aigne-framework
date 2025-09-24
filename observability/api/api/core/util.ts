@@ -1,16 +1,17 @@
 import Decimal from "decimal.js";
 import { eq, sql } from "drizzle-orm";
+import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { Trace } from "../server/models/trace.js";
 import price from "../server/utils/model-prices.json";
 import type { TraceFormatSpans } from "./type.ts";
 
 export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKLET_PORT;
 
-export const insertTrace = async (db: any, trace: TraceFormatSpans) => {
+export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   if (Number(trace.endTime) > 0) {
     const model = trace.attributes?.output?.model;
 
-    const traces: { id: string; token: number; cost: number }[] = await db
+    const traces: { id: string; token: number | null; cost: number | null }[] = await db
       .select({
         id: Trace.id,
         token: Trace.token,

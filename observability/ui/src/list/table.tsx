@@ -107,7 +107,7 @@ const Table = ({
       },
     },
     {
-      label: `${t("token")}(${t("cost")})`,
+      label: `${t("token")} (${t("cost")})`,
       name: "token",
       width: 200,
       align: "center" as const,

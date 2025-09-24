@@ -68,8 +68,12 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   });
 
   const { data: usageSummary } = useRequest(async () => {
-    const res = await fetch(joinURL(origin, "/api/trace/tree/summary"));
-    return res.json() as Promise<{ totalToken: number; totalCost: number }>;
+    try {
+      const res = await fetch(joinURL(origin, "/api/trace/tree/summary"));
+      return res.json() as Promise<{ totalToken: number; totalCost: number }>;
+    } catch {
+      return { totalToken: 0, totalCost: 0 };
+    }
   });
 
   const fetchTraces = async ({

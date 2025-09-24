@@ -189,7 +189,9 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
           : nodejs.path.join(nodejs.path.dirname(path), v.url);
         return nodejs.fs.readFile(url, "utf8").then((content) => ({ role, content, path: url }));
       }
-      throw new Error(`Invalid instruction item in agent file ${path}: ${JSON.stringify(v)}`);
+      throw new Error(
+        `Invalid instruction item in agent file ${path}. Expected 'content' or 'url' property`,
+      );
     };
 
     const instructionsSchema = z

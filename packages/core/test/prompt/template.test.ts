@@ -102,7 +102,7 @@ test("ToolMessageTemplate", async () => {
   });
 });
 
-test("safeParseChatMessages", async () => {
+test("safeParseChatMessages should correctly parse valid chat messages with roles and names", async () => {
   const messages = [
     { role: "system", content: "system message" },
     { role: "user", content: "user message", name: "UserA" },

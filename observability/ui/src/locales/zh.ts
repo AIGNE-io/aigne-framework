@@ -72,4 +72,10 @@ export default flatten({
   dateRange: "日期范围",
   reset: "重置",
   apply: "应用",
+  token: "Token",
+  cost: "花费",
+  analytics: {
+    totalToken: "总 Tokens",
+    totalCost: "总花费",
+  },
 });

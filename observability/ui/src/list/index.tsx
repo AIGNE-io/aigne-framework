@@ -22,6 +22,7 @@ import { origin } from "../utils/index.ts";
 import DesktopSearch from "./search/desktop.tsx";
 import MobileSearch from "./search/mobile.tsx";
 import Table from "./table.tsx";
+import { UsageSummary } from "./usage-summary.tsx";
 
 interface ListRef {
   refetch: () => void;
@@ -64,6 +65,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const { data: components } = useRequest(async () => {
     const res = await fetch(joinURL(origin, "/api/trace/tree/components"));
     return res.json() as Promise<{ data: string[] }>;
+  });
+
+  const { data: usageSummary } = useRequest(async () => {
+    const res = await fetch(joinURL(origin, "/api/trace/tree/summary"));
+    return res.json() as Promise<{ totalToken: number; totalCost: number }>;
   });
 
   const fetchTraces = async ({
@@ -207,6 +213,8 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   return (
     <ToastProvider>
       <Box sx={{ ".striped-row": { backgroundColor: "action.hover" } }}>
+        <UsageSummary totalToken={usageSummary?.totalToken} totalCost={usageSummary?.totalCost} />
+
         <Box
           sx={{
             my: 2,

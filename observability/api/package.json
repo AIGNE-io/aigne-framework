@@ -116,6 +116,7 @@
     "chalk": "^5.6.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "decimal.js": "^10.6.0",
     "dotenv-flow": "^4.1.0",
     "drizzle-orm": "^0.44.5",
     "express": "^5.1.0",

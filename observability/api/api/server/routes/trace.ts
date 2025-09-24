@@ -6,6 +6,7 @@ import express, { type Request, type Response, type Router } from "express";
 import type SSE from "express-sse";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
+import { insertTrace } from "../../core/util.js";
 import type { FileData, ImageData } from "../base.js";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
@@ -122,6 +123,8 @@ export default ({
         `,
         userId: Trace.userId,
         componentId: Trace.componentId,
+        token: Trace.token,
+        cost: Trace.cost,
       })
       .from(Trace)
       .where(whereClause)
@@ -146,6 +149,26 @@ export default ({
       page,
       pageSize,
       data: processedRootCalls,
+    });
+  });
+
+  router.get("/tree/summary", ...middleware, async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+
+    const whereClause = and(isNull(Trace.parentId), isNull(Trace.action));
+
+    const result = await db
+      .select({
+        totalToken: sql<number>`COALESCE(SUM(${Trace.token}), 0)`,
+        totalCost: sql<number>`COALESCE(SUM(${Trace.cost}), 0)`,
+      })
+      .from(Trace)
+      .where(whereClause)
+      .execute();
+
+    res.json({
+      totalToken: result[0]?.totalToken ?? 0,
+      totalCost: result[0]?.totalCost ?? 0,
     });
   });
 
@@ -268,6 +291,8 @@ export default ({
         userId: Trace.userId,
         sessionId: Trace.sessionId,
         componentId: Trace.componentId,
+        token: Trace.token,
+        cost: Trace.cost,
       })
       .from(Trace)
       .where(inArray(Trace.rootId, rootCallIds))
@@ -332,48 +357,7 @@ export default ({
           }
         }
 
-        const insertSql = sql`
-          INSERT INTO Trace (
-            id,
-            rootId,
-            parentId,
-            name,
-            startTime,
-            endTime,
-            attributes,
-            status,
-            userId,
-            sessionId,
-            componentId,
-            action
-          ) VALUES (
-            ${trace.id},
-            ${trace.rootId},
-            ${trace.parentId || null},
-            ${trace.name},
-            ${trace.startTime},
-            ${trace.endTime},
-            ${JSON.stringify(trace.attributes)},
-            ${JSON.stringify(trace.status)},
-            ${trace.userId || null},
-            ${trace.sessionId || null},
-            ${trace.componentId || null},
-            ${trace.action || null}
-          )
-          ON CONFLICT(id)
-          DO UPDATE SET
-            name = excluded.name,
-            startTime = excluded.startTime,
-            endTime = excluded.endTime,
-            attributes = excluded.attributes,
-            status = excluded.status,
-            userId = excluded.userId,
-            sessionId = excluded.sessionId,
-            componentId = excluded.componentId,
-            action = excluded.action;
-        `;
-
-        await db?.run?.(insertSql);
+        await insertTrace(db, trace);
       } catch (err) {
         console.error(`upsert spans failed for trace ${trace.id}:`, err);
       }

@@ -98,10 +98,23 @@ const Table = ({
       label: t("latency"),
       name: "latency",
       align: "right" as const,
+      width: 160,
       options: {
         customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
           return <Box>{parseDuration(item.startTime, item.endTime)}</Box>;
+        },
+      },
+    },
+    {
+      label: `${t("token")}(${t("cost")})`,
+      name: "token",
+      width: 200,
+      align: "center" as const,
+      options: {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+          const item = traces[rowIndex];
+          return <Box>{`${item.token || 0} ($${Number((item.cost || 0).toFixed(5))})`}</Box>;
         },
       },
     },
@@ -272,10 +285,7 @@ const Table = ({
                 paddingBottom: "16px",
               },
             }
-          : {
-              paddingTop: 0.5,
-              paddingBottom: 0.5,
-            },
+          : {},
         ".MuiTableCell-body": isMobile
           ? {
               alignItems: "center",

@@ -72,4 +72,10 @@ export default flatten({
   dateRange: "Date Range",
   reset: "Reset",
   apply: "Apply",
+  token: "Token",
+  cost: "Cost",
+  analytics: {
+    totalToken: "Total Tokens",
+    totalCost: "Total Cost",
+  },
 });

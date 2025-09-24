@@ -54,6 +54,21 @@ const migrations = [
       }
     },
   },
+  {
+    hash: "20250924_add_token_and_cost",
+    async sql(db: DB) {
+      const hasTokenColumn = await columnExists(db, "Trace", "token");
+      const hasCostColumn = await columnExists(db, "Trace", "cost");
+
+      if (!hasTokenColumn) {
+        await db.run(sql`ALTER TABLE Trace ADD COLUMN token INTEGER;`);
+      }
+
+      if (!hasCostColumn) {
+        await db.run(sql`ALTER TABLE Trace ADD COLUMN cost REAL;`);
+      }
+    },
+  },
 ];
 
 export default migrations;

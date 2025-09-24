@@ -1,4 +1,5 @@
 import {
+  type AgentInvokeOptions,
   ImageModel,
   type ImageModelInput,
   type ImageModelOptions,
@@ -7,7 +8,7 @@ import {
 } from "@aigne/core";
 
 import { snakelize } from "@aigne/core/utils/camelize.js";
-import { checkArguments, pick } from "@aigne/core/utils/type-utils.js";
+import { checkArguments, flat, pick } from "@aigne/core/utils/type-utils.js";
 import { joinURL } from "ufo";
 import { z } from "zod";
 
@@ -50,7 +51,7 @@ export class IdeogramImageModel extends ImageModel<
   IdeogramImageModelInput,
   IdeogramImageModelOutput
 > {
-  constructor(public options?: IdeogramImageModelOptions) {
+  constructor(public override options?: IdeogramImageModelOptions) {
     super({
       ...options,
       inputSchema: ideogramImageModelInputSchema,
@@ -78,7 +79,10 @@ export class IdeogramImageModel extends ImageModel<
    * @param input The input to process
    * @returns The generated response
    */
-  override async process(input: IdeogramImageModelInput): Promise<ImageModelOutput> {
+  override async process(
+    input: IdeogramImageModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<ImageModelOutput> {
     const model = input.model || this.credential.model;
     const formData = new FormData();
 
@@ -99,11 +103,9 @@ export class IdeogramImageModel extends ImageModel<
       "styleType",
     ];
 
-    const mergedInput = snakelize(pick({ ...this.modelOptions, ...input }, inputKeys));
-
-    if (input.n) {
-      formData.append("num_images", input.n.toString());
-    }
+    const mergedInput = snakelize(
+      pick({ ...this.modelOptions, ...input.modelOptions, ...input }, inputKeys),
+    );
 
     Object.keys(mergedInput).forEach((key) => {
       if (mergedInput[key]) {
@@ -111,13 +113,29 @@ export class IdeogramImageModel extends ImageModel<
       }
     });
 
+    if (input.n) {
+      formData.append("num_images", input.n.toString());
+    }
+
+    const inputImages = flat(input.image);
+    const image = inputImages.at(0);
+    if (image) {
+      if (inputImages.length > 1) {
+        throw new Error(`${this.name} only support one image for editing`);
+      }
+      const { data } = await this.transformFileType("file", image, options);
+      formData.append("image", new Blob([Buffer.from(data, "base64")]));
+    }
+
     const { url, apiKey } = this.credential;
     if (!apiKey)
       throw new Error(
         `${this.name} requires an API key. Please provide it via \`options.apiKey\`, or set the \`${this.apiKeyEnvName}\` environment variable`,
       );
 
-    const response = await fetch(joinURL(new URL(url).origin, `/v1/${model}/generate`), {
+    const apiURL = joinURL(new URL(url).origin, "v1", model, image ? "remix" : "generate");
+
+    const response = await fetch(apiURL, {
       method: "POST",
       headers: { "api-key": apiKey },
       body: formData,
@@ -128,10 +146,10 @@ export class IdeogramImageModel extends ImageModel<
       throw new Error(`Ideogram API error: ${response.status} ${response.statusText} ${error}`);
     }
 
-    const data = await response.json();
+    const data: { data: { url: string }[] } = await response.json();
 
     return {
-      images: data.data.map((item: { url: string }) => ({ url: item.url })),
+      images: data.data.map((item) => ({ type: "url", url: item.url, mimeType: "image/png" })),
       usage: {
         inputTokens: 0,
         outputTokens: 0,

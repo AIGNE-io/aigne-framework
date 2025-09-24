@@ -19,7 +19,8 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
   const componentId = raw.split("/").pop();
 
   if (!componentId) {
-    return res.status(400).send("Agent Runtime: Bad Request");
+    res.status(400).send("Agent Runtime: Bad Request");
+    return;
   }
 
   const cachedChecker = componentCache.get(componentId);
@@ -34,12 +35,14 @@ router.use(async (req: Request, res: Response, next: NextFunction) => {
   const cached = componentCache.get(componentId);
   const { component } = cached;
   if (!component) {
-    return res.status(404).send(`Agent Runtime: Component ${componentId} Not Found`);
+    res.status(404).send(`Agent Runtime: Component ${componentId} Not Found`);
+    return;
   }
 
   const env = component.environments.find((x: { key: string }) => x.key === "BLOCKLET_APP_DIR");
   if (!env) {
-    return res.status(404).send("Agent Runtime: Component Not Valid");
+    res.status(404).send("Agent Runtime: Component Not Valid");
+    return;
   }
 
   req.mainDir = component.meta.main
@@ -74,11 +77,12 @@ router.post("/chat", async (req, res) => {
     }));
     const defaultModel = aigne?.model?.model?.split(":");
     if (defaultModel?.length !== 2) {
-      return res
+      res
         .status(400)
         .send(
           "change your aigne.yml chatModel model to be like openai/gpt-5-mini or openai/gpt-4o-mini",
         );
+      return;
     }
 
     const chatModel = aigne?.model?.model?.split(":")?.join("/");

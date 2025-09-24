@@ -15,18 +15,20 @@ const mockEnv = {
 };
 
 describe("AIGNEHubChatModel", async () => {
-  const { url, aigne, close } = await createHonoServer();
+  const { url: baseURL, aigne, close } = await createHonoServer();
 
   beforeEach(() => {
     Object.entries(mockEnv).forEach(([key, value]) => {
       process.env[key] = value;
     });
-    process.env.BLOCKLET_AIGNE_API_URL = url;
+    process.env.BLOCKLET_AIGNE_API_URL = baseURL;
+    process.env.AIGNE_HUB_API_KEY = "test-api-key";
   });
 
   afterEach(() => {
     Object.keys(mockEnv).forEach((key) => delete process.env[key]);
     delete process.env.BLOCKLET_AIGNE_API_URL;
+    delete process.env.AIGNE_HUB_API_KEY;
   });
 
   afterAll(async () => {
@@ -35,8 +37,8 @@ describe("AIGNEHubChatModel", async () => {
 
   describe("constructor", () => {
     test("should create instance with options", () => {
-      const model = new AIGNEHubChatModel({ url });
-      expect(model.options.url).toBe(url);
+      const model = new AIGNEHubChatModel({ baseURL });
+      expect(model.options.baseURL).toBe(baseURL);
       expect(model.options.apiKey).toBeUndefined();
       expect(model.options.model).toBeUndefined();
     });
@@ -44,23 +46,23 @@ describe("AIGNEHubChatModel", async () => {
 
   describe("client", () => {
     test("should create client on first call", async () => {
-      const model = new AIGNEHubChatModel({ url });
+      const model = new AIGNEHubChatModel({ baseURL });
       const client = model["client"];
       expect(client).toBeDefined();
     });
 
     test("should throw error for unsupported provider", async () => {
       process.env.BLOCKLET_AIGNE_API_PROVIDER = "unsupported";
-      expect(() => new AIGNEHubChatModel({ url })).toThrowError(/Unsupported model provider/);
+      expect(() => new AIGNEHubChatModel({ baseURL })).toThrowError(/Unsupported model provider/);
     });
   });
 
   describe("credential", () => {
     test("should return credentials from environment variables", async () => {
-      const model = new AIGNEHubChatModel({ url });
+      const model = new AIGNEHubChatModel({ baseURL });
       const credential = await model.credential;
 
-      expect(credential.url).toBe(joinURL(url, "ai-kit/api/v2/chat"));
+      expect(credential.url).toBe(joinURL(baseURL, "ai-kit/api/v2/chat"));
       expect(credential.apiKey).toBe("test-api-key");
       expect(credential.model).toBe("openai/gpt-4o-mini");
     });
@@ -70,7 +72,7 @@ describe("AIGNEHubChatModel", async () => {
     test("should handle credential parsing errors gracefully", async () => {
       process.env.BLOCKLET_AIGNE_API_CREDENTIAL = '{"invalid": "json"';
 
-      const model = new AIGNEHubChatModel({ url });
+      const model = new AIGNEHubChatModel({ baseURL });
 
       const credential = await model.credential;
       expect(credential).toBeDefined();
@@ -82,24 +84,24 @@ describe("AIGNEHubChatModel", async () => {
       delete process.env.BLOCKLET_AIGNE_API_CREDENTIAL;
       delete process.env.BLOCKLET_AIGNE_API_URL;
 
-      const model = new AIGNEHubChatModel({ url });
+      const model = new AIGNEHubChatModel({ baseURL });
 
       const credential = await model.credential;
-      expect(credential.url).toBe(joinURL(url, "ai-kit/api/v2/chat"));
+      expect(credential.url).toBe(joinURL(baseURL, "ai-kit/api/v2/chat"));
     });
   });
 
   describe("other model options", () => {
     test("gemini-2.0-flash", async () => {
       process.env.BLOCKLET_AIGNE_API_MODEL = "google/gemini-2.0-flash";
-      const model = new AIGNEHubChatModel({ url: url });
+      const model = new AIGNEHubChatModel({ baseURL });
       const credential = await model.credential;
       expect(credential.model).toBe("google/gemini-2.0-flash");
     });
 
     test("deepseek-r1", async () => {
       process.env.BLOCKLET_AIGNE_API_MODEL = "deepseek/deepseek-r1";
-      const model = new AIGNEHubChatModel({ url: url });
+      const model = new AIGNEHubChatModel({ baseURL });
       const credential = await model.credential;
       expect(credential.model).toBe("deepseek/deepseek-r1");
     });
@@ -113,7 +115,7 @@ describe("AIGNEHubChatModel", async () => {
     );
 
     const client = new AIGNEHubChatModel({
-      url,
+      baseURL,
       apiKey: "123",
       model: "openai/gpt-4o-mini",
     });
@@ -130,7 +132,7 @@ describe("AIGNEHubChatModel", async () => {
     );
 
     const client = new AIGNEHubChatModel({
-      url,
+      baseURL,
       apiKey: "123",
       model: "openai/gpt-4o-mini",
     });
@@ -150,7 +152,6 @@ describe("AIGNEHubChatModel", async () => {
     expect(text).toEqual("Hello world!");
     expect(processSpy.mock.calls.at(-1)?.[0]).toMatchInlineSnapshot(`
       {
-        "fileOutputType": "file",
         "messages": [
           {
             "content": "hello",
@@ -161,6 +162,7 @@ describe("AIGNEHubChatModel", async () => {
           "model": "openai/gpt-4o-mini",
           "parallelToolCalls": true,
         },
+        "outputFileType": "file",
       }
     `);
   });

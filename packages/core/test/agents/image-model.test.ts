@@ -15,7 +15,7 @@ test("ImageModel should work correctly", async () => {
       _options: AgentInvokeOptions,
     ): PromiseOrValue<AgentProcessResult<ImageModelOutput>> {
       return {
-        images: [{ url: "https://example.com/image.png" }],
+        images: [{ type: "file", data: Buffer.from("test image").toString("base64") }],
         usage: {
           inputTokens: 10,
           outputTokens: 20,
@@ -28,12 +28,21 @@ test("ImageModel should work correctly", async () => {
   const model = new TestImageModel();
 
   expect(model.credential).toBeTruthy();
-  expect(await model.invoke({ prompt: "Draw an image about a cat" })).toEqual({
-    images: [{ url: "https://example.com/image.png" }],
-    usage: {
-      inputTokens: 10,
-      outputTokens: 20,
-      aigneHubCredits: 30,
-    },
-  });
+  expect(
+    await model.invoke({ prompt: "Draw an image about a cat", outputFileType: "file" }),
+  ).toMatchInlineSnapshot(`
+    {
+      "images": [
+        {
+          "data": "dGVzdCBpbWFnZQ==",
+          "type": "file",
+        },
+      ],
+      "usage": {
+        "aigneHubCredits": 30,
+        "inputTokens": 10,
+        "outputTokens": 20,
+      },
+    }
+  `);
 });

@@ -6,9 +6,9 @@ import {
   type Agent,
   AIAgent,
   type AIGNE,
+  type ChatModelInputOptions,
   DEFAULT_OUTPUT_KEY,
   type Message,
-  type ModelOptions,
   UserAgent,
 } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
@@ -72,7 +72,7 @@ export async function runWithAIGNE(
   }: {
     argv?: typeof process.argv;
     chatLoopOptions?: ChatLoopOptions;
-    modelOptions?: ModelOptions;
+    modelOptions?: ChatModelInputOptions;
     outputKey?: string;
   } = {},
 ) {
@@ -137,12 +137,12 @@ export async function runAgentWithAIGNE(
   agent: Agent,
   {
     outputKey,
-    fileOutputKey,
+    outputFileKey,
     chatLoopOptions,
     ...options
   }: {
     outputKey?: string;
-    fileOutputKey?: string;
+    outputFileKey?: string;
     chatLoopOptions?: ChatLoopOptions;
     input?: Message;
   } & Omit<AgentRunCommonOptions, "input"> = {},
@@ -173,14 +173,14 @@ export async function runAgentWithAIGNE(
     await runChatLoopInTerminal(userAgent, {
       ...chatLoopOptions,
       outputKey,
-      fileInputKey: agent instanceof AIAgent ? agent.fileInputKey : undefined,
+      inputFileKey: agent instanceof AIAgent ? agent.inputFileKey : undefined,
       input: options.input,
     });
 
     return;
   }
 
-  const tracer = new TerminalTracer(aigne.newContext(), { outputKey, fileOutputKey });
+  const tracer = new TerminalTracer(aigne.newContext(), { outputKey, outputFileKey });
 
   const { result } = await tracer.run(agent, options.input ?? {});
 

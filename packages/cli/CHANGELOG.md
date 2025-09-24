@@ -1,5 +1,152 @@
 # Changelog
 
+## [1.48.4-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.4-beta.3...cli-v1.48.4-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta.4
+    * @aigne/agentic-memory bumped to 1.0.46-beta.4
+    * @aigne/aigne-hub bumped to 0.10.0-beta.4
+    * @aigne/core bumped to 1.61.0-beta.3
+    * @aigne/default-memory bumped to 1.2.9-beta.4
+    * @aigne/openai bumped to 0.16.0-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.3
+
+## [1.48.4-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.4-beta.2...cli-v1.48.4-beta.3) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta.3
+    * @aigne/agentic-memory bumped to 1.0.46-beta.3
+    * @aigne/aigne-hub bumped to 0.10.0-beta.3
+    * @aigne/core bumped to 1.61.0-beta.2
+    * @aigne/default-memory bumped to 1.2.9-beta.3
+    * @aigne/openai bumped to 0.16.0-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.2
+
+## [1.48.4-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.4-beta.1...cli-v1.48.4-beta.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* standardize file parameter naming across models ([#534](https://github.com/AIGNE-io/aigne-framework/issues/534)) ([f159a9d](https://github.com/AIGNE-io/aigne-framework/commit/f159a9d6af21ec0e99641996b150560929845845))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta.2
+    * @aigne/agentic-memory bumped to 1.0.46-beta.2
+    * @aigne/aigne-hub bumped to 0.10.0-beta.2
+    * @aigne/core bumped to 1.61.0-beta.1
+    * @aigne/default-memory bumped to 1.2.9-beta.2
+    * @aigne/openai bumped to 0.16.0-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.1
+
+## [1.48.4-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.4-beta...cli-v1.48.4-beta.1) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta.1
+    * @aigne/agentic-memory bumped to 1.0.46-beta.1
+    * @aigne/aigne-hub bumped to 0.10.0-beta.1
+    * @aigne/default-memory bumped to 1.2.9-beta.1
+    * @aigne/openai bumped to 0.16.0-beta.1
+
+## [1.48.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.3...cli-v1.48.4-beta) (2025-09-22)
+
+
+### Bug Fixes
+
+* resolve Windows file import URI issues ([#528](https://github.com/AIGNE-io/aigne-framework/issues/528)) ([bf807c5](https://github.com/AIGNE-io/aigne-framework/commit/bf807c5a3563c4423dc82fddff7fba280ef57957))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta
+    * @aigne/agentic-memory bumped to 1.0.46-beta
+    * @aigne/aigne-hub bumped to 0.10.0-beta
+    * @aigne/core bumped to 1.61.0-beta
+    * @aigne/default-memory bumped to 1.2.9-beta
+    * @aigne/openai bumped to 0.16.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta
+
+## [1.48.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.3-beta...cli-v1.48.3) (2025-09-22)
+
+## [1.48.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.2...cli-v1.48.3-beta) (2025-09-22)
+
+
+### Bug Fixes
+
+* improved number formatting for credit balance display in hub commands ([c5ec419](https://github.com/AIGNE-io/aigne-framework/commit/c5ec41910435b58957611fe48105ed3c69c56e17))
+
+## [1.48.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.1...cli-v1.48.2) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.6
+
+## [1.48.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.0...cli-v1.48.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* use aigne hub model when aigne hub connected ([#516](https://github.com/AIGNE-io/aigne-framework/issues/516)) ([a0493d0](https://github.com/AIGNE-io/aigne-framework/commit/a0493d0ad453afd3c3734ee2730636c6bd1e08ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.45
+    * @aigne/agentic-memory bumped to 1.0.45
+    * @aigne/aigne-hub bumped to 0.9.5
+    * @aigne/core bumped to 1.60.3
+    * @aigne/default-memory bumped to 1.2.8
+    * @aigne/openai bumped to 0.15.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
+## [1.48.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.47.1...cli-v1.48.0) (2025-09-16)
+
+
+### Features
+
+* **cli:** support using beta apps with environments ([#511](https://github.com/AIGNE-io/aigne-framework/issues/511)) ([141b11a](https://github.com/AIGNE-io/aigne-framework/commit/141b11a7757f8a441489c9e7ab5e10df1fafe26f))
+
+
+### Bug Fixes
+
+* **cli:** tune aigne hub status and deprecate aigne hub info ([#513](https://github.com/AIGNE-io/aigne-framework/issues/513)) ([25ca2a9](https://github.com/AIGNE-io/aigne-framework/commit/25ca2a9c402e9cb2d895737c32e25e957fdefd91))
+
+## [1.47.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.47.0...cli-v1.47.1) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.4
+
 ## [1.47.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.46.2...cli-v1.47.0) (2025-09-14)
 
 

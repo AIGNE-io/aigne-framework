@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import { IdeogramImageModel } from "@aigne/ideogram";
 import { serve } from "bun";
 import { detect } from "detect-port";
@@ -32,13 +32,30 @@ test("IdeogramImageModel should generate images successfully", async () => {
     apiKey: "YOUR_API_KEY",
   });
 
-  const result = await model.invoke({ model: "ideogram-v3", prompt: "Draw an image about a cat" });
+  spyOn(model, "downloadFile").mockResolvedValueOnce(new Response("test image"));
 
-  expect(result).toEqual(
-    expect.objectContaining({
-      images: [{ url: "https://example.com/image.png" }],
-    }),
-  );
+  const result = await model.invoke({
+    model: "ideogram-v3",
+    prompt: "Draw an image about a cat",
+    outputFileType: "file",
+  });
+
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "images": [
+        {
+          "data": "dGVzdCBpbWFnZQ==",
+          "mimeType": "image/png",
+          "type": "file",
+        },
+      ],
+      "model": "ideogram-v3",
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+      },
+    }
+  `);
 
   close();
 });

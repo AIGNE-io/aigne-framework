@@ -4,6 +4,7 @@ import { parse } from "yaml";
 import { type ZodType, z } from "zod";
 import type { AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
+import { type Role, roleSchema } from "../agents/chat-model.js";
 import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import {
@@ -51,7 +52,7 @@ export interface BaseAgentSchema {
       };
 }
 
-export type Instructions = { content: string; path: string };
+export type Instructions = { role: Exclude<Role, "tool">; content: string; path: string }[];
 
 export interface AIAgentSchema extends BaseAgentSchema {
   type: "ai";
@@ -161,24 +162,49 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
       ),
     });
 
+    const instructionItemSchema = z.union([
+      z.object({
+        role: roleSchema.default("system"),
+        url: z.string(),
+      }),
+      z.object({
+        role: roleSchema.default("system"),
+        content: z.string(),
+      }),
+    ]);
+
+    const parseInstructionItem = async ({
+      role,
+      ...v
+    }: z.infer<typeof instructionItemSchema>): Promise<Instructions[number]> => {
+      if (role === "tool")
+        throw new Error(`'tool' role is not allowed in instruction item in agent file ${path}`);
+
+      if ("content" in v && typeof v.content === "string") {
+        return { role, content: v.content, path };
+      }
+      if ("url" in v && typeof v.url === "string") {
+        const url = nodejs.path.isAbsolute(v.url)
+          ? v.url
+          : nodejs.path.join(nodejs.path.dirname(path), v.url);
+        return nodejs.fs.readFile(url, "utf8").then((content) => ({ role, content, path: url }));
+      }
+      throw new Error(
+        `Invalid instruction item in agent file ${path}. Expected 'content' or 'url' property`,
+      );
+    };
+
     const instructionsSchema = z
-      .union([
-        z.string(),
-        z.object({
-          url: z.string(),
-        }),
-      ])
-      .transform((v) =>
-        typeof v === "string"
-          ? { content: v, path }
-          : Promise.resolve(
-              nodejs.path.isAbsolute(v.url)
-                ? v.url
-                : nodejs.path.join(nodejs.path.dirname(path), v.url),
-            ).then((path) =>
-              nodejs.fs.readFile(path, "utf8").then((content) => ({ content, path })),
-            ),
-      ) as unknown as ZodType<Instructions>;
+      .union([z.string(), instructionItemSchema, z.array(instructionItemSchema)])
+      .transform(async (v): Promise<Instructions> => {
+        if (typeof v === "string") return [{ role: "system", content: v, path }];
+
+        if (Array.isArray(v)) {
+          return Promise.all(v.map((item) => parseInstructionItem(item)));
+        }
+
+        return [await parseInstructionItem(v)];
+      }) as unknown as ZodType<Instructions>;
 
     return camelizeSchema(
       z.discriminatedUnion("type", [

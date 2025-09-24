@@ -1,5 +1,84 @@
 # Changelog
 
+## [0.16.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.0-beta.3...openai-v0.16.0-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.3
+
+## [0.16.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.0-beta.2...openai-v0.16.0-beta.3) (2025-09-23)
+
+
+### Bug Fixes
+
+* add prefer input file type option for image model ([#536](https://github.com/AIGNE-io/aigne-framework/issues/536)) ([3cba8a5](https://github.com/AIGNE-io/aigne-framework/commit/3cba8a5562233a1567b49b6dd5c446c0760f5c4c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.2
+
+## [0.16.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.0-beta.1...openai-v0.16.0-beta.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* remove useless parameter ([efb0690](https://github.com/AIGNE-io/aigne-framework/commit/efb0690cf1ada6de95896e160c7cc5ffc7524ab2))
+* standardize file parameter naming across models ([#534](https://github.com/AIGNE-io/aigne-framework/issues/534)) ([f159a9d](https://github.com/AIGNE-io/aigne-framework/commit/f159a9d6af21ec0e99641996b150560929845845))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.1
+
+## [0.16.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.0-beta...openai-v0.16.0-beta.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* improve image model parameters ([#530](https://github.com/AIGNE-io/aigne-framework/issues/530)) ([d66b5ca](https://github.com/AIGNE-io/aigne-framework/commit/d66b5ca01e14baad2712cc1a84930cdb63703232))
+
+## [0.16.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.15.4...openai-v0.16.0-beta) (2025-09-22)
+
+
+### Features
+
+* improve image model architecture and file handling ([#527](https://github.com/AIGNE-io/aigne-framework/issues/527)) ([4db50aa](https://github.com/AIGNE-io/aigne-framework/commit/4db50aa0387a1a0f045ca11aaa61613e36ca7597))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta
+    * @aigne/platform-helpers bumped to 0.6.3-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta
+
+## [0.15.4](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.15.3...openai-v0.15.4) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.60.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.52
+
 ## [0.15.3](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.15.2...openai-v0.15.3) (2025-09-11)
 
 

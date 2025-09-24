@@ -3,7 +3,6 @@ import {
   ChatModel,
   type ChatModelInput,
   type ChatModelOutput,
-  FileOutputType,
 } from "@aigne/core";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
@@ -16,14 +15,19 @@ import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
 import {
   AIGNE_HUB_BLOCKLET_DID,
   AIGNE_HUB_DEFAULT_MODEL,
-  AIGNE_HUB_URL,
+  aigneHubBaseUrl,
 } from "./utils/constants.js";
+import { getModels } from "./utils/hub.js";
 import { type AIGNEHubChatModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
 export class AIGNEHubChatModel extends ChatModel {
   constructor(public override options: AIGNEHubChatModelOptions) {
     checkArguments("AIGNEHubChatModel", aigneHubModelOptionsSchema, options);
     super();
+  }
+
+  async models() {
+    return getModels({ baseURL: (await this.credential).url, type: "chat" });
   }
 
   protected _client?: Promise<BaseClient>;
@@ -44,11 +48,7 @@ export class AIGNEHubChatModel extends ChatModel {
 
   override get credential() {
     this._credential ??= getAIGNEHubMountPoint(
-      this.options.url ||
-        this.options.baseURL ||
-        process.env.BLOCKLET_AIGNE_API_URL ||
-        process.env.AIGNE_HUB_API_URL ||
-        AIGNE_HUB_URL,
+      this.options.baseURL || aigneHubBaseUrl(),
       AIGNE_HUB_BLOCKLET_DID,
     ).then((url) => {
       const path = "/api/v2/chat";
@@ -95,7 +95,7 @@ export class AIGNEHubChatModel extends ChatModel {
           model: input.modelOptions?.model || (await this.credential).model,
         },
         // Shouldn't use `local` output type for remote AIGNE Hub call, client can not access the remote filesystem
-        fileOutputType: FileOutputType.file,
+        outputFileType: "file",
       },
       {
         ...options,

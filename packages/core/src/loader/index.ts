@@ -12,6 +12,7 @@ import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
+import { ChatMessagesTemplate, parseChatMessages } from "../prompt/template.js";
 import { flat, isNonNullable, type PromiseOrValue, tryOrThrow } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
@@ -29,12 +30,9 @@ export interface LoadOptions {
     | ((
         model?: z.infer<typeof aigneFileSchema>["imageModel"],
       ) => PromiseOrValue<ImageModel | undefined>);
-  key?: string | number;
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
-  options.key ??= Date.now();
-
   const { aigne, rootDir } = await loadAIGNEFile(path);
 
   const allAgentPaths = new Set(
@@ -81,7 +79,7 @@ export async function loadAgent(
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
-    const agent = await loadAgentFromJsFile(path, options);
+    const agent = await loadAgentFromJsFile(path);
     if (agent instanceof Agent) return agent;
     return parseAgent(path, agent, options, agentOptions);
   }
@@ -185,8 +183,15 @@ async function parseAgent(
 
   let instructions: PromptBuilder | undefined;
   if ("instructions" in agent && agent.instructions) {
-    instructions = PromptBuilder.from(agent.instructions.content, {
-      workingDir: nodejs.path.dirname(agent.instructions.path),
+    instructions = new PromptBuilder({
+      instructions: ChatMessagesTemplate.from(
+        parseChatMessages(
+          agent.instructions.map((i) => ({
+            ...i,
+            options: { workingDir: nodejs.path.dirname(i.path) },
+          })),
+        ),
+      ),
     });
   }
 

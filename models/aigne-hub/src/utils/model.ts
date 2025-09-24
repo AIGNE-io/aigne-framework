@@ -1,9 +1,14 @@
 import type { Agent } from "node:https";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
-import type { ChatModel, ImageModel, ModelOptions } from "@aigne/core";
+import type {
+  ChatModel,
+  ChatModelInputOptions,
+  ImageModel,
+  ImageModelInputOptions,
+} from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
-import { DoubaoChatModel } from "@aigne/doubao";
+import { DoubaoChatModel, DoubaoImageModel } from "@aigne/doubao";
 import { GeminiChatModel, GeminiImageModel } from "@aigne/gemini";
 import { IdeogramImageModel } from "@aigne/ideogram";
 import { OllamaChatModel } from "@aigne/ollama";
@@ -22,7 +27,10 @@ const getClientOptions = () => {
     .filter(Boolean)[0];
 
   const httpAgent = proxy ? (new HttpsProxyAgent(proxy) as Agent) : undefined;
-  const clientOptions: OpenAIChatModelOptions["clientOptions"] = {
+  const clientOptions: Pick<
+    NonNullable<OpenAIChatModelOptions["clientOptions"]>,
+    "fetchOptions"
+  > = {
     fetchOptions: {
       // @ts-ignore
       agent: httpAgent,
@@ -39,7 +47,7 @@ export interface LoadableModel {
   apiKeyEnvName?: string | string[];
   create: (options: {
     model?: string;
-    modelOptions?: ModelOptions;
+    modelOptions?: ChatModelInputOptions;
     apiKey?: string;
     url?: string;
   }) => ChatModel;
@@ -115,13 +123,13 @@ export function availableModels(): LoadableModel[] {
 }
 
 export interface LoadableImageModel {
-  name: string;
+  name: string | string[];
   apiKeyEnvName: string;
   create: (options: {
     apiKey?: string;
     url?: string;
     model?: string;
-    modelOptions?: any;
+    modelOptions?: ImageModelInputOptions;
   }) => ImageModel;
 }
 
@@ -135,7 +143,7 @@ export function availableImageModels(): LoadableImageModel[] {
       create: (params) => new OpenAIImageModel({ ...params, clientOptions }),
     },
     {
-      name: GeminiImageModel.name,
+      name: [GeminiImageModel.name, "google"],
       apiKeyEnvName: "GEMINI_API_KEY",
       create: (params) => new GeminiImageModel({ ...params, clientOptions }),
     },
@@ -143,6 +151,11 @@ export function availableImageModels(): LoadableImageModel[] {
       name: IdeogramImageModel.name,
       apiKeyEnvName: "IDEOGRAM_API_KEY",
       create: (params) => new IdeogramImageModel({ ...params }),
+    },
+    {
+      name: DoubaoImageModel.name,
+      apiKeyEnvName: "DOUBAO_API_KEY",
+      create: (params) => new DoubaoImageModel({ ...params, clientOptions }),
     },
     {
       name: AIGNEHubImageModel.name,
@@ -179,7 +192,19 @@ export function findImageModel(provider: string): {
 
   const all = availableImageModels();
 
-  const match = all.find((m) => m.name.toLowerCase().includes(provider));
+  const match = all.find((m) => {
+    if (typeof m.name === "string") {
+      return m.name.toLowerCase().includes(provider);
+    }
+
+    return m.name.some((n) => n.toLowerCase().includes(provider));
+  });
 
   return { all, match };
 }
+
+export const parseModel = (model: string) => {
+  model = model.replace(":", "/");
+  const { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
+  return { provider: provider?.replace(/-/g, ""), model: name };
+};

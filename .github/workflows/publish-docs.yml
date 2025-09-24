@@ -1,38 +1,66 @@
-name: Publish Docs (Manual)
+name: publish docs
+
+env:
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+permissions:
+  contents: write
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - master
 
 jobs:
   publish-docs:
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
         with:
-          version: 10
+          token: ${{ secrets.GIT_HUB_TOKEN }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 23
-          cache: pnpm
+          node-version: '22.16.0'
 
-      - name: Setup bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+          cache: true
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Install @aigne/cli
+        run: |
+          bun install -g @aigne/cli
 
-      - name: Build
-        run: pnpm build
-
-      - name: Publish Docs
-        run: pnpm publish:docs
+      - name: Publish docs to arcblock.io
         env:
-          DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_DISCUSS_KIT_ACCESS_TOKEN }}
-          DOC_DISCUSS_KIT_URL: ${{ vars.DOC_DISCUSS_KIT_URL }}
-          DOC_DISCUSS_KIT_BOARD_ID: ${{ vars.DOC_DISCUSS_KIT_BOARD_ID }}
+          DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_PUBLISH_API_KEY_ARCBLOCK }}
+        run: |
+          set -e
+          cd packages/cli && aigne doc publish --appUrl https://www.arcblock.io && cd - >/dev/null
+
+      - name: Publish docs to prod docsmith
+        env:
+          DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_PUBLISH_API_KEY_DOCSMITH }}
+        run: |
+          set -e
+          cd packages/cli && aigne doc publish --appUrl https://docsmith.aigne.io && cd - >/dev/null
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.name "bot"
+          git config --local user.email "bot@arcblock.io"
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Changes detected. Committing and pushing..."
+            git add -A
+            git commit -m "chore(docs): push doc smith cache [skip ci]"
+            BRANCH="${{ github.head_ref || github.ref_name }}"
+            git push origin HEAD:refs/heads/"${BRANCH}"
+          else
+            echo "No changes to commit."
+          fi

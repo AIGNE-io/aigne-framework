@@ -61,6 +61,8 @@ targetAudience: |
 locale: en
 translateLanguages:
   - zh
+  - zh-TW
+  - ja
 labels:
   - Reference
 docsDir: ./docs  # Directory to save generated documentation

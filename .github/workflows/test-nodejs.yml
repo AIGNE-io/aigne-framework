@@ -43,6 +43,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
 
+      - name: Fix Node 22 Windows npm issue
+        if: matrix.os == 'windows-latest' && matrix.node-version == '22.0'
+        run: |
+          corepack enable
+          corepack prepare npm@latest --activate
+
       - name: Install dependencies
         run: pnpm install
 

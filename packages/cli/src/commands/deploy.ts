@@ -3,10 +3,10 @@ import { constants } from "node:fs";
 import { access, copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { basename, dirname, isAbsolute, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Listr } from "@aigne/listr2";
 import { input as inputInquirer, select as selectInquirer } from "@inquirer/prompts";
 import { ListrInquirerPromptAdapter } from "@listr2/prompt-adapter-inquirer";
-import { withoutProtocol } from "ufo";
 import { parse, stringify } from "yaml";
 import type { CommandModule } from "yargs";
 import { isTest } from "../utils/aigne-hub/constants.js";
@@ -146,7 +146,7 @@ export const deploy = async (path: string, endpoint: string) => {
           task.output = "Copying template files...";
 
           const templatePath = join(
-            dirname(withoutProtocol(import.meta.url)),
+            dirname(fileURLToPath(import.meta.url)),
             "../../templates/blocklet",
           );
           await copyDir(templatePath, deployRoot);

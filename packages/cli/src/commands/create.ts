@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { cp } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import inquirer from "inquirer";
-import { withoutProtocol } from "ufo";
 import type { CommandModule } from "yargs";
 
 interface CreateOptions {
@@ -72,7 +72,7 @@ export function createCreateCommand(): CommandModule<unknown, CreateOptions> {
       mkdirSync(path, { recursive: true });
 
       const templatePath = join(
-        dirname(withoutProtocol(import.meta.url)),
+        dirname(fileURLToPath(import.meta.url)),
         "../../templates",
         template,
       );

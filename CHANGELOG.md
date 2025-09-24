@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.79.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.4...aigne-framework-v1.79.0-beta.5) (2025-09-24)
+
+
+### Bug Fixes
+
+* replace import.meta.dirname with Node 20 compatible dirname approach ([#541](https://github.com/AIGNE-io/aigne-framework/issues/541)) ([8a4fb26](https://github.com/AIGNE-io/aigne-framework/commit/8a4fb2649e88791444a7d4b3ddf9addcec2b666a))
+
 ## [1.79.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.3...aigne-framework-v1.79.0-beta.4) (2025-09-24)
 
 

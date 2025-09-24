@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.61.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.61.0-beta.2...core-v1.61.0-beta.3) (2025-09-24)
+
+
+### Features
+
+* **core:** add multi-roles instructions support for agent yaml ([#538](https://github.com/AIGNE-io/aigne-framework/issues/538)) ([97bf77f](https://github.com/AIGNE-io/aigne-framework/commit/97bf77f96b5f69321539311159010499eb3b1b25))
+
 ## [1.61.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.61.0-beta.1...core-v1.61.0-beta.2) (2025-09-23)
 
 

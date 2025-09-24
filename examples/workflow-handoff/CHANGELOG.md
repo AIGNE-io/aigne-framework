@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.16.62-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.62-beta.3...example-workflow-handoff-v1.16.62-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta.4
+    * @aigne/cli bumped to 1.48.4-beta.4
+    * @aigne/core bumped to 1.61.0-beta.3
+    * @aigne/default-memory bumped to 1.2.9-beta.4
+    * @aigne/openai bumped to 0.16.0-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.3
+
 ## [1.16.62-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.62-beta.2...example-workflow-handoff-v1.16.62-beta.3) (2025-09-23)
 
 

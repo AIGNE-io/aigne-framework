@@ -1,11 +1,14 @@
+import fs from "node:fs";
+import path from "node:path";
 import Decimal from "decimal.js";
 import { eq, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { Trace } from "../server/models/trace.js";
-import price from "../server/utils/model-prices.json";
 import type { TraceFormatSpans } from "./type.ts";
 
 export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKLET_PORT;
+
+let price: Record<string, { input_cost_per_token: number; output_cost_per_token: number }>;
 
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   if (Number(trace.endTime) > 0) {
@@ -33,6 +36,21 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       const outputTokens = trace.attributes?.output?.usage?.outputTokens || 0;
 
       trace.token = new Decimal(inputTokens).plus(new Decimal(outputTokens)).toNumber();
+
+      if (!price) {
+        try {
+          price = JSON.parse(
+            await fs.readFileSync(
+              // @ts-ignore
+              path.join(import.meta.dirname, "../../../dist/model-prices.json"),
+              "utf8",
+            ),
+          );
+        } catch {
+          price = {};
+        }
+      }
+
       if (price && model) {
         const value = price[model as keyof typeof price] as {
           input_cost_per_token: number;

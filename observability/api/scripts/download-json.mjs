@@ -8,7 +8,6 @@ const __dirname = path.dirname(__filename);
 const jsonUrl =
   "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
 const destFile = path.resolve(__dirname, "../dist/model-prices.json");
-const destFile2 = path.resolve(__dirname, "../api/server/utils/model-prices.json");
 
 async function downloadJson(url, destPath) {
   const res = await fetch(url);
@@ -20,7 +19,6 @@ async function downloadJson(url, destPath) {
 
 async function main() {
   await downloadJson(jsonUrl, destFile);
-  await downloadJson(jsonUrl, destFile2);
 }
 
 main().catch((err) => {

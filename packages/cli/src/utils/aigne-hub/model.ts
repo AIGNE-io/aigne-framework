@@ -1,9 +1,11 @@
+import { readFile } from "node:fs/promises";
 import { AIGNE_HUB_DEFAULT_MODEL, findModel } from "@aigne/aigne-hub";
-import type { ChatModel, ModelOptions } from "@aigne/core";
+import type { ChatModel, ChatModelInputOptions } from "@aigne/core";
 import { flat, pick } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import inquirer from "inquirer";
-import { AIGNE_HUB_PROVIDER } from "./constants.js";
+import { parse, stringify } from "yaml";
+import { AIGNE_ENV_FILE, AIGNE_HUB_PROVIDER } from "./constants.js";
 import { loadAIGNEHubCredential } from "./credential.js";
 import type { LoadCredentialOptions } from "./type.js";
 
@@ -28,10 +30,11 @@ export const formatModelName = async (
   provider ||= AIGNE_HUB_PROVIDER;
 
   const { match, all } = findModel(provider);
-  if (!match)
+  if (!match) {
     throw new Error(
       `Unsupported model: ${provider}/${name}, available providers: ${all.map((m) => m.name).join(", ")}`,
     );
+  }
 
   if (provider.includes(AIGNE_HUB_PROVIDER)) {
     return { provider, model: name || AIGNE_HUB_DEFAULT_MODEL };
@@ -40,6 +43,11 @@ export const formatModelName = async (
   const requireEnvs = flat(match.apiKeyEnvName);
   if (requireEnvs.some((name) => name && process.env[name])) {
     return { provider, model: name };
+  }
+
+  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+  if (envs?.default?.AIGNE_HUB_API_URL) {
+    return { provider: AIGNE_HUB_PROVIDER, model: `${provider}/${name}` };
   }
 
   const result = await inquirerPrompt({
@@ -72,7 +80,7 @@ export const formatModelName = async (
 };
 
 export async function loadChatModel(
-  options?: ModelOptions & LoadCredentialOptions,
+  options?: ChatModelInputOptions & LoadCredentialOptions,
 ): Promise<ChatModel> {
   const { provider, model } = await formatModelName(
     options?.model || process.env.MODEL || "",
@@ -80,7 +88,7 @@ export async function loadChatModel(
       (inquirer.prompt as NonNullable<LoadCredentialOptions["inquirerPromptFn"]>),
   );
 
-  const params: ModelOptions = {
+  const params: ChatModelInputOptions = {
     model,
     ...pick(options ?? {}, [
       "modalities",

@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { cp } from "node:fs/promises";
-import { isAbsolute, join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import inquirer from "inquirer";
+import { withoutProtocol } from "ufo";
 import type { CommandModule } from "yargs";
 
 interface CreateOptions {
@@ -70,7 +71,11 @@ export function createCreateCommand(): CommandModule<unknown, CreateOptions> {
 
       mkdirSync(path, { recursive: true });
 
-      const templatePath = join(import.meta.dirname, "../../templates", template);
+      const templatePath = join(
+        dirname(withoutProtocol(import.meta.url)),
+        "../../templates",
+        template,
+      );
 
       if (!existsSync(templatePath)) throw new Error(`Template "${template}" not found.`);
 

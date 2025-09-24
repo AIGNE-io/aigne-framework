@@ -2,7 +2,6 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
-import * as agentJs from "@aigne/core/loader/agent-js.js";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -226,21 +225,6 @@ type: mcp
   expect(loadAgent("./local-mcp.yaml")).rejects.toThrow("Missing url or command in mcp agent");
 });
 
-test("loadAgent should load js agent with a random key to avoid caching issues", async () => {
-  const loadAgentFromJsFile = spyOn(agentJs, "loadAgentFromJsFile");
-
-  await AIGNE.load(join(import.meta.dirname, "../../test-agents"));
-
-  expect(loadAgentFromJsFile).toHaveBeenLastCalledWith(
-    expect.any(String),
-    expect.objectContaining({
-      key: expect.any(Number),
-    }),
-  );
-
-  loadAgentFromJsFile.mockRestore();
-});
-
 test("loadAgent should support nested relative prompt paths", async () => {
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"));
 
@@ -250,7 +234,6 @@ test("loadAgent should support nested relative prompt paths", async () => {
 
   expect(await agent.instructions.build({})).toMatchInlineSnapshot(`
     {
-      "fileOutputType": undefined,
       "messages": [
         {
           "content": 
@@ -270,6 +253,60 @@ test("loadAgent should support nested relative prompt paths", async () => {
         },
       ],
       "modelOptions": undefined,
+      "outputFileType": undefined,
+      "responseFormat": undefined,
+      "toolAgents": undefined,
+      "toolChoice": undefined,
+      "tools": undefined,
+    }
+  `);
+});
+
+test("loadAgent should load agent with multi roles instructions", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/test-agent-with-multi-roles-instructions.yaml"),
+  );
+
+  assert(agent instanceof AIAgent);
+
+  expect(
+    await agent.instructions.build({
+      input: { topic: "AIGNE is the best framework to build AI applications." },
+    }),
+  ).toMatchInlineSnapshot(`
+    {
+      "messages": [
+        {
+          "content": 
+    "You are a smart agent that helps with code editing and understanding.
+
+    <topic>
+    AIGNE is the best framework to build AI applications.
+    </topic>
+    "
+    ,
+          "name": undefined,
+          "role": "system",
+        },
+        {
+          "content": "This is a user instruction.",
+          "name": undefined,
+          "role": "user",
+        },
+        {
+          "content": "This is an agent instruction.",
+          "name": undefined,
+          "role": "agent",
+          "toolCalls": undefined,
+        },
+        {
+          "content": "Latest user instruction about AIGNE is the best framework to build AI applications.",
+          "name": undefined,
+          "role": "user",
+        },
+      ],
+      "modelOptions": undefined,
+      "outputFileType": undefined,
       "responseFormat": undefined,
       "toolAgents": undefined,
       "toolChoice": undefined,

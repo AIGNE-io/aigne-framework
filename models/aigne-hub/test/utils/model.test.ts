@@ -53,21 +53,24 @@ describe("findModel", async () => {
     test("should return all available models", () => {
       const result = findModel("any");
       expect(result.all).toHaveLength(11);
-      expect(result.all).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ name: "OpenAIChatModel" }),
-          expect.objectContaining({ name: "AnthropicChatModel" }),
-          expect.objectContaining({ name: "BedrockChatModel" }),
-          expect.objectContaining({ name: "DeepSeekChatModel" }),
-          expect.objectContaining({ name: ["GeminiChatModel", "google"] }),
-          expect.objectContaining({ name: "OllamaChatModel" }),
-          expect.objectContaining({ name: "OpenRouterChatModel" }),
-          expect.objectContaining({ name: "XAIChatModel" }),
-          expect.objectContaining({ name: "DoubaoChatModel" }),
-          expect.objectContaining({ name: "PoeChatModel" }),
-          expect.objectContaining({ name: "AIGNEHubChatModel" }),
-        ]),
-      );
+      expect(result.all.map((i) => i.name)).toMatchInlineSnapshot(`
+        [
+          "OpenAIChatModel",
+          "AnthropicChatModel",
+          "BedrockChatModel",
+          "DeepSeekChatModel",
+          [
+            "GeminiChatModel",
+            "google",
+          ],
+          "OllamaChatModel",
+          "OpenRouterChatModel",
+          "XAIChatModel",
+          "DoubaoChatModel",
+          "PoeChatModel",
+          "AIGNEHubChatModel",
+        ]
+      `);
     });
 
     test("should handle special characters", () => {
@@ -125,13 +128,18 @@ describe("findImageModel", async () => {
       const result = findImageModel("OpenAI");
       expect(result.match).toBeDefined();
       expect(result.match?.name).toBe("OpenAIImageModel");
-      expect(result.all).toHaveLength(4);
+      expect(result.all).toHaveLength(5);
     });
 
     test("should find partial image model match", () => {
       const result = findImageModel("gemini");
       expect(result.match).toBeDefined();
-      expect(result.match?.name).toBe("GeminiImageModel");
+      expect(result.match?.name).toMatchInlineSnapshot(`
+        [
+          "GeminiImageModel",
+          "google",
+        ]
+      `);
     });
 
     test("should handle hyphenated names", () => {
@@ -153,20 +161,24 @@ describe("findImageModel", async () => {
     test("should return undefined for non-matching provider", () => {
       const result = findImageModel("nonexistent");
       expect(result.match).toBeUndefined();
-      expect(result.all).toHaveLength(4);
+      expect(result.all).toHaveLength(5);
     });
 
     test("should return all available image models", () => {
       const result = findImageModel("any");
-      expect(result.all).toHaveLength(4);
-      expect(result.all).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ name: "OpenAIImageModel" }),
-          expect.objectContaining({ name: "GeminiImageModel" }),
-          expect.objectContaining({ name: "IdeogramImageModel" }),
-          expect.objectContaining({ name: "AIGNEHubImageModel" }),
-        ]),
-      );
+      expect(result.all).toHaveLength(5);
+      expect(result.all.map((i) => i.name)).toMatchInlineSnapshot(`
+        [
+          "OpenAIImageModel",
+          [
+            "GeminiImageModel",
+            "google",
+          ],
+          "IdeogramImageModel",
+          "DoubaoImageModel",
+          "AIGNEHubImageModel",
+        ]
+      `);
     });
 
     test("should find Ideogram image model", () => {
@@ -195,7 +207,12 @@ describe("findImageModel", async () => {
     test("should find Gemini image model", () => {
       const result = findImageModel("gemini");
       expect(result.match).toBeDefined();
-      expect(result.match?.name).toBe("GeminiImageModel");
+      expect(result.match?.name).toMatchInlineSnapshot(`
+        [
+          "GeminiImageModel",
+          "google",
+        ]
+      `);
     });
   });
 });

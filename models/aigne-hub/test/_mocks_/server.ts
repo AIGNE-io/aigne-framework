@@ -1,4 +1,4 @@
-import { AIAgent, AIGNE } from "@aigne/core";
+import { AIAgent, AIGNE, type FileUnionContent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 import { AIGNEHTTPServer } from "@aigne/transport/http-server/index.js";
 import { serve } from "bun";
@@ -20,7 +20,7 @@ export async function createHonoServer() {
 
   honoApp.post("/ai-kit/api/v2/image", async (c) => {
     return c.json({
-      images: [{ url: "https://example.com/image.png" }],
+      images: <FileUnionContent[]>[{ type: "file", data: "test image base64" }],
       usage: {
         aigneHubCredits: 100,
       },

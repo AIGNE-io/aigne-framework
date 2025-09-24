@@ -5,6 +5,7 @@ export * from "./agents/guide-rail-agent.js";
 export * from "./agents/image-agent.js";
 export * from "./agents/image-model.js";
 export * from "./agents/mcp-agent.js";
+export * from "./agents/model.js";
 export * from "./agents/team-agent.js";
 export * from "./agents/transform-agent.js";
 export * from "./agents/types.js";

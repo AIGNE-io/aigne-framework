@@ -1,16 +1,19 @@
 import {
+  type AgentInvokeOptions,
+  type FileUnionContent,
   ImageModel,
   type ImageModelInput,
   type ImageModelOptions,
   type ImageModelOutput,
   imageModelInputSchema,
 } from "@aigne/core";
-import { checkArguments, isNonNullable, pick } from "@aigne/core/utils/type-utils.js";
+import { checkArguments, flat, isNonNullable, pick } from "@aigne/core/utils/type-utils.js";
 import {
   type GenerateContentConfig,
   type GenerateImagesConfig,
   GoogleGenAI,
   Modality,
+  type PartUnion,
 } from "@google/genai";
 import { z } from "zod";
 
@@ -42,7 +45,7 @@ const geminiImageModelOptionsSchema = z.object({
 });
 
 export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiImageModelOutput> {
-  constructor(public options?: GeminiImageModelOptions) {
+  constructor(public override options?: GeminiImageModelOptions) {
     super({
       ...options,
       inputSchema: geminiImageModelInputSchema,
@@ -87,8 +90,11 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
    * @param input The input to process
    * @returns The generated response
    */
-  override async process(input: GeminiImageModelInput): Promise<ImageModelOutput> {
-    const model = input.model || this.credential.model;
+  override async process(
+    input: GeminiImageModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<ImageModelOutput> {
+    const model = input.modelOptions?.model || this.credential.model;
     const responseFormat = input.responseFormat || "base64";
     if (responseFormat === "url") {
       throw new Error("Gemini image models currently only support base64 format");
@@ -98,15 +104,15 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
       return this.generateImageByImagenModel(input);
     }
 
-    return this.generateImageByGeminiModel(input);
+    return this.generateImageByGeminiModel(input, options);
   }
 
   private async generateImageByImagenModel(
     input: GeminiImageModelInput,
   ): Promise<ImageModelOutput> {
-    const model = input.model || this.credential.model;
+    const model = input.modelOptions?.model || this.credential.model;
 
-    const mergedInput = { ...this.modelOptions, ...input };
+    const mergedInput = { ...this.modelOptions, ...input.modelOptions, ...input };
 
     const inputKeys = [
       "seed",
@@ -126,7 +132,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     ];
 
     const response = await this.client.models.generateImages({
-      model: model,
+      model,
       prompt: mergedInput.prompt,
       config: { numberOfImages: mergedInput.n || 1, ...pick(mergedInput, inputKeys) },
     });
@@ -134,7 +140,11 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
     return {
       images:
         response.generatedImages
-          ?.map(({ image }) => (image?.imageBytes ? { base64: image.imageBytes } : undefined))
+          ?.map<FileUnionContent | undefined>(({ image }) =>
+            image?.imageBytes
+              ? { type: "file", data: image.imageBytes, mimeType: image.mimeType }
+              : undefined,
+          )
           .filter(isNonNullable) || [],
       usage: {
         inputTokens: 0,
@@ -146,10 +156,11 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
 
   private async generateImageByGeminiModel(
     input: GeminiImageModelInput,
+    options: AgentInvokeOptions,
   ): Promise<ImageModelOutput> {
-    const model = input.model || this.credential.model;
+    const model = input.modelOptions?.model || this.credential.model;
 
-    const mergedInput = { ...this.modelOptions, ...input };
+    const mergedInput = { ...this.modelOptions, ...input.modelOptions, ...input };
 
     const inputKeys = [
       "abortSignal",
@@ -182,9 +193,16 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
       "topP",
     ];
 
+    const images = await Promise.all(
+      flat(input.image).map<Promise<PartUnion>>(async (image) => {
+        const { data, mimeType } = await this.transformFileType("file", image, options);
+        return { inlineData: { data, mimeType } };
+      }),
+    );
+
     const response = await this.client.models.generateContent({
-      model: model,
-      contents: input.prompt,
+      model,
+      contents: [{ text: input.prompt }, ...images],
       config: {
         responseModalities: [Modality.TEXT, Modality.IMAGE],
         candidateCount: input.n || 1,
@@ -194,14 +212,23 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
 
     const allImages = (response.candidates ?? [])
       .flatMap((candidate) => candidate.content?.parts ?? [])
-      .map((part) => (part.inlineData?.data ? { base64: part.inlineData?.data } : null))
+      .map<FileUnionContent | null>((part) =>
+        part.inlineData?.data
+          ? {
+              type: "file",
+              data: part.inlineData.data,
+              filename: part.inlineData.displayName,
+              mimeType: part.inlineData.mimeType,
+            }
+          : null,
+      )
       .filter(isNonNullable);
 
     return {
       images: allImages,
       usage: {
-        inputTokens: 0,
-        outputTokens: 0,
+        inputTokens: response.usageMetadata?.promptTokenCount || 0,
+        outputTokens: response.usageMetadata?.candidatesTokenCount || 0,
       },
       model,
     };

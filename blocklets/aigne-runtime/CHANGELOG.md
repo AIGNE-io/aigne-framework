@@ -1,5 +1,94 @@
 # Changelog
 
+## [1.4.19-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.3...aigne-runtime-v1.4.19-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.4
+    * @aigne/core bumped to 1.61.0-beta.3
+    * @aigne/transport bumped to 0.15.9-beta.4
+
+## [1.4.19-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.2...aigne-runtime-v1.4.19-beta.3) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.3
+    * @aigne/core bumped to 1.61.0-beta.2
+    * @aigne/transport bumped to 0.15.9-beta.3
+
+## [1.4.19-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.1...aigne-runtime-v1.4.19-beta.2) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.2
+    * @aigne/core bumped to 1.61.0-beta.1
+    * @aigne/transport bumped to 0.15.9-beta.2
+
+## [1.4.19-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta...aigne-runtime-v1.4.19-beta.1) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.1
+    * @aigne/transport bumped to 0.15.9-beta.1
+
+## [1.4.19-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.18...aigne-runtime-v1.4.19-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta
+    * @aigne/core bumped to 1.61.0-beta
+    * @aigne/transport bumped to 0.15.9-beta
+
+## [1.4.18](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.17...aigne-runtime-v1.4.18) (2025-09-18)
+
+
+### Bug Fixes
+
+* correct flat import, remove default import error ([#519](https://github.com/AIGNE-io/aigne-framework/issues/519)) ([6e8fd30](https://github.com/AIGNE-io/aigne-framework/commit/6e8fd30b89be1300ab6214f13fd273e51e25329b))
+* correct flat import, remove default import error ([#519](https://github.com/AIGNE-io/aigne-framework/issues/519)) ([6e8fd30](https://github.com/AIGNE-io/aigne-framework/commit/6e8fd30b89be1300ab6214f13fd273e51e25329b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.6
+
+## [1.4.17](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.16...aigne-runtime-v1.4.17) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.5
+    * @aigne/core bumped to 1.60.3
+    * @aigne/transport bumped to 0.15.8
+
+## [1.4.16](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.15...aigne-runtime-v1.4.16) (2025-09-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.9.4
+
 ## [1.4.15](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.14...aigne-runtime-v1.4.15) (2025-09-11)
 
 

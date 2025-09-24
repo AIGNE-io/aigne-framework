@@ -8,7 +8,7 @@ import {
   type ChatModelOutput,
   type Context,
   type ContextUsage,
-  DEFAULT_FILE_OUTPUT_KEY,
+  DEFAULT_OUTPUT_FILE_KEY,
   DEFAULT_OUTPUT_KEY,
   type FileUnionContent,
   type InvokeOptions,
@@ -37,7 +37,7 @@ const CREDITS_ERROR_PROCESSED_FLAG = "$credits_error_processed";
 
 export interface TerminalTracerOptions {
   outputKey?: string;
-  fileOutputKey?: string;
+  outputFileKey?: string;
 }
 
 export class TerminalTracer {
@@ -389,8 +389,8 @@ export class TerminalTracer {
     return this.options.outputKey || DEFAULT_OUTPUT_KEY;
   }
 
-  get dataOutputKey() {
-    return this.options.fileOutputKey || DEFAULT_FILE_OUTPUT_KEY;
+  get outputFileKey() {
+    return this.options.outputFileKey || DEFAULT_OUTPUT_FILE_KEY;
   }
 
   formatRequest(agent: Agent, _context: Context, m: Message = {}, { running = false } = {}) {
@@ -427,7 +427,7 @@ export class TerminalTracer {
     const prefix = `${chalk.grey(figures.tick)} 🤖 ${this.formatTokenUsage(context.usage)}`;
 
     const msg = outputKey ? m[outputKey] : undefined;
-    const message = outputKey ? omit(m, outputKey, this.dataOutputKey) : m;
+    const message = outputKey ? omit(m, outputKey, this.outputFileKey) : m;
 
     const text =
       msg && typeof msg === "string"
@@ -451,8 +451,8 @@ export class TerminalTracer {
   }
 
   async formatResultData(output: Message): Promise<string | undefined> {
-    const data = output[this.dataOutputKey] as FileUnionContent[];
-    if (!Array.isArray(data)) return;
+    const files = output[this.outputFileKey] as FileUnionContent[];
+    if (!Array.isArray(files)) return;
 
     const options: Parameters<typeof terminalImage.file>[1] = {
       height: 30,
@@ -460,7 +460,7 @@ export class TerminalTracer {
 
     return (
       await Promise.all(
-        data.map(async (item) => {
+        files.map(async (item) => {
           const image =
             item.type === "local"
               ? await terminalImage.file(item.path, options)

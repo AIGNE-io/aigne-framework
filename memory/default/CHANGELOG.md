@@ -1,5 +1,69 @@
 # Changelog
 
+## [1.2.9-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.9-beta.3...default-memory-v1.2.9-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.3
+  * devDependencies
+    * @aigne/openai bumped to 0.16.0-beta.4
+
+## [1.2.9-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.9-beta.2...default-memory-v1.2.9-beta.3) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.2
+  * devDependencies
+    * @aigne/openai bumped to 0.16.0-beta.3
+
+## [1.2.9-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.9-beta.1...default-memory-v1.2.9-beta.2) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.1
+  * devDependencies
+    * @aigne/openai bumped to 0.16.0-beta.2
+
+## [1.2.9-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.9-beta...default-memory-v1.2.9-beta.1) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/openai bumped to 0.16.0-beta.1
+
+## [1.2.9-beta](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.8...default-memory-v1.2.9-beta) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta
+  * devDependencies
+    * @aigne/openai bumped to 0.16.0-beta
+
+## [1.2.8](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.7...default-memory-v1.2.8) (2025-09-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.60.3
+  * devDependencies
+    * @aigne/openai bumped to 0.15.4
+
 ## [1.2.7](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.6...default-memory-v1.2.7) (2025-09-11)
 
 

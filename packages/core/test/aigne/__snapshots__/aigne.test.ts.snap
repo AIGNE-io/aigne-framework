@@ -21,7 +21,6 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
       },
       "event": "agentStarted",
       "input": {
-        "fileOutputType": undefined,
         "messages": [
           {
             "content": [
@@ -34,6 +33,7 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
           },
         ],
         "modelOptions": undefined,
+        "outputFileType": undefined,
         "responseFormat": undefined,
         "toolChoice": undefined,
         "tools": undefined,
@@ -192,7 +192,6 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       },
       "event": "agentStarted",
       "input": {
-        "fileOutputType": undefined,
         "messages": [
           {
             "content": [
@@ -205,6 +204,7 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
           },
         ],
         "modelOptions": undefined,
+        "outputFileType": undefined,
         "responseFormat": undefined,
         "toolChoice": undefined,
         "tools": undefined,

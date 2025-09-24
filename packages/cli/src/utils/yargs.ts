@@ -223,7 +223,7 @@ export async function parseAgentInput(i: Message & AgentRunCommonOptions, agent:
     ),
   );
 
-  if (agent instanceof AIAgent && agent.fileInputKey) {
+  if (agent instanceof AIAgent && agent.inputFileKey) {
     const files: FileUnionContent[] = [];
     for (const file of i.inputFile ?? []) {
       const raw = await readFile(file.replace(/^@/, ""), "base64");
@@ -232,7 +232,7 @@ export async function parseAgentInput(i: Message & AgentRunCommonOptions, agent:
       files.push({ type: "file", data: raw, filename, mimeType });
     }
 
-    Object.assign(input, { [agent.fileInputKey]: files });
+    Object.assign(input, { [agent.inputFileKey]: files });
   }
 
   const rawInput =

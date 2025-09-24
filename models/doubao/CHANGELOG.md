@@ -1,5 +1,101 @@
 # Changelog
 
+## [1.1.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.1.0-beta.3...doubao-v1.1.0-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.4
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.3
+    * @aigne/test-utils bumped to 0.5.53-beta.3
+
+## [1.1.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.1.0-beta.2...doubao-v1.1.0-beta.3) (2025-09-23)
+
+
+### Bug Fixes
+
+* add prefer input file type option for image model ([#536](https://github.com/AIGNE-io/aigne-framework/issues/536)) ([3cba8a5](https://github.com/AIGNE-io/aigne-framework/commit/3cba8a5562233a1567b49b6dd5c446c0760f5c4c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.3
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.2
+    * @aigne/test-utils bumped to 0.5.53-beta.2
+
+## [1.1.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.1.0-beta.1...doubao-v1.1.0-beta.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* standardize file parameter naming across models ([#534](https://github.com/AIGNE-io/aigne-framework/issues/534)) ([f159a9d](https://github.com/AIGNE-io/aigne-framework/commit/f159a9d6af21ec0e99641996b150560929845845))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.2
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.1
+    * @aigne/test-utils bumped to 0.5.53-beta.1
+
+## [1.1.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.1.0-beta...doubao-v1.1.0-beta.1) (2025-09-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.1
+
+## [1.1.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.40...doubao-v1.1.0-beta) (2025-09-22)
+
+
+### Features
+
+* improve image model architecture and file handling ([#527](https://github.com/AIGNE-io/aigne-framework/issues/527)) ([4db50aa](https://github.com/AIGNE-io/aigne-framework/commit/4db50aa0387a1a0f045ca11aaa61613e36ca7597))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta
+    * @aigne/test-utils bumped to 0.5.53-beta
+
+## [1.0.40](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.39...doubao-v1.0.40) (2025-09-18)
+
+
+### Bug Fixes
+
+* support the correct 3.0 model ([#514](https://github.com/AIGNE-io/aigne-framework/issues/514)) ([98e0d44](https://github.com/AIGNE-io/aigne-framework/commit/98e0d44ce2c4c7b043d5fc934c6e312ffa821521))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.15.4
+  * devDependencies
+    * @aigne/core bumped to 1.60.3
+    * @aigne/test-utils bumped to 0.5.52
+
+## [1.0.39](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.38...doubao-v1.0.39) (2025-09-16)
+
+
+### Bug Fixes
+
+* release new version ([#509](https://github.com/AIGNE-io/aigne-framework/issues/509)) ([822ccd2](https://github.com/AIGNE-io/aigne-framework/commit/822ccd2c374cdcef187066e102dc79230e2eebff))
+
 ## [1.0.38](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.0.37...doubao-v1.0.38) (2025-09-11)
 
 

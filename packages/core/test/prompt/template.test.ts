@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
   AgentMessageTemplate,
   PromptTemplate,
-  parseChatMessages,
+  safeParseChatMessages,
   ToolMessageTemplate,
 } from "@aigne/core";
 
@@ -102,7 +102,7 @@ test("ToolMessageTemplate", async () => {
   });
 });
 
-test("parseChatMessages", async () => {
+test("safeParseChatMessages", async () => {
   const messages = [
     { role: "system", content: "system message" },
     { role: "user", content: "user message", name: "UserA" },
@@ -134,7 +134,7 @@ test("parseChatMessages", async () => {
       name: "AgentA",
     },
   ];
-  const msgs = parseChatMessages(messages);
+  const msgs = safeParseChatMessages(messages);
   assert(msgs);
 
   const result = await Promise.all(msgs.map((m) => m.format()));

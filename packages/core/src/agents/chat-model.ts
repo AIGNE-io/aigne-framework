@@ -381,6 +381,13 @@ export interface ChatModelInput extends Message {
  */
 export type Role = "system" | "user" | "agent" | "tool";
 
+export const roleSchema = z.union([
+  z.literal("system"),
+  z.literal("user"),
+  z.literal("agent"),
+  z.literal("tool"),
+]);
+
 /**
  * Structure of input messages
  *

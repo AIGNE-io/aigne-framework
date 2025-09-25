@@ -1,7 +1,7 @@
 #!/usr/bin/env npx -y bun
 
 import { loadChatModel } from "@aigne/cli/utils/aigne-hub/model.js";
-import { AIAgent, FileOutputType } from "@aigne/core";
+import { AIAgent } from "@aigne/core";
 
 const model = await loadChatModel({
   model: "aignehub:google/gemini-2.5-flash-image-preview",
@@ -13,8 +13,8 @@ const agent = AIAgent.from({
   model,
   instructions: "You are a drawer who creates images based on user descriptions.",
   inputKey: "message",
-  fileInputKey: "files",
-  fileOutputType: FileOutputType.local,
+  inputFileKey: "files",
+  outputFileType: "local",
 });
 
 const result = await agent.invoke({ message: "Draw an image: a horse fly in the space" });

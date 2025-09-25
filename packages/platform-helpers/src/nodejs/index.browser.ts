@@ -28,4 +28,8 @@ export const nodejs = {
   get crypto(): typeof import("node:crypto") {
     throw new Error("This code must run in a Node.js environment.");
   },
+
+  get url(): typeof import("node:url") {
+    throw new Error("This code must run in a Node.js environment.");
+  },
 };

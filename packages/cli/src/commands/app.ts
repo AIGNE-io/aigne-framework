@@ -314,7 +314,7 @@ async function isInstallationAvailable(
 
 async function installDependencies(dir: string, { log }: { log?: (log: string) => void } = {}) {
   await new Promise<void>((resolve, reject) => {
-    const child = spawn("corepack", ["npm", "install", "--omit", "dev", "--verbose"], {
+    const child = spawn("npm", ["install", "--omit", "dev", "--verbose"], {
       cwd: dir,
       stdio: "pipe",
       shell: process.platform === "win32",

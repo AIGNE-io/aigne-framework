@@ -5,18 +5,18 @@ import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { type AFSEntry, AFSHistory } from "../afs/index.js";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
-import { type AIAgent, DEFAULT_FILE_OUTPUT_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
-import {
-  type ChatModel,
-  type ChatModelInput,
-  type ChatModelInputMessage,
-  type ChatModelInputMessageContent,
-  type ChatModelInputResponseFormat,
-  type ChatModelInputTool,
-  type ChatModelInputToolChoice,
-  fileUnionContentsSchema,
-  type ModelOptions,
+import { type AIAgent, DEFAULT_OUTPUT_FILE_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
+import type {
+  ChatModel,
+  ChatModelInput,
+  ChatModelInputMessage,
+  ChatModelInputMessageContent,
+  ChatModelInputOptions,
+  ChatModelInputResponseFormat,
+  ChatModelInputTool,
+  ChatModelInputToolChoice,
 } from "../agents/chat-model.js";
+import { fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
@@ -108,7 +108,7 @@ export class PromptBuilder {
       responseFormat: options.agent?.structuredStreamMode
         ? undefined
         : this.buildResponseFormat(options),
-      fileOutputType: options.agent?.fileOutputType,
+      outputFileType: options.agent?.outputFileType,
       ...this.buildTools(options),
     };
   }
@@ -137,13 +137,13 @@ export class PromptBuilder {
         : this.instructions
       )?.format(options.input, { workingDir: this.workingDir })) ?? [];
 
-    const fileInputKey = options.agent?.fileInputKey;
+    const inputFileKey = options.agent?.inputFileKey;
     const files = flat(
-      fileInputKey
+      inputFileKey
         ? checkArguments(
             "Check input files",
             optionalize(fileUnionContentsSchema),
-            input?.[fileInputKey],
+            input?.[inputFileKey],
           )
         : null,
     );
@@ -219,10 +219,10 @@ export class PromptBuilder {
     const other: unknown[] = [];
 
     const inputKey = options.agent?.inputKey;
-    const fileInputKey = options.agent?.fileInputKey;
+    const inputFileKey = options.agent?.inputFileKey;
 
     const outputKey = options.agent?.outputKey || DEFAULT_OUTPUT_KEY;
-    const fileOutputKey = options.agent?.fileOutputKey || DEFAULT_FILE_OUTPUT_KEY;
+    const outputFileKey = options.agent?.outputFileKey || DEFAULT_OUTPUT_FILE_KEY;
 
     const stringOrStringify = (value: unknown) =>
       typeof value === "string" ? value : stringify(value);
@@ -239,7 +239,7 @@ export class PromptBuilder {
       const userMessageContent: ChatModelInputMessageContent = [];
       if (typeof input === "object") {
         const inputMessage: unknown = inputKey ? Reflect.get(input, inputKey) : undefined;
-        const inputFiles: unknown = fileInputKey ? Reflect.get(input, fileInputKey) : undefined;
+        const inputFiles: unknown = inputFileKey ? Reflect.get(input, inputFileKey) : undefined;
 
         if (inputMessage) {
           userMessageContent.push({ type: "text", text: stringOrStringify(inputMessage) });
@@ -264,7 +264,7 @@ export class PromptBuilder {
       const agentMessageContent: ChatModelInputMessageContent = [];
       if (typeof output === "object") {
         const outputMessage: unknown = Reflect.get(output, outputKey);
-        const outputFiles: unknown = Reflect.get(output, fileOutputKey);
+        const outputFiles: unknown = Reflect.get(output, outputFileKey);
         if (outputMessage) {
           agentMessageContent.push({ type: "text", text: stringOrStringify(outputMessage) });
         }
@@ -357,7 +357,7 @@ export class PromptBuilder {
     }));
 
     let toolChoice: ChatModelInputToolChoice | undefined;
-    const modelOptions: ModelOptions = {};
+    const modelOptions: ChatModelInputOptions = {};
 
     // use manual choice if configured in the agent
     const manualChoice = options.agent?.toolChoice;

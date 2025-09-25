@@ -12,15 +12,22 @@ import {
 } from "@aigne/transport/http-client/base-client.js";
 import { joinURL } from "ufo";
 import { getAIGNEHubMountPoint } from "./utils/blocklet.js";
-import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_IMAGE_MODEL, AIGNE_HUB_URL } from "./utils/constants.js";
+import {
+  AIGNE_HUB_BLOCKLET_DID,
+  AIGNE_HUB_IMAGE_MODEL,
+  aigneHubBaseUrl,
+} from "./utils/constants.js";
+import { getModels } from "./utils/hub.js";
 import { type AIGNEHubImageModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
-const AIGNE_HUB_DEFAULT_IMAGE_MIME = "image/png";
-
 export class AIGNEHubImageModel extends ImageModel {
-  constructor(public options: AIGNEHubImageModelOptions) {
+  constructor(public override options: AIGNEHubImageModelOptions) {
     checkArguments("AIGNEHubImageModel", aigneHubModelOptionsSchema, options);
     super();
+  }
+
+  async models() {
+    return getModels({ baseURL: (await this.credential).url, type: "image" });
   }
 
   protected _client?: Promise<BaseClient>;
@@ -41,11 +48,7 @@ export class AIGNEHubImageModel extends ImageModel {
 
   override get credential() {
     this._credential ??= getAIGNEHubMountPoint(
-      this.options.url ||
-        this.options.baseURL ||
-        process.env.BLOCKLET_AIGNE_API_URL ||
-        process.env.AIGNE_HUB_API_URL ||
-        AIGNE_HUB_URL,
+      this.options.baseURL || aigneHubBaseUrl(),
       AIGNE_HUB_BLOCKLET_DID,
     ).then((url) => {
       const path = "/api/v2/image";
@@ -81,55 +84,17 @@ export class AIGNEHubImageModel extends ImageModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    // Convert local image to base64
-    if (input.image) {
-      const images = Array.isArray(input.image) ? input.image : [input.image];
-      input.image = await Promise.all(
-        images.map(async (image) => {
-          if (image.startsWith("http")) {
-            try {
-              const response = await this.downloadFile(image);
-              const buffer = await response.arrayBuffer();
-              const mime = response.headers.get("content-type") || AIGNE_HUB_DEFAULT_IMAGE_MIME;
-              const base64 = Buffer.from(buffer).toString("base64");
-
-              return `data:${mime};base64,${base64}`;
-            } catch {
-              return image;
-            }
-          }
-
-          if (image.startsWith("file://")) {
-            const filePath = image.replace("file://", "");
-
-            if (nodejs.fsSync.existsSync(filePath)) {
-              const mime = AIGNE_HUB_DEFAULT_IMAGE_MIME;
-              const base64 = await nodejs.fs.readFile(filePath, "base64");
-              return `data:${mime};base64,${base64}`;
-            }
-
-            throw new Error(`Local file not found: ${filePath}`);
-          }
-
-          if (nodejs.fsSync.existsSync(image)) {
-            const mime = AIGNE_HUB_DEFAULT_IMAGE_MIME;
-            const base64 = await nodejs.fs.readFile(image, "base64");
-            return `data:${mime};base64,${base64}`;
-          }
-
-          return image;
-        }),
-      );
-    }
-
     const response = await (await this.client).__invoke<ImageModelInput, ImageModelOutput>(
       undefined,
       {
         ...input,
         modelOptions: {
           ...this.options.modelOptions,
-          model: input.model || (await this.credential).model,
+          ...input.modelOptions,
+          model: input.modelOptions?.model || (await this.credential).model,
         },
+        // Shouldn't use `local` output type for remote AIGNE Hub call, client can not access the remote filesystem
+        outputFileType: "file",
       },
       {
         ...options,

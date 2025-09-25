@@ -1,4 +1,6 @@
 import {
+  type AgentInvokeOptions,
+  type FileUnionContent,
   ImageModel,
   type ImageModelInput,
   type ImageModelOptions,
@@ -13,10 +15,34 @@ import { type ZodType, z } from "zod";
 import { CustomOpenAI } from "./openai.js";
 
 const DEFAULT_MODEL = "dall-e-2";
+const OUTPUT_MIME_TYPE = "image/png";
+
+const SUPPORTED_PARAMS: { [key: string]: any[] } = {
+  "dall-e-2": ["prompt", "size", "n"],
+  "dall-e-3": ["prompt", "size", "n", "quality", "style", "user"],
+  "gpt-image-1": [
+    "prompt",
+    "size",
+    "background",
+    "moderation",
+    "outputCompression",
+    "outputFormat",
+    "quality",
+    "user",
+    "stream",
+  ],
+};
+
+const SUPPORT_EDIT_MODELS = ["gpt-image-1"];
 
 export interface OpenAIImageModelInput
   extends ImageModelInput,
-    Camelize<Omit<OpenAI.ImageGenerateParams, "prompt" | "model" | "n" | "response_format">> {}
+    Camelize<
+      Omit<
+        OpenAI.ImageGenerateParams | OpenAI.ImageEditParams,
+        "prompt" | "model" | "n" | "response_format"
+      >
+    > {}
 
 export interface OpenAIImageModelOutput extends ImageModelOutput {}
 
@@ -67,7 +93,7 @@ const openAIImageModelOptionsSchema = z.object({
 });
 
 export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIImageModelOutput> {
-  constructor(public options?: OpenAIImageModelOptions) {
+  constructor(public override options?: OpenAIImageModelOptions) {
     super({
       ...options,
       inputSchema: openAIImageModelInputSchema,
@@ -116,43 +142,53 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
    * @param input The input to process
    * @returns The generated response
    */
-  override async process(input: OpenAIImageModelInput): Promise<OpenAIImageModelOutput> {
-    const model = input.model || this.credential.model;
+  override async process(
+    input: OpenAIImageModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<OpenAIImageModelOutput> {
+    const model = input.modelOptions?.model || this.credential.model;
 
-    const map: { [key: string]: any[] } = {
-      "dall-e-2": ["prompt", "size", "n"],
-      "dall-e-3": ["prompt", "size", "n", "quality", "style", "user"],
-      "gpt-image-1": [
-        "prompt",
-        "size",
-        "background",
-        "moderation",
-        "outputCompression",
-        "outputFormat",
-        "quality",
-        "user",
-        "stream",
-      ],
-    };
-
-    let responseFormat: OpenAI.ImageGenerateParams["response_format"];
-
-    if (model !== "gpt-image-1") {
-      responseFormat = input.responseFormat === "base64" ? "b64_json" : "url";
+    if (input.image?.length && !SUPPORT_EDIT_MODELS.includes(model)) {
+      throw new Error(`Model ${model} does not support image editing`);
     }
 
-    const body: OpenAI.ImageGenerateParams = {
-      ...snakelize(pick({ ...this.modelOptions, ...input }, map[model] || map["dall-e-2"])),
-      response_format: responseFormat,
+    const body: OpenAI.ImageGenerateParams | OpenAI.ImageEditParams = {
+      ...snakelize(
+        pick(
+          { ...this.modelOptions, ...input.modelOptions, ...input },
+          SUPPORTED_PARAMS[model] || SUPPORTED_PARAMS[DEFAULT_MODEL],
+        ),
+      ),
       model,
     };
 
-    const response = await this.client.images.generate({ ...body, stream: false });
+    const response = input.image?.length
+      ? ((await this.client.images.edit(
+          {
+            ...(body as OpenAI.ImageEditParams),
+            image: await Promise.all(
+              input.image.map((image) =>
+                this.transformFileType("file", image, options).then(
+                  (file) =>
+                    new File([Buffer.from(file.data, "base64")], file.filename || "image.png", {
+                      type: file.mimeType,
+                    }),
+                ),
+              ),
+            ),
+          },
+          { stream: false },
+        )) as OpenAI.ImagesResponse)
+      : ((await this.client.images.generate(
+          { ...body },
+          { stream: false },
+        )) as OpenAI.ImagesResponse);
 
     return {
-      images: (response.data ?? []).map((image) => {
-        if (image.url) return { url: image.url };
-        if (image.b64_json) return { base64: image.b64_json };
+      images: (response.data ?? []).map<FileUnionContent>((image) => {
+        if (image.url) return { type: "url", url: image.url, mimeType: OUTPUT_MIME_TYPE };
+        if (image.b64_json)
+          return { type: "file", data: image.b64_json, mimeType: OUTPUT_MIME_TYPE };
         throw new Error("Image response does not contain a valid URL or base64 data");
       }),
       usage: {

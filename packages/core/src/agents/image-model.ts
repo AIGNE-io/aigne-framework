@@ -1,30 +1,44 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { type ZodType, z } from "zod";
 import type { PromiseOrValue } from "../utils/type-utils.js";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type AgentProcessResult,
-  type Message,
+import type {
+  AgentInvokeOptions,
+  AgentOptions,
+  AgentProcessResult,
+  AgentResponse,
+  AgentResponseStream,
+  Message,
 } from "./agent.js";
 import { type ChatModelOutputUsage, chatModelOutputUsageSchema } from "./chat-model.js";
+import {
+  type FileType,
+  type FileUnionContent,
+  fileTypeSchema,
+  fileUnionContentSchema,
+  Model,
+} from "./model.js";
 
 export interface ImageModelOptions<
   I extends ImageModelInput = ImageModelInput,
   O extends ImageModelOutput = ImageModelOutput,
-> extends Omit<AgentOptions<I, O>, "model"> {}
+> extends Omit<AgentOptions<I, O>, "model"> {
+  model?: string;
+
+  modelOptions?: Omit<ImageModelInputOptions, "model">;
+}
 
 export abstract class ImageModel<
   I extends ImageModelInput = ImageModelInput,
   O extends ImageModelOutput = ImageModelOutput,
-> extends Agent<I, O> {
+> extends Model<I, O> {
   override tag = "ImageModelAgent";
 
-  constructor(options?: ImageModelOptions<I, O>) {
+  constructor(public options?: ImageModelOptions<I, O>) {
     super({
       inputSchema: imageModelInputSchema as ZodType<I>,
       outputSchema: imageModelOutputSchema as ZodType<O>,
       ...options,
+      model: undefined,
     });
   }
 
@@ -42,6 +56,41 @@ export abstract class ImageModel<
     const usedTokens = usage.outputTokens + usage.inputTokens;
     if (limits?.maxTokens && usedTokens >= limits.maxTokens) {
       throw new Error(`Exceeded max tokens ${usedTokens}/${limits.maxTokens}`);
+    }
+
+    if (input.image) {
+      input.image = await Promise.all(
+        input.image.map(async (item) => {
+          if (item.type === "local") {
+            return {
+              ...item,
+              type: "file" as const,
+              data: await nodejs.fs.readFile(item.path, "base64"),
+              path: undefined,
+              mimeType: item.mimeType || ImageModel.getMimeType(item.filename || item.path),
+            };
+          }
+
+          if (
+            (input.modelOptions?.preferInputFileType ||
+              this.options?.modelOptions?.preferInputFileType) !== "url"
+          ) {
+            if (item.type === "url") {
+              return {
+                ...item,
+                type: "file" as const,
+                data: Buffer.from(await (await this.downloadFile(item.url)).arrayBuffer()).toString(
+                  "base64",
+                ),
+                url: undefined,
+                mimeType: item.mimeType || ImageModel.getMimeType(item.filename || item.url),
+              };
+            }
+          }
+
+          return item;
+        }),
+      );
     }
   }
 
@@ -64,51 +113,55 @@ export abstract class ImageModel<
     options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<O>>;
 
-  protected async downloadFile(url: string, timeout = 30000) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const response = await fetch(url, { signal: controller.signal });
-      if (!response.ok) {
-        const text = await response.text().catch(() => null);
-        throw new Error(
-          `Failed to download content from ${url}, ${response.status} ${response.statusText} ${text}`,
-        );
-      }
-
-      return response;
-    } finally {
-      clearTimeout(timeoutId);
+  protected override async processAgentOutput(
+    input: I,
+    output: Exclude<AgentResponse<O>, AgentResponseStream<O>>,
+    options: AgentInvokeOptions,
+  ): Promise<O> {
+    if (output.images) {
+      const images = z.array(fileUnionContentSchema).parse(output.images);
+      output = {
+        ...output,
+        images: await Promise.all(
+          images.map((image) => this.transformFileType(input.outputFileType, image, options)),
+        ),
+      };
     }
+
+    return super.processAgentOutput(input, output, options);
   }
 }
 
+export type ImageModelInputImage = FileUnionContent[];
+
 export interface ImageModelInput extends Message {
-  model?: string;
-
-  image?: string | string[];
-
   prompt: string;
+
+  image?: ImageModelInputImage;
 
   n?: number;
 
-  responseFormat?: "url" | "base64";
+  outputFileType?: FileType;
+
+  modelOptions?: ImageModelInputOptions;
+}
+
+export interface ImageModelInputOptions extends Record<string, unknown> {
+  model?: string;
+
+  preferInputFileType?: "file" | "url";
 }
 
 export const imageModelInputSchema = z.object({
-  model: z.string().optional(),
-  image: z
-    .union([z.string(), z.array(z.string())])
-    .optional()
-    .describe("Image URL or base64 string(s) used for editing"),
   prompt: z.string(),
+  image: z.array(fileUnionContentSchema).optional().describe("Images used for editing"),
   n: z.number().int().min(1).optional(),
-  responseFormat: z.enum(["url", "base64"]).optional(),
+  outputFileType: fileTypeSchema.optional(),
+  modelOptions: z.record(z.unknown()).optional(),
 });
 
 export interface ImageModelOutput extends Message {
-  images: ImageModelOutputImage[];
+  images: FileUnionContent[];
 
   /**
    * Token usage statistics
@@ -121,27 +174,8 @@ export interface ImageModelOutput extends Message {
   model?: string;
 }
 
-export type ImageModelOutputImage = ImageModelOutputImageUrl | ImageModelOutputImageBase64;
-
-export interface ImageModelOutputImageUrl {
-  url: string;
-}
-
-export interface ImageModelOutputImageBase64 {
-  base64: string;
-}
-
 export const imageModelOutputSchema = z.object({
-  images: z.array(
-    z.union([
-      z.object({
-        url: z.string(),
-      }),
-      z.object({
-        base64: z.string(),
-      }),
-    ]),
-  ),
+  images: z.array(fileUnionContentSchema),
   usage: chatModelOutputUsageSchema.optional(),
   model: z.string().optional(),
 });

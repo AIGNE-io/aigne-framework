@@ -12,7 +12,7 @@ export interface ChatLoopOptions {
   welcome?: string;
   defaultQuestion?: string;
   inputKey?: string;
-  fileInputKey?: string;
+  inputFileKey?: string;
   outputKey?: string;
   dataOutputKey?: string;
   input?: Message;
@@ -30,8 +30,8 @@ export async function runChatLoopInTerminal(
 
   if (initialCall) {
     await callAgent(userAgent, initialCall, options);
-    if (options.input && options.fileInputKey) {
-      options.input = omit(options.input, options.fileInputKey);
+    if (options.input && options.inputFileKey) {
+      options.input = omit(options.input, options.inputFileKey);
     }
   }
 
@@ -64,18 +64,18 @@ export async function runChatLoopInTerminal(
 
     const input: Message = {};
 
-    if (options.fileInputKey) {
+    if (options.inputFileKey) {
       const { message, files } = await extractFilesFromQuestion(question);
       input[options.inputKey || DEFAULT_CHAT_INPUT_KEY] = message;
-      input[options.fileInputKey] = files;
+      input[options.inputFileKey] = files;
     } else {
       input[options.inputKey || DEFAULT_CHAT_INPUT_KEY] = question;
     }
 
     await callAgent(userAgent, input, options);
 
-    if (options.input && options.fileInputKey) {
-      options.input = omit(options.input, options.fileInputKey);
+    if (options.input && options.inputFileKey) {
+      options.input = omit(options.input, options.inputFileKey);
     }
   }
 }

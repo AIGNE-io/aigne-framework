@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.2...platform-helpers-v0.6.3-beta) (2025-09-22)
+
+
+### Bug Fixes
+
+* resolve Windows file import URI issues ([#528](https://github.com/AIGNE-io/aigne-framework/issues/528)) ([bf807c5](https://github.com/AIGNE-io/aigne-framework/commit/bf807c5a3563c4423dc82fddff7fba280ef57957))
+
 ## [0.6.2](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.1...platform-helpers-v0.6.2) (2025-08-14)
 
 

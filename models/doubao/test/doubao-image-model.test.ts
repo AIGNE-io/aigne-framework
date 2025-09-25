@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import { DoubaoImageModel } from "@aigne/doubao";
 import { serve } from "bun";
 import { detect } from "detect-port";
@@ -14,7 +14,7 @@ async function createHonoServer() {
   honoApp.post("/api/v3/non-streaming/images/generations", async (c) => {
     const body = await c.req.json();
     return c.json({
-      data: [{ url: "https://example.com/image.png" }],
+      data: [{ b64_json: "test image base64" }],
       model: body.model,
       usage: {
         output_tokens: 100,
@@ -54,6 +54,7 @@ async function createHonoServer() {
       },
     });
   });
+
   honoApp.post("/api/v3/streaming/error/images/generations", async (c) => {
     const body = await c.req.json();
 
@@ -93,11 +94,25 @@ test("DoubaoImageModel should generate images successfully with non-streaming", 
   const result = await model.invoke({
     prompt: "Draw an image about a cat",
     model: "doubao-seedream-4-0-250828",
+    outputFileType: "file",
   });
 
-  expect(result.model).toEqual("doubao-seedream-4-0-250828");
-  expect(result.images).toEqual([{ url: "https://example.com/image.png", base64: undefined }]);
-  expect(result.usage?.outputTokens).toEqual(100);
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "images": [
+        {
+          "data": "test image base64",
+          "mimeType": "image/jpeg",
+          "type": "file",
+        },
+      ],
+      "model": "doubao-seedream-4-0-250828",
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 100,
+      },
+    }
+  `);
 
   close();
 });
@@ -111,15 +126,31 @@ test("DoubaoImageModel should generate images successfully with streaming", asyn
     baseURL: joinURL(url, "api/v3/streaming"),
   });
 
+  spyOn(model, "downloadFile").mockResolvedValueOnce(new Response("test image"));
+
   const result = await model.invoke({
     prompt: "Draw an image about a cat",
     model: "doubao-seedream-4-0-250828",
     stream: true,
+    outputFileType: "file",
   });
 
-  expect(result.model).toEqual("doubao-seedream-4-0-250828");
-  expect(result.images).toEqual([{ url: "https://example.com/image.png", base64: undefined }]);
-  expect(result.usage?.outputTokens).toEqual(100);
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "images": [
+        {
+          "data": "dGVzdCBpbWFnZQ==",
+          "mimeType": "image/jpeg",
+          "type": "file",
+        },
+      ],
+      "model": "doubao-seedream-4-0-250828",
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 100,
+      },
+    }
+  `);
 
   close();
 });
@@ -133,7 +164,7 @@ test("DoubaoImageModel should handle non-streaming API errors", async () => {
     baseURL: joinURL(url, "api/v3/non-streaming/error"),
   });
 
-  await expect(
+  expect(
     model.invoke({
       prompt: "Invalid prompt",
       model: "doubao-seedream-4-0-250828",
@@ -152,7 +183,7 @@ test("DoubaoImageModel should handle streaming API errors", async () => {
     baseURL: joinURL(url, "api/v3/streaming/error"),
   });
 
-  await expect(
+  expect(
     model.invoke({
       prompt: "Invalid prompt",
       model: "doubao-seedream-4-0-250828",

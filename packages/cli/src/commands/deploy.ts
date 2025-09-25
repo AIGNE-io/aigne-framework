@@ -2,7 +2,8 @@ import { spawn } from "node:child_process";
 import { constants } from "node:fs";
 import { access, copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { basename, isAbsolute, join, resolve } from "node:path";
+import { basename, dirname, isAbsolute, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Listr } from "@aigne/listr2";
 import { input as inputInquirer, select as selectInquirer } from "@inquirer/prompts";
 import { ListrInquirerPromptAdapter } from "@listr2/prompt-adapter-inquirer";
@@ -144,7 +145,10 @@ export const deploy = async (path: string, endpoint: string) => {
 
           task.output = "Copying template files...";
 
-          const templatePath = join(import.meta.dirname, "../../templates/blocklet");
+          const templatePath = join(
+            dirname(fileURLToPath(import.meta.url)),
+            "../../templates/blocklet",
+          );
           await copyDir(templatePath, deployRoot);
 
           await copyDir(path, agentDest);

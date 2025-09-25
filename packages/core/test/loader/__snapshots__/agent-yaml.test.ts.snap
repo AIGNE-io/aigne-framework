@@ -8,7 +8,7 @@ exports[`loadAgentFromYaml should load AIAgent correctly 1`] = `
   ],
   "description": "Chat agent",
   "instructions": 
-"You are a helpful assistant that can answer questions and provide information on a wide range of topics.
+"system: You are a helpful assistant that can answer questions and provide information on a wide range of topics.
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 "
 ,
@@ -49,7 +49,7 @@ Your goal is to assist users in finding the information they need and to engage 
 `;
 
 exports[`loadAgentFromYaml should load AIAgent with prompt file correctly 1`] = `
-"You are a helper agent to answer everything about chat prompt in AIGNE.
+"system: You are a helper agent to answer everything about chat prompt in AIGNE.
 
 {% include "language_instruction.txt" %}
 "
@@ -83,7 +83,7 @@ exports[`loadAgentFromYaml should load nested agent correctly 3`] = `
     {
       "inputSchema": undefined,
       "instructions": 
-"You are a helpful assistant that can answer questions and provide information on a wide range of topics.
+"system: You are a helpful assistant that can answer questions and provide information on a wide range of topics.
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 "
 ,
@@ -124,7 +124,7 @@ Your goal is to assist users in finding the information they need and to engage 
     {
       "inputSchema": undefined,
       "instructions": 
-"You are a helper agent to answer everything about chat prompt in AIGNE.
+"system: You are a helper agent to answer everything about chat prompt in AIGNE.
 
 {% include "language_instruction.txt" %}
 "
@@ -142,7 +142,7 @@ Your goal is to assist users in finding the information they need and to engage 
         {
           "inputSchema": undefined,
           "instructions": 
-"You are a helpful assistant that can answer questions and provide information on a wide range of topics.
+"system: You are a helpful assistant that can answer questions and provide information on a wide range of topics.
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 "
 ,
@@ -196,7 +196,7 @@ Your goal is to assist users in finding the information they need and to engage 
             "type": "object",
           },
           "instructions": 
-"You are a helper agent to answer everything about chat prompt in AIGNE.
+"system: You are a helper agent to answer everything about chat prompt in AIGNE.
 
 {% include "language_instruction.txt" %}
 "

@@ -1,13 +1,12 @@
-import { withQuery } from "ufo";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Agent } from "../agents/agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { parseAgentFile } from "./agent-yaml.js";
-import type { LoadOptions } from "./index.js";
 
 const importFn = new Function("path", "return import(path)");
 
-export async function loadAgentFromJsFile(path: string, options?: LoadOptions) {
-  if (options?.key) path = withQuery(path, { key: options?.key });
+export async function loadAgentFromJsFile(path: string) {
+  if (nodejs.path.isAbsolute(path)) path = nodejs.url.pathToFileURL(path).toString();
 
   const { default: agent } = await tryOrThrow(
     () => importFn(path),

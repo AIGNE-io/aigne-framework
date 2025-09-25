@@ -43,6 +43,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
 
+      - name: Fix Node 22 Windows npm issue
+        if: matrix.os == 'windows-latest' && matrix.node-version == '22.0'
+        run: |
+          corepack enable
+          corepack prepare npm@latest --activate
+
       - name: Install dependencies
         run: pnpm install
 
@@ -50,8 +56,9 @@ jobs:
         # @aigne/test-browser deps vite that is not support node 20.0, skip it
         run: |
           pnpm --filter='!test-browser' build
+          # Make sure aigne cli is linked to node_modules/.bin/aigne
           pnpm install
 
       - name: Run Node.js tests
         working-directory: tests/nodejs
-        run: npm run test
+        run: pnpm test

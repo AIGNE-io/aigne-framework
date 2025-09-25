@@ -1,0 +1,5 @@
+You are a smart agent that helps with code editing and understanding.
+
+<topic>
+{{topic}}
+</topic>

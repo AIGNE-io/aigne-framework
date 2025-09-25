@@ -1,4 +1,6 @@
 import {
+  type AgentInvokeOptions,
+  type FileUnionContent,
   ImageModel,
   type ImageModelInput,
   type ImageModelOptions,
@@ -6,12 +8,13 @@ import {
   imageModelInputSchema,
 } from "@aigne/core";
 import { snakelize } from "@aigne/core/utils/camelize.js";
-import { checkArguments, pick } from "@aigne/core/utils/type-utils.js";
+import { checkArguments, flat, pick } from "@aigne/core/utils/type-utils.js";
 import { joinURL } from "ufo";
 import { z } from "zod";
 
 const DOUBAO_DEFAULT_IMAGE_MODEL = "doubao-seedream-4-0-250828";
 const DOUBAO_BASE_URL = "https://ark.cn-beijing.volces.com/api/v3";
+const OUTPUT_MIME_TYPE = "image/jpeg";
 
 export interface DoubaoImageModelInput extends ImageModelInput {
   size?: string;
@@ -47,7 +50,7 @@ const doubaoImageModelOptionsSchema = z.object({
 });
 
 export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoImageModelOutput> {
-  constructor(public options?: DoubaoImageModelOptions) {
+  constructor(public override options?: DoubaoImageModelOptions) {
     super({
       ...options,
       inputSchema: doubaoImageModelInputSchema,
@@ -94,8 +97,11 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
     return dataObjects;
   }
 
-  override async process(input: DoubaoImageModelInput): Promise<ImageModelOutput> {
-    const model = input.model || this.credential.model;
+  override async process(
+    input: DoubaoImageModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<ImageModelOutput> {
+    const model = input.modelOptions?.model || this.credential.model;
     const { url, apiKey } = this.credential;
     if (!apiKey) {
       throw new Error(
@@ -107,7 +113,6 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
       "doubao-seedream-4": [
         "model",
         "prompt",
-        "image",
         "size",
         "sequentialImageGeneration",
         "sequentialImageGenerationOptions",
@@ -127,7 +132,6 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
       "doubao-seededit-3-0-i2i": [
         "model",
         "prompt",
-        "image",
         "size",
         "seed",
         "guidanceScale",
@@ -145,10 +149,23 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
       throw new Error(`${this.name} only support ${Object.keys(map).join(", ")}`);
     }
 
-    const mergeInput = { ...this.modelOptions, ...input };
-    const body = { ...snakelize(pick(mergeInput, map[key])), model };
-    body.response_format =
-      mergeInput.responseFormat === "base64" ? "b64_json" : mergeInput.responseFormat || "url";
+    const mergeInput = { ...this.modelOptions, ...input.modelOptions, ...input };
+
+    const image = await Promise.all(
+      flat(input.image).map((image) =>
+        this.transformFileType("file", image, options).then(
+          (file) => `data:${file.mimeType || "image/png"};base64,${file.data}`,
+        ),
+      ),
+    );
+
+    const body = {
+      ...snakelize(pick(mergeInput, map[key])),
+      model,
+      response_format: "b64_json",
+      watermark: mergeInput.watermark ?? false,
+      image: image.length ? image : undefined,
+    };
 
     const response = await fetch(joinURL(url, `/images/generations`), {
       method: "POST",
@@ -187,28 +204,35 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
       return {
         images: dataObjects
           .filter((i) => i.type === "image_generation.partial_succeeded")
-          .map((i) => {
-            return {
-              url: i.url,
-              base64: i.b64_json,
-            };
+          .map<FileUnionContent>((i) => {
+            if (typeof i.url === "string")
+              return { type: "url", url: i.url, mimeType: OUTPUT_MIME_TYPE };
+            if (typeof i.b64_json === "string")
+              return { type: "file", data: i.b64_json, mimeType: OUTPUT_MIME_TYPE };
+            throw new Error("Image response does not contain a valid URL or base64 data");
           }),
         usage: { inputTokens: 0, outputTokens: completed?.usage.output_tokens || 0 },
         model: model,
       };
     }
 
-    const data = await response.json();
+    const data: {
+      model: string;
+      usage?: { output_tokens?: number };
+      data: { url?: string; b64_json?: string }[];
+      error?: { message: string };
+    } = await response.json();
 
     if (data.error) {
       throw new Error(`Doubao API error: ${data.error.message}`);
     }
 
     return {
-      images: data.data.map((item: { url?: string; b64_json?: string }) => ({
-        url: item.url,
-        base64: item.b64_json,
-      })),
+      images: data.data.map<FileUnionContent>((item) => {
+        if (item.url) return { type: "url", url: item.url, mimeType: OUTPUT_MIME_TYPE };
+        if (item.b64_json) return { type: "file", data: item.b64_json, mimeType: OUTPUT_MIME_TYPE };
+        throw new Error("Image response does not contain a valid URL or base64 data");
+      }),
       usage: {
         inputTokens: 0,
         outputTokens: data?.usage?.output_tokens || 0,

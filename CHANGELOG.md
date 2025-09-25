@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.79.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.6...aigne-framework-v1.79.0-beta.7) (2025-09-25)
+
+
+### Features
+
+* **blocklet:** add token and cost summary for tracing list ([#543](https://github.com/AIGNE-io/aigne-framework/issues/543)) ([5e78919](https://github.com/AIGNE-io/aigne-framework/commit/5e789199b8183cf9c48339ec8163faec001ca64c))
+* **core:** add automatic JSON parsing and validation for structured outputs ([#548](https://github.com/AIGNE-io/aigne-framework/issues/548)) ([9077f93](https://github.com/AIGNE-io/aigne-framework/commit/9077f93856865915aaf5e8caa5638ef0b7f05b1e))
+
 ## [1.79.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.5...aigne-framework-v1.79.0-beta.6) (2025-09-25)
 
 

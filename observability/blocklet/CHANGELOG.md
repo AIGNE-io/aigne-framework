@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.14.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.13.5-beta...blocklet-observability-v1.14.0-beta) (2025-09-25)
+
+
+### Features
+
+* **blocklet:** add token and cost summary for tracing list ([#543](https://github.com/AIGNE-io/aigne-framework/issues/543)) ([5e78919](https://github.com/AIGNE-io/aigne-framework/commit/5e789199b8183cf9c48339ec8163faec001ca64c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.0-beta
+    * @aigne/observability-ui bumped to 0.11.0-beta
+
 ## [1.13.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.13.4...blocklet-observability-v1.13.5-beta) (2025-09-25)
 
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.13.5-beta.4...anthropic-v0.14.0-beta.4) (2025-09-25)
+
+
+### Features
+
+* **core:** add automatic JSON parsing and validation for structured outputs ([#548](https://github.com/AIGNE-io/aigne-framework/issues/548)) ([9077f93](https://github.com/AIGNE-io/aigne-framework/commit/9077f93856865915aaf5e8caa5638ef0b7f05b1e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.5
+
 ## [0.13.5-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.13.5-beta.3...anthropic-v0.13.5-beta.4) (2025-09-25)
 
 

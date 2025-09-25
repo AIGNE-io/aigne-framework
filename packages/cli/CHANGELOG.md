@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.49.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.0-beta.5...cli-v1.49.0-beta.6) (2025-09-25)
+
+
+### Features
+
+* **blocklet:** add token and cost summary for tracing list ([#543](https://github.com/AIGNE-io/aigne-framework/issues/543)) ([5e78919](https://github.com/AIGNE-io/aigne-framework/commit/5e789199b8183cf9c48339ec8163faec001ca64c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta.6
+    * @aigne/agentic-memory bumped to 1.0.46-beta.6
+    * @aigne/aigne-hub bumped to 0.10.0-beta.6
+    * @aigne/core bumped to 1.61.0-beta.5
+    * @aigne/default-memory bumped to 1.2.9-beta.6
+    * @aigne/observability-api bumped to 0.11.0-beta
+    * @aigne/openai bumped to 0.16.0-beta.6
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.5
+
 ## [1.49.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.4-beta.5...cli-v1.49.0-beta.5) (2025-09-25)
 
 

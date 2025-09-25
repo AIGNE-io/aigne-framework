@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.61.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.61.0-beta.4...core-v1.61.0-beta.5) (2025-09-25)
+
+
+### Features
+
+* **core:** add automatic JSON parsing and validation for structured outputs ([#548](https://github.com/AIGNE-io/aigne-framework/issues/548)) ([9077f93](https://github.com/AIGNE-io/aigne-framework/commit/9077f93856865915aaf5e8caa5638ef0b7f05b1e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.0-beta
+
 ## [1.61.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.61.0-beta.3...core-v1.61.0-beta.4) (2025-09-25)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.10.1...observability-ui-v0.11.0-beta) (2025-09-25)
+
+
+### Features
+
+* **blocklet:** add token and cost summary for tracing list ([#543](https://github.com/AIGNE-io/aigne-framework/issues/543)) ([5e78919](https://github.com/AIGNE-io/aigne-framework/commit/5e789199b8183cf9c48339ec8163faec001ca64c))
+
 ## [0.10.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.10.0...observability-ui-v0.10.1) (2025-08-26)
 
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.79.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.5...aigne-framework-v1.79.0-beta.6) (2025-09-25)
+
+
+### Features
+
+* **cli:** add new eval command for assessing AI agent performance using custom datasets ([#535](https://github.com/AIGNE-io/aigne-framework/issues/535)) ([9da967b](https://github.com/AIGNE-io/aigne-framework/commit/9da967b01ef9eeee4c5e1242934cf08e14815753))
+* **cli:** add new eval command for assessing AI agent performance using custom datasets ([#535](https://github.com/AIGNE-io/aigne-framework/issues/535)) ([9da967b](https://github.com/AIGNE-io/aigne-framework/commit/9da967b01ef9eeee4c5e1242934cf08e14815753))
+
+
+### Bug Fixes
+
+* improve SQLite busy error handling and observability logging ([#545](https://github.com/AIGNE-io/aigne-framework/issues/545)) ([6dc8e06](https://github.com/AIGNE-io/aigne-framework/commit/6dc8e064231f3d6342036626591e89bff1ae5c08))
+
 ## [1.79.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.4...aigne-framework-v1.79.0-beta.5) (2025-09-24)
 
 

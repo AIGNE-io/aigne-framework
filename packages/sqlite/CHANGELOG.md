@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.1...sqlite-v0.4.2-beta) (2025-09-25)
+
+
+### Bug Fixes
+
+* improve SQLite busy error handling and observability logging ([#545](https://github.com/AIGNE-io/aigne-framework/issues/545)) ([6dc8e06](https://github.com/AIGNE-io/aigne-framework/commit/6dc8e064231f3d6342036626591e89bff1ae5c08))
+
 ## [0.4.1](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.0...sqlite-v0.4.1) (2025-08-26)
 
 

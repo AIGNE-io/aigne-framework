@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.49.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.4-beta.5...cli-v1.49.0-beta.5) (2025-09-25)
+
+
+### Features
+
+* **cli:** add new eval command for assessing AI agent performance using custom datasets ([#535](https://github.com/AIGNE-io/aigne-framework/issues/535)) ([9da967b](https://github.com/AIGNE-io/aigne-framework/commit/9da967b01ef9eeee4c5e1242934cf08e14815753))
+* **cli:** add new eval command for assessing AI agent performance using custom datasets ([#535](https://github.com/AIGNE-io/aigne-framework/issues/535)) ([9da967b](https://github.com/AIGNE-io/aigne-framework/commit/9da967b01ef9eeee4c5e1242934cf08e14815753))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta.5
+    * @aigne/agentic-memory bumped to 1.0.46-beta.5
+    * @aigne/aigne-hub bumped to 0.10.0-beta.5
+    * @aigne/core bumped to 1.61.0-beta.4
+    * @aigne/default-memory bumped to 1.2.9-beta.5
+    * @aigne/observability-api bumped to 0.10.5-beta
+    * @aigne/openai bumped to 0.16.0-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.4
+
 ## [1.48.4-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.48.4-beta.4...cli-v1.48.4-beta.5) (2025-09-24)
 
 

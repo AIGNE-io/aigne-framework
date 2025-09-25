@@ -1,10 +1,10 @@
 # Project information for page publishing
-projectName: aigne-framework-0923
+projectName: aigne-framework-0925
 projectDesc: The functional, composable, and typescript-first AI Agent framework
   for real-world LLM Apps.
 projectLogo: https://avatars.githubusercontent.com/u/143965177?v=4
-projectId: 7ebfbec4-8316-47a1-b38c-a7a1e0802cef
-projectSlug: aigne-framework-0923
+projectId: 7ebfbec4-8336-4ka1-b38c-a7a1e0802cef
+projectSlug: aigne-framework-0925
 
 # =============================================================================
 # Website Configuration
@@ -67,5 +67,5 @@ sourcesPath: # Source code paths to analyze
   - ./observability/**/README.md
   - ./packages/**/README.md
   - ./architecture.md
-lastGitHead: ef433bc57ebfa44443ed167c9fe687d5125a2a6c
+lastGitHead: ab16909b9eeb19e5ded1b5f321fa9cf72739a55d
 appUrl: https://staging.websmith.aigne.io

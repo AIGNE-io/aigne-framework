@@ -1,7 +1,7 @@
 id: 634e506a2a6e3ed5
-createdAt: 2025-09-23T09:24:51.932Z
-updatedAt: 2025-09-23T09:24:51.932Z
-publishedAt: 2025-09-23T09:24:51.932Z
+createdAt: 2025-09-25T12:52:05.133Z
+updatedAt: 2025-09-25T12:52:05.133Z
+publishedAt: 2025-09-25T12:52:05.133Z
 isPublic: true
 locales:
   en:
@@ -9,12 +9,11 @@ locales:
     style:
       maxWidth: custom:1560px
       paddingY: normal
-      paddingX: large
-    title: AIGNE Framework Documentation | Technical Guides & API Reference
-    description: Central hub for all AIGNE Framework technical documentation,
-      providing access to core concepts, architecture diagrams, workflow
-      patterns, and the complete API reference.
-    image: mediakit://aigne.png
+      paddingX: normal
+    title: AIGNE Framework Documentation | Guides, API Reference & Workflows
+    description: Your central hub for AIGNE Framework documentation. Find everything
+      from core concepts and architecture diagrams to detailed workflow patterns
+      and the full API reference.
     header:
       sticky: true
   zh:
@@ -22,2119 +21,1098 @@ locales:
     style:
       maxWidth: custom:1560px
       paddingY: normal
-      paddingX: large
-    title: AIGNE Framework 文档 | 技术指南 与 API 参考
-    description: AIGNE Framework 所有技术文档的集中中心，提供对核心概念、架构图、工作流模式以及完整 API 参考的访问。
-    image: mediakit://aigne.png
+      paddingX: normal
+    title: AIGNE Framework 文档 | 指南、API 参考与工作流
+    description: AIGNE Framework 文档的中心枢纽。从核心概念与架构图到详细的工作流模式以及完整的 API 参考，应有尽有。
     header:
       sticky: true
 sections:
-  f4eaeb65584e00bb:
-    id: f4eaeb65584e00bb
+  cd5bde18baa5fa64:
+    id: cd5bde18baa5fa64
+    name: Hero
     component: layout-block
-    name: docsHero
-    config:
-      gridSettings:
-        desktop:
-          cce1ead3ca2f5ef4:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          f427d45982247e4b:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          c3c17188626ea966:
-            x: 0
-            y: 2
-            w: 6
-            h: 1
-          e719b39a2da400f9:
-            x: 6
-            y: 2
-            w: 6
-            h: 1
-          b70d6a9cde1ebfe1:
-            x: 0
-            y: 3
-            w: 6
-            h: 1
-          b907e9e767704e67:
-            x: 6
-            y: 3
-            w: 6
-            h: 1
-        mobile:
-          cce1ead3ca2f5ef4:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          f427d45982247e4b:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          c3c17188626ea966:
-            x: 0
-            y: 2
-            w: 12
-            h: 1
-          e719b39a2da400f9:
-            x: 0
-            y: 3
-            w: 12
-            h: 1
-          b70d6a9cde1ebfe1:
-            x: 0
-            y: 4
-            w: 12
-            h: 1
-          b907e9e767704e67:
-            x: 0
-            y: 5
-            w: 12
-            h: 1
-      gap: normal
-      paddingX: normal
-      paddingY: large
     sections:
-      cce1ead3ca2f5ef4:
-        id: cce1ead3ca2f5ef4
-        name: RichTextTitle
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      f427d45982247e4b:
-        id: f427d45982247e4b
-        name: RichTextDescription
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      c3c17188626ea966:
-        id: c3c17188626ea966
+      f7145915bad7ee51:
+        id: f7145915bad7ee51
+        name: Title
         component: layout-block
-        name: HeroSection
-        config:
-          gridSettings:
-            desktop:
-              ed037e993caabda4:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              7829243ba0179109:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              2e396b96557c5299:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-            mobile:
-              ed037e993caabda4:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              7829243ba0179109:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              2e396b96557c5299:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: large
-          alignContent: center
-          justifyContent: center
-          background: grey.100
-          borderRadius: medium
         sections:
-          ed037e993caabda4:
-            id: ed037e993caabda4
-            name: RichTextTitle
+          32fa38d7c51e3079:
+            id: 32fa38d7c51e3079
+            name: RichText
             component: custom-component
             config:
-              componentId: xoHu0J44322kDYc-
               useCache: true
-          7829243ba0179109:
-            id: 7829243ba0179109
-            name: RichTextDescription
-            component: custom-component
-            config:
               componentId: xoHu0J44322kDYc-
-              useCache: true
-          2e396b96557c5299:
-            id: 2e396b96557c5299
-            name: ActionButton
+            sectionIds: []
+          590ffa5da2272e04:
+            id: 590ffa5da2272e04
+            name: Action
             component: custom-component
             config:
+              useCache: true
               componentId: a44r0SiGV9AFn2Fj
-              useCache: true
+            sectionIds: []
         sectionIds:
-          - ed037e993caabda4
-          - 7829243ba0179109
-          - 2e396b96557c5299
-      e719b39a2da400f9:
-        id: e719b39a2da400f9
-        component: layout-block
-        name: HeroSection
+          - 32fa38d7c51e3079
+          - 590ffa5da2272e04
         config:
           gridSettings:
             desktop:
-              388b6074ec681dfc:
+              32fa38d7c51e3079:
                 x: 0
                 y: 0
                 w: 12
                 h: 1
-              e2241af36167a1c7:
+              590ffa5da2272e04:
                 x: 0
                 y: 1
                 w: 12
                 h: 1
-              ca407f34404d3076:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-            mobile:
-              388b6074ec681dfc:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              e2241af36167a1c7:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              ca407f34404d3076:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: large
-          alignContent: center
-          justifyContent: center
-          background: grey.100
-          borderRadius: medium
-        sections:
-          388b6074ec681dfc:
-            id: 388b6074ec681dfc
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          e2241af36167a1c7:
-            id: e2241af36167a1c7
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          ca407f34404d3076:
-            id: ca407f34404d3076
-            name: ActionButton
-            component: custom-component
-            config:
-              componentId: a44r0SiGV9AFn2Fj
-              useCache: true
-        sectionIds:
-          - 388b6074ec681dfc
-          - e2241af36167a1c7
-          - ca407f34404d3076
-      b70d6a9cde1ebfe1:
-        id: b70d6a9cde1ebfe1
-        component: layout-block
-        name: HeroSection
-        config:
-          gridSettings:
-            desktop:
-              b0154110f3b32d21:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              36f5a25d4e2b71bb:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              3cce89346fb1cc20:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-            mobile:
-              b0154110f3b32d21:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              36f5a25d4e2b71bb:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              3cce89346fb1cc20:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: large
-          alignContent: center
-          justifyContent: center
-          background: grey.100
-          borderRadius: medium
-        sections:
-          b0154110f3b32d21:
-            id: b0154110f3b32d21
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          36f5a25d4e2b71bb:
-            id: 36f5a25d4e2b71bb
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          3cce89346fb1cc20:
-            id: 3cce89346fb1cc20
-            name: ActionButton
-            component: custom-component
-            config:
-              componentId: a44r0SiGV9AFn2Fj
-              useCache: true
-        sectionIds:
-          - b0154110f3b32d21
-          - 36f5a25d4e2b71bb
-          - 3cce89346fb1cc20
-      b907e9e767704e67:
-        id: b907e9e767704e67
-        component: layout-block
-        name: HeroSection
-        config:
-          gridSettings:
-            desktop:
-              710c88d1ed4b1909:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              5e47da44279f09c8:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              f9f1d8fb93c955a7:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-            mobile:
-              710c88d1ed4b1909:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              5e47da44279f09c8:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              f9f1d8fb93c955a7:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: large
-          alignContent: center
-          justifyContent: center
-          background: grey.100
-          borderRadius: medium
-        sections:
-          710c88d1ed4b1909:
-            id: 710c88d1ed4b1909
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          5e47da44279f09c8:
-            id: 5e47da44279f09c8
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          f9f1d8fb93c955a7:
-            id: f9f1d8fb93c955a7
-            name: ActionButton
-            component: custom-component
-            config:
-              componentId: a44r0SiGV9AFn2Fj
-              useCache: true
-        sectionIds:
-          - 710c88d1ed4b1909
-          - 5e47da44279f09c8
-          - f9f1d8fb93c955a7
+          gap: large
+          paddingX: none
     sectionIds:
-      - cce1ead3ca2f5ef4
-      - f427d45982247e4b
-      - c3c17188626ea966
-      - e719b39a2da400f9
-      - b70d6a9cde1ebfe1
-      - b907e9e767704e67
-  5a8a76c97f46dfb8:
-    id: 5a8a76c97f46dfb8
-    component: layout-block
-    name: quickStart
+      - f7145915bad7ee51
     config:
       gridSettings:
         desktop:
-          6f38d93fe2d0ec86:
+          f7145915bad7ee51:
             x: 0
             y: 0
-            w: 12
+            w: 8
             h: 1
-          c49f8449e5b9628d:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          af4a981f1f2a9052:
-            x: 0
-            y: 2
-            w: 12
-            h: 2
-        mobile:
-          6f38d93fe2d0ec86:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          c49f8449e5b9628d:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          af4a981f1f2a9052:
-            x: 0
-            y: 2
-            w: 12
-            h: 2
-      gap: normal
-      paddingX: normal
-      paddingY: large
+      paddingY: custom:150px
+      background: grey.400
+      backgroundFullWidth: true
+  f38ad0d303ccc7c8:
+    id: f38ad0d303ccc7c8
+    name: Section Layout
+    component: layout-block
     sections:
-      6f38d93fe2d0ec86:
-        id: 6f38d93fe2d0ec86
-        name: RichTextTitle
-        component: custom-component
+      52b6d7026b12de5f:
+        id: 52b6d7026b12de5f
+        name: Title
+        component: layout-block
+        sections:
+          ae9e055dcb7cd711:
+            id: ae9e055dcb7cd711
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          31eea5483f2e5c49:
+            id: 31eea5483f2e5c49
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - ae9e055dcb7cd711
+          - 31eea5483f2e5c49
         config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      c49f8449e5b9628d:
-        id: c49f8449e5b9628d
-        name: RichTextDescription
-        component: custom-component
+          gridSettings:
+            desktop:
+              ae9e055dcb7cd711:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              31eea5483f2e5c49:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          padding: none
+          gap: normal
+          alignContent: center
+      cd21187f98a1807e:
+        id: cd21187f98a1807e
+        name: Image Container
+        component: layout-block
+        sections:
+          f6c4d3f2cb8d1aa4:
+            id: f6c4d3f2cb8d1aa4
+            name: Image
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0JPjPs122kaaa-
+            sectionIds: []
+        sectionIds:
+          - f6c4d3f2cb8d1aa4
         config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      af4a981f1f2a9052:
-        id: af4a981f1f2a9052
-        name: CodeBlock
-        component: custom-component
-        config:
-          componentId: 2EHGy3vwxlS9JGr2
-          useCache: true
+          gridSettings:
+            desktop:
+              f6c4d3f2cb8d1aa4:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          border: safari
     sectionIds:
-      - 6f38d93fe2d0ec86
-      - c49f8449e5b9628d
-      - af4a981f1f2a9052
-  678330341923d4e1:
-    id: 678330341923d4e1
-    component: layout-block
-    name: architectureOverview
+      - 52b6d7026b12de5f
+      - cd21187f98a1807e
     config:
       gridSettings:
         desktop:
-          897435ba407c2342:
+          52b6d7026b12de5f:
             x: 0
             y: 0
             w: 6
             h: 1
-          9af1f9a7926f7e18:
-            x: 0
-            y: 1
-            w: 6
-            h: 1
-          4a976abce6b66b83:
-            x: 0
-            y: 2
-            w: 6
-            h: 1
-          a8e692abaff8320b:
+          cd21187f98a1807e:
             x: 6
             y: 0
             w: 6
-            h: 3
-        mobile:
-          897435ba407c2342:
-            x: 0
-            y: 0
-            w: 12
             h: 1
-          9af1f9a7926f7e18:
+        mobile:
+          52b6d7026b12de5f:
             x: 0
             y: 1
             w: 12
             h: 1
-          a8e692abaff8320b:
+          cd21187f98a1807e:
             x: 0
-            y: 2
+            y: 0
             w: 12
             h: 1
-          4a976abce6b66b83:
-            x: 0
-            y: 3
-            w: 12
-            h: 1
-      gap: normal
-      paddingX: normal
-      paddingY: large
-    sections:
-      897435ba407c2342:
-        id: 897435ba407c2342
-        name: RichTextTitle
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      9af1f9a7926f7e18:
-        id: 9af1f9a7926f7e18
-        name: RichTextDescription
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      a8e692abaff8320b:
-        id: a8e692abaff8320b
-        name: MediaImage
-        component: custom-component
-        config:
-          componentId: xoHu0JPjPs122kaaa-
-          useCache: true
-      4a976abce6b66b83:
-        id: 4a976abce6b66b83
-        name: ActionButton
-        component: custom-component
-        config:
-          componentId: a44r0SiGV9AFn2Fj
-          useCache: true
-    sectionIds:
-      - 897435ba407c2342
-      - 9af1f9a7926f7e18
-      - a8e692abaff8320b
-      - 4a976abce6b66b83
-  cc887feb74c5ab01:
-    id: cc887feb74c5ab01
+      gap: large
+      paddingY: small
+  2e73f26b0a048926:
+    id: 2e73f26b0a048926
+    name: Section Layout
     component: layout-block
-    name: keyFeatures
+    sections:
+      882e4729b43e1deb:
+        id: 882e4729b43e1deb
+        name: Title
+        component: layout-block
+        sections:
+          0a0086d430f162c3:
+            id: 0a0086d430f162c3
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          9bc67ab7fe3f12da:
+            id: 9bc67ab7fe3f12da
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - 0a0086d430f162c3
+          - 9bc67ab7fe3f12da
+        config:
+          gridSettings:
+            desktop:
+              0a0086d430f162c3:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              9bc67ab7fe3f12da:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          padding: none
+          gap: normal
+          alignContent: center
+      9f7af45bff6b6683:
+        id: 9f7af45bff6b6683
+        name: Image Container
+        component: layout-block
+        sections:
+          c8f64c775824d0a5:
+            id: c8f64c775824d0a5
+            name: Image
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0JPjPs122kaaa-
+            sectionIds: []
+        sectionIds:
+          - c8f64c775824d0a5
+        config:
+          gridSettings:
+            desktop:
+              c8f64c775824d0a5:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          border: safari
+    sectionIds:
+      - 882e4729b43e1deb
+      - 9f7af45bff6b6683
     config:
       gridSettings:
         desktop:
-          f0afe20f827e128d:
+          882e4729b43e1deb:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+          9f7af45bff6b6683:
             x: 0
             y: 0
-            w: 12
-            h: 1
-          c5ccf0b0061ced6c:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          9333f0c9f34aa81a:
-            x: 0
-            y: 2
-            w: 6
-            h: 1
-          cca44aceac640a7e:
-            x: 6
-            y: 2
-            w: 6
-            h: 1
-          e8437b65a6e5ce26:
-            x: 0
-            y: 3
-            w: 6
-            h: 1
-          40d6d8c9c2d9f0bc:
-            x: 6
-            y: 3
             w: 6
             h: 1
         mobile:
-          f0afe20f827e128d:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          c5ccf0b0061ced6c:
+          882e4729b43e1deb:
             x: 0
             y: 1
             w: 12
             h: 1
-          9333f0c9f34aa81a:
+          9f7af45bff6b6683:
             x: 0
-            y: 2
+            y: 0
             w: 12
             h: 1
-          cca44aceac640a7e:
-            x: 0
-            y: 3
-            w: 12
-            h: 1
-          e8437b65a6e5ce26:
-            x: 0
-            y: 4
-            w: 12
-            h: 1
-          40d6d8c9c2d9f0bc:
-            x: 0
-            y: 5
-            w: 12
-            h: 1
-      gap: normal
-      paddingX: normal
-      paddingY: large
-    sections:
-      f0afe20f827e128d:
-        id: f0afe20f827e128d
-        name: RichTextTitle
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      c5ccf0b0061ced6c:
-        id: c5ccf0b0061ced6c
-        name: RichTextDescription
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      9333f0c9f34aa81a:
-        id: 9333f0c9f34aa81a
-        component: layout-block
-        name: TitleDescription
-        config:
-          gridSettings:
-            desktop:
-              a2905935b6edfb9b:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              6ae198442f4f1495:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-            mobile:
-              a2905935b6edfb9b:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              6ae198442f4f1495:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: normal
-        sections:
-          a2905935b6edfb9b:
-            id: a2905935b6edfb9b
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          6ae198442f4f1495:
-            id: 6ae198442f4f1495
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-        sectionIds:
-          - a2905935b6edfb9b
-          - 6ae198442f4f1495
-      cca44aceac640a7e:
-        id: cca44aceac640a7e
-        component: layout-block
-        name: TitleDescription
-        config:
-          gridSettings:
-            desktop:
-              31573e61ec70294c:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              a10887505c0edd2b:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-            mobile:
-              31573e61ec70294c:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              a10887505c0edd2b:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: normal
-        sections:
-          31573e61ec70294c:
-            id: 31573e61ec70294c
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          a10887505c0edd2b:
-            id: a10887505c0edd2b
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-        sectionIds:
-          - 31573e61ec70294c
-          - a10887505c0edd2b
-      e8437b65a6e5ce26:
-        id: e8437b65a6e5ce26
-        component: layout-block
-        name: TitleDescription
-        config:
-          gridSettings:
-            desktop:
-              504e3ce8c18f035e:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              a7fcbba925873e38:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-            mobile:
-              504e3ce8c18f035e:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              a7fcbba925873e38:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: normal
-        sections:
-          504e3ce8c18f035e:
-            id: 504e3ce8c18f035e
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          a7fcbba925873e38:
-            id: a7fcbba925873e38
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-        sectionIds:
-          - 504e3ce8c18f035e
-          - a7fcbba925873e38
-      40d6d8c9c2d9f0bc:
-        id: 40d6d8c9c2d9f0bc
-        component: layout-block
-        name: TitleDescription
-        config:
-          gridSettings:
-            desktop:
-              2407373b64354217:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              f50d02c3acd8e680:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-            mobile:
-              2407373b64354217:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              f50d02c3acd8e680:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: normal
-        sections:
-          2407373b64354217:
-            id: 2407373b64354217
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          f50d02c3acd8e680:
-            id: f50d02c3acd8e680
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-        sectionIds:
-          - 2407373b64354217
-          - f50d02c3acd8e680
-    sectionIds:
-      - f0afe20f827e128d
-      - c5ccf0b0061ced6c
-      - 9333f0c9f34aa81a
-      - cca44aceac640a7e
-      - e8437b65a6e5ce26
-      - 40d6d8c9c2d9f0bc
-  be9bbce23a7fa67f:
-    id: be9bbce23a7fa67f
+      gap: large
+      paddingY: small
+  15586e0586bd1504:
+    id: 15586e0586bd1504
+    name: Section Layout
     component: layout-block
-    name: joinTheCommunity
+    sections:
+      7fed3ff5419835ab:
+        id: 7fed3ff5419835ab
+        name: Title
+        component: layout-block
+        sections:
+          ae87158608dc190d:
+            id: ae87158608dc190d
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          93c2f845c56795a7:
+            id: 93c2f845c56795a7
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - ae87158608dc190d
+          - 93c2f845c56795a7
+        config:
+          gridSettings:
+            desktop:
+              ae87158608dc190d:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              93c2f845c56795a7:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          padding: none
+          gap: normal
+          alignContent: center
+      89208d0045a67cb9:
+        id: 89208d0045a67cb9
+        name: Image Container
+        component: layout-block
+        sections:
+          045bf0ca3956e661:
+            id: 045bf0ca3956e661
+            name: Image
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0JPjPs122kaaa-
+            sectionIds: []
+        sectionIds:
+          - 045bf0ca3956e661
+        config:
+          gridSettings:
+            desktop:
+              045bf0ca3956e661:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          border: safari
+    sectionIds:
+      - 7fed3ff5419835ab
+      - 89208d0045a67cb9
     config:
       gridSettings:
         desktop:
-          b637fd5df0897d32:
+          7fed3ff5419835ab:
             x: 0
             y: 0
-            w: 12
+            w: 6
             h: 1
-          47df3c36e1f2f452:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          c46df0b4f281d3b7:
-            x: 0
-            y: 2
-            w: 12
+          89208d0045a67cb9:
+            x: 6
+            y: 0
+            w: 6
             h: 1
         mobile:
-          b637fd5df0897d32:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          47df3c36e1f2f452:
+          7fed3ff5419835ab:
             x: 0
             y: 1
             w: 12
             h: 1
-          c46df0b4f281d3b7:
+          89208d0045a67cb9:
             x: 0
-            y: 2
+            y: 0
             w: 12
             h: 1
-      gap: normal
-      paddingX: normal
-      paddingY: large
-      alignContent: center
-      justifyContent: center
-      background: grey.100
-      borderRadius: medium
+      gap: large
+      paddingY: small
+  c317d0ff72bbcab3:
+    id: c317d0ff72bbcab3
+    name: Section Layout
+    component: layout-block
     sections:
-      b637fd5df0897d32:
-        id: b637fd5df0897d32
-        name: RichTextTitle
-        component: custom-component
+      9d92f479ec3ddd99:
+        id: 9d92f479ec3ddd99
+        name: Title
+        component: layout-block
+        sections:
+          ea1e054f5904b22f:
+            id: ea1e054f5904b22f
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          5b4587268e3cb435:
+            id: 5b4587268e3cb435
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - ea1e054f5904b22f
+          - 5b4587268e3cb435
         config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      47df3c36e1f2f452:
-        id: 47df3c36e1f2f452
-        name: RichTextDescription
-        component: custom-component
+          gridSettings:
+            desktop:
+              ea1e054f5904b22f:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              5b4587268e3cb435:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          padding: none
+          gap: normal
+          alignContent: center
+      06c38af3af36436b:
+        id: 06c38af3af36436b
+        name: Image Container
+        component: layout-block
+        sections:
+          86a611bfdc38dfb5:
+            id: 86a611bfdc38dfb5
+            name: Image
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0JPjPs122kaaa-
+            sectionIds: []
+        sectionIds:
+          - 86a611bfdc38dfb5
         config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      c46df0b4f281d3b7:
-        id: c46df0b4f281d3b7
-        name: ActionButton
-        component: custom-component
-        config:
-          componentId: a44r0SiGV9AFn2Fj
-          useCache: true
+          gridSettings:
+            desktop:
+              86a611bfdc38dfb5:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          border: safari
     sectionIds:
-      - b637fd5df0897d32
-      - 47df3c36e1f2f452
-      - c46df0b4f281d3b7
+      - 9d92f479ec3ddd99
+      - 06c38af3af36436b
+    config:
+      gridSettings:
+        desktop:
+          9d92f479ec3ddd99:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+          06c38af3af36436b:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          9d92f479ec3ddd99:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          06c38af3af36436b:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+      gap: large
+      paddingY: small
+  e6a9eb91e66ea8dc:
+    id: e6a9eb91e66ea8dc
+    name: CTA
+    component: layout-block
+    sections:
+      695915809d3e2134:
+        id: 695915809d3e2134
+        name: Section Layout
+        component: layout-block
+        sections:
+          948b6829fa461237:
+            id: 948b6829fa461237
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          3ee231c506e1931b:
+            id: 3ee231c506e1931b
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - 948b6829fa461237
+          - 3ee231c506e1931b
+        config:
+          gridSettings:
+            desktop:
+              948b6829fa461237:
+                x: 2
+                y: 0
+                w: 8
+                h: 1
+              3ee231c506e1931b:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          background: background.paper
+          padding: large
+          gap: normal
+          borderRadius: medium
+          border: none
+          paddingY: large
+    sectionIds:
+      - 695915809d3e2134
+    config:
+      padding: large
+      gridSettings:
+        desktop:
+          695915809d3e2134:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+      gap: none
+      maxWidth: full
+      paddingY: custom:100px
+      paddingX: none
 sectionIds:
-  - f4eaeb65584e00bb
-  - 5a8a76c97f46dfb8
-  - 678330341923d4e1
-  - cc887feb74c5ab01
-  - be9bbce23a7fa67f
+  - cd5bde18baa5fa64
+  - f38ad0d303ccc7c8
+  - 2e73f26b0a048926
+  - 15586e0586bd1504
+  - c317d0ff72bbcab3
+  - e6a9eb91e66ea8dc
 dataSource:
-  cce1ead3ca2f5ef4:
+  32fa38d7c51e3079:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Your AI Development Adventure Starts Here!
+            text: |
+              Welcome to the AIGNE Documentation!
             style:
-              color: text.primary
+              color: common.white
+              variant: h1
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1754042380003-mnbkkn5fa
+                type: text
+                text: >
+                  Everything you need to build powerful, scalable AI
+                  applications is right here. Dive into guides, explore
+                  examples, and master the framework. Let's get building!
+                style:
+                  color: common.white
+                  fontSize: 16px
+                  variant: body1
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
+          value: flex-start
         kyg0hdy5uqq4gc1o:
-          value: center
+          value: flex-start
     zh:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 你的 AI 开发之旅从这里开始！
+            text: |
+              欢迎来到 AIGNE 文档！
             style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  f427d45982247e4b:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
+              color: common.white
+              variant: h1
+        9ajrz12ik7esfk1z:
           value:
-            text: Everything you need to build powerful, modern AI applications is right at
-              your fingertips. Explore the core concepts, check out the
-              architecture, or jump straight into the code. Let's create
-              something amazing!
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
+            list:
+              - id: item-1754042380003-mnbkkn5fa
+                type: text
+                text: |
+                  构建强大且可扩展的 AI 应用所需的一切尽在这里。深入阅读指南，查看示例，掌握框架。开始构建吧！
+                style:
+                  color: common.white
+                  fontSize: 16px
+                  variant: body1
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
+          value: flex-start
         kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 构建强大、现代 AI 应用所需的一切尽在掌握。探索核心概念、查看架构，或直接进入代码。一起开始构建优秀的项目。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  ed037e993caabda4:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Core Concepts
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 核心概念
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  7829243ba0179109:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Get to know the fundamental ideas that make AIGNE tick, from modular
-              design to our powerful agent system.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 了解驱动 AIGNE 的基本理念，从模块化设计到强大的智能体系统。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  2e396b96557c5299:
+          value: flex-start
+  590ffa5da2272e04:
     en:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: Learn the Basics
+              text: Quick Start Guide
+              url: link:///get-started
+              variant: contained
+              size: large
+              target: _blank
+              needLogin: false
+            - type: link
+              text: See Code Examples
+              url: link:///examples
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
+              needLogin: false
+              imageUrl: ""
+              imageUrlDark: ""
+              imageHoverAnimation: true
+              id: btn-1754042480282-63txf2twj
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        v9979xeclpsbvn0n:
+          value: flex-start
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: 快速入门指南
+              url: link:///get-started
+              variant: contained
+              size: large
+              target: _blank
+              needLogin: false
+            - type: link
+              text: 查看代码示例
+              url: link:///examples
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
+              needLogin: false
+              imageUrl: ""
+              imageUrlDark: ""
+              imageHoverAnimation: true
+              id: btn-1754042480282-63txf2twj
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        v9979xeclpsbvn0n:
+          value: flex-start
+  ae9e055dcb7cd711:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Master the Core Concepts
+            style:
+              variant: h2
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753382621853-07ja75k36
+                type: text
+                text: Start with the fundamentals! Learn about our modular design, agent system,
+                  TypeScript support, and the powerful Model Context Protocol
+                  (MCP) that makes AIGNE tick. This is the perfect place to
+                  begin your journey!
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 掌握核心概念
+            style:
+              variant: h2
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753382621853-07ja75k36
+                type: text
+                text: 从基础开始！了解我们的模块化设计、代理系统、TypeScript 支持，以及使 AIGNE 运作的强大模型上下文协议（Model Context
+                  Protocol，MCP）。这是开始学习的理想起点！
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+  31eea5483f2e5c49:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: Explore Concepts
               url: link:///docs/concepts
-              variant: contained
+              variant: outlined
               size: medium
               target: _self
               needLogin: false
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
+          value: flex-start
     zh:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: 了解基础
+              text: 探索概念
               url: link:///docs/concepts
-              variant: contained
+              variant: outlined
               size: medium
               target: _self
               needLogin: false
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-  388b6074ec681dfc:
+          value: flex-start
+  f6c4d3f2cb8d1aa4:
+    en:
+      properties:
+        7m5pz8nefl5j9hqq:
+          value:
+            url: mediakit://aigne-framework.png
+            mediaKitUrl: mediakit://aigne-framework.png
+            width: 5088
+            height: 2562
+        02dp1e6zfq2xwkt3:
+          value: auto
+        x8beiec3fxx5des1:
+          value: 100%
+    zh:
+      properties:
+        7m5pz8nefl5j9hqq:
+          value:
+            url: mediakit://aigne-framework.png
+            mediaKitUrl: mediakit://aigne-framework.png
+            width: 5088
+            height: 2562
+        02dp1e6zfq2xwkt3:
+          value: auto
+        x8beiec3fxx5des1:
+          value: 100%
+  0a0086d430f162c3:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Architecture
+            text: Understand the Architecture
             style:
-              color: text.primary
+              variant: h2
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753382621853-07ja75k36
+                type: text
+                text: See the big picture! Our three-layer architecture is designed for
+                  developer-friendly usability and enterprise-level scale.
+                  Discover how our Tools, Core Framework, and LLM Hub work in
+                  harmony.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
+          value: flex-start
     zh:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 架构
+            text: 了解架构
             style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  e2241af36167a1c7:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
+              variant: h2
+        9ajrz12ik7esfk1z:
           value:
-            text: See the big picture! Understand our three-layer design that makes the
-              framework so flexible and scalable.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
+            list:
+              - id: item-1753382621853-07ja75k36
+                type: text
+                text: 把握整体架构！我们的三层架构旨在兼顾开发者友好性与企业级扩展性。了解我们的工具（Tools）、核心框架（Core Framework）和 LLM
+                  Hub 如何协同工作。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 查看整体结构！理解使框架灵活且可扩展的三层设计。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  ca407f34404d3076:
+          value: flex-start
+  9bc67ab7fe3f12da:
     en:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: View the Blueprint
+              text: View the Architecture
               url: link:///docs/architecture
-              variant: contained
+              variant: outlined
               size: medium
               target: _self
               needLogin: false
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
+          value: flex-start
     zh:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: 查看蓝图
+              text: 查看架构
               url: link:///docs/architecture
-              variant: contained
+              variant: outlined
               size: medium
               target: _self
               needLogin: false
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-  b0154110f3b32d21:
+          value: flex-start
+  c8f64c775824d0a5:
+    en:
+      properties:
+        7m5pz8nefl5j9hqq:
+          value:
+            url: mediakit://aigne-dark.png
+            mediaKitUrl: mediakit://aigne-dark.png
+            width: 5088
+            height: 2562
+        02dp1e6zfq2xwkt3:
+          value: auto
+        x8beiec3fxx5des1:
+          value: 100%
+    zh:
+      properties:
+        7m5pz8nefl5j9hqq:
+          value:
+            url: mediakit://aigne-dark.png
+            mediaKitUrl: mediakit://aigne-dark.png
+            width: 5088
+            height: 2562
+        02dp1e6zfq2xwkt3:
+          value: auto
+        x8beiec3fxx5des1:
+          value: 100%
+  ae87158608dc190d:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Workflow Patterns
+            text: Unleash Powerful Workflow Patterns
             style:
-              color: text.primary
+              variant: h2
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753382621853-07ja75k36
+                type: text
+                text: Orchestrate complex tasks with ease! From sequential and concurrent
+                  processing to intelligent routing and handoffs, AIGNE provides
+                  flexible patterns to build sophisticated AI-driven workflows
+                  for any scenario.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
+          value: flex-start
     zh:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 工作流模式
+            text: 释放强大的工作流模式
             style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  36f5a25d4e2b71bb:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
+              variant: h2
+        9ajrz12ik7esfk1z:
           value:
-            text: Discover how to orchestrate simple or complex tasks with patterns like
-              Sequential, Router, and Handoff.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
+            list:
+              - id: item-1753382621853-07ja75k36
+                type: text
+                text: 轻松编排复杂任务！从顺序与并发处理到智能路由与交接，AIGNE 提供灵活的模式，可用于为任何场景构建复杂的 AI 驱动工作流。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 探索如何使用顺序、路由和移交等模式编排简单或复杂的任务。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  3cce89346fb1cc20:
+          value: flex-start
+  93c2f845c56795a7:
     en:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: Master the Flow
+              text: Discover Workflows
               url: link:///docs/workflows
-              variant: contained
+              variant: outlined
               size: medium
               target: _self
               needLogin: false
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
+          value: flex-start
     zh:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: 掌握流程
+              text: 探索工作流
               url: link:///docs/workflows
-              variant: contained
+              variant: outlined
               size: medium
               target: _self
               needLogin: false
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-  710c88d1ed4b1909:
+          value: flex-start
+  045bf0ca3956e661:
+    en:
+      properties:
+        7m5pz8nefl5j9hqq:
+          value:
+            url: mediakit://aigne-hub.png
+            mediaKitUrl: mediakit://aigne-hub.png
+            width: 5088
+            height: 2562
+        02dp1e6zfq2xwkt3:
+          value: auto
+        x8beiec3fxx5des1:
+          value: 100%
+    zh:
+      properties:
+        7m5pz8nefl5j9hqq:
+          value:
+            url: mediakit://aigne-hub.png
+            mediaKitUrl: mediakit://aigne-hub.png
+            width: 5088
+            height: 2562
+        02dp1e6zfq2xwkt3:
+          value: auto
+        x8beiec3fxx5des1:
+          value: 100%
+  ea1e054f5904b22f:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: API Reference
+            text: Dive into the API Reference
             style:
-              color: text.primary
+              variant: h2
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753382621853-07ja75k36
+                type: text
+                text: Ready to get technical? Our comprehensive API reference covers every
+                  package, module, and function in the AIGNE ecosystem. It's
+                  your go-to guide for deep implementation details.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
+          value: flex-start
     zh:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: API 参考
+            text: 深入 API 参考
             style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  5e47da44279f09c8:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
+              variant: h2
+        9ajrz12ik7esfk1z:
           value:
-            text: Dive deep into every package, class, and function. The complete guide for
-              building with precision.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
+            list:
+              - id: item-1753382621853-07ja75k36
+                type: text
+                text: 准备进入技术细节了吗？我们全面的 API 参考涵盖 AIGNE 生态中的每个包、模块和函数。它是深入实现细节的首选指南。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 深入了解每个包、类和函数。构建时的完整参考指南。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  f9f1d8fb93c955a7:
+          value: flex-start
+  5b4587268e3cb435:
     en:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: Explore the API
+              text: Browse the API
               url: link:///docs/api
-              variant: contained
+              variant: outlined
               size: medium
               target: _self
               needLogin: false
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
+          value: flex-start
     zh:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
               text: 浏览 API
               url: link:///docs/api
-              variant: contained
+              variant: outlined
               size: medium
               target: _self
               needLogin: false
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-  6f38d93fe2d0ec86:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Get Building in Minutes!
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 几分钟内开始构建！
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  c49f8449e5b9628d:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Why wait? You can have your first multi-agent workflow running in no time.
-              Just install the package with your favorite manager and run this
-              example to see the magic happen.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 无需等待。您可以在很短时间内运行首个多智能体工作流。只需使用您喜欢的包管理器安装该包并运行此示例，即可见证效果。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  af4a981f1f2a9052:
-    en:
-      properties:
-        a7frn5jmx5vpxpt3:
-          value: >-
-            import { AIAgent, AIGNE } from "@aigne/core";
-
-            import { OpenAIChatModel } from "@aigne/openai";
-
-
-            const { OPENAI_API_KEY } = process.env;
-
-
-            const model = new OpenAIChatModel({
-              apiKey: OPENAI_API_KEY,
-            });
-
-
-            function transferToB() {
-              return agentB;
-            }
-
-
-            const agentA = AIAgent.from({
-              name: "AgentA",
-              instructions: "You are a helpful agent.",
-              outputKey: "A",
-              skills: [transferToB],
-              inputKey: "message",
-            });
-
-
-            const agentB = AIAgent.from({
-              name: "AgentB",
-              instructions: "Only speak in Haikus.",
-              outputKey: "B",
-              inputKey: "message",
-            });
-
-
-            const aigne = new AIGNE({ model });
-
-
-            const userAgent = aigne.invoke(agentA);
-
-
-            const result1 = await userAgent.invoke({ message: "transfer to agent
-            b" });
-
-            console.log(result1);
-
-            // Output: { B: "Transfer now complete..." }
-
-
-            const result2 = await userAgent.invoke({ message: "It's a beautiful
-            day" });
-
-            console.log(result2);
-
-            // Output: { B: "Sunshine warms the earth..." }
-        b2jrz12ik7esf93z:
-          value: /examples/workflow-handoff/usages.ts
-        c4kvf6b7zyskk8m:
-          value: true
-    zh:
-      properties:
-        a7frn5jmx5vpxpt3:
-          value: >-
-            import { AIAgent, AIGNE } from "@aigne/core";
-
-            import { OpenAIChatModel } from "@aigne/openai";
-
-
-            const { OPENAI_API_KEY } = process.env;
-
-
-            const model = new OpenAIChatModel({
-              apiKey: OPENAI_API_KEY,
-            });
-
-
-            function transferToB() {
-              return agentB;
-            }
-
-
-            const agentA = AIAgent.from({
-              name: "AgentA",
-              instructions: "You are a helpful agent.",
-              outputKey: "A",
-              skills: [transferToB],
-              inputKey: "message",
-            });
-
-
-            const agentB = AIAgent.from({
-              name: "AgentB",
-              instructions: "Only speak in Haikus.",
-              outputKey: "B",
-              inputKey: "message",
-            });
-
-
-            const aigne = new AIGNE({ model });
-
-
-            const userAgent = aigne.invoke(agentA);
-
-
-            const result1 = await userAgent.invoke({ message: "transfer to agent
-            b" });
-
-            console.log(result1);
-
-            // Output: { B: "Transfer now complete..." }
-
-
-            const result2 = await userAgent.invoke({ message: "It's a beautiful
-            day" });
-
-            console.log(result2);
-
-            // Output: { B: "Sunshine warms the earth..." }
-        b2jrz12ik7esf93z:
-          value: /examples/workflow-handoff/usages.ts
-        c4kvf6b7zyskk8m:
-          value: true
-  897435ba407c2342:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Built for Power and Simplicity
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 为强大与简洁而构建
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  9af1f9a7926f7e18:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: The AIGNE Framework is designed in a three-layer architecture that
-              connects powerful developer tools with the core framework and a
-              huge hub of LLM providers. This means you get a developer-friendly
-              experience that's ready for enterprise-level scale.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: AIGNE Framework 采用三层架构，连接强大的开发者工具、核心框架以及大量 LLM
-              提供者。这意味着您将获得面向开发者且适用于企业级规模的体验。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  a8e692abaff8320b:
+          value: flex-start
+  86a611bfdc38dfb5:
     en:
       properties:
         7m5pz8nefl5j9hqq:
           value:
-            url: mediakit://aigne.png
-            mediaKitUrl: ""
-            width: 100%
-            height: auto
-        70d4dvbqgjal3z6j:
-          value: transparent
-        x8beiec3fxx5des1:
-          value: 100%
-        5fjm8opvqth7wk71:
-          value: auto
-        dxn6zvv5bn6dn3mr:
-          value: cover
+            url: mediakit://aigne-cli.png
+            mediaKitUrl: mediakit://aigne-cli.png
+            width: 5088
+            height: 2562
         02dp1e6zfq2xwkt3:
           value: auto
+        x8beiec3fxx5des1:
+          value: 100%
     zh:
       properties:
         7m5pz8nefl5j9hqq:
           value:
-            url: mediakit://aigne.png
-            mediaKitUrl: ""
-            width: 100%
-            height: auto
-        70d4dvbqgjal3z6j:
-          value: transparent
-        x8beiec3fxx5des1:
-          value: 100%
-        5fjm8opvqth7wk71:
-          value: auto
-        dxn6zvv5bn6dn3mr:
-          value: cover
+            url: mediakit://aigne-cli.png
+            mediaKitUrl: mediakit://aigne-cli.png
+            width: 5088
+            height: 2562
         02dp1e6zfq2xwkt3:
           value: auto
-  4a976abce6b66b83:
+        x8beiec3fxx5des1:
+          value: 100%
+  948b6829fa461237:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Ready to Build or Have Questions?
+            style:
+              variant: h1
+        e8f3k7m2n9p4q1s5:
+          value: true
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753381637728-mjjp8nvd5
+                type: text
+                text: You're all set to create something amazing! If you need a hand or want to
+                  share your work, join our vibrant developer community. Let's
+                  connect, share, and build the future together.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 准备好构建或有疑问？
+            style:
+              variant: h1
+        e8f3k7m2n9p4q1s5:
+          value: true
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753381637728-mjjp8nvd5
+                type: text
+                text: 你已准备好创造出惊人的成果！如果需要帮助或想分享你的作品，欢迎加入我们充满活力的开发者社区。让我们连接、分享并共同构建未来。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  3ee231c506e1931b:
     en:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: Explore the Architecture
-              url: link:///docs/architecture
-              variant: contained
-              size: medium
-              target: _self
-              needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-    zh:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: ""
-              type: link
-              text: 探索架构
-              url: link:///docs/architecture
-              variant: contained
-              size: medium
-              target: _self
-              needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-  f0afe20f827e128d:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Everything You Need to Succeed
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 助您成功的一切
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  c5ccf0b0061ced6c:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: We've packed AIGNE with features designed to make your development process
-              faster, more flexible, and way more fun. Here are a few fan
-              favorites!
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 我们为 AIGNE 提供了旨在使开发过程更快、更灵活且更高效的功能。以下是一些受欢迎的功能：
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  a2905935b6edfb9b:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Modular Design
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 模块化设计
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  6ae198442f4f1495:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Keep your projects clean and tidy! Our modular structure makes it a breeze
-              to organize code, boost your efficiency, and simplify maintenance
-              down the road.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 让项目保持整洁有序！我们的模块化结构便于组织代码、提高效率并简化后期维护。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  31573e61ec70294c:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Multi-AI Model Support
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 多 AI 模型支持
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  a10887505c0edd2b:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Never get locked into one provider. Seamlessly switch between OpenAI,
-              Gemini, Claude, and many more. You have the freedom to choose the
-              best model for the job.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 避免被单一提供商绑定。可无缝切换 OpenAI、Gemini、Claude 等多种模型，您可以选择最适合任务的模型。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  504e3ce8c18f035e:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Flexible Workflow Patterns
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 灵活的工作流模式
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  a7fcbba925873e38:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: From simple sequential tasks to complex, concurrent agent conversations,
-              you can build it all. AIGNE provides the patterns you need to
-              bring any workflow to life.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 从简单的顺序任务到复杂的并发智能体对话，应有尽有。AIGNE 提供实现任意工作流所需的模式。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  2407373b64354217:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Seamless MCP Integration
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 无缝 MCP 集成
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  f50d02c3acd8e680:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Connect to external systems and services like databases or web scrapers
-              with ease using the built-in Model Context Protocol. It's
-              integration made simple.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 使用内置的 Model Context Protocol，可轻松连接到数据库或网页抓取器等外部系统与服务。集成变得简单。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  b637fd5df0897d32:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Let's Build Together!
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 一起构建吧！
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  47df3c36e1f2f452:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Have a question, an idea, or just want to show off a cool project? Join
-              our vibrant community of developers! We're active on our forums
-              and always excited to see new contributions on GitHub.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 有问题、想法，或想展示一个有趣的项目？加入我们充满活力的开发者社区！我们在论坛上很活跃，也欢迎在 GitHub 上看到新贡献。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  c46df0b4f281d3b7:
-    en:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: ""
-              type: link
-              text: Get Involved Now
+              text: Join the Community
               url: link:///community
               variant: contained
-              size: medium
-              target: _self
+              size: large
+              target: _blank
               needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
     zh:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: 立即参与
+              text: 加入社区
               url: link:///community
               variant: contained
-              size: medium
-              target: _self
+              size: large
+              target: _blank
               needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center

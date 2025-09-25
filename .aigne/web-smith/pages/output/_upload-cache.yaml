@@ -3,76 +3,94 @@
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/11b04db8efadb661.png
-      upload_time: 2025-09-23T09:27:12.959Z
-843ebbbf14c8d2b74f28ec192f5ee7c455a092bc108c96b7cdbfd6724262bffc:
-  local_path: assets/aigne-openrouter.png
+      upload_time: 2025-09-25T12:52:23.644Z
+d628f3121fda396f2f985ab4ae67a89fc340cd90501027a86739bd76dde755b5:
+  local_path: assets/aigne-studio.png
   sites:
     https://staging.websmith.aigne.io:
-      url: https://staging.websmith.aigne.io/image-bin/uploads/843ebbbf14c8d2b7.png
-      upload_time: 2025-09-23T09:27:12.970Z
+      url: https://staging.websmith.aigne.io/image-bin/uploads/d628f3121fda396f.png
+      upload_time: 2025-09-25T12:52:24.020Z
 53d8c7583d78c1e4920edf8dfb29cab9231330853eceb2a3cf360a4e7443f519:
   local_path: assets/aigne.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/53d8c7583d78c1e4.png
-      upload_time: 2025-09-23T09:27:13.504Z
+      upload_time: 2025-09-25T12:52:24.151Z
 07bab592e4c74e5ba4b0fc1ab91a3e0582ea6a3ab02d0a6e1ae7acef6360093d:
   local_path: assets/aigne-ollama.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/07bab592e4c74e5b.png
-      upload_time: 2025-09-23T09:27:14.772Z
+      upload_time: 2025-09-25T12:52:25.059Z
+843ebbbf14c8d2b74f28ec192f5ee7c455a092bc108c96b7cdbfd6724262bffc:
+  local_path: assets/aigne-openrouter.png
+  sites:
+    https://staging.websmith.aigne.io:
+      url: https://staging.websmith.aigne.io/image-bin/uploads/843ebbbf14c8d2b7.png
+      upload_time: 2025-09-25T12:52:25.517Z
 bf052266e851d16d2ca6f92bc56c39290c42670579e1b9d74ad81cb4061547e7:
   local_path: assets/aigne-openai.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/bf052266e851d16d.png
-      upload_time: 2025-09-23T09:27:14.775Z
+      upload_time: 2025-09-25T12:52:26.040Z
+accf104eacffc1ba67c31be8afebb4a7f5b28355de615106bc27f79846ceec68:
+  local_path: assets/aigne-observability.png
+  sites:
+    https://staging.websmith.aigne.io:
+      url: https://staging.websmith.aigne.io/image-bin/uploads/accf104eacffc1ba.png
+      upload_time: 2025-09-25T12:52:27.241Z
 f8b17a0afcccda6b3ff3476bf972e5af8133e3e386aae6837f8d60632bdb591f:
   local_path: assets/aigne-libs.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/f8b17a0afcccda6b.png
-      upload_time: 2025-09-23T09:27:15.440Z
-a53c03d2635b29218814997a19fc81f70b42a6c126850ccba4ff86aed5dc5cb9:
-  local_path: assets/aigne-framework.png
+      upload_time: 2025-09-25T12:52:27.406Z
+cf631623c71ab8ea0c499a6372811756cf8101348f0f4098349d300327497755:
+  local_path: assets/aigne-hub.png
   sites:
     https://staging.websmith.aigne.io:
-      url: https://staging.websmith.aigne.io/image-bin/uploads/a53c03d2635b2921.png
-      upload_time: 2025-09-23T09:27:16.452Z
+      url: https://staging.websmith.aigne.io/image-bin/uploads/cf631623c71ab8ea.png
+      upload_time: 2025-09-25T12:52:28.007Z
 0e3e828513f35bec6f9cfa53839112594c7ed4610588feb58613b971dca74c14:
   local_path: assets/aigne-gemini.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/0e3e828513f35bec.png
-      upload_time: 2025-09-23T09:27:16.623Z
+      upload_time: 2025-09-25T12:52:28.945Z
+a53c03d2635b29218814997a19fc81f70b42a6c126850ccba4ff86aed5dc5cb9:
+  local_path: assets/aigne-framework.png
+  sites:
+    https://staging.websmith.aigne.io:
+      url: https://staging.websmith.aigne.io/image-bin/uploads/a53c03d2635b2921.png
+      upload_time: 2025-09-25T12:52:29.310Z
 34a05c41ae11785e4990ee0821b4ad99c2ef3dc2d8ae25cd1013977ba16418e1:
   local_path: assets/aigne-deepseek.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/34a05c41ae11785e.png
-      upload_time: 2025-09-23T09:27:17.266Z
+      upload_time: 2025-09-25T12:52:30.147Z
 2e4bd66bd5ef74f168e09f6f49ac585af7f6c9a7d15f940da192e8a75602cbbc:
   local_path: assets/aigne-dark.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/2e4bd66bd5ef74f1.png
-      upload_time: 2025-09-23T09:27:18.144Z
+      upload_time: 2025-09-25T12:52:31.008Z
 34301b9c3e394ad77d7e20504e816430c26556106f2b9edf65303c1987c5c0b4:
   local_path: assets/aigne-cli.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/34301b9c3e394ad7.png
-      upload_time: 2025-09-23T09:27:18.453Z
+      upload_time: 2025-09-25T12:52:31.253Z
 17aa8500c22cbaf676d2980ac7c6f7053940b516b2859e6c2cd62a0cd4303ce6:
   local_path: assets/aigne-bedrock.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/17aa8500c22cbaf6.png
-      upload_time: 2025-09-23T09:27:19.244Z
+      upload_time: 2025-09-25T12:52:32.037Z
 7fd8cd7329311fcd059895f478d59ba64c070066100809d06e48320de7e1794d:
   local_path: assets/aigne-anthropic.png
   sites:
     https://staging.websmith.aigne.io:
       url: https://staging.websmith.aigne.io/image-bin/uploads/7fd8cd7329311fcd.png
-      upload_time: 2025-09-23T09:27:19.992Z
+      upload_time: 2025-09-25T12:52:33.101Z

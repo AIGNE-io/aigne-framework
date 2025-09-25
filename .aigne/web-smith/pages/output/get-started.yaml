@@ -1,7 +1,7 @@
 id: 6a2e9944b2392917
-createdAt: 2025-09-23T09:24:51.944Z
-updatedAt: 2025-09-23T09:24:51.944Z
-publishedAt: 2025-09-23T09:24:51.944Z
+createdAt: 2025-09-25T12:52:05.143Z
+updatedAt: 2025-09-25T12:52:05.143Z
+publishedAt: 2025-09-25T12:52:05.143Z
 isPublic: true
 locales:
   en:
@@ -9,900 +9,574 @@ locales:
     style:
       maxWidth: custom:1560px
       paddingY: normal
-      paddingX: large
-    title: Get Started with AIGNE Framework | Quick Installation & Usage Guide
+      paddingX: normal
+    title: Get Started with AIGNE Framework | Installation & Quick Start
     description: Jumpstart your AI application development! This guide provides
-      everything you need to install the AIGNE Framework and run your first
-      agent in minutes.
-    header:
-      sticky: true
-  zh:
-    backgroundColor: ""
-    style:
-      maxWidth: custom:1560px
-      paddingY: normal
-      paddingX: large
-    title: 开始使用 AIGNE 框架 | 快速安装与使用指南
-    description: 快速启动您的 AI 应用开发！本指南提供安装 AIGNE 框架并在几分钟内运行第一个智能体所需的所有内容。
+      everything you need to install the AIGNE Framework, set up your
+      environment, and run your first agent.
     header:
       sticky: true
 sections:
-  a282db71dbe1b6c2:
-    id: a282db71dbe1b6c2
+  937f6af55e33529e:
+    id: 937f6af55e33529e
+    name: Hero
     component: layout-block
-    name: hero
-    config:
-      gridSettings:
-        desktop:
-          6b685ef99c692af1:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          e7c1e08d7e9f9ed4:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          d2a9d7beea5c9401:
-            x: 0
-            y: 2
-            w: 12
-            h: 1
-        mobile:
-          6b685ef99c692af1:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          e7c1e08d7e9f9ed4:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          d2a9d7beea5c9401:
-            x: 0
-            y: 2
-            w: 12
-            h: 1
-      gap: normal
-      paddingX: normal
-      paddingY: large
-      alignContent: center
-      justifyContent: center
-      background: grey.100
-      borderRadius: medium
     sections:
-      6b685ef99c692af1:
-        id: 6b685ef99c692af1
-        name: RichTextTitle
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      e7c1e08d7e9f9ed4:
-        id: e7c1e08d7e9f9ed4
-        name: RichTextDescription
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      d2a9d7beea5c9401:
-        id: d2a9d7beea5c9401
-        name: ActionButton
-        component: custom-component
-        config:
-          componentId: a44r0SiGV9AFn2Fj
-          useCache: true
-    sectionIds:
-      - 6b685ef99c692af1
-      - e7c1e08d7e9f9ed4
-      - d2a9d7beea5c9401
-  e2fd49e90aa632fa:
-    id: e2fd49e90aa632fa
-    component: layout-block
-    name: prerequisites
-    config:
-      gridSettings:
-        desktop:
-          115c6225efdaf710:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          2a0b7d743988fab1:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-        mobile:
-          115c6225efdaf710:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          2a0b7d743988fab1:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-      gap: normal
-      paddingX: normal
-      paddingY: normal
-    sections:
-      115c6225efdaf710:
-        id: 115c6225efdaf710
-        name: RichTextTitle
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      2a0b7d743988fab1:
-        id: 2a0b7d743988fab1
-        name: RichTextDescription
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-    sectionIds:
-      - 115c6225efdaf710
-      - 2a0b7d743988fab1
-  85e1dc0d17182c15:
-    id: 85e1dc0d17182c15
-    component: layout-block
-    name: installation
-    config:
-      gridSettings:
-        desktop:
-          bd1c45ccb36649de:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          be3a1cb96519f2e1:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          c83ae7aea787f175:
-            x: 0
-            y: 2
-            w: 12
-            h: 2
-        mobile:
-          bd1c45ccb36649de:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          be3a1cb96519f2e1:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          c83ae7aea787f175:
-            x: 0
-            y: 2
-            w: 12
-            h: 2
-      gap: normal
-      paddingX: normal
-      paddingY: large
-    sections:
-      bd1c45ccb36649de:
-        id: bd1c45ccb36649de
-        name: RichTextTitle
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      be3a1cb96519f2e1:
-        id: be3a1cb96519f2e1
-        name: RichTextDescription
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      c83ae7aea787f175:
-        id: c83ae7aea787f175
-        name: CodeBlock
-        component: custom-component
-        config:
-          componentId: 2EHGy3vwxlS9JGr2
-          useCache: true
-    sectionIds:
-      - bd1c45ccb36649de
-      - be3a1cb96519f2e1
-      - c83ae7aea787f175
-  bbef1200d15bd9e5:
-    id: bbef1200d15bd9e5
-    component: layout-block
-    name: usageExample
-    config:
-      gridSettings:
-        desktop:
-          9650efdb4698fa40:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          77e17978d40d5cec:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          06ddf21031daf149:
-            x: 0
-            y: 2
-            w: 12
-            h: 2
-        mobile:
-          9650efdb4698fa40:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          77e17978d40d5cec:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          06ddf21031daf149:
-            x: 0
-            y: 2
-            w: 12
-            h: 2
-      gap: normal
-      paddingX: normal
-      paddingY: large
-    sections:
-      9650efdb4698fa40:
-        id: 9650efdb4698fa40
-        name: RichTextTitle
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      77e17978d40d5cec:
-        id: 77e17978d40d5cec
-        name: RichTextDescription
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      06ddf21031daf149:
-        id: 06ddf21031daf149
-        name: CodeBlock
-        component: custom-component
-        config:
-          componentId: 2EHGy3vwxlS9JGr2
-          useCache: true
-    sectionIds:
-      - 9650efdb4698fa40
-      - 77e17978d40d5cec
-      - 06ddf21031daf149
-  33af75fd4a3c9dcf:
-    id: 33af75fd4a3c9dcf
-    component: layout-block
-    name: nextSteps
-    config:
-      gridSettings:
-        desktop:
-          82697c1ccdb0e4d9:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          b07ec5971046d6e2:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          6066c121117a27db:
-            x: 0
-            y: 2
-            w: 4
-            h: 1
-          27711b722ba789bf:
-            x: 4
-            y: 2
-            w: 4
-            h: 1
-          b7a2c9ae1b7cd390:
-            x: 8
-            y: 2
-            w: 4
-            h: 1
-        mobile:
-          82697c1ccdb0e4d9:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          b07ec5971046d6e2:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          6066c121117a27db:
-            x: 0
-            y: 2
-            w: 12
-            h: 1
-          27711b722ba789bf:
-            x: 0
-            y: 3
-            w: 12
-            h: 1
-          b7a2c9ae1b7cd390:
-            x: 0
-            y: 4
-            w: 12
-            h: 1
-      gap: normal
-      paddingX: normal
-      paddingY: large
-    sections:
-      82697c1ccdb0e4d9:
-        id: 82697c1ccdb0e4d9
-        name: RichTextTitle
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      b07ec5971046d6e2:
-        id: b07ec5971046d6e2
-        name: RichTextDescription
-        component: custom-component
-        config:
-          componentId: xoHu0J44322kDYc-
-          useCache: true
-      6066c121117a27db:
-        id: 6066c121117a27db
+      61a609a6f3ef2c0d:
+        id: 61a609a6f3ef2c0d
+        name: Title
         component: layout-block
-        name: HeroSection
+        sections:
+          d3563ab80b7e702a:
+            id: d3563ab80b7e702a
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          f15227da3b858fd7:
+            id: f15227da3b858fd7
+            name: action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - d3563ab80b7e702a
+          - f15227da3b858fd7
         config:
           gridSettings:
             desktop:
-              341fea01a121be79:
+              d3563ab80b7e702a:
                 x: 0
                 y: 0
                 w: 12
                 h: 1
-              10da69850262e8f7:
+              f15227da3b858fd7:
                 x: 0
                 y: 1
                 w: 12
                 h: 1
-              6839f85188accd86:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-            mobile:
-              341fea01a121be79:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              10da69850262e8f7:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              6839f85188accd86:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: large
+          gap: large
+          paddingX: none
+          maxWidth: full
           alignContent: center
-          justifyContent: center
-          background: grey.100
-          borderRadius: medium
-        sections:
-          341fea01a121be79:
-            id: 341fea01a121be79
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          10da69850262e8f7:
-            id: 10da69850262e8f7
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          6839f85188accd86:
-            id: 6839f85188accd86
-            name: ActionButton
-            component: custom-component
-            config:
-              componentId: a44r0SiGV9AFn2Fj
-              useCache: true
-        sectionIds:
-          - 341fea01a121be79
-          - 10da69850262e8f7
-          - 6839f85188accd86
-      27711b722ba789bf:
-        id: 27711b722ba789bf
-        component: layout-block
-        name: HeroSection
-        config:
-          gridSettings:
-            desktop:
-              6e907d741c61739a:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              0eb6dbf6513441bc:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              ef22e0c1a1ad9f5f:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-            mobile:
-              6e907d741c61739a:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              0eb6dbf6513441bc:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              ef22e0c1a1ad9f5f:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: large
-          alignContent: center
-          justifyContent: center
-          background: grey.100
-          borderRadius: medium
-        sections:
-          6e907d741c61739a:
-            id: 6e907d741c61739a
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          0eb6dbf6513441bc:
-            id: 0eb6dbf6513441bc
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          ef22e0c1a1ad9f5f:
-            id: ef22e0c1a1ad9f5f
-            name: ActionButton
-            component: custom-component
-            config:
-              componentId: a44r0SiGV9AFn2Fj
-              useCache: true
-        sectionIds:
-          - 6e907d741c61739a
-          - 0eb6dbf6513441bc
-          - ef22e0c1a1ad9f5f
-      b7a2c9ae1b7cd390:
-        id: b7a2c9ae1b7cd390
-        component: layout-block
-        name: HeroSection
-        config:
-          gridSettings:
-            desktop:
-              77503aae26cfa359:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              6e89ae2bce519561:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              ba288d2bfa7dd537:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-            mobile:
-              77503aae26cfa359:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              6e89ae2bce519561:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              ba288d2bfa7dd537:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-          gap: normal
-          paddingX: normal
-          paddingY: large
-          alignContent: center
-          justifyContent: center
-          background: grey.100
-          borderRadius: medium
-        sections:
-          77503aae26cfa359:
-            id: 77503aae26cfa359
-            name: RichTextTitle
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          6e89ae2bce519561:
-            id: 6e89ae2bce519561
-            name: RichTextDescription
-            component: custom-component
-            config:
-              componentId: xoHu0J44322kDYc-
-              useCache: true
-          ba288d2bfa7dd537:
-            id: ba288d2bfa7dd537
-            name: ActionButton
-            component: custom-component
-            config:
-              componentId: a44r0SiGV9AFn2Fj
-              useCache: true
-        sectionIds:
-          - 77503aae26cfa359
-          - 6e89ae2bce519561
-          - ba288d2bfa7dd537
     sectionIds:
-      - 82697c1ccdb0e4d9
-      - b07ec5971046d6e2
-      - 6066c121117a27db
-      - 27711b722ba789bf
-      - b7a2c9ae1b7cd390
+      - 61a609a6f3ef2c0d
+    config:
+      gridSettings:
+        desktop:
+          61a609a6f3ef2c0d:
+            x: 0
+            y: 0
+            w: 8
+            h: 1
+      paddingY: custom:150px
+      background: grey.400
+      backgroundFullWidth: true
+      alignContent: start
+      gap: normal
+      paddingX: none
+  d8dfd84a98473a87:
+    id: d8dfd84a98473a87
+    name: Step-2
+    component: layout-block
+    sections:
+      29aef9b049421e10:
+        id: 29aef9b049421e10
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      872dfaf0ea9f6dd5:
+        id: 872dfaf0ea9f6dd5
+        name: Container
+        component: layout-block
+        sections:
+          c7740f39af614660:
+            id: c7740f39af614660
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - c7740f39af614660
+        config:
+          gridSettings:
+            desktop:
+              c7740f39af614660:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+    sectionIds:
+      - 29aef9b049421e10
+      - 872dfaf0ea9f6dd5
+    config:
+      gridSettings:
+        desktop:
+          29aef9b049421e10:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          872dfaf0ea9f6dd5:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          29aef9b049421e10:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          872dfaf0ea9f6dd5:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  4e3e707ed4358d58:
+    id: 4e3e707ed4358d58
+    name: Step-2
+    component: layout-block
+    sections:
+      df15a417f7815db4:
+        id: df15a417f7815db4
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      8c5cc2b4760aa16f:
+        id: 8c5cc2b4760aa16f
+        name: Container
+        component: layout-block
+        sections:
+          d7a5f72157229157:
+            id: d7a5f72157229157
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - d7a5f72157229157
+        config:
+          gridSettings:
+            desktop:
+              d7a5f72157229157:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+    sectionIds:
+      - df15a417f7815db4
+      - 8c5cc2b4760aa16f
+    config:
+      gridSettings:
+        desktop:
+          df15a417f7815db4:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          8c5cc2b4760aa16f:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          df15a417f7815db4:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          8c5cc2b4760aa16f:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  b8cc2d2abbfbf7d3:
+    id: b8cc2d2abbfbf7d3
+    name: Step-2
+    component: layout-block
+    sections:
+      c538306628f58aa2:
+        id: c538306628f58aa2
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      6381f3b228d194a7:
+        id: 6381f3b228d194a7
+        name: Container
+        component: layout-block
+        sections:
+          f42d95cd286babfe:
+            id: f42d95cd286babfe
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - f42d95cd286babfe
+        config:
+          gridSettings:
+            desktop:
+              f42d95cd286babfe:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+    sectionIds:
+      - c538306628f58aa2
+      - 6381f3b228d194a7
+    config:
+      gridSettings:
+        desktop:
+          c538306628f58aa2:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          6381f3b228d194a7:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          c538306628f58aa2:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          6381f3b228d194a7:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  b91c3c08dc514570:
+    id: b91c3c08dc514570
+    name: Step-2
+    component: layout-block
+    sections:
+      232d64ab8275e287:
+        id: 232d64ab8275e287
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      e20191e496d21333:
+        id: e20191e496d21333
+        name: Container
+        component: layout-block
+        sections:
+          a357c273db4ff1f5:
+            id: a357c273db4ff1f5
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - a357c273db4ff1f5
+        config:
+          gridSettings:
+            desktop:
+              a357c273db4ff1f5:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+    sectionIds:
+      - 232d64ab8275e287
+      - e20191e496d21333
+    config:
+      gridSettings:
+        desktop:
+          232d64ab8275e287:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          e20191e496d21333:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          232d64ab8275e287:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          e20191e496d21333:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  af7acb1ef40da4d6:
+    id: af7acb1ef40da4d6
+    name: CTA
+    component: layout-block
+    sections:
+      a651a066cac2d1de:
+        id: a651a066cac2d1de
+        name: Section Layout
+        component: layout-block
+        sections:
+          33da9b71bbb88843:
+            id: 33da9b71bbb88843
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          4d1b74b24cda6613:
+            id: 4d1b74b24cda6613
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - 33da9b71bbb88843
+          - 4d1b74b24cda6613
+        config:
+          gridSettings:
+            desktop:
+              33da9b71bbb88843:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              4d1b74b24cda6613:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          background: background.paper
+          padding: large
+          gap: large
+          borderRadius: medium
+          border: none
+          paddingY: large
+    sectionIds:
+      - a651a066cac2d1de
+    config:
+      padding: large
+      gridSettings:
+        desktop:
+          a651a066cac2d1de:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+      gap: none
+      paddingX: none
+      paddingY: custom:100px
 sectionIds:
-  - a282db71dbe1b6c2
-  - e2fd49e90aa632fa
-  - 85e1dc0d17182c15
-  - bbef1200d15bd9e5
-  - 33af75fd4a3c9dcf
+  - 937f6af55e33529e
+  - d8dfd84a98473a87
+  - 4e3e707ed4358d58
+  - b8cc2d2abbfbf7d3
+  - b91c3c08dc514570
+  - af7acb1ef40da4d6
 dataSource:
-  6b685ef99c692af1:
+  d3563ab80b7e702a:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Let's Build! Get AIGNE Up and Running in Minutes
+            text: Ready to Build? Let's Go!
             style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
+              color: common.white
+              variant: h1
+        9ajrz12ik7esfk1z:
           value:
-            text: 开始构建！在几分钟内让 AIGNE 运行起来
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
+            list:
+              - id: item-1754035056337-47v01f57c
+                type: text
+                text: Welcome to AIGNE! This guide will get you from zero to your first running
+                  AI agent in just a few minutes. It's fast, fun, and incredibly
+                  powerful.
+                style:
+                  color: common.white
+                  fontSize: 16px
+                  variant: body1
         kyg0hdy5uqq4gc1o:
-          value: center
-  e7c1e08d7e9f9ed4:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: You're just a few steps away from building powerful AI applications. This
-              guide will walk you through installation and your first 'Hello,
-              Agent!' example. Let's dive in!
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
+          value: flex-start
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 离构建强大的 AI 应用只差几个步骤。本指南将引导您完成安装并运行第一个“你好，Agent！”示例。开始吧！
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  d2a9d7beea5c9401:
+          value: flex-start
+  f15227da3b858fd7:
     en:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: Explore Full Docs
+              text: Explore the Full Docs
               url: link:///docs
               variant: contained
-              size: medium
-              target: _self
+              size: large
+              target: _blank
               needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
         v9979xeclpsbvn0n:
-          value: center
-    zh:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: ""
-              type: link
-              text: 查看完整文档
-              url: link:///docs
-              variant: contained
-              size: medium
-              target: _self
-              needLogin: false
+          value: flex-start
         v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-  115c6225efdaf710:
+          value: flex-start
+  29aef9b049421e10:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: "First Things First: Your Setup"
+            text: Using npm
             style:
-              color: text.primary
+              variant: h4
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
+          value: flex-start
+        9ajrz12ik7esfk1z:
           value:
-            text: 首先：环境准备
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  2a0b7d743988fab1:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: The classic choice for Node.js package management.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  c7740f39af614660:
     en:
       properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Make sure you have Node.js version 20.0 or higher installed. That's it!
-              You're ready to roll.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 请确保已安装 Node.js 20.0 或更高版本。就这么简单！您已准备就绪。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  bd1c45ccb36649de:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Install the Magic
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 安装步骤
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  be3a1cb96519f2e1:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Ready to add AIGNE to your project? Just pick your favorite package
-              manager and run one of the commands below. It's that simple!
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 准备将 AIGNE 添加到您的项目中吗？选择您喜欢的包管理器并运行下面的任一命令。就是这么简单！
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  c83ae7aea787f175:
-    en:
-      properties:
-        a7frn5jmx5vpxpt3:
-          value: |-
-            # Using npm
-            npm install @aigne/core
-
-            # Using yarn
-            yarn add @aigne/core
-
-            # Using pnpm
-            pnpm add @aigne/core
         b2jrz12ik7esf93z:
           value: Terminal
-        c4kvf6b7zyskk8m:
-          value: true
-    zh:
-      properties:
+        e9kvx5d7y82lm3n:
+          value: material
         a7frn5jmx5vpxpt3:
-          value: |-
-            # Using npm
-            npm install @aigne/core
-
-            # Using yarn
-            yarn add @aigne/core
-
-            # Using pnpm
-            pnpm add @aigne/core
+          value: npm install @aigne/core
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  df15a417f7815db4:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Using yarn
+            style:
+              variant: h4
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: For those who prefer the speed and reliability of Yarn.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  d7a5f72157229157:
+    en:
+      properties:
         b2jrz12ik7esf93z:
-          value: 终端
-        c4kvf6b7zyskk8m:
-          value: true
-  9650efdb4698fa40:
+          value: Terminal
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: yarn add @aigne/core
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  c538306628f58aa2:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Run Your First AI Agent
+            text: Using pnpm
             style:
-              color: text.primary
+              variant: h4
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
+          value: flex-start
+        9ajrz12ik7esfk1z:
           value:
-            text: 运行您的第一个 AI 智能体
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  77e17978d40d5cec:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: A fast, disk space-efficient package manager.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  f42d95cd286babfe:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: Terminal
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: pnpm add @aigne/core
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  232d64ab8275e287:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Time for the fun part! Here’s a quick example to see AIGNE in action. This
-              code sets up two agents and shows how one can 'handoff' a
-              conversation to another. Copy, paste, and watch it work!
+            text: "Step 3: Run Your First Agent!"
             style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
+              variant: h4
         v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
+          value: flex-start
+        9ajrz12ik7esfk1z:
           value:
-            text: 进入有趣的部分！下面是一个快速示例，展示 AIGNE
-              的运行。该代码设置了两个智能体，并演示如何将会话“交接”给另一个智能体。复制、粘贴并运行查看效果！
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  06ddf21031daf149:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: You're all set! Let's bring your first AI agent to life. This example
+                  creates two agents and shows how one can hand off a task to
+                  another. Just copy, paste, and watch the magic happen!
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  a357c273db4ff1f5:
     en:
       properties:
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-handoff/usages.ts
+        e9kvx5d7y82lm3n:
+          value: material
         a7frn5jmx5vpxpt3:
           value: >-
             import { AIAgent, AIGNE } from "@aigne/core";
@@ -974,455 +648,52 @@ dataSource:
             softly,  \nNature sings with joy.  ",
 
             // }
-        b2jrz12ik7esf93z:
-          value: /examples/workflow-handoff/usages.ts
-        c4kvf6b7zyskk8m:
-          value: true
-    zh:
-      properties:
-        a7frn5jmx5vpxpt3:
-          value: >-
-            import { AIAgent, AIGNE } from "@aigne/core";
-
-            import { OpenAIChatModel } from "@aigne/openai";
-
-
-            const { OPENAI_API_KEY } = process.env;
-
-
-            const model = new OpenAIChatModel({
-              apiKey: OPENAI_API_KEY,
-            });
-
-
-            function transferToB() {
-              return agentB;
-            }
-
-
-            const agentA = AIAgent.from({
-              name: "AgentA",
-              instructions: "You are a helpful agent.",
-              outputKey: "A",
-              skills: [transferToB],
-              inputKey: "message",
-            });
-
-
-            const agentB = AIAgent.from({
-              name: "AgentB",
-              instructions: "Only speak in Haikus.",
-              outputKey: "B",
-              inputKey: "message",
-            });
-
-
-            const aigne = new AIGNE({ model });
-
-
-            const userAgent = aigne.invoke(agentA);
-
-
-            const result1 = await userAgent.invoke({ message: "transfer to agent
-            b" });
-
-            console.log(result1);
-
-            // Output:
-
-            // {
-
-            //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat
-            do you need, friend?".
-
-            // }
-
-
-            const result2 = await userAgent.invoke({ message: "It's a beautiful
-            day" });
-
-            console.log(result2);
-
-            // Output:
-
-            // {
-
-            //   B: "Sunshine warms the earth,  \nGentle breeze whispers
-            softly,  \nNature sings with joy.  ",
-
-            // }
-        b2jrz12ik7esf93z:
-          value: /examples/workflow-handoff/usages.ts
-        c4kvf6b7zyskk8m:
-          value: true
-  82697c1ccdb0e4d9:
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  33da9b71bbb88843:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: You're All Set! What's Next?
+            text: You're Off to an Amazing Start!
             style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
+              variant: h1
         e8f3k7m2n9p4q1s5:
           value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
+        9ajrz12ik7esfk1z:
           value:
-            text: 一切就绪！下一步怎么做？
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  b07ec5971046d6e2:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Awesome, you've got the basics down! Now the real adventure begins. Where
-              do you want to go from here?
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 太好了，您已经掌握基础！现在真正的探索开始了。您想从哪里继续？
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  341fea01a121be79:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Dive into the Docs
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 深入文档
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  10da69850262e8f7:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Explore core concepts, architecture, and advanced features in our
-              comprehensive documentation.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 在我们全面的文档中探索核心概念、架构和高级功能。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  6839f85188accd86:
+            list:
+              - id: item-1753381637728-mjjp8nvd5
+                type: text
+                text: See how easy that was? You've just scratched the surface of what's
+                  possible. Ready to build something incredible? Explore our
+                  examples or dive deep into the docs.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  4d1b74b24cda6613:
     en:
       properties:
         b8x4m3n9kp7qtw5r:
           value:
-            - id: ""
+            - id: btn-default-1
               type: link
-              text: Read the Docs
-              url: link:///docs
-              variant: contained
-              size: medium
-              target: _self
-              needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-    zh:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: ""
-              type: link
-              text: 阅读文档
-              url: link:///docs
-              variant: contained
-              size: medium
-              target: _self
-              needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-  6e907d741c61739a:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: See More Examples
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 查看更多示例
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  0eb6dbf6513441bc:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Check out a whole collection of ready-to-run examples for different
-              workflows and use cases.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 查看为不同工作流和使用场景准备的一整套可直接运行的示例。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  ef22e0c1a1ad9f5f:
-    en:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: ""
-              type: link
-              text: View Examples
+              text: Explore More Examples
               url: link:///examples
               variant: contained
-              size: medium
-              target: _self
+              size: large
+              target: _blank
               needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-    zh:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: ""
-              type: link
-              text: 查看示例
-              url: link:///examples
-              variant: contained
-              size: medium
-              target: _self
+            - type: link
+              text: Dive into the Docs
+              url: link:///docs
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
               needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-  77503aae26cfa359:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Join the Community
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 加入社区
-            style:
-              color: text.primary
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  6e89ae2bce519561:
-    en:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Got questions or want to share what you've built? Connect with other
-              developers in our community forum.
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-    zh:
-      properties:
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 有问题或想分享您的作品？在我们的社区论坛与其他开发者交流。
-            style:
-              color: text.secondary
-              variant: body1
-              fontSize: 18
-        v5utpm7bu9yvdpnq:
-          value: center
-        e8f3k7m2n9p4q1s5:
-          value: false
-        kyg0hdy5uqq4gc1o:
-          value: center
-  ba288d2bfa7dd537:
-    en:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: ""
-              type: link
-              text: Join the Discussion
-              url: link:///community
-              variant: contained
-              size: medium
-              target: _self
-              needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
-    zh:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: ""
-              type: link
-              text: 参与讨论
-              url: link:///community
-              variant: contained
-              size: medium
-              target: _self
-              needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: center
-        h4g7j2k8l9m5n3p6:
-          value: row
-        r8t5y6u7i1o2p3a4:
-          value: 1
-        jjq9864c7hqkr0uj:
-          value: nowrap
-        v9979xeclpsbvn0n:
-          value: center
+              id: btn-1753381708894-gbhxzm1xt

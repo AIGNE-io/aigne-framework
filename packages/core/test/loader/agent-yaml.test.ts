@@ -6,6 +6,7 @@ import {
   AIAgent,
   AIGNE,
   ProcessMode,
+  type PromptBuilder,
   stringToAgentResponseStream,
   TeamAgent,
   TransformAgent,
@@ -31,7 +32,7 @@ test("loadAgentFromYaml should load AIAgent correctly", async () => {
     model: agent.model?.options?.model,
     alias: agent.alias,
     description: agent.description,
-    instructions: agent.instructions.instructions,
+    instructions: extractInstructions(agent.instructions),
     skills: agent.skills.map((skill) => ({
       name: skill.name,
       description: skill.description,
@@ -119,7 +120,7 @@ test("loadAgentFromYaml should load AIAgent with prompt file correctly", async (
   expect(agent).toBeInstanceOf(AIAgent);
   assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
 
-  expect(agent.instructions.instructions).toMatchSnapshot();
+  expect(extractInstructions(agent.instructions)).toMatchSnapshot();
 
   const modelProcess = spyOn(model, "process").mockReturnValueOnce(
     stringToAgentResponseStream("Hello, this is a test response message"),
@@ -140,7 +141,7 @@ test("loadAgentFromYaml should load nested agent correctly", async () => {
   const flatten = (agent: Agent): unknown => {
     return {
       name: agent.name,
-      instructions: agent instanceof AIAgent ? agent.instructions?.instructions : undefined,
+      instructions: agent instanceof AIAgent ? extractInstructions(agent.instructions) : undefined,
       inputSchema:
         agent["_inputSchema"] instanceof ZodType
           ? zodToJsonSchema(agent["_inputSchema"])
@@ -278,3 +279,8 @@ test("loadAgentFromYaml should support reflection for TeamAgent with inline revi
     },
   }).toMatchSnapshot();
 });
+
+function extractInstructions(builder: PromptBuilder): string {
+  if (typeof builder.instructions === "string") return builder.instructions;
+  return builder.instructions?.messages.map((i) => `${i.role}: ${i.content}`).join("\n\n") || "";
+}

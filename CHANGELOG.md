@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.79.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.4...aigne-framework-v1.79.0-beta.5) (2025-09-24)
+
+
+### Bug Fixes
+
+* replace import.meta.dirname with Node 20 compatible dirname approach ([#541](https://github.com/AIGNE-io/aigne-framework/issues/541)) ([8a4fb26](https://github.com/AIGNE-io/aigne-framework/commit/8a4fb2649e88791444a7d4b3ddf9addcec2b666a))
+
+## [1.79.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.3...aigne-framework-v1.79.0-beta.4) (2025-09-24)
+
+
+### Features
+
+* **core:** add multi-roles instructions support for agent yaml ([#538](https://github.com/AIGNE-io/aigne-framework/issues/538)) ([97bf77f](https://github.com/AIGNE-io/aigne-framework/commit/97bf77f96b5f69321539311159010499eb3b1b25))
+
+
+### Bug Fixes
+
+* move zod from devDependencies to dependencies in ideogram model ([#539](https://github.com/AIGNE-io/aigne-framework/issues/539)) ([9a08529](https://github.com/AIGNE-io/aigne-framework/commit/9a08529c53a40817acc831fb9b1925e200671f40))
+
+## [1.79.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.2...aigne-framework-v1.79.0-beta.3) (2025-09-23)
+
+
+### Bug Fixes
+
+* add prefer input file type option for image model ([#536](https://github.com/AIGNE-io/aigne-framework/issues/536)) ([3cba8a5](https://github.com/AIGNE-io/aigne-framework/commit/3cba8a5562233a1567b49b6dd5c446c0760f5c4c))
+
 ## [1.79.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.1...aigne-framework-v1.79.0-beta.2) (2025-09-23)
 
 

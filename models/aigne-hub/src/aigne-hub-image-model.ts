@@ -21,7 +21,7 @@ import { getModels } from "./utils/hub.js";
 import { type AIGNEHubImageModelOptions, aigneHubModelOptionsSchema } from "./utils/type.js";
 
 export class AIGNEHubImageModel extends ImageModel {
-  constructor(public options: AIGNEHubImageModelOptions) {
+  constructor(public override options: AIGNEHubImageModelOptions) {
     checkArguments("AIGNEHubImageModel", aigneHubModelOptionsSchema, options);
     super();
   }
@@ -94,7 +94,7 @@ export class AIGNEHubImageModel extends ImageModel {
           model: input.modelOptions?.model || (await this.credential).model,
         },
         // Shouldn't use `local` output type for remote AIGNE Hub call, client can not access the remote filesystem
-        outputType: "file",
+        outputFileType: "file",
       },
       {
         ...options,

@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.4.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.0-beta.2...ideogram-v0.4.0-beta.3) (2025-09-24)
+
+
+### Bug Fixes
+
+* move zod from devDependencies to dependencies in ideogram model ([#539](https://github.com/AIGNE-io/aigne-framework/issues/539)) ([9a08529](https://github.com/AIGNE-io/aigne-framework/commit/9a08529c53a40817acc831fb9b1925e200671f40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.3
+
+## [0.4.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.0-beta.1...ideogram-v0.4.0-beta.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* add prefer input file type option for image model ([#536](https://github.com/AIGNE-io/aigne-framework/issues/536)) ([3cba8a5](https://github.com/AIGNE-io/aigne-framework/commit/3cba8a5562233a1567b49b6dd5c446c0760f5c4c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0-beta.2
+
 ## [0.4.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.0-beta...ideogram-v0.4.0-beta.1) (2025-09-23)
 
 

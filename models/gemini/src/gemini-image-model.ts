@@ -45,7 +45,7 @@ const geminiImageModelOptionsSchema = z.object({
 });
 
 export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiImageModelOutput> {
-  constructor(public options?: GeminiImageModelOptions) {
+  constructor(public override options?: GeminiImageModelOptions) {
     super({
       ...options,
       inputSchema: geminiImageModelInputSchema,

@@ -93,7 +93,7 @@ const openAIImageModelOptionsSchema = z.object({
 });
 
 export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIImageModelOutput> {
-  constructor(public options?: OpenAIImageModelOptions) {
+  constructor(public override options?: OpenAIImageModelOptions) {
     super({
       ...options,
       inputSchema: openAIImageModelInputSchema,

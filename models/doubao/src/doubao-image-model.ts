@@ -50,7 +50,7 @@ const doubaoImageModelOptionsSchema = z.object({
 });
 
 export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoImageModelOutput> {
-  constructor(public options?: DoubaoImageModelOptions) {
+  constructor(public override options?: DoubaoImageModelOptions) {
     super({
       ...options,
       inputSchema: doubaoImageModelInputSchema,

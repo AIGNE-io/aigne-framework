@@ -261,3 +261,56 @@ test("loadAgent should support nested relative prompt paths", async () => {
     }
   `);
 });
+
+test("loadAgent should load agent with multi roles instructions", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/test-agent-with-multi-roles-instructions.yaml"),
+  );
+
+  assert(agent instanceof AIAgent);
+
+  expect(
+    await agent.instructions.build({
+      input: { topic: "AIGNE is the best framework to build AI applications." },
+    }),
+  ).toMatchInlineSnapshot(`
+    {
+      "messages": [
+        {
+          "content": 
+    "You are a smart agent that helps with code editing and understanding.
+
+    <topic>
+    AIGNE is the best framework to build AI applications.
+    </topic>
+    "
+    ,
+          "name": undefined,
+          "role": "system",
+        },
+        {
+          "content": "This is a user instruction.",
+          "name": undefined,
+          "role": "user",
+        },
+        {
+          "content": "This is an agent instruction.",
+          "name": undefined,
+          "role": "agent",
+          "toolCalls": undefined,
+        },
+        {
+          "content": "Latest user instruction about AIGNE is the best framework to build AI applications.",
+          "name": undefined,
+          "role": "user",
+        },
+      ],
+      "modelOptions": undefined,
+      "outputFileType": undefined,
+      "responseFormat": undefined,
+      "toolAgents": undefined,
+      "toolChoice": undefined,
+      "tools": undefined,
+    }
+  `);
+});

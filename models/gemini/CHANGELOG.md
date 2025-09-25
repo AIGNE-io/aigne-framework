@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.14.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.0-beta.3...gemini-v0.14.0-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.4
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.3
+    * @aigne/test-utils bumped to 0.5.53-beta.3
+
+## [0.14.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.0-beta.2...gemini-v0.14.0-beta.3) (2025-09-23)
+
+
+### Bug Fixes
+
+* add prefer input file type option for image model ([#536](https://github.com/AIGNE-io/aigne-framework/issues/536)) ([3cba8a5](https://github.com/AIGNE-io/aigne-framework/commit/3cba8a5562233a1567b49b6dd5c446c0760f5c4c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.3
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.2
+    * @aigne/test-utils bumped to 0.5.53-beta.2
+
 ## [0.14.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.0-beta.1...gemini-v0.14.0-beta.2) (2025-09-23)
 
 

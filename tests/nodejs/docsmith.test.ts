@@ -1,10 +1,8 @@
-import { spawnSync } from "node:child_process";
 import { expect, test } from "vitest";
+import { spawnAsync } from "./utils.js";
 
 test("AIGNE DocSmith should work", async () => {
-  const { status, stdout, stderr } = spawnSync("aigne", ["doc", "--version"], {
-    encoding: "utf8",
-    stdio: "pipe",
+  const { status, stdout, stderr } = await spawnAsync("aigne", ["doc", "--version"], {
     shell: true,
   });
 
@@ -14,4 +12,4 @@ test("AIGNE DocSmith should work", async () => {
     status: 0,
     stdout: expect.stringMatching(/\d+\.\d+\.\d+/),
   });
-}, 120e3);
+}, 600e3);

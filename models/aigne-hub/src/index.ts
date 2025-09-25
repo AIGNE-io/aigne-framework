@@ -85,7 +85,7 @@ export class AIGNEHubImageModel extends ImageModel {
     return getModels({ type: "image" });
   }
 
-  constructor(public options: AIGNEHubImageModelOptions) {
+  constructor(public override options: AIGNEHubImageModelOptions) {
     let provider = process.env.BLOCKLET_AIGNE_API_PROVIDER;
 
     if (!provider && options.model) {

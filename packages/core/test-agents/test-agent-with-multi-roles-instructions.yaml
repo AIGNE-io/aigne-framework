@@ -1,0 +1,17 @@
+type: ai
+name: test_agent_with_multi_roles_instructions
+instructions:
+  - role: system
+    url: ./test-agent-with-multi-roles-instructions-system.txt
+  - role: user
+    content: This is a user instruction.
+  - role: agent
+    content: This is an agent instruction.
+  - role: user
+    content: Latest user instruction about {{topic}}
+input_schema:
+  type: object
+  properties:
+    topic:
+      type: string
+  required: [topic]

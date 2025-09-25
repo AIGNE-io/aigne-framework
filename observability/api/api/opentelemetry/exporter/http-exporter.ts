@@ -116,7 +116,10 @@ class HttpExporter implements HttpExporterInterface {
 
       resultCallback({ code: ExportResultCode.SUCCESS });
     } catch (error) {
-      console.error("Failed to export spans:", error);
+      console.warn(
+        "[Observability] Failed to export spans:",
+        error.cause?.message || error.message,
+      );
       resultCallback({ code: ExportResultCode.FAILED });
     }
   }

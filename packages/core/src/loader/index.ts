@@ -44,11 +44,12 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
       aigne.cli?.chat,
     ).map((i) => nodejs.path.join(rootDir, i)),
   );
-  const allAgents: { [path: string]: Agent } = Object.fromEntries(
-    await Promise.all(
-      Array.from(allAgentPaths).map(async (path) => [path, await loadAgent(path, options)]),
-    ),
-  );
+
+  const allAgents: { [path: string]: Agent } = {};
+
+  for (const path of allAgentPaths) {
+    allAgents[path] = await loadAgent(path, options);
+  }
 
   const pickAgents = (paths: string[]) =>
     paths.map((filename) => allAgents[nodejs.path.join(rootDir, filename)]).filter(isNonNullable);

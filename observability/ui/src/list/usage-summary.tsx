@@ -152,7 +152,7 @@ export function UsageSummary({
     },
     {
       title: t("analytics.totalCost"),
-      value: `$${formatNumber((totalCost || 0).toFixed(5))}`,
+      value: `$${formatNumber((totalCost || 0).toFixed(6))}`,
       trend: undefined,
       trendDescription: undefined,
       icon: <TrendingUp color="success" />,

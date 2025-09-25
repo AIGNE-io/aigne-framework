@@ -4,6 +4,7 @@ import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import UserCard from "@arcblock/ux/lib/UserCard";
 import { CardType, InfoType } from "@arcblock/ux/lib/UserCard/types";
+import { formatNumber } from "@blocklet/aigne-hub/utils/util";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -107,14 +108,26 @@ const Table = ({
       },
     },
     {
-      label: `${t("token")} (${t("cost")})`,
+      label: `${t("token")}`,
       name: "token",
       width: 200,
-      align: "center" as const,
+      align: "right" as const,
       options: {
         customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
-          return <Box>{`${item.token || 0} ($${Number((item.cost || 0).toFixed(5))})`}</Box>;
+          return <Box>{`${formatNumber(item.token || 0)}`}</Box>;
+        },
+      },
+    },
+    {
+      label: `${t("cost")}`,
+      name: "token",
+      width: 200,
+      align: "right" as const,
+      options: {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+          const item = traces[rowIndex];
+          return <Box>{`$${formatNumber((item.cost || 0).toFixed(6))}`}</Box>;
         },
       },
     },

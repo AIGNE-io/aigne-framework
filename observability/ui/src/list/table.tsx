@@ -9,6 +9,7 @@ import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import { compact } from "lodash";
+import prettyMs from "pretty-ms";
 import { BlockletComponent } from "../components/blocklet-comp.tsx";
 import type { TraceData } from "../components/run/types.ts";
 import Status from "../components/status.tsx";
@@ -103,6 +104,10 @@ const Table = ({
       options: {
         customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
+          if (item?.endTime && item?.startTime) {
+            return <Box>{prettyMs(item.endTime - item.startTime)}</Box>;
+          }
+
           return <Box>{parseDuration(item.startTime, item.endTime)}</Box>;
         },
       },

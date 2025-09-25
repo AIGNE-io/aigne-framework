@@ -77,5 +77,9 @@ export default flatten({
   analytics: {
     totalToken: "总 Tokens",
     totalCost: "总花费",
+    totalCount: "总次数",
+    totalDuration: "总执行时间",
+    llmTotalCount: "LLM 总次数",
+    llmTotalDuration: "LLM 总执行时间",
   },
 });

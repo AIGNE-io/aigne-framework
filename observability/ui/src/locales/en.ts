@@ -77,5 +77,9 @@ export default flatten({
   analytics: {
     totalToken: "Total Tokens",
     totalCost: "Total Cost",
+    totalCount: "Total Count",
+    totalDuration: "Total Duration",
+    llmTotalCount: "LLM Total Count",
+    llmTotalDuration: "LLM Total Duration",
   },
 });

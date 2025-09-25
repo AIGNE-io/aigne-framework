@@ -25,17 +25,16 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       .execute();
 
     if (traces.length > 0) {
-      trace.token = traces
-        .reduce((acc, curr) => new Decimal(acc).plus(curr.token || 0), new Decimal(0))
-        .toNumber();
-      trace.cost = traces
-        .reduce((acc, curr) => new Decimal(acc).plus(curr.cost || 0), new Decimal(0))
-        .toNumber();
+      const tokenDecimal = traces.reduce((acc, curr) => acc.plus(curr.token || 0), new Decimal(0));
+      trace.token = tokenDecimal.toNumber();
+
+      const costDecimal = traces.reduce((acc, curr) => acc.plus(curr.cost || 0), new Decimal(0));
+      trace.cost = costDecimal.gt(0) ? Number(costDecimal.toFixed(6)) : 0;
     } else {
       const inputTokens = trace.attributes?.output?.usage?.inputTokens || 0;
       const outputTokens = trace.attributes?.output?.usage?.outputTokens || 0;
 
-      trace.token = new Decimal(inputTokens).plus(new Decimal(outputTokens)).toNumber();
+      trace.token = new Decimal(inputTokens).plus(outputTokens).toNumber();
 
       if (!price) {
         try {
@@ -57,12 +56,14 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
           output_cost_per_token: number;
         };
 
-        if (value) {
-          trace.cost = new Decimal(inputTokens)
-            .mul(value?.input_cost_per_token || 0)
-            .plus(new Decimal(outputTokens).mul(value?.output_cost_per_token || 0))
-            .toNumber();
-        }
+        trace.cost = value
+          ? Number(
+              new Decimal(inputTokens)
+                .mul(value.input_cost_per_token || 0)
+                .plus(new Decimal(outputTokens).mul(value.output_cost_per_token || 0))
+                .toFixed(6),
+            )
+          : 0;
       } else {
         trace.cost = 0;
       }

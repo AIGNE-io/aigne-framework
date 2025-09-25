@@ -22,7 +22,7 @@ import { origin } from "../utils/index.ts";
 import DesktopSearch from "./search/desktop.tsx";
 import MobileSearch from "./search/mobile.tsx";
 import Table from "./table.tsx";
-import { UsageSummary } from "./usage-summary.tsx";
+import { UsageSummary, type UsageSummaryProps } from "./usage-summary.tsx";
 
 interface ListRef {
   refetch: () => void;
@@ -70,7 +70,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const { data: usageSummary } = useRequest(async () => {
     try {
       const res = await fetch(joinURL(origin, "/api/trace/tree/summary"));
-      return res.json() as Promise<{ totalToken: number; totalCost: number }>;
+      return res.json() as Promise<UsageSummaryProps>;
     } catch {
       return { totalToken: 0, totalCost: 0 };
     }
@@ -217,7 +217,16 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   return (
     <ToastProvider>
       <Box sx={{ ".striped-row": { backgroundColor: "action.hover" } }}>
-        <UsageSummary totalToken={usageSummary?.totalToken} totalCost={usageSummary?.totalCost} />
+        <UsageSummary
+          totalToken={usageSummary?.totalToken}
+          totalCost={usageSummary?.totalCost}
+          totalCount={usageSummary?.totalCount}
+          successCount={usageSummary?.successCount}
+          totalDuration={usageSummary?.totalDuration}
+          llmTotalCount={usageSummary?.llmTotalCount}
+          llmSuccessCount={usageSummary?.llmSuccessCount}
+          llmTotalDuration={usageSummary?.llmTotalDuration}
+        />
 
         <Box
           sx={{

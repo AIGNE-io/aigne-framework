@@ -3,11 +3,22 @@ import { formatNumber } from "@blocklet/aigne-hub/utils/util";
 import { CallMade, InfoOutlined, TrendingUp } from "@mui/icons-material";
 import { Box, Card, CardContent, Grid, Tooltip, Typography } from "@mui/material";
 import BigNumber from "bignumber.js";
+import prettyMs from "pretty-ms";
 
-interface UsageSummaryProps {
+export interface UsageSummaryProps {
+  title?: string;
+  totalCount?: number;
+  successCount?: number;
+  failCount?: number;
   totalToken?: number;
   totalCost?: number;
-  title?: string;
+  totalDuration?: number;
+  maxLatency?: number;
+  minLatency?: number;
+  avgLatency?: number;
+  llmSuccessCount?: number;
+  llmTotalCount?: number;
+  llmTotalDuration?: number;
 }
 
 interface SummaryCardProps {
@@ -134,7 +145,13 @@ function SummaryCard({
 export function UsageSummary({
   totalToken = 0,
   totalCost = 0,
+  totalCount = 0,
+  successCount = 0,
   title = undefined,
+  totalDuration = 0,
+  llmTotalCount = 0,
+  llmSuccessCount = 0,
+  llmTotalDuration = 0,
 }: UsageSummaryProps) {
   const { t } = useLocaleContext();
 
@@ -153,6 +170,50 @@ export function UsageSummary({
     {
       title: t("analytics.totalCost"),
       value: `$${formatNumber((totalCost || 0).toFixed(6))}`,
+      trend: undefined,
+      trendDescription: undefined,
+      icon: <TrendingUp color="success" />,
+      color: "success" as const,
+      tooltip: null,
+      showInfoIcon: false,
+      infoTooltip: undefined,
+    },
+    {
+      title: t("analytics.totalCount"),
+      value: `${successCount} / ${totalCount}`,
+      trend: undefined,
+      trendDescription: undefined,
+      icon: <TrendingUp color="success" />,
+      color: "success" as const,
+      tooltip: null,
+      showInfoIcon: false,
+      infoTooltip: undefined,
+    },
+    {
+      title: t("analytics.totalDuration"),
+      value: prettyMs(totalDuration),
+      trend: undefined,
+      trendDescription: undefined,
+      icon: <TrendingUp color="success" />,
+      color: "success" as const,
+      tooltip: null,
+      showInfoIcon: false,
+      infoTooltip: undefined,
+    },
+    {
+      title: t("analytics.llmTotalCount"),
+      value: `${llmSuccessCount} / ${llmTotalCount}`,
+      trend: undefined,
+      trendDescription: undefined,
+      icon: <TrendingUp color="success" />,
+      color: "success" as const,
+      tooltip: null,
+      showInfoIcon: false,
+      infoTooltip: undefined,
+    },
+    {
+      title: t("analytics.llmTotalDuration"),
+      value: prettyMs(llmTotalDuration),
       trend: undefined,
       trendDescription: undefined,
       icon: <TrendingUp color="success" />,

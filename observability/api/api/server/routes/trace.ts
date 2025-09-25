@@ -155,20 +155,88 @@ export default ({
   router.get("/tree/summary", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
 
-    const whereClause = and(isNull(Trace.parentId), isNull(Trace.action));
+    const baseWhere = and(isNull(Trace.parentId), isNull(Trace.action));
 
-    const result = await db
+    const totalCountResult = await db
+      .select({ totalCount: sql<number>`COUNT(*)` })
+      .from(Trace)
+      .where(baseWhere)
+      .execute();
+
+    const totalCount = totalCountResult[0]?.totalCount ?? 0;
+
+    const statusResult = await db
       .select({
-        totalToken: sql<number>`COALESCE(SUM(${Trace.token}), 0)`,
-        totalCost: sql<number>`COALESCE(SUM(${Trace.cost}), 0)`,
+        successCount: sql<number>`
+          COUNT(
+            CASE 
+              WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0 
+              THEN 1 
+            END
+          )
+        `,
       })
       .from(Trace)
-      .where(whereClause)
+      .where(baseWhere)
+      .execute();
+
+    const successCount = statusResult[0]?.successCount ?? 0;
+    const failCount = totalCount - successCount;
+
+    const TotalStatsResult = await db
+      .select({
+        totalToken: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.token} ELSE 0 END), 0)`,
+        totalCost: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.cost} ELSE 0 END), 0)`,
+        maxLatency: sql<number>`COALESCE(MAX(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
+        minLatency: sql<number>`COALESCE(MIN(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
+        avgLatency: sql<number>`COALESCE(AVG(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
+        totalDuration: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0 END), 0)`,
+      })
+      .from(Trace)
+      .where(baseWhere)
+      .execute();
+
+    const totalStats = TotalStatsResult[0];
+
+    const llmWhere = and(
+      sql`${Trace.attributes} IS NOT NULL`,
+      sql`JSON_EXTRACT(${Trace.attributes}, '$.output.model') IS NOT NULL`,
+    );
+
+    const llmStatsResult = await db
+      .select({
+        llmTotalCount: sql<number>`COUNT(*)`,
+        llmSuccessCount: sql<number>`
+          COUNT(
+            CASE 
+              WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0 
+              THEN 1 
+            END
+          )
+        `,
+        llmTotalDuration: sql<number>`
+          COALESCE(SUM(
+            CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0 END
+          ), 0)
+        `,
+      })
+      .from(Trace)
+      .where(llmWhere)
       .execute();
 
     res.json({
-      totalToken: result[0]?.totalToken ?? 0,
-      totalCost: result[0]?.totalCost ?? 0,
+      totalCount,
+      successCount,
+      failCount,
+      totalToken: totalStats?.totalToken ?? 0,
+      totalCost: totalStats?.totalCost ?? 0,
+      maxLatency: totalStats?.maxLatency ?? 0,
+      minLatency: totalStats?.minLatency ?? 0,
+      avgLatency: totalStats?.avgLatency ?? 0,
+      totalDuration: totalStats?.totalDuration ?? 0,
+      llmSuccessCount: llmStatsResult[0]?.llmSuccessCount ?? 0,
+      llmTotalCount: llmStatsResult[0]?.llmTotalCount ?? 0,
+      llmTotalDuration: llmStatsResult[0]?.llmTotalDuration ?? 0,
     });
   });
 

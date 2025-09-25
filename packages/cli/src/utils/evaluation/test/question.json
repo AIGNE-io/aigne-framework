@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "input": { "message": "Which country is Mount Kilimanjaro located in?" },
+    "expected": { "message": "Mount Kilimanjaro is located in Tanzania." },
+    "tags": [],
+    "selected": true
+  },
+  {
+    "id": "2",
+    "input": { "message": "What is Earth's lowest point?" },
+    "expected": { "message": "Earth's lowest point is The Dead Sea." },
+    "tags": [],
+    "selected": true
+  },
+  {
+    "id": "3",
+    "input": { "message": "3 + 3 = ?" },
+    "expected": { "message": "6" },
+    "tags": [],
+    "selected": true
+  },
+  {
+    "id": "4",
+    "input": { "message": "Who wrote the novel '1984'?" },
+    "expected": { "message": "The novel '1984' was written by George Orwell." },
+    "tags": [],
+    "selected": true
+  },
+  {
+    "id": "5",
+    "input": { "message": "What is the boiling point of water at sea level?" },
+    "expected": { "message": "The boiling point of water at sea level is 100°C." },
+    "tags": [],
+    "selected": true
+  },
+  {
+    "id": "6",
+    "input": { "message": "What is the capital city of Japan?" },
+    "expected": { "message": "The capital city of Japan is Tokyo." },
+    "tags": [],
+    "selected": true
+  }
+]

@@ -70,51 +70,51 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
   }
 
   const insertSql = sql`
-		INSERT INTO Trace (
-			id,
-			rootId,
-			parentId,
-			name,
-			startTime,
-			endTime,
-			attributes,
-			status,
-			userId,
-			sessionId,
-			componentId,
-			action,
-			token,
-			cost
-		) VALUES (
-			${trace.id},
-			${trace.rootId},
-			${trace.parentId || null},
-			${trace.name},
-			${trace.startTime},
-			${trace.endTime},
-			${JSON.stringify(trace.attributes)},
-			${JSON.stringify(trace.status)},
-			${trace.userId || null},
-			${trace.sessionId || null},
-			${trace.componentId || null},
-			${trace.action || null},
-			${trace.token || 0},
-			${trace.cost || 0}
-		)
-		ON CONFLICT(id)
-		DO UPDATE SET
-			name = excluded.name,
-			startTime = excluded.startTime,
-			endTime = excluded.endTime,
-			attributes = excluded.attributes,
-			status = excluded.status,
-			userId = excluded.userId,
-			sessionId = excluded.sessionId,
-			componentId = excluded.componentId,
-			action = excluded.action,
-			token = excluded.token,
-			cost = excluded.cost;
-	`;
+    INSERT INTO Trace (
+      id,
+      rootId,
+      parentId,
+      name,
+      startTime,
+      endTime,
+      attributes,
+      status,
+      userId,
+      sessionId,
+      componentId,
+      action,
+      token,
+      cost
+    ) VALUES (
+      ${trace.id},
+      ${trace.rootId},
+      ${trace.parentId || null},
+      ${trace.name},
+      ${trace.startTime},
+      ${trace.endTime},
+      ${JSON.stringify(trace.attributes)},
+      ${JSON.stringify(trace.status)},
+      ${trace.userId || null},
+      ${trace.sessionId || null},
+      ${trace.componentId || null},
+      ${trace.action || null},
+      ${trace.token || 0},
+      ${trace.cost || 0}
+    )
+    ON CONFLICT(id)
+    DO UPDATE SET
+      name = excluded.name,
+      startTime = excluded.startTime,
+      endTime = excluded.endTime,
+      attributes = excluded.attributes,
+      status = excluded.status,
+      userId = excluded.userId,
+      sessionId = excluded.sessionId,
+      componentId = excluded.componentId,
+      action = excluded.action,
+      token = excluded.token,
+      cost = excluded.cost;
+  `;
 
   await db?.run?.(insertSql);
 };

@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
-import type { Dataset, DatasetItem } from "./type.ts";
+import type { Dataset, DatasetItem } from "./type.js";
 
 const recordSchema = z.record(z.any());
 

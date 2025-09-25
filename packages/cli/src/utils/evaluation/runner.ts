@@ -1,5 +1,5 @@
 import { type Agent, AIGNE } from "@aigne/core";
-import type { DatasetItem, Runner, RunOptions, RunResult } from "./type.ts";
+import type { DatasetItem, Runner, RunOptions, RunResult } from "./type.js";
 
 export class DefaultRunner implements Runner {
   name = "default-runner";

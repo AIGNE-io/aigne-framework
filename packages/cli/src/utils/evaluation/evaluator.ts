@@ -1,6 +1,6 @@
 import { type Agent, AIAgent, AIGNE } from "@aigne/core";
 import { z } from "zod";
-import type { DatasetItem, Evaluation, Evaluator } from "./type.ts";
+import type { DatasetItem, Evaluation, Evaluator } from "./type.js";
 
 const EVALUATOR_PROMPT = `
 # Instructions
@@ -65,7 +65,7 @@ SCORE: 4
 `;
 
 const defaultAgent = AIAgent.from({
-  name: "LLMAsJudgeEvaluator",
+  name: "LLMEvaluator",
   instructions: EVALUATOR_PROMPT,
   inputSchema: z.object({
     input: z.string().describe("The input content to analyze"),
@@ -83,7 +83,7 @@ const defaultAgent = AIAgent.from({
 
 const defaultAigne = new AIGNE();
 
-export class LLMAsJudgeEvaluator implements Evaluator {
+export class LLMEvaluator implements Evaluator {
   name = "llm-as-judge";
 
   constructor(

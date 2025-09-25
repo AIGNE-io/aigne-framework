@@ -11,7 +11,7 @@ import type {
   Reporter,
   Runner,
   RunOptions,
-} from "./type.ts";
+} from "./type.js";
 
 function aggregateSummary(results: EvaluationResult[], duration: number): EvaluationSummary {
   const total = results.length;

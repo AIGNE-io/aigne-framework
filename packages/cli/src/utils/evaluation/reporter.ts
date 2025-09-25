@@ -1,7 +1,9 @@
+import fs from "node:fs";
+import path from "node:path";
+import { format } from "@fast-csv/format";
 import chalk from "chalk";
 import Table from "cli-table3";
-import * as XLSX from "xlsx";
-import type { Report, Reporter } from "./type.ts";
+import type { Report, Reporter } from "./type.js";
 
 const borderColor = chalk.green;
 const chars = {
@@ -181,31 +183,50 @@ export class ConsoleReporter extends BaseReporter {
   }
 }
 
-export class ExcelReporter extends BaseReporter {
-  override name = "excel";
+export class CsvReporter extends BaseReporter {
+  override name = "csv";
+
   constructor(private filePath: string) {
     super();
   }
 
-  override async report(report: Report): Promise<void> {
-    const wb = XLSX.utils.book_new();
+  private async writeCsv(filePath: string, data: Record<string, any>[], headers: string[]) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
 
-    // Summary sheet
-    const summaryList = this.formatSummary(report.summary);
-    const summaryData = [summaryList.map((h) => h.header), summaryList.map((h) => h.value)];
-    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-    XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
+    const stream = format({ headers });
+    const writeStream = fs.createWriteStream(filePath);
+    stream.pipe(writeStream);
 
-    // Results sheet
-    const list = this.formatReport(report);
-    if (list.length > 0) {
-      const headers: (string | number)[] = list[0]?.map((h) => h.header) ?? [];
-      const rows: (string | number)[][] = list.map((row) => row.map((h) => h.value));
-      const resultsSheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-      XLSX.utils.book_append_sheet(wb, resultsSheet, "Results");
+    for (const row of data) {
+      stream.write(row);
     }
 
-    XLSX.writeFile(wb, this.filePath);
-    console.log(`✅ Excel report saved to ${this.filePath}`);
+    stream.end();
+
+    await new Promise<void>((resolve, reject) => {
+      writeStream.on("finish", resolve);
+      writeStream.on("error", reject);
+    });
+  }
+
+  override async report(report: Report): Promise<void> {
+    const list = this.formatReport(report);
+    if (list.length > 0) {
+      const resultsHeaders = list[0]?.map((h) => h.header) ?? [];
+      const resultsRows = list.map((row) => {
+        const record: Record<string, string | number> = {};
+        for (const item of row) {
+          record[item.header] = item.value;
+        }
+        return record;
+      });
+
+      const ext = path.extname(this.filePath).toLowerCase();
+      const outputFile = ext ? this.filePath : `${this.filePath}.csv`;
+
+      await this.writeCsv(outputFile, resultsRows, resultsHeaders);
+
+      console.log(`✅ Results CSV saved to ${outputFile}`);
+    }
   }
 }

@@ -5,18 +5,18 @@ import type { CommandModule } from "yargs";
 import { z } from "zod";
 import { runEvaluationPipeline } from "../utils/evaluation/core.js";
 import { FileDataset } from "../utils/evaluation/dataset.js";
-import { LLMAsJudgeEvaluator } from "../utils/evaluation/evaluator.js";
-import { ConsoleReporter, ExcelReporter } from "../utils/evaluation/reporter.js";
+import { LLMEvaluator } from "../utils/evaluation/evaluator.js";
+import { ConsoleReporter, CsvReporter } from "../utils/evaluation/reporter.js";
 import { DefaultRunnerWithConcurrency } from "../utils/evaluation/runner.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 
 const schema = z.object({
   path: z.string().optional(),
-  entryAgent: z.string(),
+  agent: z.string(),
   dataset: z.string(),
-  evaluatorAgent: z.string().optional(),
+  evaluator: z.string().optional(),
   concurrency: z.number().optional(),
-  reporter: z.string().optional(),
+  output: z.string().optional(),
 });
 
 const getResolvePath = (path: string) => {
@@ -31,15 +31,15 @@ export function createEvalCommand({
   unknown,
   {
     path?: string;
-    entryAgent?: string;
+    agent?: string;
     dataset?: string;
-    evaluatorAgent?: string;
+    evaluator?: string;
     concurrency?: number;
-    reporter?: string;
+    output?: string;
   }
 > {
   return {
-    command: "eval [path] [entry-agent]",
+    command: "eval [path] [agent]",
     describe: "Evaluate AIGNE for the specified path",
     builder: async (yargs) => {
       return yargs
@@ -48,7 +48,7 @@ export function createEvalCommand({
           describe: "Path to the agents directory or URL to an aigne project",
           default: ".",
         })
-        .positional("entry-agent", {
+        .positional("agent", {
           type: "string",
           describe: "Name of the agent to evaluate",
         })
@@ -56,13 +56,14 @@ export function createEvalCommand({
           type: "string",
           describe: "Path to the dataset file",
         })
-        .positional("evaluator-agent", {
+        .positional("evaluator", {
           type: "string",
           describe: "Name of the evaluator to use",
         })
-        .positional("reporter", {
+        .positional("output", {
+          alias: "o",
           type: "string",
-          describe: "Path to the reporter file",
+          describe: "Path to the output file",
         })
         .positional("concurrency", {
           type: "number",
@@ -80,9 +81,9 @@ export function createEvalCommand({
       }
 
       const {
-        entryAgent,
+        agent: entryAgent,
         dataset: datasetPath,
-        evaluatorAgent: evaluatorName,
+        evaluator: evaluatorName,
         concurrency,
       } = parsedOptions.data;
 
@@ -121,11 +122,11 @@ export function createEvalCommand({
 
       const dataset = new FileDataset(resolvedDatasetPath);
       const runner = new DefaultRunnerWithConcurrency(agent, aigne);
-      const evaluator = new LLMAsJudgeEvaluator(aigne, evaluatorAgent);
+      const evaluator = new LLMEvaluator(aigne, evaluatorAgent);
       const reporters = [new ConsoleReporter()];
-      if (options.reporter) {
-        const resolvedReporterPath = getResolvePath(options.reporter);
-        const reporter = new ExcelReporter(resolvedReporterPath);
+      if (options.output) {
+        const resolvedReporterPath = getResolvePath(options.output);
+        const reporter = new CsvReporter(resolvedReporterPath);
         reporters.push(reporter);
       }
 

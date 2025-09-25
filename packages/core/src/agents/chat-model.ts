@@ -1,6 +1,7 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
-import { Ajv } from "ajv";
 import { z } from "zod";
+import { convertJsonSchemaToZod, type JSONSchema } from "zod-from-json-schema";
+import { wrapAutoParseJsonSchema } from "../utils/json-schema.js";
 import { checkArguments, isNil, omitByDeep, type PromiseOrValue } from "../utils/type-utils.js";
 import {
   type Agent,
@@ -244,21 +245,6 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
     output: ChatModelOutput,
     options: AgentInvokeOptions,
   ): Promise<void> {
-    // Restore original tool names in the output
-    if (output.toolCalls?.length) {
-      const toolsMap = input._toolsMap as Record<string, ChatModelInputTool> | undefined;
-      if (toolsMap) {
-        for (const toolCall of output.toolCalls) {
-          const originalTool = toolsMap[toolCall.function.name];
-          if (!originalTool) {
-            throw new Error(`Tool "${toolCall.function.name}" not found in tools map`);
-          }
-
-          toolCall.function.name = originalTool.function.name;
-        }
-      }
-    }
-
     super.postprocess(input, output, options);
     const { usage } = output;
     if (usage) {
@@ -311,20 +297,50 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
     // Remove fields with `null` value for validation
     output = omitByDeep(output, (value) => isNil(value));
 
+    const toolCalls = (output as ChatModelOutput).toolCalls;
+
     if (
       input.responseFormat?.type === "json_schema" &&
       // NOTE: Should not validate if there are tool calls
-      !(output as ChatModelOutput).toolCalls?.length
+      !toolCalls?.length
     ) {
-      const ajv = new Ajv();
-      if (!ajv.validate(input.responseFormat.jsonSchema.schema, output.json)) {
-        throw new StructuredOutputError(
-          `Output JSON does not conform to the provided JSON schema: ${ajv.errorsText()}`,
-        );
+      output.json = this.validateJsonSchema(input.responseFormat.jsonSchema.schema, output.json);
+    }
+
+    // Restore original tool names in the output
+    if (toolCalls?.length) {
+      const toolsMap = input._toolsMap as Record<string, ChatModelInputTool> | undefined;
+      if (toolsMap) {
+        for (const toolCall of toolCalls) {
+          const originalTool = toolsMap[toolCall.function.name];
+          if (!originalTool) {
+            throw new Error(`Tool "${toolCall.function.name}" not found in tools map`);
+          }
+
+          toolCall.function.name = originalTool.function.name;
+          toolCall.function.arguments = this.validateJsonSchema(
+            originalTool.function.parameters,
+            toolCall.function.arguments,
+          );
+        }
       }
     }
 
     return super.processAgentOutput(input, output, options);
+  }
+
+  protected validateJsonSchema<T>(schema: object, data: T): T {
+    const s = wrapAutoParseJsonSchema(convertJsonSchemaToZod(schema as JSONSchema));
+
+    const r = s.safeParse(data);
+
+    if (r.error) {
+      throw new StructuredOutputError(
+        `Output JSON does not conform to the provided JSON schema: ${r.error.errors.map((i) => `${i.path}: ${i.message}`).join(", ")}`,
+      );
+    }
+
+    return r.data;
   }
 }
 

@@ -3,6 +3,7 @@ import {
   ensureZodUnionArray,
   outputSchemaToResponseFormatSchema,
   parseJSON,
+  wrapAutoParseJsonSchema,
 } from "@aigne/core/utils/json-schema.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { z } from "zod";
@@ -171,4 +172,56 @@ test("convertNullableToOptional should convert all nullable properties to option
       "type": "object",
     }
   `);
+});
+
+test("wrapAutoParseJsonSchema should auto parse json string to object", async () => {
+  const schema = z.object({
+    profile: z.object({
+      name: z.string(),
+      tags: z.array(z.string()),
+    }),
+    friends: z.array(
+      z.object({
+        profile: z.object({
+          name: z.string(),
+          tags: z.array(z.string()),
+        }),
+      }),
+    ),
+  });
+
+  const data: z.infer<typeof schema> = {
+    profile: { name: "Alice", tags: ["friend", "colleague"] },
+    friends: [
+      { profile: { name: "Bob", tags: ["gym"] } },
+      { profile: { name: "Charlie", tags: ["school", "neighbor"] } },
+    ],
+  };
+
+  expect(wrapAutoParseJsonSchema(schema).parse(JSON.stringify(data))).toEqual(data);
+
+  expect(
+    wrapAutoParseJsonSchema(schema).parse({
+      ...data,
+      profile: { ...data.profile, tags: JSON.stringify(data.profile.tags) },
+      friends: JSON.stringify(data.friends),
+    }),
+  ).toEqual(data);
+
+  expect(
+    wrapAutoParseJsonSchema(schema).parse({
+      ...data,
+      friends: data.friends.map((i) => JSON.stringify(i)),
+    }),
+  ).toEqual(data);
+
+  expect(
+    wrapAutoParseJsonSchema(schema).parse({
+      ...data,
+      friends: data.friends.map((i) => ({
+        ...i,
+        profile: { ...i.profile, tags: JSON.stringify(i.profile.tags) },
+      })),
+    }),
+  ).toEqual(data);
 });

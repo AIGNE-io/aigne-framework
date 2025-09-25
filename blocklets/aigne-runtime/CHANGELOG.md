@@ -85,7 +85,6 @@
 ### Bug Fixes
 
 * correct flat import, remove default import error ([#519](https://github.com/AIGNE-io/aigne-framework/issues/519)) ([6e8fd30](https://github.com/AIGNE-io/aigne-framework/commit/6e8fd30b89be1300ab6214f13fd273e51e25329b))
-* correct flat import, remove default import error ([#519](https://github.com/AIGNE-io/aigne-framework/issues/519)) ([6e8fd30](https://github.com/AIGNE-io/aigne-framework/commit/6e8fd30b89be1300ab6214f13fd273e51e25329b))
 
 
 ### Dependencies
@@ -297,7 +296,6 @@
 
 ### Features
 
-* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
 * **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
 
 

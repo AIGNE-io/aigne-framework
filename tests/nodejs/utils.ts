@@ -29,5 +29,9 @@ export async function spawnAsync(
     child.on("close", (code) => {
       resolve({ status: code, stdout, stderr });
     });
+
+    child.on("exit", (code) => {
+      resolve({ status: code, stdout, stderr });
+    });
   });
 }

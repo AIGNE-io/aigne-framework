@@ -1,13 +1,13 @@
 import { fork } from "node:child_process";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { AIGNE } from "@aigne/core";
-import { withoutProtocol } from "ufo";
 
 export async function safeLoadAIGNE(
   ...args: Parameters<typeof AIGNE.load>
 ): Promise<ReturnType<typeof AIGNE.load>> {
   await new Promise<void>((resolve, reject) => {
-    const child = fork(join(dirname(withoutProtocol(import.meta.url)), "./load-aigne-worker.js"), {
+    const child = fork(join(dirname(fileURLToPath(import.meta.url)), "./load-aigne-worker.js"), {
       timeout: 600e3,
     });
 

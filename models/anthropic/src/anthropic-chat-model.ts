@@ -31,7 +31,6 @@ import type {
   ToolUnion,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources/index.js";
-import { Ajv } from "ajv";
 import { z } from "zod";
 
 const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
@@ -158,8 +157,6 @@ export class AnthropicChatModel extends ChatModel {
     return this._process(input);
   }
 
-  private ajv = new Ajv();
-
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const model = input.modelOptions?.model || this.credential.model;
 
@@ -199,8 +196,11 @@ export class AnthropicChatModel extends ChatModel {
     // Try to parse the text response as JSON
     // If it matches the json_schema, return it as json
     const json = safeParseJSON(result.text || "");
-    if (this.ajv.validate(input.responseFormat.jsonSchema.schema, json)) {
-      return { ...result, json, text: undefined };
+    const validated = this.validateJsonSchema(input.responseFormat.jsonSchema.schema, json, {
+      safe: true,
+    });
+    if (validated.success) {
+      return { ...result, json: validated.data, text: undefined };
     }
     logger.warn(
       `AnthropicChatModel: Text response does not match JSON schema, trying to use tool to extract json `,

@@ -329,10 +329,27 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
     return super.processAgentOutput(input, output, options);
   }
 
-  protected validateJsonSchema<T>(schema: object, data: T): T {
+  protected validateJsonSchema<T>(schema: object, data: T, options?: { safe?: false }): T;
+  protected validateJsonSchema<T>(
+    schema: object,
+    data: T,
+    options: { safe: true },
+  ): z.SafeParseReturnType<T, T>;
+  protected validateJsonSchema<T>(
+    schema: object,
+    data: T,
+    options?: { safe?: boolean },
+  ): T | z.SafeParseReturnType<T, T>;
+  protected validateJsonSchema<T>(
+    schema: object,
+    data: T,
+    options?: { safe?: boolean },
+  ): T | z.SafeParseReturnType<T, T> {
     const s = wrapAutoParseJsonSchema(convertJsonSchemaToZod(schema as JSONSchema));
 
     const r = s.safeParse(data);
+
+    if (options?.safe) return r;
 
     if (r.error) {
       throw new StructuredOutputError(

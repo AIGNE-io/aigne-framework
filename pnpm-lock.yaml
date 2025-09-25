@@ -919,9 +919,6 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.63.0
         version: 0.63.0(zod@3.25.67)
-      ajv:
-        specifier: ^8.17.1
-        version: 8.17.1
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -1213,9 +1210,6 @@ importers:
       '@aigne/platform-helpers':
         specifier: workspace:^
         version: link:../../packages/platform-helpers
-      ajv:
-        specifier: ^8.17.1
-        version: 8.17.1
       openai:
         specifier: ^5.20.3
         version: 5.20.3(ws@8.18.2)(zod@3.25.67)
@@ -1932,9 +1926,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
-      ajv:
-        specifier: ^8.17.1
-        version: 8.17.1
       camelize-ts:
         specifier: ^3.0.0
         version: 3.0.0

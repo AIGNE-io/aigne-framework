@@ -56,14 +56,26 @@ screenshots:
 components: []
 egress: true
 navigation:
-  - id: observability
+  - id: overview
     title:
-      en: Traces
-      zh: Traces
-    icon: mdi:vote-outline
+      en: Overview
+      zh: 概览
+    icon: ant-design:dashboard-outlined
     link: /
     section:
       - dashboard
     role:
       - owner
       - admin
+  - id: observability
+    title:
+      en: Traces
+      zh: Traces
+    icon: mdi:vote-outline
+    link: /traces
+    section:
+      - dashboard
+    role:
+      - owner
+      - admin
+      

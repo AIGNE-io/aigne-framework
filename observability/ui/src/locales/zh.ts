@@ -82,4 +82,5 @@ export default flatten({
     llmTotalCount: "LLM 总次数",
     llmTotalDuration: "LLM 总执行时间",
   },
+  overview: "概览",
 });

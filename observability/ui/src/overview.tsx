@@ -1,9 +1,13 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { formatNumber } from "@blocklet/aigne-hub/utils/util";
 import { CallMade, InfoOutlined, TrendingUp } from "@mui/icons-material";
-import { Box, Card, CardContent, Grid, Tooltip, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid, styled, Tooltip, Typography } from "@mui/material";
+import useRequest from "ahooks/lib/useRequest";
 import BigNumber from "bignumber.js";
 import prettyMs from "pretty-ms";
+import { joinURL } from "ufo";
+import Metric from "./components/metric.js";
+import { origin } from "./utils/index.js";
 
 export interface UsageSummaryProps {
   title?: string;
@@ -31,7 +35,7 @@ interface SummaryCardProps {
   infoTooltip?: string;
 }
 
-function SummaryCard({
+export function SummaryCard({
   title,
   value = "-",
   trend = undefined,
@@ -142,7 +146,7 @@ function SummaryCard({
   );
 }
 
-export function UsageSummary({
+function UsageSummary({
   totalToken = 0,
   totalCost = 0,
   totalCount = 0,
@@ -159,96 +163,101 @@ export function UsageSummary({
     {
       title: t("analytics.totalToken"),
       value: formatNumber(new BigNumber(totalToken || 0).dp(2).toString()),
-      trend: undefined,
-      trendDescription: undefined,
       icon: <CallMade color="primary" />,
-      color: "primary" as const,
-      tooltip: null,
-      showInfoIcon: false,
-      infoTooltip: undefined,
     },
     {
       title: t("analytics.totalCost"),
       value: `$${formatNumber((totalCost || 0).toFixed(6))}`,
-      trend: undefined,
-      trendDescription: undefined,
       icon: <TrendingUp color="success" />,
-      color: "success" as const,
-      tooltip: null,
-      showInfoIcon: false,
-      infoTooltip: undefined,
     },
     {
       title: t("analytics.totalCount"),
       value: `${successCount} / ${totalCount}`,
-      trend: undefined,
-      trendDescription: undefined,
       icon: <TrendingUp color="success" />,
-      color: "success" as const,
-      tooltip: null,
-      showInfoIcon: false,
-      infoTooltip: undefined,
     },
     {
       title: t("analytics.totalDuration"),
       value: prettyMs(totalDuration),
-      trend: undefined,
-      trendDescription: undefined,
       icon: <TrendingUp color="success" />,
-      color: "success" as const,
-      tooltip: null,
-      showInfoIcon: false,
-      infoTooltip: undefined,
     },
     {
       title: t("analytics.llmTotalCount"),
       value: `${llmSuccessCount} / ${llmTotalCount}`,
-      trend: undefined,
-      trendDescription: undefined,
       icon: <TrendingUp color="success" />,
-      color: "success" as const,
-      tooltip: null,
-      showInfoIcon: false,
-      infoTooltip: undefined,
     },
     {
       title: t("analytics.llmTotalDuration"),
       value: prettyMs(llmTotalDuration),
-      trend: undefined,
-      trendDescription: undefined,
       icon: <TrendingUp color="success" />,
-      color: "success" as const,
-      tooltip: null,
-      showInfoIcon: false,
-      infoTooltip: undefined,
     },
   ];
 
   return (
-    <Box>
-      {title && (
-        <Typography variant="h3" sx={{ fontWeight: "bold", mb: 3 }}>
-          {title}
-        </Typography>
-      )}
-      <Grid container spacing={2}>
-        {(metrics || []).map(
-          (metric) =>
-            metric && (
-              <Grid key={metric.title} size={{ xs: 12, sm: 6, md: 3 }}>
-                <SummaryCard
-                  title={metric.title}
-                  value={metric.value || "-"}
-                  trend={metric.trend}
-                  trendDescription={metric.trendDescription}
-                  tooltip={metric.tooltip}
-                  showInfoIcon={metric.showInfoIcon}
-                  infoTooltip={metric.infoTooltip}
-                />
-              </Grid>
-            ),
+    <Div>
+      <Box className="section">
+        {title && (
+          <Typography className="section__header" color="textPrimary" component="h2">
+            {title}
+          </Typography>
         )}
-      </Grid>
-    </Box>
+        <Grid className="page-metrics" container spacing={5}>
+          {metrics.map(({ icon, ...x }) => (
+            <Grid
+              key={x.title}
+              sx={{ small: { ml: 0.5 } }}
+              size={{
+                xl: 1.5,
+                lg: 3,
+                md: 4,
+                sm: 6,
+                xs: 6,
+              }}
+            >
+              <Metric {...x} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </Div>
   );
 }
+
+export default () => {
+  const { t } = useLocaleContext();
+  const { data: usageSummary } = useRequest(async () => {
+    try {
+      const res = await fetch(joinURL(origin, "/api/trace/tree/summary"));
+      return res.json() as Promise<UsageSummaryProps>;
+    } catch {
+      return { totalToken: 0, totalCost: 0 };
+    }
+  });
+
+  return (
+    <UsageSummary
+      title={t("overview")}
+      totalToken={usageSummary?.totalToken}
+      totalCost={usageSummary?.totalCost}
+      totalCount={usageSummary?.totalCount}
+      successCount={usageSummary?.successCount}
+      totalDuration={usageSummary?.totalDuration}
+      llmTotalCount={usageSummary?.llmTotalCount}
+      llmSuccessCount={usageSummary?.llmSuccessCount}
+      llmTotalDuration={usageSummary?.llmTotalDuration}
+    />
+  );
+};
+
+const Div = styled(Typography)`
+  .section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 64px;
+
+    .section__header {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 24px;
+    }
+  }
+`;

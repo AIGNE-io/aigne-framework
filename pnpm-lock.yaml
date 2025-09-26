@@ -1736,6 +1736,9 @@ importers:
       '@aigne/default-memory':
         specifier: workspace:^
         version: link:../../memory/default
+      '@aigne/json-schema-to-zod':
+        specifier: ^1.3.3
+        version: 1.3.3(zod@3.25.67)
       '@aigne/listr2':
         specifier: ^1.0.10
         version: 1.0.10
@@ -1853,6 +1856,9 @@ importers:
       zod:
         specifier: ^3.25.67
         version: 3.25.67
+      zod-to-json-schema:
+        specifier: ^3.24.6
+        version: 3.24.6(zod@3.25.67)
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^

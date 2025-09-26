@@ -72,12 +72,16 @@ export class TerminalTracer {
     const hideContextIds = new Set<string>();
 
     const onStart: AgentHooks["onStart"] = async ({ context, agent, ...event }) => {
-      if (agent instanceof UserAgent) return;
+      const result = { options: { prompts: this.proxiedPrompts } };
+
+      if (agent instanceof UserAgent) return result;
 
       if (agent.taskRenderMode === "hide") {
         hideContextIds.add(context.id);
-        return;
-      } else if (agent.taskRenderMode === "collapse") {
+        return result;
+      }
+
+      if (agent.taskRenderMode === "collapse") {
         collapsedMap.set(context.id, {
           ancestor: { contextId: context.id },
           usage: newEmptyContextUsage(),
@@ -88,13 +92,13 @@ export class TerminalTracer {
       if (context.parentId) {
         if (hideContextIds.has(context.parentId)) {
           hideContextIds.add(context.id);
-          return;
+          return result;
         }
 
         const collapsed = collapsedMap.get(context.parentId);
         if (collapsed) {
           collapsedMap.set(context.id, collapsed);
-          return;
+          return result;
         }
       }
 
@@ -133,7 +137,7 @@ export class TerminalTracer {
         listr.add(listrTask);
       }
 
-      return { options: { prompts: this.proxiedPrompts } };
+      return result;
     };
 
     const onSuccess: AgentHooks["onSuccess"] = async ({ context, agent, output, ...event }) => {

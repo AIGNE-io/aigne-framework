@@ -181,6 +181,7 @@ test("app command should register doc-smith to yargs", async () => {
   `,
   );
 
+  invokeAgentFromDir.mockRestore();
   exit.mockRestore();
   log.mockRestore();
   loadApplication.mockRestore();
@@ -268,7 +269,10 @@ test("app command should support upgrade subcommand", async () => {
     version: "1.1.1",
     url: "http://example.com/doc-smith-1.1.1.tgz",
   });
-  const installApp = spyOn(app, "installApp").mockResolvedValue();
+  const installApp = spyOn(app, "installApp").mockResolvedValue({
+    version: "1.1.1",
+    url: "http://example.com/doc-smith-1.1.1.tgz",
+  });
 
   await command.parseAsync(["doc-smith", "upgrade"]);
 
@@ -328,28 +332,29 @@ test("loadApplication should load doc-smith correctly", async () => {
 
 test("beta version support should work with AIGNE_USE_BETA_APPS environment variable", async () => {
   // Mock fetch to return package info with beta version
-  const mockFetch = mock().mockResolvedValue({
-    ok: true,
-    json: () =>
-      Promise.resolve({
-        "dist-tags": {
-          latest: "1.0.0",
-          beta: "1.1.0-beta.1",
-        },
-        versions: {
-          "1.0.0": {
-            dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz" },
+  const mockFetch = spyOn(globalThis, "fetch").mockImplementation(
+    (async () =>
+      new Response(
+        JSON.stringify({
+          "dist-tags": {
+            latest: "1.0.0",
+            beta: "1.1.0-beta.1",
           },
-          "1.1.0-beta.1": {
-            dist: {
-              tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.1.0-beta.1.tgz",
+          versions: {
+            "1.0.0": {
+              dist: {
+                tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz",
+              },
+            },
+            "1.1.0-beta.1": {
+              dist: {
+                tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.1.0-beta.1.tgz",
+              },
             },
           },
-        },
-      }),
-  });
-
-  global.fetch = mockFetch as any;
+        }),
+      )) as unknown as typeof fetch,
+  );
 
   // Test without beta flag - should use latest
   delete process.env.AIGNE_USE_BETA_APPS;
@@ -367,28 +372,30 @@ test("beta version support should work with AIGNE_USE_BETA_APPS environment vari
 
   // Cleanup
   delete process.env.AIGNE_USE_BETA_APPS;
+
   mockFetch.mockRestore();
 });
 
 test("beta version support should fallback to latest when no beta available", async () => {
   // Mock fetch to return package info without beta version
-  const mockFetch = mock().mockResolvedValue({
-    ok: true,
-    json: () =>
-      Promise.resolve({
-        "dist-tags": {
-          latest: "1.0.0",
-          // No beta tag
-        },
-        versions: {
-          "1.0.0": {
-            dist: { tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz" },
+  const mockFetch = spyOn(globalThis, "fetch").mockImplementation(
+    (async () =>
+      new Response(
+        JSON.stringify({
+          "dist-tags": {
+            latest: "1.0.0",
+            // No beta tag
           },
-        },
-      }),
-  });
-
-  global.fetch = mockFetch as any;
+          versions: {
+            "1.0.0": {
+              dist: {
+                tarball: "https://registry.npmjs.org/@aigne/doc-smith/-/doc-smith-1.0.0.tgz",
+              },
+            },
+          },
+        }),
+      )) as unknown as typeof fetch,
+  );
 
   // Test with beta flag but no beta version available - should fallback to latest
   process.env.AIGNE_USE_BETA_APPS = "true";

@@ -154,8 +154,6 @@ const upgradeCommandModule = ({
 
     const npm = await getNpmTgzInfo(packageName, { beta, version: targetVersion });
 
-    console.log({ force, beta, targetVersion });
-
     if (!app || force || npm.version !== app.version) {
       if (force) await rm(dir, { force: true, recursive: true });
 
@@ -291,7 +289,7 @@ export async function installApp({
   beta?: boolean;
   version?: string;
 }) {
-  await new Listr<{ url: string; version: string }>(
+  return await new Listr<{ url: string; version: string }>(
     [
       {
         title: `Fetching ${packageName} metadata`,

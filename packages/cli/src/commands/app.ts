@@ -305,7 +305,7 @@ export async function installApp({
       {
         title: `Downloading ${packageName}`,
         task: async (ctx, task) => {
-          task.title = `Downloading ${packageName}(@v${ctx.version})`;
+          task.title = `Downloading ${packageName} (v${ctx.version})`;
 
           await mkdir(dir, { recursive: true });
 

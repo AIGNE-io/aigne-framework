@@ -81,6 +81,7 @@ export default flatten({
     totalDuration: "Total Duration",
     llmTotalCount: "LLM Total Count",
     llmTotalDuration: "LLM Total Duration",
+    active: "Success",
   },
   overview: "Overview",
 });

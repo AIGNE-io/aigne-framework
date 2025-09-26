@@ -65,9 +65,12 @@ export default function Metric({
             {value}
           </Box>
         ) : (
-          <Box className={`metric__number ${animated ? "metric__number--animated" : ""}`}>
-            {value}
-          </Box>
+          <Box
+            component="div"
+            className={`metric__number ${animated ? "metric__number--animated" : ""}`}
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+            dangerouslySetInnerHTML={{ __html: value as string }}
+          />
         )}
         <Box className="metric__name">{name}</Box>
       </Box>

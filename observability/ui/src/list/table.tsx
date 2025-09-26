@@ -4,7 +4,6 @@ import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import UserCard from "@arcblock/ux/lib/UserCard";
 import { CardType, InfoType } from "@arcblock/ux/lib/UserCard/types";
-import { formatNumber } from "@blocklet/aigne-hub/utils/util";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -13,6 +12,7 @@ import prettyMs from "pretty-ms";
 import { BlockletComponent } from "../components/blocklet-comp.tsx";
 import type { TraceData } from "../components/run/types.ts";
 import Status from "../components/status.tsx";
+import formatNumber from "../utils/format-number.ts";
 import { parseDuration } from "../utils/latency.ts";
 
 const Table = ({
@@ -31,7 +31,7 @@ const Table = ({
   setPage: (page: { page: number; pageSize: number }) => void;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
-  const { t } = useLocaleContext();
+  const { t, locale } = useLocaleContext();
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
 
   const columns = compact([
@@ -120,7 +120,7 @@ const Table = ({
       options: {
         customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
-          return <Box>{`${formatNumber(item.token || 0)}`}</Box>;
+          return <Box>{`${formatNumber(item.token || 0, locale)}`}</Box>;
         },
       },
     },
@@ -132,7 +132,7 @@ const Table = ({
       options: {
         customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
           const item = traces[rowIndex];
-          return <Box>{`$${formatNumber((item.cost || 0).toFixed(6))}`}</Box>;
+          return <Box>{`$${Number(item.cost || 0).toFixed(6)}`}</Box>;
         },
       },
     },

@@ -1,5 +1,4 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import { formatNumber } from "@blocklet/aigne-hub/utils/util";
 import { CallMade, InfoOutlined, TrendingUp } from "@mui/icons-material";
 import { Box, Card, CardContent, Grid, styled, Tooltip, Typography } from "@mui/material";
 import useRequest from "ahooks/lib/useRequest";
@@ -7,6 +6,7 @@ import BigNumber from "bignumber.js";
 import prettyMs from "pretty-ms";
 import { joinURL } from "ufo";
 import Metric from "./components/metric.js";
+import formatNumber from "./utils/format-number.ts";
 import { origin } from "./utils/index.js";
 
 export interface UsageSummaryProps {
@@ -157,22 +157,22 @@ function UsageSummary({
   llmSuccessCount = 0,
   llmTotalDuration = 0,
 }: UsageSummaryProps) {
-  const { t } = useLocaleContext();
+  const { t, locale } = useLocaleContext();
 
   const metrics = [
     {
       title: t("analytics.totalToken"),
-      value: formatNumber(new BigNumber(totalToken || 0).dp(2).toString()),
+      value: formatNumber(new BigNumber(totalToken || 0).dp(2).toNumber(), locale),
       icon: <CallMade color="primary" />,
     },
     {
       title: t("analytics.totalCost"),
-      value: `$${formatNumber((totalCost || 0).toFixed(6))}`,
+      value: `$${Number(totalCost || 0).toFixed(6)}`,
       icon: <TrendingUp color="success" />,
     },
     {
       title: t("analytics.totalCount"),
-      value: `${successCount} / ${totalCount}`,
+      value: `${totalCount}<small>${t("analytics.active")} ${successCount}</small>`,
       icon: <TrendingUp color="success" />,
     },
     {
@@ -182,7 +182,7 @@ function UsageSummary({
     },
     {
       title: t("analytics.llmTotalCount"),
-      value: `${llmSuccessCount} / ${llmTotalCount}`,
+      value: `${llmTotalCount}<small>${t("analytics.active")} ${llmSuccessCount}</small>`,
       icon: <TrendingUp color="success" />,
     },
     {

@@ -24,13 +24,14 @@ const chars = {
   middle: borderColor("│"),
 };
 
+const MAX_CELL_LENGTH = 300;
+
 function renderPagedTable(
   list: { header: string; width?: number; value: any }[][],
-  { maxCols = 6, chars }: { maxCols?: number; chars: any },
+  { maxCols = 6, chars }: { maxCols?: number; chars: Record<string, string> },
 ) {
   if (!list.length) return [];
 
-  const maxLength = 300;
   const tables: string[] = [];
   const head = list[0]?.map((h) => h.header) ?? [];
   const widths = list[0]?.map((h) => h.width ?? 20) ?? [];
@@ -51,8 +52,8 @@ function renderPagedTable(
         row
           .slice(i, i + maxCols)
           .map((h) =>
-            String(h.value).length > maxLength
-              ? `${String(h.value).slice(0, maxLength)}...`
+            String(h.value).length > MAX_CELL_LENGTH
+              ? `${String(h.value).slice(0, MAX_CELL_LENGTH)}...`
               : h.value,
           ),
       );

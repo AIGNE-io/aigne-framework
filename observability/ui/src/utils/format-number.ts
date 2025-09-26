@@ -1,5 +1,5 @@
 const formatNumber = (num: number, locale: string) => {
-  if (typeof num !== "number" || Number.isNaN(num)) {
+  if (num === null || num === undefined || typeof num !== "number" || Number.isNaN(num)) {
     return "0";
   }
 

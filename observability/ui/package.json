@@ -53,7 +53,6 @@
   "dependencies": {
     "@abtnode/util": "^1.16.51",
     "@arcblock/ux": "^3.1.41",
-    "@blocklet/aigne-hub": "^0.4.35",
     "@blocklet/sdk": "^1.16.51",
     "@iconify/react": "^6.0.2",
     "@microsoft/fetch-event-source": "^2.0.1",

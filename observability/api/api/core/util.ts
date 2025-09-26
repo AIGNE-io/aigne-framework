@@ -8,8 +8,6 @@ import type { TraceFormatSpans } from "./type.ts";
 
 export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKLET_PORT;
 
-let price: Record<string, { input_cost_per_token: number; output_cost_per_token: number }>;
-
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   if (Number(trace.endTime) > 0) {
     const model = trace.attributes?.output?.model;
@@ -36,21 +34,18 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
 
       trace.token = new Decimal(inputTokens).plus(outputTokens).toNumber();
 
-      if (!price) {
-        try {
-          price = JSON.parse(
-            await fs.readFileSync(
-              // @ts-ignore
-              path.join(import.meta.dirname, "../../../dist/model-prices.json"),
-              "utf8",
-            ),
-          );
-        } catch {
-          price = {};
-        }
+      let price = {};
+      try {
+        const relativePath = !process?.env?.BLOCKLET_APP_DIR
+          ? "../../../dist"
+          : path.resolve(process?.env?.BLOCKLET_APP_DIR!, "dist");
+        const fullPath = path.resolve(__dirname, relativePath, "model-prices.json");
+        price = JSON.parse(await fs.readFileSync(path.join(fullPath), "utf8"));
+      } catch {
+        price = {};
       }
 
-      if (price && model) {
+      if (price && Object.keys(price).length > 0 && model) {
         const value = price[model as keyof typeof price] as {
           input_cost_per_token: number;
           output_cost_per_token: number;

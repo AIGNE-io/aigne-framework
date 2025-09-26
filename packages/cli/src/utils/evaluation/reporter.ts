@@ -24,6 +24,47 @@ const chars = {
   middle: borderColor("│"),
 };
 
+const MAX_CELL_LENGTH = 300;
+
+function renderPagedTable(
+  list: { header: string; width?: number; value: any }[][],
+  { maxCols = 6, chars }: { maxCols?: number; chars: Record<string, string> },
+) {
+  if (!list.length) return [];
+
+  const tables: string[] = [];
+  const head = list[0]?.map((h) => h.header) ?? [];
+  const widths = list[0]?.map((h) => h.width ?? 20) ?? [];
+
+  for (let i = 0; i < head.length; i += maxCols) {
+    const subHead = head.slice(i, i + maxCols);
+    const subWidths = widths.slice(i, i + maxCols);
+
+    const table = new Table({
+      head: subHead,
+      colWidths: subWidths,
+      wordWrap: true,
+      chars,
+    });
+
+    for (const row of list) {
+      table.push(
+        row
+          .slice(i, i + maxCols)
+          .map((h) =>
+            String(h.value).length > MAX_CELL_LENGTH
+              ? `${String(h.value).slice(0, MAX_CELL_LENGTH)}...`
+              : h.value,
+          ),
+      );
+    }
+
+    tables.push(table.toString());
+  }
+
+  return tables;
+}
+
 export class BaseReporter implements Reporter {
   name = "base";
 
@@ -50,7 +91,6 @@ export class BaseReporter implements Reporter {
           width: 40,
           value: r.expected ? JSON.stringify(r.expected) : "-",
         },
-        { header: "Error", key: "Error", width: 20, value: r.error ?? "-" },
         {
           header: "Evaluations",
           key: "Evaluations",
@@ -63,6 +103,7 @@ export class BaseReporter implements Reporter {
           width: 20,
           value: r.evaluations.map((e) => `${e.rating}`).join(", "),
         },
+        { header: "Error", key: "Error", width: 20, value: r.error ?? "-" },
         {
           header: "Reason",
           key: "Reason",
@@ -155,19 +196,10 @@ export class ConsoleReporter extends BaseReporter {
     if (!list.length) return;
 
     console.log("\n=== 📋 Detailed Results ===");
-    const head = list[0]?.map((h) => h.header) ?? [];
-    const colWidths = list[0]?.map((h) => h.width) ?? [];
-    const detailTable = new Table({
-      head,
-      colWidths,
-      wordWrap: true,
-      chars,
-    });
-
-    for (const r of list) {
-      detailTable.push(r.map((h) => h.value));
+    const pages = renderPagedTable(list, { maxCols: 5, chars });
+    for (const page of pages) {
+      console.log(page);
     }
-    console.log(detailTable.toString());
 
     const failed = report.results.filter((r) => r.error);
     if (failed.length) {

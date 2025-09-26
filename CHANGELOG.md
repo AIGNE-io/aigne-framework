@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.79.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.8...aigne-framework-v1.79.0-beta.9) (2025-09-26)
+
+
+### Bug Fixes
+
+* **core:** check agent by structure instead of instanceOf ([826ef6f](https://github.com/AIGNE-io/aigne-framework/commit/826ef6fd4e9603cf51344e8e5b11af644396220e))
+
 ## [1.79.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.7...aigne-framework-v1.79.0-beta.8) (2025-09-26)
 
 

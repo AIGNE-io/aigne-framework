@@ -11,6 +11,7 @@ import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { isUrl } from "../utils/url.js";
+import { serializeAgent } from "../utils/workers/run-aigne-in-child-process.js";
 import { agentCommandModule } from "./app.js";
 
 export function createRunCommand({
@@ -50,7 +51,7 @@ export function createRunCommand({
 
       if (aigne.cli.chat) {
         subYargs.command({
-          ...agentCommandModule({ dir: path, agent: aigne.cli.chat }),
+          ...agentCommandModule({ dir: path, agent: serializeAgent(aigne.cli.chat) }),
           command: "$0",
         });
       }
@@ -64,7 +65,7 @@ export function createRunCommand({
         aigne.mcpServer.agents,
       );
       for (const agent of allAgents) {
-        subYargs.command(agentCommandModule({ dir: path, agent }));
+        subYargs.command(agentCommandModule({ dir: path, agent: serializeAgent(agent) }));
       }
 
       const argv = process.argv.slice(aigneFilePath ? 3 : 2);

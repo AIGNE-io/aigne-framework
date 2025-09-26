@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.0-beta...observability-ui-v0.11.0-beta.1) (2025-09-26)
+
+
+### Bug Fixes
+
+* **blocklet:** observability blocklet start failure ([#554](https://github.com/AIGNE-io/aigne-framework/issues/554)) ([8431d4d](https://github.com/AIGNE-io/aigne-framework/commit/8431d4d89a4b96f735f23e774e9545bbe1fd811c))
+* **blocklet:** observability blocklet start failure ([#554](https://github.com/AIGNE-io/aigne-framework/issues/554)) ([8431d4d](https://github.com/AIGNE-io/aigne-framework/commit/8431d4d89a4b96f735f23e774e9545bbe1fd811c))
+
 ## [0.11.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.10.1...observability-ui-v0.11.0-beta) (2025-09-25)
 
 

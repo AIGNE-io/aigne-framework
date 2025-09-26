@@ -1,9 +1,9 @@
 import assert from "node:assert";
-import { type Agent, AIGNE, type Message } from "@aigne/core";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { AIGNE, type Message } from "@aigne/core";
 import { loadAIGNE } from "../load-aigne.js";
 import { runAgentWithAIGNE } from "../run-with-aigne.js";
 import { type AgentRunCommonOptions, parseAgentInput } from "../yargs.js";
+import { type AgentInChildProcess, serializeAgent } from "./run-aigne-in-child-process.js";
 
 const METHODS: { [method: string]: (...args: any[]) => Promise<any> } = {
   loadAIGNE: loadAIGNEInChildProcess,
@@ -32,21 +32,6 @@ process.on("message", async ({ method, args }: { method: string; args: any[] }) 
     process.exit(0);
   }
 });
-
-export interface AgentInChildProcess extends Pick<Agent, "name" | "description" | "alias"> {
-  inputSchema: object;
-  outputSchema: object;
-}
-
-function serializeAgent(agent: Agent): AgentInChildProcess {
-  return {
-    name: agent.name,
-    description: agent.description,
-    alias: agent.alias,
-    inputSchema: zodToJsonSchema(agent.inputSchema),
-    outputSchema: zodToJsonSchema(agent.outputSchema),
-  };
-}
 
 export async function loadAIGNEInChildProcess(...args: Parameters<typeof AIGNE.load>): Promise<{
   agents?: AgentInChildProcess[];

@@ -1,12 +1,30 @@
 import { fork } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import type { Agent } from "@aigne/core";
+import type { JsonSchema } from "@aigne/json-schema-to-zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import type {
   invokeCLIAgentFromDirInChildProcess,
   loadAIGNEInChildProcess,
 } from "./run-aigne-in-child-process-worker.js";
 
 export type LoadAIGNEInChildProcessResult = Awaited<ReturnType<typeof loadAIGNEInChildProcess>>;
+
+export interface AgentInChildProcess extends Pick<Agent, "name" | "description" | "alias"> {
+  inputSchema: JsonSchema;
+  outputSchema: JsonSchema;
+}
+
+export function serializeAgent(agent: Agent): AgentInChildProcess {
+  return {
+    name: agent.name,
+    description: agent.description,
+    alias: agent.alias,
+    inputSchema: zodToJsonSchema(agent.inputSchema) as JsonSchema,
+    outputSchema: zodToJsonSchema(agent.outputSchema) as JsonSchema,
+  };
+}
 
 export interface ChildProcessAIGNEMethods {
   loadAIGNE: typeof loadAIGNEInChildProcess;

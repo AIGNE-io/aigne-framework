@@ -9,10 +9,10 @@ import { joinURL } from "ufo";
 import type { CommandModule } from "yargs";
 import { downloadAndExtract } from "../utils/download.js";
 import {
+  type AgentInChildProcess,
   type LoadAIGNEInChildProcessResult,
   runAIGNEInChildProcess,
 } from "../utils/workers/run-aigne-in-child-process.js";
-import type { AgentInChildProcess } from "../utils/workers/run-aigne-in-child-process-worker.js";
 import { type AgentRunCommonOptions, withAgentInputSchema } from "../utils/yargs.js";
 import { serveMCPServerFromDir } from "./serve-mcp.js";
 

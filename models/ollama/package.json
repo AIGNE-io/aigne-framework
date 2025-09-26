@@ -1,6 +1,6 @@
 {
   "name": "@aigne/ollama",
-  "version": "0.7.46-beta.6",
+  "version": "0.7.46-beta.7",
   "description": "AIGNE Ollama SDK for integrating with locally hosted AI models via Ollama",
   "publishConfig": {
     "access": "public"

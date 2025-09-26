@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.61.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.61.0-beta.5...core-v1.61.0-beta.6) (2025-09-26)
+
+
+### Bug Fixes
+
+* multiple input reminder ([#550](https://github.com/AIGNE-io/aigne-framework/issues/550)) ([0ab858f](https://github.com/AIGNE-io/aigne-framework/commit/0ab858fbe5177f02c1ca6af239b4171a358545df))
+
 ## [1.61.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.61.0-beta.4...core-v1.61.0-beta.5) (2025-09-25)
 
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.49.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.0-beta.6...cli-v1.49.0-beta.7) (2025-09-26)
+
+
+### Bug Fixes
+
+* **cli:** options.prompts should always available ([44ca0a6](https://github.com/AIGNE-io/aigne-framework/commit/44ca0a65d910fbd327b89d2f3dfe38ab7d1be7df))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.46-beta.7
+    * @aigne/agentic-memory bumped to 1.0.46-beta.7
+    * @aigne/aigne-hub bumped to 0.10.0-beta.7
+    * @aigne/core bumped to 1.61.0-beta.6
+    * @aigne/default-memory bumped to 1.2.9-beta.7
+    * @aigne/openai bumped to 0.16.0-beta.7
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.53-beta.6
+
 ## [1.49.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.0-beta.5...cli-v1.49.0-beta.6) (2025-09-25)
 
 

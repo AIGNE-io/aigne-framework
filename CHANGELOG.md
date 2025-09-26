@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.79.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.7...aigne-framework-v1.79.0-beta.8) (2025-09-26)
+
+
+### Bug Fixes
+
+* **cli:** options.prompts should always available ([44ca0a6](https://github.com/AIGNE-io/aigne-framework/commit/44ca0a65d910fbd327b89d2f3dfe38ab7d1be7df))
+* multiple input reminder ([#550](https://github.com/AIGNE-io/aigne-framework/issues/550)) ([0ab858f](https://github.com/AIGNE-io/aigne-framework/commit/0ab858fbe5177f02c1ca6af239b4171a358545df))
+
 ## [1.79.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.6...aigne-framework-v1.79.0-beta.7) (2025-09-25)
 
 

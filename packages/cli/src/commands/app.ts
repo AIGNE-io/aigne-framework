@@ -338,7 +338,7 @@ export async function installApp({
 
 async function installDependencies(dir: string, { log }: { log?: (log: string) => void } = {}) {
   await new Promise<void>((resolve, reject) => {
-    const child = spawn("npm", ["install", "--omit", "dev", "--verbose"], {
+    const child = spawn("npm", ["install", "--omit", "dev", "--verbose", "--force"], {
       cwd: dir,
       stdio: "pipe",
       shell: process.platform === "win32",

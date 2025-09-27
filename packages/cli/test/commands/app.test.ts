@@ -6,8 +6,9 @@ import { join } from "node:path";
 import { createAppCommands } from "@aigne/cli/commands/app";
 import * as app from "@aigne/cli/commands/app.js";
 import * as runAIGNEInChildProcess from "@aigne/cli/utils/workers/run-aigne-in-child-process.js";
-import { AIGNE, FunctionAgent } from "@aigne/core";
+import { AIGNE } from "@aigne/core";
 import { omit } from "@aigne/core/utils/type-utils.js";
+import type { JSONSchema } from "openai/lib/jsonschema.mjs";
 import yargs from "yargs";
 import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
@@ -57,8 +58,8 @@ test("app command should register doc-smith to yargs", async () => {
                 title: z.string().describe("Title of doc to generate"),
                 topic: z.string().describe("Topic of doc to generate").nullish(),
               }),
-            ),
-            outputSchema: zodToJsonSchema(z.object({})),
+            ) as JSONSchema,
+            outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
           },
         ],
       },
@@ -199,23 +200,21 @@ test("app command should support serve-mcp subcommand", async () => {
     serveMCPServerFromDir: mockServeMCPServerFromDir,
   }));
 
-  const loadApplication = spyOn(app, "loadApplication").mockReturnValueOnce(
-    Promise.resolve({
-      aigne: new AIGNE({
-        cli: {
-          agents: [
-            FunctionAgent.from({
-              name: "generate",
-              description: "Generate documents by doc-smith",
-              process: () => ({}),
-            }),
-          ],
-        },
-      }),
-      dir: "",
-      version: "1.1.1",
-    }),
-  );
+  const loadApplication = spyOn(app, "loadApplication").mockResolvedValueOnce({
+    aigne: {
+      cli: {
+        agents: [
+          {
+            name: "generate",
+            description: "Generate documents by doc-smith",
+            inputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+            outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+          },
+        ],
+      },
+    },
+    version: "1.1.1",
+  });
 
   await command.parseAsync(["doc-smith", "serve-mcp"]);
 
@@ -253,8 +252,8 @@ test("app command should support upgrade subcommand", async () => {
         {
           name: "generate",
           description: "Generate documents by doc-smith",
-          inputSchema: zodToJsonSchema(z.object({})),
-          outputSchema: zodToJsonSchema(z.object({})),
+          inputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+          outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
         },
       ],
     },

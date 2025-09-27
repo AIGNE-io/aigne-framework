@@ -1,0 +1,1219 @@
+id: 17638b6ecdd7e1fa
+createdAt: 2025-09-27T12:49:50.677Z
+updatedAt: 2025-09-27T12:49:50.677Z
+publishedAt: 2025-09-27T12:49:50.677Z
+isPublic: true
+locales:
+  en:
+    backgroundColor: ""
+    style:
+      maxWidth: custom:1560px
+      paddingY: large
+      paddingX: large
+    title: AIGNE Workflow Patterns | Build Complex AI Logic with Ease
+    description: Discover AIGNE's powerful workflow patterns! From sequential and
+      concurrent to router and reflection, learn how to orchestrate
+      sophisticated AI agents and build complex application logic with clear
+      examples and diagrams.
+    image: mediakit://aigne-framework.png
+    header:
+      sticky: true
+  zh:
+    backgroundColor: ""
+    style:
+      maxWidth: custom:1560px
+      paddingY: large
+      paddingX: large
+    title: AIGNE 工作流模式 | 轻松构建复杂 AI 逻辑
+    description: 探索 AIGNE 强大的工作流模式！从顺序与并发到路由与反思，学习如何协调复杂的 AI 代理并通过清晰的示例与图表构建复杂的应用逻辑。
+    image: mediakit://aigne-framework.png
+    header:
+      sticky: true
+sections:
+  cd5bde18baa5fa64:
+    id: cd5bde18baa5fa64
+    name: Hero
+    component: layout-block
+    sections:
+      f7145915bad7ee51:
+        id: f7145915bad7ee51
+        name: Title
+        component: layout-block
+        sections:
+          32fa38d7c51e3079:
+            id: 32fa38d7c51e3079
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          590ffa5da2272e04:
+            id: 590ffa5da2272e04
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - 32fa38d7c51e3079
+          - 590ffa5da2272e04
+        config:
+          gridSettings:
+            desktop:
+              32fa38d7c51e3079:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              590ffa5da2272e04:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          gap: large
+          paddingX: none
+    sectionIds:
+      - f7145915bad7ee51
+    config:
+      gridSettings:
+        desktop:
+          f7145915bad7ee51:
+            x: 0
+            y: 0
+            w: 8
+            h: 1
+      paddingY: custom:150px
+      background: "linear-gradient(to bottom, #1e1e1e, #121212)"
+      backgroundFullWidth: true
+  b0ff19d620d9d126:
+    id: b0ff19d620d9d126
+    name: Step-2
+    component: layout-block
+    sections:
+      72f4519edda5cd9a:
+        id: 72f4519edda5cd9a
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      a4ca22fa75ace2b0:
+        id: a4ca22fa75ace2b0
+        name: Container
+        component: layout-block
+        sections:
+          0ae2c25b71903de4:
+            id: 0ae2c25b71903de4
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - 0ae2c25b71903de4
+        config:
+          gridSettings:
+            desktop:
+              0ae2c25b71903de4:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+          border: terminal
+    sectionIds:
+      - 72f4519edda5cd9a
+      - a4ca22fa75ace2b0
+    config:
+      gridSettings:
+        desktop:
+          72f4519edda5cd9a:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          a4ca22fa75ace2b0:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          72f4519edda5cd9a:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          a4ca22fa75ace2b0:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  16d9d6d6dd3ed00f:
+    id: 16d9d6d6dd3ed00f
+    name: Step-2
+    component: layout-block
+    sections:
+      e662d6c45a814da9:
+        id: e662d6c45a814da9
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      2f5a01fb73c4eadb:
+        id: 2f5a01fb73c4eadb
+        name: Container
+        component: layout-block
+        sections:
+          1e3f8a6e7192ee4d:
+            id: 1e3f8a6e7192ee4d
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - 1e3f8a6e7192ee4d
+        config:
+          gridSettings:
+            desktop:
+              1e3f8a6e7192ee4d:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+          border: terminal
+    sectionIds:
+      - e662d6c45a814da9
+      - 2f5a01fb73c4eadb
+    config:
+      gridSettings:
+        desktop:
+          e662d6c45a814da9:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          2f5a01fb73c4eadb:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          e662d6c45a814da9:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          2f5a01fb73c4eadb:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  d8dfd84a98473a87:
+    id: d8dfd84a98473a87
+    name: Step-2
+    component: layout-block
+    sections:
+      29aef9b049421e10:
+        id: 29aef9b049421e10
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      872dfaf0ea9f6dd5:
+        id: 872dfaf0ea9f6dd5
+        name: Container
+        component: layout-block
+        sections:
+          c7740f39af614660:
+            id: c7740f39af614660
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - c7740f39af614660
+        config:
+          gridSettings:
+            desktop:
+              c7740f39af614660:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+          border: terminal
+    sectionIds:
+      - 29aef9b049421e10
+      - 872dfaf0ea9f6dd5
+    config:
+      gridSettings:
+        desktop:
+          29aef9b049421e10:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          872dfaf0ea9f6dd5:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          29aef9b049421e10:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          872dfaf0ea9f6dd5:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  4e3e707ed4358d58:
+    id: 4e3e707ed4358d58
+    name: Step-2
+    component: layout-block
+    sections:
+      df15a417f7815db4:
+        id: df15a417f7815db4
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      8c5cc2b4760aa16f:
+        id: 8c5cc2b4760aa16f
+        name: Container
+        component: layout-block
+        sections:
+          d7a5f72157229157:
+            id: d7a5f72157229157
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - d7a5f72157229157
+        config:
+          gridSettings:
+            desktop:
+              d7a5f72157229157:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+          border: terminal
+    sectionIds:
+      - df15a417f7815db4
+      - 8c5cc2b4760aa16f
+    config:
+      gridSettings:
+        desktop:
+          df15a417f7815db4:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          8c5cc2b4760aa16f:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          df15a417f7815db4:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          8c5cc2b4760aa16f:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  b8cc2d2abbfbf7d3:
+    id: b8cc2d2abbfbf7d3
+    name: Step-2
+    component: layout-block
+    sections:
+      c538306628f58aa2:
+        id: c538306628f58aa2
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      6381f3b228d194a7:
+        id: 6381f3b228d194a7
+        name: Container
+        component: layout-block
+        sections:
+          f42d95cd286babfe:
+            id: f42d95cd286babfe
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - f42d95cd286babfe
+        config:
+          gridSettings:
+            desktop:
+              f42d95cd286babfe:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+          border: terminal
+    sectionIds:
+      - c538306628f58aa2
+      - 6381f3b228d194a7
+    config:
+      gridSettings:
+        desktop:
+          c538306628f58aa2:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          6381f3b228d194a7:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          c538306628f58aa2:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          6381f3b228d194a7:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  b91c3c08dc514570:
+    id: b91c3c08dc514570
+    name: Step-2
+    component: layout-block
+    sections:
+      232d64ab8275e287:
+        id: 232d64ab8275e287
+        name: RichText
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      e20191e496d21333:
+        id: e20191e496d21333
+        name: Container
+        component: layout-block
+        sections:
+          a357c273db4ff1f5:
+            id: a357c273db4ff1f5
+            name: Code
+            component: custom-component
+            config:
+              useCache: true
+              componentId: 2EHGy3vwxlS9JGr2
+            sectionIds: []
+        sectionIds:
+          - a357c273db4ff1f5
+        config:
+          gridSettings:
+            desktop:
+              a357c273db4ff1f5:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: medium
+          height: unset
+          border: terminal
+    sectionIds:
+      - 232d64ab8275e287
+      - e20191e496d21333
+    config:
+      gridSettings:
+        desktop:
+          232d64ab8275e287:
+            x: 0
+            y: 0
+            w: 6
+            h: 1
+          e20191e496d21333:
+            x: 6
+            y: 0
+            w: 6
+            h: 1
+        mobile:
+          232d64ab8275e287:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          e20191e496d21333:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      gap: normal
+  af7acb1ef40da4d6:
+    id: af7acb1ef40da4d6
+    name: CTA
+    component: layout-block
+    sections:
+      a651a066cac2d1de:
+        id: a651a066cac2d1de
+        name: Section Layout
+        component: layout-block
+        sections:
+          33da9b71bbb88843:
+            id: 33da9b71bbb88843
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          4d1b74b24cda6613:
+            id: 4d1b74b24cda6613
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - 33da9b71bbb88843
+          - 4d1b74b24cda6613
+        config:
+          gridSettings:
+            desktop:
+              33da9b71bbb88843:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              4d1b74b24cda6613:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          background: grey.100
+          padding: large
+          gap: large
+          borderRadius: medium
+          border: none
+          paddingY: large
+    sectionIds:
+      - a651a066cac2d1de
+    config:
+      padding: large
+      gridSettings:
+        desktop:
+          a651a066cac2d1de:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+      gap: none
+      paddingX: none
+      paddingY: none
+sectionIds:
+  - cd5bde18baa5fa64
+  - b0ff19d620d9d126
+  - 16d9d6d6dd3ed00f
+  - d8dfd84a98473a87
+  - 4e3e707ed4358d58
+  - b8cc2d2abbfbf7d3
+  - b91c3c08dc514570
+  - af7acb1ef40da4d6
+dataSource:
+  32fa38d7c51e3079:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: |
+              Unleash Powerful AI Logic with AIGNE Workflows
+            style:
+              color: common.white
+              variant: h1
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1754042380003-mnbkkn5fa
+                type: text
+                text: >
+                  Stop wrestling with complex logic! AIGNE gives you a toolkit
+                  of plug-and-play workflow patterns to build sophisticated,
+                  multi-agent applications. Whether you need step-by-step
+                  pipelines, parallel processing, or intelligent routing, you'll
+                  find the perfect pattern to bring your ideas to life.
+                style:
+                  color: common.white
+                  fontSize: 16px
+                  variant: body1
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        kyg0hdy5uqq4gc1o:
+          value: flex-start
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: |
+              用 AIGNE 工作流释放强大的 AI 逻辑
+            style:
+              color: common.white
+              variant: h1
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1754042380003-mnbkkn5fa
+                type: text
+                text: |
+                  别再为复杂逻辑苦恼！AIGNE 为你提供一套即插即用的工作流模式，帮助构建复杂的多代理应用。无论你需要逐步流水线、并行处理，还是智能路由，都能找到合适的模式将想法变为现实。
+                style:
+                  color: common.white
+                  fontSize: 16px
+                  variant: body1
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        kyg0hdy5uqq4gc1o:
+          value: flex-start
+  590ffa5da2272e04:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: See The Code
+              url: link:///examples
+              variant: contained
+              size: large
+              target: _blank
+              needLogin: false
+            - type: link
+              text: Read The Docs
+              url: link:///docs
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
+              needLogin: false
+              imageUrl: ""
+              imageUrlDark: ""
+              imageHoverAnimation: true
+              id: btn-1754042480282-63txf2twj
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        v9979xeclpsbvn0n:
+          value: flex-start
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: 查看代码
+              url: link:///examples
+              variant: contained
+              size: large
+              target: _blank
+              needLogin: false
+            - type: link
+              text: 阅读文档
+              url: link:///docs
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
+              needLogin: false
+              imageUrl: ""
+              imageUrlDark: ""
+              imageHoverAnimation: true
+              id: btn-1754042480282-63txf2twj
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        v9979xeclpsbvn0n:
+          value: flex-start
+  72f4519edda5cd9a:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Sequential Workflow: Step-by-Step Precision"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: Perfect for tasks that need a specific order of operations. Build powerful
+                  pipelines where the output of one agent becomes the input for
+                  the next. It's ideal for content generation, multi-stage data
+                  processing, or any task that requires guaranteed execution
+                  order. You'll love the control and predictability!
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 顺序工作流：逐步精确
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 适用于需要特定操作顺序的任务。构建强大的流水线，使一个代理的输出成为下一个代理的输入。非常适合内容生成、多阶段数据处理或任何需要保证执行顺序的工作，能带来良好的控制性和可预测性。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  0ae2c25b71903de4:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: Sequential Flow Diagram
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            flowchart LR
+
+            in(In) --> conceptExtractor(Concept Extractor) --> writer(Writer)
+            --> formatProof(Format Proof) --> out(Out)
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: 顺序流程图
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            flowchart LR
+
+            in(In) --> conceptExtractor(Concept Extractor) --> writer(Writer)
+            --> formatProof(Format Proof) --> out(Out)
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  e662d6c45a814da9:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Concurrent Workflow: Unleash Parallel Power"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: Why wait? Process multiple independent tasks at the same time to boost
+                  efficiency. This pattern is a game-changer for parallel data
+                  analysis, running multiple evaluations at once, or any
+                  scenario where speed is critical. Get results faster and
+                  optimize your application's performance!
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 并发工作流：释放并行威力
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 无需等待，同时处理多个独立任务以提高效率。该模式非常适合并行数据分析、同时运行多项评估或任何对速度有较高要求的场景。更快获得结果并优化应用性能。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  1e3f8a6e7192ee4d:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: Concurrent Flow Diagram
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            flowchart LR
+
+            in(In) --> featureExtractor(Feature Extractor) -->
+            aggregator(Aggregator)
+
+            in --> audienceAnalyzer(Audience Analyzer) --> aggregator
+
+            aggregator --> out(Out)
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: 并发流程图
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            flowchart LR
+
+            in(In) --> featureExtractor(Feature Extractor) -->
+            aggregator(Aggregator)
+
+            in --> audienceAnalyzer(Audience Analyzer) --> aggregator
+
+            aggregator --> out(Out)
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  29aef9b049421e10:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Router Workflow: Intelligent Task Routing"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: Let your application make smart decisions! The Router pattern directs
+                  incoming requests to the right specialized agent based on the
+                  content. It's the secret behind intelligent customer service
+                  bots, multi-functional assistants, and dynamic response
+                  systems. Build apps that adapt and respond with precision.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 路由工作流：智能任务路由
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 使应用能够做出智能决策。路由模式根据内容将传入请求导向合适的专门代理。这是智能客服机器人、多功能助手和动态响应系统背后的关键。构建能精确适应和响应的应用。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  c7740f39af614660:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: Router Flow Diagram
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: |-
+            flowchart LR
+            in(In) ==> triage(Triage)
+            triage ==> productSupport(Product Support) ==> out(Out)
+            triage -.-> feedback(Feedback) -.-> out
+            triage -.-> other(Other) -.-> out
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: 路由流程图
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: |-
+            flowchart LR
+            in(In) ==> triage(Triage)
+            triage ==> productSupport(Product Support) ==> out(Out)
+            triage -.-> feedback(Feedback) -.-> out
+            triage -.-> other(Other) -.-> out
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  df15a417f7815db4:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Handoff Workflow: Seamless Agent Collaboration"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: Create a team of specialized AI experts! The Handoff pattern allows one
+                  agent to pass control to another, enabling them to collaborate
+                  on complex problems. Perfect for building systems where
+                  different agents handle different stages of a task, creating a
+                  seamless and powerful user experience.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 交接工作流：无缝的代理协作
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 构建一支专业化的 AI
+                  团队。交接模式允许一个代理将控制权传递给另一个代理，使其协作解决复杂问题。适用于不同代理负责任务不同阶段的系统，能够提供顺畅且强大的用户体验。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  d7a5f72157229157:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: Handoff Flow Diagram
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            flowchart LR
+
+            in(In) --> agentA(Agent A) --transfer to b--> agentB(Agent B) -->
+            out(Out)
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: 交接流程图
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            flowchart LR
+
+            in(In) --> agentA(Agent A) --transfer to b--> agentB(Agent B) -->
+            out(Out)
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  c538306628f58aa2:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Reflection Workflow: Self-Improving AI"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: Build agents that learn and improve. The Reflection pattern enables a
+                  workflow where one agent's output is reviewed and refined by
+                  another, creating a feedback loop for quality control. It's
+                  perfect for code reviews, content editing, and any process
+                  that requires iterative improvement.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 反思工作流：自我改进的 AI
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 构建能够学习和改进的代理。反思模式使得一个代理的输出由另一个代理审查和精炼，形成质量控制的反馈回路。非常适用于代码审查、内容编辑以及任何需要迭代改进的流程。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  f42d95cd286babfe:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: Reflection Flow Diagram
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            flowchart LR
+
+            in(In) --Ideas--> coder(Coder) ==Solution==> reviewer(Reviewer)
+            --Approved--> out(Out)
+
+            reviewer ==Rejected==> coder
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: 反思流程图
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            flowchart LR
+
+            in(In) --Ideas--> coder(Coder) ==Solution==> reviewer(Reviewer)
+            --Approved--> out(Out)
+
+            reviewer ==Rejected==> coder
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  232d64ab8275e287:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Code Execution: Bring Your Logic to Life"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: Go beyond conversation and empower your agents to take action. This
+                  workflow allows your AI to dynamically generate and execute
+                  code in a secure sandbox. Solve complex calculations, automate
+                  data analysis, and build truly powerful, autonomous agents
+                  that can solve problems on the fly.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 代码执行：让你的逻辑成为现实
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 超越对话，赋予代理执行操作的能力。该工作流允许 AI
+                  在安全的沙箱中动态生成并执行代码。用于解决复杂计算、自动化数据分析以及构建能够即时解决问题的强大自主代理。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  a357c273db4ff1f5:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: Code Execution Flow Diagram
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: |-
+            flowchart LR
+            in(In) ==> coder(Coder) ==> out(Out)
+            coder -.-> sandbox(Sandbox)
+            sandbox -.-> coder
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: 代码执行流程图
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: |-
+            flowchart LR
+            in(In) ==> coder(Coder) ==> out(Out)
+            coder -.-> sandbox(Sandbox)
+            sandbox -.-> coder
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  33da9b71bbb88843:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Ready to Build Your Masterpiece?
+            style:
+              variant: h1
+        e8f3k7m2n9p4q1s5:
+          value: false
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753381637728-mjjp8nvd5
+                type: text
+                text: You've seen the patterns, now it's time to create! Dive into our examples
+                  to see these workflows in action or head straight to the
+                  documentation to start building your own complex AI
+                  applications with AIGNE.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 准备好构建你的杰作了吗？
+            style:
+              variant: h1
+        e8f3k7m2n9p4q1s5:
+          value: false
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753381637728-mjjp8nvd5
+                type: text
+                text: 你已经了解了这些模式，现在是时候开始创造了！深入我们的示例以查看这些工作流的实际应用，或直接查看文档开始使用 AIGNE 构建你自己的复杂 AI
+                  应用。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  4d1b74b24cda6613:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: Explore Examples
+              url: link:///examples
+              variant: contained
+              size: large
+              target: _blank
+              needLogin: false
+            - type: link
+              text: Start Building Now
+              url: link:///docs/getting-started
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
+              needLogin: false
+              id: btn-1753381708894-gbhxzm1xt
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: 查看示例
+              url: link:///examples
+              variant: contained
+              size: large
+              target: _blank
+              needLogin: false
+            - type: link
+              text: 立即开始构建
+              url: link:///docs/getting-started
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
+              needLogin: false
+              id: btn-1753381708894-gbhxzm1xt

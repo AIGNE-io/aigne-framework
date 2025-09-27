@@ -1,7 +1,7 @@
-id: 423f8449a3d5581e
-createdAt: 2025-09-27T12:49:50.634Z
-updatedAt: 2025-09-27T12:49:50.634Z
-publishedAt: 2025-09-27T12:49:50.634Z
+id: 96b14d369f0994a5
+createdAt: 2025-09-27T12:49:50.667Z
+updatedAt: 2025-09-27T12:49:50.667Z
+publishedAt: 2025-09-27T12:49:50.667Z
 isPublic: true
 locales:
   en:
@@ -10,11 +10,11 @@ locales:
       maxWidth: custom:1560px
       paddingY: large
       paddingX: large
-    title: Join the AIGNE Developer Community | AIGNE Framework
-    description: Connect with the AIGNE community! Find resources for contributing
-      to our open-source project, join the technical forum, and learn about our
-      Elastic-2.0 license.
-    image: mediakit://aigne-framework.png
+    title: AIGNE Observability | Visualize Your Agent's Data Flow in Real-Time
+    description: See your AIGNE agents in action! Our OpenTelemetry-based tools let
+      you visualize trace data, debug workflows, and monitor data flows with
+      incredible clarity. Stop guessing, start seeing.
+    image: mediakit://aigne-observability.png
     header:
       sticky: true
   zh:
@@ -23,69 +23,98 @@ locales:
       maxWidth: custom:1560px
       paddingY: large
       paddingX: large
-    title: 加入 AIGNE 开发者社区 | AIGNE Framework
-    description: 与 AIGNE 社区连接！查找贡献我们开源项目的资源、加入技术论坛，并了解我们的 Elastic-2.0 许可证。
-    image: mediakit://aigne-framework.png
+    title: AIGNE Observability | 实时可视化您的代理数据流
+    description: 查看您的 AIGNE 代理的运行情况！我们基于 OpenTelemetry
+      的工具可让您可视化追踪数据、调试工作流并清晰监控数据流。停止猜测，开始可视化。
+    image: mediakit://aigne-observability.png
     header:
       sticky: true
 sections:
-  cd5bde18baa5fa64:
-    id: cd5bde18baa5fa64
-    name: Hero
+  e6232bec8999d739:
+    id: e6232bec8999d739
+    name: Section
     component: layout-block
     sections:
-      f7145915bad7ee51:
-        id: f7145915bad7ee51
+      42f7799e0d7c5c2d:
+        id: 42f7799e0d7c5c2d
         name: Title
         component: layout-block
         sections:
-          32fa38d7c51e3079:
-            id: 32fa38d7c51e3079
+          e705ebdbc994f82c:
+            id: e705ebdbc994f82c
             name: RichText
             component: custom-component
             config:
               useCache: true
               componentId: xoHu0J44322kDYc-
             sectionIds: []
-          590ffa5da2272e04:
-            id: 590ffa5da2272e04
-            name: Action
-            component: custom-component
-            config:
-              useCache: true
-              componentId: a44r0SiGV9AFn2Fj
-            sectionIds: []
         sectionIds:
-          - 32fa38d7c51e3079
-          - 590ffa5da2272e04
+          - e705ebdbc994f82c
         config:
           gridSettings:
             desktop:
-              32fa38d7c51e3079:
+              e705ebdbc994f82c:
                 x: 0
                 y: 0
                 w: 12
                 h: 1
-              590ffa5da2272e04:
+          alignContent: center
+      d066f0c64100a63a:
+        id: d066f0c64100a63a
+        name: Image Container
+        component: layout-block
+        sections:
+          64b4e2ad6a16d2dd:
+            id: 64b4e2ad6a16d2dd
+            name: Image
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0JPjPs122kaaa-
+            sectionIds: []
+        sectionIds:
+          - 64b4e2ad6a16d2dd
+        config:
+          gridSettings:
+            desktop:
+              64b4e2ad6a16d2dd:
                 x: 0
-                y: 1
+                y: 0
                 w: 12
                 h: 1
-          gap: large
-          paddingX: none
+          borderRadius: medium
+          border: safari
     sectionIds:
-      - f7145915bad7ee51
+      - 42f7799e0d7c5c2d
+      - d066f0c64100a63a
     config:
+      padding: large
+      gap: normal
       gridSettings:
         desktop:
-          f7145915bad7ee51:
-            x: 0
+          42f7799e0d7c5c2d:
+            x: 2
             y: 0
             w: 8
             h: 1
-      paddingY: custom:150px
-      background: "linear-gradient(135deg, #232526 0%, #414345 100%)"
-      backgroundFullWidth: true
+          d066f0c64100a63a:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+        mobile:
+          42f7799e0d7c5c2d:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          d066f0c64100a63a:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      paddingX: none
+      paddingY: none
   527bc42c9719026c:
     id: 527bc42c9719026c
     name: Layout 1x3
@@ -341,105 +370,6 @@ sections:
             y: 2
             w: 12
             h: 1
-  18ba2aba08dd4709:
-    id: 18ba2aba08dd4709
-    name: Section Layout
-    component: layout-block
-    sections:
-      8cc145cdf603c366:
-        id: 8cc145cdf603c366
-        name: Title
-        component: layout-block
-        sections:
-          6e71d4d6a25d20f2:
-            id: 6e71d4d6a25d20f2
-            name: RichText
-            component: custom-component
-            config:
-              useCache: true
-              componentId: xoHu0J44322kDYc-
-            sectionIds: []
-          1dd6374d7abc9b2b:
-            id: 1dd6374d7abc9b2b
-            name: Action
-            component: custom-component
-            config:
-              useCache: true
-              componentId: a44r0SiGV9AFn2Fj
-            sectionIds: []
-        sectionIds:
-          - 6e71d4d6a25d20f2
-          - 1dd6374d7abc9b2b
-        config:
-          gridSettings:
-            desktop:
-              6e71d4d6a25d20f2:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              1dd6374d7abc9b2b:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-          padding: none
-          gap: normal
-          alignContent: center
-      ddd3a39b7defd223:
-        id: ddd3a39b7defd223
-        name: Image Container
-        component: layout-block
-        sections:
-          87105d37871e5e60:
-            id: 87105d37871e5e60
-            name: Image
-            component: custom-component
-            config:
-              useCache: true
-              componentId: xoHu0JPjPs122kaaa-
-            sectionIds: []
-        sectionIds:
-          - 87105d37871e5e60
-        config:
-          gridSettings:
-            desktop:
-              87105d37871e5e60:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-          borderRadius: medium
-          border: safari
-    sectionIds:
-      - 8cc145cdf603c366
-      - ddd3a39b7defd223
-    config:
-      gridSettings:
-        desktop:
-          8cc145cdf603c366:
-            x: 0
-            y: 0
-            w: 6
-            h: 1
-          ddd3a39b7defd223:
-            x: 6
-            y: 0
-            w: 6
-            h: 1
-        mobile:
-          8cc145cdf603c366:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          ddd3a39b7defd223:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-      gap: large
-      paddingY: small
   a70d5c2691268c55:
     id: a70d5c2691268c55
     name: CTA
@@ -482,7 +412,7 @@ sections:
                 y: 1
                 w: 12
                 h: 1
-          background: grey.100
+          background: primary.dark
           padding: large
           gap: large
           borderRadius: medium
@@ -503,126 +433,70 @@ sections:
       paddingX: none
       paddingY: none
 sectionIds:
-  - cd5bde18baa5fa64
+  - e6232bec8999d739
   - 527bc42c9719026c
-  - 18ba2aba08dd4709
   - a70d5c2691268c55
 dataSource:
-  32fa38d7c51e3079:
+  e705ebdbc994f82c:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: |
-              Welcome to the AIGNE Community!
+            text: See Your Agent's Every Move
             style:
-              color: common.white
               variant: h1
+        v5utpm7bu9yvdpnq:
+          value: center
         9ajrz12ik7esfk1z:
           value:
             list:
-              - id: item-1754042380003-mnbkkn5fa
+              - id: item-1753778571489-pi6knln4d
                 type: text
-                text: >
-                  This is where the magic happens! Connect with fellow
-                  developers, share your brilliant ideas, and help shape the
-                  future of AI application development. Let's build something
-                  amazing, together.
+                text: Stop flying blind! AIGNE Observability, built on OpenTelemetry, gives you
+                  a live, visual dashboard to monitor your agent's data flow.
+                  Track traces, logs, and pinpoint exactly what's happening
+                  inside your workflows, instantly.
                 style:
-                  color: common.white
+                  color: ""
                   fontSize: 16px
                   variant: body1
-        v5utpm7bu9yvdpnq:
-          value: flex-start
-        kyg0hdy5uqq4gc1o:
-          value: flex-start
     zh:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: |
-              欢迎来到 AIGNE 社区！
+            text: 查看代理的每一步操作
             style:
-              color: common.white
               variant: h1
+        v5utpm7bu9yvdpnq:
+          value: center
         9ajrz12ik7esfk1z:
           value:
             list:
-              - id: item-1754042380003-mnbkkn5fa
+              - id: item-1753778571489-pi6knln4d
                 type: text
-                text: |
-                  这里是精彩发生的地方！与其他开发者建立联系，分享你的出色想法，并共同塑造 AI 应用开发的未来。让我们一起构建非凡的事物。
+                text: 别再盲目操作！AIGNE Observability 基于
+                  OpenTelemetry，提供实时可视化仪表板以监控代理的数据流。跟踪追踪、日志，并能立即精确定位工作流内部的情况。
                 style:
-                  color: common.white
+                  color: ""
                   fontSize: 16px
                   variant: body1
-        v5utpm7bu9yvdpnq:
-          value: flex-start
-        kyg0hdy5uqq4gc1o:
-          value: flex-start
-  590ffa5da2272e04:
+  64b4e2ad6a16d2dd:
     en:
       properties:
-        b8x4m3n9kp7qtw5r:
+        7m5pz8nefl5j9hqq:
           value:
-            - id: btn-default-1
-              type: link
-              text: Join the Forum
-              url: https://community.arcblock.io/discussions/boards/aigne
-              variant: contained
-              size: large
-              target: _blank
-              needLogin: false
-            - type: link
-              text: View on GitHub
-              url: https://github.com/AIGNE-io/aigne-framework
-              color: ""
-              borderColor: ""
-              variant: outlined
-              size: large
-              target: _blank
-              startIcon: ""
-              endIcon: ""
-              needLogin: false
-              imageUrl: ""
-              imageUrlDark: ""
-              imageHoverAnimation: true
-              id: btn-1754042480282-63txf2twj
-        v5utpm7bu9yvdpnq:
-          value: flex-start
-        v9979xeclpsbvn0n:
-          value: flex-start
+            url: mediakit://aigne-observability.png
+            mediaKitUrl: mediakit://aigne-observability.png
+            width: 4408
+            height: 2258
     zh:
       properties:
-        b8x4m3n9kp7qtw5r:
+        7m5pz8nefl5j9hqq:
           value:
-            - id: btn-default-1
-              type: link
-              text: 加入论坛
-              url: https://community.arcblock.io/discussions/boards/aigne
-              variant: contained
-              size: large
-              target: _blank
-              needLogin: false
-            - type: link
-              text: 在 GitHub 查看
-              url: https://github.com/AIGNE-io/aigne-framework
-              color: ""
-              borderColor: ""
-              variant: outlined
-              size: large
-              target: _blank
-              startIcon: ""
-              endIcon: ""
-              needLogin: false
-              imageUrl: ""
-              imageUrlDark: ""
-              imageHoverAnimation: true
-              id: btn-1754042480282-63txf2twj
-        v5utpm7bu9yvdpnq:
-          value: flex-start
-        v9979xeclpsbvn0n:
-          value: flex-start
+            url: mediakit://aigne-observability.png
+            mediaKitUrl: mediakit://aigne-observability.png
+            width: 4408
+            height: 2258
   f5f0ef1e63c47757:
     en:
       properties:
@@ -632,7 +506,7 @@ dataSource:
           value: center
         gs1rn5jmxfvpxptx:
           value:
-            text: Get Involved and Make an Impact
+            text: Everything You Need to See What's Happening
             style:
               fontSize: 32px
               variant: h1
@@ -641,9 +515,9 @@ dataSource:
             list:
               - id: item-1754037726128-q9f6xufkq
                 type: text
-                text: There are so many ways to be a part of the AIGNE journey. Whether you're a
-                  coder, a thinker, or a problem-solver, your contribution is
-                  what drives us forward.
+                text: Debugging complex agent interactions can be tough. We make it easy and,
+                  dare we say, fun! Here's how you can gain total clarity and
+                  control.
                 style:
                   color: text.secondary
                   fontSize: ""
@@ -656,7 +530,7 @@ dataSource:
           value: center
         gs1rn5jmxfvpxptx:
           value:
-            text: 参与并发挥影响力
+            text: 查看系统运行所需的一切
             style:
               fontSize: 32px
               variant: h1
@@ -665,7 +539,7 @@ dataSource:
             list:
               - id: item-1754037726128-q9f6xufkq
                 type: text
-                text: 有很多方式可以成为 AIGNE 旅程的一部分。无论你是程序员、思考者还是问题解决者，你的贡献推动我们向前。
+                text: 调试复杂的代理交互可能很困难。我们让这变得简单且高效。以下是您如何获得完全的可见性与控制。
                 style:
                   color: text.secondary
                   fontSize: ""
@@ -677,8 +551,8 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: Read Contribution Guide
-              url: https://github.com/AIGNE-io/aigne-framework/blob/main/CONTRIBUTING.md
+              text: ""
+              url: ""
               variant: outlined
               size: large
               target: _blank
@@ -689,8 +563,8 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: 阅读贡献指南
-              url: https://github.com/AIGNE-io/aigne-framework/blob/main/CONTRIBUTING.md
+              text: ""
+              url: ""
               variant: outlined
               size: large
               target: _blank
@@ -700,7 +574,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Contribute Code
+            text: Real-Time Visualization
             style:
               fontSize: ""
               variant: h4
@@ -711,8 +585,8 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: Jump into our open-source repository. Check out our contributing
-                  guidelines to get started with your first pull request.
+                text: Watch trace data and call chains light up as they happen. No more
+                  guesswork—see the full picture, live.
                 style:
                   color: ""
                   fontSize: 16px
@@ -725,7 +599,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 贡献代码
+            text: 实时可视化
             style:
               fontSize: ""
               variant: h4
@@ -736,7 +610,7 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: 加入我们的开源代码库。查看我们的贡献指南，开始你的第一个拉取请求（pull request）。
+                text: 在发生时观看追踪数据和调用链的可视化。无需再猜测——实时查看全貌。
                 style:
                   color: ""
                   fontSize: 16px
@@ -749,7 +623,7 @@ dataSource:
     en:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:github
+          value: mdi:chart-timeline-variant
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -757,7 +631,7 @@ dataSource:
     zh:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:github
+          value: mdi:chart-timeline-variant
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -767,7 +641,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Join the Discussion
+            text: Pinpoint Workflows
             style:
               fontSize: ""
               variant: h4
@@ -778,8 +652,8 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: Share your projects, ask questions, and connect with other developers in
-                  our official technical forum.
+                text: Instantly identify bottlenecks or errors within any AIGNE workflow. You'll
+                  know exactly where to look.
                 style:
                   color: ""
                   fontSize: 16px
@@ -792,7 +666,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 加入讨论
+            text: 精确定位工作流
             style:
               fontSize: ""
               variant: h4
@@ -803,7 +677,7 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: 分享你的项目、提出问题，并在我们的官方技术论坛与其他开发者建立联系。
+                text: 即时识别任何 AIGNE 工作流中的瓶颈或错误。您会准确知道要查看的位置。
                 style:
                   color: ""
                   fontSize: 16px
@@ -816,7 +690,7 @@ dataSource:
     en:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:forum-outline
+          value: mdi:target-arrow
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -824,7 +698,7 @@ dataSource:
     zh:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:forum-outline
+          value: mdi:target-arrow
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -834,7 +708,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Report & Track Issues
+            text: Deploy Anywhere
             style:
               fontSize: ""
               variant: h4
@@ -845,8 +719,8 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: Found a bug or have a feature request? Let us know on GitHub Issues to
-                  help us improve the framework for everyone.
+                text: Run it locally with the AIGNE CLI for quick debugging or deploy it as a
+                  Blocklet for production monitoring. It's ready when you are.
                 style:
                   color: ""
                   fontSize: 16px
@@ -859,7 +733,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 报告与跟踪问题
+            text: 随处部署
             style:
               fontSize: ""
               variant: h4
@@ -870,7 +744,7 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: 发现错误或有功能请求？在 GitHub Issues 上告诉我们，帮助我们为所有人改进框架。
+                text: 使用 AIGNE CLI 在本地运行以便快速调试，或将其作为 Blocklet 部署以进行生产监控。随时可用。
                 style:
                   color: ""
                   fontSize: 16px
@@ -883,7 +757,7 @@ dataSource:
     en:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:bug-outline
+          value: mdi:cloud-sync-outline
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -891,114 +765,171 @@ dataSource:
     zh:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:bug-outline
+          value: mdi:cloud-sync-outline
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
           value: primary.main
-  6e71d4d6a25d20f2:
+  c9671dc4bf62b036:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Licensed for Innovation
+            text: "For Production: Blocklet/Server Mode"
             style:
               variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
         9ajrz12ik7esfk1z:
           value:
             list:
-              - id: item-1753382621853-07ja75k36
+              - id: item-1753781653625-ia4shqnk4
                 type: text
-                text: AIGNE Framework is open-source and licensed under the Elastic-2.0 License.
-                  We believe in transparency and empowering developers to build
-                  freely, with the confidence that the project will remain open
-                  and collaborative.
+                text: Perfect for when you're deploying as a standalone service or integrating
+                  into the AIGNE runtime on your server.
                 style:
                   color: ""
                   fontSize: 16px
                   variant: body1
-        v5utpm7bu9yvdpnq:
-          value: flex-start
     zh:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 许可以支持创新
+            text: 用于生产：Blocklet/服务器 模式
             style:
               variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
         9ajrz12ik7esfk1z:
           value:
             list:
-              - id: item-1753382621853-07ja75k36
+              - id: item-1753781653625-ia4shqnk4
                 type: text
-                text: AIGNE Framework 是开源的，采用 Elastic-2.0
-                  许可证。我们信奉透明并致力于赋能开发者自由构建，让大家有信心项目将保持开放与协作。
+                text: 适用于作为独立服务部署或集成到服务器上的 AIGNE 运行时。
                 style:
                   color: ""
                   fontSize: 16px
                   variant: body1
-        v5utpm7bu9yvdpnq:
-          value: flex-start
-  1dd6374d7abc9b2b:
+  5924f5ccb93bd13f:
     en:
       properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: btn-default-1
-              type: link
-              text: Read the Full License
-              url: https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md
-              variant: outlined
-              size: medium
-              target: _self
-              needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: flex-start
+        b2jrz12ik7esf93z:
+          value: server.js
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { startObservabilityBlockletServer } from
+            "@aigne/observability-api/server";
+
+
+            startObservabilityBlockletServer({
+              port: Number(process.env.BLOCKLET_PORT) || 3000,
+              dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
+            });
+        d8hvf7cxz93jk5p:
+          value: 1rem
     zh:
       properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: btn-default-1
-              type: link
-              text: 阅读完整许可证
-              url: https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md
-              variant: outlined
-              size: medium
-              target: _self
-              needLogin: false
-        v5utpm7bu9yvdpnq:
-          value: flex-start
-  87105d37871e5e60:
+        b2jrz12ik7esf93z:
+          value: server.js
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { startObservabilityBlockletServer } from
+            "@aigne/observability-api/server";
+
+
+            startObservabilityBlockletServer({
+              port: Number(process.env.BLOCKLET_PORT) || 3000,
+              dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
+            });
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  cb14d3a91ebc8c71:
     en:
       properties:
-        7m5pz8nefl5j9hqq:
+        gs1rn5jmxfvpxptx:
           value:
-            url: mediakit://aigne.png
-            mediaKitUrl: mediakit://aigne.png
-            width: 5088
-            height: 2562
-        02dp1e6zfq2xwkt3:
-          value: auto
-        x8beiec3fxx5des1:
-          value: 100%
+            text: "For Local Dev: CLI Mode"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: Super lightweight and ideal for your local development environment. Get it
+                  running with the AIGNE CLI for instant feedback.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
     zh:
       properties:
-        7m5pz8nefl5j9hqq:
+        gs1rn5jmxfvpxptx:
           value:
-            url: mediakit://aigne.png
-            mediaKitUrl: mediakit://aigne.png
-            width: 5088
-            height: 2562
-        02dp1e6zfq2xwkt3:
-          value: auto
-        x8beiec3fxx5des1:
-          value: 100%
+            text: 用于本地开发：CLI 模式
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 非常轻量，适合本地开发环境。使用 AIGNE CLI 启动即可获得即时反馈。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  f18aa16444c127ac:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: cli.js
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { startObservabilityCLIServer } from
+            "@aigne/observability-api/cli";
+
+
+            startObservabilityCLIServer({
+              port: 7890,
+              dbUrl: "file:observer.db",
+            });
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: cli.js
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { startObservabilityCLIServer } from
+            "@aigne/observability-api/cli";
+
+
+            startObservabilityCLIServer({
+              port: 7890,
+              dbUrl: "file:observer.db",
+            });
+        d8hvf7cxz93jk5p:
+          value: 1rem
   a91fb517ee087e8c:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Ready to Dive In?
+            text: Ready to Illuminate Your Workflows?
             style:
               variant: h1
         e8f3k7m2n9p4q1s5:
@@ -1008,8 +939,8 @@ dataSource:
             list:
               - id: item-1753381637728-mjjp8nvd5
                 type: text
-                text: Your next big idea is just a conversation away. Join our vibrant community
-                  today and start building the future of AI.
+                text: Stop guessing and start seeing. Dive into the documentation to explore
+                  advanced usage or jump right into the getting started guide.
                 style:
                   color: ""
                   fontSize: 16px
@@ -1018,7 +949,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 准备好深入参与了吗？
+            text: 准备好让工作流可视化了吗？
             style:
               variant: h1
         e8f3k7m2n9p4q1s5:
@@ -1028,7 +959,7 @@ dataSource:
             list:
               - id: item-1753381637728-mjjp8nvd5
                 type: text
-                text: 你的下一个重要创意可能只差一次对话。今天就加入我们充满活力的社区，开始构建 AI 的未来。
+                text: 停止猜测，开始查看。深入文档以探索高级用法，或直接进入入门指南开始。
                 style:
                   color: ""
                   fontSize: 16px
@@ -1040,15 +971,15 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: Go to the Forum
-              url: https://community.arcblock.io/discussions/boards/aigne
+              text: Read the Docs
+              url: link:///docs
               variant: contained
               size: large
               target: _blank
               needLogin: false
             - type: link
-              text: Star us on GitHub
-              url: https://github.com/AIGNE-io/aigne-framework
+              text: Get Started Now
+              url: link:///docs/getting-started
               color: ""
               borderColor: ""
               variant: outlined
@@ -1064,15 +995,15 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: 前往论坛
-              url: https://community.arcblock.io/discussions/boards/aigne
+              text: 阅读文档
+              url: link:///docs
               variant: contained
               size: large
               target: _blank
               needLogin: false
             - type: link
-              text: 在 GitHub 上为我们加星
-              url: https://github.com/AIGNE-io/aigne-framework
+              text: 立即开始
+              url: link:///docs/getting-started
               color: ""
               borderColor: ""
               variant: outlined

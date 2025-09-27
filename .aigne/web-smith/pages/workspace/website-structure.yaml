@@ -1,86 +1,80 @@
-- title: AIGNE Framework | Build Modern AI Applications
-  description: Landing page for AIGNE Framework, highlighting its key features
-    like modular design, multi-model support, and flexible workflows. Includes a
-    quick start example and calls-to-action for developers.
+- title: Home
+  description: Landing page for AIGNE Framework, introducing its core value
+    proposition, key features, and architecture. It's designed to quickly
+    convert developers into users by showcasing its capabilities and providing a
+    clear call-to-action to the documentation.
   path: /home
   sourceIds:
     - README.md
   parentId: ""
-- title: Get Started
-  description: A step-by-step guide for developers to install and start using the
-    AIGNE Framework, including environment requirements, installation commands,
-    and a basic usage example.
-  path: /get-started
-  sourceIds:
-    - README.md
-  parentId: ""
 - title: Documentation
-  description: Central hub for all AIGNE Framework technical documentation,
-    providing access to core concepts, architecture diagrams, workflow patterns,
-    and the complete API reference.
+  description: A central hub for all technical documentation, providing developers
+    with the necessary resources to understand and implement the AIGNE
+    Framework.
   path: /docs
   sourceIds:
     - README.md
-    - architecture.md
+    - blocklets/aigne-runtime/README.md
   parentId: ""
-- title: Core Concepts
-  description: Explore the fundamental principles of the AIGNE Framework,
-    including its modular design, agent system, TypeScript support, multiple AI
-    model integration, and the Model Context Protocol (MCP).
-  path: /docs/concepts
+- title: Getting Started
+  description: A step-by-step guide for developers to install the AIGNE Framework,
+    understand environment requirements, and run their first usage example. This
+    page aims to provide a smooth onboarding experience.
+  path: /docs/getting-started
   sourceIds:
     - README.md
     - packages/core/README.md
   parentId: /docs
 - title: Architecture
-  description: An overview of the AIGNE Framework's three-layer architecture,
-    detailing the Tools, Framework Core, and Hub & LLM Provider layers,
-    illustrated with a clear diagram.
+  description: A detailed overview of the AIGNE Framework's three-layer
+    architecture, explaining the Tools, Framework Core, and Hub & LLM Providers
+    layers. This helps developers understand the framework's design principles
+    and how components interact.
   path: /docs/architecture
   sourceIds:
-    - README.md
     - architecture.md
+    - README.md
   parentId: /docs
-- title: Workflow Patterns
-  description: A detailed guide to the various workflow patterns supported by
-    AIGNE, such as Sequential, Concurrent, Router, Handoff, Reflection, and Code
-    Execution, with diagrams and use cases.
-  path: /docs/workflows
+- title: Workflows
+  description: Showcases the flexible and powerful workflow patterns supported by
+    AIGNE, such as Sequential, Concurrent, Router, Handoff, and Reflection. Each
+    pattern is explained with diagrams and use cases to help developers build
+    complex application logic.
+  path: /workflows
   sourceIds:
     - README.md
-    - examples/workflow-router/README.md
     - examples/workflow-sequential/README.md
     - examples/workflow-concurrency/README.md
+    - examples/workflow-router/README.md
     - examples/workflow-handoff/README.md
     - examples/workflow-reflection/README.md
-    - examples/workflow-orchestrator/README.md
     - examples/workflow-code-execution/README.md
     - examples/workflow-group-chat/README.md
-  parentId: /docs
-- title: API Reference
-  description: Comprehensive reference for all packages within the AIGNE Framework
-    ecosystem, including @aigne/core, @aigne/transport, various model
-    integrations, and the agent library.
-  path: /docs/api
+    - examples/workflow-orchestrator/README.md
+  parentId: ""
+- title: Ecosystem
+  description: Explores the rich ecosystem of AIGNE, detailing the available
+    packages like Core, CLI, and Agent Libraries, and listing the supported AI
+    models from providers like OpenAI, Gemini, Anthropic, and more.
+  path: /ecosystem
   sourceIds:
     - README.md
     - packages/core/README.md
     - packages/agent-library/README.md
     - packages/cli/README.md
     - models/openai/README.md
+    - models/gemini/README.md
     - models/anthropic/README.md
     - models/bedrock/README.md
     - models/deepseek/README.md
-    - models/gemini/README.md
     - models/ollama/README.md
     - models/open-router/README.md
     - models/xai/README.md
-    - packages/transport/README.md
-  parentId: /docs
+  parentId: ""
 - title: Examples
-  description: A collection of practical examples demonstrating how to use the
-    AIGNE Framework for various tasks, including chatbots, MCP integration,
-    memory management, and different workflow patterns.
+  description: A curated collection of practical examples and demos, such as
+    chatbots, MCP integrations, and various workflow implementations. This page
+    serves as a practical resource for developers to learn from and build upon.
   path: /examples
   sourceIds:
     - examples/README.md
@@ -91,11 +85,28 @@
     - examples/mcp-puppeteer/README.md
     - examples/mcp-sqlite/README.md
   parentId: ""
-- title: Community & Support
-  description: Join the AIGNE developer community. Find information on
-    contributing to the project, links to the technical forum, and details about
-    the project's Elastic-2.0 license.
+- title: Community
+  description: A space for developers to connect with the AIGNE community.
+    Provides information on contributing to the open-source project, links to
+    the technical forum, and details about the project's license.
   path: /community
   sourceIds:
     - README.md
+  parentId: ""
+- title: About
+  description: Learn more about the AIGNE Framework, including the origin and
+    meaning of its name. This page will also feature information about the team
+    behind the project.
+  path: /about
+  sourceIds:
+    - README.md
+  parentId: ""
+- title: Observability
+  description: Discover AIGNE's visual monitoring tools built on OpenTelemetry.
+    This page explains how developers can visualize trace data, pinpoint
+    workflows, and monitor agent data flow in real-time.
+  path: /observability
+  sourceIds:
+    - observability/api/README.md
+    - blocklets/aigne-runtime/node_modules/@aigne/observability-api/README.md
   parentId: ""

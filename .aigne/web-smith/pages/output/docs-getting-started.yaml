@@ -1,0 +1,1101 @@
+id: 4ba73a7570ac48c9
+createdAt: 2025-09-27T12:49:50.645Z
+updatedAt: 2025-09-27T12:49:50.645Z
+publishedAt: 2025-09-27T12:49:50.645Z
+isPublic: true
+locales:
+  en:
+    backgroundColor: ""
+    style:
+      maxWidth: custom:1560px
+      paddingY: large
+      paddingX: large
+    title: Getting Started with AIGNE Framework | Quickstart Guide
+    description: Your step-by-step guide to installing the AIGNE Framework. Set up
+      your environment and run your first AI agent in just a few minutes!
+    header:
+      sticky: true
+  zh:
+    backgroundColor: ""
+    style:
+      maxWidth: custom:1560px
+      paddingY: large
+      paddingX: large
+    title: 开始使用 AIGNE Framework | 快速入门指南
+    description: 一步步教你安装 AIGNE Framework。设置好环境，几分钟内运行你的第一个 AI 代理！
+    header:
+      sticky: true
+sections:
+  43483e566b924717:
+    id: 43483e566b924717
+    name: Hero
+    component: layout-block
+    sections:
+      01c7c3d0f9bba783:
+        id: 01c7c3d0f9bba783
+        name: Title
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      ef12534e7d00bbc9:
+        id: ef12534e7d00bbc9
+        name: Section Layout
+        component: layout-block
+        sections:
+          9914d42155ac4e72:
+            id: 9914d42155ac4e72
+            name: Section Layout
+            component: layout-block
+            sections:
+              2850505d04303bf1:
+                id: 2850505d04303bf1
+                name: Code
+                component: custom-component
+                config:
+                  useCache: true
+                  componentId: 2EHGy3vwxlS9JGr2
+                sectionIds: []
+            sectionIds:
+              - 2850505d04303bf1
+            config:
+              gridSettings:
+                desktop:
+                  2850505d04303bf1:
+                    x: 0
+                    y: 0
+                    w: 12
+                    h: 1
+              borderRadius: small
+        sectionIds:
+          - 9914d42155ac4e72
+        config:
+          gridSettings:
+            desktop:
+              9914d42155ac4e72:
+                x: 0
+                y: 0
+                w: 5
+                h: 1
+            mobile:
+              9914d42155ac4e72:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+          borderRadius: none
+          alignContent: center
+    sectionIds:
+      - 01c7c3d0f9bba783
+      - ef12534e7d00bbc9
+    config:
+      gridSettings:
+        desktop:
+          01c7c3d0f9bba783:
+            x: 0
+            y: 0
+            w: 8
+            h: 1
+          ef12534e7d00bbc9:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+      paddingY: custom:150px
+      paddingX: none
+      backgroundFullWidth: true
+      background: primary.dark
+      gap: large
+  527bc42c9719026c:
+    id: 527bc42c9719026c
+    name: Layout 1x3
+    component: layout-block
+    sections:
+      f5f0ef1e63c47757:
+        id: f5f0ef1e63c47757
+        name: Title
+        component: custom-component
+        config:
+          useCache: true
+          componentId: xoHu0J44322kDYc-
+        sectionIds: []
+      455ad2ddade30c52:
+        id: 455ad2ddade30c52
+        name: CardList
+        component: layout-block
+        sections:
+          0e438a393b666432:
+            id: 0e438a393b666432
+            name: CardList-1
+            component: layout-block
+            sections:
+              3fe0e876ba2bc9be:
+                id: 3fe0e876ba2bc9be
+                name: Card
+                component: layout-block
+                sections:
+                  d623545c67c0bae5:
+                    id: d623545c67c0bae5
+                    name: Icon
+                    component: custom-component
+                    config:
+                      useCache: true
+                      componentId: YwuDiIbyyF5vfGpt
+                    sectionIds: []
+                  f2fceaee42d5c604:
+                    id: f2fceaee42d5c604
+                    name: RichText
+                    component: custom-component
+                    config:
+                      useCache: true
+                      componentId: xoHu0J44322kDYc-
+                    sectionIds: []
+                sectionIds:
+                  - d623545c67c0bae5
+                  - f2fceaee42d5c604
+                config:
+                  gridSettings:
+                    desktop:
+                      f2fceaee42d5c604:
+                        x: 0
+                        y: 1
+                        w: 12
+                        h: 1
+                      d623545c67c0bae5:
+                        x: 0
+                        y: 0
+                        w: 4
+                        h: 1
+                  padding: normal
+                  background: transparent
+                  gap: normal
+                  borderRadius: none
+                  border: none
+                  alignContent: start
+                  paddingY: none
+                  paddingX: none
+            sectionIds:
+              - 3fe0e876ba2bc9be
+            config:
+              gridSettings:
+                desktop: {}
+              gap: normal
+              paddingX: large
+              paddingY: large
+              background: background.paper
+              borderRadius: none
+          209534d5a63eec4d:
+            id: 209534d5a63eec4d
+            name: CardList-2
+            component: layout-block
+            sections:
+              cc7c79ac6a9844e5:
+                id: cc7c79ac6a9844e5
+                name: Step-2
+                component: layout-block
+                sections:
+                  4c9b2416efc74e91:
+                    id: 4c9b2416efc74e91
+                    name: RichText
+                    component: custom-component
+                    config:
+                      useCache: true
+                      componentId: xoHu0J44322kDYc-
+                    sectionIds: []
+                  afbf383cd0cd0a2e:
+                    id: afbf383cd0cd0a2e
+                    name: Container
+                    component: layout-block
+                    sections:
+                      39d863798f35c7a6:
+                        id: 39d863798f35c7a6
+                        name: Code
+                        component: custom-component
+                        config:
+                          useCache: true
+                          componentId: 2EHGy3vwxlS9JGr2
+                        sectionIds: []
+                    sectionIds:
+                      - 39d863798f35c7a6
+                    config:
+                      gridSettings:
+                        desktop:
+                          39d863798f35c7a6:
+                            x: 0
+                            y: 0
+                            w: 12
+                            h: 1
+                      borderRadius: medium
+                      height: unset
+                      border: terminal
+                sectionIds:
+                  - 4c9b2416efc74e91
+                  - afbf383cd0cd0a2e
+                config:
+                  gridSettings:
+                    desktop:
+                      4c9b2416efc74e91:
+                        x: 0
+                        y: 0
+                        w: 6
+                        h: 1
+                      afbf383cd0cd0a2e:
+                        x: 6
+                        y: 0
+                        w: 6
+                        h: 1
+                    mobile:
+                      4c9b2416efc74e91:
+                        x: 0
+                        y: 0
+                        w: 12
+                        h: 1
+                      afbf383cd0cd0a2e:
+                        x: 0
+                        y: 1
+                        w: 12
+                        h: 1
+                  gap: normal
+            sectionIds:
+              - cc7c79ac6a9844e5
+            config:
+              gridSettings:
+                desktop: {}
+              gap: normal
+              paddingX: large
+              paddingY: large
+              background: background.paper
+              borderRadius: none
+          d47318693d81eb59:
+            id: d47318693d81eb59
+            name: CardList-3
+            component: layout-block
+            sections:
+              6a9c6c11f0e86ea3:
+                id: 6a9c6c11f0e86ea3
+                name: Step-2
+                component: layout-block
+                sections:
+                  efa77b3f9e4074a7:
+                    id: efa77b3f9e4074a7
+                    name: RichText
+                    component: custom-component
+                    config:
+                      useCache: true
+                      componentId: xoHu0J44322kDYc-
+                    sectionIds: []
+                  95927d55c021533c:
+                    id: 95927d55c021533c
+                    name: Container
+                    component: layout-block
+                    sections:
+                      9630889a92eacd9c:
+                        id: 9630889a92eacd9c
+                        name: Code
+                        component: custom-component
+                        config:
+                          useCache: true
+                          componentId: 2EHGy3vwxlS9JGr2
+                        sectionIds: []
+                    sectionIds:
+                      - 9630889a92eacd9c
+                    config:
+                      gridSettings:
+                        desktop:
+                          9630889a92eacd9c:
+                            x: 0
+                            y: 0
+                            w: 12
+                            h: 1
+                      borderRadius: medium
+                      height: unset
+                      border: terminal
+                sectionIds:
+                  - efa77b3f9e4074a7
+                  - 95927d55c021533c
+                config:
+                  gridSettings:
+                    desktop:
+                      efa77b3f9e4074a7:
+                        x: 0
+                        y: 0
+                        w: 6
+                        h: 1
+                      95927d55c021533c:
+                        x: 6
+                        y: 0
+                        w: 6
+                        h: 1
+                    mobile:
+                      efa77b3f9e4074a7:
+                        x: 0
+                        y: 0
+                        w: 12
+                        h: 1
+                      95927d55c021533c:
+                        x: 0
+                        y: 1
+                        w: 12
+                        h: 1
+                  gap: normal
+            sectionIds:
+              - 6a9c6c11f0e86ea3
+            config:
+              gridSettings:
+                desktop: {}
+              gap: normal
+              paddingX: large
+              paddingY: large
+              background: background.paper
+              borderRadius: none
+        sectionIds:
+          - 0e438a393b666432
+          - 209534d5a63eec4d
+          - d47318693d81eb59
+        config:
+          gridSettings:
+            desktop:
+              0e438a393b666432:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              209534d5a63eec4d:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+              d47318693d81eb59:
+                x: 0
+                y: 2
+                w: 12
+                h: 1
+          gap: normal
+      41ab00ee9bcc38fb:
+        id: 41ab00ee9bcc38fb
+        name: Action
+        component: custom-component
+        config:
+          useCache: true
+          componentId: a44r0SiGV9AFn2Fj
+        sectionIds: []
+    sectionIds:
+      - f5f0ef1e63c47757
+      - 455ad2ddade30c52
+      - 41ab00ee9bcc38fb
+    config:
+      gap: normal
+      paddingX: none
+      maxWidth: full
+      paddingY: none
+      gridSettings:
+        desktop:
+          f5f0ef1e63c47757:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+          455ad2ddade30c52:
+            x: 0
+            y: 1
+            w: 12
+            h: 1
+          41ab00ee9bcc38fb:
+            x: 0
+            y: 2
+            w: 12
+            h: 1
+  bde360d84f67b360:
+    id: bde360d84f67b360
+    name: CTA
+    component: layout-block
+    sections:
+      b70cd8475dcc784d:
+        id: b70cd8475dcc784d
+        name: Section Layout
+        component: layout-block
+        sections:
+          2dd08b573b6c205e:
+            id: 2dd08b573b6c205e
+            name: RichText
+            component: custom-component
+            config:
+              useCache: true
+              componentId: xoHu0J44322kDYc-
+            sectionIds: []
+          314d2fda36ec223d:
+            id: 314d2fda36ec223d
+            name: Action
+            component: custom-component
+            config:
+              useCache: true
+              componentId: a44r0SiGV9AFn2Fj
+            sectionIds: []
+        sectionIds:
+          - 2dd08b573b6c205e
+          - 314d2fda36ec223d
+        config:
+          gridSettings:
+            desktop:
+              2dd08b573b6c205e:
+                x: 0
+                y: 0
+                w: 12
+                h: 1
+              314d2fda36ec223d:
+                x: 0
+                y: 1
+                w: 12
+                h: 1
+          background: grey.100
+          padding: large
+          gap: large
+          borderRadius: medium
+          border: none
+          paddingY: large
+    sectionIds:
+      - b70cd8475dcc784d
+    config:
+      padding: large
+      gridSettings:
+        desktop:
+          b70cd8475dcc784d:
+            x: 0
+            y: 0
+            w: 12
+            h: 1
+      gap: none
+      paddingX: none
+      paddingY: none
+sectionIds:
+  - 43483e566b924717
+  - 527bc42c9719026c
+  - bde360d84f67b360
+dataSource:
+  01c7c3d0f9bba783:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Let's Build Your First AI Agent!
+            style:
+              color: common.white
+              variant: h1
+        kyg0hdy5uqq4gc1o:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1754131284858-7ip6im6yq
+                type: text
+                text: You're just moments away from building powerful, agentic AI applications.
+                  This guide gets you installed and running your first AIGNE
+                  workflow in no time. Let's dive in!
+                style:
+                  color: common.white
+                  fontSize: 16px
+                  variant: body1
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 让我们构建你的第一个 AI 代理！
+            style:
+              color: common.white
+              variant: h1
+        kyg0hdy5uqq4gc1o:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1754131284858-7ip6im6yq
+                type: text
+                text: 你即将构建强大的具代理性 AI 应用。本指南帮助你安装并运行第一个 AIGNE 工作流，快速上手。我们开始吧！
+                style:
+                  color: common.white
+                  fontSize: 16px
+                  variant: body1
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+  2850505d04303bf1:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: basic-usage.ts
+        a7frn5jmx5vpxpt3:
+          value: |-
+            import { AIAgent, AIGNE } from "@aigne/core";
+            import { OpenAIChatModel } from "@aigne/openai";
+
+            // Create AI model instance
+            const model = new OpenAIChatModel({
+              apiKey: process.env.OPENAI_API_KEY,
+            });
+
+            // Create AI agent
+            const agent = AIAgent.from({
+              name: "Assistant",
+              instructions: "You are a helpful assistant.",
+            });
+
+            // AIGNE: Main execution engine of AIGNE Framework.
+            const aigne = new AIGNE({ model });
+
+            // Use the AIGNE to invoke the agent
+            const userAgent = await aigne.invoke(agent);
+
+            // Send a message to the agent
+            const response = await userAgent.invoke(
+              "Hello, can you help me write a short article?",
+            );
+            console.log(response);
+        e9kvx5d7y82lm3n:
+          value: default
+        qvxiyadgn5bj6oq8:
+          value: false
+        c4kvf6b7zyskk8m:
+          value: false
+        7mp2u9tibl03thp6:
+          value: shell
+        d8hvf7cxz93jk5p:
+          value: 1rem
+        3uqbvyqzsluuv5hs:
+          value: "500"
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: basic-usage.ts
+        a7frn5jmx5vpxpt3:
+          value: |-
+            import { AIAgent, AIGNE } from "@aigne/core";
+            import { OpenAIChatModel } from "@aigne/openai";
+
+            // Create AI model instance
+            const model = new OpenAIChatModel({
+              apiKey: process.env.OPENAI_API_KEY,
+            });
+
+            // Create AI agent
+            const agent = AIAgent.from({
+              name: "Assistant",
+              instructions: "You are a helpful assistant.",
+            });
+
+            // AIGNE: Main execution engine of AIGNE Framework.
+            const aigne = new AIGNE({ model });
+
+            // Use the AIGNE to invoke the agent
+            const userAgent = await aigne.invoke(agent);
+
+            // Send a message to the agent
+            const response = await userAgent.invoke(
+              "Hello, can you help me write a short article?",
+            );
+            console.log(response);
+        e9kvx5d7y82lm3n:
+          value: default
+        qvxiyadgn5bj6oq8:
+          value: false
+        c4kvf6b7zyskk8m:
+          value: false
+        7mp2u9tibl03thp6:
+          value: shell
+        d8hvf7cxz93jk5p:
+          value: 1rem
+        3uqbvyqzsluuv5hs:
+          value: "500"
+  f5f0ef1e63c47757:
+    en:
+      properties:
+        v5utpm7bu9yvdpnq:
+          value: center
+        kyg0hdy5uqq4gc1o:
+          value: center
+        gs1rn5jmxfvpxptx:
+          value:
+            text: Ready, Set, Go!
+            style:
+              fontSize: 32px
+              variant: h1
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1754037726128-q9f6xufkq
+                type: text
+                text: Getting started is a breeze! Just follow these simple steps to get the
+                  AIGNE Framework up and running in your project.
+                style:
+                  color: text.secondary
+                  fontSize: ""
+                  variant: body1
+    zh:
+      properties:
+        v5utpm7bu9yvdpnq:
+          value: center
+        kyg0hdy5uqq4gc1o:
+          value: center
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 准备，出发！
+            style:
+              fontSize: 32px
+              variant: h1
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1754037726128-q9f6xufkq
+                type: text
+                text: 入门非常简单！按照以下步骤在你的项目中安装并运行 AIGNE Framework。
+                style:
+                  color: text.secondary
+                  fontSize: ""
+                  variant: body1
+  41ab00ee9bcc38fb:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: ""
+              url: ""
+              variant: outlined
+              size: large
+              target: _blank
+              needLogin: false
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: ""
+              url: ""
+              variant: outlined
+              size: large
+              target: _blank
+              needLogin: false
+  f2fceaee42d5c604:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Step 1: Check Your Environment"
+            style:
+              fontSize: ""
+              variant: h4
+        e8f3k7m2n9p4q1s5:
+          value: false
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753379691477-fu786lae3
+                type: text
+                text: First things first! You'll need Node.js version 20.0 or higher to get
+                  started. This ensures everything runs smoothly.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        kyg0hdy5uqq4gc1o:
+          value: flex-start
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 第 1 步：检查你的环境
+            style:
+              fontSize: ""
+              variant: h4
+        e8f3k7m2n9p4q1s5:
+          value: false
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753379691477-fu786lae3
+                type: text
+                text: 首先确认！你需要 Node.js 版本 20.0 或更高才能开始。这能确保运行顺利。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        kyg0hdy5uqq4gc1o:
+          value: flex-start
+  d623545c67c0bae5:
+    en:
+      properties:
+        5ek4m0kw9cu0ndns:
+          value: logos:nodejs-icon
+        529qbwiam7oypw8e:
+          value: 40px
+        gugqsxx3xyveuu8n:
+          value: primary.main
+    zh:
+      properties:
+        5ek4m0kw9cu0ndns:
+          value: logos:nodejs-icon
+        529qbwiam7oypw8e:
+          value: 40px
+        gugqsxx3xyveuu8n:
+          value: primary.main
+  4c9b2416efc74e91:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Step 2: Install the Core Package"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: Now for the fun part! Pick your favorite package manager and run the
+                  command below to add `@aigne/core` to your project.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 第 2 步：安装核心包
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 接下来是有趣的部分！选择你喜欢的包管理器，运行下面的命令将 `@aigne/core` 添加到项目中。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  39d863798f35c7a6:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: npm
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: npm install @aigne/core
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: npm
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: npm install @aigne/core
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  efa77b3f9e4074a7:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: "Step 3: Run Your First Agent"
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: "Let's bring your first agents to life! This example shows two agents
+                  collaborating: AgentA hands off a task to AgentB, who only
+                  speaks in haikus. Copy this code, add your OpenAI API key, and
+                  run it to see the magic happen!"
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 第 3 步：运行你的第一个代理
+            style:
+              variant: h2
+        v5utpm7bu9yvdpnq:
+          value: flex-start
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753781653625-ia4shqnk4
+                type: text
+                text: 让你的第一个代理活起来！此示例展示两个代理协作：AgentA 将任务移交给仅用俳句回复的 AgentB。复制此代码，添加你的 OpenAI API
+                  密钥并运行，即可见证效果！
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  9630889a92eacd9c:
+    en:
+      properties:
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-handoff/usages.ts
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE } from "@aigne/core";
+
+            import { OpenAIChatModel } from "@aigne/openai";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+
+            const model = new OpenAIChatModel({
+              apiKey: OPENAI_API_KEY,
+            });
+
+
+            function transferToB() {
+              return agentB;
+            }
+
+
+            const agentA = AIAgent.from({
+              name: "AgentA",
+              instructions: "You are a helpful agent.",
+              outputKey: "A",
+              skills: [transferToB],
+              inputKey: "message",
+            });
+
+
+            const agentB = AIAgent.from({
+              name: "AgentB",
+              instructions: "Only speak in Haikus.",
+              outputKey: "B",
+              inputKey: "message",
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const userAgent = aigne.invoke(agentA);
+
+
+            const result1 = await userAgent.invoke({ message: "transfer to agent
+            b" });
+
+            console.log(result1);
+
+            // Output:
+
+            // {
+
+            //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat
+            do you need, friend?".
+
+            // }
+
+
+            const result2 = await userAgent.invoke({ message: "It's a beautiful
+            day" });
+
+            console.log(result2);
+
+            // Output:
+
+            // {
+
+            //   B: "Sunshine warms the earth,  \nGentle breeze whispers
+            softly,  \nNature sings with joy.  ".
+
+            // }
+        d8hvf7cxz93jk5p:
+          value: 1rem
+    zh:
+      properties:
+        b2jrz12ik7esf93z:
+          value: /examples/workflow-handoff/usages.ts
+        e9kvx5d7y82lm3n:
+          value: material
+        a7frn5jmx5vpxpt3:
+          value: >-
+            import { AIAgent, AIGNE } from "@aigne/core";
+
+            import { OpenAIChatModel } from "@aigne/openai";
+
+
+            const { OPENAI_API_KEY } = process.env;
+
+
+            const model = new OpenAIChatModel({
+              apiKey: OPENAI_API_KEY,
+            });
+
+
+            function transferToB() {
+              return agentB;
+            }
+
+
+            const agentA = AIAgent.from({
+              name: "AgentA",
+              instructions: "You are a helpful agent.",
+              outputKey: "A",
+              skills: [transferToB],
+              inputKey: "message",
+            });
+
+
+            const agentB = AIAgent.from({
+              name: "AgentB",
+              instructions: "Only speak in Haikus.",
+              outputKey: "B",
+              inputKey: "message",
+            });
+
+
+            const aigne = new AIGNE({ model });
+
+
+            const userAgent = aigne.invoke(agentA);
+
+
+            const result1 = await userAgent.invoke({ message: "transfer to agent
+            b" });
+
+            console.log(result1);
+
+            // Output:
+
+            // {
+
+            //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat
+            do you need, friend?".
+
+            // }
+
+
+            const result2 = await userAgent.invoke({ message: "It's a beautiful
+            day" });
+
+            console.log(result2);
+
+            // Output:
+
+            // {
+
+            //   B: "Sunshine warms the earth,  \nGentle breeze whispers
+            softly,  \nNature sings with joy.  ".
+
+            // }
+        d8hvf7cxz93jk5p:
+          value: 1rem
+  2dd08b573b6c205e:
+    en:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: You're on a Roll! What's Next?
+            style:
+              variant: h1
+        e8f3k7m2n9p4q1s5:
+          value: false
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753381637728-mjjp8nvd5
+                type: text
+                text: Congratulations, you've officially built and run your first AIGNE
+                  application! That was just a taste of what's possible. Ready
+                  to go deeper? Explore our powerful workflow patterns or get a
+                  full picture of the framework's architecture.
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+    zh:
+      properties:
+        gs1rn5jmxfvpxptx:
+          value:
+            text: 进展顺利！下一步是什么？
+            style:
+              variant: h1
+        e8f3k7m2n9p4q1s5:
+          value: false
+        9ajrz12ik7esfk1z:
+          value:
+            list:
+              - id: item-1753381637728-mjjp8nvd5
+                type: text
+                text: 恭喜，你已成功构建并运行了第一个 AIGNE 应用！这只是可能性的开端。准备深入了解吗？探索我们强大的工作流模式或查看框架的整体架构。
+                style:
+                  color: ""
+                  fontSize: 16px
+                  variant: body1
+  314d2fda36ec223d:
+    en:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: Explore All Workflows
+              url: link:///workflows
+              variant: contained
+              size: large
+              target: _blank
+              needLogin: false
+            - type: link
+              text: View the Architecture
+              url: link:///docs/architecture
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
+              needLogin: false
+              id: btn-1753381708894-gbhxzm1xt
+    zh:
+      properties:
+        b8x4m3n9kp7qtw5r:
+          value:
+            - id: btn-default-1
+              type: link
+              text: 探索所有工作流
+              url: link:///workflows
+              variant: contained
+              size: large
+              target: _blank
+              needLogin: false
+            - type: link
+              text: 查看架构
+              url: link:///docs/architecture
+              color: ""
+              borderColor: ""
+              variant: outlined
+              size: large
+              target: _blank
+              startIcon: ""
+              endIcon: ""
+              needLogin: false
+              id: btn-1753381708894-gbhxzm1xt

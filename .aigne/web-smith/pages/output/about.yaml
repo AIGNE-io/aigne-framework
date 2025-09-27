@@ -1,7 +1,7 @@
-id: 423f8449a3d5581e
-createdAt: 2025-09-27T12:49:50.634Z
-updatedAt: 2025-09-27T12:49:50.634Z
-publishedAt: 2025-09-27T12:49:50.634Z
+id: 0c8c2f1e1f437282
+createdAt: 2025-09-27T12:49:50.627Z
+updatedAt: 2025-09-27T12:49:50.627Z
+publishedAt: 2025-09-27T12:49:50.627Z
 isPublic: true
 locales:
   en:
@@ -10,10 +10,10 @@ locales:
       maxWidth: custom:1560px
       paddingY: large
       paddingX: large
-    title: Join the AIGNE Developer Community | AIGNE Framework
-    description: Connect with the AIGNE community! Find resources for contributing
-      to our open-source project, join the technical forum, and learn about our
-      Elastic-2.0 license.
+    title: About AIGNE | The Story Behind the Name
+    description: Discover the origin and meaning of AIGNE. Learn how a medieval
+      French village and Old Irish inspired our name and what it stands for in
+      the world of AI.
     image: mediakit://aigne-framework.png
     header:
       sticky: true
@@ -23,8 +23,8 @@ locales:
       maxWidth: custom:1560px
       paddingY: large
       paddingX: large
-    title: 加入 AIGNE 开发者社区 | AIGNE Framework
-    description: 与 AIGNE 社区连接！查找贡献我们开源项目的资源、加入技术论坛，并了解我们的 Elastic-2.0 许可证。
+    title: 关于 AIGNE | 名称背后的故事
+    description: 了解 AIGNE 的起源与含义。了解一个法国中世纪村庄和古爱尔兰语如何激发我们的名称灵感，以及它在人工智能领域的意义。
     image: mediakit://aigne-framework.png
     header:
       sticky: true
@@ -84,263 +84,8 @@ sections:
             w: 8
             h: 1
       paddingY: custom:150px
-      background: "linear-gradient(135deg, #232526 0%, #414345 100%)"
+      background: primary.dark
       backgroundFullWidth: true
-  527bc42c9719026c:
-    id: 527bc42c9719026c
-    name: Layout 1x3
-    component: layout-block
-    sections:
-      f5f0ef1e63c47757:
-        id: f5f0ef1e63c47757
-        name: Title
-        component: custom-component
-        config:
-          useCache: true
-          componentId: xoHu0J44322kDYc-
-        sectionIds: []
-      455ad2ddade30c52:
-        id: 455ad2ddade30c52
-        name: CardList
-        component: layout-block
-        sections:
-          0e438a393b666432:
-            id: 0e438a393b666432
-            name: CardList-1
-            component: layout-block
-            sections:
-              3fe0e876ba2bc9be:
-                id: 3fe0e876ba2bc9be
-                name: Card
-                component: layout-block
-                sections:
-                  d623545c67c0bae5:
-                    id: d623545c67c0bae5
-                    name: Icon
-                    component: custom-component
-                    config:
-                      useCache: true
-                      componentId: YwuDiIbyyF5vfGpt
-                    sectionIds: []
-                  f2fceaee42d5c604:
-                    id: f2fceaee42d5c604
-                    name: RichText
-                    component: custom-component
-                    config:
-                      useCache: true
-                      componentId: xoHu0J44322kDYc-
-                    sectionIds: []
-                sectionIds:
-                  - d623545c67c0bae5
-                  - f2fceaee42d5c604
-                config:
-                  gridSettings:
-                    desktop:
-                      f2fceaee42d5c604:
-                        x: 0
-                        y: 1
-                        w: 12
-                        h: 1
-                      d623545c67c0bae5:
-                        x: 0
-                        y: 0
-                        w: 4
-                        h: 1
-                  padding: normal
-                  background: transparent
-                  gap: normal
-                  borderRadius: none
-                  border: none
-                  alignContent: start
-                  paddingY: none
-                  paddingX: none
-            sectionIds:
-              - 3fe0e876ba2bc9be
-            config:
-              gridSettings:
-                desktop: {}
-              gap: normal
-              paddingX: large
-              paddingY: large
-              background: background.paper
-              borderRadius: none
-          209534d5a63eec4d:
-            id: 209534d5a63eec4d
-            name: CardList-2
-            component: layout-block
-            sections:
-              ab473ce9ac8a830e:
-                id: ab473ce9ac8a830e
-                name: Card
-                component: layout-block
-                sections:
-                  a00892c014dbf1b6:
-                    id: a00892c014dbf1b6
-                    name: Icon
-                    component: custom-component
-                    config:
-                      useCache: true
-                      componentId: YwuDiIbyyF5vfGpt
-                    sectionIds: []
-                  60669633b69c613c:
-                    id: 60669633b69c613c
-                    name: RichText
-                    component: custom-component
-                    config:
-                      useCache: true
-                      componentId: xoHu0J44322kDYc-
-                    sectionIds: []
-                sectionIds:
-                  - a00892c014dbf1b6
-                  - 60669633b69c613c
-                config:
-                  gridSettings:
-                    desktop:
-                      60669633b69c613c:
-                        x: 0
-                        y: 1
-                        w: 12
-                        h: 1
-                      a00892c014dbf1b6:
-                        x: 0
-                        y: 0
-                        w: 4
-                        h: 1
-                  padding: normal
-                  background: transparent
-                  gap: normal
-                  borderRadius: none
-                  border: none
-                  alignContent: start
-                  paddingY: none
-                  paddingX: none
-            sectionIds:
-              - ab473ce9ac8a830e
-            config:
-              gridSettings:
-                desktop: {}
-              gap: normal
-              paddingX: large
-              paddingY: large
-              background: background.paper
-              borderRadius: none
-          d47318693d81eb59:
-            id: d47318693d81eb59
-            name: CardList-3
-            component: layout-block
-            sections:
-              8ed56cb8ce29cc1d:
-                id: 8ed56cb8ce29cc1d
-                name: Card
-                component: layout-block
-                sections:
-                  258d860b278ad281:
-                    id: 258d860b278ad281
-                    name: Icon
-                    component: custom-component
-                    config:
-                      useCache: true
-                      componentId: YwuDiIbyyF5vfGpt
-                    sectionIds: []
-                  cebc339339a2bdc3:
-                    id: cebc339339a2bdc3
-                    name: RichText
-                    component: custom-component
-                    config:
-                      useCache: true
-                      componentId: xoHu0J44322kDYc-
-                    sectionIds: []
-                sectionIds:
-                  - 258d860b278ad281
-                  - cebc339339a2bdc3
-                config:
-                  gridSettings:
-                    desktop:
-                      cebc339339a2bdc3:
-                        x: 0
-                        y: 1
-                        w: 12
-                        h: 1
-                      258d860b278ad281:
-                        x: 0
-                        y: 0
-                        w: 4
-                        h: 1
-                  padding: normal
-                  background: transparent
-                  gap: normal
-                  borderRadius: none
-                  border: none
-                  alignContent: start
-                  paddingY: none
-                  paddingX: none
-            sectionIds:
-              - 8ed56cb8ce29cc1d
-            config:
-              gridSettings:
-                desktop: {}
-              gap: normal
-              paddingX: large
-              paddingY: large
-              background: background.paper
-              borderRadius: none
-        sectionIds:
-          - 0e438a393b666432
-          - 209534d5a63eec4d
-          - d47318693d81eb59
-        config:
-          gridSettings:
-            desktop:
-              0e438a393b666432:
-                x: 0
-                y: 0
-                w: 12
-                h: 1
-              209534d5a63eec4d:
-                x: 0
-                y: 1
-                w: 12
-                h: 1
-              d47318693d81eb59:
-                x: 0
-                y: 2
-                w: 12
-                h: 1
-          gap: normal
-      41ab00ee9bcc38fb:
-        id: 41ab00ee9bcc38fb
-        name: Action
-        component: custom-component
-        config:
-          useCache: true
-          componentId: a44r0SiGV9AFn2Fj
-        sectionIds: []
-    sectionIds:
-      - f5f0ef1e63c47757
-      - 455ad2ddade30c52
-      - 41ab00ee9bcc38fb
-    config:
-      gap: normal
-      paddingX: none
-      maxWidth: full
-      paddingY: none
-      gridSettings:
-        desktop:
-          f5f0ef1e63c47757:
-            x: 0
-            y: 0
-            w: 12
-            h: 1
-          455ad2ddade30c52:
-            x: 0
-            y: 1
-            w: 12
-            h: 1
-          41ab00ee9bcc38fb:
-            x: 0
-            y: 2
-            w: 12
-            h: 1
   18ba2aba08dd4709:
     id: 18ba2aba08dd4709
     name: Section Layout
@@ -504,7 +249,6 @@ sections:
       paddingY: none
 sectionIds:
   - cd5bde18baa5fa64
-  - 527bc42c9719026c
   - 18ba2aba08dd4709
   - a70d5c2691268c55
 dataSource:
@@ -514,7 +258,7 @@ dataSource:
         gs1rn5jmxfvpxptx:
           value:
             text: |
-              Welcome to the AIGNE Community!
+              What's in a Name? The Story of AIGNE
             style:
               color: common.white
               variant: h1
@@ -524,10 +268,9 @@ dataSource:
               - id: item-1754042380003-mnbkkn5fa
                 type: text
                 text: >
-                  This is where the magic happens! Connect with fellow
-                  developers, share your brilliant ideas, and help shape the
-                  future of AI application development. Let's build something
-                  amazing, together.
+                  Ever wondered where 'AIGNE' comes from? It's more than just a
+                  name—it's a story of inspiration, spirit, and our vision for
+                  the future of AI. Let's dive in!
                 style:
                   color: common.white
                   fontSize: 16px
@@ -541,7 +284,7 @@ dataSource:
         gs1rn5jmxfvpxptx:
           value:
             text: |
-              欢迎来到 AIGNE 社区！
+              名字背后有什么？AIGNE 的故事
             style:
               color: common.white
               variant: h1
@@ -551,7 +294,7 @@ dataSource:
               - id: item-1754042380003-mnbkkn5fa
                 type: text
                 text: |
-                  这里是精彩发生的地方！与其他开发者建立联系，分享你的出色想法，并共同塑造 AI 应用开发的未来。让我们一起构建非凡的事物。
+                  有没有想过“ AIGNE ”源自何处？它不仅仅是一个名字——它承载着灵感、精神和我们对人工智能未来的愿景。让我们深入了解吧！
                 style:
                   color: common.white
                   fontSize: 16px
@@ -567,15 +310,15 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: Join the Forum
-              url: https://community.arcblock.io/discussions/boards/aigne
+              text: Explore the Docs
+              url: link:///docs
               variant: contained
               size: large
               target: _blank
               needLogin: false
             - type: link
-              text: View on GitHub
-              url: https://github.com/AIGNE-io/aigne-framework
+              text: Join the Community
+              url: link:///community
               color: ""
               borderColor: ""
               variant: outlined
@@ -598,15 +341,15 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: 加入论坛
-              url: https://community.arcblock.io/discussions/boards/aigne
+              text: 查看文档
+              url: link:///docs
               variant: contained
               size: large
               target: _blank
               needLogin: false
             - type: link
-              text: 在 GitHub 查看
-              url: https://github.com/AIGNE-io/aigne-framework
+              text: 加入社区
+              url: link:///community
               color: ""
               borderColor: ""
               variant: outlined
@@ -623,84 +366,12 @@ dataSource:
           value: flex-start
         v9979xeclpsbvn0n:
           value: flex-start
-  f5f0ef1e63c47757:
-    en:
-      properties:
-        v5utpm7bu9yvdpnq:
-          value: center
-        kyg0hdy5uqq4gc1o:
-          value: center
-        gs1rn5jmxfvpxptx:
-          value:
-            text: Get Involved and Make an Impact
-            style:
-              fontSize: 32px
-              variant: h1
-        9ajrz12ik7esfk1z:
-          value:
-            list:
-              - id: item-1754037726128-q9f6xufkq
-                type: text
-                text: There are so many ways to be a part of the AIGNE journey. Whether you're a
-                  coder, a thinker, or a problem-solver, your contribution is
-                  what drives us forward.
-                style:
-                  color: text.secondary
-                  fontSize: ""
-                  variant: body1
-    zh:
-      properties:
-        v5utpm7bu9yvdpnq:
-          value: center
-        kyg0hdy5uqq4gc1o:
-          value: center
-        gs1rn5jmxfvpxptx:
-          value:
-            text: 参与并发挥影响力
-            style:
-              fontSize: 32px
-              variant: h1
-        9ajrz12ik7esfk1z:
-          value:
-            list:
-              - id: item-1754037726128-q9f6xufkq
-                type: text
-                text: 有很多方式可以成为 AIGNE 旅程的一部分。无论你是程序员、思考者还是问题解决者，你的贡献推动我们向前。
-                style:
-                  color: text.secondary
-                  fontSize: ""
-                  variant: body1
-  41ab00ee9bcc38fb:
-    en:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: btn-default-1
-              type: link
-              text: Read Contribution Guide
-              url: https://github.com/AIGNE-io/aigne-framework/blob/main/CONTRIBUTING.md
-              variant: outlined
-              size: large
-              target: _blank
-              needLogin: false
-    zh:
-      properties:
-        b8x4m3n9kp7qtw5r:
-          value:
-            - id: btn-default-1
-              type: link
-              text: 阅读贡献指南
-              url: https://github.com/AIGNE-io/aigne-framework/blob/main/CONTRIBUTING.md
-              variant: outlined
-              size: large
-              target: _blank
-              needLogin: false
   f2fceaee42d5c604:
     en:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Contribute Code
+            text: How to Say It
             style:
               fontSize: ""
               variant: h4
@@ -711,8 +382,8 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: Jump into our open-source repository. Check out our contributing
-                  guidelines to get started with your first pull request.
+                text: It's pronounced [ ˈei dʒən ]—just like 'agent' but without the 't.'
+                  Simple, right? Now you're in the know!
                 style:
                   color: ""
                   fontSize: 16px
@@ -725,7 +396,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 贡献代码
+            text: 如何发音
             style:
               fontSize: ""
               variant: h4
@@ -736,7 +407,7 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: 加入我们的开源代码库。查看我们的贡献指南，开始你的第一个拉取请求（pull request）。
+                text: 发音为 [ ˈei dʒən ]——类似英文单词“agent”，但去掉了结尾的 t。很简单，对吧？现在你知道了！
                 style:
                   color: ""
                   fontSize: 16px
@@ -749,7 +420,7 @@ dataSource:
     en:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:github
+          value: mdi:volume-high
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -757,7 +428,7 @@ dataSource:
     zh:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:github
+          value: mdi:volume-high
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -767,7 +438,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Join the Discussion
+            text: A Tale of Two Origins
             style:
               fontSize: ""
               variant: h4
@@ -778,8 +449,9 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: Share your projects, ask questions, and connect with other developers in
-                  our official technical forum.
+                text: "AIGNE is inspired by a medieval village in southern France and the Old
+                  Irish word for 'spirit.' This combo perfectly captures our
+                  goal: building intelligent agents that think and act."
                 style:
                   color: ""
                   fontSize: 16px
@@ -792,7 +464,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 加入讨论
+            text: 双重起源的故事
             style:
               fontSize: ""
               variant: h4
@@ -803,7 +475,7 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: 分享你的项目、提出问题，并在我们的官方技术论坛与其他开发者建立联系。
+                text: AIGNE 的灵感来源于法国南部的一个中世纪村庄以及古爱尔兰语中表示“精神”的词汇。二者结合恰好体现了我们的目标：构建会思考并付诸行动的智能代理。
                 style:
                   color: ""
                   fontSize: 16px
@@ -816,7 +488,7 @@ dataSource:
     en:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:forum-outline
+          value: mdi:map-marker-outline
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -824,7 +496,7 @@ dataSource:
     zh:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:forum-outline
+          value: mdi:map-marker-outline
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -834,7 +506,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Report & Track Issues
+            text: What It Stands For
             style:
               fontSize: ""
               variant: h4
@@ -845,8 +517,9 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: Found a bug or have a feature request? Let us know on GitHub Issues to
-                  help us improve the framework for everyone.
+                text: AIGNE is short for Artificial Intelligence & Generative Natural-Language
+                  Ecosystem. It's our commitment to an open framework for real
+                  AI agents that live everywhere—from the cloud to the edge.
                 style:
                   color: ""
                   fontSize: 16px
@@ -859,7 +532,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 报告与跟踪问题
+            text: 缩写含义
             style:
               fontSize: ""
               variant: h4
@@ -870,7 +543,8 @@ dataSource:
             list:
               - id: item-1753379691477-fu786lae3
                 type: text
-                text: 发现错误或有功能请求？在 GitHub Issues 上告诉我们，帮助我们为所有人改进框架。
+                text: AIGNE 是“Artificial Intelligence & Generative Natural-Language
+                  Ecosystem”（人工智能与生成式自然语言生态系统）的缩写。我们致力于构建一个开放框架，让真正的人工智能代理无处不在——从云端到边缘端。
                 style:
                   color: ""
                   fontSize: 16px
@@ -883,7 +557,7 @@ dataSource:
     en:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:bug-outline
+          value: mdi:format-letter-case
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -891,7 +565,7 @@ dataSource:
     zh:
       properties:
         5ek4m0kw9cu0ndns:
-          value: mdi:bug-outline
+          value: mdi:format-letter-case
         529qbwiam7oypw8e:
           value: 40px
         gugqsxx3xyveuu8n:
@@ -901,7 +575,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Licensed for Innovation
+            text: Built by a Passionate Community
             style:
               variant: h2
         9ajrz12ik7esfk1z:
@@ -909,10 +583,10 @@ dataSource:
             list:
               - id: item-1753382621853-07ja75k36
                 type: text
-                text: AIGNE Framework is open-source and licensed under the Elastic-2.0 License.
-                  We believe in transparency and empowering developers to build
-                  freely, with the confidence that the project will remain open
-                  and collaborative.
+                text: AIGNE isn't just a project; it's a collaborative effort driven by
+                  developers like you! We believe in the power of open source to
+                  build the future of AI together. Every contribution, big or
+                  small, makes a huge impact.
                 style:
                   color: ""
                   fontSize: 16px
@@ -923,7 +597,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 许可以支持创新
+            text: 由热情的社区构建
             style:
               variant: h2
         9ajrz12ik7esfk1z:
@@ -931,8 +605,8 @@ dataSource:
             list:
               - id: item-1753382621853-07ja75k36
                 type: text
-                text: AIGNE Framework 是开源的，采用 Elastic-2.0
-                  许可证。我们信奉透明并致力于赋能开发者自由构建，让大家有信心项目将保持开放与协作。
+                text: AIGNE
+                  不仅仅是一个项目；它是由像你这样的开发者共同推动的协作成果。我们相信开源的力量能共同构建人工智能的未来。每一次贡献，无论大小，都会带来重大影响。
                 style:
                   color: ""
                   fontSize: 16px
@@ -946,8 +620,8 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: Read the Full License
-              url: https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md
+              text: Become a Contributor
+              url: link:///community
               variant: outlined
               size: medium
               target: _self
@@ -960,8 +634,8 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: 阅读完整许可证
-              url: https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md
+              text: 成为贡献者
+              url: link:///community
               variant: outlined
               size: medium
               target: _self
@@ -973,8 +647,8 @@ dataSource:
       properties:
         7m5pz8nefl5j9hqq:
           value:
-            url: mediakit://aigne.png
-            mediaKitUrl: mediakit://aigne.png
+            url: mediakit://aigne-framework.png
+            mediaKitUrl: mediakit://aigne-framework.png
             width: 5088
             height: 2562
         02dp1e6zfq2xwkt3:
@@ -985,8 +659,8 @@ dataSource:
       properties:
         7m5pz8nefl5j9hqq:
           value:
-            url: mediakit://aigne.png
-            mediaKitUrl: mediakit://aigne.png
+            url: mediakit://aigne-framework.png
+            mediaKitUrl: mediakit://aigne-framework.png
             width: 5088
             height: 2562
         02dp1e6zfq2xwkt3:
@@ -998,7 +672,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: Ready to Dive In?
+            text: Inspired? Let's Build Together!
             style:
               variant: h1
         e8f3k7m2n9p4q1s5:
@@ -1008,8 +682,9 @@ dataSource:
             list:
               - id: item-1753381637728-mjjp8nvd5
                 type: text
-                text: Your next big idea is just a conversation away. Join our vibrant community
-                  today and start building the future of AI.
+                text: Now that you know our story, it's time to become a part of it. Dive into
+                  the framework, explore our examples, and see what you can
+                  create with AIGNE.
                 style:
                   color: ""
                   fontSize: 16px
@@ -1018,7 +693,7 @@ dataSource:
       properties:
         gs1rn5jmxfvpxptx:
           value:
-            text: 准备好深入参与了吗？
+            text: 受到启发了吗？一起构建吧！
             style:
               variant: h1
         e8f3k7m2n9p4q1s5:
@@ -1028,7 +703,7 @@ dataSource:
             list:
               - id: item-1753381637728-mjjp8nvd5
                 type: text
-                text: 你的下一个重要创意可能只差一次对话。今天就加入我们充满活力的社区，开始构建 AI 的未来。
+                text: 既然你已了解我们的故事，现在是成为其中一员的时候。深入框架，浏览示例，看看你能用 AIGNE 创造出什么。
                 style:
                   color: ""
                   fontSize: 16px
@@ -1040,15 +715,15 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: Go to the Forum
-              url: https://community.arcblock.io/discussions/boards/aigne
+              text: Get Started Now
+              url: link:///docs/getting-started
               variant: contained
               size: large
               target: _blank
               needLogin: false
             - type: link
-              text: Star us on GitHub
-              url: https://github.com/AIGNE-io/aigne-framework
+              text: See it in Action
+              url: link:///examples
               color: ""
               borderColor: ""
               variant: outlined
@@ -1064,15 +739,15 @@ dataSource:
           value:
             - id: btn-default-1
               type: link
-              text: 前往论坛
-              url: https://community.arcblock.io/discussions/boards/aigne
+              text: 立即开始
+              url: link:///docs/getting-started
               variant: contained
               size: large
               target: _blank
               needLogin: false
             - type: link
-              text: 在 GitHub 上为我们加星
-              url: https://github.com/AIGNE-io/aigne-framework
+              text: 查看演示
+              url: link:///examples
               color: ""
               borderColor: ""
               variant: outlined

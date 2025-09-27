@@ -1,4 +1,4 @@
-import type { AgentHooks } from "../agents/agent.ts";
+import type { AgentHooks } from "../agents/agent.js";
 
 const priorities: NonNullable<AgentHooks["priority"]>[] = ["high", "medium", "low"];
 

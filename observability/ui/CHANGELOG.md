@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.0-beta.1...observability-ui-v0.11.0) (2025-09-27)
+
 ## [0.11.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.0-beta...observability-ui-v0.11.0-beta.1) (2025-09-26)
 
 

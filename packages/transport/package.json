@@ -1,6 +1,6 @@
 {
   "name": "@aigne/transport",
-  "version": "0.15.9-beta.9",
+  "version": "0.15.9",
   "description": "AIGNE Transport SDK providing HTTP client and server implementations for communication between AIGNE components",
   "publishConfig": {
     "access": "public"

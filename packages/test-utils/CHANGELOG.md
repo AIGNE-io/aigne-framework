@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.53](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.53-beta.8...test-utils-v0.5.53) (2025-09-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.61.0
+
 ## [0.5.53-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.53-beta.7...test-utils-v0.5.53-beta.8) (2025-09-26)
 
 

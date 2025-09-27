@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.79.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0...aigne-framework-v1.79.1-beta) (2025-09-27)
+
+
+### Bug Fixes
+
+* **cli:** install deps with `--force` option when installing application ([#560](https://github.com/AIGNE-io/aigne-framework/issues/560)) ([adc49b1](https://github.com/AIGNE-io/aigne-framework/commit/adc49b18907a0c94a1404fa17717aea1f1fc84d3))
+
 ## [1.79.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.11...aigne-framework-v1.79.0) (2025-09-27)
 
 ## [1.79.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0-beta.10...aigne-framework-v1.79.0-beta.11) (2025-09-27)

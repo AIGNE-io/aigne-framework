@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.49.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.0-beta.9...cli-v1.49.0-beta.10) (2025-09-27)
+
+
+### Bug Fixes
+
+* **cli:** resolve input schema not working for run command ([#557](https://github.com/AIGNE-io/aigne-framework/issues/557)) ([6fa12b3](https://github.com/AIGNE-io/aigne-framework/commit/6fa12b3e068aaec28cf204c3a3f7c471bd2827ae))
+
 ## [1.49.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.0-beta.8...cli-v1.49.0-beta.9) (2025-09-26)
 
 

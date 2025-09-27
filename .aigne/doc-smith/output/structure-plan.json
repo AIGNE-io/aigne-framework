@@ -1,0 +1,413 @@
+[
+  {
+    "title": "Overview",
+    "description": "A high-level introduction to the AIGNE Framework, explaining what it is, the problems it solves, and how its components (Core, CLI, Models) work together.",
+    "path": "/overview",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/package.json",
+      "models/openai/README.md",
+      "models/anthropic/README.md"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "Core Framework",
+    "description": "Dive into the fundamental components of the AIGNE Core, including the main AIGNE engine, context management, and different agent types.",
+    "path": "/core",
+    "sourceIds": [
+      "packages/core/src/index.ts",
+      "packages/core/src/aigne.ts",
+      "packages/core/src/agent.ts"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "AIGNE & Context",
+    "description": "Understand the main AIGNE class that orchestrates agents and the Context object that manages state and observability.",
+    "path": "/core/aigne-and-context",
+    "sourceIds": [
+      "packages/core/src/aigne.ts",
+      "packages/core/src/context.ts"
+    ],
+    "parentId": "/core"
+  },
+  {
+    "title": "Agents",
+    "description": "Explore the different types of agents available in the AIGNE framework, which are the fundamental actors for performing tasks.",
+    "path": "/core/agents",
+    "sourceIds": [
+      "packages/core/src/agent.ts",
+      "packages/core/src/agents/index.ts"
+    ],
+    "parentId": "/core"
+  },
+  {
+    "title": "Command Line Interface (CLI)",
+    "description": "A complete guide to the AIGNE Command Line Interface (CLI), your command center for creating, running, and managing AI agents.",
+    "path": "/cli",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/package.json",
+      "packages/cli/src/cli.ts"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "Overview",
+    "description": "Start here to understand what the AIGNE Command Line Tool is, what problems it solves, and what you can do with it. This section will give you a quick tour of its main features.",
+    "path": "/cli/overview",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/package.json"
+    ],
+    "parentId": "/cli"
+  },
+  {
+    "title": "Getting Started",
+    "description": "A step-by-step guide to get you from installation to running your first AI agent in just a few minutes.",
+    "path": "/cli/getting-started",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/commands/create.ts",
+      "packages/cli/src/commands/run.ts"
+    ],
+    "parentId": "/cli"
+  },
+  {
+    "title": "Installation",
+    "description": "Follow these simple steps to install the AIGNE Command Line Tool on your computer so you can start creating and using AI agents.",
+    "path": "/cli/getting-started/installation",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/package.json"
+    ],
+    "parentId": "/cli/getting-started"
+  },
+  {
+    "title": "Creating a Project",
+    "description": "Learn how to create a new project, which acts as a container for your AI agent's settings and skills, using a simple command.",
+    "path": "/cli/getting-started/creating-a-project",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/commands/create.ts",
+      "packages/cli/templates/default/aigne.yaml",
+      "packages/cli/templates/default/chat.yaml",
+      "packages/cli/templates/default/sandbox.js"
+    ],
+    "parentId": "/cli/getting-started"
+  },
+  {
+    "title": "Running an Agent",
+    "description": "Start a conversation with your newly created AI agent to test it out and see how it responds in an interactive chat.",
+    "path": "/cli/getting-started/running-an-agent",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/commands/run.ts",
+      "packages/cli/src/utils/run-chat-loop.ts",
+      "packages/cli/src/utils/yargs.ts"
+    ],
+    "parentId": "/cli/getting-started"
+  },
+  {
+    "title": "Command Reference",
+    "description": "A quick reference guide to the most common commands you'll use to create, run, and manage your AI agents.",
+    "path": "/cli/command-reference",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/cli.ts",
+      "packages/cli/src/commands/aigne.ts"
+    ],
+    "parentId": "/cli"
+  },
+  {
+    "title": "create",
+    "description": "Use the `create` command to start a new AIGNE project, which sets up all the necessary files and folders for you.",
+    "path": "/cli/command-reference/create",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/commands/create.ts"
+    ],
+    "parentId": "/cli/command-reference"
+  },
+  {
+    "title": "run",
+    "description": "Use the `run` command to start a chat session or send a single message to your agent to see it in action.",
+    "path": "/cli/command-reference/run",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/commands/run.ts",
+      "packages/cli/src/utils/yargs.ts"
+    ],
+    "parentId": "/cli/command-reference"
+  },
+  {
+    "title": "test",
+    "description": "Use the `test` command to automatically run checks that ensure your agent's skills and configurations are working correctly.",
+    "path": "/cli/command-reference/test",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/commands/test.ts"
+    ],
+    "parentId": "/cli/command-reference"
+  },
+  {
+    "title": "serve-mcp",
+    "description": "Use the `serve-mcp` command to make your agent available as a service that other applications can connect to and interact with.",
+    "path": "/cli/command-reference/serve-mcp",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/commands/serve-mcp.ts",
+      "packages/cli/src/utils/serve-mcp.ts"
+    ],
+    "parentId": "/cli/command-reference"
+  },
+  {
+    "title": "observe",
+    "description": "Use the `observe` command to start a local web server that lets you visually monitor and debug your agent's activities.",
+    "path": "/cli/command-reference/observe",
+    "sourceIds": [
+      "packages/cli/README.md",
+      "packages/cli/src/commands/observe.ts"
+    ],
+    "parentId": "/cli/command-reference"
+  },
+  {
+    "title": "deploy",
+    "description": "Use the `deploy` command to package and publish your agent application to a specified endpoint.",
+    "path": "/cli/command-reference/deploy",
+    "sourceIds": [
+      "packages/cli/src/commands/deploy.ts"
+    ],
+    "parentId": "/cli/command-reference"
+  },
+  {
+    "title": "hub",
+    "description": "Use the `hub` command to connect to and manage your AIGNE Hub account, giving you access to more models and features.",
+    "path": "/cli/command-reference/hub",
+    "sourceIds": [
+      "packages/cli/src/commands/hub.ts",
+      "packages/cli/src/utils/aigne-hub/credential.ts",
+      "packages/cli/src/utils/aigne-hub-user.ts"
+    ],
+    "parentId": "/cli/command-reference"
+  },
+  {
+    "title": "AI Models",
+    "description": "Explore the wide range of supported AI models you can use with the AIGNE Framework, from providers like OpenAI, Anthropic, Google, and more.",
+    "path": "/models",
+    "sourceIds": [
+      "models/aigne-hub/README.md",
+      "models/anthropic/README.md",
+      "models/bedrock/README.md",
+      "models/deepseek/README.md",
+      "models/doubao/README.md",
+      "models/gemini/README.md",
+      "models/ideogram/README.md",
+      "models/lmstudio/README.md",
+      "models/ollama/README.md",
+      "models/open-router/README.md",
+      "models/openai/README.md",
+      "models/poe/README.md",
+      "models/xai/README.md"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "AIGNE Hub",
+    "description": "Connect to the AIGNE Hub to access a unified proxy for multiple LLM providers, manage credits, and simplify API key management.",
+    "path": "/models/aigne-hub",
+    "sourceIds": [
+      "models/aigne-hub/README.md",
+      "models/aigne-hub/package.json",
+      "models/aigne-hub/src/index.ts",
+      "packages/cli/src/commands/hub.ts",
+      "packages/cli/src/utils/aigne-hub/credential.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Anthropic (Claude)",
+    "description": "Leverage Anthropic's Claude models, known for their strong performance in complex reasoning and creative tasks.",
+    "path": "/models/anthropic",
+    "sourceIds": [
+      "models/anthropic/README.md",
+      "models/anthropic/package.json",
+      "models/anthropic/src/index.ts",
+      "models/anthropic/src/anthropic-chat-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "AWS Bedrock",
+    "description": "Access a variety of foundation models from leading AI companies through Amazon's fully managed AWS Bedrock service.",
+    "path": "/models/aws-bedrock",
+    "sourceIds": [
+      "models/bedrock/README.md",
+      "models/bedrock/package.json",
+      "models/bedrock/src/index.ts",
+      "models/bedrock/src/bedrock-chat-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "DeepSeek",
+    "description": "Integrate DeepSeek's powerful open-source language models into your agents for strong coding and reasoning capabilities.",
+    "path": "/models/deepseek",
+    "sourceIds": [
+      "models/deepseek/README.md",
+      "models/deepseek/package.json",
+      "models/deepseek/src/index.ts",
+      "models/deepseek/src/deepseek-chat-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Doubao",
+    "description": "Connect with Doubao's AI models for a wide range of language and image generation tasks.",
+    "path": "/models/doubao",
+    "sourceIds": [
+      "models/doubao/README.md",
+      "models/doubao/package.json",
+      "models/doubao/src/index.ts",
+      "models/doubao/src/doubao-chat-model.ts",
+      "models/doubao/src/doubao-image-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Google Gemini",
+    "description": "Use Google's Gemini family of multimodal models for tasks involving text, images, and more.",
+    "path": "/models/gemini",
+    "sourceIds": [
+      "models/gemini/README.md",
+      "models/gemini/package.json",
+      "models/gemini/src/index.ts",
+      "models/gemini/src/gemini-chat-model.ts",
+      "models/gemini/src/gemini-image-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Ideogram",
+    "description": "Generate high-quality images from text prompts using Ideogram's advanced image synthesis models.",
+    "path": "/models/ideogram",
+    "sourceIds": [
+      "models/ideogram/README.md",
+      "models/ideogram/package.json",
+      "models/ideogram/src/index.ts",
+      "models/ideogram/src/ideogram-image-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "LM Studio",
+    "description": "Run local language models on your own machine through LM Studio's OpenAI-compatible server.",
+    "path": "/models/lm-studio",
+    "sourceIds": [
+      "models/lmstudio/README.md",
+      "models/lmstudio/package.json",
+      "models/lmstudio/src/index.ts",
+      "models/lmstudio/src/lmstudio-chat-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Ollama",
+    "description": "Utilize a wide variety of open-source models running locally on your machine via the Ollama server.",
+    "path": "/models/ollama",
+    "sourceIds": [
+      "models/ollama/README.md",
+      "models/ollama/package.json",
+      "models/ollama/src/index.ts",
+      "models/ollama/src/ollama-chat-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "OpenAI",
+    "description": "Integrate OpenAI's powerful GPT models, including chat completions and DALL-E image generation, into your AIGNE agents.",
+    "path": "/models/openai",
+    "sourceIds": [
+      "models/openai/README.md",
+      "models/openai/package.json",
+      "models/openai/src/index.ts",
+      "models/openai/src/openai-chat-model.ts",
+      "models/openai/src/openai-image-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "OpenRouter",
+    "description": "Access a diverse marketplace of models from multiple providers through a single, unified OpenRouter API.",
+    "path": "/models/open-router",
+    "sourceIds": [
+      "models/open-router/README.md",
+      "models/open-router/package.json",
+      "models/open-router/src/index.ts",
+      "models/open-router/src/open-router-chat-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Poe",
+    "description": "Integrate with various AI models available on the Poe platform through its OpenAI-compatible API.",
+    "path": "/models/poe",
+    "sourceIds": [
+      "models/poe/README.md",
+      "models/poe/package.json",
+      "models/poe/src/index.ts",
+      "models/poe/src/poe.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "xAI (Grok)",
+    "description": "Connect to xAI's models, like Grok, known for their unique personality and real-time information access.",
+    "path": "/models/xai",
+    "sourceIds": [
+      "models/xai/README.md",
+      "models/xai/package.json",
+      "models/xai/src/index.ts",
+      "models/xai/src/xai-chat-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "AI Agent",
+    "description": "Learn about the `AIAgent`, the core component for executing AI tasks, processing instructions, and interacting with large language models.",
+    "path": "/core/agents/ai-agent",
+    "sourceIds": [
+      "packages/core/src/agents/ai-agent.ts"
+    ],
+    "parentId": "/core/agents"
+  },
+  {
+    "title": "Function Agent",
+    "description": "Learn about the `FunctionAgent`, which executes specific, predefined functions or tools based on user input.",
+    "path": "/core/agents/function-agent",
+    "sourceIds": [
+      "packages/core/src/agents/function-agent.ts"
+    ],
+    "parentId": "/core/agents"
+  },
+  {
+    "title": "Team Agent",
+    "description": "Discover the `TeamAgent`, a powerful component that orchestrates multiple agents to collaborate on complex tasks.",
+    "path": "/core/agents/team-agent",
+    "sourceIds": [
+      "packages/core/src/agents/team-agent.ts"
+    ],
+    "parentId": "/core/agents"
+  },
+  {
+    "title": "MCP Agent",
+    "description": "Understand the `MCPAgent`, which exposes agent functionality over the Model Context Protocol (MCP) for interoperability.",
+    "path": "/core/agents/mcp-agent",
+    "sourceIds": [
+      "packages/core/src/agents/mcp-agent.ts",
+      "packages/core/test/agents/mcp-agent.test.ts"
+    ],
+    "parentId": "/core/agents"
+  }
+]

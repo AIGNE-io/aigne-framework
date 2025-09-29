@@ -11,7 +11,7 @@ import { createRunCommand } from "./run.js";
 import { createServeMCPCommand } from "./serve-mcp.js";
 import { createTestCommand } from "./test.js";
 
-export function createAIGNECommand(options?: { aigneFilePath?: string }) {
+export function createAIGNECommand(options?: { argv?: string[]; aigneFilePath?: string }) {
   return yargs()
     .scriptName("aigne")
     .usage(`${asciiLogo}\n$0 <command> [options]`)
@@ -22,7 +22,7 @@ export function createAIGNECommand(options?: { aigneFilePath?: string }) {
     .command(createCreateCommand())
     .command(createServeMCPCommand(options))
     .command(createObservabilityCommand())
-    .command(createAppCommands())
+    .command(createAppCommands(options))
     .command(createHubCommand())
     .command(createDeployCommands())
     .demandCommand()

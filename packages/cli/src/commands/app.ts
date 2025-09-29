@@ -8,6 +8,7 @@ import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
 import type { CommandModule } from "yargs";
 import { downloadAndExtract } from "../utils/download.js";
+import { withSpinner } from "../utils/spinner.js";
 import {
   type AgentInChildProcess,
   type LoadAIGNEInChildProcessResult,
@@ -41,43 +42,44 @@ const builtinApps = [
   },
 ];
 
-export function createAppCommands(): CommandModule[] {
+export function createAppCommands({ argv }: { argv?: string[] } = {}): CommandModule[] {
   return builtinApps.map((app) => ({
     command: app.name,
     describe: app.describe,
     aliases: app.aliases,
-    builder: async (yargs) => {
+    builder: async (y) => {
       const dir = join(homedir(), ".aigne", "registry.npmjs.org", app.packageName);
 
-      const { aigne, version } = await loadApplication({
-        dir,
-        packageName: app.packageName,
-        install: true,
-      });
+      y.command(upgradeCommandModule({ packageName: app.packageName, dir }));
 
-      if (aigne.cli?.chat) {
-        yargs.command({
-          ...agentCommandModule({ dir, agent: aigne.cli.chat }),
-          command: "$0",
+      if (!argv || !isUpgradeCommand(argv)) {
+        const { aigne, version } = await loadApplication({
+          dir,
+          packageName: app.packageName,
+          install: true,
         });
-      }
 
-      for (const agent of aigne.cli?.agents ?? []) {
-        yargs.command(agentCommandModule({ dir, agent }));
-      }
+        if (aigne.cli?.chat) {
+          y.command({
+            ...agentCommandModule({ dir, agent: aigne.cli.chat }),
+            command: "$0",
+          });
+        }
 
-      yargs
-        .option("model", {
+        for (const agent of aigne.cli?.agents ?? []) {
+          y.command(agentCommandModule({ dir, agent }));
+        }
+
+        y.option("model", {
           type: "string",
           description:
             "Model to use for the application, example: openai:gpt-4.1 or google:gemini-2.5-flash",
-        })
-        .command(serveMcpCommandModule({ name: app.name, dir }))
-        .command(upgradeCommandModule({ packageName: app.packageName, dir }));
+        }).command(serveMcpCommandModule({ name: app.name, dir }));
 
-      yargs.version(`${app.name} v${version}`).alias("version", "v");
+        y.version(`${app.name} v${version}`).alias("version", "v");
+      }
 
-      return yargs.demandCommand();
+      return y.demandCommand();
     },
     handler: () => {},
   }));
@@ -114,6 +116,11 @@ const serveMcpCommandModule = ({
   },
 });
 
+function isUpgradeCommand(argv: string[]): boolean {
+  const skipGlobalOptions = ["-v", "--version"];
+  return argv[1] === "upgrade" && !argv.some((arg) => skipGlobalOptions.includes(arg));
+}
+
 const upgradeCommandModule = ({
   packageName,
   dir,
@@ -130,8 +137,8 @@ const upgradeCommandModule = ({
 > => ({
   command: "upgrade",
   describe: `Upgrade ${packageName} to the latest version`,
-  builder: (argv) => {
-    return argv
+  builder: (yargs) => {
+    return yargs
       .option("beta", {
         type: "boolean",
         describe: "Use beta versions if available",
@@ -150,13 +157,14 @@ const upgradeCommandModule = ({
   handler: async ({ beta, targetVersion, force }) => {
     beta ??= shouldUseBetaApps();
 
+    const npm = await withSpinner("", async () => {
+      if (force) await rm(dir, { force: true, recursive: true });
+      return await getNpmTgzInfo(packageName, { beta, version: targetVersion });
+    });
+
     let app = await loadApplication({ packageName, dir });
 
-    const npm = await getNpmTgzInfo(packageName, { beta, version: targetVersion });
-
     if (!app || force || npm.version !== app.version) {
-      if (force) await rm(dir, { force: true, recursive: true });
-
       await installApp({ packageName, dir, beta, version: targetVersion });
       app = await loadApplication({ dir, packageName, install: true });
 
@@ -222,8 +230,13 @@ export async function loadApplication(
   const check = await checkInstallation(dir);
 
   if (check && !check.expired) {
-    const aigne = await runAIGNEInChildProcess("loadAIGNE", dir).catch((error) => {
-      console.warn(`⚠️ Failed to load ${packageName}, trying to reinstall:`, error.message);
+    const aigne = await runAIGNEInChildProcess("loadAIGNE", dir).catch(async (error) => {
+      logger.error(`⚠️ Failed to load ${packageName}, trying to reinstall:`, error.message);
+
+      await withSpinner("", async () => {
+        await rm(options.dir, { recursive: true, force: true });
+        await mkdir(options.dir, { recursive: true });
+      });
     });
 
     if (aigne) {

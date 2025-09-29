@@ -7,13 +7,9 @@ export async function withSpinner<T>(message: string, fn: () => Promise<T>): Pro
   });
 
   try {
-    const result = await fn();
-    spinner.stop();
-
-    process.stdout.write("\r\x1b[K"); // Clear the spinner line
-
-    return result;
+    return await fn();
   } finally {
     spinner.stop();
+    process.stdout.write("\r\x1b[K"); // Clear the spinner line
   }
 }

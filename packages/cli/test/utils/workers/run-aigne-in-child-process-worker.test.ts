@@ -22,14 +22,12 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
     process: () => ({}),
   });
 
-  spyOn(load, "loadAIGNE").mockReturnValueOnce(
-    Promise.resolve(
-      new AIGNE({
-        cli: {
-          agents: [testAgent],
-        },
-      }),
-    ),
+  spyOn(load, "loadAIGNE").mockResolvedValueOnce(
+    new AIGNE({
+      cli: {
+        agents: [{ agent: testAgent }],
+      },
+    }),
   );
 
   const readFile = spyOn(fs, "readFile")
@@ -75,4 +73,58 @@ test("invokeCLIAgentFromDir should process input and invoke agent correctly", as
   );
 
   readFile.mockRestore();
+});
+
+test("invokeCLIAgentFromDir should handle nested agent from aigne cli correctly", async () => {
+  const testAgent = FunctionAgent.from({
+    name: "test-agent",
+    description: "test agent",
+    inputSchema: z.object({
+      title: z.string(),
+    }),
+    process: () => ({}),
+  });
+
+  spyOn(load, "loadAIGNE").mockResolvedValueOnce(
+    new AIGNE({
+      cli: {
+        agents: [
+          {
+            name: "component",
+            commands: [{ agent: testAgent }],
+          },
+        ],
+      },
+    }),
+  );
+
+  const run = spyOn(runWithAIGNE, "runAgentWithAIGNE");
+
+  await invokeCLIAgentFromDirInChildProcess({
+    dir: "test-dir",
+    parent: ["component"],
+    agent: "test-agent",
+    input: {
+      title: "test title",
+    },
+  });
+
+  expect(run.mock.lastCall).toMatchInlineSnapshot(
+    [expect.anything(), expect.objectContaining({ name: "test-agent" }), {}],
+    `
+    [
+      Anything,
+      ObjectContaining {
+        "name": "test-agent",
+      },
+      {
+        "chat": undefined,
+        "input": {
+          "title": "test title",
+        },
+        "title": "test title",
+      },
+    ]
+  `,
+  );
 });

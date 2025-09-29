@@ -36,9 +36,17 @@ test("CLI imports and loads with shebang mode correctly", async () => {
 
   process.argv = originalArgv;
 
-  expect(createAIGNECommand).toHaveBeenLastCalledWith({
-    aigneFilePath: expect.stringContaining("test-agents/aigne.yaml"),
-  });
+  expect(createAIGNECommand.mock.lastCall?.at(0)).toMatchInlineSnapshot(
+    {
+      aigneFilePath: expect.stringContaining("test-agents/aigne.yaml"),
+    },
+    `
+    {
+      "aigneFilePath": StringContaining "test-agents/aigne.yaml",
+      "argv": [],
+    }
+  `,
+  );
 });
 
 test("aigne cli should print error message", async () => {

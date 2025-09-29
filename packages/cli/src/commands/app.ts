@@ -1,3 +1,4 @@
+import assert from "node:assert";
 import { spawn } from "node:child_process";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -11,6 +12,7 @@ import { downloadAndExtract } from "../utils/download.js";
 import { withSpinner } from "../utils/spinner.js";
 import {
   type AgentInChildProcess,
+  type CLIAgentInChildProcess,
   type LoadAIGNEInChildProcessResult,
   runAIGNEInChildProcess,
 } from "../utils/workers/run-aigne-in-child-process.js";
@@ -66,8 +68,8 @@ export function createAppCommands({ argv }: { argv?: string[] } = {}): CommandMo
           });
         }
 
-        for (const agent of aigne.cli?.agents ?? []) {
-          y.command(agentCommandModule({ dir, agent }));
+        for (const cliAgent of aigne.cli?.agents ?? []) {
+          y.command(cliAgentCommandModule({ dir, cliAgent }));
         }
 
         y.option("model", {
@@ -196,6 +198,55 @@ export const agentCommandModule = ({
       await runAIGNEInChildProcess("invokeCLIAgentFromDir", {
         dir,
         agent: agent.name,
+        input: options,
+      });
+
+      process.exit(0);
+    },
+  };
+};
+
+export const cliAgentCommandModule = ({
+  dir,
+  parent,
+  cliAgent,
+}: {
+  dir: string;
+  parent?: string[];
+  cliAgent: CLIAgentInChildProcess;
+}): CommandModule<unknown, AgentRunCommonOptions> => {
+  const { agent, commands } = cliAgent;
+
+  const name = cliAgent.name || agent?.name;
+  assert(name, "CLI agent must have a name");
+
+  return {
+    command: name,
+    aliases: cliAgent.alias || agent?.alias || [],
+    describe: cliAgent.description || agent?.description || "",
+    builder: async (yargs) => {
+      if (agent) {
+        withAgentInputSchema(yargs, { inputSchema: jsonSchemaToZod(agent.inputSchema) });
+      }
+      if (commands?.length) {
+        for (const cmd of commands) {
+          yargs.command(
+            cliAgentCommandModule({ dir, parent: (parent ?? []).concat(name), cliAgent: cmd }),
+          );
+        }
+      }
+
+      return yargs;
+    },
+    handler: async (options) => {
+      if (!agent) throw new Error("CLI agent is not defined");
+
+      if (options.logLevel) logger.level = options.logLevel;
+
+      await runAIGNEInChildProcess("invokeCLIAgentFromDir", {
+        dir,
+        parent,
+        agent: name,
         input: options,
       });
 

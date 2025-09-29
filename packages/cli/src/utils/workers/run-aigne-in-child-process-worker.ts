@@ -1,9 +1,14 @@
 import assert from "node:assert";
-import { AIGNE, type Message } from "@aigne/core";
+import { type Agent, AIGNE, type Message } from "@aigne/core";
+import { findCliAgent, mapCliAgent } from "@aigne/core/utils/agent-utils.js";
 import { loadAIGNE } from "../load-aigne.js";
 import { runAgentWithAIGNE } from "../run-with-aigne.js";
 import { type AgentRunCommonOptions, parseAgentInput } from "../yargs.js";
-import { type AgentInChildProcess, serializeAgent } from "./run-aigne-in-child-process.js";
+import {
+  type AgentInChildProcess,
+  type CLIAgentInChildProcess,
+  serializeAgent,
+} from "./run-aigne-in-child-process.js";
 
 const METHODS: { [method: string]: (...args: any[]) => Promise<any> } = {
   loadAIGNE: loadAIGNEInChildProcess,
@@ -35,7 +40,7 @@ process.on("message", async ({ method, args }: { method: string; args: any[] }) 
 
 export async function loadAIGNEInChildProcess(...args: Parameters<typeof AIGNE.load>): Promise<{
   agents?: AgentInChildProcess[];
-  cli?: { chat?: AgentInChildProcess; agents?: AgentInChildProcess[] };
+  cli?: { chat?: AgentInChildProcess; agents?: CLIAgentInChildProcess[] };
   mcpServer?: { agents?: AgentInChildProcess[] };
 }> {
   const aigne = await AIGNE.load(...args);
@@ -43,7 +48,7 @@ export async function loadAIGNEInChildProcess(...args: Parameters<typeof AIGNE.l
     agents: aigne.agents.map(serializeAgent),
     cli: {
       chat: aigne.cli.chat ? serializeAgent(aigne.cli.chat) : undefined,
-      agents: aigne.cli.agents.map(serializeAgent),
+      agents: aigne.cli.agents?.map((item) => mapCliAgent(item, serializeAgent)),
     },
     mcpServer: {
       agents: aigne.mcpServer.agents.map(serializeAgent),
@@ -53,6 +58,7 @@ export async function loadAIGNEInChildProcess(...args: Parameters<typeof AIGNE.l
 
 export async function invokeCLIAgentFromDirInChildProcess(options: {
   dir: string;
+  parent?: string[];
   agent: string;
   input: Message & AgentRunCommonOptions;
 }) {
@@ -64,13 +70,19 @@ export async function invokeCLIAgentFromDirInChildProcess(options: {
   try {
     const { chat } = aigne.cli;
 
-    const agent =
-      chat && chat.name === options.agent
-        ? chat
-        : aigne.cli.agents[options.agent] ||
-          aigne.agents[options.agent] ||
-          aigne.skills[options.agent] ||
-          aigne.mcpServer.agents[options.agent];
+    let agent: Agent | undefined;
+
+    if (chat && chat.name === options.agent) {
+      agent = chat;
+    } else if (options.parent) {
+      agent = findCliAgent(aigne.cli, options.parent, options.agent);
+    } else {
+      agent =
+        findCliAgent(aigne.cli, [], options.agent) ||
+        aigne.agents[options.agent] ||
+        aigne.skills[options.agent] ||
+        aigne.mcpServer.agents[options.agent];
+    }
     assert(agent, `Agent ${options.agent} not found in ${options.dir}`);
 
     const input = await parseAgentInput(options.input, agent);

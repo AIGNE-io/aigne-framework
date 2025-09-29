@@ -3,6 +3,7 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
+import { mapCliAgent } from "@aigne/core/utils/agent-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { ClaudeChatModel, OpenAIChatModel } from "../_mocks/mock-models.js";
@@ -54,10 +55,9 @@ test("AIGNE.load should load agents correctly", async () => {
       })),
     },
     cli: {
-      agents: aigne.cli?.agents.map((agent) => ({
-        name: agent.name,
-        description: agent.description,
-      })),
+      agents: aigne.cli?.agents?.map((i) =>
+        mapCliAgent(i, (i) => ({ name: i.name, description: i.description })),
+      ),
     },
   }).toMatchSnapshot();
 });

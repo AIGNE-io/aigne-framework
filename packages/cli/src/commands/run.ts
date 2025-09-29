@@ -2,6 +2,7 @@ import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { exists } from "@aigne/agent-library/utils/fs.js";
+import { mapCliAgent } from "@aigne/core/utils/agent-utils.js";
 import { flat, isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { config } from "dotenv-flow";
@@ -12,7 +13,7 @@ import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { isUrl } from "../utils/url.js";
 import { serializeAgent } from "../utils/workers/run-aigne-in-child-process.js";
-import { agentCommandModule } from "./app.js";
+import { agentCommandModule, cliAgentCommandModule } from "./app.js";
 
 export function createRunCommand({
   aigneFilePath,
@@ -57,15 +58,18 @@ export function createRunCommand({
       }
 
       // Allow user to run all of agents in the AIGNE instances
-      const allAgents = flat(
-        aigne.cli.agents,
-        aigne.agents,
-        aigne.skills,
-        aigne.cli.chat,
-        aigne.mcpServer.agents,
-      );
+      const allAgents = flat(aigne.agents, aigne.skills, aigne.cli.chat, aigne.mcpServer.agents);
       for (const agent of allAgents) {
         subYargs.command(agentCommandModule({ dir: path, agent: serializeAgent(agent) }));
+      }
+
+      for (const cliAgent of aigne.cli.agents ?? []) {
+        subYargs.command(
+          cliAgentCommandModule({
+            dir: path,
+            cliAgent: mapCliAgent(cliAgent, (a) => (a ? serializeAgent(a) : undefined)),
+          }),
+        );
       }
 
       const argv = process.argv.slice(aigneFilePath ? 3 : 2);
@@ -77,7 +81,9 @@ export function createRunCommand({
       if (argv[0] === "--entry-agent") argv.shift();
 
       const firstAgent = aigne.agents[0]?.name;
-      if (!options.entryAgent && firstAgent) argv.unshift(firstAgent);
+      if (!options.entryAgent && firstAgent && !argv.some((i) => ["-h", "--help"].includes(i))) {
+        argv.unshift(firstAgent);
+      }
 
       await subYargs
         .strict()

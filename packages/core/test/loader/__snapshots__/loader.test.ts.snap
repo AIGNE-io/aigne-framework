@@ -32,8 +32,60 @@ exports[`AIGNE.load should load agents correctly 1`] = `
   "cli": {
     "agents": [
       {
-        "description": "Chat agent",
-        "name": "chat",
+        "agent": {
+          "description": "Chat agent",
+          "name": "chat",
+        },
+        "commands": undefined,
+      },
+      {
+        "agent": {
+          "description": undefined,
+          "name": "b",
+        },
+        "commands": undefined,
+      },
+      {
+        "agent": {
+          "description": undefined,
+          "name": "a",
+        },
+        "commands": [
+          {
+            "agent": {
+              "description": undefined,
+              "name": "a1",
+            },
+            "commands": [
+              {
+                "agent": {
+                  "description": undefined,
+                  "name": "a11",
+                },
+                "commands": undefined,
+                "url": "test-cli-agents/a-1-1.yaml",
+              },
+              {
+                "agent": {
+                  "description": undefined,
+                  "name": "a12",
+                },
+                "commands": undefined,
+                "name": "a12",
+                "url": "test-cli-agents/a-1-2.yaml",
+              },
+            ],
+            "url": "test-cli-agents/a-1.yaml",
+          },
+          {
+            "agent": {
+              "description": undefined,
+              "name": "a2",
+            },
+            "commands": undefined,
+          },
+        ],
+        "url": "test-cli-agents/a.yaml",
       },
     ],
   },

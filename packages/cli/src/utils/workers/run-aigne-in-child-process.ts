@@ -45,8 +45,7 @@ export async function runAIGNEInChildProcess<M extends keyof ChildProcessAIGNEMe
       (event: { method: string; error?: { message: string }; result?: unknown }) => {
         if (event.method !== method)
           reject(new Error(`Unknown method: ${event.method} expected: ${method}`));
-        else if (event.error)
-          reject(new Error(`Failed to execute ${method}: ${event.error.message}`));
+        else if (event.error) reject(new Error(event.error.message));
         else resolve(event.result as ReturnType<ChildProcessAIGNEMethods[M]>);
       },
     );

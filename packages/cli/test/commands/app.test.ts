@@ -75,9 +75,9 @@ test("app command should register doc-smith to yargs", async () => {
     Generate and maintain project docs — powered by agents.
 
     Commands:
+      aigne doc-smith upgrade    Upgrade @aigne/doc-smith to the latest version
       aigne doc-smith generate   Generate documents by doc-smith   [aliases: gen, g]
       aigne doc-smith serve-mcp  Serve doc-smith a MCP server (streamable http)
-      aigne doc-smith upgrade    Upgrade @aigne/doc-smith to the latest version
 
     Options:
           --help     Show help                                             [boolean]

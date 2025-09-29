@@ -10,6 +10,7 @@ export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKL
 
 import { fileURLToPath } from "node:url";
 
+// @ts-ignore
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {

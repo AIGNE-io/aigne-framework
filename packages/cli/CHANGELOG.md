@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.49.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.2-beta...cli-v1.49.2-beta.1) (2025-09-29)
+
+
+### Bug Fixes
+
+* **cli:** improve app loading reliability with force upgrade on error ([#566](https://github.com/AIGNE-io/aigne-framework/issues/566)) ([d7c49cf](https://github.com/AIGNE-io/aigne-framework/commit/d7c49cfdfdc72c0d1a98c3033babe1392cb707c1))
+
 ## [1.49.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.1...cli-v1.49.2-beta) (2025-09-29)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.10.64-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.64-beta...example-memory-v0.10.64-beta.1) (2025-09-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.49.2-beta.1
+
 ## [0.10.64-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.63...example-memory-v0.10.64-beta) (2025-09-29)
 
 

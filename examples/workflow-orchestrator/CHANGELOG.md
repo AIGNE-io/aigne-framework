@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.13.74-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.13.74-beta...example-workflow-orchestrator-v1.13.74-beta.1) (2025-09-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.49.2-beta.1
+
 ## [1.13.74-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.13.73...example-workflow-orchestrator-v1.13.74-beta) (2025-09-29)
 
 

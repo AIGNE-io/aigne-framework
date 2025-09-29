@@ -16,7 +16,7 @@ cli:
     - name: component
       description: Manage components of web-smith
       alias: ["comp", "components"]
-      commands:
+      agents:
         - url: test-cli-agents/push.yaml
           name: push-components
           alias: ["push", "push-comps"]

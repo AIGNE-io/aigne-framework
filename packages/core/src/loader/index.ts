@@ -38,7 +38,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
 
   const flatCliAgents = (cliAgent: CliAgent): string[] => {
     if (typeof cliAgent === "string") return [cliAgent];
-    return flat(cliAgent.url, cliAgent.commands?.flatMap(flatCliAgents));
+    return flat(cliAgent.url, cliAgent.agents?.flatMap(flatCliAgents));
   };
 
   const allAgentPaths = new Set(
@@ -68,7 +68,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
     return {
       ...cliAgent,
       agent: cliAgent.url ? pickAgent(cliAgent.url) : undefined,
-      commands: cliAgent.commands?.map(mapCliAgents),
+      agents: cliAgent.agents?.map(mapCliAgents),
     };
   };
 
@@ -292,7 +292,7 @@ type CliAgent =
       name?: string;
       alias?: string[];
       description?: string;
-      commands?: CliAgent[];
+      agents?: CliAgent[];
     };
 
 const cliAgentSchema: ZodType<CliAgent> = z.union([
@@ -302,7 +302,7 @@ const cliAgentSchema: ZodType<CliAgent> = z.union([
     name: optionalize(z.string()),
     alias: optionalize(z.array(z.string())),
     description: optionalize(z.string()),
-    commands: optionalize(z.array(z.lazy(() => cliAgentSchema))),
+    agents: optionalize(z.array(z.lazy(() => cliAgentSchema))),
   }),
 ]);
 

@@ -215,7 +215,7 @@ export const cliAgentCommandModule = ({
   parent?: string[];
   cliAgent: CLIAgentInChildProcess;
 }): CommandModule<unknown, AgentRunCommonOptions> => {
-  const { agent, commands } = cliAgent;
+  const { agent, agents } = cliAgent;
 
   const name = cliAgent.name || agent?.name;
   assert(name, "CLI agent must have a name");
@@ -228,8 +228,8 @@ export const cliAgentCommandModule = ({
       if (agent) {
         withAgentInputSchema(yargs, { inputSchema: jsonSchemaToZod(agent.inputSchema) });
       }
-      if (commands?.length) {
-        for (const cmd of commands) {
+      if (agents?.length) {
+        for (const cmd of agents) {
           yargs.command(
             cliAgentCommandModule({ dir, parent: (parent ?? []).concat(name), cliAgent: cmd }),
           );

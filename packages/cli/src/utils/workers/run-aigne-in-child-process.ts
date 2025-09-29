@@ -17,9 +17,9 @@ export interface AgentInChildProcess extends Pick<Agent, "name" | "description" 
   outputSchema: JsonSchema;
 }
 
-export interface CLIAgentInChildProcess extends Omit<AIGNECLIAgent, "agent" | "commands"> {
+export interface CLIAgentInChildProcess extends Omit<AIGNECLIAgent, "agent" | "agents"> {
   agent?: AgentInChildProcess;
-  commands?: CLIAgentInChildProcess[];
+  agents?: CLIAgentInChildProcess[];
 }
 
 export function serializeAgent(agent: Agent): AgentInChildProcess {

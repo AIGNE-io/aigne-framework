@@ -36,37 +36,33 @@ exports[`AIGNE.load should load agents correctly 1`] = `
           "description": "Chat agent",
           "name": "chat",
         },
-        "commands": undefined,
+        "agents": undefined,
       },
       {
         "agent": {
           "description": undefined,
           "name": "b",
         },
-        "commands": undefined,
+        "agents": undefined,
       },
       {
         "agent": {
           "description": undefined,
           "name": "a",
         },
-        "alias": [
-          "a",
-          "a-agent",
-        ],
-        "commands": [
+        "agents": [
           {
             "agent": {
               "description": undefined,
               "name": "a1",
             },
-            "commands": [
+            "agents": [
               {
                 "agent": {
                   "description": undefined,
                   "name": "a11",
                 },
-                "commands": undefined,
+                "agents": undefined,
                 "url": "test-cli-agents/a-1-1.yaml",
               },
               {
@@ -74,7 +70,7 @@ exports[`AIGNE.load should load agents correctly 1`] = `
                   "description": undefined,
                   "name": "a12",
                 },
-                "commands": undefined,
+                "agents": undefined,
                 "description": "A agent from a-1-2.yaml",
                 "name": "a12-renamed",
                 "url": "test-cli-agents/a-1-2.yaml",
@@ -87,8 +83,12 @@ exports[`AIGNE.load should load agents correctly 1`] = `
               "description": undefined,
               "name": "a2",
             },
-            "commands": undefined,
+            "agents": undefined,
           },
+        ],
+        "alias": [
+          "a",
+          "a-agent",
         ],
         "description": "A agent from a.yaml",
         "name": "a-renamed",

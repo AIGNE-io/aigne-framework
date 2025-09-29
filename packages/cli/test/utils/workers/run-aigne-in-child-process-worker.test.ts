@@ -91,7 +91,7 @@ test("invokeCLIAgentFromDir should handle nested agent from aigne cli correctly"
         agents: [
           {
             name: "component",
-            commands: [{ agent: testAgent }],
+            agents: [{ agent: testAgent }],
           },
         ],
       },

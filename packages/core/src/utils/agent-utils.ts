@@ -16,17 +16,17 @@ export interface CLIAgent<T> {
   name?: string;
   alias?: string[];
   description?: string;
-  commands?: CLIAgent<T>[];
+  agents?: CLIAgent<T>[];
 }
 
 export function mapCliAgent<A, O>(
-  { agent, commands, ...input }: CLIAgent<A>,
+  { agent, agents, ...input }: CLIAgent<A>,
   transform: (input: A) => O,
 ): CLIAgent<O> {
   return {
     ...input,
     agent: agent ? transform(agent) : undefined,
-    commands: commands?.map((item) => mapCliAgent(item, transform)),
+    agents: agents?.map((item) => mapCliAgent(item, transform)),
   };
 }
 
@@ -37,7 +37,7 @@ export function findCliAgent(cli: AIGNECLIAgents, parent: string[] | "*", name: 
   for (const name of parent) {
     const found = currentAgents.find((i) => (i.name || i.agent?.name) === name);
     if (!found) throw new Error(`Agent ${name} not found in parent path ${parent.join(" -> ")}`);
-    if (found.commands) currentAgents = found.commands;
+    if (found.agents) currentAgents = found.agents;
     else currentAgents = [];
   }
   return currentAgents.find((i) => (i.name || i.agent?.name) === name)?.agent;
@@ -56,8 +56,8 @@ function findCliAgentRecursive(agents: AIGNECLIAgents, name: string) {
       if ((c.name || c.agent?.name) === name) {
         return c.agent;
       }
-      if (c.commands) {
-        queue.push(...c.commands);
+      if (c.agents) {
+        queue.push(...c.agents);
       }
     }
   }

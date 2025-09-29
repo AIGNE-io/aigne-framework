@@ -11,5 +11,5 @@ export interface AIGNECLIAgent {
   name?: string;
   alias?: string[];
   description?: string;
-  commands?: AIGNECLIAgent[];
+  agents?: AIGNECLIAgent[];
 }

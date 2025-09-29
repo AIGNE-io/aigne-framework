@@ -1,3 +1,5 @@
+export * from "./reexport.js";
+
 export interface InitDatabaseOptions {
   url?: string;
   wal?: boolean;

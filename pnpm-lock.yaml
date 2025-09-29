@@ -1914,6 +1914,9 @@ importers:
       '@aigne/platform-helpers':
         specifier: workspace:^
         version: link:../platform-helpers
+      '@aigne/sqlite':
+        specifier: workspace:^
+        version: link:../sqlite
       '@inquirer/prompts':
         specifier: ^7.8.6
         version: 7.8.6(@types/node@24.5.1)

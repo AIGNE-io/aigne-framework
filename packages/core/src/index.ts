@@ -1,3 +1,4 @@
+export * from "./afs/index.js";
 export * from "./agents/agent.js";
 export * from "./agents/ai-agent.js";
 export * from "./agents/chat-model.js";

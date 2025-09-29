@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.0...observability-api-v0.11.1-beta) (2025-09-29)
+
+
+### Bug Fixes
+
+* improved path resolution for better module compatibility ([#564](https://github.com/AIGNE-io/aigne-framework/issues/564)) ([84e92a1](https://github.com/AIGNE-io/aigne-framework/commit/84e92a13367d801c58dd7740e9762c7b245308c6))
+
 ## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.0-beta.1...observability-api-v0.11.0) (2025-09-27)
 
 

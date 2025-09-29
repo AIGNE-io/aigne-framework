@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.49.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.1...cli-v1.49.2-beta) (2025-09-29)
+
+
+### Bug Fixes
+
+* **checkbox:** display options list alongside error messages in search mode ([#563](https://github.com/AIGNE-io/aigne-framework/issues/563)) ([b0ebbed](https://github.com/AIGNE-io/aigne-framework/commit/b0ebbed933362fe462a6af2c812886f8e80d5194))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.47-beta
+    * @aigne/agentic-memory bumped to 1.0.47-beta
+    * @aigne/aigne-hub bumped to 0.10.1-beta
+    * @aigne/core bumped to 1.61.1-beta
+    * @aigne/default-memory bumped to 1.2.10-beta
+    * @aigne/observability-api bumped to 0.11.1-beta
+    * @aigne/openai bumped to 0.16.1-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.54-beta
+
 ## [1.49.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.1-beta...cli-v1.49.1) (2025-09-27)
 
 ## [1.49.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.0...cli-v1.49.1-beta) (2025-09-27)

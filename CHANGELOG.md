@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.79.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.1...aigne-framework-v1.79.2-beta) (2025-09-29)
+
+
+### Bug Fixes
+
+* **checkbox:** display options list alongside error messages in search mode ([#563](https://github.com/AIGNE-io/aigne-framework/issues/563)) ([b0ebbed](https://github.com/AIGNE-io/aigne-framework/commit/b0ebbed933362fe462a6af2c812886f8e80d5194))
+* improved path resolution for better module compatibility ([#564](https://github.com/AIGNE-io/aigne-framework/issues/564)) ([84e92a1](https://github.com/AIGNE-io/aigne-framework/commit/84e92a13367d801c58dd7740e9762c7b245308c6))
+
 ## [1.79.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.1-beta...aigne-framework-v1.79.1) (2025-09-27)
 
 ## [1.79.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.0...aigne-framework-v1.79.1-beta) (2025-09-27)

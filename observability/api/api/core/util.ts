@@ -40,7 +40,7 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       try {
         let fullPath = "";
         if (process?.env?.BLOCKLET_APP_DIR) {
-          fullPath = path.resolve(process?.env?.BLOCKLET_APP_DIR!, "dist", "model-prices.json");
+          fullPath = path.resolve(process.env.BLOCKLET_APP_DIR, "dist", "model-prices.json");
         } else {
           // @ts-ignore
           const dirname = path.dirname(fileURLToPath(import.meta.url));

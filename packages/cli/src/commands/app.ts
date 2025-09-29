@@ -236,6 +236,8 @@ export const cliAgentCommandModule = ({
         }
       }
 
+      if (!agent) yargs.demandCommand();
+
       return yargs;
     },
     handler: async (options) => {

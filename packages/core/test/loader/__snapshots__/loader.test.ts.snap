@@ -50,6 +50,10 @@ exports[`AIGNE.load should load agents correctly 1`] = `
           "description": undefined,
           "name": "a",
         },
+        "alias": [
+          "a",
+          "a-agent",
+        ],
         "commands": [
           {
             "agent": {

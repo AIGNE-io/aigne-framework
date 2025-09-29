@@ -21,6 +21,7 @@ cli:
     - url: test-cli-agents/a.yaml
       name: a-renamed
       description: A agent from a.yaml
+      alias: ["a", "a-agent"]
       commands:
         - url: test-cli-agents/a-1.yaml
           commands:

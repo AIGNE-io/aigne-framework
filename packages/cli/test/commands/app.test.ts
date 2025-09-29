@@ -50,16 +50,18 @@ test("app command should register doc-smith to yargs", async () => {
       cli: {
         agents: [
           {
-            name: "generate",
-            alias: ["gen", "g"],
-            description: "Generate documents by doc-smith",
-            inputSchema: zodToJsonSchema(
-              z.object({
-                title: z.string().describe("Title of doc to generate"),
-                topic: z.string().describe("Topic of doc to generate").nullish(),
-              }),
-            ) as JSONSchema,
-            outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+            agent: {
+              name: "generate",
+              alias: ["gen", "g"],
+              description: "Generate documents by doc-smith",
+              inputSchema: zodToJsonSchema(
+                z.object({
+                  title: z.string().describe("Title of doc to generate"),
+                  topic: z.string().describe("Topic of doc to generate").nullish(),
+                }),
+              ) as JSONSchema,
+              outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+            },
           },
         ],
       },
@@ -178,6 +180,7 @@ test("app command should register doc-smith to yargs", async () => {
         "title": "test title to generate",
         "topic": "test topic to generate",
       },
+      "parent": undefined,
     }
   `,
   );
@@ -205,10 +208,12 @@ test("app command should support serve-mcp subcommand", async () => {
       cli: {
         agents: [
           {
-            name: "generate",
-            description: "Generate documents by doc-smith",
-            inputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
-            outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+            agent: {
+              name: "generate",
+              description: "Generate documents by doc-smith",
+              inputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+              outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+            },
           },
         ],
       },
@@ -250,10 +255,12 @@ test("app command should support upgrade subcommand", async () => {
     cli: {
       agents: [
         {
-          name: "generate",
-          description: "Generate documents by doc-smith",
-          inputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
-          outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+          agent: {
+            name: "generate",
+            description: "Generate documents by doc-smith",
+            inputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+            outputSchema: zodToJsonSchema(z.object({})) as JSONSchema,
+          },
         },
       ],
     },

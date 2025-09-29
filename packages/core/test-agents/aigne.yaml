@@ -19,10 +19,13 @@ cli:
     - chat.yaml
     - test-cli-agents/b.yaml
     - url: test-cli-agents/a.yaml
+      name: a-renamed
+      description: A agent from a.yaml
       commands:
         - url: test-cli-agents/a-1.yaml
           commands:
             - url: test-cli-agents/a-1-1.yaml
             - url: test-cli-agents/a-1-2.yaml
-              name: a12
+              name: a12-renamed
+              description: A agent from a-1-2.yaml
         - test-cli-agents/a-2.yaml

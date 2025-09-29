@@ -8,6 +8,11 @@ import type { TraceFormatSpans } from "./type.ts";
 
 export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKLET_PORT;
 
+import { fileURLToPath } from "node:url";
+
+// @ts-ignore
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   if (Number(trace.endTime) > 0) {
     const model = trace.attributes?.output?.model;

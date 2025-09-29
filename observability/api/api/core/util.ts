@@ -10,8 +10,7 @@ export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKL
 
 import { fileURLToPath } from "node:url";
 
-// @ts-ignore
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   if (Number(trace.endTime) > 0) {
@@ -44,7 +43,7 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
         const relativePath = !process?.env?.BLOCKLET_APP_DIR
           ? "../../../dist"
           : path.resolve(process?.env?.BLOCKLET_APP_DIR!, "dist");
-        const fullPath = path.resolve(__dirname, relativePath, "model-prices.json");
+        const fullPath = path.resolve(dirname, relativePath, "model-prices.json");
         price = JSON.parse(await fs.readFileSync(path.join(fullPath), "utf8"));
       } catch {
         price = {};

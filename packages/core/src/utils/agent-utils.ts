@@ -30,7 +30,9 @@ export function mapCliAgent<A, O>(
   };
 }
 
-export function findCliAgent(cli: AIGNECLIAgents, parent: string[], name: string) {
+export function findCliAgent(cli: AIGNECLIAgents, parent: string[] | "*", name: string) {
+  if (parent === "*") return findCliAgentRecursive(cli, name);
+
   let currentAgents: AIGNECLIAgent[] = cli.agents ?? [];
   for (const name of parent) {
     const found = currentAgents.find((i) => (i.name || i.agent?.name) === name);
@@ -39,4 +41,25 @@ export function findCliAgent(cli: AIGNECLIAgents, parent: string[], name: string
     else currentAgents = [];
   }
   return currentAgents.find((i) => (i.name || i.agent?.name) === name)?.agent;
+}
+
+function findCliAgentRecursive(agents: AIGNECLIAgents, name: string) {
+  if (agents.chat?.name === name) {
+    return agents.chat;
+  }
+
+  if (agents.agents) {
+    const queue = [...agents.agents];
+    while (queue.length > 0) {
+      const c = queue.shift();
+      if (!c) break;
+      if ((c.name || c.agent?.name) === name) {
+        return c.agent;
+      }
+      if (c.commands) {
+        queue.push(...c.commands);
+      }
+    }
+  }
+  return undefined;
 }

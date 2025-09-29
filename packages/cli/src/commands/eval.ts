@@ -1,6 +1,7 @@
 import { isAbsolute, resolve } from "node:path";
 import { exists } from "@aigne/agent-library/utils/fs.js";
 import type { Agent } from "@aigne/core";
+import { findCliAgent } from "@aigne/core/utils/agent-utils.js";
 import type { CommandModule } from "yargs";
 import { z } from "zod";
 import { runEvaluationPipeline } from "../utils/evaluation/core.js";
@@ -99,7 +100,7 @@ export function createEvalCommand({
       const agent =
         chat && chat.name === entryAgent
           ? chat
-          : aigne.cli.agents[entryAgent] ||
+          : findCliAgent(aigne.cli, "*", entryAgent) ||
             aigne.agents[entryAgent] ||
             aigne.skills[entryAgent] ||
             aigne.mcpServer.agents[entryAgent];
@@ -110,7 +111,7 @@ export function createEvalCommand({
       let evaluatorAgent: Agent | undefined;
       if (evaluatorName) {
         evaluatorAgent =
-          aigne.cli.agents[evaluatorName] ||
+          findCliAgent(aigne.cli, "*", evaluatorName) ||
           aigne.agents[evaluatorName] ||
           aigne.skills[evaluatorName] ||
           aigne.mcpServer.agents[evaluatorName];

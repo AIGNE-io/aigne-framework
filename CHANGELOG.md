@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.80.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.1...aigne-framework-v1.80.0-beta.2) (2025-09-30)
+
+
+### Features
+
+* add multiline support for prompts.input ([#570](https://github.com/AIGNE-io/aigne-framework/issues/570)) ([520d985](https://github.com/AIGNE-io/aigne-framework/commit/520d9859770cc553b551a4a58c7e392b39f53b37))
+
 ## [1.80.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.2-beta.1...aigne-framework-v1.80.0-beta.1) (2025-09-30)
 
 

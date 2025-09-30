@@ -1,168 +1,115 @@
 # Function Agent
 
-`FunctionAgent` 是一个简单而强大的 Agent，可以执行一个特定的、预定义的 JavaScript 函数。与使用大语言模型生成响应的 `AIAgent` 不同，`FunctionAgent` 是确定性的：它接收输入，运行你的代码，然后返回输出。这使其成为需要可靠、可预测逻辑任务的理想工具。
+`FunctionAgent` 提供了一种将标准 JavaScript 或 TypeScript 函数直接包装为功能齐全的 AIGNE Agent 的简便方法。它作为一个轻量级桥梁，允许您将现有的业务逻辑或简单的确定性任务集成到 AIGNE 生态系统中，而无需创建专用的 Agent 类。
 
-你可以把 `FunctionAgent` 看作是一种封装任何现有代码片段的方式——无论是简单的计算、数据转换，还是对外部 API 的调用——并使其在 AIGNE 生态系统中作为构建块可用。然后，这些 Agent 可以被其他更复杂的 Agent（如 [Team Agent](./core-agents-team-agent.md)）用作专门的“工具”。
-
-## 工作原理
-
-`FunctionAgent` 的核心是其 `process` 函数。当 Agent 运行时，它只是将输入传递给此函数并返回结果。这种简单的执行流程使你能够将任何自定义逻辑无缝集成到你的 AI 工作流中。
-
-下图说明了该过程：
-
-```d2
-direction: down
-
-Input: {
-  label: "Input Data"
-  shape: rectangle
-}
-
-Function-Agent: {
-  label: "FunctionAgent"
-  shape: rectangle
-
-  JS-Function: {
-    label: "Your JS 'process' Function"
-    shape: rectangle
-  }
-}
-
-Output: {
-  label: "Function Result"
-  shape: rectangle
-}
-
-Input -> Function-Agent: "1. run() is called"
-Function-Agent -> Function-Agent.JS-Function: "2. Executes function with input"
-Function-Agent.JS-Function -> Function-Agent: "3. Returns result"
-Function-Agent -> Output: "4. Agent outputs the result"
-```
+您可以将其视为一种快速创建专用工具的方法，供其他更复杂的 Agent（如 [AIAgent](./core-agents-ai-agent.md)）使用。如果您有一个函数用于计算值、从特定来源获取数据或执行任何单一、明确定义的操作，那么 `FunctionAgent` 是理想的选择。
 
 ## 基本用法
 
-创建 `FunctionAgent` 就像定义一个函数一样简单。让我们创建一个作为简单计算器的 Agent。
+创建 `FunctionAgent` 的最简单方法是将您的函数直接传递给 `FunctionAgent.from()` 静态方法。
 
-```javascript Simple Calculator Agent icon=logos:javascript
-import { FunctionAgent, AIGNE, Context } from '@aigne/core';
+### 示例：创建一个简单的问候 Agent
+
+假设您有一个生成问候语的函数。您可以用一行代码将其转换为一个 Agent。
+
+```javascript Function Agent Example icon=logos:javascript
+import { FunctionAgent } from '@aigne/core';
+
+// 从一个简单的函数创建一个 Agent
+const agent = FunctionAgent.from(({ name }: { name: string }) => {
+  return {
+    greeting: `Hello, ${name}!`,
+  };
+});
+
+// 调用 Agent
+const result = await agent.invoke({ name: "Alice" });
+
+console.log(result); 
+// 输出: { greeting: "Hello, Alice!" }
+```
+
+在此示例中，AIGNE 会自动包装所提供的函数。当您 `invoke` 该 Agent 时，它会使用您提供的输入执行您的函数并返回结果。
+
+## 配置和模式
+
+为了实现更精细的控制，您可以提供一个配置对象，其中包含名称、描述以及用于输入和输出验证的模式。
+
+定义模式是一种最佳实践，因为它可以确保您的 Agent 接收到预期的数据并生成一致的输出格式。当 `FunctionAgent` 被其他 Agent 用作工具时，这一点尤为重要。
+
+### 示例：一个带验证的加法器 Agent
+
+此示例创建一个将两个数字相加的 Agent。它使用 Zod 模式来确保输入是数字，并且输出也是一个数字。
+
+```javascript Agent with Schemas icon=logos:javascript
+import { FunctionAgent } from '@aigne/core';
 import { z } from 'zod';
 
-// Define the input schema for validation
-const calculatorInputSchema = z.object({
-  a: z.number(),
-  b: z.number(),
-  operator: z.enum(['+', '-', '*', '/']),
-});
-
-// Define the agent
-const calculatorAgent = new FunctionAgent({
-  name: 'calculator',
-  description: 'Performs a basic arithmetic operation.',
-  input_schema: calculatorInputSchema,
-  process: async (inputs) => {
-    const { a, b, operator } = inputs;
-    switch (operator) {
-      case '+':
-        return a + b;
-      case '-':
-        return a - b;
-      case '*':
-        return a * b;
-      case '/':
-        if (b === 0) {
-          throw new Error('Division by zero is not allowed.');
-        }
-        return a / b;
-      default:
-        throw new Error(`Invalid operator: ${operator}`);
-    }
+const adderAgent = FunctionAgent.from({
+  name: 'adder',
+  description: 'Adds two numbers together.',
+  inputSchema: z.object({
+    a: z.number(),
+    b: z.number(),
+  }),
+  outputSchema: z.object({
+    sum: z.number(),
+  }),
+  process: ({ a, b }) => {
+    return { sum: a + b };
   },
 });
 
-// Example of how to run the agent
-async function runCalculator() {
-  const aigne = new AIGNE();
-  const context = new Context();
+const result = await adderAgent.invoke({ a: 5, b: 10 });
 
-  const result = await aigne.run(calculatorAgent, { a: 10, b: 5, operator: '*' }, context);
+console.log(result); 
+// 输出: { sum: 15 }
 
-  console.log('Calculation Result:', result);
-}
-
-runCalculator();
+// 这将无法通过验证并抛出错误：
+// await adderAgent.invoke({ a: 5, b: 'ten' });
 ```
 
-在此示例中，我们定义了一个接收两个数字和一个运算符的 Agent。`process` 函数包含核心逻辑，而 `input_schema` 确保在函数被调用之前输入是有效的，从而防止常见错误。
+## 流式响应
 
-### 示例响应
+`FunctionAgent` 不局限于简单的请求-响应模式。它完全支持流式传输，这对于长时间运行的任务或希望增量返回数据的情况非常有用。
 
-当 Agent 运行时，框架会将 `process` 函数的返回值包装成一个标准的输出对象。
+您可以通过两种方式实现这一点：返回一个 `ReadableStream` 或使用异步生成器。
 
-```json Response icon=mdi:code-json
-{
-  "output": 50
-}
-```
+### 使用异步生成器
 
-## 构造函数
+使用 `async function*` (异步生成器) 通常是创建流最直观的方式。您可以在数据块可用时 `yield` 它们。
 
-`FunctionAgent` 构造函数接受一个配置对象来定义其行为。
+```javascript Streaming with Async Generator icon=logos:javascript
+import { FunctionAgent, textDelta } from '@aigne/core';
 
-<x-field-group>
-  <x-field data-name="name" data-type="string" data-required="true">
-    <x-field-desc markdown>Agent 的唯一名称，用于识别和记录。</x-field-desc>
-  </x-field>
-  <x-field data-name="description" data-type="string" data-required="true">
-    <x-field-desc markdown>对 Agent 功能的清晰、人类可读的描述。当该 Agent 被其他 Agent 用作工具时，这一点至关重要。</x-field-desc>
-  </x-field>
-  <x-field data-name="input_schema" data-type="z.ZodObject" data-required="false">
-    <x-field-desc markdown>一个来自 `zod` 库的 schema，用于验证 Agent 的输入。强烈建议使用此 schema 以确保数据完整性并防止运行时错误。</x-field-desc>
-  </x-field>
-  <x-field data-name="output_schema" data-type="z.ZodObject" data-required="false">
-    <x-field-desc markdown>一个 `zod` schema，用于验证 Agent 的输出。这对于确保函数返回符合预期格式的数据很有用。</x-field-desc>
-  </x-field>
-  <x-field data-name="process" data-type="(inputs: T_in, context: Context) => Promise<T_out>" data-required="true">
-    <x-field-desc markdown>包含 Agent 核心逻辑的异步 JavaScript 函数。它接收两个参数：`inputs`（要处理的数据，与 `input_schema` 匹配）和 `context`（运行的共享上下文对象）。</x-field-desc>
-  </x-field>
-</x-field-group>
-
-## 使用 Context 对象
-
-`process` 函数还接收一个 `Context` 对象作为其第二个参数。该对象功能强大，可用于观察 Agent 的执行并在应用程序的不同部分之间共享状态。
-
-以下是一个 Agent 示例，它使用上下文的观察者在其执行期间记录一条消息。
-
-```javascript Logging Agent icon=logos:javascript
-import { FunctionAgent, Context } from '@aigne/core';
-
-const loggingAgent = new FunctionAgent({
-  name: 'loggingAgent',
-  description: 'Logs a message to the context observer.',
-  process: async (inputs, context) => {
-    const message = `Processing input: ${JSON.stringify(inputs)}`;
-
-    // Use the observer to emit a log event
-    context.observer.onLog({ message });
-
-    return { status: 'logged', received: inputs };
-  },
+const streamingAgent = FunctionAgent.from(async function* ({ name }: { name: string }) {
+  yield textDelta({ text: "Hello" });
+  yield textDelta({ text: ", " });
+  yield textDelta({ text: name });
+  yield textDelta({ text: "!" });
 });
 
-// Example runner
-async function runLogger() {
-  const aigne = new AIGNE();
-  const context = new Context();
+// 使用 streaming: true 调用
+const stream = await streamingAgent.invoke({ name: "World" }, { streaming: true });
 
-  // You can listen for events from the observer
-  context.observer.on('log', (event) => {
-    console.log('[LOG EVENT]:', event.message);
-  });
-
-  const result = await aigne.run(loggingAgent, { user: 'test-user', action: 'login' }, context);
-  console.log('Agent Result:', result);
+let fullText = '';
+for await (const chunk of stream) {
+  // 在每个数据块到达时处理它
+  if (chunk.delta?.text?.text) {
+    fullText += chunk.delta.text.text;
+  }
 }
 
-runLogger();
+console.log(fullText); 
+// 输出: "Hello, World!"
 ```
 
-现在你已经知道如何构建确定性工具，你可以探索 [AIAgent](./core-agents-ai-agent.md) 以处理更动态、由 AI 驱动的任务，或者学习如何使用 [Team Agent](./core-agents-team-agent.md) 来协调多个 Agent。
+## 总结
+
+`FunctionAgent` 是一个功能强大的实用工具，可用于将自定义逻辑快速集成到 AIGNE 框架中。它简化了为特定任务创建 Agent 的过程，并完整支持数据验证和流式传输。
+
+- **用于：** 简单的、确定性的任务或包装现有函数。
+- **最佳实践：** 始终定义 `inputSchema` 和 `outputSchema` 以确保可靠性。
+- **功能：** 支持单次响应和通过异步生成器实现的复杂流式传输。
+
+现在您已经了解了如何创建功能性工具，接下来请在 [Team Agent](./core-agents-team-agent.md) 部分学习如何编排多个 Agent 以协同工作。

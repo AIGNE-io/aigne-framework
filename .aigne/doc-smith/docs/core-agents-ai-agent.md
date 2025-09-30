@@ -1,109 +1,202 @@
 # AI Agent
 
-The `AIAgent` is the foundational building block in the AIGNE framework. Think of it as your primary worker, designed to communicate with Large Language Models (LLMs) to understand tasks, process information, and generate intelligent responses.
+The `AIAgent` is the core component in the AIGNE framework for executing AI-driven tasks. It acts as the primary interface to large language models (LLMs), processing user instructions, managing conversations, and orchestrating tools to generate intelligent responses.
 
-Its main job is to take a set of `instructions` you provide, interact with an AI model (like OpenAI's GPT-4), and return the result in a structured format that your application can easily use. This is perfect for tasks like summarizing text, extracting specific information, answering questions, or categorizing content.
+Think of the `AIAgent` as the brain of your operation. It takes an input, thinks about it using an LLM, and produces an output. It can also use specialized tools to perform specific actions, like calculations or fetching data from an API.
 
-Two key features make the `AIAgent` powerful and reliable:
+## Creating an AI Agent
 
-1.  **Instructions, Not Prompts**: Instead of simple prompts, you give the `AIAgent` a clear set of `instructions`. This allows for more detailed and explicit task definitions, guiding the AI more effectively.
-2.  **Structured Output**: You can define exactly what the output should look like using an `outputSchema`. This ensures the AI's response isn't just a block of text, but a predictable, machine-readable JSON object, which is crucial for building reliable applications.
+The simplest way to create an `AIAgent` is by using the `AIAgent.from()` factory method. At a minimum, you need to provide a language model and specify which part of the input contains the user's message.
 
-## How It Works
+```javascript Basic AIAgent creation icon=logos:javascript
+// Import the necessary components
+import { AIAgent } from "@aigne/core";
+import { OpenAIChatModel } from "../_mocks/mock-models.js"; // Replace with your actual model import
 
-The `AIAgent` follows a simple but effective process:
+// 1. Instantiate a language model
+const model = new OpenAIChatModel();
 
-1.  **Initialization**: You create an `AIAgent` by giving it a connection to an AI model and a set of `instructions`.
-2.  **Execution**: When you run the agent with some input, it combines your instructions and the input into a request for the AI model.
-3.  **Response Generation**: The AI model processes the request and generates a response.
-4.  **Output Formatting**: The `AIAgent` takes the model's raw response and formats it according to the `outputSchema` you defined, returning a clean JSON object.
-
-## Basic Usage
-
-Here’s a simple example of how to create and use an `AIAgent` to generate a creative story title based on a theme.
-
-```typescript Creating an AIAgent icon=logos:typescript
-import { AIAgent } from '@aigne/core';
-import { OpenAI } from '@aigne/models/openai';
-import { z } from 'zod';
-
-// 1. Define the structure of the output you want
-const StorySchema = z.object({
-  title: z.string().describe('A creative and catchy title for the story'),
-  tagline: z.string().describe('A short, intriguing tagline'),
-});
-
-// 2. Initialize the AI model you want to use
-const model = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: 'gpt-4o',
-});
-
-// 3. Create the AIAgent with instructions and the output schema
-const storyAgent = new AIAgent({
+// 2. Create the agent, specifying the model and the input key
+const agent = AIAgent.from({
   model,
-  instructions: 'You are a creative writer. Generate a title and tagline for a story.',
-  outputSchema: StorySchema,
+  name: "assistant",
+  description: "A helpful assistant",
+  inputKey: "message", // Tells the agent to find the user's query in the 'message' field of the input
 });
 
-// 4. Run the agent with specific input
-async function generateStoryTitle() {
-  const result = await storyAgent.run({
-    input: { theme: 'a robot who discovers music' },
-  });
-
-  console.log('Generated Story Title:', result.title);
-  console.log('Tagline:', result.tagline);
+// 3. Invoke the agent with some input
+async function runAgent() {
+  const result = await agent.invoke({ message: "What is the weather today?" });
+  console.log(result); // Expected output: { message: "Hello, How can I help you?" }
 }
 
-generateStoryTitle();
+runAgent();
 ```
 
-### Expected Output
+## Configuration Options
 
-Running the code above would produce a structured object like this:
-
-```json Response Example icon=mdi:code-json
-{
-  "title": "The Silicon Symphony",
-  "tagline": "His world was logic. Until he heard the first note."
-}
-```
-
-## Configuration
-
-When you create a new `AIAgent`, you can pass a configuration object with the following properties:
+You can customize the behavior of an `AIAgent` through its configuration options. Here are some of the most common ones:
 
 <x-field-group>
-  <x-field data-name="model" data-type="Model" data-required="true">
-    <x-field-desc markdown>An instance of an AI model, such as `OpenAI` or `Anthropic`. This is the engine the agent will use to think.</x-field-desc>
+  <x-field data-name="instructions" data-type="string | PromptBuilder" data-required="false">
+    <x-field-desc markdown>Provides guidance to the AI model on its role, personality, and how it should respond. This can be a simple string or a more complex `PromptBuilder` instance for dynamic prompts.</x-field-desc>
   </x-field>
-  <x-field data-name="instructions" data-type="string" data-required="true">
-    <x-field-desc markdown>A clear and detailed description of the agent's task and personality. This guides the AI's behavior.</x-field-desc>
+  <x-field data-name="inputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>Specifies the key in the input object where the agent should find the main user message. If not provided, `instructions` must be set.</x-field-desc>
   </x-field>
-  <x-field data-name="outputSchema" data-type="ZodSchema" data-required="false">
-    <x-field-desc markdown>A schema from the Zod library that defines the structure of the output. This forces the AI to respond in a consistent JSON format.</x-field-desc>
+  <x-field data-name="outputKey" data-type="string" data-default="message" data-required="false">
+    <x-field-desc markdown>Defines the key used for the main text output in the agent's response. Defaults to `message`.</x-field-desc>
   </x-field>
-  <x-field data-name="name" data-type="string" data-required="false">
-    <x-field-desc markdown>A unique name for the agent, used for logging and identification.</x-field-desc>
+  <x-field data-name="toolChoice" data-type="AIAgentToolChoice | Agent" data-default="auto" data-required="false">
+    <x-field-desc markdown>Controls how the agent uses tools. It can be set to `auto`, `none`, `required`, or `router`.</x-field-desc>
   </x-field>
-  <x-field data-name="description" data-type="string" data-required="false">
-    <x-field-desc markdown>A brief description of what the agent does.</x-field-desc>
+  <x-field data-name="catchToolsError" data-type="boolean" data-default="true" data-required="false">
+    <x-field-desc markdown>If `true`, the agent will catch errors from tool executions and attempt to continue. If `false`, it will stop and throw the error.</x-field-desc>
   </x-field>
-  <x-field data-name="system_prompts" data-type="string[]" data-required="false">
-    <x-field-desc markdown>An array of system-level prompts to further guide the model's behavior, often used for setting tone or constraints.</x-field-desc>
+  <x-field data-name="structuredStreamMode" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>When enabled, the agent processes the model's streaming response to extract structured data (like JSON or YAML) alongside the text, which is useful for tasks requiring metadata.</x-field-desc>
   </x-field>
 </x-field-group>
 
-## Next Steps
+## Key Features and Usage
 
-Now that you understand the `AIAgent`, you might wonder how to give it tools to interact with the outside world or how to make multiple agents work together. 
+### Customizing Instructions
 
-<x-cards>
-  <x-card data-title="Function Agent" data-icon="lucide:function-square" data-href="/core/agents/function-agent">
-    Learn how to give your agents tools and capabilities by wrapping JavaScript functions.
-  </x-card>
-  <x-card data-title="Team Agent" data-icon="lucide:users" data-href="/core/agents/team-agent">
-    Discover how to orchestrate multiple agents to collaborate on solving complex problems.
-  </x-card>
-</x-cards>
+You can guide the agent's behavior by providing system instructions. This helps set the context and tone for the conversation.
+
+#### Simple Instructions
+
+For simple cases, a string is sufficient.
+
+```javascript AI agent with custom instructions icon=logos:javascript
+const agent = AIAgent.from({
+  model: new OpenAIChatModel(),
+  name: "tutor",
+  description: "A math tutor",
+  instructions: "You are a math tutor who helps students understand concepts clearly.",
+  inputKey: "message",
+});
+
+async function run() {
+  const result = await agent.invoke({ message: "What is 10 factorial?" });
+  console.log(result); // { message: "10 factorial is 3628800." }
+}
+run();
+```
+
+#### Advanced Prompts with PromptBuilder
+
+For more complex scenarios where you need to structure the prompt with different message types (system, user, assistant), you can use a `PromptBuilder`.
+
+```javascript AI agent with PromptBuilder icon=logos:javascript
+import { PromptBuilder, SystemMessageTemplate, UserMessageTemplate, ChatMessagesTemplate } from "@aigne/core";
+
+// Create a template for system and user messages
+const systemMessage = SystemMessageTemplate.from("You are a technical support specialist.");
+const userMessage = UserMessageTemplate.from("Please help me troubleshoot this issue: {{issue}}");
+const promptTemplate = ChatMessagesTemplate.from([systemMessage, userMessage]);
+
+// Create a PromptBuilder with the template
+const promptBuilder = new PromptBuilder({
+  instructions: promptTemplate,
+});
+
+const agent = AIAgent.from({
+  model: new OpenAIChatModel(),
+  name: "support",
+  description: "Technical support specialist",
+  instructions: promptBuilder,
+});
+
+async function run() {
+  const result = await agent.invoke({ issue: "My computer won't start." });
+  console.log(result); // { message: "Is there any message on the screen?" }
+}
+run();
+```
+
+### Using Tools (Function Calling)
+
+`AIAgent` can be equipped with `skills` (other agents, typically `FunctionAgent`), which act as tools it can call to perform specific tasks. The `toolChoice` option controls this behavior.
+
+#### Automatic Tool Choice (`auto`)
+
+In `auto` mode, the language model decides whether to respond directly or to use one of the available tools based on the user's query.
+
+```javascript Automatic Tool Usage icon=logos:javascript
+import { FunctionAgent, AIAgent, AIAgentToolChoice } from "@aigne/core";
+import { z } from "zod";
+
+// Define a tool for weather forecasts
+const weatherService = FunctionAgent.from({
+  name: "weather",
+  inputSchema: z.object({ location: z.string() }),
+  process: ({ location }) => ({
+    forecast: `Weather forecast for ${location}: Sunny, 75°F`,
+  }),
+});
+
+// Create an AIAgent that can use the tool
+const agent = AIAgent.from({
+  model: new OpenAIChatModel(),
+  toolChoice: AIAgentToolChoice.auto, // Let the model decide
+  skills: [weatherService],
+  inputKey: "message",
+});
+
+async function run() {
+  // The model will see the query and decide to call the 'weather' tool
+  const result = await agent.invoke({ message: "What is the weather in San Francisco?" });
+  console.log(result); // { message: "Weather forecast for San Francisco: Sunny, 75°F" }
+}
+run();
+```
+
+#### Router Tool Choice (`router`)
+
+In `router` mode, the agent's only job is to select the single best tool for the user's query and pass the input directly to it. The final output comes directly from the chosen tool, not from the LLM.
+
+This is useful for creating a dispatcher that routes requests to specialized agents.
+
+```javascript Router Tool Usage icon=logos:javascript
+import { FunctionAgent, AIAgent, AIAgentToolChoice } from "@aigne/core";
+import { z } from "zod";
+
+// Define specialized agents
+const weatherAgent = FunctionAgent.from({
+  name: "weather",
+  inputSchema: z.object({ location: z.string() }),
+  outputSchema: z.object({ forecast: z.string() }),
+  process: ({ location }) => ({ forecast: `Weather in ${location}: Sunny, 75°F` }),
+});
+
+const translator = FunctionAgent.from({
+  name: "translator",
+  inputSchema: z.object({ text: z.string(), language: z.string() }),
+  outputSchema: z.object({ translation: z.string() }),
+  process: ({ text, language }) => ({ translation: `Translated ${text} to ${language}` }),
+});
+
+// Create a router agent
+const routerAgent = AIAgent.from({
+  model: new OpenAIChatModel(),
+  toolChoice: AIAgentToolChoice.router, // Use router mode
+  skills: [weatherAgent, translator],
+  inputKey: "message",
+});
+
+async function run() {
+  // The router will select the 'weatherAgent' and execute it.
+  // The result is the direct output from weatherAgent.
+  const result = await routerAgent.invoke({ message: "What's the weather in San Francisco?" });
+  console.log(result); // { forecast: "Weather in San Francisco: Sunny, 75°F" }
+}
+run();
+```
+
+## Summary
+
+The `AIAgent` is a versatile and powerful component for building LLM-powered applications. It provides a structured way to interact with language models, manage prompts, and integrate external tools. For more advanced scenarios, you can combine `AIAgent` with other agent types:
+
+*   **[Function Agent](./core-agents-function-agent.md):** To create custom tools that `AIAgent` can use.
+*   **[Team Agent](./core-agents-team-agent.md):** To orchestrate multiple `AIAgent` instances to collaborate on complex tasks.

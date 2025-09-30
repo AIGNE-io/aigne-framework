@@ -1,109 +1,202 @@
 # AI Agent
 
-`AIAgent` 是 AIGNE 框架中的基础构建模块。你可以把它看作是你的主要工作单元，旨在与大语言模型（LLMs）进行通信，以理解任务、处理信息并生成智能响应。
+`AIAgent` 是 AIGNE 框架中用于执行 AI 驱动任务的核心组件。它充当与大语言模型 (LLM) 交互的主要接口，处理用户指令、管理对话并协调工具以生成智能响应。
 
-它的主要工作是接收你提供的一组 `instructions`，与 AI 模型（如 OpenAI 的 GPT-4）进行交互，并以你的应用程序可以轻松使用的结构化格式返回结果。这非常适合用于总结文本、提取特定信息、回答问题或对内容进行分类等任务。
+可以将 `AIAgent` 想象成操作的大脑。它接收输入，使用 LLM 进行思考，然后产生输出。它还可以使用专门的工具来执行特定操作，例如计算或从 API 获取数据。
 
-`AIAgent` 的两个关键特性使其功能强大且可靠：
+## 创建 AI Agent
 
-1.  **指令，而非提示**：你为 `AIAgent` 提供的是一组清晰的 `instructions`，而不是简单的提示。这允许更详细和明确的任务定义，从而更有效地指导 AI。
-2.  **结构化输出**：你可以使用 `outputSchema` 来精确定义输出的格式。这确保了 AI 的响应不仅仅是一段文本，而是一个可预测、机器可读的 JSON 对象，这对于构建可靠的应用程序至关重要。
+创建 `AIAgent` 最简单的方法是使用 `AIAgent.from()` 工厂方法。至少，你需要提供一个语言模型，并指定输入的哪个部分包含用户的消息。
 
-## 工作原理
+```javascript Basic AIAgent creation icon=logos:javascript
+// 导入必要的组件
+import { AIAgent } from "@aigne/core";
+import { OpenAIChatModel } from "../_mocks/mock-models.js"; // 替换为你的实际模型导入
 
-`AIAgent` 遵循一个简单而有效的流程：
+// 1. 实例化一个语言模型
+const model = new OpenAIChatModel();
 
-1.  **初始化**：你通过为 `AIAgent` 提供与 AI 模型的连接和一组 `instructions` 来创建它。
-2.  **执行**：当你使用某些输入运行 Agent 时，它会将你的指令和输入组合成一个对 AI 模型的请求。
-3.  **响应生成**：AI 模型处理该请求并生成一个响应。
-4.  **输出格式化**：`AIAgent` 接收模型的原始响应，并根据你定义的 `outputSchema` 对其进行格式化，返回一个干净的 JSON 对象。
-
-## 基本用法
-
-以下是一个如何创建和使用 `AIAgent` 根据主题生成创意故事标题的简单示例。
-
-```typescript Creating an AIAgent icon=logos:typescript
-import { AIAgent } from '@aigne/core';
-import { OpenAI } from '@aigne/models/openai';
-import { z } from 'zod';
-
-// 1. 定义你想要的输出结构
-const StorySchema = z.object({
-  title: z.string().describe('一个富有创意且吸引人的故事标题'),
-  tagline: z.string().describe('一句简短而引人入胜的宣传语'),
-});
-
-// 2. 初始化你想要使用的 AI 模型
-const model = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: 'gpt-4o',
-});
-
-// 3. 使用指令和输出模式创建 AIAgent
-const storyAgent = new AIAgent({
+// 2. 创建 Agent，指定模型和输入键
+const agent = AIAgent.from({
   model,
-  instructions: '你是一位富有创造力的作家。为一个故事生成一个标题和宣传语。',
-  outputSchema: StorySchema,
+  name: "assistant",
+  description: "一个有用的助手",
+  inputKey: "message", // 告诉 Agent 在输入的 'message' 字段中查找用户查询
 });
 
-// 4. 使用特定输入运行 Agent
-async function generateStoryTitle() {
-  const result = await storyAgent.run({
-    input: { theme: '一个发现了音乐的机器人' },
-  });
-
-  console.log('生成的故事情节：', result.title);
-  console.log('宣传语：', result.tagline);
+// 3. 使用一些输入调用 Agent
+async function runAgent() {
+  const result = await agent.invoke({ message: "What is the weather today?" });
+  console.log(result); // 预期输出：{ message: "Hello, How can I help you?" }
 }
 
-generateStoryTitle();
+runAgent();
 ```
 
-### 预期输出
+## 配置选项
 
-运行以上代码将生成如下所示的结构化对象：
-
-```json Response Example icon=mdi:code-json
-{
-  "title": "硅基交响曲",
-  "tagline": "他的世界充满了逻辑。直到他听到了第一个音符。"
-}
-```
-
-## 配置
-
-当你创建一个新的 `AIAgent` 时，可以传递一个包含以下属性的配置对象：
+你可以通过配置选项自定义 `AIAgent` 的行为。以下是一些最常见的选项：
 
 <x-field-group>
-  <x-field data-name="model" data-type="Model" data-required="true">
-    <x-field-desc markdown>一个 AI 模型实例，例如 `OpenAI` 或 `Anthropic`。这是 Agent 用来思考的引擎。</x-field-desc>
+  <x-field data-name="instructions" data-type="string | PromptBuilder" data-required="false">
+    <x-field-desc markdown>为 AI 模型提供关于其角色、个性和响应方式的指导。这可以是一个简单的字符串，也可以是一个用于动态提示的更复杂的 `PromptBuilder` 实例。</x-field-desc>
   </x-field>
-  <x-field data-name="instructions" data-type="string" data-required="true">
-    <x-field-desc markdown>对 Agent 的任务和个性的清晰、详细的描述。这会指导 AI 的行为。</x-field-desc>
+  <x-field data-name="inputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>指定输入对象中 Agent 应用于查找主要用户消息的键。如果未提供，则必须设置 `instructions`。</x-field-desc>
   </x-field>
-  <x-field data-name="outputSchema" data-type="ZodSchema" data-required="false">
-    <x-field-desc markdown>一个来自 Zod 库的模式，用于定义输出的结构。这会强制 AI 以一致的 JSON 格式进行响应。</x-field-desc>
+  <x-field data-name="outputKey" data-type="string" data-default="message" data-required="false">
+    <x-field-desc markdown>定义 Agent 响应中主要文本输出所使用的键。默认为 `message`。</x-field-desc>
   </x-field>
-  <x-field data-name="name" data-type="string" data-required="false">
-    <x-field-desc markdown>Agent 的唯一名称，用于日志记录和识别。</x-field-desc>
+  <x-field data-name="toolChoice" data-type="AIAgentToolChoice | Agent" data-default="auto" data-required="false">
+    <x-field-desc markdown>控制 Agent 如何使用工具。可以设置为 `auto`、`none`、`required` 或 `router`。</x-field-desc>
   </x-field>
-  <x-field data-name="description" data-type="string" data-required="false">
-    <x-field-desc markdown>关于此 Agent 功能的简要描述。</x-field-desc>
+  <x-field data-name="catchToolsError" data-type="boolean" data-default="true" data-required="false">
+    <x-field-desc markdown>如果为 `true`，Agent 将捕获工具执行中的错误并尝试继续。如果为 `false`，它将停止并抛出错误。</x-field-desc>
   </x-field>
-  <x-field data-name="system_prompts" data-type="string[]" data-required="false">
-    <x-field-desc markdown>一个系统级提示数组，用于进一步指导模型的行为，通常用于设置基调或约束。</x-field-desc>
+  <x-field data-name="structuredStreamMode" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>启用后，Agent 会处理模型的流式响应，以在文本之外提取结构化数据（如 JSON 或 YAML），这对于需要元数据的任务非常有用。</x-field-desc>
   </x-field>
 </x-field-group>
 
-## 后续步骤
+## 主要功能与用法
 
-现在你已经了解了 `AIAgent`，你可能想知道如何赋予它与外部世界交互的工具，或者如何让多个 Agent 协同工作。
+### 自定义指令
 
-<x-cards>
-  <x-card data-title="Function Agent" data-icon="lucide:function-square" data-href="/core/agents/function-agent">
-    了解如何通过包装 JavaScript 函数来为你的 Agent 提供工具和能力。
-  </x-card>
-  <x-card data-title="Team Agent" data-icon="lucide:users" data-href="/core/agents/team-agent">
-    探索如何编排多个 Agent 以协作解决复杂问题。
-  </x-card>
-</x-cards>
+你可以通过提供系统指令来指导 Agent 的行为。这有助于为对话设置背景和基调。
+
+#### 简单指令
+
+对于简单情况，一个字符串就足够了。
+
+```javascript AI agent with custom instructions icon=logos:javascript
+const agent = AIAgent.from({
+  model: new OpenAIChatModel(),
+  name: "tutor",
+  description: "一位数学导师",
+  instructions: "你是一位帮助学生清晰理解概念的数学导师。",
+  inputKey: "message",
+});
+
+async function run() {
+  const result = await agent.invoke({ message: "What is 10 factorial?" });
+  console.log(result); // { message: "10 factorial is 3628800." }
+}
+run();
+```
+
+#### 使用 PromptBuilder 的高级提示
+
+对于需要使用不同消息类型（系统、用户、助手）来构造提示的更复杂场景，你可以使用 `PromptBuilder`。
+
+```javascript AI agent with PromptBuilder icon=logos:javascript
+import { PromptBuilder, SystemMessageTemplate, UserMessageTemplate, ChatMessagesTemplate } from "@aigne/core";
+
+// 为系统和用户消息创建一个模板
+const systemMessage = SystemMessageTemplate.from("你是一名技术支持专家。");
+const userMessage = UserMessageTemplate.from("请帮我排查这个问题：{{issue}}");
+const promptTemplate = ChatMessagesTemplate.from([systemMessage, userMessage]);
+
+// 使用模板创建一个 PromptBuilder
+const promptBuilder = new PromptBuilder({
+  instructions: promptTemplate,
+});
+
+const agent = AIAgent.from({
+  model: new OpenAIChatModel(),
+  name: "support",
+  description: "技术支持专家",
+  instructions: promptBuilder,
+});
+
+async function run() {
+  const result = await agent.invoke({ issue: "My computer won't start." });
+  console.log(result); // { message: "Is there any message on the screen?" }
+}
+run();
+```
+
+### 使用工具（函数调用）
+
+`AIAgent` 可以配备 `skills`（其他 Agent，通常是 `FunctionAgent`），这些技能充当它可以调用以执行特定任务的工具。`toolChoice` 选项控制此行为。
+
+#### 自动工具选择 (`auto`)
+
+在 `auto` 模式下，语言模型会根据用户的查询决定是直接响应还是使用其中一个可用工具。
+
+```javascript Automatic Tool Usage icon=logos:javascript
+import { FunctionAgent, AIAgent, AIAgentToolChoice } from "@aigne/core";
+import { z } from "zod";
+
+// 定义一个用于天气预报的工具
+const weatherService = FunctionAgent.from({
+  name: "weather",
+  inputSchema: z.object({ location: z.string() }),
+  process: ({ location }) => ({
+    forecast: `Weather forecast for ${location}: Sunny, 75°F`,
+  }),
+});
+
+// 创建一个可以使用该工具的 AIAgent
+const agent = AIAgent.from({
+  model: new OpenAIChatModel(),
+  toolChoice: AIAgentToolChoice.auto, // 让模型来决定
+  skills: [weatherService],
+  inputKey: "message",
+});
+
+async function run() {
+  // 模型将看到查询并决定调用 'weather' 工具
+  const result = await agent.invoke({ message: "What is the weather in San Francisco?" });
+  console.log(result); // { message: "Weather forecast for San Francisco: Sunny, 75°F" }
+}
+run();
+```
+
+#### 路由器工具选择 (`router`)
+
+在 `router` 模式下，Agent 的唯一工作是为用户的查询选择最合适的单个工具，并将输入直接传递给它。最终输出直接来自所选工具，而不是来自 LLM。
+
+这对于创建一个将请求路由到专门 Agent 的分发器非常有用。
+
+```javascript Router Tool Usage icon=logos:javascript
+import { FunctionAgent, AIAgent, AIAgentToolChoice } from "@aigne/core";
+import { z } from "zod";
+
+// 定义专门的 Agent
+const weatherAgent = FunctionAgent.from({
+  name: "weather",
+  inputSchema: z.object({ location: z.string() }),
+  outputSchema: z.object({ forecast: z.string() }),
+  process: ({ location }) => ({ forecast: `Weather in ${location}: Sunny, 75°F` }),
+});
+
+const translator = FunctionAgent.from({
+  name: "translator",
+  inputSchema: z.object({ text: z.string(), language: z.string() }),
+  outputSchema: z.object({ translation: z.string() }),
+  process: ({ text, language }) => ({ translation: `Translated ${text} to ${language}` }),
+});
+
+// 创建一个路由器 Agent
+const routerAgent = AIAgent.from({
+  model: new OpenAIChatModel(),
+  toolChoice: AIAgentToolChoice.router, // 使用路由器模式
+  skills: [weatherAgent, translator],
+  inputKey: "message",
+});
+
+async function run() {
+  // 路由器将选择 'weatherAgent' 并执行它。
+  // 结果是来自 weatherAgent 的直接输出。
+  const result = await routerAgent.invoke({ message: "What's the weather in San Francisco?" });
+  console.log(result); // { forecast: "Weather in San Francisco: Sunny, 75°F" }
+}
+run();
+```
+
+## 总结
+
+`AIAgent` 是一个多功能且强大的组件，用于构建由 LLM 驱动的应用程序。它提供了一种结构化的方式来与语言模型交互、管理提示并集成外部工具。对于更高级的场景，你可以将 `AIAgent` 与其他 Agent 类型结合使用：
+
+*   **[Function Agent](./core-agents-function-agent.md):** 用于创建可供 `AIAgent` 使用的自定义工具。
+*   **[Team Agent](./core-agents-team-agent.md):** 用于协调多个 `AIAgent` 实例以协作完成复杂任务。

@@ -1,62 +1,77 @@
 # Core Framework
 
-Welcome to the heart of the AIGNE platform. The Core Framework is the engine that powers every AI application you build. Think of it as the central nervous system that coordinates all activities, manages memory, and directs specialized 'agents' to perform tasks. In this section, we'll explore the fundamental building blocks that make your AI work.
+Welcome to the engine room of the AIGNE platform. The Core Framework provides the fundamental building blocks for creating, managing, and running sophisticated AI agents. It is designed to be a powerful yet flexible foundation for your applications, handling everything from simple chat interactions to complex, multi-agent workflows.
 
-## How It Works
+At its heart, the framework consists of three main pillars:
 
-At a high level, the Core Framework consists of a few key parts that work together seamlessly. The AIGNE engine acts as the central orchestrator, the Context provides the necessary memory and state, and the Agents are the workers that carry out the actual tasks.
+*   **AIGNE Engine**: The central orchestrator that manages the entire lifecycle of an AI task.
+*   **Context**: The state manager that keeps track of conversations, memory, and other critical data during an interaction.
+*   **Agents**: The specialized actors that perform specific tasks, such as communicating with AI models, executing code, or coordinating other agents.
 
-This diagram shows the basic relationship between these components:
+### How It Works
 
-```d2 AIGNE Core Architecture icon=lucide:workflow
+The following diagram illustrates the high-level architecture of the AIGNE Core Framework. An application interacts with the central AIGNE engine, which uses a Context object to manage state and delegates tasks to one or more Agents.
+
+```d2
 direction: down
 
-AIGNE-Engine: {
-  label: "AIGNE Engine\n(The Orchestrator)"
+app: {
+  label: "Your Application"
   shape: rectangle
-  style.fill: "#f0f9ff"
 }
 
-Context: {
-  label: "Context\n(The Memory)"
-  shape: cylinder
-  style.fill: "#fefce8"
-}
-
-Agents: {
-  label: "Agents\n(The Workers)"
+aigne-core: {
+  label: "AIGNE Core Framework"
   shape: rectangle
   style: {
-    stroke-dash: 4
+    stroke: "#888"
+    stroke-width: 2
+    stroke-dash: 2
   }
 
-  AIAgent: {
-    label: "AI Agent"
+  aigne-engine: {
+    label: "AIGNE Engine"
   }
-  FunctionAgent: {
-    label: "Function Agent"
+
+  context: {
+    label: "Context"
+    shape: cylinder
   }
-  TeamAgent: {
-    label: "Team Agent"
+
+  agents: {
+    label: "Agents"
+    shape: rectangle
+    grid-columns: 3
+
+    ai-agent: { label: "AIAgent" }
+    function-agent: { label: "FunctionAgent" }
+    team-agent: { label: "TeamAgent" }
   }
 }
 
-AIGNE-Engine <-> Context: "Manages State"
-AIGNE-Engine -> Agents: "Delegates Tasks"
-
+app -> aigne-core.aigne-engine: "Invoke"
+aigne-core.aigne-engine <-> aigne-core.context: "Manages"
+aigne-core.aigne-engine -> aigne-core.agents: "Delegates Tasks"
 ```
 
-## Dive Deeper
+### Key Components
 
-To understand how these pieces fit together, explore the main components of the Core Framework in the following sections.
+The Core Framework is divided into two primary concepts. Click on a card to learn more about each one.
 
 <x-cards data-columns="2">
   <x-card data-title="AIGNE & Context" data-icon="lucide:brain-circuit" data-href="/core/aigne-and-context">
-    Learn about the central AIGNE engine that orchestrates tasks and the Context object that provides memory and awareness to your agents.
+    Learn about the main AIGNE class that orchestrates agents and the Context object that manages state and observability.
   </x-card>
   <x-card data-title="Agents" data-icon="lucide:bot" data-href="/core/agents">
-    Discover the different types of agents—the specialized workers that execute tasks, run functions, or even collaborate as a team.
+    Explore the different types of agents, which are the fundamental actors for performing tasks like chatting or calling functions.
   </x-card>
 </x-cards>
 
-By understanding these core concepts, you'll be well on your way to building sophisticated and powerful AI applications with AIGNE. We recommend starting with [AIGNE & Context](./core-aigne-and-context.md) to learn about the main controller.
+### Summary
+
+The AIGNE Core Framework provides a robust and modular architecture for building powerful AI applications. By understanding these core components, you can effectively design agents that are scalable, maintainable, and capable of handling complex tasks.
+
+To continue, please explore the detailed documentation for each component:
+
+*   **[AIGNE & Context](./core-aigne-and-context.md)**: Understand the central engine and state management.
+*   **[Agents](./core-agents.md)**: Discover the different types of workers you can build and use.

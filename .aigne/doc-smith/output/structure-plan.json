@@ -18,7 +18,11 @@
     "sourceIds": [
       "packages/core/src/index.ts",
       "packages/core/src/aigne.ts",
-      "packages/core/src/agent.ts"
+      "packages/core/src/context.ts",
+      "packages/core/src/agent.ts",
+      "packages/core/src/ai-agent.ts",
+      "packages/core/test/aigne/aigne.test.ts",
+      "packages/core/test/agents/ai-agent.test.ts"
     ],
     "parentId": ""
   },
@@ -27,8 +31,13 @@
     "description": "Understand the main AIGNE class that orchestrates agents and the Context object that manages state and observability.",
     "path": "/core/aigne-and-context",
     "sourceIds": [
+      "packages/core/src/index.ts",
       "packages/core/src/aigne.ts",
-      "packages/core/src/context.ts"
+      "packages/core/src/context.ts",
+      "packages/core/src/agent.ts",
+      "packages/core/src/ai-agent.ts",
+      "packages/core/test/aigne/aigne.test.ts",
+      "packages/core/test/agents/ai-agent.test.ts"
     ],
     "parentId": "/core"
   },
@@ -37,8 +46,12 @@
     "description": "Explore the different types of agents available in the AIGNE framework, which are the fundamental actors for performing tasks.",
     "path": "/core/agents",
     "sourceIds": [
-      "packages/core/src/agent.ts",
-      "packages/core/src/agents/index.ts"
+      "packages/core/src/agents/agent.ts",
+      "packages/core/src/agents/ai-agent.ts",
+      "packages/core/src/agents/mcp-agent.ts",
+      "packages/core/src/agents/team-agent.ts",
+      "packages/core/src/agents/transform-agent.ts",
+      "packages/core/test/agents/ai-agent.test.ts"
     ],
     "parentId": "/core"
   },
@@ -378,7 +391,8 @@
     "description": "Learn about the `AIAgent`, the core component for executing AI tasks, processing instructions, and interacting with large language models.",
     "path": "/core/agents/ai-agent",
     "sourceIds": [
-      "packages/core/src/agents/ai-agent.ts"
+      "packages/core/src/agents/ai-agent.ts",
+      "packages/core/test/agents/ai-agent.test.ts"
     ],
     "parentId": "/core/agents"
   },
@@ -387,7 +401,8 @@
     "description": "Learn about the `FunctionAgent`, which executes specific, predefined functions or tools based on user input.",
     "path": "/core/agents/function-agent",
     "sourceIds": [
-      "packages/core/src/agents/function-agent.ts"
+      "packages/core/src/agents/agent.ts",
+      "packages/core/test/agents/agent.test.ts"
     ],
     "parentId": "/core/agents"
   },
@@ -396,7 +411,8 @@
     "description": "Discover the `TeamAgent`, a powerful component that orchestrates multiple agents to collaborate on complex tasks.",
     "path": "/core/agents/team-agent",
     "sourceIds": [
-      "packages/core/src/agents/team-agent.ts"
+      "packages/core/src/agents/team-agent.ts",
+      "packages/core/test/agents/team-agent.test.ts"
     ],
     "parentId": "/core/agents"
   },

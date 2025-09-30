@@ -28,6 +28,7 @@ import terminalImage from "terminal-image";
 import terminalLink from "terminal-link";
 import { withProtocol } from "ufo";
 import { AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE } from "../constants.js";
+import { terminalInput } from "../ui/utils/terminal-input.js";
 import checkbox from "../utils/inquirer/checkbox.js";
 import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
 import { highlightUrl } from "../utils/string-utils.js";
@@ -270,8 +271,10 @@ export class TerminalTracer {
         const method =
           prop === "checkbox"
             ? checkbox
-            : // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
-              (prompts[prop as keyof typeof prompts] as (...args: any[]) => any);
+            : prop === "input"
+              ? terminalInput
+              : // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
+                (prompts[prop as keyof typeof prompts] as (...args: any[]) => any);
         if (typeof method !== "function")
           throw new Error(`Unsupported prompt method ${String(prop)}`);
 

@@ -1,5 +1,50 @@
 # Changelog
 
+## [0.11.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.0...observability-api-v0.11.1-beta) (2025-09-29)
+
+
+### Bug Fixes
+
+* improved path resolution for better module compatibility ([#564](https://github.com/AIGNE-io/aigne-framework/issues/564)) ([84e92a1](https://github.com/AIGNE-io/aigne-framework/commit/84e92a13367d801c58dd7740e9762c7b245308c6))
+
+## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.0-beta.1...observability-api-v0.11.0) (2025-09-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.2
+
+## [0.11.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.0-beta...observability-api-v0.11.0-beta.1) (2025-09-26)
+
+
+### Bug Fixes
+
+* **blocklet:** observability blocklet start failure ([#554](https://github.com/AIGNE-io/aigne-framework/issues/554)) ([8431d4d](https://github.com/AIGNE-io/aigne-framework/commit/8431d4d89a4b96f735f23e774e9545bbe1fd811c))
+* **blocklet:** observability blocklet start failure ([#554](https://github.com/AIGNE-io/aigne-framework/issues/554)) ([8431d4d](https://github.com/AIGNE-io/aigne-framework/commit/8431d4d89a4b96f735f23e774e9545bbe1fd811c))
+
+## [0.11.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.5-beta...observability-api-v0.11.0-beta) (2025-09-25)
+
+
+### Features
+
+* **blocklet:** add token and cost summary for tracing list ([#543](https://github.com/AIGNE-io/aigne-framework/issues/543)) ([5e78919](https://github.com/AIGNE-io/aigne-framework/commit/5e789199b8183cf9c48339ec8163faec001ca64c))
+
+## [0.10.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.4...observability-api-v0.10.5-beta) (2025-09-25)
+
+
+### Bug Fixes
+
+* improve SQLite busy error handling and observability logging ([#545](https://github.com/AIGNE-io/aigne-framework/issues/545)) ([6dc8e06](https://github.com/AIGNE-io/aigne-framework/commit/6dc8e064231f3d6342036626591e89bff1ae5c08))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.2-beta
+
 ## [0.10.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.3...observability-api-v0.10.4) (2025-09-11)
 
 

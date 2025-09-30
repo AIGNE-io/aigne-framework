@@ -1,6 +1,6 @@
 {
   "name": "@aigne/observability-api",
-  "version": "0.10.4",
+  "version": "0.11.1-beta",
   "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -116,6 +116,7 @@
     "chalk": "^5.6.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "decimal.js": "^10.6.0",
     "dotenv-flow": "^4.1.0",
     "drizzle-orm": "^0.44.5",
     "express": "^5.1.0",

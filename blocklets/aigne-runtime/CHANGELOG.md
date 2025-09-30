@@ -1,5 +1,100 @@
 # Changelog
 
+## [1.4.20-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19...aigne-runtime-v1.4.20-beta) (2025-09-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.1-beta
+    * @aigne/core bumped to 1.61.1-beta
+    * @aigne/observability-api bumped to 0.11.1-beta
+    * @aigne/transport bumped to 0.15.10-beta
+
+## [1.4.19](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.9...aigne-runtime-v1.4.19) (2025-09-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0
+    * @aigne/core bumped to 1.61.0
+    * @aigne/observability-api bumped to 0.11.0
+    * @aigne/sqlite bumped to 0.4.2
+    * @aigne/transport bumped to 0.15.9
+
+## [1.4.19-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.8...aigne-runtime-v1.4.19-beta.9) (2025-09-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.9
+    * @aigne/core bumped to 1.61.0-beta.8
+    * @aigne/observability-api bumped to 0.11.0-beta.1
+    * @aigne/transport bumped to 0.15.9-beta.9
+
+## [1.4.19-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.7...aigne-runtime-v1.4.19-beta.8) (2025-09-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.8
+    * @aigne/core bumped to 1.61.0-beta.7
+    * @aigne/transport bumped to 0.15.9-beta.8
+
+## [1.4.19-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.6...aigne-runtime-v1.4.19-beta.7) (2025-09-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.7
+    * @aigne/core bumped to 1.61.0-beta.6
+    * @aigne/transport bumped to 0.15.9-beta.7
+
+## [1.4.19-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.5...aigne-runtime-v1.4.19-beta.6) (2025-09-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.6
+    * @aigne/core bumped to 1.61.0-beta.5
+    * @aigne/observability-api bumped to 0.11.0-beta
+    * @aigne/transport bumped to 0.15.9-beta.6
+
+## [1.4.19-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.4...aigne-runtime-v1.4.19-beta.5) (2025-09-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.5
+    * @aigne/core bumped to 1.61.0-beta.4
+    * @aigne/observability-api bumped to 0.10.5-beta
+    * @aigne/sqlite bumped to 0.4.2-beta
+    * @aigne/transport bumped to 0.15.9-beta.5
+
+## [1.4.19-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.3...aigne-runtime-v1.4.19-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.0-beta.4
+    * @aigne/core bumped to 1.61.0-beta.3
+    * @aigne/transport bumped to 0.15.9-beta.4
+
 ## [1.4.19-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.19-beta.2...aigne-runtime-v1.4.19-beta.3) (2025-09-23)
 
 
@@ -48,7 +143,6 @@
 
 ### Bug Fixes
 
-* correct flat import, remove default import error ([#519](https://github.com/AIGNE-io/aigne-framework/issues/519)) ([6e8fd30](https://github.com/AIGNE-io/aigne-framework/commit/6e8fd30b89be1300ab6214f13fd273e51e25329b))
 * correct flat import, remove default import error ([#519](https://github.com/AIGNE-io/aigne-framework/issues/519)) ([6e8fd30](https://github.com/AIGNE-io/aigne-framework/commit/6e8fd30b89be1300ab6214f13fd273e51e25329b))
 
 
@@ -261,7 +355,6 @@
 
 ### Features
 
-* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
 * **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
 
 

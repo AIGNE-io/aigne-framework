@@ -1,5 +1,101 @@
 # Changelog
 
+## [0.7.47-beta](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46...deepseek-v0.7.47-beta) (2025-09-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.1-beta
+  * devDependencies
+    * @aigne/core bumped to 1.61.1-beta
+    * @aigne/test-utils bumped to 0.5.54-beta
+
+## [0.7.46](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46-beta.9...deepseek-v0.7.46) (2025-09-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0
+  * devDependencies
+    * @aigne/core bumped to 1.61.0
+    * @aigne/test-utils bumped to 0.5.53
+
+## [0.7.46-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46-beta.8...deepseek-v0.7.46-beta.9) (2025-09-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.9
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.8
+    * @aigne/test-utils bumped to 0.5.53-beta.8
+
+## [0.7.46-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46-beta.7...deepseek-v0.7.46-beta.8) (2025-09-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.8
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.7
+    * @aigne/test-utils bumped to 0.5.53-beta.7
+
+## [0.7.46-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46-beta.6...deepseek-v0.7.46-beta.7) (2025-09-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.7
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.6
+    * @aigne/test-utils bumped to 0.5.53-beta.6
+
+## [0.7.46-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46-beta.5...deepseek-v0.7.46-beta.6) (2025-09-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.6
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.5
+    * @aigne/test-utils bumped to 0.5.53-beta.5
+
+## [0.7.46-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46-beta.4...deepseek-v0.7.46-beta.5) (2025-09-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.5
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.4
+    * @aigne/test-utils bumped to 0.5.53-beta.4
+
+## [0.7.46-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46-beta.3...deepseek-v0.7.46-beta.4) (2025-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.0-beta.4
+  * devDependencies
+    * @aigne/core bumped to 1.61.0-beta.3
+    * @aigne/test-utils bumped to 0.5.53-beta.3
+
 ## [0.7.46-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.46-beta.2...deepseek-v0.7.46-beta.3) (2025-09-23)
 
 

@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://goo.gl/fbAQLP
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`aigne command should print help if no any subcommand 1`] = `
 [
@@ -18,6 +18,7 @@ aigne <command> [options]
 
 Commands:
   aigne run [path] [entry-agent]  Run AIGNE for the specified path
+  aigne eval [path] [agent]       Evaluate AIGNE for the specified path
   aigne test                      Run tests in the specified agents directory
   aigne create [path]             Create a new aigne project with agent config files
   aigne serve-mcp                 Serve the agents in the specified directory as a MCP server (streamable http)

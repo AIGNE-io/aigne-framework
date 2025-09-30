@@ -444,7 +444,7 @@ export default createPrompt(
       const searchStr = theme.style.searchTerm(searchTerm);
       return [
         [prefix, message, searchStr].filter(Boolean).join(" "),
-        `${error || page}${helpTipBottom}${choiceDescription}`,
+        `${error}${error ? "\n" : ""}${page}${helpTipBottom}${choiceDescription}`,
       ];
     }
 

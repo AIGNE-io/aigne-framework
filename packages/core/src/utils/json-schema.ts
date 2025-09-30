@@ -1,6 +1,7 @@
-import type { ZodType, z } from "zod";
+import { type ZodType, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { Message } from "../agents/agent.js";
+import { safeParseJSON } from "./json-utils.js";
 import { logger } from "./logger.js";
 import { isEmpty, isRecord } from "./type-utils.js";
 
@@ -106,3 +107,33 @@ function convertNullableToOptional(schema: any): [typeof schema, boolean] {
 
   return [schema, false];
 }
+
+const wrapJsonParse = <T extends ZodType>(schema: T): T => {
+  return z.preprocess(
+    (val) => (typeof val === "string" ? safeParseJSON(val) : val),
+    schema,
+  ) as unknown as T;
+};
+
+export const wrapAutoParseJsonSchema = <T extends ZodType>(schema: T): T => {
+  if (schema instanceof z.ZodNullable)
+    return z.nullable(wrapAutoParseJsonSchema(schema._def.innerType)) as unknown as T;
+  if (schema instanceof z.ZodOptional)
+    return z.optional(wrapAutoParseJsonSchema(schema._def.innerType)) as unknown as T;
+  if (schema instanceof z.ZodObject) {
+    const newSchema = schema.extend(
+      Object.fromEntries(
+        Object.entries(schema.shape).map(([key, value]: any) => [
+          key,
+          wrapAutoParseJsonSchema(value),
+        ]),
+      ),
+    );
+    return wrapJsonParse(newSchema) as unknown as T;
+  }
+  if (schema instanceof z.ZodArray) {
+    schema._def.type = wrapAutoParseJsonSchema(schema._def.type);
+    return wrapJsonParse(schema) as unknown as T;
+  }
+  return schema;
+};

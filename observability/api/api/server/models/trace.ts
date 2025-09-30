@@ -1,5 +1,5 @@
 import { json } from "@aigne/sqlite/type.js";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v7 as uuidv7 } from "uuid";
 
 export const Trace = sqliteTable("Trace", {
@@ -27,4 +27,6 @@ export const Trace = sqliteTable("Trace", {
   sessionId: text("sessionId"),
   componentId: text("componentId"),
   action: integer("action"),
+  token: integer("token").$defaultFn(() => 0),
+  cost: real("cost").$defaultFn(() => 0),
 });

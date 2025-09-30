@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.48.4-beta.3",
+  "version": "1.49.2-beta.1",
   "description": "Your command center for agent development",
   "publishConfig": {
     "access": "public"
@@ -62,10 +62,12 @@
     "@aigne/aigne-hub": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
+    "@aigne/json-schema-to-zod": "^1.3.3",
     "@aigne/listr2": "^1.0.10",
     "@aigne/marked-terminal": "^7.3.2",
     "@aigne/observability-api": "workspace:^",
     "@aigne/openai": "workspace:^",
+    "@fast-csv/format": "^5.0.5",
     "@inquirer/core": "^10.2.2",
     "@inquirer/figures": "^1.0.13",
     "@inquirer/prompts": "^7.8.6",
@@ -99,7 +101,8 @@
     "yaml": "^2.8.1",
     "yargs": "^18.0.0",
     "yoctocolors-cjs": "^2.1.3",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

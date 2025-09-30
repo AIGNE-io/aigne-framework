@@ -181,7 +181,7 @@ export function inferZodType(
   };
 }
 
-export function withAgentInputSchema(yargs: Argv, agent: Agent) {
+export function withAgentInputSchema(yargs: Argv, agent: Pick<Agent, "inputSchema">) {
   const inputSchema: { [key: string]: ZodType } =
     agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
 

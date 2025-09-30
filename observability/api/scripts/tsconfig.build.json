@@ -6,7 +6,7 @@
     "noEmit": false,
     "paths": {}
   },
-  "include": ["../api"],
+  "include": ["../api/**/*.ts", "../api/**/*.json"],
   "references": [
     { "path": "./tsconfig.build.cjs.json" },
     { "path": "./tsconfig.build.esm.json" },

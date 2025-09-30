@@ -9,7 +9,7 @@ author:
   name: Arcblock
   email: blocklet@arcblock.io
 specVersion: 1.2.8
-version: 1.13.4
+version: 1.14.1-beta
 repository:
   type: git
   url: git+https://github.com/AIGNE-io/aigne-framework.git
@@ -56,12 +56,23 @@ screenshots:
 components: []
 egress: true
 navigation:
+  - id: overview
+    title:
+      en: Overview
+      zh: 概览
+    icon: ant-design:dashboard-outlined
+    link: /
+    section:
+      - dashboard
+    role:
+      - owner
+      - admin
   - id: observability
     title:
       en: Traces
       zh: Traces
     icon: mdi:vote-outline
-    link: /
+    link: /traces
     section:
       - dashboard
     role:

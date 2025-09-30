@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.80.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.2-beta.1...aigne-framework-v1.80.0-beta.1) (2025-09-30)
+
+
+### Features
+
+* **cli:** support define nested commands for sub apps ([#568](https://github.com/AIGNE-io/aigne-framework/issues/568)) ([0693b80](https://github.com/AIGNE-io/aigne-framework/commit/0693b807e0f8d335010e6ad00763b07cf095e65b))
+
 ## [1.79.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.79.2-beta...aigne-framework-v1.79.2-beta.1) (2025-09-29)
 
 

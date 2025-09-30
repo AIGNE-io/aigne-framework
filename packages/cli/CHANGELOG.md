@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.50.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.2-beta.1...cli-v1.50.0-beta.1) (2025-09-30)
+
+
+### Features
+
+* **cli:** support define nested commands for sub apps ([#568](https://github.com/AIGNE-io/aigne-framework/issues/568)) ([0693b80](https://github.com/AIGNE-io/aigne-framework/commit/0693b807e0f8d335010e6ad00763b07cf095e65b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.47-beta.1
+    * @aigne/agentic-memory bumped to 1.0.47-beta.1
+    * @aigne/aigne-hub bumped to 0.10.1-beta.1
+    * @aigne/core bumped to 1.62.0-beta
+    * @aigne/default-memory bumped to 1.2.10-beta.1
+    * @aigne/openai bumped to 0.16.1-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.54-beta.1
+
 ## [1.49.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.49.2-beta...cli-v1.49.2-beta.1) (2025-09-29)
 
 

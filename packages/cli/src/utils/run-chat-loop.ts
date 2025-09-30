@@ -2,9 +2,7 @@ import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
 import { ChatModel, type FileUnionContent, type Message, type UserAgent } from "@aigne/core";
 import { isNonNullable, omit } from "@aigne/core/utils/type-utils.js";
-import chalk from "chalk";
 import { TerminalTracer } from "../tracer/terminal.js";
-import { SIGINTError } from "../ui/utils/error.js";
 import { terminalInput } from "../ui/utils/terminal-input.js";
 
 export const DEFAULT_CHAT_INPUT_KEY = "message";
@@ -36,18 +34,10 @@ export async function runChatLoopInTerminal(
   }
 
   for (let i = 0; ; i++) {
-    let question: string | undefined;
-    try {
-      question = await terminalInput({
-        message: "💬",
-        default: i === 0 ? options?.defaultQuestion : undefined,
-      });
-    } catch (error) {
-      if (error instanceof SIGINTError) {
-        console.error(chalk.red(error.message));
-        break;
-      }
-    }
+    const question = await terminalInput({
+      message: "💬",
+      default: i === 0 ? options?.defaultQuestion : undefined,
+    });
 
     if (!question?.trim()) continue;
 

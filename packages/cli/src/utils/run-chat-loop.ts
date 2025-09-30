@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
 import { ChatModel, type FileUnionContent, type Message, type UserAgent } from "@aigne/core";
 import { isNonNullable, omit } from "@aigne/core/utils/type-utils.js";
+import chalk from "chalk";
 import { TerminalTracer } from "../tracer/terminal.js";
 import { SIGINTError } from "../ui/utils/error.js";
 import { terminalInput } from "../ui/utils/terminal-input.js";
@@ -43,7 +44,7 @@ export async function runChatLoopInTerminal(
       });
     } catch (error) {
       if (error instanceof SIGINTError) {
-        console.error(error.message);
+        console.error(chalk.red(error.message));
         break;
       }
     }

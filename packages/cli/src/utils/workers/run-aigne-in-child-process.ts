@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Agent } from "@aigne/core";
 import type { AIGNECLIAgent } from "@aigne/core/aigne/type.js";
+import { logger } from "@aigne/core/utils/logger.js";
 import type { JsonSchema } from "@aigne/json-schema-to-zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type {
@@ -60,6 +61,6 @@ export async function runAIGNEInChildProcess<M extends keyof ChildProcessAIGNEMe
       reject(new Error(`Child process exited with code ${code}`));
     });
 
-    child.send({ method, args });
+    child.send({ method, args, logLevel: logger.level });
   });
 }

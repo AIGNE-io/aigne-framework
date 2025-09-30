@@ -200,7 +200,8 @@ test("run command should register commands correctly", async () => {
 
     Options:
       -h, --help     Show help                                             [boolean]
-      -v, --version  Show version number                                   [boolean]"
+      -v, --version  Show version number                                   [boolean]
+    "
     ,
     ]
   `);
@@ -221,7 +222,8 @@ test("run command should register commands correctly", async () => {
 
     Options:
       -h, --help     Show help                                             [boolean]
-      -v, --version  Show version number                                   [boolean]"
+      -v, --version  Show version number                                   [boolean]
+    "
     ,
     ]
   `);
@@ -272,7 +274,8 @@ test("run command should register commands correctly", async () => {
           --log-level   Log level for detailed debugging information. Values:
                         silent, error, warn, info, debug[string] [default: "silent"]
       -h, --help        Show help                                          [boolean]
-      -v, --version     Show version number                                [boolean]"
+      -v, --version     Show version number                                [boolean]
+    "
     ,
     ]
   `);

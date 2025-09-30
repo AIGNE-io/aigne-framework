@@ -32,7 +32,8 @@ test("app command should register applications to yargs", async () => {
 
     Options:
       --help     Show help                                                 [boolean]
-      --version  Show version number                                       [boolean]"
+      --version  Show version number                                       [boolean]
+    "
   `);
 
   exit.mockRestore();
@@ -85,7 +86,8 @@ test("app command should register doc-smith to yargs", async () => {
           --help     Show help                                             [boolean]
           --model    Model to use for the application, example: openai:gpt-4.1 or
                      google:gemini-2.5-flash                                [string]
-      -v, --version  Show version number                                   [boolean]"
+      -v, --version  Show version number                                   [boolean]
+    "
   `);
 
   await command.parseAsync(["doc-smith", "generate", "--help"]);
@@ -132,7 +134,8 @@ test("app command should register doc-smith to yargs", async () => {
           --force       Truncate the output file if it exists, and create directory
                         if the output path does not exists[boolean] [default: false]
           --log-level   Log level for detailed debugging information. Values:
-                        silent, error, warn, info, debug[string] [default: "silent"]"
+                        silent, error, warn, info, debug[string] [default: "silent"]
+    "
   `);
 
   const invokeAgentFromDir = spyOn(

@@ -1,6 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import { AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE } from "@aigne/cli/constants.js";
 import { TerminalTracer } from "@aigne/cli/tracer/terminal.js";
+import * as terminalInput from "@aigne/cli/ui/utils/terminal-input";
 import { type AgentInvokeOptions, AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
@@ -128,7 +129,7 @@ test("TerminalTracer should add prompts for user input", async () => {
 
   const tracer = new TerminalTracer(context);
 
-  const input = spyOn(prompts, "input").mockReturnValueOnce(Promise.resolve("John Doe") as any);
+  const input = spyOn(terminalInput, "terminalInput").mockResolvedValueOnce("John Doe");
   const number = spyOn(prompts, "number").mockReturnValueOnce(Promise.resolve(18) as any);
   const select = spyOn(prompts, "select").mockReturnValueOnce(Promise.resolve("red") as any);
 

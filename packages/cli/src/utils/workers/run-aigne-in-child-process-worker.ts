@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import { type Agent, AIGNE, type Message } from "@aigne/core";
 import { findCliAgent, mapCliAgent } from "@aigne/core/utils/agent-utils.js";
+import { type LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { loadAIGNE } from "../load-aigne.js";
 import { runAgentWithAIGNE } from "../run-with-aigne.js";
 import { type AgentRunCommonOptions, parseAgentInput } from "../yargs.js";
@@ -15,28 +16,33 @@ const METHODS: { [method: string]: (...args: any[]) => Promise<any> } = {
   invokeCLIAgentFromDir: invokeCLIAgentFromDirInChildProcess,
 };
 
-process.on("message", async ({ method, args }: { method: string; args: any[] }) => {
-  const send = (message: any) =>
-    new Promise((resolve, reject) => {
-      assert(process.send);
-      process.send(message, undefined, undefined, (error) => {
-        if (error) reject(error);
-        else resolve(true);
+process.on(
+  "message",
+  async ({ method, args, ...options }: { method: string; args: any[]; logLevel?: LogLevel }) => {
+    if (options.logLevel) logger.level = options.logLevel;
+
+    const send = (message: any) =>
+      new Promise((resolve, reject) => {
+        assert(process.send);
+        process.send(message, undefined, undefined, (error) => {
+          if (error) reject(error);
+          else resolve(true);
+        });
       });
-    });
 
-  try {
-    const handler = METHODS[method];
-    if (!handler) throw new Error(`Unknown method: ${method}`);
+    try {
+      const handler = METHODS[method];
+      if (!handler) throw new Error(`Unknown method: ${method}`);
 
-    const result = await handler(...args);
-    await send({ method, result });
-  } catch (error) {
-    await send({ method, error: { message: error.message } });
-  } finally {
-    process.exit(0);
-  }
-});
+      const result = await handler(...args);
+      await send({ method, result });
+    } catch (error) {
+      await send({ method, error: { message: error.message } });
+    } finally {
+      process.exit(0);
+    }
+  },
+);
 
 export async function loadAIGNEInChildProcess(...args: Parameters<typeof AIGNE.load>): Promise<{
   agents?: AgentInChildProcess[];

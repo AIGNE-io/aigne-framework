@@ -13,11 +13,13 @@ let originalEnv: NodeJS.ProcessEnv;
 beforeEach(() => {
   originalEnv = {
     MODEL: process.env.MODEL,
+    IMAGE_MODEL: process.env.IMAGE_MODEL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     XAI_API_KEY: process.env.XAI_API_KEY,
   };
 
   process.env.MODEL = "openai:gpt-4o-mini";
+  process.env.IMAGE_MODEL = "openai:gpt-image-1";
   process.env.OPENAI_API_KEY = "test-openai-api-key";
   process.env.XAI_API_KEY = "test-xai-api-key";
 });
@@ -242,12 +244,18 @@ test("run command should register commands correctly", async () => {
           --component_name  Name of the component to push        [string] [required]
 
     Model Options
-          --model              AI model to use in format 'provider[:model]' where
+          --model              AI model to use in format 'provider[/model]' where
                                model is optional. Examples: 'openai' or
-                               'openai:gpt-4o-mini'. Available providers: openai,
+                               'openai/gpt-4o-mini'. Available providers: openai,
                                anthropic, bedrock, deepseek, gemini,google, ollama,
                                openrouter, xai, doubao, poe, aignehub (default:
                                openai)                                      [string]
+          --image-model        Image model to use in format 'provider[/model]' where
+                               model is optional. Examples: 'openai' or
+                               'openai/gpt-image-1'. Available providers:
+                               openaiimagemodel, geminiimagemodel,google,
+                               ideogramimagemodel, doubaoimagemodel,
+                               aignehubimagemodel (default: openai)         [string]
           --temperature        Temperature for the model (controls randomness,
                                higher values produce more random outputs). Range:
                                0.0-2.0                                      [number]

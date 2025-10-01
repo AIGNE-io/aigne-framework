@@ -102,12 +102,18 @@ test("app command should register doc-smith to yargs", async () => {
           --topic  Topic of doc to generate                                 [string]
 
     Model Options
-          --model              AI model to use in format 'provider[:model]' where
+          --model              AI model to use in format 'provider[/model]' where
                                model is optional. Examples: 'openai' or
-                               'openai:gpt-4o-mini'. Available providers: openai,
+                               'openai/gpt-4o-mini'. Available providers: openai,
                                anthropic, bedrock, deepseek, gemini,google, ollama,
                                openrouter, xai, doubao, poe, aignehub (default:
                                openai)                                      [string]
+          --image-model        Image model to use in format 'provider[/model]' where
+                               model is optional. Examples: 'openai' or
+                               'openai/gpt-image-1'. Available providers:
+                               openaiimagemodel, geminiimagemodel,google,
+                               ideogramimagemodel, doubaoimagemodel,
+                               aignehubimagemodel (default: openai)         [string]
           --temperature        Temperature for the model (controls randomness,
                                higher values produce more random outputs). Range:
                                0.0-2.0                                      [number]

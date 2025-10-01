@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.62.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta.1...core-v1.62.0-beta.2) (2025-10-01)
+
+
+### Bug Fixes
+
+* **core:** add `include_input_in_output` option for agent definition ([#575](https://github.com/AIGNE-io/aigne-framework/issues/575)) ([9e28b72](https://github.com/AIGNE-io/aigne-framework/commit/9e28b729963faa8bea90ee42fde855868889396d))
+
 ## [1.62.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta...core-v1.62.0-beta.1) (2025-10-01)
 
 

@@ -1,10 +1,14 @@
-import { AIGNE, type ChatModel, type ChatModelInputOptions } from "@aigne/core";
+import {
+  AIGNE,
+  type ChatModel,
+  type ChatModelInputOptions,
+  type ImageModelInputOptions,
+} from "@aigne/core";
 import { isNil, omitBy } from "@aigne/core/utils/type-utils.js";
-import { OpenAIImageModel } from "@aigne/openai";
 import boxen from "boxen";
 import chalk from "chalk";
 import { availableMemories } from "../constants.js";
-import { loadChatModel, maskApiKey } from "./aigne-hub/model.js";
+import { loadChatModel, loadImageModel, maskApiKey } from "./aigne-hub/model.js";
 import type { LoadCredentialOptions } from "./aigne-hub/type.js";
 import { getUrlOrigin } from "./get-url-origin.js";
 import type { AgentRunCommonOptions } from "./yargs.js";
@@ -42,10 +46,12 @@ async function printChatModelInfoBox(model: ChatModel) {
 export async function loadAIGNE({
   path,
   modelOptions,
+  imageModelOptions,
   printTips = true,
 }: {
   path?: string;
   modelOptions?: ChatModelInputOptions & LoadCredentialOptions;
+  imageModelOptions?: ImageModelInputOptions & LoadCredentialOptions;
   printTips?: boolean;
 }) {
   let aigne: AIGNE;
@@ -59,7 +65,12 @@ export async function loadAIGNE({
           ...omitBy(modelOptions ?? {}, (v) => isNil(v)),
           model: modelOptions?.model || process.env.MODEL || options?.model,
         }),
-      imageModel: () => new OpenAIImageModel(),
+      imageModel: (options) =>
+        loadImageModel({
+          ...options,
+          ...omitBy(imageModelOptions ?? {}, (v) => isNil(v)),
+          model: imageModelOptions?.model || process.env.IMAGE_MODEL || options?.model,
+        }),
     });
   } else {
     const chatModel = await loadChatModel({ ...modelOptions });

@@ -1,6 +1,11 @@
 import { readFile } from "node:fs/promises";
-import { AIGNE_HUB_DEFAULT_MODEL, findModel } from "@aigne/aigne-hub";
-import type { ChatModel, ChatModelInputOptions } from "@aigne/core";
+import { AIGNE_HUB_DEFAULT_MODEL, findImageModel, findModel } from "@aigne/aigne-hub";
+import type {
+  ChatModel,
+  ChatModelInputOptions,
+  ImageModel,
+  ImageModelInputOptions,
+} from "@aigne/core";
 import { flat, pick } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import inquirer from "inquirer";
@@ -103,6 +108,38 @@ export async function loadChatModel(
   if (!match) {
     throw new Error(
       `Unsupported model provider ${provider}, available providers: ${all.map((m) => m.name).join(", ")}`,
+    );
+  }
+
+  const credential = provider.toLowerCase().includes(AIGNE_HUB_PROVIDER)
+    ? await loadAIGNEHubCredential(options)
+    : undefined;
+
+  return match.create({
+    ...credential,
+    model: params.model,
+    modelOptions: { ...params },
+  });
+}
+
+export async function loadImageModel(
+  options?: ImageModelInputOptions & LoadCredentialOptions,
+): Promise<ImageModel> {
+  const { provider, model } = await formatModelName(
+    options?.model || process.env.MODEL || "",
+    options?.inquirerPromptFn ??
+      (inquirer.prompt as NonNullable<LoadCredentialOptions["inquirerPromptFn"]>),
+  );
+
+  const params: ImageModelInputOptions = {
+    model,
+    ...pick(options ?? {}, ["preferInputFileType"]),
+  };
+
+  const { match, all } = findImageModel(provider);
+  if (!match) {
+    throw new Error(
+      `Unsupported image model provider ${provider}, available providers: ${all.map((m) => m.name).join(", ")}`,
     );
   }
 

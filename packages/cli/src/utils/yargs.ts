@@ -3,7 +3,12 @@ import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
 import { isatty } from "node:tty";
 import { promisify } from "node:util";
-import { availableModels } from "@aigne/aigne-hub";
+import {
+  availableImageModels,
+  availableModels,
+  type LoadableImageModel,
+  type LoadableModel,
+} from "@aigne/aigne-hub";
 import {
   type Agent,
   AIAgent,
@@ -42,14 +47,16 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
     })
     .option("model", {
       group: MODEL_OPTIONS_GROUP_NAME,
-      describe: `AI model to use in format 'provider[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: ${availableModels()
-        .map((i) => {
-          if (typeof i.name === "string") {
-            return i.name.toLowerCase().replace(/ChatModel$/i, "");
-          }
-          return i.name.map((n) => n.toLowerCase().replace(/ChatModel$/i, ""));
-        })
-        .join(", ")} (default: openai)`,
+      describe: `AI model to use in format 'provider[/model]' where model is optional. Examples: 'openai' or 'openai/gpt-4o-mini'. Available providers: ${formatModelsName(
+        availableModels(),
+      )} (default: openai)`,
+      type: "string",
+    })
+    .option("image-model", {
+      group: MODEL_OPTIONS_GROUP_NAME,
+      describe: `Image model to use in format 'provider[/model]' where model is optional. Examples: 'openai' or 'openai/gpt-image-1'. Available providers: ${formatModelsName(
+        availableImageModels(),
+      )} (default: openai)`,
       type: "string",
     })
     .option("temperature", {
@@ -127,6 +134,17 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
       describe: "Custom AIGNE Hub service URL. Used to fetch remote agent definitions or models.",
       type: "string",
     });
+
+function formatModelsName(models: (LoadableModel | LoadableImageModel)[]): string {
+  return models
+    .map((i) => {
+      if (typeof i.name === "string") {
+        return i.name.toLowerCase().replace(/ChatModel$/i, "");
+      }
+      return i.name.map((n) => n.toLowerCase().replace(/ChatModel$/i, ""));
+    })
+    .join(", ");
+}
 
 type _AgentRunCommonOptions = Partial<InferArgv<ReturnType<typeof withAgentInputSchema>>>;
 

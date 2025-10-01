@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@aigne/core": "workspace:^",
-    "@aigne/uuid": "^13.0.0",
+    "@aigne/uuid": "^13.0.1",
     "@aws-sdk/client-bedrock-runtime": "^3.890.0",
     "zod": "^3.25.67"
   },

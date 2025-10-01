@@ -33,7 +33,7 @@
     "@aigne/observability-api": "workspace:^",
     "@aigne/observability-ui": "workspace:^",
     "@aigne/sqlite": "workspace:^",
-    "@aigne/uuid": "^13.0.0",
+    "@aigne/uuid": "^13.0.1",
     "@arcblock/did-connect-react": "^3.1.41",
     "@arcblock/ux": "^3.1.41",
     "@biomejs/biome": "^2.2.4",

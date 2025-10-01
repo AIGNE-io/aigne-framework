@@ -54,7 +54,7 @@
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/sqlite": "workspace:^",
-    "@aigne/uuid": "^13.0.0",
+    "@aigne/uuid": "^13.0.1",
     "drizzle-orm": "^0.44.5",
     "fastq": "^1.19.1",
     "jsonata": "^2.1.0",

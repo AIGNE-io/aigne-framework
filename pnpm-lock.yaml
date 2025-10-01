@@ -87,8 +87,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/transport
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.1.41
         version: 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
@@ -739,8 +739,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/sqlite
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.5(@libsql/client@0.15.15)(@opentelemetry/api@1.9.0)(bun-types@1.2.22(@types/react@19.1.13))(sqlite3@5.1.7)
@@ -948,8 +948,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       '@aws-sdk/client-bedrock-runtime':
         specifier: ^3.890.0
         version: 3.890.0
@@ -1053,8 +1053,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/platform-helpers
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       '@google/genai':
         specifier: ^1.20.0
         version: 1.20.0(@modelcontextprotocol/sdk@1.18.0)(encoding@0.1.13)
@@ -1211,8 +1211,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/platform-helpers
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       openai:
         specifier: ^5.20.3
         version: 5.20.3(ws@8.18.2)(zod@3.25.67)
@@ -1301,8 +1301,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/sqlite
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1413,8 +1413,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/sqlite
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.1.41
         version: 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
@@ -1682,8 +1682,8 @@ importers:
         specifier: workspace:^
         version: link:../sqlite
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.5(@libsql/client@0.15.15)(@opentelemetry/api@1.9.0)(bun-types@1.2.22(@types/react@19.1.13))(sqlite3@5.1.7)
@@ -1930,8 +1930,8 @@ importers:
         specifier: workspace:^
         version: link:../platform-helpers
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       '@inquirer/prompts':
         specifier: ^7.8.6
         version: 7.8.6(@types/node@24.5.1)
@@ -2145,8 +2145,8 @@ importers:
         specifier: workspace:^
         version: link:../test-utils
       '@aigne/uuid':
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^13.0.1
+        version: 13.0.1
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -2330,8 +2330,8 @@ packages:
   '@aigne/publish-docs@0.10.0':
     resolution: {integrity: sha512-TdNvu+rNuS+4BHJG5Mw0Voi1IGkSmtk7aUR4K5OjnOCgAr7z3QNk37fCW6NFEMhnyVvq8rxC5lYxAYd6S3n63w==}
 
-  '@aigne/uuid@13.0.0':
-    resolution: {integrity: sha512-l74ywhcJOsXq7rrpM5aEFG0aHCdZ19NLdAwvXLpPWyDgmdorGGL6RqnaCjU6AhWZaOpCM/NmjImPxfbl6t7EcA==}
+  '@aigne/uuid@13.0.1':
+    resolution: {integrity: sha512-28GrlAzaE1RkCQhkBn953gOd0hvCOAlZzjs4R5xPRphyNgZtDf058i2VfGDTyGvcVVkLhhoTy7s85srOM52krQ==}
     hasBin: true
 
   '@alcalzone/ansi-tokenize@0.2.0':
@@ -12782,7 +12782,7 @@ snapshots:
       - utf-8-validate
       - yjs
 
-  '@aigne/uuid@13.0.0': {}
+  '@aigne/uuid@13.0.1': {}
 
   '@alcalzone/ansi-tokenize@0.2.0':
     dependencies:

@@ -62,7 +62,7 @@
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
     "@aigne/test-utils": "workspace:^",
-    "@aigne/uuid": "^13.0.0",
+    "@aigne/uuid": "^13.0.1",
     "@types/bun": "^1.2.22",
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.1",

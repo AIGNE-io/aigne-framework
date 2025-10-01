@@ -12,6 +12,7 @@
   },
   "scripts": {
     "test": "vitest",
+    "test:coverage": "vitest",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

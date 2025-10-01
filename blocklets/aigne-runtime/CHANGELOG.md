@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.20-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.20-beta.4...aigne-runtime-v1.4.20-beta.5) (2025-10-01)
+
+
+### Bug Fixes
+
+* update deps compatibility in CommonJS environment ([#580](https://github.com/AIGNE-io/aigne-framework/issues/580)) ([a1e35d0](https://github.com/AIGNE-io/aigne-framework/commit/a1e35d016405accb51c1aeb6a544503a1c78e912))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.1-beta.5
+    * @aigne/core bumped to 1.62.0-beta.4
+    * @aigne/observability-api bumped to 0.11.1-beta.2
+    * @aigne/transport bumped to 0.15.10-beta.5
+
 ## [1.4.20-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.20-beta.3...aigne-runtime-v1.4.20-beta.4) (2025-10-01)
 
 

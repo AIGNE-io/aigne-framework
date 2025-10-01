@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.80.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.5...aigne-framework-v1.80.0-beta.6) (2025-10-01)
+
+
+### Bug Fixes
+
+* handle optional imageModel in loader function ([#582](https://github.com/AIGNE-io/aigne-framework/issues/582)) ([7d55084](https://github.com/AIGNE-io/aigne-framework/commit/7d550841b6edfc762ef7c188a585d9fc8ffdf4c7))
+* update deps compatibility in CommonJS environment ([#580](https://github.com/AIGNE-io/aigne-framework/issues/580)) ([a1e35d0](https://github.com/AIGNE-io/aigne-framework/commit/a1e35d016405accb51c1aeb6a544503a1c78e912))
+
 ## [1.80.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.4...aigne-framework-v1.80.0-beta.5) (2025-10-01)
 
 

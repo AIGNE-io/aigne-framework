@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.1-beta.1...observability-api-v0.11.1-beta.2) (2025-10-01)
+
+
+### Bug Fixes
+
+* update deps compatibility in CommonJS environment ([#580](https://github.com/AIGNE-io/aigne-framework/issues/580)) ([a1e35d0](https://github.com/AIGNE-io/aigne-framework/commit/a1e35d016405accb51c1aeb6a544503a1c78e912))
+
 ## [0.11.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.1-beta...observability-api-v0.11.1-beta.1) (2025-10-01)
 
 

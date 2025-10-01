@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.62.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta.3...core-v1.62.0-beta.4) (2025-10-01)
+
+
+### Bug Fixes
+
+* handle optional imageModel in loader function ([#582](https://github.com/AIGNE-io/aigne-framework/issues/582)) ([7d55084](https://github.com/AIGNE-io/aigne-framework/commit/7d550841b6edfc762ef7c188a585d9fc8ffdf4c7))
+* update deps compatibility in CommonJS environment ([#580](https://github.com/AIGNE-io/aigne-framework/issues/580)) ([a1e35d0](https://github.com/AIGNE-io/aigne-framework/commit/a1e35d016405accb51c1aeb6a544503a1c78e912))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.1-beta.2
+
 ## [1.62.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta.2...core-v1.62.0-beta.3) (2025-10-01)
 
 

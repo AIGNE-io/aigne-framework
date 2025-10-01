@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.1-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.1-beta.4...anthropic-v0.14.1-beta.5) (2025-10-01)
+
+
+### Bug Fixes
+
+* update deps compatibility in CommonJS environment ([#580](https://github.com/AIGNE-io/aigne-framework/issues/580)) ([a1e35d0](https://github.com/AIGNE-io/aigne-framework/commit/a1e35d016405accb51c1aeb6a544503a1c78e912))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.62.0-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.54-beta.5
+
 ## [0.14.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.1-beta.3...anthropic-v0.14.1-beta.4) (2025-10-01)
 
 

@@ -1,6 +1,6 @@
 import { json } from "@aigne/sqlite/type.js";
+import { v7 as uuidv7 } from "@aigne/uuid";
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { v7 as uuidv7 } from "uuid";
 
 export const Trace = sqliteTable("Trace", {
   id: text("id")

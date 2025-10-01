@@ -86,9 +86,12 @@ importers:
       '@aigne/transport':
         specifier: workspace:^
         version: link:../../packages/transport
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       '@arcblock/did-connect-react':
         specifier: ^3.1.41
-        version: 3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
       '@arcblock/ux':
         specifier: ^3.1.41
         version: 3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -137,9 +140,6 @@ importers:
       ufo:
         specifier: ^1.6.1
         version: 1.6.1
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
     devDependencies:
       '@blocklet/js-sdk':
         specifier: ^1.16.51
@@ -738,12 +738,12 @@ importers:
       '@aigne/sqlite':
         specifier: workspace:^
         version: link:../../packages/sqlite
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.5(@libsql/client@0.15.15)(@opentelemetry/api@1.9.0)(bun-types@1.2.22(@types/react@19.1.13))(sqlite3@5.1.7)
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
       yaml:
         specifier: ^2.8.1
         version: 2.8.1
@@ -947,12 +947,12 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       '@aws-sdk/client-bedrock-runtime':
         specifier: ^3.890.0
         version: 3.890.0
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -1052,12 +1052,12 @@ importers:
       '@aigne/platform-helpers':
         specifier: workspace:^
         version: link:../../packages/platform-helpers
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       '@google/genai':
         specifier: ^1.20.0
         version: 1.20.0(@modelcontextprotocol/sdk@1.18.0)(encoding@0.1.13)
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -1210,12 +1210,12 @@ importers:
       '@aigne/platform-helpers':
         specifier: workspace:^
         version: link:../../packages/platform-helpers
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       openai:
         specifier: ^5.20.3
         version: 5.20.3(ws@8.18.2)(zod@3.25.67)
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -1300,6 +1300,9 @@ importers:
       '@aigne/sqlite':
         specifier: workspace:^
         version: link:../../packages/sqlite
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1345,9 +1348,6 @@ importers:
       ufo:
         specifier: ^1.6.1
         version: 1.6.1
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
       yaml:
         specifier: ^2.8.1
         version: 2.8.1
@@ -1412,9 +1412,12 @@ importers:
       '@aigne/sqlite':
         specifier: workspace:^
         version: link:../../packages/sqlite
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       '@arcblock/did-connect-react':
         specifier: ^3.1.41
-        version: 3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
       '@arcblock/ux':
         specifier: ^3.1.41
         version: 3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -1475,9 +1478,6 @@ importers:
       ufo:
         specifier: ^1.6.1
         version: 1.6.1
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
       vite-plugin-blocklet:
         specifier: ^0.10.1
         version: 0.10.1(rollup@4.50.2)(vite@7.1.5(@types/node@24.5.1)(jiti@2.5.1)(tsx@4.20.5)(yaml@2.8.1))
@@ -1681,6 +1681,9 @@ importers:
       '@aigne/sqlite':
         specifier: workspace:^
         version: link:../sqlite
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.5(@libsql/client@0.15.15)(@opentelemetry/api@1.9.0)(bun-types@1.2.22(@types/react@19.1.13))(sqlite3@5.1.7)
@@ -1693,9 +1696,6 @@ importers:
       jsonschema:
         specifier: ^1.5.0
         version: 1.5.0
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
       yaml:
         specifier: ^2.8.1
         version: 2.8.1
@@ -1929,6 +1929,9 @@ importers:
       '@aigne/platform-helpers':
         specifier: workspace:^
         version: link:../platform-helpers
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       '@inquirer/prompts':
         specifier: ^7.8.6
         version: 7.8.6(@types/node@24.5.1)
@@ -1992,9 +1995,6 @@ importers:
       ufo:
         specifier: ^1.6.1
         version: 1.6.1
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
       yaml:
         specifier: ^2.8.1
         version: 2.8.1
@@ -2144,6 +2144,9 @@ importers:
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../test-utils
+      '@aigne/uuid':
+        specifier: ^13.0.0
+        version: 13.0.0
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -2177,9 +2180,6 @@ importers:
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
 
   tests/browser:
     dependencies:
@@ -2329,6 +2329,10 @@ packages:
 
   '@aigne/publish-docs@0.10.0':
     resolution: {integrity: sha512-TdNvu+rNuS+4BHJG5Mw0Voi1IGkSmtk7aUR4K5OjnOCgAr7z3QNk37fCW6NFEMhnyVvq8rxC5lYxAYd6S3n63w==}
+
+  '@aigne/uuid@13.0.0':
+    resolution: {integrity: sha512-l74ywhcJOsXq7rrpM5aEFG0aHCdZ19NLdAwvXLpPWyDgmdorGGL6RqnaCjU6AhWZaOpCM/NmjImPxfbl6t7EcA==}
+    hasBin: true
 
   '@alcalzone/ansi-tokenize@0.2.0':
     resolution: {integrity: sha512-qI/5TaaaCZE4yeSZ83lu0+xi1r88JSxUjnH4OP/iZF7+KKZ75u3ee5isd0LxX+6N8U0npL61YrpbthILHB6BnA==}
@@ -12119,10 +12123,6 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  uuid@13.0.0:
-    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
-    hasBin: true
-
   uuid@3.4.0:
     resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
     deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
@@ -12782,6 +12782,8 @@ snapshots:
       - utf-8-validate
       - yjs
 
+  '@aigne/uuid@13.0.0': {}
+
   '@alcalzone/ansi-tokenize@0.2.0':
     dependencies:
       ansi-styles: 6.2.1
@@ -12820,7 +12822,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@arcblock/did-connect-react@3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@arcblock/did-connect-react@3.1.41(53a6f9726b75e09a959ba2f3e9329f19)':
     dependencies:
       '@arcblock/bridge': 3.1.41
       '@arcblock/did': 1.24.0
@@ -14390,10 +14392,10 @@ snapshots:
       - supports-color
       - tedious
 
-  '@blocklet/did-space-react@1.1.18(27107ef010abacc6a4e897228646a070)':
+  '@blocklet/did-space-react@1.1.18(b4368c857823c854234d93c459b555a3)':
     dependencies:
       '@arcblock/did': 1.24.0
-      '@arcblock/did-connect-react': 3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@arcblock/did-connect-react': 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
       '@arcblock/ux': 3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@blocklet/js-sdk': 1.16.51
       '@blocklet/sdk': 1.16.51(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -14589,13 +14591,13 @@ snapshots:
       '@abtnode/constant': 1.16.51
       '@abtnode/util': 1.16.51
       '@arcblock/bridge': 3.1.41
-      '@arcblock/did-connect-react': 3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@arcblock/did-connect-react': 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
       '@arcblock/icons': 3.1.41(react@19.1.1)
       '@arcblock/react-hooks': 3.1.41
       '@arcblock/ux': 3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@arcblock/ws': 1.24.0
       '@blocklet/constant': 1.16.51
-      '@blocklet/did-space-react': 1.1.18(27107ef010abacc6a4e897228646a070)
+      '@blocklet/did-space-react': 1.1.18(b4368c857823c854234d93c459b555a3)
       '@blocklet/js-sdk': 1.16.51
       '@emotion/react': 11.14.0(@types/react@19.1.13)(react@19.1.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1)
@@ -25925,8 +25927,6 @@ snapshots:
   utility-types@3.11.0: {}
 
   utils-merge@1.0.1: {}
-
-  uuid@13.0.0: {}
 
   uuid@3.4.0: {}
 

@@ -1,6 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import { AIGNE } from "@aigne/core";
-import { v7 } from "uuid";
+import { v7 } from "@aigne/uuid";
 import {
   type AgentProcessResult,
   type AgentResponseStream,

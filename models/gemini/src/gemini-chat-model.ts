@@ -12,6 +12,7 @@ import {
 } from "@aigne/core";
 import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
+import { v7 } from "@aigne/uuid";
 import {
   type Content,
   type FunctionCallingConfig,
@@ -21,7 +22,6 @@ import {
   type Part,
   type ToolListUnion,
 } from "@google/genai";
-import { v7 } from "uuid";
 
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai";
 const GEMINI_DEFAULT_CHAT_MODEL = "gemini-2.0-flash";

@@ -1,9 +1,9 @@
 import type { AgentInvokeOptions, Context, Memory } from "@aigne/core";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { initDatabase } from "@aigne/sqlite";
+import { v7 } from "@aigne/uuid";
 import { asc, desc, eq, type InferSelectModel, isNull, sql } from "drizzle-orm";
 import type { SqliteRemoteDatabase } from "drizzle-orm/sqlite-proxy";
-import { v7 } from "uuid";
 import { stringify } from "yaml";
 import { MemoryStorage } from "../storage.js";
 import { migrate } from "./migrate.js";

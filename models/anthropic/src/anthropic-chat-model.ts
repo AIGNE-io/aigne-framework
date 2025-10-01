@@ -430,9 +430,9 @@ async function convertContent(
       content.map<Promise<ContentBlockParam>>(async (item) => {
         if (item.type === "text") return { type: "text", text: item.text };
 
-        const media_type = ChatModel.getMimeType(
+        const media_type = (await ChatModel.getMimeType(
           item.mimeType || item.filename || "",
-        ) as Base64ImageSource["media_type"];
+        )) as Base64ImageSource["media_type"];
 
         switch (item.type) {
           case "url":

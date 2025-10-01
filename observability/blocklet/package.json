@@ -33,6 +33,7 @@
     "@aigne/observability-api": "workspace:^",
     "@aigne/observability-ui": "workspace:^",
     "@aigne/sqlite": "workspace:^",
+    "@aigne/uuid": "^13.0.0",
     "@arcblock/did-connect-react": "^3.1.41",
     "@arcblock/ux": "^3.1.41",
     "@biomejs/biome": "^2.2.4",
@@ -54,7 +55,6 @@
     "react-json-view": "^1.21.3",
     "react-router-dom": "^7.9.1",
     "ufo": "^1.6.1",
-    "uuid": "^13.0.0",
     "vite-plugin-blocklet": "^0.10.1"
   },
   "devDependencies": {

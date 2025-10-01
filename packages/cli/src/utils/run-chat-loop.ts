@@ -87,7 +87,7 @@ async function extractFilesFromQuestion(
 
         return {
           path,
-          file: { type: "file", data, filename, mimeType: ChatModel.getMimeType(filename) },
+          file: { type: "file", data, filename, mimeType: await ChatModel.getMimeType(filename) },
         };
       }),
     )

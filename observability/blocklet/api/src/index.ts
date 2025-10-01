@@ -1,12 +1,12 @@
 import path from "node:path";
 import { startObservabilityBlockletServer } from "@aigne/observability-api/server";
+import { v7 } from "@aigne/uuid";
 import { getComponentMountPoint } from "@blocklet/sdk/lib/component";
 import middleware from "@blocklet/sdk/lib/middlewares";
 import fallback from "@blocklet/sdk/lib/middlewares/fallback";
 import dotenv from "dotenv-flow";
 import express, { type NextFunction, type Request, type Response } from "express";
 import mime from "mime";
-import { v7 } from "uuid";
 
 dotenv.config({ silent: true });
 const { uploadToMediaKit } = require("@blocklet/uploader-server");

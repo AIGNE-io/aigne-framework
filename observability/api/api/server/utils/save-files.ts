@@ -1,10 +1,10 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import mime from "mime";
-import { v7 } from "uuid";
+import { v7 } from "@aigne/uuid";
 
-const getFileExtension = (type: string) => mime.getExtension(type) || "png";
+const getFileExtension = (type: string) =>
+  import("mime").then((m) => m.default.getExtension(type) || "png");
 
 interface FileData {
   mimeType: string;
@@ -37,7 +37,7 @@ const saveFiles = async (
         typeof file.data === "string" &&
         file.data.length > 200
       ) {
-        const ext = getFileExtension(file.mimeType || "image/png");
+        const ext = await getFileExtension(file.mimeType || "image/png");
         const id = v7();
         const filename = ext ? `${id}.${ext}` : id;
 
@@ -59,7 +59,7 @@ const saveFiles = async (
         file.base64 &&
         file.base64.length > 200
       ) {
-        const ext = getFileExtension("image/png");
+        const ext = await getFileExtension("image/png");
         const id = v7();
         const filename = ext ? `${id}.${ext}` : id;
 

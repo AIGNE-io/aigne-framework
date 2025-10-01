@@ -1,4 +1,4 @@
-import { v7 } from "uuid";
+import { v7 } from "@aigne/uuid";
 import { createMockEventStream } from "../_utils/event-stream.js";
 
 export function mockOpenAIStreaming<T>({

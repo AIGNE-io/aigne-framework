@@ -246,7 +246,7 @@ export async function parseAgentInput(i: Message & AgentRunCommonOptions, agent:
     for (const file of i.inputFile ?? []) {
       const raw = await readFile(file.replace(/^@/, ""), "base64");
       const filename = basename(file);
-      const mimeType = ChatModel.getMimeType(filename) || "application/octet-stream";
+      const mimeType = (await ChatModel.getMimeType(filename)) || "application/octet-stream";
       files.push({ type: "file", data: raw, filename, mimeType });
     }
 

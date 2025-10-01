@@ -22,6 +22,7 @@ import {
   isNonNullable,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
+import { v7 } from "@aigne/uuid";
 import type { ClientOptions, OpenAI } from "openai";
 import type {
   ChatCompletionContentPart,
@@ -30,7 +31,6 @@ import type {
   ResponseFormatJSONSchema,
 } from "openai/resources";
 import type { Stream } from "openai/streaming.js";
-import { v7 } from "uuid";
 import { z } from "zod";
 import { CustomOpenAI } from "./openai.js";
 

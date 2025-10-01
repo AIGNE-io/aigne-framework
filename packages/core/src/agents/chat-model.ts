@@ -202,7 +202,8 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
                   type: "file" as const,
                   data: await nodejs.fs.readFile(item.path, "base64"),
                   path: undefined,
-                  mimeType: item.mimeType || ChatModel.getMimeType(item.filename || item.path),
+                  mimeType:
+                    item.mimeType || (await ChatModel.getMimeType(item.filename || item.path)),
                 };
               }
 
@@ -218,7 +219,8 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
                       await (await this.downloadFile(item.url)).arrayBuffer(),
                     ).toString("base64"),
                     url: undefined,
-                    mimeType: item.mimeType || ChatModel.getMimeType(item.filename || item.url),
+                    mimeType:
+                      item.mimeType || (await ChatModel.getMimeType(item.filename || item.url)),
                   };
                 }
               }

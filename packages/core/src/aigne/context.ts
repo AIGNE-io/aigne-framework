@@ -1,9 +1,9 @@
 import type { AIGNEObserver } from "@aigne/observability-api";
+import { v7 } from "@aigne/uuid";
 import type { Span } from "@opentelemetry/api";
 import { context, SpanStatusCode, trace } from "@opentelemetry/api";
 import equal from "fast-deep-equal";
 import { Emitter } from "strict-event-emitter";
-import { v7 } from "uuid";
 import { z } from "zod";
 import {
   type Agent,

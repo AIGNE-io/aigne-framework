@@ -109,6 +109,7 @@
   },
   "dependencies": {
     "@aigne/sqlite": "workspace:^",
+    "@aigne/uuid": "^13.0.0",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/core": "^2.1.0",
     "@opentelemetry/sdk-node": "^0.205.0",
@@ -124,7 +125,6 @@
     "mime": "^4.1.0",
     "terminal-link": "^5.0.0",
     "ufo": "^1.6.1",
-    "uuid": "^13.0.0",
     "yaml": "^2.8.1",
     "zod": "^3.25.67"
   },

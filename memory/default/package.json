@@ -43,8 +43,8 @@
   "dependencies": {
     "@aigne/core": "workspace:^",
     "@aigne/sqlite": "workspace:^",
+    "@aigne/uuid": "^13.0.0",
     "drizzle-orm": "^0.44.5",
-    "uuid": "^13.0.0",
     "yaml": "^2.8.1",
     "zod": "^3.25.67"
   },

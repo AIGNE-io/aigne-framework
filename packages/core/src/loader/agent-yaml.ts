@@ -42,6 +42,7 @@ export interface BaseAgentSchema {
   inputSchema?: ZodType<Record<string, any>>;
   defaultInput?: Record<string, any>;
   outputSchema?: ZodType<Record<string, any>>;
+  includeInputInOutput?: boolean;
   skills?: NestAgentSchema[];
   hooks?: HooksSchema | HooksSchema[];
   memory?:
@@ -147,6 +148,7 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
       outputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["outputSchema"]>,
+      includeInputInOutput: optionalize(z.boolean()),
       hooks: optionalize(z.union([hooksSchema, z.array(hooksSchema)])),
       skills: optionalize(z.array(nestAgentSchema)),
       memory: optionalize(

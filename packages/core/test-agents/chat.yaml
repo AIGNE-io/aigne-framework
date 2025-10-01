@@ -12,3 +12,4 @@ input_key: message
 memory: true
 skills:
   - sandbox.js
+include_input_in_output: true

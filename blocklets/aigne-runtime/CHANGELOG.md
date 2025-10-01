@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.4.20-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.20-beta.1...aigne-runtime-v1.4.20-beta.2) (2025-10-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.1-beta.2
+    * @aigne/core bumped to 1.62.0-beta.1
+    * @aigne/transport bumped to 0.15.10-beta.2
+
 ## [1.4.20-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.20-beta...aigne-runtime-v1.4.20-beta.1) (2025-09-30)
 
 

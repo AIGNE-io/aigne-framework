@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.80.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.2...aigne-framework-v1.80.0-beta.3) (2025-10-01)
+
+
+### Bug Fixes
+
+* prevent template rendering for agent and tool messages ([#572](https://github.com/AIGNE-io/aigne-framework/issues/572)) ([859687e](https://github.com/AIGNE-io/aigne-framework/commit/859687e499b07ffebced8b2cd89d4af676f6a462))
+* **ui:** enhance terminal input with status indicators and layout options ([#573](https://github.com/AIGNE-io/aigne-framework/issues/573)) ([31b83df](https://github.com/AIGNE-io/aigne-framework/commit/31b83df86fa959a37e6df2df516d7fc3015dc63b))
+
 ## [1.80.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.1...aigne-framework-v1.80.0-beta.2) (2025-09-30)
 
 

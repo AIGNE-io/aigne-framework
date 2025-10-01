@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.62.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta...core-v1.62.0-beta.1) (2025-10-01)
+
+
+### Bug Fixes
+
+* prevent template rendering for agent and tool messages ([#572](https://github.com/AIGNE-io/aigne-framework/issues/572)) ([859687e](https://github.com/AIGNE-io/aigne-framework/commit/859687e499b07ffebced8b2cd89d4af676f6a462))
+
 ## [1.62.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.61.1-beta...core-v1.62.0-beta) (2025-09-30)
 
 

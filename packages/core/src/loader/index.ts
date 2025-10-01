@@ -78,7 +78,9 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
     model: typeof options.model === "function" ? await options.model(aigne.model) : options.model,
     imageModel:
       typeof options.imageModel === "function"
-        ? await options.imageModel(aigne.imageModel)
+        ? aigne.imageModel
+          ? await options.imageModel(aigne.imageModel)
+          : undefined
         : options.imageModel,
     agents: pickAgents(aigne.agents ?? []),
     skills: pickAgents(aigne.skills ?? []),

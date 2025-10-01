@@ -38,6 +38,7 @@ function Input(props: {
 }) {
   const buffer = useTextBuffer({
     initialText: props.default || "",
+    initialCursorOffset: props.default?.length || 0,
     isValidPath: () => false,
     viewport: { width: 80, height: 1 },
   });

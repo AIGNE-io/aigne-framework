@@ -1,8 +1,7 @@
 name: test_aigne_project
 description: A test project for the aigne agent
-chat_model:
-  model: openai:gpt-4o-mini
-  temperature: 0.8
+model: openai/gpt-4o-mini
+image_model: openai/gpt-image-1
 agents:
   - chat.yaml
 skills:

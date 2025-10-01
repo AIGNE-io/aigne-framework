@@ -126,7 +126,7 @@ export async function loadImageModel(
   options?: ImageModelInputOptions & LoadCredentialOptions,
 ): Promise<ImageModel> {
   const { provider, model } = await formatModelName(
-    options?.model || process.env.MODEL || "",
+    options?.model || process.env.IMAGE_MODEL || "",
     options?.inquirerPromptFn ??
       (inquirer.prompt as NonNullable<LoadCredentialOptions["inquirerPromptFn"]>),
   );

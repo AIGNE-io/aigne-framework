@@ -1,6 +1,6 @@
 {
   "name": "@aigne/doubao",
-  "version": "1.1.1-beta.2",
+  "version": "1.1.1-beta.3",
   "description": "AIGNE doubao SDK for integrating with doubao AI models",
   "publishConfig": {
     "access": "public"

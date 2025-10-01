@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.80.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.3...aigne-framework-v1.80.0-beta.4) (2025-10-01)
+
+
+### Bug Fixes
+
+* **cli:** load image model base on agent definition ([#577](https://github.com/AIGNE-io/aigne-framework/issues/577)) ([f1b7205](https://github.com/AIGNE-io/aigne-framework/commit/f1b7205904ed47b0c00199964eda74581473d805))
+* **core:** add `include_input_in_output` option for agent definition ([#575](https://github.com/AIGNE-io/aigne-framework/issues/575)) ([9e28b72](https://github.com/AIGNE-io/aigne-framework/commit/9e28b729963faa8bea90ee42fde855868889396d))
+
 ## [1.80.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.2...aigne-framework-v1.80.0-beta.3) (2025-10-01)
 
 

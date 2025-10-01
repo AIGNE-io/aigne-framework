@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import path from "node:path";
 import Decimal from "decimal.js";
 import { eq, sql } from "drizzle-orm";
@@ -7,8 +6,6 @@ import { Trace } from "../server/models/trace.js";
 import type { TraceFormatSpans } from "./type.ts";
 
 export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKLET_PORT;
-
-import { fileURLToPath } from "node:url";
 
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   if (Number(trace.endTime) > 0) {
@@ -42,12 +39,11 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
         if (process?.env?.BLOCKLET_APP_DIR) {
           fullPath = path.resolve(process.env.BLOCKLET_APP_DIR, "dist", "model-prices.json");
         } else {
-          // @ts-ignore
-          const dirname = path.dirname(fileURLToPath(import.meta.url));
-          fullPath = path.resolve(dirname, "../../../dist", "model-prices.json");
+          fullPath = "../../../dist/model-prices.json";
         }
 
-        price = JSON.parse(await fs.readFileSync(path.join(fullPath), "utf8"));
+        // @ts-ignore
+        price = await import(fullPath, { with: { type: "json" } });
       } catch {
         price = {};
       }

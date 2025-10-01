@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.6-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.6-beta.3...bedrock-v0.10.6-beta.4) (2025-10-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.62.0-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.54-beta.4
+
 ## [0.10.6-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.6-beta.2...bedrock-v0.10.6-beta.3) (2025-10-01)
 
 

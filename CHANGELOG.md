@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.80.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.4...aigne-framework-v1.80.0-beta.5) (2025-10-01)
+
+
+### Bug Fixes
+
+* resolve import.meta compatibility in CommonJS environment ([#578](https://github.com/AIGNE-io/aigne-framework/issues/578)) ([d3a492a](https://github.com/AIGNE-io/aigne-framework/commit/d3a492a4de1b8f6648866590266aab0fe69f32e0))
+
 ## [1.80.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.3...aigne-framework-v1.80.0-beta.4) (2025-10-01)
 
 

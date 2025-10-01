@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.1-beta...observability-api-v0.11.1-beta.1) (2025-10-01)
+
+
+### Bug Fixes
+
+* resolve import.meta compatibility in CommonJS environment ([#578](https://github.com/AIGNE-io/aigne-framework/issues/578)) ([d3a492a](https://github.com/AIGNE-io/aigne-framework/commit/d3a492a4de1b8f6648866590266aab0fe69f32e0))
+
 ## [0.11.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.0...observability-api-v0.11.1-beta) (2025-09-29)
 
 

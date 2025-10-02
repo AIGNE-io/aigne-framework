@@ -884,9 +884,9 @@ test("Agent should not emit agentFailed event if error is handled and is being r
 
   const context = aigne.newContext();
 
-  const onAgentField = mock();
+  const onAgentFailed = mock();
 
-  context.on("agentFailed", onAgentField);
+  context.on("agentFailed", onAgentFailed);
 
   const getWeather = FunctionAgent.from({
     name: "getWeather",
@@ -927,8 +927,8 @@ test("Agent should not emit agentFailed event if error is handled and is being r
   );
 
   expect(result1).rejects.toThrowErrorMatchingInlineSnapshot(`"Model failed during second call"`);
-  expect(onAgentField.mock.calls.length).toBe(2);
-  expect(onAgentField.mock.calls.map((i) => i.at(0).error)).toMatchInlineSnapshot(`
+  expect(onAgentFailed.mock.calls.length).toBe(2);
+  expect(onAgentFailed.mock.calls.map((i) => i.at(0).error)).toMatchInlineSnapshot(`
     [
       [Error: Model failed during second call],
       [Error: Model failed during second call],
@@ -936,7 +936,7 @@ test("Agent should not emit agentFailed event if error is handled and is being r
   `);
 
   modelSpy.mockReset();
-  onAgentField.mockReset();
+  onAgentFailed.mockReset();
 
   // 2. should not emit agentFailed event if error is handled and is being retried
   modelSpy
@@ -969,5 +969,5 @@ test("Agent should not emit agentFailed event if error is handled and is being r
     }
   `);
 
-  expect(onAgentField.mock.calls.length).toBe(0);
+  expect(onAgentFailed.mock.calls.length).toBe(0);
 });

@@ -61,6 +61,7 @@ export interface AIAgentSchema extends BaseAgentSchema {
   inputKey?: string;
   outputKey?: string;
   toolChoice?: AIAgentToolChoice;
+  keepTextInToolUses?: boolean;
 }
 
 export interface ImageAgentSchema extends BaseAgentSchema {
@@ -217,6 +218,7 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
             inputKey: optionalize(z.string()),
             outputKey: optionalize(z.string()),
             toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
+            keepTextInToolUses: optionalize(z.boolean()),
             structuredStreamMode: optionalize(z.boolean()),
           })
           .extend(baseAgentSchema.shape),

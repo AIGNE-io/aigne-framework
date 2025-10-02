@@ -72,6 +72,9 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    */
   toolChoice?: AIAgentToolChoice | Agent;
 
+  /**
+   * Whether to preserve text generated during tool usage in the final output
+   */
   keepTextInToolUses?: boolean;
 
   /**
@@ -340,6 +343,9 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    */
   toolChoice?: AIAgentToolChoice | Agent;
 
+  /**
+   * Whether to preserve text generated during tool usage in the final output
+   */
   keepTextInToolUses?: boolean;
 
   /**

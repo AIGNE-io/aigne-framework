@@ -255,6 +255,13 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
 [
   {
     "delta": {
+      "json": {
+        "message": "",
+      },
+    },
+  },
+  {
+    "delta": {
       "text": {
         "message": "Hello",
       },

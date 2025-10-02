@@ -28,12 +28,14 @@ test("AgentMessageTemplate", async () => {
   const prompt = await AgentMessageTemplate.from("Hello, {{name}}!", undefined, "AgentA").format({
     name: "Alice",
   });
-  expect(prompt).toEqual({
-    role: "agent",
-    content: "Hello, Alice!",
-    toolCalls: undefined,
-    name: "AgentA",
-  });
+  expect(prompt).toMatchInlineSnapshot(`
+    {
+      "content": "Hello, {{name}}!",
+      "name": "AgentA",
+      "role": "agent",
+      "toolCalls": undefined,
+    }
+  `);
 
   const toolCallsPrompt = await AgentMessageTemplate.from(
     undefined,
@@ -49,57 +51,68 @@ test("AgentMessageTemplate", async () => {
     ],
     "AgentA",
   ).format();
-  expect(toolCallsPrompt).toEqual({
-    role: "agent",
-    content: undefined,
-    toolCalls: [
-      {
-        id: "tool1",
-        type: "function",
-        function: {
-          name: "plus",
-          arguments: { a: 1, b: 2 },
+  expect(toolCallsPrompt).toMatchInlineSnapshot(`
+    {
+      "content": undefined,
+      "name": "AgentA",
+      "role": "agent",
+      "toolCalls": [
+        {
+          "function": {
+            "arguments": {
+              "a": 1,
+              "b": 2,
+            },
+            "name": "plus",
+          },
+          "id": "tool1",
+          "type": "function",
         },
-      },
-    ],
-    name: "AgentA",
-  });
+      ],
+    }
+  `);
 });
 
 test("ToolMessageTemplate", async () => {
   const prompt = await ToolMessageTemplate.from("Hello, {{name}}!", "tool1", "AgentA").format({
     name: "Alice",
   });
-  expect(prompt).toEqual({
-    role: "tool",
-    toolCallId: "tool1",
-    content: "Hello, Alice!",
-    name: "AgentA",
-  });
+  expect(prompt).toMatchInlineSnapshot(`
+    {
+      "content": "Hello, {{name}}!",
+      "name": "AgentA",
+      "role": "tool",
+      "toolCallId": "tool1",
+    }
+  `);
 
   const objectPrompt = await ToolMessageTemplate.from(
     { result: { content: "call tool success" } },
     "tool1",
     "AgentA",
   ).format();
-  expect(objectPrompt).toEqual({
-    role: "tool",
-    toolCallId: "tool1",
-    content: JSON.stringify({ result: { content: "call tool success" } }),
-    name: "AgentA",
-  });
+  expect(objectPrompt).toMatchInlineSnapshot(`
+    {
+      "content": "{"result":{"content":"call tool success"}}",
+      "name": "AgentA",
+      "role": "tool",
+      "toolCallId": "tool1",
+    }
+  `);
 
   const bigintPrompt = await ToolMessageTemplate.from(
     { result: { content: 1234567890n } },
     "tool1",
     "AgentA",
   ).format();
-  expect(bigintPrompt).toEqual({
-    role: "tool",
-    toolCallId: "tool1",
-    content: JSON.stringify({ result: { content: "1234567890" } }),
-    name: "AgentA",
-  });
+  expect(bigintPrompt).toMatchInlineSnapshot(`
+    {
+      "content": "{"result":{"content":"1234567890"}}",
+      "name": "AgentA",
+      "role": "tool",
+      "toolCallId": "tool1",
+    }
+  `);
 });
 
 test("safeParseChatMessages should correctly parse valid chat messages with roles and names", async () => {

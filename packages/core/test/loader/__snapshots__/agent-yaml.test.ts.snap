@@ -7,6 +7,7 @@ exports[`loadAgentFromYaml should load AIAgent correctly 1`] = `
     "bot",
   ],
   "description": "Chat agent",
+  "includeInputInOutput": true,
   "instructions": 
 "system: You are a helpful assistant that can answer questions and provide information on a wide range of topics.
 Your goal is to assist users in finding the information they need and to engage in friendly conversation.

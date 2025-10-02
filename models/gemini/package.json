@@ -1,6 +1,6 @@
 {
   "name": "@aigne/gemini",
-  "version": "0.14.0-beta.4",
+  "version": "0.14.1-beta.6",
   "description": "AIGNE Gemini SDK for integrating with Google's Gemini AI models",
   "publishConfig": {
     "access": "public"
@@ -46,8 +46,8 @@
   "dependencies": {
     "@aigne/openai": "workspace:^",
     "@aigne/platform-helpers": "workspace:^",
+    "@aigne/uuid": "^13.0.1",
     "@google/genai": "^1.20.0",
-    "uuid": "^13.0.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

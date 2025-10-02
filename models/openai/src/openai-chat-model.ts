@@ -22,7 +22,7 @@ import {
   isNonNullable,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
-import { Ajv } from "ajv";
+import { v7 } from "@aigne/uuid";
 import type { ClientOptions, OpenAI } from "openai";
 import type {
   ChatCompletionContentPart,
@@ -31,7 +31,6 @@ import type {
   ResponseFormatJSONSchema,
 } from "openai/resources";
 import type { Stream } from "openai/streaming.js";
-import { v7 } from "uuid";
 import { z } from "zod";
 import { CustomOpenAI } from "./openai.js";
 
@@ -176,8 +175,6 @@ export class OpenAIChatModel extends ChatModel {
     return this._process(input);
   }
 
-  private ajv = new Ajv();
-
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
     const model = input.modelOptions?.model || this.credential.model;
@@ -226,8 +223,11 @@ export class OpenAIChatModel extends ChatModel {
     // Try to parse the text response as JSON
     // If it matches the json_schema, return it as json
     const json = safeParseJSON(result.text || "");
-    if (this.ajv.validate(input.responseFormat.jsonSchema.schema, json)) {
-      return { ...result, json, text: undefined };
+    const validated = this.validateJsonSchema(input.responseFormat.jsonSchema.schema, json, {
+      safe: true,
+    });
+    if (validated.success) {
+      return { ...result, json: validated.data, text: undefined };
     }
     logger.warn(
       `${this.name}: Text response does not match JSON schema, trying to use tool to extract json `,

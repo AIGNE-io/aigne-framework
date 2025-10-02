@@ -1,0 +1,13 @@
+type: ai
+name: pull
+description: Pull components from remote repository
+input_schema:
+  type: object
+  properties:
+    url:
+      type: string
+      description: URL of the remote repository
+    component_name:
+      type: string
+      description: Name of the component to pull
+  required: ["component_name"]

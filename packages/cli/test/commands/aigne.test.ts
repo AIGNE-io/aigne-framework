@@ -29,7 +29,18 @@ test("aigne command should print help if no any subcommand", async () => {
 
   expect(
     log.mock.calls.map((i) =>
-      i.map((j) => (typeof j === "string" ? j.replaceAll(AIGNE_CLI_VERSION, "xx.xx.xx") : j)),
+      i.map((j) =>
+        typeof j === "string"
+          ? j
+              .split("\n")
+              .map((i) =>
+                i.includes(AIGNE_CLI_VERSION)
+                  ? i.replace(AIGNE_CLI_VERSION, "xx.xx.xx").replace(/\s+/g, "").trim()
+                  : i,
+              )
+              .join("\n")
+          : j,
+      ),
     ),
   ).toMatchSnapshot();
 

@@ -1,7 +1,6 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
-import mime from "mime";
+import { v7 } from "@aigne/uuid";
 import { parseURL } from "ufo";
-import { v7 } from "uuid";
 import { z } from "zod";
 import { optionalize } from "../loader/schema.js";
 import { pick } from "../utils/type-utils.js";
@@ -37,7 +36,7 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
         const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
         await nodejs.fs.mkdir(dir, { recursive: true });
 
-        const ext = Model.getFileExtension(data.mimeType || data.filename || "");
+        const ext = await Model.getFileExtension(data.mimeType || data.filename || "");
         const id = v7();
         const filename = ext ? `${id}.${ext}` : id;
         const path = nodejs.path.join(dir, filename);
@@ -45,12 +44,12 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
 
         if (data.type === "file") {
           await nodejs.fs.writeFile(path, data.data, "base64");
-          mimeType ||= Model.getMimeType(data.filename || "");
+          mimeType ||= await Model.getMimeType(data.filename || "");
         } else if (data.type === "url") {
           await this.downloadFile(data.url)
             .then((res) => res.body)
             .then((body) => body && nodejs.fs.writeFile(path, body));
-          mimeType ||= Model.getMimeType(data.filename || parseURL(data.url).pathname);
+          mimeType ||= await Model.getMimeType(data.filename || parseURL(data.url).pathname);
         } else {
           throw new Error(`Unexpected file type: ${data.type}`);
         }
@@ -63,12 +62,12 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
 
         if (data.type === "local") {
           base64 = await nodejs.fs.readFile(data.path, "base64");
-          mimeType ||= Model.getMimeType(data.filename || data.path);
+          mimeType ||= await Model.getMimeType(data.filename || data.path);
         } else if (data.type === "url") {
           base64 = Buffer.from(await (await this.downloadFile(data.url)).arrayBuffer()).toString(
             "base64",
           );
-          mimeType ||= Model.getMimeType(data.filename || parseURL(data.url).pathname);
+          mimeType ||= await Model.getMimeType(data.filename || parseURL(data.url).pathname);
         } else {
           throw new Error(`Unexpected file type: ${data.type}`);
         }
@@ -78,11 +77,13 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
     }
   }
 
-  static getFileExtension(type: string) {
+  static async getFileExtension(type: string) {
+    const { default: mime } = await import("mime");
     return mime.getExtension(type) || undefined;
   }
 
-  static getMimeType(filename: string) {
+  static async getMimeType(filename: string) {
+    const { default: mime } = await import("mime");
     return mime.getType(filename) || undefined;
   }
 

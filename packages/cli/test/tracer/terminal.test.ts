@@ -1,7 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
 import { AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE } from "@aigne/cli/constants.js";
 import { TerminalTracer } from "@aigne/cli/tracer/terminal.js";
-import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
+import * as terminalInput from "@aigne/cli/ui/utils/terminal-input";
+import { type AgentInvokeOptions, AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
 import { OpenAIChatModel } from "@aigne/openai";
@@ -111,7 +112,7 @@ ${"```"}
   ).toMatchSnapshot();
 });
 
-test("TerminalTracer should", async () => {
+test("TerminalTracer should add prompts for user input", async () => {
   const aigne = new AIGNE();
   const context = aigne.newContext();
 
@@ -128,7 +129,7 @@ test("TerminalTracer should", async () => {
 
   const tracer = new TerminalTracer(context);
 
-  const input = spyOn(prompts, "input").mockReturnValueOnce(Promise.resolve("John Doe") as any);
+  const input = spyOn(terminalInput, "terminalInput").mockResolvedValueOnce("John Doe");
   const number = spyOn(prompts, "number").mockReturnValueOnce(Promise.resolve(18) as any);
   const select = spyOn(prompts, "select").mockReturnValueOnce(Promise.resolve("red") as any);
 
@@ -143,6 +144,32 @@ test("TerminalTracer should", async () => {
   input.mockRestore();
   number.mockRestore();
   select.mockRestore();
+});
+
+test("TerminalTracer should add prompts whether taskRenderMode is hide/collapse", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const agent = FunctionAgent.from(async (_, options: AgentInvokeOptions) => {
+    await options.context.invoke((options.context.agents as any)["child"], {}, options);
+    return {};
+  });
+  const child = FunctionAgent.from(function child() {
+    return {};
+  });
+
+  aigne.addAgent(child);
+
+  const agentSpy = spyOn(agent, "process");
+  const childSpy = spyOn(child, "process");
+
+  const tracer = new TerminalTracer(context);
+
+  agent.taskRenderMode = "hide";
+  await tracer.run(agent, {});
+
+  expect(agentSpy.mock.lastCall?.[1].prompts?.input).toBeFunction();
+  expect(childSpy.mock.lastCall?.[1].prompts?.input).toBeFunction();
 });
 
 test("TerminalTracer should handle buy credits prompt", async () => {

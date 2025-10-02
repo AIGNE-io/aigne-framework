@@ -27,10 +27,10 @@ export function withRetry<T extends object>(
   db: T,
   methods: (keyof T)[],
   {
-    max = 20,
+    max = 30,
     backoffBase = 300,
     backoffExponent = 1.2,
-    backoffJitter = 100,
+    backoffJitter = 300,
     shouldRetry = isDBLockedError,
   }: WithRetryOptions = {},
 ): T {

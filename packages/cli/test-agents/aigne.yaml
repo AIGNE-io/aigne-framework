@@ -1,8 +1,7 @@
 name: test_aigne_project
 description: A test project for the aigne agent
-chat_model:
-  model: openai:gpt-4o-mini
-  temperature: 0.8
+model: openai/gpt-4o-mini
+image_model: openai/gpt-image-1
 agents:
   - chat.yaml
 skills:
@@ -13,3 +12,11 @@ mcp_server:
 cli:
   agents:
     - chat.yaml
+    - name: component
+      description: Manage components of web-smith
+      alias: ["comp", "components"]
+      agents:
+        - url: test-cli-agents/push.yaml
+          name: push-components
+          alias: ["push", "push-comps"]
+        - url: test-cli-agents/pull.yaml

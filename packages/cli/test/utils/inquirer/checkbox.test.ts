@@ -1464,6 +1464,7 @@ describe("checkbox prompt", () => {
         "? Select programming languages xyz
 
         > No results found
+
         (Use arrow keys to navigate, ctrl+a to select all)"
       `);
 
@@ -1494,32 +1495,73 @@ describe("checkbox prompt", () => {
         {
           message: "Select programming languages",
           source: (term: string | undefined) => {
-            if (!term) return Promise.resolve([]);
-            // Return a rejected promise to trigger the catch block
-            return Promise.reject(new Error("Search service unavailable"));
+            if (!term) return Promise.resolve(CHOICES);
+            if (term === "error") {
+              return Promise.reject(new Error("Search service unavailable"));
+            }
+            return Promise.resolve(
+              CHOICES.filter((choice) => choice.name.toLowerCase().includes(term.toLowerCase())),
+            );
+          },
+          validate: (items: ReadonlyArray<unknown>) => {
+            if (items.length > 3) {
+              return "Please select no more than 3 options";
+            }
+            return true;
           },
         },
         { signal: abortController.signal },
       );
 
+      // Initial state should show options
+      await Promise.resolve();
       expect(getScreen()).toMatchInlineSnapshot(`
         "? Select programming languages 
-
-        (Use arrow keys to navigate, ctrl+a to select all)"
+        ❯◯ JavaScript
+         ◯ TypeScript
+         ◯ Python
+         ◯ Java
+         ◯ C++
+         ◯ C#
+         ◯ Go
+        (Use arrow keys to reveal more choices, ctrl+a to select all)"
       `);
 
-      // Type to trigger search which will reject the promise
-      events.type("java");
+      // Select more than 3 options to trigger validation error
+      events.keypress("space"); // Select JavaScript
+      events.keypress("down");
+      events.keypress("space"); // Select TypeScript
+      events.keypress("down");
+      events.keypress("space"); // Select Python
+      events.keypress("down");
+      events.keypress("space"); // Select Java
+
+      // Try to submit - should trigger validation error
+      events.keypress("enter");
       await Promise.resolve();
-      await Promise.resolve(); // Extra resolve to ensure async error is processed
 
-      // Error should be displayed since controller is not aborted when error occurs
-      expect(getScreen()).toMatchInlineSnapshot(`
-        "? Select programming languages java
+      // Validation error should be displayed WITH help tips (our fix ensures both show)
+      const validationErrorScreen = getScreen();
+      expect(validationErrorScreen).toContain("Please select no more than 3 options");
+      // Before our fix: `${error || page}` would show only error
+      // After our fix: `${error}${error ? '\n' : ''}${page}` shows error + help tip
+      expect(validationErrorScreen).toContain(
+        "(Use arrow keys to reveal more choices, ctrl+a to select all)",
+      );
 
-        > Search service unavailable
-        (Use arrow keys to navigate, ctrl+a to select all)"
-      `);
+      // Now test search error - type "error" to trigger search error
+      events.type("error");
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Search error should be displayed WITH help tips (our fix ensures both show)
+      const searchErrorScreen = getScreen();
+      expect(searchErrorScreen).toContain("Search service unavailable");
+      // Before our fix: `${error || page}` would show only error
+      // After our fix: `${error}${error ? '\n' : ''}${page}` shows error + help tip
+      expect(searchErrorScreen).toContain(
+        "(Use arrow keys to reveal more choices, ctrl+a to select all)",
+      );
 
       abortController.abort();
       expect(answer).rejects.toThrow();

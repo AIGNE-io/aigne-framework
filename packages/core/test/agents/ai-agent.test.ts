@@ -1,10 +1,13 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import {
+  type AgentProcessAsyncGenerator,
   AIAgent,
+  type AIAgentOptions,
   AIAgentToolChoice,
   AIGNE,
   ChatMessagesTemplate,
+  type ChatModelOutput,
   FunctionAgent,
   PromptBuilder,
   SystemMessageTemplate,
@@ -675,3 +678,72 @@ ${"```"}
     }
   `);
 });
+
+test.each(<AIAgentOptions[]>[{ keepTextInToolUses: true }, { keepTextInToolUses: false }])(
+  "AIAgent should keep text in tool uses if keepTextInToolUses is %p",
+  async (options) => {
+    const model = new OpenAIChatModel();
+    const aigne = new AIGNE({ model });
+
+    const getWeather = FunctionAgent.from({
+      name: "getWeather",
+      inputSchema: z.object({
+        location: z.string(),
+      }),
+      outputSchema: z.object({
+        forecast: z.string(),
+      }),
+      process: ({ location }: { location: string }) => {
+        return { location, forecast: `Sunny in ${location}` };
+      },
+    });
+
+    const agent = AIAgent.from({
+      skills: [getWeather],
+      inputKey: "message",
+      ...options,
+    });
+
+    const modelSpy = spyOn(model, "process");
+
+    modelSpy
+      .mockImplementationOnce(async function* (): AgentProcessAsyncGenerator<ChatModelOutput> {
+        yield { delta: { text: { text: "Let " } } };
+        yield { delta: { text: { text: "me " } } };
+        yield { delta: { text: { text: "check " } } };
+        yield { delta: { text: { text: "the " } } };
+        yield { delta: { text: { text: "weather " } } };
+        yield { delta: { text: { text: "for " } } };
+        yield { delta: { text: { text: "you." } } };
+        yield {
+          delta: {
+            json: { toolCalls: [createToolCallResponse("getWeather", { location: "New York" })] },
+          },
+        };
+      })
+      .mockReturnValueOnce(
+        Promise.resolve(stringToAgentResponseStream("The weather in New York is Sunny.")),
+      );
+
+    const result1 = await aigne.invoke(agent, { message: "How's the weather in New York?" });
+
+    if (options.keepTextInToolUses) {
+      expect(result1).toMatchInlineSnapshot(`
+        {
+          "message": 
+        "Let me check the weather for you.
+        The weather in New York is Sunny."
+        ,
+        }
+      `);
+    } else {
+      expect(result1).toMatchInlineSnapshot(`
+        {
+          "message": "The weather in New York is Sunny.",
+        }
+      `);
+    }
+
+    modelSpy.mockReset();
+  },
+);

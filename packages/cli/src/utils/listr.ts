@@ -3,7 +3,7 @@ import { format } from "node:util";
 import type { AgentResponseStream, Message } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
-import type { PromiseOrValue } from "@aigne/core/utils/type-utils";
+import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import {
   color,
   DefaultRenderer,

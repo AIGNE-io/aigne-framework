@@ -1,9 +1,8 @@
 import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
-import { sql } from "drizzle-orm";
 import type { TraceFormatSpans } from "../../core/type.js";
-import { isBlocklet } from "../../core/util.js";
+import { insertTrace, isBlocklet } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
 import getAIGNEHomePath from "../../server/utils/image-home-path.js";
 import saveFiles from "../../server/utils/save-files.js";
@@ -62,48 +61,7 @@ class HttpExporter implements HttpExporterInterface {
         }
       }
 
-      const insertSql = sql`
-        INSERT INTO Trace (
-          id,
-          rootId,
-          parentId,
-          name,
-          startTime,
-          endTime,
-          attributes,
-          status,
-          userId,
-          sessionId,
-          componentId,
-          action
-        ) VALUES (
-          ${trace.id},
-          ${trace.rootId},
-          ${trace.parentId || null},
-          ${trace.name},
-          ${trace.startTime},
-          ${trace.endTime},
-          ${JSON.stringify(trace.attributes)},
-          ${JSON.stringify(trace.status)},
-          ${trace.userId || null},
-          ${trace.sessionId || null},
-          ${trace.componentId || null},
-          ${trace.action || null}
-        )
-        ON CONFLICT(id)
-        DO UPDATE SET
-          name = excluded.name,
-          startTime = excluded.startTime,
-          endTime = excluded.endTime,
-          attributes = excluded.attributes,
-          status = excluded.status,
-          userId = excluded.userId,
-          sessionId = excluded.sessionId,
-          componentId = excluded.componentId,
-          action = excluded.action;
-      `;
-
-      await db?.run?.(insertSql);
+      await insertTrace(db, trace);
     }
   }
 
@@ -116,7 +74,10 @@ class HttpExporter implements HttpExporterInterface {
 
       resultCallback({ code: ExportResultCode.SUCCESS });
     } catch (error) {
-      console.error("Failed to export spans:", error);
+      console.warn(
+        "[Observability] Failed to export spans:",
+        error.cause?.message || error.message,
+      );
       resultCallback({ code: ExportResultCode.FAILED });
     }
   }

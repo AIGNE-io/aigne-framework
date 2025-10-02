@@ -2,10 +2,10 @@ import ThemeModeToggle from "@arcblock/ux/lib/Config/theme-mode-toggle";
 import Dashboard from "@arcblock/ux/lib/Layout/dashboard";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import LocaleSelector from "@arcblock/ux/lib/Locale/selector";
+import { Icon } from "@iconify/react";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import Box from "@mui/material/Box";
 import { useMemo } from "react";
-
 import Logo from "./icons/logo.svg?url";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -30,6 +30,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return [
       {
         url: "/",
+        title: t("overview"),
+        name: "overview",
+        showBadge: false,
+        icon: <Icon icon="ant-design:dashboard-outlined" />,
+      },
+      {
+        url: "/traces",
         title: t("traces"),
         name: "traces",
         showBadge: false,

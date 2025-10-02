@@ -40,6 +40,7 @@ test("loadAgentFromYaml should load AIAgent correctly", async () => {
       output_schema: zodToJsonSchema(skill.outputSchema),
       default_input: skill.defaultInput,
     })),
+    includeInputInOutput: agent.includeInputInOutput,
   }).toMatchSnapshot();
 });
 

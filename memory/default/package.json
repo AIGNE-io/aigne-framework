@@ -1,6 +1,6 @@
 {
   "name": "@aigne/default-memory",
-  "version": "1.2.9-beta.4",
+  "version": "1.2.10-beta.6",
   "description": "Default memory for AIGNE framework",
   "publishConfig": {
     "access": "public"
@@ -43,8 +43,8 @@
   "dependencies": {
     "@aigne/core": "workspace:^",
     "@aigne/sqlite": "workspace:^",
+    "@aigne/uuid": "^13.0.1",
     "drizzle-orm": "^0.44.5",
-    "uuid": "^13.0.0",
     "yaml": "^2.8.1",
     "zod": "^3.25.67"
   },

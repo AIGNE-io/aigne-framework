@@ -926,9 +926,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     options: AgentInvokeOptions,
   ): Promise<{ retry?: boolean; error?: Error }> {
     logger.error("Invoke agent %s failed with error: %O", this.name, error);
-    if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
 
     const res = (await this.callHooks(["onError", "onEnd"], { input, error }, options)) ?? {};
+
+    if (!res.retry) {
+      if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
+    }
 
     return { ...res };
   }

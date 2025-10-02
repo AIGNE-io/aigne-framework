@@ -27,9 +27,7 @@ export default function useGetTokenPrice() {
         };
       }
 
-      // @ts-ignore
       const inputCostPerToken = new Decimal(price.input_cost_per_token || 0);
-      // @ts-ignore
       const outputCostPerToken = new Decimal(price.output_cost_per_token || 0);
 
       return {

@@ -17,7 +17,7 @@ import {
 } from "@aigne/core";
 import { omit } from "@aigne/core/utils/type-utils.js";
 import type { Args, Listener } from "@aigne/core/utils/typed-event-emitter.js";
-import { v7 } from "uuid";
+import { v7 } from "@aigne/uuid";
 import { BaseClient, type BaseClientInvokeOptions, type BaseClientOptions } from "./base-client.js";
 import { ClientAgent, type ClientAgentOptions } from "./client-agent.js";
 import { ClientChatModel } from "./client-chat-model.js";

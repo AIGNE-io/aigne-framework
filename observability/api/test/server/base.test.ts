@@ -163,6 +163,12 @@ describe("Base Server", () => {
     const listJson11 = await listRes11.json();
     expect(listJson11.error).toBe("Page number too large, would cause overflow");
 
+    const listRes12 = await fetch(`${url}/api/trace/tree/summary`);
+    expect(listRes12.status).toBe(200);
+    const listJson12 = await listRes12.json();
+    expect(listJson12.totalToken).toBeGreaterThanOrEqual(0);
+    expect(listJson12.totalCost).toBeGreaterThanOrEqual(0);
+
     server.closeAllConnections();
     server.close();
   });

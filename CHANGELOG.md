@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.80.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.6...aigne-framework-v1.80.0-beta.7) (2025-10-02)
+
+
+### Features
+
+* **core:** add `keepTextInToolUses` option for AI Agent ([#585](https://github.com/AIGNE-io/aigne-framework/issues/585)) ([6c6be9e](https://github.com/AIGNE-io/aigne-framework/commit/6c6be9eee8e96294921b676a1982a18c93b2f66d))
+
+
+### Bug Fixes
+
+* **core:** agent should not emit error event if retried ([#583](https://github.com/AIGNE-io/aigne-framework/issues/583)) ([04edcbf](https://github.com/AIGNE-io/aigne-framework/commit/04edcbfd71aa2746dad98140e20e0b718701fa0a))
+
 ## [1.80.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.5...aigne-framework-v1.80.0-beta.6) (2025-10-01)
 
 

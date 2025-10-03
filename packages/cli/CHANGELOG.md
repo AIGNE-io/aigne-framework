@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.50.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.0-beta.7...cli-v1.50.0-beta.8) (2025-10-03)
+
+
+### Features
+
+* support custom extra model options in agent yaml file ([#586](https://github.com/AIGNE-io/aigne-framework/issues/586)) ([6d82115](https://github.com/AIGNE-io/aigne-framework/commit/6d82115e0763385c7e44ea152867c0d4a9e0a301))
+
+
+### Bug Fixes
+
+* **cli:** prevent terminal input text overflow and corruption ([#588](https://github.com/AIGNE-io/aigne-framework/issues/588)) ([990c952](https://github.com/AIGNE-io/aigne-framework/commit/990c9526f0d2d6eec4d9fcd5ae61612a6ce23b9e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.47-beta.7
+    * @aigne/agentic-memory bumped to 1.0.47-beta.7
+    * @aigne/aigne-hub bumped to 0.10.1-beta.7
+    * @aigne/core bumped to 1.62.0-beta.6
+    * @aigne/default-memory bumped to 1.2.10-beta.7
+    * @aigne/openai bumped to 0.16.1-beta.7
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.54-beta.7
+
 ## [1.50.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.0-beta.6...cli-v1.50.0-beta.7) (2025-10-02)
 
 

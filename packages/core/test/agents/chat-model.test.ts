@@ -407,6 +407,69 @@ test("ChatModel should retry after network errors or structured output validatio
   expect(await model.invoke(input)).toEqual({ json: { name: "Alice", age: 25 } });
 });
 
+test("ChatModel should retry after tool not found error", async () => {
+  const model = new OpenAIChatModel({});
+
+  const input: ChatModelInput = {
+    messages: [{ role: "user", content: "Provide a JSON response with name and age." }],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get_user_info",
+          description: "Get user info",
+          parameters: {
+            type: "object",
+            properties: { user_id: { type: "string" } },
+            required: ["user_id"],
+          },
+        },
+      },
+    ],
+  };
+
+  const modelProcess = spyOn(model, "process");
+
+  modelProcess
+    .mockReturnValueOnce(<ChatModelOutput>{
+      toolCalls: [{ id: "1", type: "function", function: { name: "unknown_tool", arguments: {} } }],
+    })
+    .mockReturnValueOnce(<ChatModelOutput>{
+      toolCalls: [
+        {
+          id: "2",
+          type: "function",
+          function: { name: "get_user_info", arguments: { user_id: null } },
+        },
+      ],
+    })
+    .mockReturnValueOnce(<ChatModelOutput>{
+      toolCalls: [
+        {
+          id: "3",
+          type: "function",
+          function: { name: "get_user_info", arguments: { user_id: "123" } },
+        },
+      ],
+    });
+  expect(await model.invoke(input)).toMatchInlineSnapshot(`
+    {
+      "toolCalls": [
+        {
+          "function": {
+            "arguments": {
+              "user_id": "123",
+            },
+            "name": "get_user_info",
+          },
+          "id": "3",
+          "type": "function",
+        },
+      ],
+    }
+  `);
+});
+
 test("ChatModel should save file to local", async () => {
   const context = new AIGNE().newContext();
   const model = new OpenAIChatModel({});

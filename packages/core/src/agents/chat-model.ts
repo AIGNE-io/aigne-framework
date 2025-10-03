@@ -316,7 +316,9 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
         for (const toolCall of toolCalls) {
           const originalTool = toolsMap[toolCall.function.name];
           if (!originalTool) {
-            throw new Error(`Tool "${toolCall.function.name}" not found in tools map`);
+            throw new StructuredOutputError(
+              `Tool "${toolCall.function.name}" not found in tools map`,
+            );
           }
 
           toolCall.function.name = originalTool.function.name;

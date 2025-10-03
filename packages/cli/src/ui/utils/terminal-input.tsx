@@ -91,7 +91,7 @@ function Input(props: {
       <Text>
         {PREFIX[status]} {!inline && label}
       </Text>
-      <Box flexShrink={1} flexGrow={1} marginLeft={inline ? 0 : 2}>
+      <Box flexShrink={1} flexGrow={1} marginLeft={inline ? 0 : 2} marginRight={1}>
         <Text>
           {!!label && inline && `${label} `}
           {lines.join("\n")}

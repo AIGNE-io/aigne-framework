@@ -75,13 +75,15 @@ export const defaultInputSchema = z.record(
 );
 
 const chatModelObjectSchema = camelizeSchema(
-  z.object({
-    model: optionalize(z.string()),
-    temperature: optionalize(z.number().min(0).max(2)),
-    topP: optionalize(z.number().min(0)),
-    frequencyPenalty: optionalize(z.number().min(-2).max(2)),
-    presencePenalty: optionalize(z.number().min(-2).max(2)),
-  }),
+  z
+    .object({
+      model: optionalize(z.string()),
+      temperature: optionalize(z.number().min(0).max(2)),
+      topP: optionalize(z.number().min(0)),
+      frequencyPenalty: optionalize(z.number().min(-2).max(2)),
+      presencePenalty: optionalize(z.number().min(-2).max(2)),
+    })
+    .passthrough(),
 );
 
 export const chatModelSchema = z
@@ -97,9 +99,11 @@ export const chatModelSchema = z
   ) as unknown as typeof chatModelObjectSchema;
 
 const imageModelObjectSchema = camelizeSchema(
-  z.object({
-    model: optionalize(z.string()),
-  }),
+  z
+    .object({
+      model: optionalize(z.string()),
+    })
+    .passthrough(),
 );
 
 export const imageModelSchema = z

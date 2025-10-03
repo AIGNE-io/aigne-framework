@@ -6,7 +6,7 @@ import type {
   ImageModel,
   ImageModelInputOptions,
 } from "@aigne/core";
-import { flat, pick } from "@aigne/core/utils/type-utils.js";
+import { flat, omit } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import inquirer from "inquirer";
 import { parse, stringify } from "yaml";
@@ -93,17 +93,6 @@ export async function loadChatModel(
       (inquirer.prompt as NonNullable<LoadCredentialOptions["inquirerPromptFn"]>),
   );
 
-  const params: ChatModelInputOptions = {
-    model,
-    ...pick(options ?? {}, [
-      "modalities",
-      "temperature",
-      "topP",
-      "frequencyPenalty",
-      "presencePenalty",
-    ]),
-  };
-
   const { match, all } = findModel(provider);
   if (!match) {
     throw new Error(
@@ -117,8 +106,8 @@ export async function loadChatModel(
 
   return match.create({
     ...credential,
-    model: params.model,
-    modelOptions: { ...params },
+    model,
+    modelOptions: options && omit(options, "model", "aigneHubUrl", "inquirerPromptFn"),
   });
 }
 
@@ -130,11 +119,6 @@ export async function loadImageModel(
     options?.inquirerPromptFn ??
       (inquirer.prompt as NonNullable<LoadCredentialOptions["inquirerPromptFn"]>),
   );
-
-  const params: ImageModelInputOptions = {
-    model,
-    ...pick(options ?? {}, ["preferInputFileType"]),
-  };
 
   const { match, all } = findImageModel(provider);
   if (!match) {
@@ -149,7 +133,7 @@ export async function loadImageModel(
 
   return match.create({
     ...credential,
-    model: params.model,
-    modelOptions: { ...params },
+    model,
+    modelOptions: options && omit(options, "model", "aigneHubUrl", "inquirerPromptFn"),
   });
 }

@@ -1,7 +1,11 @@
 name: test_aigne_project
 description: A test project for the aigne agent
-model: openai/gpt-4o-mini
-image_model: openai/gpt-image-1
+model:
+  model: openai/gpt-4o-mini
+  custom_option: 1
+image_model:
+  model: openai/gpt-image-1
+  quality: standard
 agents:
   - chat.yaml
 skills:

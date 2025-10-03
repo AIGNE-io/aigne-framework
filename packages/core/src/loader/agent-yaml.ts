@@ -252,6 +252,7 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
                   isApproved: z.string(),
                   maxIterations: optionalize(z.number().int().min(1)),
                   returnLastOnMaxIterations: optionalize(z.boolean()),
+                  customErrorMessage: optionalize(z.string()),
                 }),
               ),
             ),

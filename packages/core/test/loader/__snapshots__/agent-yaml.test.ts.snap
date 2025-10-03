@@ -1121,6 +1121,7 @@ exports[`loadAgentFromYaml should support reflection for TeamAgent 1`] = `
 {
   "name": "test-team-agent-with-reflection",
   "reflection": {
+    "customErrorMessage": "Test custom error message for reflection",
     "isApproved": "approved",
     "maxIterations": 5,
     "returnLastOnMaxIterations": true,

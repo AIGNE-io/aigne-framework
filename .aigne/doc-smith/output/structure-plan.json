@@ -1,0 +1,298 @@
+[
+  {
+    "title": "Overview",
+    "description": "Provides a high-level introduction to the AIGNE Core framework, outlining its purpose, key features, and overall architecture to give all users a foundational understanding.",
+    "path": "/overview",
+    "sourceIds": [
+      "packages/core/README.md",
+      "packages/core/package.json",
+      "packages/core/architecture.md",
+      "packages/core/src/index.ts"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "User Guide",
+    "description": "A conceptual guide for non-technical users, explaining the core ideas behind AIGNE, agents, and AI workflows in plain language, focusing on the 'what' and 'why' rather than the 'how'.",
+    "path": "/user-guide",
+    "sourceIds": [
+      "packages/core/README.md",
+      "README.md"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "What is AIGNE?",
+    "description": "Explains the fundamental purpose of the AIGNE framework and the problems it solves for building AI-driven applications, presented in a non-technical manner.",
+    "path": "/user-guide/what-is-aigne",
+    "sourceIds": [
+      "packages/core/README.md",
+      "README.md"
+    ],
+    "parentId": "/user-guide"
+  },
+  {
+    "title": "Understanding Agents",
+    "description": "Introduces the concept of AI 'Agents' as specialized workers that can perform tasks, communicate, and collaborate to achieve complex goals.",
+    "path": "/user-guide/understanding-agents",
+    "sourceIds": [
+      "packages/core/README.md",
+      "packages/core/architecture.md",
+      "README.md"
+    ],
+    "parentId": "/user-guide"
+  },
+  {
+    "title": "Building with Workflows",
+    "description": "Illustrates how different agents can be combined into workflows, such as sequential pipelines or parallel teams, to automate complex processes.",
+    "path": "/user-guide/building-with-workflows",
+    "sourceIds": [
+      "README.md",
+      "packages/core/src/agents/team-agent.ts",
+      "packages/core/test-agents/team.yaml"
+    ],
+    "parentId": "/user-guide"
+  },
+  {
+    "title": "Developer Guide",
+    "description": "The complete technical guide for developers, providing everything needed to build, integrate, and develop with the AIGNE Core framework.",
+    "path": "/developer-guide",
+    "sourceIds": [
+      "packages/core/README.md",
+      "packages/core/src/index.ts"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "Getting Started",
+    "description": "Provides a quick-start path for developers to install the framework and build their first functional AI agent in under 30 minutes.",
+    "path": "/developer-guide/getting-started",
+    "sourceIds": [
+      "packages/core/README.md",
+      "packages/core/package.json"
+    ],
+    "parentId": "/developer-guide"
+  },
+  {
+    "title": "Installation",
+    "description": "Details the steps to install the `@aigne/core` package into a project using various package managers like npm, yarn, and pnpm.",
+    "path": "/developer-guide/getting-started/installation",
+    "sourceIds": [
+      "packages/core/README.md",
+      "packages/core/package.json"
+    ],
+    "parentId": "/developer-guide/getting-started"
+  },
+  {
+    "title": "Your First Agent",
+    "description": "A step-by-step tutorial with a complete, copy-paste ready code example to create and run a basic AI agent.",
+    "path": "/developer-guide/getting-started/your-first-agent",
+    "sourceIds": [
+      "packages/core/README.md",
+      "packages/core/src/aigne/aigne.ts",
+      "packages/core/src/agents/ai-agent.ts"
+    ],
+    "parentId": "/developer-guide/getting-started"
+  },
+  {
+    "title": "Core Concepts",
+    "description": "Explains the fundamental building blocks and architectural principles of the AIGNE framework, such as the AIGNE Engine, Agents, Models, and Memory.",
+    "path": "/developer-guide/core-concepts",
+    "sourceIds": [
+      "packages/core/architecture.md",
+      "packages/core/README.md",
+      "packages/core/src/aigne/index.ts",
+      "packages/core/src/agents/agent.ts"
+    ],
+    "parentId": "/developer-guide"
+  },
+  {
+    "title": "The AIGNE Engine",
+    "description": "Details the role of the main `AIGNE` class and the `Context` object, which together orchestrate agent execution, state management, and communication.",
+    "path": "/developer-guide/core-concepts/aigne-engine",
+    "sourceIds": [
+      "packages/core/architecture.md",
+      "packages/core/src/aigne/aigne.ts",
+      "packages/core/src/aigne/context.ts",
+      "packages/core/README.md"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Agents Explained",
+    "description": "Covers the base `Agent` class, its lifecycle, properties, and the core `process` method that defines an agent's behavior.",
+    "path": "/developer-guide/core-concepts/agents-explained",
+    "sourceIds": [
+      "packages/core/architecture.md",
+      "packages/core/src/agents/agent.ts",
+      "packages/core/src/index.ts"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Models",
+    "description": "Explains how `ChatModel` and `ImageModel` classes serve as abstractions for interacting with various underlying AI models from different providers.",
+    "path": "/developer-guide/core-concepts/models",
+    "sourceIds": [
+      "packages/core/architecture.md",
+      "packages/core/src/agents/chat-model.ts",
+      "packages/core/src/agents/image-model.ts",
+      "packages/core/src/agents/model.ts"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Memory",
+    "description": "Describes how memory is managed through the `MemoryAgent`, which uses `Recorder` and `Retriever` skills to store and recall information.",
+    "path": "/developer-guide/core-concepts/memory",
+    "sourceIds": [
+      "packages/core/architecture.md",
+      "packages/core/src/memory/index.ts",
+      "packages/core/src/memory/memory.ts",
+      "packages/core/src/memory/recorder.ts",
+      "packages/core/src/memory/retriever.ts"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Prompts",
+    "description": "Details the `PromptBuilder` and template engine, which allow for dynamic and reusable prompt construction using variables and includes.",
+    "path": "/developer-guide/core-concepts/prompts",
+    "sourceIds": [
+      "packages/core/architecture.md",
+      "packages/core/src/prompt/prompt-builder.ts",
+      "packages/core/src/prompt/template.ts",
+      "packages/core/test-agents/chat-prompt.md",
+      "packages/core/test-agents/test-agent-with-multi-roles-instructions.yaml"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Agent Types & Examples",
+    "description": "Provides practical examples and usage guides for the different types of specialized agents available in the framework.",
+    "path": "/developer-guide/agent-types-and-examples",
+    "sourceIds": [
+      "packages/core/src/agents/ai-agent.ts",
+      "packages/core/src/agents/team-agent.ts",
+      "packages/core/src/agents/agent.ts",
+      "packages/core/src/agents/image-agent.ts",
+      "packages/core/src/agents/transform-agent.ts",
+      "packages/core/test-agents/chat.yaml",
+      "packages/core/test-agents/team.yaml",
+      "packages/core/test-agents/sandbox.js",
+      "packages/core/test-agents/image.yaml",
+      "packages/core/test-agents/transform.yaml"
+    ],
+    "parentId": "/developer-guide"
+  },
+  {
+    "title": "AI Agent",
+    "description": "Demonstrates how to create a standard AI-powered agent that interacts with a language model, using YAML configuration and prompt instructions.",
+    "path": "/developer-guide/agent-types-and-examples/ai-agent",
+    "sourceIds": [
+      "packages/core/src/agents/ai-agent.ts",
+      "packages/core/test-agents/chat.yaml",
+      "packages/core/test-agents/chat-with-prompt.yaml",
+      "packages/core/README.md"
+    ],
+    "parentId": "/developer-guide/agent-types-and-examples"
+  },
+  {
+    "title": "Team Agent",
+    "description": "Explains how to orchestrate multiple agents to work together either sequentially or in parallel using a `TeamAgent`.",
+    "path": "/developer-guide/agent-types-and-examples/team-agent",
+    "sourceIds": [
+      "packages/core/src/agents/team-agent.ts",
+      "packages/core/test-agents/team.yaml",
+      "packages/core/test-agents/nested-agent.yaml",
+      "packages/core/test-agents/team-agent-with-reflection.yaml"
+    ],
+    "parentId": "/developer-guide/agent-types-and-examples"
+  },
+  {
+    "title": "Function Agent",
+    "description": "Shows how to wrap any JavaScript or TypeScript function into an agent, allowing you to integrate custom logic and tools.",
+    "path": "/developer-guide/agent-types-and-examples/function-agent",
+    "sourceIds": [
+      "packages/core/src/agents/agent.ts",
+      "packages/core/test-agents/sandbox.js",
+      "packages/core/test-agents/test-agent-with-default-input-skill-js.js"
+    ],
+    "parentId": "/developer-guide/agent-types-and-examples"
+  },
+  {
+    "title": "Image Agent",
+    "description": "Provides an example of how to configure an `ImageAgent` to generate images from text prompts using an image model.",
+    "path": "/developer-guide/agent-types-and-examples/image-agent",
+    "sourceIds": [
+      "packages/core/src/agents/image-agent.ts",
+      "packages/core/test-agents/image.yaml"
+    ],
+    "parentId": "/developer-guide/agent-types-and-examples"
+  },
+  {
+    "title": "Transform Agent",
+    "description": "Illustrates how to use a `TransformAgent` with JSONata expressions to reshape and manipulate JSON data between other agents.",
+    "path": "/developer-guide/agent-types-and-examples/transform-agent",
+    "sourceIds": [
+      "packages/core/src/agents/transform-agent.ts",
+      "packages/core/test-agents/transform.yaml"
+    ],
+    "parentId": "/developer-guide/agent-types-and-examples"
+  },
+  {
+    "title": "API Reference",
+    "description": "A detailed reference of all public classes, functions, and types exported by the `@aigne/core` package.",
+    "path": "/api-reference",
+    "sourceIds": [
+      "packages/core/src/index.ts",
+      "packages/core/typedoc.js"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "Main Exports",
+    "description": "Lists all the top-level exports available directly from the `@aigne/core` package for easy importing.",
+    "path": "/api-reference/main-exports",
+    "sourceIds": [
+      "packages/core/src/index.ts"
+    ],
+    "parentId": "/api-reference"
+  },
+  {
+    "title": "Agent Classes",
+    "description": "Provides detailed API documentation for the base `Agent` class and all its specialized subclasses like `AIAgent`, `TeamAgent`, etc.",
+    "path": "/api-reference/agent-classes",
+    "sourceIds": [
+      "packages/core/src/agents/agent.ts",
+      "packages/core/src/agents/ai-agent.ts",
+      "packages/core/src/agents/team-agent.ts",
+      "packages/core/src/agents/image-agent.ts",
+      "packages/core/src/agents/transform-agent.ts",
+      "packages/core/src/agents/mcp-agent.ts",
+      "packages/core/src/agents/user-agent.ts",
+      "packages/core/src/agents/guide-rail-agent.ts"
+    ],
+    "parentId": "/api-reference"
+  },
+  {
+    "title": "Model Classes",
+    "description": "Documents the `ChatModel` and `ImageModel` base classes used for creating integrations with different AI model providers.",
+    "path": "/api-reference/model-classes",
+    "sourceIds": [
+      "packages/core/src/agents/chat-model.ts",
+      "packages/core/src/agents/image-model.ts",
+      "packages/core/src/agents/model.ts"
+    ],
+    "parentId": "/api-reference"
+  },
+  {
+    "title": "Changelog",
+    "description": "A complete record of all versions, including new features, bug fixes, and breaking changes for the `@aigne/core` package.",
+    "path": "/changelog",
+    "sourceIds": [
+      "packages/core/CHANGELOG.md"
+    ],
+    "parentId": ""
+  }
+]

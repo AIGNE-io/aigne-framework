@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.47](https://github.com/AIGNE-io/aigne-framework/compare/ollama-v0.7.47-beta.7...ollama-v0.7.47) (2025-10-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.1
+  * devDependencies
+    * @aigne/core bumped to 1.62.0
+    * @aigne/test-utils bumped to 0.5.54
+
 ## [0.7.47-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/ollama-v0.7.47-beta.6...ollama-v0.7.47-beta.7) (2025-10-03)
 
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.27](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.27-beta.7...poe-v1.0.27) (2025-10-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.1
+  * devDependencies
+    * @aigne/core bumped to 1.62.0
+    * @aigne/test-utils bumped to 0.5.54
+
 ## [1.0.27-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.27-beta.6...poe-v1.0.27-beta.7) (2025-10-03)
 
 

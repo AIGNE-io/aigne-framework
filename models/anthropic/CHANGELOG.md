@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.14.1](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.1-beta.7...anthropic-v0.14.1) (2025-10-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.62.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.54
+
 ## [0.14.1-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.1-beta.6...anthropic-v0.14.1-beta.7) (2025-10-03)
 
 

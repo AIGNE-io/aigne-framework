@@ -1,7 +1,18 @@
 import { z } from "zod";
 
+export const userProfileJsonPathSchema = z.object({
+  ops: z
+    .array(
+      z.object({
+        op: z.enum(["add", "remove", "replace"]),
+        path: z.string(),
+        value: z.string().optional().describe("JSON serialized value for add/replace operations"),
+      }),
+    )
+    .describe("List of operations to update the user profile"),
+});
+
 export const userProfileSchema = z.object({
-  updated: z.boolean().optional().describe("just return false if no update is needed"),
   name: z
     .array(
       z.object({

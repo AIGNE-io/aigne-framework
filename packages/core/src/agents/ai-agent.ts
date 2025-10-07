@@ -9,6 +9,7 @@ import {
   type AgentInvokeOptions,
   type AgentOptions,
   type AgentProcessAsyncGenerator,
+  type AgentProcessResult,
   type AgentResponseStream,
   agentOptionsSchema,
   isAgentResponseDelta,
@@ -418,7 +419,11 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    *
    * @protected
    */
-  async *process(input: I, options: AgentInvokeOptions): AgentProcessAsyncGenerator<O> {
+  process(input: I, options: AgentInvokeOptions): AgentProcessResult<O> {
+    return this._process(input, options);
+  }
+
+  private async *_process(input: I, options: AgentInvokeOptions): AgentProcessAsyncGenerator<O> {
     const model = this.model || options.model || options.context.model;
     if (!model) throw new Error("model is required to run AIAgent");
 

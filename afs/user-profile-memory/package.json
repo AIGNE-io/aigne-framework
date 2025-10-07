@@ -58,7 +58,9 @@
   "dependencies": {
     "@aigne/afs": "workspace:^",
     "@aigne/core": "workspace:^",
-    "zod": "^3.25.67"
+    "fast-json-patch": "^3.1.1",
+    "zod": "^3.25.67",
+    "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
     "@types/bun": "^1.2.22",

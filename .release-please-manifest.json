@@ -43,5 +43,7 @@
   "models/poe": "1.0.27",
   "models/ideogram": "0.4.1",
   "models/lmstudio": "1.0.16",
-  "blocklets/aigne-runtime": "1.4.20"
+  "blocklets/aigne-runtime": "1.4.20",
+  "afs/core": "0.0.0",
+  "afs/user-profile-memory": "0.0.0"
 }

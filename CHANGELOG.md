@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.81.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0...aigne-framework-v1.81.0-beta) (2025-10-07)
+
+
+### Features
+
+* **afs:** add basic AFS(AIGNE File System) support ([#505](https://github.com/AIGNE-io/aigne-framework/issues/505)) ([ac2a18a](https://github.com/AIGNE-io/aigne-framework/commit/ac2a18a82470a2f31c466f329386525eb1cdab6d))
+
+
+### Bug Fixes
+
+* standardize URL parameter naming from url to baseURL ([#593](https://github.com/AIGNE-io/aigne-framework/issues/593)) ([47efd4a](https://github.com/AIGNE-io/aigne-framework/commit/47efd4aad7130356a0c0bdf905acd8bc50453d26))
+
 ## [1.80.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.8...aigne-framework-v1.80.0) (2025-10-04)
 
 ## [1.80.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0-beta.7...aigne-framework-v1.80.0-beta.8) (2025-10-03)

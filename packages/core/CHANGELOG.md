@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.63.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0...core-v1.63.0-beta) (2025-10-07)
+
+
+### Features
+
+* **afs:** add basic AFS(AIGNE File System) support ([#505](https://github.com/AIGNE-io/aigne-framework/issues/505)) ([ac2a18a](https://github.com/AIGNE-io/aigne-framework/commit/ac2a18a82470a2f31c466f329386525eb1cdab6d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.0.0
+    * @aigne/observability-api bumped to 0.11.2-beta
+
 ## [1.62.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta.6...core-v1.62.0) (2025-10-04)
 
 

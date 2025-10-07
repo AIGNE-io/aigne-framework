@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.10.65-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.64...example-memory-v0.10.65-beta) (2025-10-07)
+
+
+### Features
+
+* **afs:** add basic AFS(AIGNE File System) support ([#505](https://github.com/AIGNE-io/aigne-framework/issues/505)) ([ac2a18a](https://github.com/AIGNE-io/aigne-framework/commit/ac2a18a82470a2f31c466f329386525eb1cdab6d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.0.0
+    * @aigne/afs-user-profile-memory bumped to 1.0.0
+    * @aigne/cli bumped to 1.50.1-beta
+    * @aigne/core bumped to 1.63.0-beta
+    * @aigne/default-memory bumped to 1.2.11-beta
+    * @aigne/fs-memory bumped to 1.0.48-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta
+
 ## [0.10.64](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.64-beta.9...example-memory-v0.10.64) (2025-10-04)
 
 

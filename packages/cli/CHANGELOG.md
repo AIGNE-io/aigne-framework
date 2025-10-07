@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.50.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.0...cli-v1.50.1-beta) (2025-10-07)
+
+
+### Bug Fixes
+
+* standardize URL parameter naming from url to baseURL ([#593](https://github.com/AIGNE-io/aigne-framework/issues/593)) ([47efd4a](https://github.com/AIGNE-io/aigne-framework/commit/47efd4aad7130356a0c0bdf905acd8bc50453d26))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.48-beta
+    * @aigne/agentic-memory bumped to 1.0.48-beta
+    * @aigne/aigne-hub bumped to 0.10.2-beta
+    * @aigne/core bumped to 1.63.0-beta
+    * @aigne/default-memory bumped to 1.2.11-beta
+    * @aigne/observability-api bumped to 0.11.2-beta
+    * @aigne/openai bumped to 0.16.2-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta
+
 ## [1.50.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.0-beta.8...cli-v1.50.0) (2025-10-04)
 
 

@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@aigne/afs-user-profile-memory": ["./src"],
+      "@aigne/afs-user-profile-memory/*": ["./src/*"]
+    }
+  },
+  "exclude": ["node_modules", "lib"],
+  "include": ["src", "test"]
+}

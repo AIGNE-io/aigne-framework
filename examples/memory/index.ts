@@ -1,6 +1,6 @@
 #!/usr/bin/env npx -y bun
 
-import { UserProfileMemory } from "@aigne/agent-library/afs-modules/user-profile-memory/index.js";
+import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent } from "@aigne/core";
 import { AFS } from "@aigne/fs";

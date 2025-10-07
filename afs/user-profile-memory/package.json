@@ -1,7 +1,7 @@
 {
-  "name": "@aigne/agent-library",
-  "version": "1.21.47",
-  "description": "Collection of agent libraries for AIGNE framework",
+  "name": "@aigne/afs-user-profile-memory",
+  "version": "0.0.0",
+  "description": "AIGNE AFS module for user profile memory",
   "publishConfig": {
     "access": "public"
   },
@@ -28,6 +28,11 @@
   "module": "./lib/esm/index.js",
   "types": "./lib/dts/index.d.ts",
   "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/dts/index.d.ts"
+    },
     "./*": {
       "import": "./lib/esm/*",
       "require": "./lib/cjs/*",
@@ -36,8 +41,8 @@
   },
   "typesVersions": {
     "*": {
-      "*": [
-        "./lib/dts/*"
+      ".": [
+        "./lib/dts/index.d.ts"
       ]
     }
   },
@@ -46,20 +51,13 @@
     "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rimraf lib test/coverage",
     "prepublishOnly": "run-s clean build",
-    "test": "bun --cwd test test",
-    "test:coverage": "bun --cwd test test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
+    "@aigne/fs": "workspace:^",
     "@aigne/core": "workspace:^",
-    "@aigne/openai": "workspace:^",
-    "@aigne/sqlite": "workspace:^",
-    "@aigne/uuid": "^13.0.1",
-    "drizzle-orm": "^0.44.5",
-    "fastq": "^1.19.1",
-    "jsonata": "^2.1.0",
-    "jsonschema": "^1.5.0",
-    "yaml": "^2.8.1",
     "zod": "^3.25.67"
   },
   "devDependencies": {

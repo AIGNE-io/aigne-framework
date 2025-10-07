@@ -21,7 +21,7 @@
     "test:llm": "bun test index.test.ts"
   },
   "dependencies": {
-    "@aigne/agent-library": "workspace:^",
+    "@aigne/afs-user-profile-memory": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",

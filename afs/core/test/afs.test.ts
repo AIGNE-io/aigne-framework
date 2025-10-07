@@ -1,8 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { AFS, AFSHistory, type AFSModule, AIAgent, AIGNE } from "@aigne/core";
-import { AFSStorageWithModule } from "@aigne/core/afs/storage";
-import { omit } from "@aigne/core/utils/type-utils";
+import { AFS, AFSHistory, type AFSModule, AFSStorageWithModule } from "@aigne/fs";
 
 test("AFS should use AFSHistory module default", async () => {
   const afs = new AFS({});
@@ -165,16 +163,9 @@ test("AFS should search entries correctly", async () => {
 });
 
 test("AFS should record history correctly", async () => {
-  const context = new AIGNE().newContext();
-  const agent = AIAgent.from({});
-
   const afs = new AFS();
 
   afs.emit("agentSucceed", {
-    context,
-    agent,
-    contextId: context.id,
-    timestamp: Date.now(),
     input: { message: "foo" },
     output: { message: "bar" },
   });
@@ -183,9 +174,7 @@ test("AFS should record history correctly", async () => {
 
   const histories = (await afs.list(AFSHistory.Path)).list;
 
-  expect(
-    histories.map((i) => omit(i, "createdAt", "id", "path", "updatedAt")),
-  ).toMatchInlineSnapshot(`
+  expect(histories.map(({ createdAt, id, path, updatedAt, ...i }) => i)).toMatchInlineSnapshot(`
     [
       {
         "content": {

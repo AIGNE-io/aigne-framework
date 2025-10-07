@@ -25,6 +25,7 @@
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
+    "@aigne/fs": "workspace:^",
     "@aigne/fs-memory": "workspace:^"
   },
   "devDependencies": {

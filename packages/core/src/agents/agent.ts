@@ -1,9 +1,9 @@
+import { AFS, type AFSOptions } from "@aigne/fs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type * as prompts from "@inquirer/prompts";
 import equal from "fast-deep-equal";
 import nunjucks from "nunjucks";
 import { type ZodObject, type ZodType, z } from "zod";
-import { AFS, type AFSOptions } from "../afs/afs.js";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { ContextUsage } from "../aigne/usage.js";
@@ -566,7 +566,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     try {
       await context.invoke(this, message as I, { newContext: false });
     } catch (error) {
-      context.emit("agentFailed", { agent: this, input: message, error });
+      context.emit("agentFailed", { agent: this, error });
     }
   }
 
@@ -923,8 +923,9 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     const o = await this.callHooks(["onSuccess", "onEnd"], { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
 
-    if (!this.disableEvents)
-      context.emit("agentSucceed", { agent: this, input, output: finalOutput });
+    this.afs?.emit("agentSucceed", { input, output: finalOutput });
+
+    if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
     return finalOutput;
   }
@@ -947,7 +948,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     const res = (await this.callHooks(["onError", "onEnd"], { input, error }, options)) ?? {};
 
     if (!res.retry) {
-      if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, input, error });
+      if (!this.disableEvents) options.context.emit("agentFailed", { agent: this, error });
     }
 
     return { ...res };
@@ -1403,7 +1404,7 @@ export interface AgentResponseProgress {
         error: Error;
       }
   ) &
-    Omit<AgentEvent, "agent" | "context"> & { agent: { name: string } };
+    Omit<AgentEvent, "agent"> & { agent: { name: string } };
 }
 
 export function isAgentResponseProgress<T>(

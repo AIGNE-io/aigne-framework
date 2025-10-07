@@ -1,9 +1,9 @@
+import { type AFSEntry, AFSHistory } from "@aigne/fs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { type AFSEntry, AFSHistory } from "../afs/index.js";
 import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
 import { type AIAgent, DEFAULT_OUTPUT_FILE_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
 import type {

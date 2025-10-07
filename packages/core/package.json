@@ -74,10 +74,10 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
+    "@aigne/fs": "workspace:^",
     "@aigne/json-schema-to-zod": "^1.3.3",
     "@aigne/observability-api": "workspace:^",
     "@aigne/platform-helpers": "workspace:^",
-    "@aigne/sqlite": "workspace:^",
     "@aigne/uuid": "^13.0.1",
     "@inquirer/prompts": "^7.8.6",
     "@modelcontextprotocol/sdk": "^1.18.0",

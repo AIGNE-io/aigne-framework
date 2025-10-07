@@ -1,4 +1,5 @@
 packages:
+  - afs/*
   - packages/*
   - models/*
   - memory/*

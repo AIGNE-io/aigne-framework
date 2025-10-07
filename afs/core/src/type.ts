@@ -1,5 +1,4 @@
 import type { Emitter } from "strict-event-emitter";
-import type { Context, ContextEventMap } from "../aigne/context.js";
 import type { AFSStorage } from "./storage/type.js";
 
 export interface AFSListOptions {
@@ -35,8 +34,9 @@ export interface AFSModule {
   search?(path: string, query: string, options?: AFSSearchOptions): Promise<{ list: AFSEntry[] }>;
 }
 
-export type AFSRootEvents = ContextEventMap & {
-  historyCreated: [{ context: Context; entry: AFSEntry }];
+export type AFSRootEvents = {
+  agentSucceed: [{ input: object; output: object }];
+  historyCreated: [{ entry: AFSEntry }];
 };
 
 export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {

@@ -1,13 +1,12 @@
+import { v7 } from "@aigne/uuid";
 import { joinURL } from "ufo";
-import { v7 } from "uuid";
-import { logger } from "../../../utils/logger.js";
 import type {
   AFSEntry,
   AFSListOptions,
   AFSModule,
   AFSRoot,
   AFSWriteEntryPayload,
-} from "../../type.js";
+} from "../type.js";
 
 export class AFSHistory implements AFSModule {
   static Path = "/history";
@@ -26,7 +25,7 @@ export class AFSHistory implements AFSModule {
   onMount(afs: AFSRoot): void {
     this._afs = afs;
 
-    afs.on("agentSucceed", ({ context, input, output }) => {
+    afs.on("agentSucceed", ({ input, output }) => {
       this.afs
         .storage(this)
         .create({
@@ -34,10 +33,10 @@ export class AFSHistory implements AFSModule {
           content: { input, output },
         })
         .then((entry) => {
-          afs.emit("historyCreated", { context, entry });
+          afs.emit("historyCreated", { entry });
         })
         .catch((error) => {
-          logger.error("Failed to store history entry", error);
+          console.error("Failed to store history entry", error);
         });
     });
   }

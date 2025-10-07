@@ -69,6 +69,34 @@ importers:
         specifier: ^8.8.1
         version: 8.8.1
 
+  afs/core:
+    dependencies:
+      '@aigne/sqlite':
+        specifier: workspace:^
+        version: link:../../packages/sqlite
+      '@aigne/uuid':
+        specifier: ^13.0.1
+        version: 13.0.1
+      strict-event-emitter:
+        specifier: ^0.5.1
+        version: 0.5.1
+      ufo:
+        specifier: ^1.6.1
+        version: 1.6.1
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
   blocklets/aigne-runtime:
     dependencies:
       '@aigne/aigne-hub':
@@ -432,6 +460,9 @@ importers:
       '@aigne/default-memory':
         specifier: workspace:^
         version: link:../../memory/default
+      '@aigne/fs':
+        specifier: workspace:^
+        version: link:../../afs/core
       '@aigne/fs-memory':
         specifier: workspace:^
         version: link:../../memory/fs
@@ -1675,6 +1706,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../core
+      '@aigne/fs':
+        specifier: workspace:^
+        version: link:../../afs/core
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
@@ -1920,6 +1954,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@aigne/fs':
+        specifier: workspace:^
+        version: link:../../afs/core
       '@aigne/json-schema-to-zod':
         specifier: ^1.3.3
         version: 1.3.3(zod@3.25.67)
@@ -1929,9 +1966,6 @@ importers:
       '@aigne/platform-helpers':
         specifier: workspace:^
         version: link:../platform-helpers
-      '@aigne/sqlite':
-        specifier: workspace:^
-        version: link:../sqlite
       '@aigne/uuid':
         specifier: ^13.0.1
         version: 13.0.1

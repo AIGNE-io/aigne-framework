@@ -1,7 +1,6 @@
 import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
-import { logger } from "../utils/logger.js";
-import { AFSHistory } from "./modules/history/index.js";
+import { AFSHistory } from "./history/index.js";
 import { SharedAFSStorage, type SharedAFSStorageOptions } from "./storage/index.js";
 import type { AFSStorage } from "./storage/type.js";
 import type {
@@ -74,7 +73,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
           })),
         );
       } catch (error) {
-        logger.error(`Error listing from module at ${mountPath}`, error);
+        console.error(`Error listing from module at ${mountPath}`, error);
       }
     }
 
@@ -167,7 +166,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
             })),
           );
         } catch (error) {
-          logger.error(`Error searching in module at ${mountPath}`, error);
+          console.error(`Error searching in module at ${mountPath}`, error);
         }
       }
     }

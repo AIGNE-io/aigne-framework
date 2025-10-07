@@ -1,18 +1,19 @@
-import {
-  type AFSEntry,
-  type AFSModule,
-  type AFSRoot,
-  type AFSSearchOptions,
-  type AFSWriteEntryPayload,
-  AIAgent,
-  type Context,
-} from "@aigne/core";
+import { AIAgent, type Context } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
+import type {
+  AFSEntry,
+  AFSModule,
+  AFSRoot,
+  AFSSearchOptions,
+  AFSWriteEntryPayload,
+} from "@aigne/fs";
 import type { z } from "zod";
 import { USER_PROFILE_MEMORY_EXTRACTOR_PROMPT } from "./prompt.js";
 import { userProfileSchema } from "./schema.js";
 
 export class UserProfileMemory implements AFSModule {
+  constructor(public options: { context: Context }) {}
+
   moduleId: string = "UserProfileMemory";
 
   path = "/user-profile-memory";
@@ -33,19 +34,19 @@ export class UserProfileMemory implements AFSModule {
   onMount(afs: AFSRoot): void {
     this._afs = afs;
 
-    afs.on("historyCreated", async ({ context, entry }) => {
+    afs.on("historyCreated", async ({ entry }) => {
       try {
-        await this.updateProfile(context, entry);
+        await this.updateProfile(entry);
       } catch (error) {
         logger.error("Failed to update user profile memory", error);
       }
     });
   }
 
-  private async updateProfile(context: Context, entry: AFSEntry): Promise<AFSEntry | undefined> {
+  private async updateProfile(entry: AFSEntry): Promise<AFSEntry | undefined> {
     const previous = await this._read();
 
-    const profile = await context.newContext({ reset: true }).invoke(this.extractor, {
+    const profile = await this.options.context.newContext({ reset: true }).invoke(this.extractor, {
       profile: previous?.content,
       entry,
     });

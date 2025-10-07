@@ -19,12 +19,11 @@ test("aigne command should parse --version correctly", async () => {
 test("aigne command should print help if no any subcommand", async () => {
   const command = createAIGNECommand();
 
-  const exit = spyOn(process, "exit")
+  const exit = spyOn(process, "exit").mockReturnValue(undefined as never);
+  spyOn(console, "error")
     .mockReturnValue(undefined as never)
-    .mockReset();
-  const log = spyOn(console, "error")
-    .mockReturnValue(undefined as never)
-    .mockReset();
+    .mockRestore();
+  const log = spyOn(console, "error").mockReturnValue(undefined as never);
 
   await command.parseAsync([]);
 

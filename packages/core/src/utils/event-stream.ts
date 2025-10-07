@@ -138,7 +138,7 @@ export class AgentResponseProgressStream extends ReadableStream<AgentResponsePro
       async start(controller) {
         const writeEvent = (
           eventName: keyof ContextEventMap,
-          { context, ...event }: ContextEventMap[typeof eventName][0],
+          event: ContextEventMap[typeof eventName][0],
         ) => {
           const progress = {
             ...event,

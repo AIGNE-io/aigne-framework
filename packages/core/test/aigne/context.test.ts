@@ -55,32 +55,22 @@ test("AIGNEContext should emit/on correctly", async () => {
       }),
     );
 
-    context.emit("agentSucceed", {
-      agent,
-      input: { message: "foo" },
-      output: { message: "hello" },
-    });
+    context.emit("agentSucceed", { agent, output: { message: "hello" } });
     expect(onAgentSucceed).toHaveBeenLastCalledWith(
       expect.objectContaining({
         contextId: context.id,
         parentContextId: parentContext.id,
         agent,
-        input: { message: "foo" },
         output: { message: "hello" },
       }),
     );
 
-    context.emit("agentFailed", {
-      agent,
-      input: { message: "foo" },
-      error: new Error("test error"),
-    });
+    context.emit("agentFailed", { agent, error: new Error("test error") });
     expect(onAgentFailed).toHaveBeenLastCalledWith(
       expect.objectContaining({
         contextId: context.id,
         parentContextId: parentContext.id,
         agent,
-        input: { message: "foo" },
         error: new Error("test error"),
       }),
     );

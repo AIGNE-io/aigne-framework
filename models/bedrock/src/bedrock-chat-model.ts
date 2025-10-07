@@ -18,6 +18,7 @@ import {
   isNonNullable,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
+import { v7 } from "@aigne/uuid";
 import {
   BedrockRuntimeClient,
   type BedrockRuntimeClientConfig,
@@ -33,7 +34,6 @@ import {
   type ToolConfiguration,
   type ToolInputSchema,
 } from "@aws-sdk/client-bedrock-runtime";
-import { v7 } from "uuid";
 import { z } from "zod";
 
 /**

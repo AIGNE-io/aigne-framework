@@ -1,0 +1,4 @@
+type: ai
+name: b
+instructions: You are b
+input_key: message

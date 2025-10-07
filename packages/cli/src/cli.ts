@@ -19,7 +19,9 @@ function getAIGNEFilePath() {
 
 const aigneFilePath = getAIGNEFilePath();
 
-export default createAIGNECommand({ aigneFilePath })
+const argv = process.argv.slice(aigneFilePath ? 3 : 2);
+
+export default createAIGNECommand({ argv, aigneFilePath })
   .fail((message, error, yargs) => {
     // We catch all errors below, here just print the help message non-error case like demandCommand
     if (!error) {
@@ -29,7 +31,7 @@ export default createAIGNECommand({ aigneFilePath })
       process.exit(1);
     }
   })
-  .parseAsync(process.argv.slice(aigneFilePath ? 3 : 2))
+  .parseAsync(argv)
   .catch((error: Error) => {
     console.log(""); // Add an empty line for better readability
     console.error(`${chalk.red("Error:")} ${highlightUrl(error.message)}`);

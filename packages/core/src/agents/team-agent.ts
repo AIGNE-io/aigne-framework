@@ -113,6 +113,8 @@ export interface ReflectionMode {
    * @default false
    */
   returnLastOnMaxIterations?: boolean;
+
+  customErrorMessage?: string;
 }
 
 /**
@@ -394,7 +396,8 @@ export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O>
     }
 
     throw new Error(
-      `Reflection mode exceeded max iterations ${this.reflection.maxIterations}. Please review the feedback and try again.`,
+      this.reflection.customErrorMessage ||
+        `Reflection mode exceeded max iterations ${this.reflection.maxIterations}. Please review the feedback and try again.`,
     );
   }
 

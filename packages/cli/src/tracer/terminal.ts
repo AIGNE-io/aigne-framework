@@ -28,6 +28,7 @@ import terminalImage from "terminal-image";
 import terminalLink from "terminal-link";
 import { withProtocol } from "ufo";
 import { AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE } from "../constants.js";
+import { terminalInput } from "../ui/utils/terminal-input.js";
 import checkbox from "../utils/inquirer/checkbox.js";
 import { AIGNEListr, AIGNEListrRenderer, type AIGNEListrTaskWrapper } from "../utils/listr.js";
 import { highlightUrl } from "../utils/string-utils.js";
@@ -72,12 +73,16 @@ export class TerminalTracer {
     const hideContextIds = new Set<string>();
 
     const onStart: AgentHooks["onStart"] = async ({ context, agent, ...event }) => {
-      if (agent instanceof UserAgent) return;
+      const result = { options: { prompts: this.proxiedPrompts } };
+
+      if (agent instanceof UserAgent) return result;
 
       if (agent.taskRenderMode === "hide") {
         hideContextIds.add(context.id);
-        return;
-      } else if (agent.taskRenderMode === "collapse") {
+        return result;
+      }
+
+      if (agent.taskRenderMode === "collapse") {
         collapsedMap.set(context.id, {
           ancestor: { contextId: context.id },
           usage: newEmptyContextUsage(),
@@ -88,13 +93,13 @@ export class TerminalTracer {
       if (context.parentId) {
         if (hideContextIds.has(context.parentId)) {
           hideContextIds.add(context.id);
-          return;
+          return result;
         }
 
         const collapsed = collapsedMap.get(context.parentId);
         if (collapsed) {
           collapsedMap.set(context.id, collapsed);
-          return;
+          return result;
         }
       }
 
@@ -133,7 +138,7 @@ export class TerminalTracer {
         listr.add(listrTask);
       }
 
-      return { options: { prompts: this.proxiedPrompts } };
+      return result;
     };
 
     const onSuccess: AgentHooks["onSuccess"] = async ({ context, agent, output, ...event }) => {
@@ -266,8 +271,10 @@ export class TerminalTracer {
         const method =
           prop === "checkbox"
             ? checkbox
-            : // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
-              (prompts[prop as keyof typeof prompts] as (...args: any[]) => any);
+            : prop === "input"
+              ? terminalInput
+              : // biome-ignore lint/performance/noDynamicNamespaceImportAccess: we need to access prompts dynamically
+                (prompts[prop as keyof typeof prompts] as (...args: any[]) => any);
         if (typeof method !== "function")
           throw new Error(`Unsupported prompt method ${String(prop)}`);
 

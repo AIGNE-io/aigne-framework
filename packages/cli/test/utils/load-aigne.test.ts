@@ -3,6 +3,7 @@ import { readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { AIGNE_ENV_FILE } from "@aigne/cli/utils/aigne-hub/constants.js";
 import { loadAIGNE } from "@aigne/cli/utils/load-aigne.js";
+import { pick } from "@aigne/core/utils/type-utils.js";
 import { withEnv } from "@aigne/test-utils/utils/with-env.js";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
@@ -23,7 +24,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -49,7 +50,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -69,7 +70,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -91,7 +92,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -120,7 +121,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -149,7 +150,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -178,7 +179,7 @@ describe("load aigne", () => {
       const path = join(import.meta.dirname, "../_mocks_");
       await loadAIGNE({
         path,
-        modelOptions: { model: "aignehub:openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
@@ -198,12 +199,15 @@ describe("load aigne", () => {
     const aigne1 = await loadAIGNE({
       path: join(import.meta.dirname, "../../test-agents"),
       modelOptions: {},
+      imageModelOptions: {},
     });
 
     expect(aigne1.model?.name).toBe("OpenAIChatModel");
+    expect(aigne1.imageModel?.name).toBe("OpenAIImageModel");
 
     using _ = withEnv({
-      MODEL: "gemini:gemini-2.0-pro",
+      MODEL: "gemini/gemini-2.0-pro",
+      IMAGE_MODEL: "gemini/gemini-2.5-flash-image-preview",
       GEMINI_API_KEY: "YOUR_GEMINI_API_KEY",
       ANTHROPIC_API_KEY: "YOUR_ANTHROPIC_API_KEY",
     });
@@ -211,14 +215,43 @@ describe("load aigne", () => {
     const aigne2 = await loadAIGNE({
       path: join(import.meta.dirname, "../../test-agents"),
       modelOptions: {},
+      imageModelOptions: {},
     });
     expect(aigne2.model?.name).toBe("GeminiChatModel");
+    expect(aigne2.imageModel?.name).toBe("GeminiImageModel");
 
     const aigne3 = await loadAIGNE({
       path: join(import.meta.dirname, "../../test-agents"),
       modelOptions: { model: "anthropic:claude-3-7-sonnet-latest" },
+      imageModelOptions: { model: "doubao/seedream-4.0" },
     });
     expect(aigne3.model?.name).toBe("AnthropicChatModel");
+    expect(aigne3.imageModel?.name).toBe("DoubaoImageModel");
+  });
+
+  test("should load models with custom options", async () => {
+    const aigne1 = await loadAIGNE({
+      path: join(import.meta.dirname, "../../test-agents"),
+      modelOptions: {},
+      imageModelOptions: {},
+    });
+
+    expect(pick(aigne1.model?.options ?? {}, "model", "modelOptions")).toMatchInlineSnapshot(`
+      {
+        "model": "gpt-4o-mini",
+        "modelOptions": {
+          "customOption": 1,
+        },
+      }
+    `);
+    expect(pick(aigne1.imageModel?.options ?? {}, "model", "modelOptions")).toMatchInlineSnapshot(`
+      {
+        "model": "gpt-image-1",
+        "modelOptions": {
+          "quality": "standard",
+        },
+      }
+    `);
   });
 
   afterAll(async () => {

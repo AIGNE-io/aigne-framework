@@ -1,6 +1,6 @@
 {
   "name": "@aigne/anthropic",
-  "version": "0.13.5-beta.3",
+  "version": "0.14.1",
   "description": "AIGNE Anthropic SDK for integrating with Claude AI models",
   "publishConfig": {
     "access": "public"
@@ -47,7 +47,6 @@
     "@aigne/core": "workspace:^",
     "@aigne/platform-helpers": "workspace:^",
     "@anthropic-ai/sdk": "^0.63.0",
-    "ajv": "^8.17.1",
     "zod": "^3.25.67"
   },
   "devDependencies": {

@@ -1,17 +1,27 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, ChatModel, type ChatModelOptions, MCPAgent } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
+import { mapCliAgent } from "@aigne/core/utils/agent-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { ClaudeChatModel, OpenAIChatModel } from "../_mocks/mock-models.js";
+import { ClaudeChatModel, OpenAIChatModel, OpenAIImageModel } from "../_mocks/mock-models.js";
 
-const loadModel = () => new OpenAIChatModel();
+const loadModel = (options?: ChatModelOptions) => new OpenAIChatModel(options);
 
 test("AIGNE.load should load agents correctly", async () => {
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
-    model: loadModel,
+    model: (options) =>
+      loadModel({
+        model: options?.model,
+        modelOptions: options,
+      }),
+    imageModel: (options) =>
+      new OpenAIImageModel({
+        model: options?.model,
+        modelOptions: options,
+      }),
   });
 
   expect(aigne).toEqual(
@@ -35,7 +45,23 @@ test("AIGNE.load should load agents correctly", async () => {
   expect(chat.skills[0]).toEqual(expect.objectContaining({ name: "evaluateJs" }));
 
   expect(aigne.model).toBeInstanceOf(ChatModel);
+  expect(aigne.model?.options?.modelOptions).toMatchInlineSnapshot(`
+    {
+      "customOption": 1,
+      "model": ":gpt-4o-mini",
+      "name": "gpt-4o-mini",
+      "temperature": 0.8,
+    }
+  `);
   assert(aigne.model, "model should be defined");
+
+  expect(aigne.imageModel).toBeInstanceOf(OpenAIImageModel);
+  expect(aigne.imageModel?.options?.modelOptions).toMatchInlineSnapshot(`
+    {
+      "model": "openai/gpt-image-1",
+      "quality": "standard",
+    }
+  `);
 
   expect({
     agents: aigne.agents.map((agent) => ({
@@ -54,10 +80,9 @@ test("AIGNE.load should load agents correctly", async () => {
       })),
     },
     cli: {
-      agents: aigne.cli?.agents.map((agent) => ({
-        name: agent.name,
-        description: agent.description,
-      })),
+      agents: aigne.cli?.agents?.map((i) =>
+        mapCliAgent(i, (i) => ({ name: i.name, description: i.description })),
+      ),
     },
   }).toMatchSnapshot();
 });

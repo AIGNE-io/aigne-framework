@@ -67,7 +67,7 @@ export abstract class ImageModel<
               type: "file" as const,
               data: await nodejs.fs.readFile(item.path, "base64"),
               path: undefined,
-              mimeType: item.mimeType || ImageModel.getMimeType(item.filename || item.path),
+              mimeType: item.mimeType || (await ImageModel.getMimeType(item.filename || item.path)),
             };
           }
 
@@ -83,7 +83,8 @@ export abstract class ImageModel<
                   "base64",
                 ),
                 url: undefined,
-                mimeType: item.mimeType || ImageModel.getMimeType(item.filename || item.url),
+                mimeType:
+                  item.mimeType || (await ImageModel.getMimeType(item.filename || item.url)),
               };
             }
           }

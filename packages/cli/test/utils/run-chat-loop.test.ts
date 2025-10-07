@@ -1,8 +1,8 @@
 import { expect, spyOn, test } from "bun:test";
+import * as terminalInput from "@aigne/cli/ui/utils/terminal-input.js";
 import { runChatLoopInTerminal } from "@aigne/cli/utils/run-chat-loop.js";
 import { AIAgent, AIGNE, UserAgent } from "@aigne/core";
 import { arrayToAgentProcessAsyncGenerator } from "@aigne/core/utils/stream-utils.js";
-import inquirer from "inquirer";
 
 test("runChatLoopInTerminal should respond /help /exit commands", async () => {
   const aigne = new AIGNE({});
@@ -14,12 +14,8 @@ test("runChatLoopInTerminal should respond /help /exit commands", async () => {
 
   const log = spyOn(console, "log").mockImplementation(() => {});
 
-  spyOn(inquirer, "prompt").mockReturnValueOnce(
-    Promise.resolve({ question: "/help" }) as unknown as ReturnType<typeof inquirer.prompt>,
-  );
-  spyOn(inquirer, "prompt").mockReturnValueOnce(
-    Promise.resolve({ question: "/exit" }) as unknown as ReturnType<typeof inquirer.prompt>,
-  );
+  spyOn(terminalInput, "terminalInput").mockResolvedValueOnce("/help");
+  spyOn(terminalInput, "terminalInput").mockResolvedValueOnce("/exit");
 
   const result = runChatLoopInTerminal(userAgent);
   expect(result).resolves.toBeUndefined();
@@ -36,9 +32,7 @@ test("runChatLoopInTerminal should trigger initial call", async () => {
 
   const user = aigne.invoke(agent);
 
-  spyOn(inquirer, "prompt").mockReturnValueOnce(
-    Promise.resolve({ question: "/exit" }) as unknown as ReturnType<typeof inquirer.prompt>,
-  );
+  spyOn(terminalInput, "terminalInput").mockResolvedValueOnce("/exit");
 
   const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
     arrayToAgentProcessAsyncGenerator([
@@ -65,14 +59,8 @@ test("runChatLoopInTerminal should invoke agent correctly", async () => {
 
   const userAgent = aigne.invoke(agent);
 
-  spyOn(inquirer, "prompt").mockReturnValueOnce(
-    Promise.resolve({ question: "hello, this is a test message" }) as unknown as ReturnType<
-      typeof inquirer.prompt
-    >,
-  );
-  spyOn(inquirer, "prompt").mockReturnValueOnce(
-    Promise.resolve({ question: "/exit" }) as unknown as ReturnType<typeof inquirer.prompt>,
-  );
+  spyOn(terminalInput, "terminalInput").mockResolvedValueOnce("hello, this is a test message");
+  spyOn(terminalInput, "terminalInput").mockResolvedValueOnce("/exit");
 
   const agentProcess = spyOn(agent, "process").mockReturnValueOnce(
     arrayToAgentProcessAsyncGenerator([

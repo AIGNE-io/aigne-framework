@@ -1,0 +1,4 @@
+type: ai
+name: a1
+instructions: You are a-1
+input_key: message

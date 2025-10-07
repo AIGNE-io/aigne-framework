@@ -6,6 +6,7 @@ import express, { type Request, type Response, type Router } from "express";
 import type SSE from "express-sse";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
+import { insertTrace } from "../../core/util.js";
 import type { FileData, ImageData } from "../base.js";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
@@ -122,6 +123,8 @@ export default ({
         `,
         userId: Trace.userId,
         componentId: Trace.componentId,
+        token: Trace.token,
+        cost: Trace.cost,
       })
       .from(Trace)
       .where(whereClause)
@@ -146,6 +149,94 @@ export default ({
       page,
       pageSize,
       data: processedRootCalls,
+    });
+  });
+
+  router.get("/tree/summary", ...middleware, async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+
+    const baseWhere = and(isNull(Trace.parentId), isNull(Trace.action));
+
+    const totalCountResult = await db
+      .select({ totalCount: sql<number>`COUNT(*)` })
+      .from(Trace)
+      .where(baseWhere)
+      .execute();
+
+    const totalCount = totalCountResult[0]?.totalCount ?? 0;
+
+    const statusResult = await db
+      .select({
+        successCount: sql<number>`
+          COUNT(
+            CASE 
+              WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0 
+              THEN 1 
+            END
+          )
+        `,
+      })
+      .from(Trace)
+      .where(baseWhere)
+      .execute();
+
+    const successCount = statusResult[0]?.successCount ?? 0;
+    const failCount = totalCount - successCount;
+
+    const TotalStatsResult = await db
+      .select({
+        totalToken: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.token} ELSE 0 END), 0)`,
+        totalCost: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.cost} ELSE 0 END), 0)`,
+        maxLatency: sql<number>`COALESCE(MAX(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
+        minLatency: sql<number>`COALESCE(MIN(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
+        avgLatency: sql<number>`COALESCE(AVG(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
+        totalDuration: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0 END), 0)`,
+      })
+      .from(Trace)
+      .where(baseWhere)
+      .execute();
+
+    const totalStats = TotalStatsResult[0];
+
+    const llmWhere = and(
+      sql`${Trace.attributes} IS NOT NULL`,
+      sql`JSON_EXTRACT(${Trace.attributes}, '$.output.model') IS NOT NULL`,
+    );
+
+    const llmStatsResult = await db
+      .select({
+        llmTotalCount: sql<number>`COUNT(*)`,
+        llmSuccessCount: sql<number>`
+          COUNT(
+            CASE 
+              WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0 
+              THEN 1 
+            END
+          )
+        `,
+        llmTotalDuration: sql<number>`
+          COALESCE(SUM(
+            CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0 END
+          ), 0)
+        `,
+      })
+      .from(Trace)
+      .where(llmWhere)
+      .execute();
+
+    res.json({
+      totalCount,
+      successCount,
+      failCount,
+      totalToken: totalStats?.totalToken ?? 0,
+      totalCost: totalStats?.totalCost ?? 0,
+      maxLatency: totalStats?.maxLatency ?? 0,
+      minLatency: totalStats?.minLatency ?? 0,
+      avgLatency: totalStats?.avgLatency ?? 0,
+      totalDuration: totalStats?.totalDuration ?? 0,
+      llmSuccessCount: llmStatsResult[0]?.llmSuccessCount ?? 0,
+      llmTotalCount: llmStatsResult[0]?.llmTotalCount ?? 0,
+      llmTotalDuration: llmStatsResult[0]?.llmTotalDuration ?? 0,
     });
   });
 
@@ -268,6 +359,8 @@ export default ({
         userId: Trace.userId,
         sessionId: Trace.sessionId,
         componentId: Trace.componentId,
+        token: Trace.token,
+        cost: Trace.cost,
       })
       .from(Trace)
       .where(inArray(Trace.rootId, rootCallIds))
@@ -332,48 +425,7 @@ export default ({
           }
         }
 
-        const insertSql = sql`
-          INSERT INTO Trace (
-            id,
-            rootId,
-            parentId,
-            name,
-            startTime,
-            endTime,
-            attributes,
-            status,
-            userId,
-            sessionId,
-            componentId,
-            action
-          ) VALUES (
-            ${trace.id},
-            ${trace.rootId},
-            ${trace.parentId || null},
-            ${trace.name},
-            ${trace.startTime},
-            ${trace.endTime},
-            ${JSON.stringify(trace.attributes)},
-            ${JSON.stringify(trace.status)},
-            ${trace.userId || null},
-            ${trace.sessionId || null},
-            ${trace.componentId || null},
-            ${trace.action || null}
-          )
-          ON CONFLICT(id)
-          DO UPDATE SET
-            name = excluded.name,
-            startTime = excluded.startTime,
-            endTime = excluded.endTime,
-            attributes = excluded.attributes,
-            status = excluded.status,
-            userId = excluded.userId,
-            sessionId = excluded.sessionId,
-            componentId = excluded.componentId,
-            action = excluded.action;
-        `;
-
-        await db?.run?.(insertSql);
+        await insertTrace(db, trace);
       } catch (err) {
         console.error(`upsert spans failed for trace ${trace.id}:`, err);
       }

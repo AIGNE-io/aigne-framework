@@ -3,6 +3,10 @@ description: A test project for the aigne agent
 chat_model:
   name: gpt-4o-mini
   temperature: 0.8
+  custom_option: 1
+image_model:
+  model: openai/gpt-image-1
+  quality: standard
 agents:
   - chat.yaml
   - chat-with-prompt.yaml
@@ -17,3 +21,16 @@ mcp_server:
 cli:
   agents:
     - chat.yaml
+    - test-cli-agents/b.yaml
+    - url: test-cli-agents/a.yaml
+      name: a-renamed
+      description: A agent from a.yaml
+      alias: ["a", "a-agent"]
+      agents:
+        - url: test-cli-agents/a-1.yaml
+          agents:
+            - url: test-cli-agents/a-1-1.yaml
+            - url: test-cli-agents/a-1-2.yaml
+              name: a12-renamed
+              description: A agent from a-1-2.yaml
+        - test-cli-agents/a-2.yaml

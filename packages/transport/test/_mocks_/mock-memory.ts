@@ -9,8 +9,8 @@ import {
   type MemoryRetrieverInput,
   type MemoryRetrieverOutput,
 } from "@aigne/core";
+import { v7 } from "@aigne/uuid";
 import equal from "fast-deep-equal";
-import { v7 } from "uuid";
 
 export interface MockMemoryOptions extends Partial<MemoryAgentOptions> {}
 

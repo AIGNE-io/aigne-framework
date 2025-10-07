@@ -1,3 +1,4 @@
+import Overview from "@aigne/observability-ui/overview";
 import { translations } from "@aigne/observability-ui/translations";
 import { ConfigProvider } from "@arcblock/ux/lib/Config";
 import { ToastProvider } from "@arcblock/ux/lib/Toast";
@@ -34,7 +35,15 @@ export default function BlockletApp() {
 function WrappedApp() {
   return (
     <Routes>
-      <Route path="/" element={<ListPage />} />
+      <Route
+        path="/"
+        element={
+          <Box py={3}>
+            <Overview />
+          </Box>
+        }
+      />
+      <Route path="/traces" element={<ListPage />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

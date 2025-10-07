@@ -1,9 +1,9 @@
 import { isAgentResponseDelta, isAgentResponseProgress } from "@aigne/core";
 import { AIGNEHTTPClient } from "@aigne/transport/http-client/index.js";
+import { v4 as uuidv4 } from "@aigne/uuid";
 import { Box, Container, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { joinURL } from "ufo";
-import { v4 as uuidv4 } from "uuid";
 import ChatInput from "../components/chat-input.js";
 import MessageBubble from "../components/message-bubble.js";
 import TextLoading from "../components/text-loading.js";

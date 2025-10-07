@@ -1,6 +1,6 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
-import { z } from "zod";
+import { type ZodType, z } from "zod";
 import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
@@ -10,6 +10,7 @@ import { MCPAgent } from "../agents/mcp-agent.js";
 import { TeamAgent } from "../agents/team-agent.js";
 import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
+import type { AIGNECLIAgent } from "../aigne/type.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { ChatMessagesTemplate, parseChatMessages } from "../prompt/template.js";
@@ -35,23 +36,41 @@ export interface LoadOptions {
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
   const { aigne, rootDir } = await loadAIGNEFile(path);
 
+  const flatCliAgents = (cliAgent: CliAgent): string[] => {
+    if (typeof cliAgent === "string") return [cliAgent];
+    return flat(cliAgent.url, cliAgent.agents?.flatMap(flatCliAgents));
+  };
+
   const allAgentPaths = new Set(
     flat(
       aigne.agents,
       aigne.skills,
       aigne.mcpServer?.agents,
-      aigne.cli?.agents,
       aigne.cli?.chat,
+      aigne.cli?.agents?.flatMap((i) => (typeof i === "string" ? i : flatCliAgents(i))),
     ).map((i) => nodejs.path.join(rootDir, i)),
   );
-  const allAgents: { [path: string]: Agent } = Object.fromEntries(
-    await Promise.all(
-      Array.from(allAgentPaths).map(async (path) => [path, await loadAgent(path, options)]),
-    ),
-  );
+
+  const allAgents: { [path: string]: Agent } = {};
+
+  for (const path of allAgentPaths) {
+    allAgents[path] = await loadAgent(path, options);
+  }
+
+  const pickAgent = (path: string) => allAgents[nodejs.path.join(rootDir, path)];
 
   const pickAgents = (paths: string[]) =>
-    paths.map((filename) => allAgents[nodejs.path.join(rootDir, filename)]).filter(isNonNullable);
+    paths.map((filename) => pickAgent(filename)).filter(isNonNullable);
+
+  const mapCliAgents = (cliAgent: CliAgent): AIGNECLIAgent => {
+    if (typeof cliAgent === "string") return { agent: pickAgent(cliAgent) };
+
+    return {
+      ...cliAgent,
+      agent: cliAgent.url ? pickAgent(cliAgent.url) : undefined,
+      agents: cliAgent.agents?.map(mapCliAgents),
+    };
+  };
 
   return {
     ...aigne,
@@ -59,7 +78,9 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
     model: typeof options.model === "function" ? await options.model(aigne.model) : options.model,
     imageModel:
       typeof options.imageModel === "function"
-        ? await options.imageModel(aigne.imageModel)
+        ? aigne.imageModel
+          ? await options.imageModel(aigne.imageModel)
+          : undefined
         : options.imageModel,
     agents: pickAgents(aigne.agents ?? []),
     skills: pickAgents(aigne.skills ?? []),
@@ -68,7 +89,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
     },
     cli: {
       chat: aigne.cli?.chat ? pickAgents([aigne.cli.chat])[0] : undefined,
-      agents: pickAgents(aigne.cli?.agents ?? []),
+      agents: aigne.cli?.agents?.map(mapCliAgents),
     },
   };
 }
@@ -266,6 +287,27 @@ async function loadMemory(
   return new M(options);
 }
 
+type CliAgent =
+  | string
+  | {
+      url?: string;
+      name?: string;
+      alias?: string[];
+      description?: string;
+      agents?: CliAgent[];
+    };
+
+const cliAgentSchema: ZodType<CliAgent> = z.union([
+  z.string(),
+  z.object({
+    url: optionalize(z.string()),
+    name: optionalize(z.string()),
+    alias: optionalize(z.array(z.string())),
+    description: optionalize(z.string()),
+    agents: optionalize(z.array(z.lazy(() => cliAgentSchema))),
+  }),
+]);
+
 const aigneFileSchema = camelizeSchema(
   z.object({
     name: optionalize(z.string()),
@@ -282,7 +324,7 @@ const aigneFileSchema = camelizeSchema(
     cli: optionalize(
       z.object({
         chat: optionalize(z.string()),
-        agents: optionalize(z.array(z.string())),
+        agents: optionalize(z.array(cliAgentSchema)),
       }),
     ),
   }),

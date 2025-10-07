@@ -1,6 +1,6 @@
 {
   "name": "@aigne/observability-ui",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -33,6 +33,9 @@
     },
     "./translations": {
       "default": "./src/locales/index.ts"
+    },
+    "./overview": {
+      "default": "./src/overview.tsx"
     }
   },
   "typesVersions": {
@@ -51,11 +54,13 @@
     "@abtnode/util": "^1.16.51",
     "@arcblock/ux": "^3.1.41",
     "@blocklet/sdk": "^1.16.51",
+    "@iconify/react": "^6.0.2",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "@mui/x-data-grid": "^8.11.3",
     "ahooks": "^3.9.5",
+    "bignumber.js": "^9.3.1",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.18",
     "decimal.js": "^10.6.0",
@@ -63,6 +68,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "mui-daterange-picker": "^1.0.5",
+    "pretty-ms": "^9.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-json-view": "^1.21.3",

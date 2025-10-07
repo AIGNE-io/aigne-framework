@@ -151,9 +151,12 @@ export class AgentMessageTemplate extends ChatMessageTemplate {
     super("agent", content, name, options);
   }
 
-  override async format(variables?: Record<string, unknown>, options?: FormatOptions) {
+  override async format(_variables?: Record<string, unknown>, _options?: FormatOptions) {
     return {
-      ...(await super.format(variables, options)),
+      role: this.role,
+      name: this.name,
+      // NOTE: agent message should not rendered by template
+      content: this.content,
       toolCalls: this.toolCalls,
     };
   }
@@ -187,9 +190,12 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
     );
   }
 
-  override async format(variables?: Record<string, unknown>, options?: FormatOptions) {
+  override async format(_variables?: Record<string, unknown>, _options?: FormatOptions) {
     return {
-      ...(await super.format(variables, options)),
+      role: this.role,
+      name: this.name,
+      // NOTE: tool result should not rendered by template
+      content: this.content,
       toolCallId: this.toolCallId,
     };
   }

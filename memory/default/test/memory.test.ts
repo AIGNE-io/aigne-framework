@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { AIAgent, AIGNE, type MemoryRecorderInput, stringToAgentResponseStream } from "@aigne/core";
 import { DefaultMemory, DefaultMemoryStorage } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
-import { v7 } from "uuid";
+import { v7 } from "@aigne/uuid";
 import { z } from "zod";
 
 test("should add a new memory", async () => {

@@ -1,7 +1,7 @@
 {
   "name": "aigne-runtime",
   "private": true,
-  "version": "1.4.19-beta.4",
+  "version": "1.4.20",
   "scripts": {
     "dev": "blocklet dev",
     "lint": "tsc --noEmit && tsc -p tsconfig.api.json --noEmit && biome check",
@@ -32,6 +32,7 @@
     "@aigne/observability-api": "workspace:^",
     "@aigne/sqlite": "workspace:^",
     "@aigne/transport": "workspace:^",
+    "@aigne/uuid": "^13.0.1",
     "@arcblock/did-connect-react": "^3.1.41",
     "@arcblock/ux": "^3.1.41",
     "@blocklet/sdk": "^1.16.51",
@@ -48,8 +49,7 @@
     "flat": "^6.0.1",
     "framer-motion": "^12.23.13",
     "react-error-boundary": "^6.0.0",
-    "ufo": "^1.6.1",
-    "uuid": "^13.0.0"
+    "ufo": "^1.6.1"
   },
   "devDependencies": {
     "@blocklet/js-sdk": "^1.16.51",

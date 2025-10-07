@@ -73,6 +73,11 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
   toolChoice?: AIAgentToolChoice | Agent;
 
   /**
+   * Whether to preserve text generated during tool usage in the final output
+   */
+  keepTextInToolUses?: boolean;
+
+  /**
    * Whether to catch errors from tool execution and continue processing.
    * If set to false, the agent will throw an error if a tool fails.
    *
@@ -206,6 +211,7 @@ export const aiAgentOptionsSchema: ZodObject<{
   inputKey: z.string().optional(),
   outputKey: z.string().optional(),
   toolChoice: aiAgentToolChoiceSchema.optional(),
+  keepTextInToolUses: z.boolean().optional(),
   memoryAgentsAsTools: z.boolean().optional(),
   memoryPromptTemplate: z.string().optional(),
 }) as ZodObject<{
@@ -270,6 +276,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     this.outputFileKey = options.outputFileKey || DEFAULT_OUTPUT_FILE_KEY;
     this.outputFileType = options.outputFileType;
     this.toolChoice = options.toolChoice;
+    this.keepTextInToolUses = options.keepTextInToolUses;
     this.memoryAgentsAsTools = options.memoryAgentsAsTools;
     this.memoryPromptTemplate = options.memoryPromptTemplate;
     this.useMemoriesFromContext = options.useMemoriesFromContext;
@@ -335,6 +342,11 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-router}
    */
   toolChoice?: AIAgentToolChoice | Agent;
+
+  /**
+   * Whether to preserve text generated during tool usage in the final output
+   */
+  keepTextInToolUses?: boolean;
 
   /**
    * Whether to include memory agents as tools for the AI model
@@ -467,6 +479,12 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       const { toolCalls, json, text, files } = modelOutput;
 
       if (toolCalls?.length) {
+        if (!this.keepTextInToolUses) {
+          yield { delta: { json: { [outputKey]: "" } as Partial<O> } };
+        } else {
+          yield { delta: { text: { [outputKey]: "\n" } } };
+        }
+
         const executedToolCalls: {
           call: ChatModelOutputToolCall;
           output: Message;

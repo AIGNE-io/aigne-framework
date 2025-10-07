@@ -62,3 +62,7 @@ jobs:
       - name: Run Node.js tests
         working-directory: tests/nodejs
         run: pnpm test
+
+      - name: Run Node.js (commonjs) tests
+        working-directory: tests/nodejs-cjs
+        run: pnpm test

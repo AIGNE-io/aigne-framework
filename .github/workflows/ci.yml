@@ -42,7 +42,7 @@ jobs:
 
 
       - name: Build
-        run: pnpm build
+        run: pnpm build && pnpm install
 
       - name: Lint
         run: pnpm lint

@@ -13,6 +13,7 @@ import {
   type MessageQueueListener,
   type Unsubscribe,
 } from "./message-queue.js";
+import type { AIGNECLIAgents } from "./type.js";
 import type { ContextLimits } from "./usage.js";
 
 /**
@@ -59,11 +60,7 @@ export interface AIGNEOptions {
     agents?: Agent[];
   };
 
-  cli?: {
-    chat?: Agent;
-
-    agents?: Agent[];
-  };
+  cli?: AIGNECLIAgents;
 
   /**
    * Limits for the AIGNE instance, such as timeout, max tokens, max invocations, etc.
@@ -133,8 +130,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     if (options?.skills?.length) this.skills.push(...options.skills);
     if (options?.agents?.length) this.addAgent(...options.agents);
     if (options?.mcpServer?.agents?.length) this.mcpServer.agents.push(...options.mcpServer.agents);
-    if (options?.cli?.agents?.length) this.cli.agents.push(...options.cli.agents);
-    if (options?.cli?.chat) this.cli.chat = options.cli.chat;
+    this.cli = options?.cli ?? {};
 
     this.observer?.serve();
     this.initProcessExitHandler();
@@ -193,11 +189,7 @@ export class AIGNE<U extends UserContext = UserContext> {
     agents: createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name)),
   };
 
-  readonly cli = {
-    chat: undefined as Agent | undefined,
-
-    agents: createAccessorArray<Agent>([], (arr, name) => arr.find((i) => i.name === name)),
-  };
+  readonly cli: AIGNECLIAgents = {};
 
   /**
    * Observer for the AIGNE instance.

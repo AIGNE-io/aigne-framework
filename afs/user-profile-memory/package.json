@@ -56,7 +56,7 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/fs": "workspace:^",
+    "@aigne/afs": "workspace:^",
     "@aigne/core": "workspace:^",
     "zod": "^3.25.67"
   },

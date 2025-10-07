@@ -99,12 +99,12 @@ importers:
 
   afs/user-profile-memory:
     dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../core
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
-      '@aigne/fs':
-        specifier: workspace:^
-        version: link:../core
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -473,6 +473,9 @@ importers:
 
   examples/memory:
     dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../../afs/core
       '@aigne/afs-user-profile-memory':
         specifier: workspace:^
         version: link:../../afs/user-profile-memory
@@ -485,9 +488,6 @@ importers:
       '@aigne/default-memory':
         specifier: workspace:^
         version: link:../../memory/default
-      '@aigne/fs':
-        specifier: workspace:^
-        version: link:../../afs/core
       '@aigne/fs-memory':
         specifier: workspace:^
         version: link:../../memory/fs
@@ -1976,7 +1976,7 @@ importers:
 
   packages/core:
     dependencies:
-      '@aigne/fs':
+      '@aigne/afs':
         specifier: workspace:^
         version: link:../../afs/core
       '@aigne/json-schema-to-zod':

@@ -1,4 +1,4 @@
-import { AFS, type AFSOptions } from "@aigne/fs";
+import { AFS, type AFSOptions } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type * as prompts from "@inquirer/prompts";
 import equal from "fast-deep-equal";

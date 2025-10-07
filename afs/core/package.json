@@ -1,5 +1,5 @@
 {
-  "name": "@aigne/fs",
+  "name": "@aigne/afs",
   "version": "0.0.0",
   "description": "AIGNE File System (AFS) is a virtual file system that supports various storage backends and provides a unified API for file operations.",
   "publishConfig": {

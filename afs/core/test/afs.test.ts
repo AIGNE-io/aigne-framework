@@ -1,6 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { AFS, AFSHistory, type AFSModule, AFSStorageWithModule } from "@aigne/fs";
+import { AFS, AFSHistory, type AFSModule, AFSStorageWithModule } from "@aigne/afs";
 
 test("AFS should use AFSHistory module default", async () => {
   const afs = new AFS({});

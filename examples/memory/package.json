@@ -21,11 +21,11 @@
     "test:llm": "bun test index.test.ts"
   },
   "dependencies": {
+    "@aigne/afs": "workspace:^",
     "@aigne/afs-user-profile-memory": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",
-    "@aigne/fs": "workspace:^",
     "@aigne/fs-memory": "workspace:^"
   },
   "devDependencies": {

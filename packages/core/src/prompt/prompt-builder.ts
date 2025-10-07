@@ -1,4 +1,4 @@
-import { type AFSEntry, AFSHistory } from "@aigne/fs";
+import { type AFSEntry, AFSHistory } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";

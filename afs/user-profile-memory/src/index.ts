@@ -1,12 +1,12 @@
-import { AIAgent, type Context } from "@aigne/core";
-import { logger } from "@aigne/core/utils/logger.js";
 import type {
   AFSEntry,
   AFSModule,
   AFSRoot,
   AFSSearchOptions,
   AFSWriteEntryPayload,
-} from "@aigne/fs";
+} from "@aigne/afs";
+import { AIAgent, type Context } from "@aigne/core";
+import { logger } from "@aigne/core/utils/logger.js";
 import type { z } from "zod";
 import { USER_PROFILE_MEMORY_EXTRACTOR_PROMPT } from "./prompt.js";
 import { userProfileSchema } from "./schema.js";

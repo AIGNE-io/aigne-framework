@@ -51,7 +51,7 @@ export const formatModelName = async (
   }
 
   const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-  if (envs?.default?.AIGNE_HUB_API_URL) {
+  if (process.env.AIGNE_HUB_API_KEY || envs?.default?.AIGNE_HUB_API_URL) {
     return { provider: AIGNE_HUB_PROVIDER, model: `${provider}/${name}` };
   }
 

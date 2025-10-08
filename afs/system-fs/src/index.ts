@@ -27,11 +27,14 @@ export class SystemFS implements AFSModule {
 
     const pattern = options?.recursive ? "**/*" : "*";
 
+    const abortController = new AbortController();
+
     const files = globStream(pattern, {
       cwd: basePath,
       dot: false,
       absolute: false,
       maxDepth: options?.maxDepth,
+      signal: abortController.signal,
     });
 
     const entries: AFSEntry[] = [];
@@ -56,7 +59,7 @@ export class SystemFS implements AFSModule {
       entries.push(entry);
 
       if (options?.limit && entries.length >= options.limit) {
-        files.destroy();
+        abortController.abort();
         break;
       }
     }

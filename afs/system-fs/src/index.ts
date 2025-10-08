@@ -1,5 +1,5 @@
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, relative } from "node:path";
 import type {
   AFSEntry,
   AFSListOptions,
@@ -150,7 +150,7 @@ export class SystemFS implements AFSModule {
     for (const match of matches) {
       if (match.type === "match" && match.data.path) {
         const absolutePath = match.data.path.text;
-        const itemRelativePath = join(path, absolutePath.replace(`${basePath}/`, ""));
+        const itemRelativePath = join(path, relative(basePath, absolutePath));
 
         // Avoid duplicate files
         if (processedFiles.has(itemRelativePath)) continue;

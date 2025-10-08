@@ -205,7 +205,14 @@ export async function loadAIGNEHubCredential(options?: LoadCredentialOptions) {
   let credential: { apiKey?: string; url?: string } = {};
 
   try {
-    credential = await checkConnectionStatus(host);
+    if (process.env.AIGNE_HUB_API_KEY) {
+      credential = {
+        apiKey: process.env.AIGNE_HUB_API_KEY,
+        url: process.env.AIGNE_HUB_API_URL || url,
+      };
+    } else {
+      credential = await checkConnectionStatus(host);
+    }
   } catch (error) {
     if (error instanceof Error && error.message.includes("login first")) {
       let aigneHubUrl = connectUrl;

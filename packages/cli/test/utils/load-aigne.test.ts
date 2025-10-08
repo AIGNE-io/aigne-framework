@@ -1,4 +1,4 @@
-import { afterAll, afterEach, describe, expect, mock, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { AIGNE_ENV_FILE } from "@aigne/cli/utils/aigne-hub/constants.js";
@@ -8,6 +8,10 @@ import { withEnv } from "@aigne/test-utils/utils/with-env.js";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import { createHonoServer } from "../_mocks_/server.js";
+
+beforeEach(() => {
+  delete process.env.AIGNE_HUB_API_KEY;
+});
 
 afterEach(() => {
   delete process.env.AIGNE_HUB_API_URL;

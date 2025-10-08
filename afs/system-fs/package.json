@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs-system-fs",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "AIGNE AFS module for local filesystem storage",
   "publishConfig": {
     "access": "public"

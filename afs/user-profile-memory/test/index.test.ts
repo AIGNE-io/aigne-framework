@@ -34,14 +34,11 @@ test("UserProfileMemory should update memory based on conversation", async () =>
   ).toMatchInlineSnapshot(`
     [
       {
-        "content": {
-          "name": [
-            {
-              "name": "Bob",
-            },
-          ],
-        },
-        "description": "User Profile Memory, a summary of user information and preferences",
+        "name": [
+          {
+            "name": "Bob",
+          },
+        ],
       },
     ]
   `);

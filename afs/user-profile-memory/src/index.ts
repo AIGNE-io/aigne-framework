@@ -13,18 +13,12 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import { USER_PROFILE_MEMORY_EXTRACTOR_PROMPT } from "./prompt.js";
 import { userProfileJsonPathSchema, userProfileSchema } from "./schema.js";
 
-const DEFAULT_DESCRIPTION = "User Profile Memory, a summary of user information and preferences";
-
 export class UserProfileMemory implements AFSModule {
-  constructor(public options: { description?: string; context: Context }) {
-    this.description = options.description || DEFAULT_DESCRIPTION;
-  }
+  constructor(public options: { context: Context }) {}
 
   moduleId: string = "UserProfileMemory";
 
   path = "/user-profile-memory";
-
-  description?: string;
 
   _afs?: AFSRoot;
 
@@ -74,13 +68,7 @@ export class UserProfileMemory implements AFSModule {
   }
 
   private async _read(): Promise<AFSEntry | undefined> {
-    const afs = await this.afs.storage(this).read("/");
-    if (afs?.content)
-      afs.content = {
-        description: this.description,
-        content: afs.content,
-      };
-    return afs;
+    return this.afs.storage(this).read("/");
   }
 
   private async _write(entry: AFSWriteEntryPayload): Promise<AFSEntry> {

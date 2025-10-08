@@ -12,6 +12,10 @@ import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import { createHonoServer } from "../../_mocks_/server.js";
 
+beforeEach(() => {
+  delete process.env.AIGNE_HUB_API_KEY;
+});
+
 describe("credential util functions", () => {
   describe("fetchConfigs", () => {
     test("should fetch configs successfully", async () => {

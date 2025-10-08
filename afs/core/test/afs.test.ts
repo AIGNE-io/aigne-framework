@@ -63,7 +63,7 @@ test("AFS should list entries correctly", async () => {
   expect(listSpy.mock.calls).toMatchInlineSnapshot(`
     [
       [
-        "/test-module",
+        "/",
         {
           "maxDepth": 4,
         },
@@ -154,7 +154,7 @@ test("AFS should search entries correctly", async () => {
   expect(searchSpy.mock.calls).toMatchInlineSnapshot(`
     [
       [
-        "/test-module",
+        "/",
         "foo",
         undefined,
       ],

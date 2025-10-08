@@ -121,7 +121,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     } else if (mp.startsWith(fp)) {
       return {
         matchedDepth: fullPathSegments.length,
-        subpath: joinURL("/", ...mountPathSegments.slice(fullPathSegments.length)),
+        subpath: "/",
       };
     }
   }

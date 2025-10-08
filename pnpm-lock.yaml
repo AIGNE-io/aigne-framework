@@ -365,6 +365,31 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  examples/afs-system-fs:
+    dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../../afs/core
+      '@aigne/afs-system-fs':
+        specifier: workspace:^
+        version: link:../../afs/system-fs
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      yargs:
+        specifier: ^18.0.0
+        version: 18.0.0
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+
   examples/chat-bot:
     dependencies:
       '@aigne/cli':

@@ -11,13 +11,16 @@ import { globStream } from "glob";
 import { searchWithRipgrep } from "./utils/ripgrep.js";
 
 export class SystemFS implements AFSModule {
-  constructor(public options: { mount: string; path: string }) {
+  constructor(public options: { mount: string; path: string; description?: string }) {
     this.path = options.mount;
+    this.description = options.description;
   }
 
   moduleId: string = "SystemFS";
 
   path: string;
+
+  description?: string;
 
   async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }> {
     const basePath = join(this.options.path, path);
@@ -135,6 +138,8 @@ export class SystemFS implements AFSModule {
     query: string,
     options?: AFSSearchOptions,
   ): Promise<{ list: AFSEntry[] }> {
+    console.log({ path, query, options });
+
     const basePath = join(this.options.path, path);
     const matches = await searchWithRipgrep(basePath, query);
 

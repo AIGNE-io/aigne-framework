@@ -141,8 +141,6 @@ export class SystemFS implements AFSModule {
     query: string,
     options?: AFSSearchOptions,
   ): Promise<{ list: AFSEntry[] }> {
-    console.log({ path, query, options });
-
     const basePath = join(this.options.path, path);
     const matches = await searchWithRipgrep(basePath, query);
 

@@ -38,6 +38,31 @@ test("AFS should initialize a storage for a new module", async () => {
   );
 });
 
+test("AFS should list modules correctly", async () => {
+  const module: AFSModule = {
+    moduleId: "test-module",
+    path: "/test-module",
+    list: async () => ({ list: [] }),
+  };
+
+  const afs = new AFS().use(module);
+
+  expect(await afs.listModules()).toMatchInlineSnapshot(`
+    [
+      {
+        "description": undefined,
+        "moduleId": "AFSHistory",
+        "path": "/history",
+      },
+      {
+        "description": undefined,
+        "moduleId": "test-module",
+        "path": "/test-module",
+      },
+    ]
+  `);
+});
+
 test("AFS should list entries correctly", async () => {
   const module: AFSModule = {
     moduleId: "test-module",

@@ -102,7 +102,6 @@ test("getAFSSkills should return all AFS skills", async () => {
           "required": [
             "path",
             "query",
-            "options",
           ],
           "type": "object",
         },

@@ -49,6 +49,14 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return this;
   }
 
+  async listModules(): Promise<{ moduleId: string; path: string; description?: string }[]> {
+    return Array.from(this.modules.entries()).map(([path, module]) => ({
+      moduleId: module.moduleId,
+      path,
+      description: module.description,
+    }));
+  }
+
   async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }> {
     const maxDepth = options?.maxDepth ?? DEFAULT_MAX_DEPTH;
     if (!(maxDepth >= 0)) throw new Error(`Invalid maxDepth: ${maxDepth}`);

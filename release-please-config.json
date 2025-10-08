@@ -161,6 +161,9 @@
     },
     "afs/user-profile-memory": {
       "prerelease-type": "beta"
+    },
+    "afs/system-fs": {
+      "prerelease-type": "beta"
     }
   },
   "plugins": [

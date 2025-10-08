@@ -8,7 +8,9 @@ packages:
   - observability/*
   - docs-examples
   - blocklets/*
+
 onlyBuiltDependencies:
   - '@biomejs/biome'
+  - '@vscode/ripgrep'
   - esbuild
   - simple-git-hooks

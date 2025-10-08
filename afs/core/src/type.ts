@@ -23,6 +23,8 @@ export interface AFSModule {
 
   readonly path: string;
 
+  readonly description?: string;
+
   onMount?(root: AFSRoot): void;
 
   list?(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }>;

@@ -45,5 +45,6 @@
   "models/lmstudio": "1.0.17-beta",
   "blocklets/aigne-runtime": "1.4.21-beta",
   "afs/core": "1.0.0",
-  "afs/user-profile-memory": "1.0.0"
+  "afs/user-profile-memory": "1.0.0",
+  "afs/system-fs": "0.0.0"
 }

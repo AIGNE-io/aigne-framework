@@ -97,6 +97,37 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
+  afs/system-fs:
+    dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../core
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@vscode/ripgrep':
+        specifier: ^1.15.14
+        version: 1.15.14
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
   afs/user-profile-memory:
     dependencies:
       '@aigne/afs':
@@ -150,7 +181,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.1.41
-        version: 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
+        version: 3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux':
         specifier: ^3.1.41
         version: 3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -1479,7 +1510,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.1.41
-        version: 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
+        version: 3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux':
         specifier: ^3.1.41
         version: 3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -5669,6 +5700,9 @@ packages:
 
   '@vitest/utils@3.2.4':
     resolution: {integrity: sha512-fB2V0JFrQSMsCo9HiSq3Ezpdv4iYaXRG1Sx8edX3MwxfyNn83mKiGzOcH+Fkxt4MHxr3y42fQi1oeAInqgX2QA==}
+
+  '@vscode/ripgrep@1.15.14':
+    resolution: {integrity: sha512-/G1UJPYlm+trBWQ6cMO3sv6b8D1+G16WaJH1/DSqw32JOVlzgZbLkDxRyzIpTpv30AcYGMkCf5tUqGlW6HbDWw==}
 
   '@wangshijun/hdkey@2.0.5':
     resolution: {integrity: sha512-BCVoapO+cBAniHPf00v4XhJBzRVthFkD+h9ee/6SwGUir2juZibyuKCKi42AK48TpMMMBg7BgUXdr30alchNgg==}
@@ -12888,7 +12922,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@arcblock/did-connect-react@3.1.41(53a6f9726b75e09a959ba2f3e9329f19)':
+  '@arcblock/did-connect-react@3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@arcblock/bridge': 3.1.41
       '@arcblock/did': 1.24.0
@@ -14458,10 +14492,10 @@ snapshots:
       - supports-color
       - tedious
 
-  '@blocklet/did-space-react@1.1.18(b4368c857823c854234d93c459b555a3)':
+  '@blocklet/did-space-react@1.1.18(27107ef010abacc6a4e897228646a070)':
     dependencies:
       '@arcblock/did': 1.24.0
-      '@arcblock/did-connect-react': 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
+      '@arcblock/did-connect-react': 3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux': 3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@blocklet/js-sdk': 1.16.51
       '@blocklet/sdk': 1.16.51(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -14657,13 +14691,13 @@ snapshots:
       '@abtnode/constant': 1.16.51
       '@abtnode/util': 1.16.51
       '@arcblock/bridge': 3.1.41
-      '@arcblock/did-connect-react': 3.1.41(53a6f9726b75e09a959ba2f3e9329f19)
+      '@arcblock/did-connect-react': 3.1.41(@arcblock/ux@3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.51)(@blocklet/theme@3.1.41(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/icons': 3.1.41(react@19.1.1)
       '@arcblock/react-hooks': 3.1.41
       '@arcblock/ux': 3.1.41(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@arcblock/ws': 1.24.0
       '@blocklet/constant': 1.16.51
-      '@blocklet/did-space-react': 1.1.18(b4368c857823c854234d93c459b555a3)
+      '@blocklet/did-space-react': 1.1.18(27107ef010abacc6a4e897228646a070)
       '@blocklet/js-sdk': 1.16.51
       '@emotion/react': 11.14.0(@types/react@19.1.13)(react@19.1.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1)
@@ -18165,6 +18199,14 @@ snapshots:
       '@vitest/pretty-format': 3.2.4
       loupe: 3.1.4
       tinyrainbow: 2.0.0
+
+  '@vscode/ripgrep@1.15.14':
+    dependencies:
+      https-proxy-agent: 7.0.6
+      proxy-from-env: 1.1.0
+      yauzl: 2.10.0
+    transitivePeerDependencies:
+      - supports-color
 
   '@wangshijun/hdkey@2.0.5':
     dependencies:

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.81.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta...aigne-framework-v1.81.0-beta.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* **cli:** add environment variable support for AIGNE Hub credentials ([#595](https://github.com/AIGNE-io/aigne-framework/issues/595)) ([00651e4](https://github.com/AIGNE-io/aigne-framework/commit/00651e4f1047c24be297b4f73e06e144592d934d))
+
 ## [1.81.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.80.0...aigne-framework-v1.81.0-beta) (2025-10-07)
 
 

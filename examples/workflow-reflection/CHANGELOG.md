@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.15.75-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.75-beta...example-workflow-reflection-v1.15.75-beta.1) (2025-10-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.50.1-beta.1
+
 ## [1.15.75-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.74...example-workflow-reflection-v1.15.75-beta) (2025-10-07)
 
 

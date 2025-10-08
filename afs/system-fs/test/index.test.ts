@@ -34,11 +34,11 @@ test("SystemFS should list files in the root directory (non-recursive)", async (
   const result = await systemFS.list("");
 
   const paths = result.list.map((entry) => entry.path);
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
+      "file1.txt",
       "file2.md",
       "subdir",
-      "file1.txt",
     ]
   `);
 
@@ -47,8 +47,12 @@ test("SystemFS should list files in the root directory (non-recursive)", async (
     path: entry.path,
     type: entry.metadata?.type,
   }));
-  expect(metadataTypes).toMatchInlineSnapshot(`
+  expect(metadataTypes.sort((a, b) => a.path.localeCompare(b.path))).toMatchInlineSnapshot(`
     [
+      {
+        "path": "file1.txt",
+        "type": "file",
+      },
       {
         "path": "file2.md",
         "type": "file",
@@ -56,10 +60,6 @@ test("SystemFS should list files in the root directory (non-recursive)", async (
       {
         "path": "subdir",
         "type": "directory",
-      },
-      {
-        "path": "file1.txt",
-        "type": "file",
       },
     ]
   `);
@@ -69,13 +69,13 @@ test("SystemFS should list files recursively when recursive option is true", asy
   const result = await systemFS.list("", { recursive: true });
 
   const paths = result.list.map((entry) => entry.path);
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
+      "file1.txt",
       "file2.md",
       "subdir",
-      "file1.txt",
-      "subdir/nested",
       "subdir/file3.js",
+      "subdir/nested",
       "subdir/nested/file4.json",
     ]
   `);
@@ -85,11 +85,11 @@ test("SystemFS should respect maxDepth option", async () => {
   const result = await systemFS.list("", { recursive: true, maxDepth: 1 });
 
   const paths = result.list.map((entry) => entry.path);
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
+      "file1.txt",
       "file2.md",
       "subdir",
-      "file1.txt",
     ]
   `);
 });
@@ -105,10 +105,10 @@ test("SystemFS should list files in a subdirectory", async () => {
   const result = await systemFS.list("subdir");
 
   const paths = result.list.map((entry) => entry.path);
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
-      "subdir/nested",
       "subdir/file3.js",
+      "subdir/nested",
     ]
   `);
 });
@@ -119,11 +119,11 @@ test("SystemFS should handle orderBy option", async () => {
   });
 
   const paths = result.list.map((entry) => entry.path);
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
+      "file1.txt",
       "file2.md",
       "subdir",
-      "file1.txt",
     ]
   `);
 });

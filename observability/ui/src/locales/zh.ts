@@ -84,4 +84,5 @@ export default flatten({
     active: "成功",
   },
   overview: "概览",
+  toggleLive: "当启用实时同步时，表格会自动更新以展示最新数据，为确保实时性，将禁用切换和分页操作",
 });

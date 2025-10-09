@@ -70,26 +70,35 @@ export default ({
     }
 
     const rootFilter = and(isNull(Trace.parentId), isNull(Trace.action));
-    const count = await db.select({ count: sql`count(*)` }).from(Trace).where(rootFilter).execute();
-    const total = Number((count[0] as { count: string }).count ?? 0);
 
     const searchFilter = or(
       like(Trace.attributes, `%${searchText}%`),
       like(Trace.name, `%${searchText}%`),
       like(Trace.id, `%${searchText}%`),
+      like(Trace.userId, `%${(searchText || "").replace("did:abt:", "")}%`),
     );
     let whereClause = searchText ? and(rootFilter, searchFilter) : rootFilter;
 
     if (startDate && endDate) {
-      whereClause = and(
-        whereClause,
-        between(Trace.startTime, new Date(startDate).getTime(), new Date(endDate).getTime()),
-      );
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+
+      whereClause = and(whereClause, between(Trace.startTime, start.getTime(), end.getTime()));
     }
 
     if (componentId) {
       whereClause = and(whereClause, eq(Trace.componentId, componentId));
     }
+
+    const count = await db
+      .select({ count: sql`count(*)` })
+      .from(Trace)
+      .where(whereClause)
+      .execute();
+    const total = Number((count[0] as { count: string }).count ?? 0);
 
     const rootCalls = await db
       .select({

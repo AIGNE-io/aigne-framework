@@ -59,6 +59,7 @@ export interface AIAgentSchema extends BaseAgentSchema {
   type: "ai";
   instructions?: Instructions;
   inputKey?: string;
+  inputFileKey?: string;
   outputKey?: string;
   toolChoice?: AIAgentToolChoice;
   toolCallsConcurrency?: number;
@@ -218,6 +219,8 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
             instructions: optionalize(instructionsSchema),
             inputKey: optionalize(z.string()),
             outputKey: optionalize(z.string()),
+            inputFileKey: optionalize(z.string()),
+            outputFileKey: optionalize(z.string()),
             toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
             toolCallsConcurrency: optionalize(z.number().int().min(0)),
             keepTextInToolUses: optionalize(z.boolean()),

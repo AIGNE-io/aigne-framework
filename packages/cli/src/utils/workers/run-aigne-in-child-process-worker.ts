@@ -99,7 +99,7 @@ export async function invokeCLIAgentFromDirInChildProcess(options: {
     await runAgentWithAIGNE(aigne, agent, {
       ...options.input,
       input,
-      chat: agent === chat || options.input.chat,
+      chat: options.input.chat,
     });
   } finally {
     await aigne.shutdown();

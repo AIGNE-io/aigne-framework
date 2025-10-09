@@ -24,7 +24,7 @@ import type {
   ChatModelOutputToolCall,
 } from "./chat-model.js";
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
-import type { FileType } from "./model.js";
+import { type FileType, fileUnionContentsSchema } from "./model.js";
 import { isTransferAgentOutput, type TransferAgentOutput } from "./types.js";
 
 export const DEFAULT_OUTPUT_KEY = "message";
@@ -430,6 +430,23 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     metadataEnd: string;
     parse: (raw: string) => object;
   };
+
+  override get inputSchema(): ZodType<I> {
+    let schema = super.inputSchema as unknown as ZodObject<{ [key: string]: ZodType<any> }>;
+
+    if (this.inputKey) {
+      schema = schema.extend({
+        [this.inputKey]: z.string().nullish(),
+      });
+    }
+    if (this.inputFileKey) {
+      schema = schema.extend({
+        [this.inputFileKey]: fileUnionContentsSchema.nullish(),
+      });
+    }
+
+    return schema as unknown as ZodType<I>;
+  }
 
   /**
    * Process an input message and generate a response

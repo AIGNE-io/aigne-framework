@@ -1,3 +1,4 @@
+import fastq from "fastq";
 import { type ZodObject, type ZodType, z } from "zod";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
@@ -24,7 +25,7 @@ import type {
 } from "./chat-model.js";
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
 import type { FileType } from "./model.js";
-import { isTransferAgentOutput } from "./types.js";
+import { isTransferAgentOutput, type TransferAgentOutput } from "./types.js";
 
 export const DEFAULT_OUTPUT_KEY = "message";
 export const DEFAULT_OUTPUT_FILE_KEY = "files";
@@ -72,6 +73,13 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    * @default AIAgentToolChoice.auto
    */
   toolChoice?: AIAgentToolChoice | Agent;
+
+  /**
+   * Maximum number of tool calls to execute concurrently
+   *
+   * @default 1
+   */
+  toolCallsConcurrency?: number;
 
   /**
    * Whether to preserve text generated during tool usage in the final output
@@ -212,6 +220,7 @@ export const aiAgentOptionsSchema: ZodObject<{
   inputKey: z.string().optional(),
   outputKey: z.string().optional(),
   toolChoice: aiAgentToolChoiceSchema.optional(),
+  toolCallsConcurrency: z.number().int().min(0).optional(),
   keepTextInToolUses: z.boolean().optional(),
   memoryAgentsAsTools: z.boolean().optional(),
   memoryPromptTemplate: z.string().optional(),
@@ -277,6 +286,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     this.outputFileKey = options.outputFileKey || DEFAULT_OUTPUT_FILE_KEY;
     this.outputFileType = options.outputFileType;
     this.toolChoice = options.toolChoice;
+    this.toolCallsConcurrency = options.toolCallsConcurrency || 1;
     this.keepTextInToolUses = options.keepTextInToolUses;
     this.memoryAgentsAsTools = options.memoryAgentsAsTools;
     this.memoryPromptTemplate = options.memoryPromptTemplate;
@@ -343,6 +353,13 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-router}
    */
   toolChoice?: AIAgentToolChoice | Agent;
+
+  /**
+   * Maximum number of tool calls to execute concurrently
+   *
+   * @default 1
+   */
+  toolCallsConcurrency?: number;
 
   /**
    * Whether to preserve text generated during tool usage in the final output
@@ -495,39 +512,58 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
           output: Message;
         }[] = [];
 
+        let error: Error | undefined;
+
+        const queue = fastq.promise<unknown, { tool: Agent; call: ChatModelOutputToolCall }>(
+          async ({ tool, call }) => {
+            try {
+              // NOTE: should pass both arguments (model generated) and input (user provided) to the tool
+              const output = await this.invokeSkill(
+                tool,
+                { ...input, ...call.function.arguments },
+                options,
+              ).catch((error) => {
+                if (!this.catchToolsError) {
+                  return Promise.reject(error);
+                }
+
+                return {
+                  isError: true,
+                  error: {
+                    message: error.message,
+                  },
+                };
+              });
+
+              executedToolCalls.push({ call, output });
+            } catch (e) {
+              error = e;
+              queue.killAndDrain();
+            }
+          },
+          this.toolCallsConcurrency || 1,
+        );
+
         // Execute tools
         for (const call of toolCalls) {
           const tool = toolsMap.get(call.function.name);
           if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
-          // NOTE: should pass both arguments (model generated) and input (user provided) to the tool
-          const output = await this.invokeSkill(
-            tool,
-            { ...input, ...call.function.arguments },
-            options,
-          ).catch((error) => {
-            if (!this.catchToolsError) {
-              return Promise.reject(error);
-            }
-
-            return {
-              isError: true,
-              error: {
-                message: error.message,
-              },
-            };
-          });
-
-          // NOTE: Return transfer output immediately
-          if (isTransferAgentOutput(output)) {
-            return output;
-          }
-
-          executedToolCalls.push({ call, output });
+          queue.push({ tool, call });
         }
+
+        await queue.drained();
+
+        if (error) throw error;
 
         // Continue LLM function calling loop if any tools were executed
         if (executedToolCalls.length) {
+          const transferOutput = executedToolCalls.find(
+            (i): i is { call: ChatModelOutputToolCall; output: TransferAgentOutput } =>
+              isTransferAgentOutput(i.output),
+          )?.output;
+          if (transferOutput) return transferOutput;
+
           toolCallMessages.push(
             await AgentMessageTemplate.from(
               undefined,

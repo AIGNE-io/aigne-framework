@@ -46,6 +46,7 @@ Your goal is to assist users in finding the information they need and to engage 
       },
     },
   ],
+  "toolCallsConcurrency": 3,
 }
 `;
 

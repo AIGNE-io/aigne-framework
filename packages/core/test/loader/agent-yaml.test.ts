@@ -41,6 +41,7 @@ test("loadAgentFromYaml should load AIAgent correctly", async () => {
       default_input: skill.defaultInput,
     })),
     includeInputInOutput: agent.includeInputInOutput,
+    toolCallsConcurrency: agent.toolCallsConcurrency,
   }).toMatchSnapshot();
 });
 

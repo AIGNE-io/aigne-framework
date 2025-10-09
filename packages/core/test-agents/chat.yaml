@@ -13,3 +13,4 @@ memory: true
 skills:
   - sandbox.js
 include_input_in_output: true
+tool_calls_concurrency: 3

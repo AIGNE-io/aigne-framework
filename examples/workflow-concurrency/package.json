@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-concurrency",
-  "version": "1.16.74-beta.2",
+  "version": "1.16.74-beta.3",
   "description": "A demonstration of using AIGNE Framework to build a concurrency workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-concurrency",

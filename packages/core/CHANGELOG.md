@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.63.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.1...core-v1.63.0-beta.2) (2025-10-09)
+
+
+### Bug Fixes
+
+* input schema of AI agent should includes input key and input file key ([#600](https://github.com/AIGNE-io/aigne-framework/issues/600)) ([b4ca076](https://github.com/AIGNE-io/aigne-framework/commit/b4ca076d6b4a1a1ecb8d4ebb008abd0d7561aadd))
+
 ## [1.63.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta...core-v1.63.0-beta.1) (2025-10-09)
 
 

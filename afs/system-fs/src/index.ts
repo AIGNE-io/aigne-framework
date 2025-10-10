@@ -7,11 +7,27 @@ import type {
   AFSSearchOptions,
   AFSWriteEntryPayload,
 } from "@aigne/afs";
+import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import { globStream } from "glob";
+import { z } from "zod";
 import { searchWithRipgrep } from "./utils/ripgrep.js";
 
+export interface SystemFSOptions {
+  mount: string;
+  path: string;
+  description?: string;
+}
+
+const systemFSOptionsSchema = z.object({
+  mount: z.string().describe("The mount point in the AFS (e.g., '/system')"),
+  path: z.string().describe("The path to the directory to mount"),
+  description: z.string().describe("A description of the mounted directory").optional(),
+});
+
 export class SystemFS implements AFSModule {
-  constructor(public options: { mount: string; path: string; description?: string }) {
+  constructor(public options: SystemFSOptions) {
+    checkArguments("SystemFS", systemFSOptionsSchema, options);
+
     this.path = options.mount;
     this.description = options.description;
   }

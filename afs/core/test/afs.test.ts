@@ -82,6 +82,7 @@ test("AFS should list entries correctly", async () => {
           "path": "/test-module/foo",
         },
       ],
+      "message": "",
     }
   `);
 
@@ -101,14 +102,14 @@ test("AFS should read entry correctly", async () => {
   const module: AFSModule = {
     moduleId: "test-module",
     path: "/test-module",
-    read: async () => undefined,
+    read: async () => ({}),
   };
 
   const afs = new AFS().use(module);
 
-  const readSpy = spyOn(module, "read").mockResolvedValue({ id: "foo", path: "/foo" });
+  const readSpy = spyOn(module, "read").mockResolvedValue({ result: { id: "foo", path: "/foo" } });
 
-  expect(await afs.read("/test-module/foo")).toMatchInlineSnapshot(`
+  expect((await afs.read("/test-module/foo")).result).toMatchInlineSnapshot(`
     {
       "id": "foo",
       "path": "/test-module/foo",
@@ -128,14 +129,16 @@ test("AFS should write entry correctly", async () => {
   const module: AFSModule = {
     moduleId: "test-module",
     path: "/test-module",
-    write: async () => ({ id: "foo", path: "/foo" }),
+    write: async () => ({ result: { id: "foo", path: "/foo" } }),
   };
 
   const afs = new AFS().use(module);
 
-  const writeSpy = spyOn(module, "write").mockResolvedValue({ id: "foo", path: "/foo" });
+  const writeSpy = spyOn(module, "write").mockResolvedValue({
+    result: { id: "foo", path: "/foo" },
+  });
 
-  expect(await afs.write("/test-module/foo", {})).toMatchInlineSnapshot(`
+  expect((await afs.write("/test-module/foo", {})).result).toMatchInlineSnapshot(`
     {
       "id": "foo",
       "path": "/test-module/foo",
@@ -173,6 +176,7 @@ test("AFS should search entries correctly", async () => {
           "path": "/test-module/foo",
         },
       ],
+      "message": "",
     }
   `);
 
@@ -221,7 +225,7 @@ test("AFS should record history correctly", async () => {
 
   assert(histories[0]);
 
-  expect(await afs.read(histories[0].path)).toMatchInlineSnapshot(
+  expect((await afs.read(histories[0].path)).result).toMatchInlineSnapshot(
     {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),

@@ -185,7 +185,9 @@ test("AFS'skill read should invoke afs.read", async () => {
   const skills = await getAFSSkills(afs);
   const read = skills.find((i) => i.name === "afs_read");
 
-  const readSpy = spyOn(afs, "read").mockResolvedValue({ id: "foo", path: "/foo", content: "bar" });
+  const readSpy = spyOn(afs, "read").mockResolvedValue({
+    result: { id: "foo", path: "/foo", content: "bar" },
+  });
 
   assert(read);
   expect(await read.invoke({ path: "/foo" })).toMatchInlineSnapshot(`
@@ -213,9 +215,11 @@ test("AFS'skill write should invoke afs.write", async () => {
   const write = skills.find((i) => i.name === "afs_write");
 
   const writeSpy = spyOn(afs, "write").mockResolvedValue({
-    id: "foo",
-    path: "/foo",
-    content: "bar",
+    result: {
+      id: "foo",
+      path: "/foo",
+      content: "bar",
+    },
   });
 
   assert(write);

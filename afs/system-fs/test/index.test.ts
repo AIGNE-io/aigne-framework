@@ -130,7 +130,7 @@ test("SystemFS should handle orderBy option", async () => {
 
 // Read method tests
 test("SystemFS should read a file and return content", async () => {
-  const result = await systemFS.read("file1.txt");
+  const { result } = await systemFS.read("file1.txt");
 
   expect(result).toBeDefined();
   expect(result?.path).toBe("file1.txt");
@@ -140,7 +140,7 @@ test("SystemFS should read a file and return content", async () => {
 });
 
 test("SystemFS should read a directory without content", async () => {
-  const result = await systemFS.read("subdir");
+  const { result } = await systemFS.read("subdir");
 
   expect(result).toBeDefined();
   expect(result?.path).toBe("subdir");
@@ -149,7 +149,7 @@ test("SystemFS should read a directory without content", async () => {
 });
 
 test("SystemFS should read a nested file", async () => {
-  const result = await systemFS.read("subdir/file3.js");
+  const { result } = await systemFS.read("subdir/file3.js");
 
   expect(result).toBeDefined();
   expect(result?.path).toBe("subdir/file3.js");
@@ -165,7 +165,7 @@ test("SystemFS should write a new file", async () => {
     metadata: { custom: "value" },
   };
 
-  const result = await systemFS.write("newfile.txt", entry);
+  const { result } = await systemFS.write("newfile.txt", entry);
 
   expect(result).toBeDefined();
   expect(result.path).toBe("newfile.txt");
@@ -183,7 +183,7 @@ test("SystemFS should write a file with JSON content", async () => {
     summary: "JSON test file",
   };
 
-  const result = await systemFS.write("data.json", entry);
+  const { result } = await systemFS.write("data.json", entry);
 
   expect(result).toBeDefined();
   expect(result.path).toBe("data.json");
@@ -191,7 +191,7 @@ test("SystemFS should write a file with JSON content", async () => {
   expect(result.metadata?.type).toBe("file");
 
   // Verify the file was written with JSON formatting
-  const readResult = await systemFS.read("data.json");
+  const { result: readResult } = await systemFS.read("data.json");
   expect(readResult?.content).toBe(JSON.stringify(jsonData, null, 2));
 });
 
@@ -201,7 +201,7 @@ test("SystemFS should write a file in a nested directory", async () => {
     metadata: { nested: true },
   };
 
-  const result = await systemFS.write("deep/nested/test.txt", entry);
+  const { result } = await systemFS.write("deep/nested/test.txt", entry);
 
   expect(result).toBeDefined();
   expect(result.path).toBe("deep/nested/test.txt");
@@ -216,7 +216,7 @@ test("SystemFS should overwrite existing file", async () => {
     summary: "Updated file",
   };
 
-  const result = await systemFS.write("file1.txt", entry);
+  const { result } = await systemFS.write("file1.txt", entry);
 
   expect(result).toBeDefined();
   expect(result.path).toBe("file1.txt");
@@ -224,7 +224,7 @@ test("SystemFS should overwrite existing file", async () => {
   expect(result.summary).toBe("Updated file");
 
   // Verify the file was actually updated
-  const readResult = await systemFS.read("file1.txt");
+  const { result: readResult } = await systemFS.read("file1.txt");
   expect(readResult?.content).toBe("Updated content");
 });
 

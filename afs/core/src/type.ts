@@ -27,13 +27,20 @@ export interface AFSModule {
 
   onMount?(root: AFSRoot): void;
 
-  list?(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }>;
+  list?(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[]; message?: string }>;
 
-  read?(path: string): Promise<AFSEntry | undefined>;
+  read?(path: string): Promise<{ result?: AFSEntry; message?: string }>;
 
-  write?(path: string, content: AFSWriteEntryPayload): Promise<AFSEntry>;
+  write?(
+    path: string,
+    content: AFSWriteEntryPayload,
+  ): Promise<{ result: AFSEntry; message?: string }>;
 
-  search?(path: string, query: string, options?: AFSSearchOptions): Promise<{ list: AFSEntry[] }>;
+  search?(
+    path: string,
+    query: string,
+    options?: AFSSearchOptions,
+  ): Promise<{ list: AFSEntry[]; message?: string }>;
 }
 
 export type AFSRootEvents = {

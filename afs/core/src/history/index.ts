@@ -44,14 +44,19 @@ export class AFSHistory implements AFSModule {
   async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }> {
     if (path !== "/") return { list: [] };
 
-    return this.afs.storage(this).list(options);
+    return await this.afs.storage(this).list(options);
   }
 
-  async read(path: string): Promise<AFSEntry | undefined> {
-    return this.afs.storage(this).read(path);
+  async read(path: string): Promise<{ result: AFSEntry | undefined; message?: string }> {
+    const result = await this.afs.storage(this).read(path);
+    return { result };
   }
 
-  async write(path: string, content: AFSWriteEntryPayload): Promise<AFSEntry> {
-    return this.afs.storage(this).create({ ...content, path });
+  async write(
+    path: string,
+    content: AFSWriteEntryPayload,
+  ): Promise<{ result: AFSEntry; message?: string }> {
+    const result = await this.afs.storage(this).create({ ...content, path });
+    return { result };
   }
 }

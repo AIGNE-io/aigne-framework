@@ -62,11 +62,15 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     }));
   }
 
-  async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }> {
+  async list(
+    path: string,
+    options?: AFSListOptions,
+  ): Promise<{ list: AFSEntry[]; message?: string }> {
     const maxDepth = options?.maxDepth ?? DEFAULT_MAX_DEPTH;
     if (!(maxDepth >= 0)) throw new Error(`Invalid maxDepth: ${maxDepth}`);
 
     const results: AFSEntry[] = [];
+    const messages: string[] = [];
 
     const modules = this.findModules(path);
 
@@ -77,7 +81,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
         const newMaxDepth = maxDepth - mountPath.split("/").filter(Boolean).length;
         if (newMaxDepth < 0) continue;
 
-        const { list } = await module.list(subpath, { ...options, maxDepth: newMaxDepth });
+        const { list, message } = await module.list(subpath, { ...options, maxDepth: newMaxDepth });
 
         results.push(
           ...list.map((entry) => ({
@@ -85,12 +89,14 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
             path: joinURL(mountPath, entry.path),
           })),
         );
+
+        if (message) messages.push(message);
       } catch (error) {
         console.error(`Error listing from module at ${mountPath}`, error);
       }
     }
 
-    return { list: results };
+    return { list: results, message: messages.join("; ") };
   }
 
   private findModules(
@@ -131,30 +137,41 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     }
   }
 
-  async read(path: string): Promise<AFSEntry | undefined> {
+  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
     const modules = this.findModules(path);
 
     for (const { module, mountPath, subpath } of modules) {
-      const entry = await module.read?.(subpath);
+      const res = await module.read?.(subpath);
 
-      if (entry) {
+      if (res?.result) {
         return {
-          ...entry,
-          path: joinURL(mountPath, entry.path),
+          ...res,
+          result: {
+            ...res.result,
+            path: joinURL(mountPath, res.result.path),
+          },
         };
       }
     }
+
+    return { result: undefined, message: "File not found" };
   }
 
-  async write(path: string, content: AFSWriteEntryPayload): Promise<AFSEntry> {
+  async write(
+    path: string,
+    content: AFSWriteEntryPayload,
+  ): Promise<{ result: AFSEntry; message?: string }> {
     const module = this.findModules(path)[0];
     if (!module?.module.write) throw new Error(`No module found for path: ${path}`);
 
-    const entry = await module.module.write(module.subpath, content);
+    const res = await module.module.write(module.subpath, content);
 
     return {
-      ...entry,
-      path: joinURL(module.mountPath, entry.path),
+      ...res,
+      result: {
+        ...res.result,
+        path: joinURL(module.mountPath, res.result.path),
+      },
     };
   }
 
@@ -162,15 +179,16 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     path: string,
     query: string,
     options?: AFSSearchOptions,
-  ): Promise<{ list: AFSEntry[] }> {
+  ): Promise<{ list: AFSEntry[]; message?: string }> {
     const results: AFSEntry[] = [];
+    const messages: string[] = [];
 
     for (const { module, mountPath, subpath } of this.findModules(path)) {
       if (mountPath.startsWith(path)) {
         if (!module.search) continue;
 
         try {
-          const { list } = await module.search(subpath, query, options);
+          const { list, message } = await module.search(subpath, query, options);
 
           results.push(
             ...list.map((entry) => ({
@@ -178,12 +196,13 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
               path: joinURL(mountPath, entry.path),
             })),
           );
+          if (message) messages.push(message);
         } catch (error) {
           console.error(`Error searching in module at ${mountPath}`, error);
         }
       }
     }
 
-    return { list: results };
+    return { list: results, message: messages.join("; ") };
   }
 }

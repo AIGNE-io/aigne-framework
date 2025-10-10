@@ -12,6 +12,8 @@ import { globStream } from "glob";
 import { z } from "zod";
 import { searchWithRipgrep } from "./utils/ripgrep.js";
 
+const LIST_MAX_LIMIT = 50;
+
 export interface SystemFSOptions {
   mount: string;
   path: string;
@@ -38,7 +40,11 @@ export class SystemFS implements AFSModule {
 
   description?: string;
 
-  async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }> {
+  async list(
+    path: string,
+    options?: AFSListOptions,
+  ): Promise<{ list: AFSEntry[]; message?: string }> {
+    const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
     const basePath = join(this.options.path, path);
 
     const pattern = options?.recursive ? "**/*" : "*";
@@ -54,6 +60,8 @@ export class SystemFS implements AFSModule {
     });
 
     const entries: AFSEntry[] = [];
+
+    let hasMoreFiles = false;
 
     for await (const file of files) {
       const itemPath = join(path, file);
@@ -74,16 +82,20 @@ export class SystemFS implements AFSModule {
 
       entries.push(entry);
 
-      if (options?.limit && entries.length >= options.limit) {
+      if (entries.length >= limit) {
+        hasMoreFiles = true;
         abortController.abort();
         break;
       }
     }
 
-    return { list: entries };
+    return {
+      list: entries,
+      message: hasMoreFiles ? `Results truncated to limit ${limit}` : undefined,
+    };
   }
 
-  async read(path: string): Promise<AFSEntry | undefined> {
+  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
     const fullPath = join(this.options.path, path);
 
     const stats = await stat(fullPath);
@@ -107,10 +119,13 @@ export class SystemFS implements AFSModule {
       },
     };
 
-    return entry;
+    return { result: entry };
   }
 
-  async write(path: string, entry: AFSWriteEntryPayload): Promise<AFSEntry> {
+  async write(
+    path: string,
+    entry: AFSWriteEntryPayload,
+  ): Promise<{ result: AFSEntry; message?: string }> {
     const fullPath = join(this.options.path, path);
 
     // Ensure parent directory exists
@@ -149,19 +164,21 @@ export class SystemFS implements AFSModule {
       linkTo: entry.linkTo,
     };
 
-    return writtenEntry;
+    return { result: writtenEntry };
   }
 
   async search(
     path: string,
     query: string,
     options?: AFSSearchOptions,
-  ): Promise<{ list: AFSEntry[] }> {
+  ): Promise<{ list: AFSEntry[]; message?: string }> {
+    const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
     const basePath = join(this.options.path, path);
     const matches = await searchWithRipgrep(basePath, query);
 
     const entries: AFSEntry[] = [];
     const processedFiles = new Set<string>();
+    let hasMoreFiles = false;
 
     for (const match of matches) {
       if (match.type === "match" && match.data.path) {
@@ -190,13 +207,16 @@ export class SystemFS implements AFSModule {
 
         entries.push(entry);
 
-        // Apply limit at the SystemFS level
-        if (options?.limit && entries.length >= options.limit) {
+        if (entries.length >= limit) {
+          hasMoreFiles = true;
           break;
         }
       }
     }
 
-    return { list: entries };
+    return {
+      list: entries,
+      message: hasMoreFiles ? `Results truncated to limit ${limit}` : undefined,
+    };
   }
 }

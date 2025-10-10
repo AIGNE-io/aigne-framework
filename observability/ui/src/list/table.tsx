@@ -35,12 +35,13 @@ const Table = ({
   page: { page: number; pageSize: number };
   setPage: (page: { page: number; pageSize: number }) => void;
   isLive?: boolean;
-  onDelete: (item: TraceData) => void;
+  onDelete: (item: string[]) => void;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t, locale } = useLocaleContext();
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
-  const [open, setOpen] = useState<TraceData | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const columns = compact([
     {
@@ -264,30 +265,6 @@ const Table = ({
         },
       },
     },
-    {
-      label: t("action"),
-      name: "action",
-      width: 100,
-      align: "right" as const,
-      options: {
-        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
-          const item = traces[rowIndex];
-          return (
-            <Button
-              variant="text"
-              size="small"
-              color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(item);
-              }}
-            >
-              {t("delete.button")}
-            </Button>
-          );
-        },
-      },
-    },
   ]);
 
   if (isBlocklet) {
@@ -314,6 +291,29 @@ const Table = ({
 
   const onTableChange = ({ page: newPage, rowsPerPage }: { page: number; rowsPerPage: number }) => {
     setPage({ page: newPage + 1, pageSize: rowsPerPage });
+  };
+
+  const onClose = () => {
+    setOpen(false);
+    setSelectedRows([]);
+  };
+
+  const customToolbarSelect = (_selectedRows: { data: { index: number; dataIndex: number }[] }) => {
+    if (!_selectedRows.data.length) return null;
+
+    return (
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Button
+          className="resend-btn"
+          color="primary"
+          variant="contained"
+          sx={{ my: "2px", ".MuiButton-startIcon": { mr: "2px" } }}
+          onClick={() => setOpen(true)}
+        >
+          {t("actionLabel")}
+        </Button>
+      </Box>
+    );
   };
 
   return (
@@ -367,14 +367,25 @@ const Table = ({
             const item = traces[rowMeta.dataIndex];
             onRowClick(item);
           },
+
+          selectableRows: !isBlocklet ? "multiple" : "none",
+          filterType: "checkbox",
+          onRowSelectionChange: (_: unknown, __: unknown, rowsSelected: any) => {
+            const ids = rowsSelected.map((idx: number) => traces[idx].id);
+            setSelectedRows(ids);
+          },
+          rowsSelected: traces
+            .map((row, idx) => (selectedRows.includes(row.id) ? idx : null))
+            .filter((idx) => idx !== null),
+          customToolbarSelect,
         }}
         onChange={onTableChange}
         emptyNode={<Empty>{t("noData")}</Empty>}
       />
 
       <Confirm
-        title={t("delConfirmDescription", { name: open?.name, id: open?.id })}
-        open={!!open}
+        title={t("delConfirmTitle")}
+        open={!!(open && selectedRows.length)}
         confirmButton={{
           text: t("common.confirm"),
           props: { variant: "contained", color: "error", loading },
@@ -384,11 +395,15 @@ const Table = ({
           props: { variant: "contained", color: "primary" },
         }}
         onConfirm={() => {
-          onDelete(open!);
-          setOpen(null);
+          onDelete(selectedRows);
+          onClose();
         }}
-        onCancel={() => setOpen(null)}
-      />
+        onCancel={onClose}
+      >
+        <Box sx={{ wordBreak: "break-word" }}>
+          {t("delConfirmDescription", { id: selectedRows.join(",") })}
+        </Box>
+      </Confirm>
     </Box>
   );
 };

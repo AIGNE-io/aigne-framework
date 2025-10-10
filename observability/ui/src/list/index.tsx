@@ -50,10 +50,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [search, setSearch] = useState<SearchState>({
     componentId: "",
     searchText: "",
-    dateRange: [
-      dayjs().subtract(1, "month").startOf("day").toDate(),
-      dayjs().endOf("day").toDate(),
-    ],
+    dateRange: [dayjs().subtract(1, "week").startOf("day").toDate(), dayjs().endOf("day").toDate()],
   });
 
   const [traces, setTraces] = useState<TraceData[]>([]);
@@ -66,13 +63,22 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     return res.json() as Promise<{ data: string[] }>;
   });
 
-  const onDelete = async (item: TraceData) => {
+  const onDelete = async (items: string[]) => {
     try {
-      await fetch(joinURL(origin, `/api/trace/tree/${item.id}`), { method: "delete" });
+      await fetch(joinURL(origin, "/api/trace/tree"), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: items }),
+      });
     } catch (error) {
       Toast.error((error as Error)?.message);
     } finally {
-      fetchTraces({ page: 0, pageSize: page.pageSize });
+      fetchTraces({
+        page: 0,
+        pageSize: page.pageSize,
+        searchText: search.searchText,
+        dateRange: search.dateRange,
+      });
     }
   };
 

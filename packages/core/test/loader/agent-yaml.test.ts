@@ -33,6 +33,11 @@ test("loadAgentFromYaml should load AIAgent correctly", async () => {
     alias: agent.alias,
     description: agent.description,
     instructions: extractInstructions(agent.instructions),
+    input_key: agent.inputKey,
+    output_key: agent.outputKey,
+    input_file_key: agent.inputFileKey,
+    output_file_key: agent.outputFileKey,
+    keep_text_in_tool_uses: agent.keepTextInToolUses,
     skills: agent.skills.map((skill) => ({
       name: skill.name,
       description: skill.description,
@@ -41,6 +46,7 @@ test("loadAgentFromYaml should load AIAgent correctly", async () => {
       default_input: skill.defaultInput,
     })),
     includeInputInOutput: agent.includeInputInOutput,
+    toolCallsConcurrency: agent.toolCallsConcurrency,
   }).toMatchSnapshot();
 });
 

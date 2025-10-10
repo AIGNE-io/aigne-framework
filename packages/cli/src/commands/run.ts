@@ -52,7 +52,7 @@ export function createRunCommand({
 
       if (aigne.cli.chat) {
         subYargs.command({
-          ...agentCommandModule({ dir: path, agent: serializeAgent(aigne.cli.chat) }),
+          ...agentCommandModule({ dir: path, agent: serializeAgent(aigne.cli.chat), chat: true }),
           command: "$0",
         });
       }

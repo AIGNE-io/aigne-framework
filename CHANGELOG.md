@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.81.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.2...aigne-framework-v1.81.0-beta.3) (2025-10-09)
+
+
+### Bug Fixes
+
+* input schema of AI agent should includes input key and input file key ([#600](https://github.com/AIGNE-io/aigne-framework/issues/600)) ([b4ca076](https://github.com/AIGNE-io/aigne-framework/commit/b4ca076d6b4a1a1ecb8d4ebb008abd0d7561aadd))
+
+## [1.81.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.1...aigne-framework-v1.81.0-beta.2) (2025-10-09)
+
+
+### Features
+
+* **core:** add `toolCallsConcurrency` support for AI agent ([#598](https://github.com/AIGNE-io/aigne-framework/issues/598)) ([84df406](https://github.com/AIGNE-io/aigne-framework/commit/84df406bfa9e3bdf159509f4b9cf2301ec80b155))
+
+
+### Bug Fixes
+
+* **core:** add input_file_key support for agent yaml ([#597](https://github.com/AIGNE-io/aigne-framework/issues/597)) ([63414a3](https://github.com/AIGNE-io/aigne-framework/commit/63414a3d46c74c686e7f033c224ca6175bea8c3f))
+
 ## [1.81.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta...aigne-framework-v1.81.0-beta.1) (2025-10-08)
 
 

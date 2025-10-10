@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.16.2-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.2-beta.1...openai-v0.16.2-beta.2) (2025-10-09)
+
+
+### Bug Fixes
+
+* input schema of AI agent should includes input key and input file key ([#600](https://github.com/AIGNE-io/aigne-framework/issues/600)) ([b4ca076](https://github.com/AIGNE-io/aigne-framework/commit/b4ca076d6b4a1a1ecb8d4ebb008abd0d7561aadd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.2
+
+## [0.16.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.2-beta...openai-v0.16.2-beta.1) (2025-10-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.1
+
 ## [0.16.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.1...openai-v0.16.2-beta) (2025-10-07)
 
 

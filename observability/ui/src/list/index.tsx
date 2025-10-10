@@ -120,6 +120,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     search.componentId,
   ]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
+  useEffect(() => {
+    setPage({ page: 1, pageSize: page.pageSize });
+  }, [search.searchText, search.dateRange, documentVisibility, search.componentId]);
+
   useRafInterval(() => {
     if (!live) return;
     if (isBlocklet) return;
@@ -261,6 +266,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           loading={loading}
           page={page}
           setPage={setPage}
+          isLive={live}
           onRowClick={(row) => {
             setSelectedTrace(row);
             setSearchParams((prev) => {

@@ -22,6 +22,7 @@ const Table = ({
   onRowClick,
   page,
   setPage,
+  isLive,
 }: {
   traces: TraceData[];
   total: number;
@@ -29,6 +30,7 @@ const Table = ({
   onRowClick: (row: TraceData) => void;
   page: { page: number; pageSize: number };
   setPage: (page: { page: number; pageSize: number }) => void;
+  isLive?: boolean;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t, locale } = useLocaleContext();
@@ -329,6 +331,8 @@ const Table = ({
           page: page.page - 1,
           rowsPerPage: page.pageSize,
           count: total,
+          pagination: !isLive,
+          rowsPerPageOptions: [10, 20, 50, 100],
           onRowClick(_rowData: string[], rowMeta: { dataIndex: number; rowIndex: number }) {
             const item = traces[rowMeta.dataIndex];
             onRowClick(item);

@@ -9,7 +9,12 @@ instructions: |
   You are a helpful assistant that can answer questions and provide information on a wide range of topics.
   Your goal is to assist users in finding the information they need and to engage in friendly conversation.
 input_key: message
+output_key: message
+input_file_key: message_file
+output_file_key: response_file
+keep_text_in_tool_uses: true
 memory: true
 skills:
   - sandbox.js
 include_input_in_output: true
+tool_calls_concurrency: 3

@@ -63,7 +63,7 @@ export function createAppCommands({ argv }: { argv?: string[] } = {}): CommandMo
 
         if (aigne.cli?.chat) {
           y.command({
-            ...agentCommandModule({ dir, agent: aigne.cli.chat }),
+            ...agentCommandModule({ dir, agent: aigne.cli.chat, chat: true }),
             command: "$0",
           });
         }
@@ -181,9 +181,11 @@ const upgradeCommandModule = ({
 export const agentCommandModule = ({
   dir,
   agent,
+  chat,
 }: {
   dir: string;
   agent: AgentInChildProcess;
+  chat?: boolean;
 }): CommandModule<unknown, AgentRunCommonOptions> => {
   return {
     command: agent.name,
@@ -198,7 +200,7 @@ export const agentCommandModule = ({
       await runAIGNEInChildProcess("invokeCLIAgentFromDir", {
         dir,
         agent: agent.name,
-        input: options,
+        input: { ...options, chat },
       });
 
       process.exit(0);

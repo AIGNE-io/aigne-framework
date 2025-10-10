@@ -84,4 +84,6 @@ export default flatten({
     active: "Success",
   },
   overview: "Overview",
+  toggleLive:
+    "When real-time synchronization is enabled, the table automatically updates to show the latest data. Switching and pagination are disabled to ensure real-time accuracy.",
 });

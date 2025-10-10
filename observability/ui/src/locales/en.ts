@@ -66,6 +66,7 @@ export default flatten({
     cancel: "Cancel",
   },
   delete: {
+    button: "Delete",
     restConfirmTitle: "Delete Traces",
     restConfirmDesc: "Are you sure you want to delete all traces?",
   },
@@ -86,4 +87,5 @@ export default flatten({
   overview: "Overview",
   toggleLive:
     "When real-time synchronization is enabled, the table automatically updates to show the latest data. Switching and pagination are disabled to ensure real-time accuracy.",
+  delConfirmDescription: "Are you sure you want to delete the trace of {id}?",
 });

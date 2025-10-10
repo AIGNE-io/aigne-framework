@@ -1,7 +1,7 @@
 import dayjs from "@abtnode/util/lib/dayjs";
 import TableSearch from "@arcblock/ux/lib/Datatable/TableSearch";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import { ToastProvider } from "@arcblock/ux/lib/Toast";
+import Toast, { ToastProvider } from "@arcblock/ux/lib/Toast";
 import TuneIcon from "@mui/icons-material/Tune";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -66,6 +66,16 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     return res.json() as Promise<{ data: string[] }>;
   });
 
+  const onDelete = async (item: TraceData) => {
+    try {
+      await fetch(joinURL(origin, `/api/trace/tree/${item.id}`), { method: "delete" });
+    } catch (error) {
+      Toast.error((error as Error)?.message);
+    } finally {
+      fetchTraces({ page: 0, pageSize: page.pageSize });
+    }
+  };
+
   const fetchTraces = async ({
     page,
     pageSize,
@@ -123,7 +133,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
     setPage({ page: 1, pageSize: page.pageSize });
-  }, [search.searchText, search.dateRange, documentVisibility, search.componentId]);
+  }, [search.searchText, search.dateRange, live, search.componentId]);
 
   useRafInterval(() => {
     if (!live) return;
@@ -274,6 +284,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               return prev;
             });
           }}
+          onDelete={onDelete}
         />
       </Box>
 

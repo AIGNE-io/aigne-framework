@@ -453,5 +453,14 @@ export default ({
     res.json({ code: 0, message: "ok" });
   });
 
+  router.delete("/tree/:id", async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+    await db
+      .delete(Trace)
+      .where(eq(Trace.id, req.params.id as string))
+      .execute();
+    res.json({ code: 0, message: "ok" });
+  });
+
   return router;
 };

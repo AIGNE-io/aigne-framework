@@ -1,4 +1,5 @@
 import Datatable from "@arcblock/ux/lib/Datatable";
+import Confirm from "@arcblock/ux/lib/Dialog/confirm";
 import Empty from "@arcblock/ux/lib/Empty";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
@@ -6,9 +7,11 @@ import UserCard from "@arcblock/ux/lib/UserCard";
 import { CardType, InfoType } from "@arcblock/ux/lib/UserCard/types";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import { compact } from "lodash";
 import prettyMs from "pretty-ms";
+import { useState } from "react";
 import { BlockletComponent } from "../components/blocklet-comp.tsx";
 import type { TraceData } from "../components/run/types.ts";
 import Status from "../components/status.tsx";
@@ -23,6 +26,7 @@ const Table = ({
   page,
   setPage,
   isLive,
+  onDelete,
 }: {
   traces: TraceData[];
   total: number;
@@ -31,10 +35,12 @@ const Table = ({
   page: { page: number; pageSize: number };
   setPage: (page: { page: number; pageSize: number }) => void;
   isLive?: boolean;
+  onDelete: (item: TraceData) => void;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t, locale } = useLocaleContext();
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
+  const [open, setOpen] = useState<TraceData | null>(null);
 
   const columns = compact([
     {
@@ -258,6 +264,30 @@ const Table = ({
         },
       },
     },
+    {
+      label: t("action"),
+      name: "action",
+      width: 100,
+      align: "right" as const,
+      options: {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+          const item = traces[rowIndex];
+          return (
+            <Button
+              variant="text"
+              size="small"
+              color="error"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(item);
+              }}
+            >
+              {t("delete.button")}
+            </Button>
+          );
+        },
+      },
+    },
   ]);
 
   if (isBlocklet) {
@@ -340,6 +370,24 @@ const Table = ({
         }}
         onChange={onTableChange}
         emptyNode={<Empty>{t("noData")}</Empty>}
+      />
+
+      <Confirm
+        title={t("delConfirmDescription", { name: open?.name, id: open?.id })}
+        open={!!open}
+        confirmButton={{
+          text: t("common.confirm"),
+          props: { variant: "contained", color: "error", loading },
+        }}
+        cancelButton={{
+          text: t("common.cancel"),
+          props: { variant: "contained", color: "primary" },
+        }}
+        onConfirm={() => {
+          onDelete(open!);
+          setOpen(null);
+        }}
+        onCancel={() => setOpen(null)}
       />
     </Box>
   );

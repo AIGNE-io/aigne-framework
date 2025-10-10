@@ -71,6 +71,15 @@ export async function loadAIGNE({
           ...omitBy(imageModelOptions ?? {}, (v) => isNil(v)),
           model: imageModelOptions?.model || process.env.IMAGE_MODEL || options?.model,
         }),
+      afs: {
+        availableModules: [
+          {
+            module: "system-fs",
+            create: (options) =>
+              import("@aigne/afs-system-fs").then((m) => new m.SystemFS(options as any)),
+          },
+        ],
+      },
     });
   } else {
     const chatModel = await loadChatModel({ ...modelOptions });

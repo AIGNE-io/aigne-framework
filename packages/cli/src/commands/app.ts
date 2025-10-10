@@ -200,7 +200,7 @@ export const agentCommandModule = ({
       await runAIGNEInChildProcess("invokeCLIAgentFromDir", {
         dir,
         agent: agent.name,
-        input: { ...options, chat },
+        input: { ...options, chat: chat ?? options.chat },
       });
 
       process.exit(0);

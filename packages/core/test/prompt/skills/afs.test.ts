@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AFS } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
 import zodToJsonSchema from "zod-to-json-schema";
 
 test("getAFSSkills should return all AFS skills", async () => {
@@ -17,23 +17,7 @@ test("getAFSSkills should return all AFS skills", async () => {
   ).toMatchInlineSnapshot(`
     [
       {
-        "description": "List all mounted AFS modules",
-        "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
-          "additionalProperties": true,
-          "properties": {},
-          "type": "object",
-        },
-        "name": "listModules",
-        "outputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
-          "additionalProperties": true,
-          "properties": {},
-          "type": "object",
-        },
-      },
-      {
-        "description": "List files in the AFS (AIGNE File System)",
+        "description": "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -57,7 +41,7 @@ test("getAFSSkills should return all AFS skills", async () => {
               "type": "object",
             },
             "path": {
-              "description": "The path to list files from",
+              "description": "The directory path to browse (e.g., '/', '/docs', '/src')",
               "type": "string",
             },
           },
@@ -66,7 +50,7 @@ test("getAFSSkills should return all AFS skills", async () => {
           ],
           "type": "object",
         },
-        "name": "list",
+        "name": "afs_list",
         "outputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -75,7 +59,7 @@ test("getAFSSkills should return all AFS skills", async () => {
         },
       },
       {
-        "description": "Search files in the AFS (AIGNE File System)",
+        "description": "Find files by searching content using keywords - returns matching files with their paths",
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -91,11 +75,11 @@ test("getAFSSkills should return all AFS skills", async () => {
               "type": "object",
             },
             "path": {
-              "description": "The path to search files in",
+              "description": "The directory path to search in (e.g., '/', '/docs')",
               "type": "string",
             },
             "query": {
-              "description": "The search query",
+              "description": "Keywords to search for in file contents (e.g., 'function authentication', 'database config')",
               "type": "string",
             },
           },
@@ -105,7 +89,7 @@ test("getAFSSkills should return all AFS skills", async () => {
           ],
           "type": "object",
         },
-        "name": "search",
+        "name": "afs_search",
         "outputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -114,13 +98,13 @@ test("getAFSSkills should return all AFS skills", async () => {
         },
       },
       {
-        "description": "Read a file from the AFS (AIGNE File System)",
+        "description": "Read file contents from the AFS - path must be an exact file path from list or search results",
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
           "properties": {
             "path": {
-              "description": "The path to the file to read",
+              "description": "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
               "type": "string",
             },
           },
@@ -129,7 +113,7 @@ test("getAFSSkills should return all AFS skills", async () => {
           ],
           "type": "object",
         },
-        "name": "read",
+        "name": "afs_read",
         "outputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -138,17 +122,17 @@ test("getAFSSkills should return all AFS skills", async () => {
         },
       },
       {
-        "description": "Write a file to the AFS (AIGNE File System)",
+        "description": "Create or update a file in the AFS with new content - overwrites existing files",
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
           "properties": {
             "content": {
-              "description": "The content to write to the file",
+              "description": "The text content to write to the file",
               "type": "string",
             },
             "path": {
-              "description": "The path to the file to write",
+              "description": "Full file path where to write content (e.g., '/docs/new-file.md', '/src/component.js')",
               "type": "string",
             },
           },
@@ -158,7 +142,7 @@ test("getAFSSkills should return all AFS skills", async () => {
           ],
           "type": "object",
         },
-        "name": "write",
+        "name": "afs_write",
         "outputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -170,29 +154,10 @@ test("getAFSSkills should return all AFS skills", async () => {
   `);
 });
 
-test("AFS'skill listModules should return all mounted modules", async () => {
-  const afs = new AFS();
-  const skills = await getAFSSkills(afs);
-  const listModule = skills.find((i) => i.name === "listModules");
-
-  assert(listModule);
-  expect(await listModule.invoke({})).toMatchInlineSnapshot(`
-    {
-      "modules": [
-        {
-          "description": undefined,
-          "moduleId": "AFSHistory",
-          "path": "/history",
-        },
-      ],
-    }
-  `);
-});
-
 test("AFS'skill list should invoke afs.list", async () => {
   const afs = new AFS();
   const skills = await getAFSSkills(afs);
-  const list = skills.find((i) => i.name === "list");
+  const list = skills.find((i) => i.name === "afs_list");
 
   const listSpy = spyOn(afs, "list").mockResolvedValue({ list: [] });
 
@@ -218,7 +183,7 @@ test("AFS'skill list should invoke afs.list", async () => {
 test("AFS'skill read should invoke afs.read", async () => {
   const afs = new AFS();
   const skills = await getAFSSkills(afs);
-  const read = skills.find((i) => i.name === "read");
+  const read = skills.find((i) => i.name === "afs_read");
 
   const readSpy = spyOn(afs, "read").mockResolvedValue({ id: "foo", path: "/foo", content: "bar" });
 
@@ -245,7 +210,7 @@ test("AFS'skill read should invoke afs.read", async () => {
 test("AFS'skill write should invoke afs.write", async () => {
   const afs = new AFS();
   const skills = await getAFSSkills(afs);
-  const write = skills.find((i) => i.name === "write");
+  const write = skills.find((i) => i.name === "afs_write");
 
   const writeSpy = spyOn(afs, "write").mockResolvedValue({
     id: "foo",

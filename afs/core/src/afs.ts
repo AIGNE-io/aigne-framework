@@ -17,6 +17,7 @@ const DEFAULT_MAX_DEPTH = 5;
 
 export interface AFSOptions {
   storage?: SharedAFSStorage | SharedAFSStorageOptions;
+  modules?: AFSModule[];
 }
 
 export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
@@ -33,6 +34,10 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
         : new SharedAFSStorage(options?.storage);
 
     this.use(new AFSHistory());
+
+    for (const module of options?.modules ?? []) {
+      this.use(module);
+    }
   }
 
   private _storage: SharedAFSStorage;

@@ -57,6 +57,7 @@
     "test:templates:coverage": "cd templates && mkdir -p coverage && node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test-reporter=spec --test-reporter-destination=stdout"
   },
   "dependencies": {
+    "@aigne/afs-system-fs": "workspace:^",
     "@aigne/agent-library": "workspace:^",
     "@aigne/agentic-memory": "workspace:^",
     "@aigne/aigne-hub": "workspace:^",

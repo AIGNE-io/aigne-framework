@@ -1836,6 +1836,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@aigne/afs-system-fs':
+        specifier: workspace:^
+        version: link:../../afs/system-fs
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../agent-library

@@ -21,9 +21,10 @@ import { optionalize } from "../loader/schema.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
 import { checkArguments, flat, isNonNullable, isRecord, unique } from "../utils/type-utils.js";
-import { getAFSSkills } from "./afs.js";
+import { getAFSSystemPrompt } from "./prompts/afs-builtin-prompt.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
+import { getAFSSkills } from "./skills/afs.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
@@ -166,7 +167,7 @@ export class PromptBuilder {
 
     if (options.agent?.afs) {
       const history = await options.agent.afs.list(AFSHistory.Path, {
-        limit: options.agent.maxRetrieveMemoryCount || 1,
+        limit: options.agent.maxRetrieveMemoryCount ?? 10,
         orderBy: [["createdAt", "desc"]],
       });
 
@@ -179,6 +180,8 @@ export class PromptBuilder {
       memories.push(
         ...history.list.filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
       );
+
+      messages.push(SystemMessageTemplate.from(await getAFSSystemPrompt(options.agent.afs)));
     }
 
     if (memories.length)

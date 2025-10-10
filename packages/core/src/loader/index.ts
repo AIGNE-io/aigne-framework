@@ -1,3 +1,4 @@
+import { AFS, type AFSModule } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
@@ -31,6 +32,12 @@ export interface LoadOptions {
     | ((
         model?: z.infer<typeof aigneFileSchema>["imageModel"],
       ) => PromiseOrValue<ImageModel | undefined>);
+  afs?: {
+    availableModules?: {
+      module: string;
+      create: (options?: Record<string, any>) => PromiseOrValue<AFSModule>;
+    }[];
+  };
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
@@ -180,6 +187,31 @@ async function parseAgent(
         )
       : undefined;
 
+  let afs: AFS | undefined;
+  if (typeof agent.afs === "boolean") {
+    if (agent.afs) {
+      afs = new AFS();
+    }
+  } else if (agent.afs) {
+    afs = new AFS({
+      ...agent.afs,
+      modules:
+        agent.afs.modules &&
+        (await Promise.all(
+          agent.afs.modules.map((m) => {
+            const mod =
+              typeof m === "string"
+                ? options?.afs?.availableModules?.find((mod) => mod.module === m)
+                : options?.afs?.availableModules?.find((mod) => mod.module === m.module);
+            if (!mod)
+              throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
+
+            return mod.create(typeof m === "string" ? {} : m.options);
+          }),
+        )),
+    });
+  }
+
   const model =
     agent.model && typeof options?.model === "function"
       ? await options.model(agent.model)
@@ -200,6 +232,7 @@ async function parseAgent(
       ...((await parseHooks(path, agent.hooks, options)) ?? []),
       ...[agentOptions?.hooks].flat().filter(isNonNullable),
     ],
+    afs,
   };
 
   let instructions: PromptBuilder | undefined;

@@ -1,3 +1,4 @@
+import type { AFSOptions } from "@aigne/afs";
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
@@ -32,6 +33,13 @@ export type NestAgentSchema =
   | { url: string; defaultInput?: Record<string, any>; hooks?: HooksSchema | HooksSchema[] }
   | AgentSchema;
 
+export type AFSModuleSchema =
+  | string
+  | {
+      module: string;
+      options?: Record<string, any>;
+    };
+
 export interface BaseAgentSchema {
   name?: string;
   description?: string;
@@ -51,6 +59,11 @@ export interface BaseAgentSchema {
         provider: string;
         subscribeTopic?: string[];
       };
+  afs?:
+    | boolean
+    | (Omit<AFSOptions, "modules"> & {
+        modules?: AFSModuleSchema[];
+      });
 }
 
 export type Instructions = { role: Exclude<Role, "tool">; content: string; path: string }[];
@@ -161,6 +174,31 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
             z.object({
               provider: z.string(),
               subscribeTopic: optionalize(z.array(z.string())),
+            }),
+          ),
+        ]),
+      ),
+      afs: optionalize(
+        z.union([
+          z.boolean(),
+          camelizeSchema(
+            z.object({
+              storage: optionalize(
+                z.object({
+                  url: optionalize(z.string()),
+                }),
+              ),
+              modules: optionalize(
+                z.array(
+                  z.union([
+                    z.string(),
+                    z.object({
+                      module: z.string(),
+                      options: optionalize(z.record(z.any())),
+                    }),
+                  ]),
+                ),
+              ),
             }),
           ),
         ]),

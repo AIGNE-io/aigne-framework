@@ -449,8 +449,16 @@ export default ({
 
   router.delete("/tree", async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
+
+    const ids = req.body?.ids;
+    if (Array.isArray(ids) && ids.length > 0) {
+      await db.delete(Trace).where(inArray(Trace.id, ids)).execute();
+      res.json({ code: 0, message: `${ids.length} traces deleted` });
+      return;
+    }
+
     await db.delete(Trace).execute();
-    res.json({ code: 0, message: "ok" });
+    res.json({ code: 0, message: "all traces deleted" });
   });
 
   return router;

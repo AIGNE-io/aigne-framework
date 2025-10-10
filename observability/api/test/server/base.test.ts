@@ -150,7 +150,7 @@ describe("Base Server", () => {
     const deleteRes = await fetch(`${url}/api/trace/tree`, { method: "DELETE" });
     expect(deleteRes.status).toBe(200);
     const deleteJson = await deleteRes.json();
-    expect(deleteJson.message).toBe("ok");
+    expect(deleteJson.message).toBe("all traces deleted");
 
     // Step 10: GET /tree list
     const listRes10 = await fetch(`${url}/api/trace/tree`);

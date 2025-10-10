@@ -43,7 +43,7 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
         }
 
         // @ts-ignore
-        price = await import(fullPath, { with: { type: "json" } });
+        price = await import(fullPath, { with: { type: "json" } }).then((res) => res.default);
       } catch {
         price = {};
       }

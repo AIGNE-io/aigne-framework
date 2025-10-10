@@ -81,13 +81,20 @@ jobs:
         run: |
           if git diff HEAD~1 HEAD -- observability/blocklet/package.json | grep '"version"'; then
             echo "changed=true" >> $GITHUB_OUTPUT
+            TAG=$(node -p "require('./observability/blocklet/package.json').version.includes('beta') ? 'beta' : 'latest'")
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Blocklet workflow for observability
-        if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true'  }}
+        if: ${{ steps.release.outputs.release_created && steps.blocklets-observability-version-check.outputs.changed == 'true' }}
         env:
+          TAG: ${{ steps.blocklets-observability-version-check.outputs.tag }}
+          STORE_ENDPOINT_TEST: ${{ secrets.STORE_ENDPOINT_TEST }}
+          STORE_ACCESS_TOKEN_TEST: ${{ secrets.STORE_ACCESS_TOKEN_TEST }}
+          STORE_ENDPOINT_PROD: ${{ secrets.STORE_ENDPOINT_PROD }}
+          STORE_ACCESS_TOKEN_PROD: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}
           COMPONENT_STORE_URL: ${{ secrets.STORE_ENDPOINT_PROD }}
         uses: blocklet/action-workflow@v1
         with:
@@ -98,8 +105,8 @@ jobs:
           skip-release: true
           working-directory: observability/blocklet
           bundle-command: pnpm bundle
-          store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
-          store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}
+          store-endpoint: ${{ env.TAG == 'beta' && env.STORE_ENDPOINT_TEST || env.STORE_ENDPOINT_PROD }}
+          store-access-token: ${{ env.TAG == 'beta' && env.STORE_ACCESS_TOKEN_TEST || env.STORE_ACCESS_TOKEN_PROD }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
 

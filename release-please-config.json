@@ -3,6 +3,7 @@
   "release-type": "node",
   "prerelease": true,
   "versioning": "prerelease",
+  "bump-patch-for-minor-pre-major": true,
   "packages": {
     ".": {
       "prerelease-type": "beta"
@@ -154,6 +155,12 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "afs/core": {
+      "prerelease-type": "beta"
+    },
+    "afs/user-profile-memory": {
+      "prerelease-type": "beta"
     }
   },
   "plugins": [

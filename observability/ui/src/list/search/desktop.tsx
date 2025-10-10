@@ -4,6 +4,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
+import Tooltip from "@mui/material/Tooltip";
 import { useState } from "react";
 import { BlockletComponent, type SearchState } from "../../components/blocklet-comp.tsx";
 import CustomDateRangePicker from "../../components/date-picker.tsx";
@@ -68,9 +69,11 @@ const PcSearch = ({
         <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
       </Box>
 
-      <Box sx={{ display: "flex" }}>
-        <SwitchComponent live={live} setLive={setLive} />
-      </Box>
+      <Tooltip title={t("toggleLive")}>
+        <Box sx={{ display: "flex" }}>
+          <SwitchComponent live={live} setLive={setLive} />
+        </Box>
+      </Tooltip>
 
       {!isBlocklet && (
         <IconButton onClick={() => setDialogOpen(true)}>

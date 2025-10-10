@@ -1,7 +1,7 @@
 import dayjs from "@abtnode/util/lib/dayjs";
 import TableSearch from "@arcblock/ux/lib/Datatable/TableSearch";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import { ToastProvider } from "@arcblock/ux/lib/Toast";
+import Toast, { ToastProvider } from "@arcblock/ux/lib/Toast";
 import TuneIcon from "@mui/icons-material/Tune";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -50,10 +50,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [search, setSearch] = useState<SearchState>({
     componentId: "",
     searchText: "",
-    dateRange: [
-      dayjs().subtract(1, "month").startOf("day").toDate(),
-      dayjs().endOf("day").toDate(),
-    ],
+    dateRange: [dayjs().subtract(1, "week").startOf("day").toDate(), dayjs().endOf("day").toDate()],
   });
 
   const [traces, setTraces] = useState<TraceData[]>([]);
@@ -65,6 +62,25 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     const res = await fetch(joinURL(origin, "/api/trace/tree/components"));
     return res.json() as Promise<{ data: string[] }>;
   });
+
+  const onDelete = async (items: string[]) => {
+    try {
+      await fetch(joinURL(origin, "/api/trace/tree"), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: items }),
+      });
+    } catch (error) {
+      Toast.error((error as Error)?.message);
+    } finally {
+      fetchTraces({
+        page: 0,
+        pageSize: page.pageSize,
+        searchText: search.searchText,
+        dateRange: search.dateRange,
+      });
+    }
+  };
 
   const fetchTraces = async ({
     page,
@@ -119,6 +135,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     documentVisibility,
     search.componentId,
   ]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
+  useEffect(() => {
+    setPage({ page: 1, pageSize: page.pageSize });
+  }, [search.searchText, search.dateRange, live, search.componentId]);
 
   useRafInterval(() => {
     if (!live) return;
@@ -261,6 +282,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           loading={loading}
           page={page}
           setPage={setPage}
+          isLive={live}
           onRowClick={(row) => {
             setSelectedTrace(row);
             setSearchParams((prev) => {
@@ -268,6 +290,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               return prev;
             });
           }}
+          onDelete={onDelete}
         />
       </Box>
 

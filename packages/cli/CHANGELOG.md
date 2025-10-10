@@ -1,5 +1,88 @@
 # Changelog
 
+## [1.50.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.1-beta.2...cli-v1.50.1-beta.3) (2025-10-09)
+
+
+### Bug Fixes
+
+* input schema of AI agent should includes input key and input file key ([#600](https://github.com/AIGNE-io/aigne-framework/issues/600)) ([b4ca076](https://github.com/AIGNE-io/aigne-framework/commit/b4ca076d6b4a1a1ecb8d4ebb008abd0d7561aadd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.48-beta.2
+    * @aigne/agentic-memory bumped to 1.0.48-beta.2
+    * @aigne/aigne-hub bumped to 0.10.2-beta.2
+    * @aigne/core bumped to 1.63.0-beta.2
+    * @aigne/default-memory bumped to 1.2.11-beta.2
+    * @aigne/openai bumped to 0.16.2-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.2
+
+## [1.50.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.1-beta.1...cli-v1.50.1-beta.2) (2025-10-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.48-beta.1
+    * @aigne/agentic-memory bumped to 1.0.48-beta.1
+    * @aigne/aigne-hub bumped to 0.10.2-beta.1
+    * @aigne/core bumped to 1.63.0-beta.1
+    * @aigne/default-memory bumped to 1.2.11-beta.1
+    * @aigne/openai bumped to 0.16.2-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.1
+
+## [1.50.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.1-beta...cli-v1.50.1-beta.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* **cli:** add environment variable support for AIGNE Hub credentials ([#595](https://github.com/AIGNE-io/aigne-framework/issues/595)) ([00651e4](https://github.com/AIGNE-io/aigne-framework/commit/00651e4f1047c24be297b4f73e06e144592d934d))
+
+## [1.50.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.0...cli-v1.50.1-beta) (2025-10-07)
+
+
+### Bug Fixes
+
+* standardize URL parameter naming from url to baseURL ([#593](https://github.com/AIGNE-io/aigne-framework/issues/593)) ([47efd4a](https://github.com/AIGNE-io/aigne-framework/commit/47efd4aad7130356a0c0bdf905acd8bc50453d26))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.48-beta
+    * @aigne/agentic-memory bumped to 1.0.48-beta
+    * @aigne/aigne-hub bumped to 0.10.2-beta
+    * @aigne/core bumped to 1.63.0-beta
+    * @aigne/default-memory bumped to 1.2.11-beta
+    * @aigne/observability-api bumped to 0.11.2-beta
+    * @aigne/openai bumped to 0.16.2-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta
+
+## [1.50.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.0-beta.8...cli-v1.50.0) (2025-10-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.47
+    * @aigne/agentic-memory bumped to 1.0.47
+    * @aigne/aigne-hub bumped to 0.10.1
+    * @aigne/core bumped to 1.62.0
+    * @aigne/default-memory bumped to 1.2.10
+    * @aigne/observability-api bumped to 0.11.1
+    * @aigne/openai bumped to 0.16.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.54
+
 ## [1.50.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.0-beta.7...cli-v1.50.0-beta.8) (2025-10-03)
 
 

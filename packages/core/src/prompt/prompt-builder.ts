@@ -1,3 +1,4 @@
+import { type AFSEntry, AFSHistory } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
@@ -19,7 +20,7 @@ import { fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { checkArguments, flat, isRecord, unique } from "../utils/type-utils.js";
+import { checkArguments, flat, isNonNullable, isRecord, unique } from "../utils/type-utils.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import {
@@ -160,6 +161,23 @@ export class PromptBuilder {
 
     if (options.agent?.useMemoriesFromContext && options.context?.memories?.length) {
       memories.push(...options.context.memories);
+    }
+
+    if (options.agent?.afs) {
+      const history = await options.agent.afs.list(AFSHistory.Path, {
+        limit: options.agent.maxRetrieveMemoryCount || 1,
+        orderBy: [["createdAt", "desc"]],
+      });
+
+      if (message) {
+        const result = await options.agent.afs.search("/", message);
+        const ms = result.list.map((entry) => ({ content: stringify(entry.content) }));
+        memories.push(...ms);
+      }
+
+      memories.push(
+        ...history.list.filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
+      );
     }
 
     if (memories.length)

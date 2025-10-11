@@ -66,6 +66,7 @@ export default function TraceDetailPanel({
       setTrace(res.data);
     } finally {
       setIsLoading(false);
+      setTab("input");
     }
   };
 

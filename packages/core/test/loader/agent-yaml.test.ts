@@ -1,6 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
+import { AFS } from "@aigne/afs";
 import {
   type Agent,
   AIAgent,
@@ -291,3 +292,17 @@ function extractInstructions(builder: PromptBuilder): string {
   if (typeof builder.instructions === "string") return builder.instructions;
   return builder.instructions?.messages.map((i) => `${i.role}: ${i.content}`).join("\n\n") || "";
 }
+
+test("loadAgentFromYaml should load AIAgent with AFS correctly", async () => {
+  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/test-afs.yaml"));
+
+  assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
+
+  expect(agent.afs).toBeInstanceOf(AFS);
+  expect(agent.afsConfig).toMatchInlineSnapshot(`
+    {
+      "historyWindowSize": 5,
+      "injectHistory": true,
+    }
+  `);
+});

@@ -2,7 +2,6 @@ import InfoRow from "@arcblock/ux/lib/InfoRow";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import Tag from "@arcblock/ux/lib/Tag";
-import Toast from "@arcblock/ux/lib/Toast";
 import type { SxProps } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -65,10 +64,6 @@ export default function TraceDetailPanel({
       });
 
       setTrace(res.data);
-    } catch (error: any) {
-      if (error.name !== "AbortError") {
-        Toast.error(error.message);
-      }
     } finally {
       setIsLoading(false);
     }

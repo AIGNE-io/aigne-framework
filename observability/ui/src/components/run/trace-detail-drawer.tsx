@@ -1,4 +1,3 @@
-import Toast from "@arcblock/ux/lib/Toast";
 import { CircularProgress, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -43,11 +42,7 @@ export default function RunDetailDrawer({
         setSelectedTrace(format);
         setLoading(false);
       }
-    } catch (err: any) {
-      if (err.name !== "AbortError") {
-        Toast.error(err?.message);
-      }
-
+    } catch {
       setLoading(false);
     }
   };

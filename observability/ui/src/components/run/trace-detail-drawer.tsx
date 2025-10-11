@@ -1,7 +1,6 @@
 import { CircularProgress, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import useRafInterval from "ahooks/lib/useRafInterval";
 import { useEffect, useState } from "react";
 import { joinURL } from "ufo";
 import { origin } from "../../utils/index.ts";
@@ -52,9 +51,9 @@ export default function RunDetailDrawer({
     if (!traceId) return;
 
     const controller = new AbortController();
+
     setLoading(true);
     init(true, controller.signal);
-
     setSelectedTrace(trace);
 
     return () => {
@@ -62,14 +61,33 @@ export default function RunDetailDrawer({
     };
   }, [trace, traceId]);
 
-  useRafInterval(() => {
-    if (!open) return;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
+  useEffect(() => {
+    if (!traceId || !open) return;
 
+    let cancelled = false;
     const controller = new AbortController();
-    init(undefined, controller.signal);
 
-    return () => controller.abort();
-  }, 3000);
+    const fetchLoop = async () => {
+      while (!cancelled) {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          if (cancelled) break;
+
+          await init(false, controller.signal);
+        } catch {
+          break;
+        }
+      }
+    };
+
+    fetchLoop();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [traceId, open, trace]);
 
   const onClose = () => {
     setTraces(null);

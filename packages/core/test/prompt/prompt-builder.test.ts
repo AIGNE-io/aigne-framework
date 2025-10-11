@@ -1,5 +1,6 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
+import { AFS } from "@aigne/afs";
 import {
   AIAgent,
   AIAgentToolChoice,
@@ -365,4 +366,305 @@ test("PromptBuilder should build image prompt correctly", async () => {
   expect(await builder.buildImagePrompt({ input: { topic: "a cat" } })).toEqual({
     prompt: "Draw an image about a cat",
   });
+});
+
+test("PromptBuilder should build with afs correctly", async () => {
+  const builder = PromptBuilder.from("Test instructions");
+
+  const afs = new AFS();
+
+  const agent = AIAgent.from({
+    inputKey: "message",
+    afs,
+    afsConfig: {
+      injectHistory: false,
+      historyWindowSize: 5,
+    },
+  });
+
+  // Build without AFS history
+  const result = await builder.build({
+    agent,
+  });
+
+  expect(result.messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": "Test instructions",
+        "name": undefined,
+        "role": "system",
+      },
+      SystemMessageTemplate {
+        "content": 
+    "
+    <afs_usage>
+    AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
+
+    Modules:
+    - moduleId: AFSHistory
+      path: /history
+
+
+    Available Tools:
+    1. afs_list: Browse directory contents like filesystem ls/tree command - shows files and folders in a given path
+    2. afs_search: Find files by content keywords - use specific keywords related to what you're looking for
+    3. afs_read: Read file contents - path must be an exact file path from list or search results
+    4. afs_write: Write content to a file in the AFS
+
+    Workflow: Use afs_list to browse directories, afs_search to find specific content, then afs_read to access file contents.
+    </afs_usage>
+    "
+    ,
+        "name": undefined,
+        "options": undefined,
+        "role": "system",
+      },
+    ]
+  `);
+
+  // Mock AFS history
+  agent.afsConfig = { ...agent.afsConfig, injectHistory: true };
+
+  const listSpy = spyOn(afs, "list").mockResolvedValueOnce({
+    list: [
+      {
+        id: "1",
+        path: "/history/1",
+        content: { input: { message: "Hello" }, output: { message: "Hello, How can I help you?" } },
+      },
+      {
+        id: "1",
+        path: "/history/1",
+        content: { input: { message: "I'm Bob" }, output: { message: "Hello, Bob!" } },
+      },
+    ],
+  });
+
+  const result1 = await builder.build({
+    agent,
+  });
+
+  expect(listSpy.mock.calls).toMatchInlineSnapshot(`
+    [
+      [
+        "/history",
+        {
+          "limit": 5,
+          "orderBy": [
+            [
+              "createdAt",
+              "desc",
+            ],
+          ],
+        },
+      ],
+    ]
+  `);
+
+  expect(result1).toMatchInlineSnapshot(
+    { toolAgents: expect.anything() },
+    `
+    {
+      "messages": [
+        {
+          "content": "Test instructions",
+          "name": undefined,
+          "role": "system",
+        },
+        SystemMessageTemplate {
+          "content": 
+    "
+    <afs_usage>
+    AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
+
+    Modules:
+    - moduleId: AFSHistory
+      path: /history
+
+
+    Available Tools:
+    1. afs_list: Browse directory contents like filesystem ls/tree command - shows files and folders in a given path
+    2. afs_search: Find files by content keywords - use specific keywords related to what you're looking for
+    3. afs_read: Read file contents - path must be an exact file path from list or search results
+    4. afs_write: Write content to a file in the AFS
+
+    Workflow: Use afs_list to browse directories, afs_search to find specific content, then afs_read to access file contents.
+    </afs_usage>
+    "
+    ,
+          "name": undefined,
+          "options": undefined,
+          "role": "system",
+        },
+        {
+          "content": [
+            {
+              "text": "Hello",
+              "type": "text",
+            },
+          ],
+          "role": "user",
+        },
+        {
+          "content": [
+            {
+              "text": "Hello, How can I help you?",
+              "type": "text",
+            },
+          ],
+          "role": "agent",
+        },
+        {
+          "content": [
+            {
+              "text": "I'm Bob",
+              "type": "text",
+            },
+          ],
+          "role": "user",
+        },
+        {
+          "content": [
+            {
+              "text": "Hello, Bob!",
+              "type": "text",
+            },
+          ],
+          "role": "agent",
+        },
+      ],
+      "modelOptions": undefined,
+      "outputFileType": undefined,
+      "responseFormat": undefined,
+      "toolAgents": Anything,
+      "toolChoice": "auto",
+      "tools": [
+        {
+          "function": {
+            "description": "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
+            "name": "afs_list",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "options": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "limit": {
+                      "description": "Maximum number of entries to return",
+                      "type": "number",
+                    },
+                    "maxDepth": {
+                      "description": "Maximum depth to list files",
+                      "type": "number",
+                    },
+                    "recursive": {
+                      "description": "Whether to list files recursively",
+                      "type": "boolean",
+                    },
+                  },
+                  "required": [],
+                  "type": "object",
+                },
+                "path": {
+                  "description": "The directory path to browse (e.g., '/', '/docs', '/src')",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "path",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Find files by searching content using keywords - returns matching files with their paths",
+            "name": "afs_search",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "options": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "limit": {
+                      "description": "Maximum number of entries to return",
+                      "type": "number",
+                    },
+                  },
+                  "required": [],
+                  "type": "object",
+                },
+                "path": {
+                  "description": "The directory path to search in (e.g., '/', '/docs')",
+                  "type": "string",
+                },
+                "query": {
+                  "description": "Keywords to search for in file contents (e.g., 'function authentication', 'database config')",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "path",
+                "query",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Read file contents from the AFS - path must be an exact file path from list or search results",
+            "name": "afs_read",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "description": "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "path",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Create or update a file in the AFS with new content - overwrites existing files",
+            "name": "afs_write",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "content": {
+                  "description": "The text content to write to the file",
+                  "type": "string",
+                },
+                "path": {
+                  "description": "Full file path where to write content (e.g., '/docs/new-file.md', '/src/component.js')",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "path",
+                "content",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+      ],
+    }
+  `,
+  );
 });

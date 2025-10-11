@@ -43,24 +43,32 @@ export default function TraceDetailPanel({
   const hasMemories = trace?.attributes?.memories && trace?.attributes?.memories.length > 0;
   const model = trace?.attributes?.output?.model;
 
-  const init = async () => {
+  const init = async (signal?: AbortSignal) => {
     try {
       setIsLoading(true);
 
       const start = Date.now();
 
-      const res = await fetch(
-        joinURL(origin, `/api/trace/tree/children/${originalTrace?.id}`),
-      ).then((res) => res.json());
+      const res = await fetch(joinURL(origin, `/api/trace/tree/children/${originalTrace?.id}`), {
+        signal,
+      }).then((res) => res.json());
 
       const duration = Date.now() - start;
       const remaining = Math.max(0, 1000 - duration);
 
-      await new Promise((resolve) => setTimeout(resolve, remaining));
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, remaining);
+        signal?.addEventListener("abort", () => {
+          clearTimeout(timer);
+          reject(new DOMException("Aborted", "AbortError"));
+        });
+      });
 
       setTrace(res.data);
-    } catch (error) {
-      Toast.error((error as Error)?.message);
+    } catch (error: any) {
+      if (error.name !== "AbortError") {
+        Toast.error(error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -68,9 +76,14 @@ export default function TraceDetailPanel({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
-    if (originalTrace?.id) {
-      init();
-    }
+    if (!originalTrace?.id) return;
+
+    const controller = new AbortController();
+    init(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
   }, [originalTrace]);
 
   const value = useMemo(() => {

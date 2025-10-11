@@ -45,7 +45,7 @@ export default function RunDetailDrawer({
       }
     } catch (err: any) {
       if (err.name !== "AbortError") {
-        Toast.error((err as Error)?.message);
+        Toast.error(err?.message);
       }
 
       setLoading(false);

@@ -148,11 +148,11 @@ export default function JsonView({ value: data }: { value: object }) {
           readOnly: true,
           folding: true,
           glyphMargin: false,
-          // 优化渲染
+          // Optimize rendering
           renderWhitespace: "none",
           renderControlCharacters: false,
           renderLineHighlight: "none",
-          // 滚动优化
+          // Scroll optimization
           scrollbar: {
             verticalHasArrows: true,
             alwaysConsumeMouseWheel: false,
@@ -161,12 +161,12 @@ export default function JsonView({ value: data }: { value: object }) {
           },
           scrollBeyondLastLine: false,
           smoothScrolling: false,
-          // 性能优化
+          // Performance optimization
           wordWrap: "off",
           minimap: { enabled: false },
           overviewRulerLanes: 0,
           hideCursorInOverviewRuler: true,
-          // 禁用不必要的功能
+          // Disable unnecessary functions
           occurrencesHighlight: "off",
           selectionHighlight: false,
           codeLens: false,

@@ -88,15 +88,10 @@ export const formatModelName = async (
 
   if (!envs.default?.AIGNE_HUB_API_URL) {
     const host = new URL(AIGNE_HUB_URL).host;
-    let defaultEnv: { AIGNE_HUB_API_URL: string } = { AIGNE_HUB_API_URL: "" };
 
-    if (envs[host]?.AIGNE_HUB_API_URL) {
-      defaultEnv = envs[host];
-    } else {
-      if (Object.keys(envs)[0]) {
-        defaultEnv = envs[Object.keys(envs)[0] as keyof typeof envs];
-      }
-    }
+    const defaultEnv = envs[host]?.AIGNE_HUB_API_URL
+      ? envs[host]
+      : Object.values(envs)[0] || { AIGNE_HUB_API_URL: "" };
 
     await writeFile(
       AIGNE_ENV_FILE,

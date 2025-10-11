@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.81.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.3...aigne-framework-v1.81.0-beta.4) (2025-10-11)
+
+
+### Features
+
+* **afs:** add module system fs for afs ([#594](https://github.com/AIGNE-io/aigne-framework/issues/594)) ([83c7b65](https://github.com/AIGNE-io/aigne-framework/commit/83c7b6555d21c606a5005eb05f6686882fb8ffa3))
+
+
+### Bug Fixes
+
+* add ability to delete individual trace records ([f853cec](https://github.com/AIGNE-io/aigne-framework/commit/f853cec0557600788f2da1e5be4935360372dc99))
+* add ability to delete individual trace records ([#606](https://github.com/AIGNE-io/aigne-framework/issues/606)) ([f853cec](https://github.com/AIGNE-io/aigne-framework/commit/f853cec0557600788f2da1e5be4935360372dc99))
+* improve exit event handling for cli ([#609](https://github.com/AIGNE-io/aigne-framework/issues/609)) ([00211f8](https://github.com/AIGNE-io/aigne-framework/commit/00211f8ad4686ea673ea8e2eac5b850bcbd8c1f6))
+* observability list query setting ([#605](https://github.com/AIGNE-io/aigne-framework/issues/605)) ([0952d39](https://github.com/AIGNE-io/aigne-framework/commit/0952d398955702276956da963710f8bfd85a86ce))
+* observability list query setting ([#605](https://github.com/AIGNE-io/aigne-framework/issues/605)) ([0952d39](https://github.com/AIGNE-io/aigne-framework/commit/0952d398955702276956da963710f8bfd85a86ce))
+* update aigne hub params ([#607](https://github.com/AIGNE-io/aigne-framework/issues/607)) ([9ea9e0b](https://github.com/AIGNE-io/aigne-framework/commit/9ea9e0bce7119abe496a463ecb779b120d48f4bc))
+* update observability deps ([#602](https://github.com/AIGNE-io/aigne-framework/issues/602)) ([fc70ecd](https://github.com/AIGNE-io/aigne-framework/commit/fc70ecd142825f0bcfc01bfa7df488d8f1d95ec3))
+* update observability deps ([#602](https://github.com/AIGNE-io/aigne-framework/issues/602)) ([fc70ecd](https://github.com/AIGNE-io/aigne-framework/commit/fc70ecd142825f0bcfc01bfa7df488d8f1d95ec3))
+* upload to different Blocklet store based on version ([e4d3a1c](https://github.com/AIGNE-io/aigne-framework/commit/e4d3a1c5485f473d1ba092dd6c91bcc57590e68d))
+* upload to different Blocklet store based on version ([#604](https://github.com/AIGNE-io/aigne-framework/issues/604)) ([e4d3a1c](https://github.com/AIGNE-io/aigne-framework/commit/e4d3a1c5485f473d1ba092dd6c91bcc57590e68d))
+
 ## [1.81.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.2...aigne-framework-v1.81.0-beta.3) (2025-10-09)
 
 

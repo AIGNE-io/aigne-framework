@@ -9,7 +9,7 @@ author:
   name: Arcblock
   email: blocklet@arcblock.io
 specVersion: 1.2.8
-version: 1.14.2-beta
+version: 1.14.2-beta.1
 repository:
   type: git
   url: git+https://github.com/AIGNE-io/aigne-framework.git

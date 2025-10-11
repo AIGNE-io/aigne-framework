@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.0.0...afs-v1.1.0-beta) (2025-10-11)
+
+
+### Features
+
+* **afs:** add module system fs for afs ([#594](https://github.com/AIGNE-io/aigne-framework/issues/594)) ([83c7b65](https://github.com/AIGNE-io/aigne-framework/commit/83c7b6555d21c606a5005eb05f6686882fb8ffa3))
+
 ## 1.0.0 (2025-10-07)
 
 

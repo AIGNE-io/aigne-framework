@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.51.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.1-beta.3...cli-v1.51.0-beta.3) (2025-10-11)
+
+
+### Features
+
+* **afs:** add module system fs for afs ([#594](https://github.com/AIGNE-io/aigne-framework/issues/594)) ([83c7b65](https://github.com/AIGNE-io/aigne-framework/commit/83c7b6555d21c606a5005eb05f6686882fb8ffa3))
+
+
+### Bug Fixes
+
+* improve exit event handling for cli ([#609](https://github.com/AIGNE-io/aigne-framework/issues/609)) ([00211f8](https://github.com/AIGNE-io/aigne-framework/commit/00211f8ad4686ea673ea8e2eac5b850bcbd8c1f6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.0
+    * @aigne/agent-library bumped to 1.21.48-beta.3
+    * @aigne/agentic-memory bumped to 1.0.48-beta.3
+    * @aigne/aigne-hub bumped to 0.10.2-beta.3
+    * @aigne/core bumped to 1.63.0-beta.3
+    * @aigne/default-memory bumped to 1.2.11-beta.3
+    * @aigne/observability-api bumped to 0.11.2-beta.1
+    * @aigne/openai bumped to 0.16.2-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.3
+
 ## [1.50.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.50.1-beta.2...cli-v1.50.1-beta.3) (2025-10-09)
 
 

@@ -88,5 +88,6 @@ export default flatten({
   toggleLive: "当启用实时同步时，表格会自动更新以展示最新数据，为确保实时性，将禁用切换和分页操作",
   delConfirmTitle: "删除 Traces",
   delConfirmDescription: "确定要删除 ID 为 {id} 的 Traces 吗？",
-  actionLabel: "批量操作",
+  copyJson: "复制 JSON",
+  downloadJson: "下载 JSON",
 });

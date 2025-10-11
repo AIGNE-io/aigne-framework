@@ -5,10 +5,11 @@ import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import UserCard from "@arcblock/ux/lib/UserCard";
 import { CardType, InfoType } from "@arcblock/ux/lib/UserCard/types";
+import TrashIcon from "@mui/icons-material/Delete";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
 import { compact } from "lodash";
 import prettyMs from "pretty-ms";
 import { useState } from "react";
@@ -27,6 +28,8 @@ const Table = ({
   setPage,
   isLive,
   onDelete,
+  selectedRows,
+  setSelectedRows,
 }: {
   traces: TraceData[];
   total: number;
@@ -36,12 +39,13 @@ const Table = ({
   setPage: (page: { page: number; pageSize: number }) => void;
   isLive?: boolean;
   onDelete: (item: string[]) => void;
+  selectedRows: string[];
+  setSelectedRows: (rows: string[]) => void;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t, locale } = useLocaleContext();
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const columns = compact([
     {
@@ -303,15 +307,9 @@ const Table = ({
 
     return (
       <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Button
-          className="resend-btn"
-          color="primary"
-          variant="contained"
-          sx={{ my: "2px", ".MuiButton-startIcon": { mr: "2px" } }}
-          onClick={() => setOpen(true)}
-        >
-          {t("actionLabel")}
-        </Button>
+        <IconButton onClick={() => setOpen(true)}>
+          <TrashIcon sx={{ color: "error.main" }} />
+        </IconButton>
       </Box>
     );
   };
@@ -345,6 +343,10 @@ const Table = ({
               },
             }
           : {},
+        ".MuiPaper-elevation1": {
+          paddingTop: "16px",
+          paddingBottom: "16px",
+        },
       }}
     >
       <Datatable

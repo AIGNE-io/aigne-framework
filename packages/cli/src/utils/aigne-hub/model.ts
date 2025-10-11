@@ -1,5 +1,10 @@
-import { readFile } from "node:fs/promises";
-import { AIGNE_HUB_DEFAULT_MODEL, findImageModel, findModel } from "@aigne/aigne-hub";
+import { readFile, writeFile } from "node:fs/promises";
+import {
+  AIGNE_HUB_DEFAULT_MODEL,
+  AIGNE_HUB_URL,
+  findImageModel,
+  findModel,
+} from "@aigne/aigne-hub";
 import type {
   ChatModel,
   ChatModelInputOptions,
@@ -79,6 +84,19 @@ export const formatModelName = async (
       ),
     );
     process.exit(0);
+  }
+
+  if (!envs.default?.AIGNE_HUB_API_URL) {
+    const host = new URL(AIGNE_HUB_URL).host;
+
+    const defaultEnv = envs[host]?.AIGNE_HUB_API_URL
+      ? envs[host]
+      : Object.values(envs)[0] || { AIGNE_HUB_API_URL: "" };
+
+    await writeFile(
+      AIGNE_ENV_FILE,
+      stringify({ ...envs, default: { AIGNE_HUB_API_URL: defaultEnv?.AIGNE_HUB_API_URL } }),
+    );
   }
 
   return { provider: AIGNE_HUB_PROVIDER, model: `${provider}/${name}` };

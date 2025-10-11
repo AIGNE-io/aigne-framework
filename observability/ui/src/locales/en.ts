@@ -89,5 +89,6 @@ export default flatten({
     "When real-time synchronization is enabled, the table automatically updates to show the latest data. Switching and pagination are disabled to ensure real-time accuracy.",
   delConfirmTitle: "Delete Traces",
   delConfirmDescription: "Are you sure you want to delete the traces of {id}?",
-  actionLabel: "Batch operation",
+  copyJson: "Copy JSON",
+  downloadJson: "Download JSON",
 });

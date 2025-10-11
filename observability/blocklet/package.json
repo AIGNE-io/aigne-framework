@@ -52,7 +52,6 @@
     "nodemon": "^3.1.10",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-json-view": "^1.21.3",
     "react-router-dom": "^7.9.1",
     "ufo": "^1.6.1",
     "vite-plugin-blocklet": "^0.10.1"

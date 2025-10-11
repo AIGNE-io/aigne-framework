@@ -2,9 +2,11 @@ import InfoRow from "@arcblock/ux/lib/InfoRow";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import Tag from "@arcblock/ux/lib/Tag";
+import Toast from "@arcblock/ux/lib/Toast";
 import type { SxProps } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -15,13 +17,10 @@ import { isUndefined, omitBy } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import { joinURL } from "ufo";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
-import useSwitchView from "../../hooks/switch-view.tsx";
 import { origin } from "../../utils/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
 import JsonView from "../json-view.tsx";
 import ModelInfoTip from "../model-tip.tsx";
-import RenderView from "../render-view.tsx";
-import YamlView from "../yaml-view.tsx";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
 
@@ -35,10 +34,9 @@ export default function TraceDetailPanel({
   const [tab, setTab] = useState("input");
   const { t } = useLocaleContext();
   const getPrices = useGetTokenPrice();
-  const { view, renderView } = useSwitchView();
   const [trace, setTrace] = useState<TraceData | undefined | null>(originalTrace);
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
-
+  const [isLoading, setIsLoading] = useState(false);
   const hasError = trace?.status?.code === 2;
   const hasUserContext =
     trace?.attributes?.userContext && Object.keys(trace?.attributes?.userContext).length > 0;
@@ -46,9 +44,26 @@ export default function TraceDetailPanel({
   const model = trace?.attributes?.output?.model;
 
   const init = async () => {
-    fetch(joinURL(origin, `/api/trace/tree/children/${originalTrace?.id}`))
-      .then((res) => res.json() as Promise<{ data: TraceData }>)
-      .then(({ data }) => setTrace(data));
+    try {
+      setIsLoading(true);
+
+      const start = Date.now();
+
+      const res = await fetch(
+        joinURL(origin, `/api/trace/tree/children/${originalTrace?.id}`),
+      ).then((res) => res.json());
+
+      const duration = Date.now() - start;
+      const remaining = Math.max(0, 1000 - duration);
+
+      await new Promise((resolve) => setTimeout(resolve, remaining));
+
+      setTrace(res.data);
+    } catch (error) {
+      Toast.error((error as Error)?.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
@@ -56,8 +71,6 @@ export default function TraceDetailPanel({
     if (originalTrace?.id) {
       init();
     }
-
-    setTrace(originalTrace);
   }, [originalTrace]);
 
   const value = useMemo(() => {
@@ -122,33 +135,23 @@ export default function TraceDetailPanel({
     { label: t("metadata"), value: "metadata" },
   ];
 
-  if (!trace) {
-    return null;
+  if (!trace) return null;
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   const inputTokens = trace.attributes.output?.usage?.inputTokens || 0;
   const outputTokens = trace.attributes.output?.usage?.outputTokens || 0;
 
-  const mapViews = {
-    json: JsonView,
-    yaml: YamlView,
-    rendered: RenderView,
-  };
-
-  const ComponentView = mapViews[view as keyof typeof mapViews] || JsonView;
-
   return (
     <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", ...sx }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Typography
-          sx={{
-            fontSize: 20,
-            color: "text.primary",
-          }}
-        >
-          {`${trace?.name}`}
-        </Typography>
-
+        <Typography sx={{ fontSize: 20, color: "text.primary" }}>{`${trace?.name}`}</Typography>
         <AgentTag agentTag={trace?.attributes?.agentTag} model={trace?.attributes?.output?.model} />
       </Box>
       <Box sx={{ my: 1 }}>
@@ -310,33 +313,31 @@ export default function TraceDetailPanel({
           mt: 2,
           flex: 1,
           height: 0,
-          overflow: "auto",
+          overflow: "hidden",
           position: "relative",
           backgroundColor: "#1e1e1e",
           borderRadius: 2,
         }}
       >
-        <Box sx={{ position: "absolute", top: 15, right: 15, zIndex: 1000 }}>{renderView()}</Box>
-
-        <Box sx={{ overflowX: "auto", color: "common.white" }}>
-          {value === undefined || value === null ? (
-            <Typography
-              sx={{
-                color: "grey.500",
-                fontSize: 14,
-                p: 2,
-              }}
-            >
-              {t("noData")}
-            </Typography>
-          ) : typeof value === "object" ? (
-            <ComponentView value={value} />
-          ) : (
-            <Typography sx={{ whiteSpace: "break-spaces", p: 2 }} component="pre">
-              {JSON.stringify(value, null, 2)}
-            </Typography>
-          )}
-        </Box>
+        {!isLoading ? (
+          <Box sx={{ color: "common.white", height: "100%" }}>
+            {value === undefined || value === null ? (
+              <Typography sx={{ color: "grey.500", fontSize: 14, p: 2 }}>{t("noData")}</Typography>
+            ) : typeof value === "object" ? (
+              <JsonView value={value} />
+            ) : (
+              <Typography sx={{ whiteSpace: "break-spaces", p: 2, fontSize: 14 }} component="pre">
+                {JSON.stringify(value, null, 2)}
+              </Typography>
+            )}
+          </Box>
+        ) : (
+          <Box
+            sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
       </Box>
     </Box>
   );

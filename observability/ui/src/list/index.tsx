@@ -40,6 +40,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [live, setLive] = useState(false);
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
   const [open, setOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
 
@@ -218,7 +219,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       componentId: "",
       searchText: "",
       dateRange: [
-        dayjs().subtract(1, "month").startOf("day").toDate(),
+        dayjs().subtract(1, "week").startOf("day").toDate(),
         dayjs().endOf("day").toDate(),
       ],
     });
@@ -228,53 +229,55 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   return (
     <ToastProvider>
       <Box sx={{ ".striped-row": { backgroundColor: "action.hover" } }}>
-        <Box
-          sx={{
-            my: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: !isMobile ? "flex-end" : "space-between",
-            gap: 1,
+        {!selectedRows.length && (
+          <Box
+            sx={{
+              my: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: !isMobile ? "flex-end" : "space-between",
+              gap: 1,
 
-            ".search-always-open": isMobile
-              ? {
-                  flex: 1,
-                  ".toolbar-search-area.toolbar-btn-show": {
-                    width: "100%",
-                  },
-                }
-              : {},
-          }}
-        >
-          <TableSearch
-            options={{
-              searchPlaceholder: t("search"),
-              searchDebounceTime: 600,
-              searchAlwaysOpen: isMobile,
+              ".search-always-open": isMobile
+                ? {
+                    flex: 1,
+                    ".toolbar-search-area.toolbar-btn-show": {
+                      width: "100%",
+                    },
+                  }
+                : {},
             }}
-            search={search.searchText}
-            searchText={search.searchText}
-            searchTextUpdate={(text: string) => setSearch((x) => ({ ...x, searchText: text }))}
-            searchClose={() => setSearch((x) => ({ ...x, searchText: "" }))}
-          />
-
-          {isMobile ? (
-            <IconButton onClick={toggleDrawer(true)}>
-              <TuneIcon />
-            </IconButton>
-          ) : (
-            <DesktopSearch
-              components={components || { data: [] }}
-              search={search}
-              setSearch={setSearch}
-              onDateRangeChange={onDateRangeChange}
-              live={live}
-              setLive={setLive}
-              fetchTraces={fetchTraces}
-              page={page}
+          >
+            <TableSearch
+              options={{
+                searchPlaceholder: t("search"),
+                searchDebounceTime: 600,
+                searchAlwaysOpen: isMobile,
+              }}
+              search={search.searchText}
+              searchText={search.searchText}
+              searchTextUpdate={(text: string) => setSearch((x) => ({ ...x, searchText: text }))}
+              searchClose={() => setSearch((x) => ({ ...x, searchText: "" }))}
             />
-          )}
-        </Box>
+
+            {isMobile ? (
+              <IconButton onClick={toggleDrawer(true)}>
+                <TuneIcon />
+              </IconButton>
+            ) : (
+              <DesktopSearch
+                components={components || { data: [] }}
+                search={search}
+                setSearch={setSearch}
+                onDateRangeChange={onDateRangeChange}
+                live={live}
+                setLive={setLive}
+                fetchTraces={fetchTraces}
+                page={page}
+              />
+            )}
+          </Box>
+        )}
 
         <Table
           traces={traces}
@@ -291,6 +294,8 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             });
           }}
           onDelete={onDelete}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
         />
       </Box>
 

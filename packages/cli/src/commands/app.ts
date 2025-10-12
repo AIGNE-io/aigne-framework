@@ -285,7 +285,10 @@ export async function loadApplication(
   const check = await checkInstallation(dir);
 
   if (check && !check.expired) {
-    const aigne = await runAIGNEInChildProcess("loadAIGNE", dir).catch(async (error) => {
+    const aigne = await runAIGNEInChildProcess("loadAIGNE", {
+      path: dir,
+      skipModelLoading: true,
+    }).catch(async (error) => {
       logger.error(`⚠️ Failed to load ${packageName}, trying to reinstall:`, error.message);
 
       await withSpinner("", async () => {
@@ -304,7 +307,7 @@ export async function loadApplication(
   const result = await installApp({ dir, packageName, beta: check?.version?.includes("beta") });
 
   return {
-    aigne: await runAIGNEInChildProcess("loadAIGNE", dir),
+    aigne: await runAIGNEInChildProcess("loadAIGNE", { path: dir, skipModelLoading: true }),
     version: result.version,
   };
 }

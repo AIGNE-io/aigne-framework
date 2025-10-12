@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.63.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.3...core-v1.63.0-beta.4) (2025-10-12)
+
+
+### Features
+
+* **afs:** add configurable history injection to AFS system ([#611](https://github.com/AIGNE-io/aigne-framework/issues/611)) ([689b5d7](https://github.com/AIGNE-io/aigne-framework/commit/689b5d76d8cc82f548e8be74e63f18e7a6216c31))
+
 ## [1.63.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.2...core-v1.63.0-beta.3) (2025-10-11)
 
 

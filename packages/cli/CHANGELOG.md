@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.51.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0-beta.4...cli-v1.51.0-beta.5) (2025-10-12)
+
+
+### Bug Fixes
+
+* correct loading aigne with AFS config for `upgrade` command ([#613](https://github.com/AIGNE-io/aigne-framework/issues/613)) ([db1db97](https://github.com/AIGNE-io/aigne-framework/commit/db1db97b6305009d302a782dbc7fa3147900af47))
+
 ## [1.51.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0-beta.3...cli-v1.51.0-beta.4) (2025-10-12)
 
 

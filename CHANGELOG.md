@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.81.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.5...aigne-framework-v1.81.0-beta.6) (2025-10-12)
+
+
+### Bug Fixes
+
+* correct loading aigne with AFS config for `upgrade` command ([#613](https://github.com/AIGNE-io/aigne-framework/issues/613)) ([db1db97](https://github.com/AIGNE-io/aigne-framework/commit/db1db97b6305009d302a782dbc7fa3147900af47))
+
 ## [1.81.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.4...aigne-framework-v1.81.0-beta.5) (2025-10-12)
 
 

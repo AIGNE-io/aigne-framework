@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.18.65-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-router-v1.18.65-beta.5...example-workflow-router-v1.18.65-beta.6) (2025-10-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.51.0-beta.5
+
 ## [1.18.65-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-router-v1.18.65-beta.4...example-workflow-router-v1.18.65-beta.5) (2025-10-12)
 
 

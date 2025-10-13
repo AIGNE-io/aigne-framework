@@ -6,7 +6,6 @@ exports[`Build first agent: setup memory for client agent 1`] = `
     "messages": [
       {
         "content": "You are a helpful assistant",
-        "name": undefined,
         "role": "system",
       },
       {

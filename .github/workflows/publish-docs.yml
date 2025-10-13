@@ -1,7 +1,7 @@
 name: publish docs
 
-env:
-  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+env: 
+  AIGNE_HUB_API_KEY: ${{ secrets.AIGNE_HUB_API_KEY }}
 
 permissions:
   contents: write
@@ -36,13 +36,14 @@ jobs:
 
       - name: Install @aigne/cli
         run: |
-          bun install -g @aigne/cli
+          bun install -g @aigne/cli@beta
 
       - name: Publish docs to arcblock.io
         env:
           DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_PUBLISH_API_KEY_ARCBLOCK }}
         run: |
           set -e
+          aigne doc publish --appUrl https://www.arcblock.io
           cd packages/cli && aigne doc publish --appUrl https://www.arcblock.io && cd - >/dev/null
 
       - name: Publish docs to prod docsmith
@@ -50,6 +51,7 @@ jobs:
           DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_PUBLISH_API_KEY_DOCSMITH }}
         run: |
           set -e
+          aigne doc publish --appUrl https://docsmith.aigne.io
           cd packages/cli && aigne doc publish --appUrl https://docsmith.aigne.io && cd - >/dev/null
 
       - name: Commit and push changes

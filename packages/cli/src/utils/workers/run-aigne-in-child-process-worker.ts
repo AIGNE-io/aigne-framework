@@ -37,7 +37,7 @@ process.on(
       const result = await handler(...args);
       await send({ method, result });
     } catch (error) {
-      await send({ method, error: { message: error.message } });
+      await send({ method, error: { name: error.name, message: error.message } });
     } finally {
       process.exit(0);
     }

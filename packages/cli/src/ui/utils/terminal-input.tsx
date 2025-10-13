@@ -1,7 +1,7 @@
+import { ExitPromptError } from "@inquirer/core";
 import chalk from "chalk";
 import { Box, render, Text, useInput } from "ink";
 import { useState } from "react";
-import { SIGINTError } from "./error.js";
 import { useTextBuffer } from "./text-buffer.js";
 
 export async function terminalInput(
@@ -49,7 +49,7 @@ function Input(props: {
     if (character === "c" && key.ctrl) {
       setStatus("error");
       setTimeout(() => {
-        props.onError(new SIGINTError("Input aborted by user"));
+        props.onError(new ExitPromptError("Input aborted by user"));
       });
       return;
     }

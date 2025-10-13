@@ -33,7 +33,9 @@ export default createAIGNECommand({ argv, aigneFilePath })
   })
   .parseAsync(argv)
   .catch((error: Error) => {
-    console.log(""); // Add an empty line for better readability
-    console.error(`${chalk.red("Error:")} ${highlightUrl(error.message)}`);
+    if (error.name !== "ExitPromptError") {
+      console.log(""); // Add an empty line for better readability
+      console.error(`${chalk.red("Error:")} ${highlightUrl(error.message)}`);
+    }
     process.exit(1);
   });

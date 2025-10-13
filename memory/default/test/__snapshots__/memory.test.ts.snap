@@ -7,7 +7,6 @@ exports[`DefaultMemory should remember memories for AIAgent correctly 1`] = `
 "You are a helpful assistant.
 Please answer in zh."
 ,
-    "name": undefined,
     "role": "system",
   },
   {
@@ -29,7 +28,6 @@ exports[`DefaultMemory should remember memories for AIAgent correctly 2`] = `
 "You are a helpful assistant.
 Please answer in zh."
 ,
-    "name": undefined,
     "role": "system",
   },
   {

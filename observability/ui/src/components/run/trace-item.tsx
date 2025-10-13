@@ -1,132 +1,103 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import { Box, Card, LinearProgress, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import type { ReactElement } from "react";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Box, IconButton, Typography } from "@mui/material";
+import { type ReactElement, useState } from "react";
 import { parseDurationMs, parseDurationTime } from "../../utils/latency.ts";
-import Status from "../status.tsx";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
 
 type TraceItemProps = {
   name: string;
   duration: number;
-  start: number;
-  totalDuration: number;
   selected?: boolean;
   depth?: number;
   onSelect?: () => void;
-  status?: number;
   agentTag?: string;
   model?: string;
+  hasChildren?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 };
 
 function TraceItem({
   name,
   duration,
-  start,
-  totalDuration,
   selected,
   depth = 0,
   onSelect,
-  status,
   agentTag,
   model,
+  hasChildren,
+  isExpanded,
+  onToggleExpand,
 }: TraceItemProps) {
-  const widthPercent = Math.min((duration / totalDuration) * 100 || 0, 100);
-  const marginLeftPercent = (start / totalDuration) * 100;
-  const { t } = useLocaleContext();
-  const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
-
-  const getBorderColor = () => {
-    if (selected) {
-      return "primary.main";
-    }
-
-    if (status === 0) {
-      return "warning.light";
-    }
-
-    if (status === 1) {
-      return "transparent";
-    }
-
-    return "error.main";
-  };
-
   return (
-    <Card
+    <Box
       sx={{
-        cursor: "pointer",
-        px: 2,
+        display: "flex",
+        alignItems: "center",
         py: 1,
-        mb: 1,
-        ml: depth * 2,
-        overflow: "hidden",
-        transition: "all 0.2s ease-in-out",
-        border: "1px solid transparent",
-        borderColor: getBorderColor(),
+        px: 0,
+        pr: 2,
+        pl: 0 + depth * 1,
+        my: 0.5,
+        cursor: "pointer",
+        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        backgroundColor: selected ? "action.selected" : "transparent",
+        borderRadius: 1,
+        "&:hover": {
+          backgroundColor: selected ? "action.selected" : "action.hover",
+          transform: "translateX(4px)",
+          boxShadow: selected ? 0 : "0 2px 8px rgba(0, 0, 0, 0.08)",
+        },
       }}
       onClick={() => onSelect?.()}
     >
-      <Box
-        data-percent={widthPercent}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          flexWrap: "nowrap",
-          justifyContent: "space-between",
-          gap: 1,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1, minWidth: 0 }}>
-          <Typography sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {name}
-          </Typography>
-
-          {status === 0 && <Status />}
-        </Box>
-
-        {!isMobile && (
-          <Box sx={{ mr: 2 }}>
-            <AgentTag agentTag={agentTag} model={model} />
-          </Box>
+      <Box sx={{ display: "flex", alignItems: "center", flex: 1, minWidth: 0, gap: 1 }}>
+        {hasChildren ? (
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleExpand?.();
+            }}
+            sx={{ p: 0 }}
+          >
+            {isExpanded ? (
+              <ExpandMoreIcon sx={{ fontSize: 20 }} />
+            ) : (
+              <ChevronRightIcon sx={{ fontSize: 20 }} />
+            )}
+          </IconButton>
+        ) : (
+          <Box sx={{ width: 20 }} />
         )}
 
-        {!isMobile && (
-          <Typography variant="caption" sx={{ minWidth: 60, flexShrink: 0, ml: "auto", mr: 1 }}>
-            {parseDurationTime(duration * 1000)}
-          </Typography>
-        )}
-
-        <Box
+        <Typography
           sx={{
-            width: "100%",
-            maxWidth: isMobile ? "100px" : "200px",
-            minWidth: "100px",
-            position: "relative",
-            height: 10,
-            borderRadius: 5,
-            overflow: "visible",
+            fontSize: 14,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
         >
-          <Tooltip title={`${t("duration")}: ${duration}s`}>
-            <Box
-              sx={{
-                position: "absolute",
-                left: `${marginLeftPercent}%`,
-                width: `${widthPercent}%`,
-                height: "100%",
-              }}
-            >
-              <LinearProgress
-                variant="determinate"
-                value={100}
-                sx={{ height: "100%", borderRadius: 5 }}
-              />
-            </Box>
-          </Tooltip>
+          {name}
+        </Typography>
+      </Box>
+
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <AgentTag agentTag={agentTag} model={model} />
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 80 }}>
+          <AccessTimeIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: 13 }}>
+            {parseDurationTime(duration * 1000)}
+          </Typography>
         </Box>
       </Box>
-    </Card>
+    </Box>
   );
 }
 
@@ -204,40 +175,49 @@ export function formatTraceStepsAndTotalDuration({
 export function renderTraceItems({
   traceId,
   items,
-  totalDuration,
   depth = 0,
   onSelect,
+  expandedItems,
+  onToggleExpand,
 }: {
   traceId: string;
   items: TraceStep[];
-  totalDuration: number;
   depth?: number;
   onSelect?: (step?: TraceData) => void;
+  expandedItems: Set<string>;
+  onToggleExpand: (itemKey: string) => void;
 }): ReactElement<any>[] {
-  return items.flatMap((item) => [
-    <TraceItem
-      key={`${item.name}-${item.duration}-${item.agentTag}-${traceId}`}
-      name={item.name}
-      duration={item.duration}
-      start={item.start ?? 0}
-      totalDuration={totalDuration}
-      selected={item.selected}
-      depth={depth}
-      status={item.status?.code}
-      model={item.run?.attributes?.output?.model}
-      agentTag={item.agentTag}
-      onSelect={() => onSelect?.(item.run)}
-    />,
-    ...(item.children
-      ? renderTraceItems({
-          traceId,
-          items: item.children,
-          totalDuration,
-          depth: depth + 1,
-          onSelect,
-        })
-      : []),
-  ]);
+  return items.flatMap((item) => {
+    const itemKey = `${item.name}-${item.duration}-${item.agentTag}-${traceId}-${depth}`;
+    const isExpanded = expandedItems.has(itemKey);
+    const hasChildren = !!item.children && item.children.length > 0;
+
+    return [
+      <TraceItem
+        key={itemKey}
+        name={item.name}
+        duration={item.duration}
+        selected={item.selected}
+        depth={depth}
+        model={item.run?.attributes?.output?.model}
+        agentTag={item.agentTag}
+        onSelect={() => onSelect?.(item.run)}
+        hasChildren={hasChildren}
+        isExpanded={isExpanded}
+        onToggleExpand={() => onToggleExpand(itemKey)}
+      />,
+      ...(hasChildren && isExpanded && item.children
+        ? renderTraceItems({
+            traceId,
+            items: item.children,
+            depth: depth + 1,
+            onSelect,
+            expandedItems,
+            onToggleExpand,
+          })
+        : []),
+    ];
+  });
 }
 
 export default function TraceItemList({
@@ -251,9 +231,37 @@ export default function TraceItemList({
   onSelect?: (step?: TraceData) => void;
   selectedTrace?: TraceData | null;
 }) {
-  const traceSteps = formatTraceStepsAndTotalDuration({ steps, start: 0, selectedTrace });
   const { t } = useLocaleContext();
-  const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
+  const traceSteps = formatTraceStepsAndTotalDuration({ steps, start: 0, selectedTrace });
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(() => {
+    // default expand first two levels
+    const allKeys = new Set<string>();
+    const collectKeys = (items: TraceStep[], depth: number) => {
+      items.forEach((item) => {
+        if (depth < 2) {
+          const itemKey = `${item.name}-${item.duration}-${item.agentTag}-${traceId}-${depth}`;
+          allKeys.add(itemKey);
+        }
+        if (item.children && depth < 2) {
+          collectKeys(item.children, depth + 1);
+        }
+      });
+    };
+    collectKeys(traceSteps, 0);
+    return allKeys;
+  });
+
+  const toggleExpand = (itemKey: string) => {
+    setExpandedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemKey)) {
+        next.delete(itemKey);
+      } else {
+        next.add(itemKey);
+      }
+      return next;
+    });
+  };
 
   return (
     <Box>
@@ -262,46 +270,27 @@ export default function TraceItemList({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 1,
-          mb: 2,
+          mb: 1,
+          pb: 2,
+          borderBottom: "1px solid",
+          borderColor: "divider",
         }}
       >
-        <Typography
-          sx={{
-            fontWeight: 500,
-            flex: 1,
-            minWidth: 0,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {t("agentName")}
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          {t("traceTimeline")}
         </Typography>
-
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: isMobile ? "120px" : "200px",
-            position: "relative",
-            borderRadius: 5,
-            fontWeight: 500,
-          }}
-        >
-          {t("duration")}
-        </Box>
       </Box>
 
-      {/** biome-ignore lint/complexity/noUselessFragments: <> */}
-      <>
+      <Box>
         {renderTraceItems({
           traceId,
           items: traceSteps,
-          totalDuration: traceSteps[0]?.totalDuration ?? 0,
           depth: 0,
           onSelect,
+          expandedItems,
+          onToggleExpand: toggleExpand,
         })}
-      </>
+      </Box>
     </Box>
   );
 }

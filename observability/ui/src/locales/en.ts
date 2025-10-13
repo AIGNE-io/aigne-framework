@@ -91,4 +91,5 @@ export default flatten({
   delConfirmDescription: "Are you sure you want to delete the traces of {id}?",
   copyJson: "Copy JSON",
   downloadJson: "Download JSON",
+  traceTimeline: "Trace Timeline",
 });

@@ -37,7 +37,7 @@ export default function RunDetailDrawer({
           </IconButton>
         </Box>
 
-        <Box sx={{ overflow: "auto" }}>
+        <Box sx={{ overflow: "auto", height: 1 }}>
           <TraceDetailPanel trace={selectedTrace} sx={{ height: "inherit" }} />
         </Box>
       </Box>

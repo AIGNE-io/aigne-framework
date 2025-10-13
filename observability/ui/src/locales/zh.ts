@@ -90,4 +90,5 @@ export default flatten({
   delConfirmDescription: "确定要删除 ID 为 {id} 的 Traces 吗？",
   copyJson: "复制 JSON",
   downloadJson: "下载 JSON",
+  traceTimeline: "Trace Timeline",
 });

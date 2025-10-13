@@ -14,7 +14,7 @@ Config-Sources: {
   shape: rectangle
 
   aigne-yaml: "aigne.yaml\n(根入口点)"
-  
+
   definitions: {
     label: "Agent 与技能定义"
     shape: rectangle
@@ -33,7 +33,7 @@ Loader: {
 Runtime: {
   label: "已初始化的运行时环境"
   shape: rectangle
-  
+
   Objects: {
     label: "内存中的活动对象"
     shape: rectangle
@@ -106,7 +106,6 @@ export async function loadAgent(
 此示例演示了一个典型的项目设置，定义了默认模型，并列出了要加载的各种 Agent 和技能。
 
 ```yaml
-# 来源：packages/core/test-agents/aigne.yaml
 name: test_aigne_project
 description: A test project for the aigne agent
 chat_model:
@@ -175,7 +174,6 @@ Agent 是 AIGNE 平台的基本构建块。您可以在 YAML 文件中以声明�
 **示例：**
 
 ```yaml
-# 来源：packages/core/test-agents/chat-with-prompt.yaml
 name: chat-with-prompt
 description: Chat agent
 instructions:

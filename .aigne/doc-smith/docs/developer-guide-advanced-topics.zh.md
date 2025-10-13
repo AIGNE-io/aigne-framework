@@ -133,7 +133,6 @@ Agent 可以配置**记忆 (Memory)** 功能，以在多次调用之间保持状
 以下是在 YAML 中定义的 `AIAgent` 的一个简单示例：
 
 ```yaml
-# /agents/greeter.yaml
 type: ai
 name: 问候者
 description: 一个简单的 Agent，用于问候用户。

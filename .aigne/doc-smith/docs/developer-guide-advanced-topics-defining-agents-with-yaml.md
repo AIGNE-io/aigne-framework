@@ -14,7 +14,7 @@ Config-Sources: {
   shape: rectangle
 
   aigne-yaml: "aigne.yaml\n(Root Entry Point)"
-  
+
   definitions: {
     label: "Agent & Skill Definitions"
     shape: rectangle
@@ -33,7 +33,7 @@ Loader: {
 Runtime: {
   label: "Initialized Runtime Environment"
   shape: rectangle
-  
+
   Objects: {
     label: "Live Objects in Memory"
     shape: rectangle
@@ -106,7 +106,6 @@ Here are the top-level properties you can define in your `aigne.yaml` file:
 This example demonstrates a typical project setup, defining a default model, and listing various agents and skills to be loaded.
 
 ```yaml
-# Source: packages/core/test-agents/aigne.yaml
 name: test_aigne_project
 description: A test project for the aigne agent
 chat_model:
@@ -175,7 +174,6 @@ The most common type, used for general-purpose AI tasks. It uses a large languag
 **Example:**
 
 ```yaml
-# Source: packages/core/test-agents/chat-with-prompt.yaml
 name: chat-with-prompt
 description: Chat agent
 instructions:

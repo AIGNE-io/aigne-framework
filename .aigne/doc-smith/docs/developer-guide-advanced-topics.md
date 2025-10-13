@@ -133,7 +133,6 @@ While agents can be defined and configured programmatically in TypeScript, the m
 Here is a simple example of an `AIAgent` defined in YAML:
 
 ```yaml
-# /agents/greeter.yaml
 type: ai
 name: Greeter
 description: A simple agent that greets the user.

@@ -814,3 +814,27 @@ a6b723c09039f67e52684ba929c899440b74038791c26a6cf99cfea881c5f70f:
     https://docsmith.aigne.io:
       url: https://docsmith.aigne.io/image-bin/uploads/123cce5c739872c9.svg
       upload_time: 2025-10-13T08:04:43.162Z
+4d30b10415f2d0532e4cb3849f51d5ec4db90a2f2b62dfd3015ee57e06b02c43:
+  local_path: .aigne/doc-smith/.tmp/assets/d2/b0a063009dc0bf16da16bfa62a56fad99047b8cea67f6b8f6247f4a50e727996.svg
+  sites:
+    https://docsmith.aigne.io:
+      url: https://docsmith.aigne.io/image-bin/uploads/4d30b10415f2d053.svg
+      upload_time: 2025-10-13T08:40:56.370Z
+e168c29e0b92fd8f9687c4479d4298954874d1c6ab5116a49e3288901a1335d3:
+  local_path: .aigne/doc-smith/.tmp/assets/d2/54c563eae8a6434b0ce0a26d8ca1285e2799c43e6b3cd78d568fb0a51ff487a0.svg
+  sites:
+    https://docsmith.aigne.io:
+      url: https://docsmith.aigne.io/image-bin/uploads/e168c29e0b92fd8f.svg
+      upload_time: 2025-10-13T08:40:56.906Z
+e57b657a0254b6d3fbc1dbe032f758f8171da842df73fbbcd4db20c604c11ed6:
+  local_path: .aigne/doc-smith/.tmp/assets/d2/01ec18c22e1358ee6948d1350d07bfc3e98b0b3900a10bb4d38d6feebdbde48e.svg
+  sites:
+    https://docsmith.aigne.io:
+      url: https://docsmith.aigne.io/image-bin/uploads/e57b657a0254b6d3.svg
+      upload_time: 2025-10-13T08:40:57.974Z
+179f2d455f9c8a2a96bbc6ca4b2939a26f3b2f9ad3194b599fb59d9eee58f458:
+  local_path: .aigne/doc-smith/.tmp/assets/d2/c052141adef49d08d26e188cfd76b42779cffa054adb26b3a9cf3c0930aaec6f.svg
+  sites:
+    https://docsmith.aigne.io:
+      url: https://docsmith.aigne.io/image-bin/uploads/179f2d455f9c8a2a.svg
+      upload_time: 2025-10-13T08:40:58.796Z

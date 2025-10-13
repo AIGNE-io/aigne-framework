@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.81.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.5...aigne-framework-v1.81.0-beta.6) (2025-10-12)
+
+
+### Bug Fixes
+
+* correct loading aigne with AFS config for `upgrade` command ([#613](https://github.com/AIGNE-io/aigne-framework/issues/613)) ([db1db97](https://github.com/AIGNE-io/aigne-framework/commit/db1db97b6305009d302a782dbc7fa3147900af47))
+
+## [1.81.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.4...aigne-framework-v1.81.0-beta.5) (2025-10-12)
+
+
+### Features
+
+* **afs:** add configurable history injection to AFS system ([#611](https://github.com/AIGNE-io/aigne-framework/issues/611)) ([689b5d7](https://github.com/AIGNE-io/aigne-framework/commit/689b5d76d8cc82f548e8be74e63f18e7a6216c31))
+
 ## [1.81.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.3...aigne-framework-v1.81.0-beta.4) (2025-10-11)
 
 

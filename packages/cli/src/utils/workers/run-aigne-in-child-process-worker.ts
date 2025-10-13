@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { type Agent, AIGNE, type Message } from "@aigne/core";
+import type { Agent, Message } from "@aigne/core";
 import { findCliAgent, mapCliAgent } from "@aigne/core/utils/agent-utils.js";
 import { type LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { loadAIGNE } from "../load-aigne.js";
@@ -44,12 +44,12 @@ process.on(
   },
 );
 
-export async function loadAIGNEInChildProcess(...args: Parameters<typeof AIGNE.load>): Promise<{
+export async function loadAIGNEInChildProcess(options: Parameters<typeof loadAIGNE>[0]): Promise<{
   agents?: AgentInChildProcess[];
   cli?: { chat?: AgentInChildProcess; agents?: CLIAgentInChildProcess[] };
   mcpServer?: { agents?: AgentInChildProcess[] };
 }> {
-  const aigne = await AIGNE.load(...args);
+  const aigne = await loadAIGNE(options);
   return {
     agents: aigne.agents.map(serializeAgent),
     cli: {

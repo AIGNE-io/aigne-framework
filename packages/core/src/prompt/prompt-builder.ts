@@ -166,22 +166,24 @@ export class PromptBuilder {
     }
 
     if (options.agent?.afs) {
-      const history = await options.agent.afs.list(AFSHistory.Path, {
-        limit: options.agent.maxRetrieveMemoryCount ?? 10,
-        orderBy: [["createdAt", "desc"]],
-      });
-
-      if (message) {
-        const result = await options.agent.afs.search("/", message);
-        const ms = result.list.map((entry) => ({ content: stringify(entry.content) }));
-        memories.push(...ms);
-      }
-
-      memories.push(
-        ...history.list.filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
-      );
-
       messages.push(SystemMessageTemplate.from(await getAFSSystemPrompt(options.agent.afs)));
+
+      if (options.agent.afsConfig?.injectHistory) {
+        const history = await options.agent.afs.list(AFSHistory.Path, {
+          limit: options.agent.afsConfig.historyWindowSize || 10,
+          orderBy: [["createdAt", "desc"]],
+        });
+
+        if (message) {
+          const result = await options.agent.afs.search("/", message);
+          const ms = result.list.map((entry) => ({ content: stringify(entry.content) }));
+          memories.push(...ms);
+        }
+
+        memories.push(
+          ...history.list.filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
+        );
+      }
     }
 
     if (memories.length)

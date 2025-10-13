@@ -1,14 +1,14 @@
-本文档提供了 `AIGNE` 类的详细指南，该类是 AIGNE 框架中的核心协调器。您将学习如何初始化、配置和使用 `AIGNE` 类来管理 Agent、处理消息传递以及执行复杂的 AI 工作流。
+本文档详细介绍了 `AIGNE` 类，它是 AIGNE 框架中的核心协调器。您将学习如何初始化、配置和使用 `AIGNE` 类来管理 Agent、处理消息传递以及执行复杂的 AI 工作流。
 
 ### 系统架构
 
-为了理解 `AIGNE` 类如何融入更广泛的生态系统，让我们来可视化其核心组件及其交互方式。`AIGNE` 类作为中心枢纽，管理 Agent、技能和通信渠道。
+为了理解 `AIGNE` 类如何融入更广泛的生态系统，让我们将其核心组件及其交互可视化。`AIGNE` 类作为中心枢纽，管理 Agent、技能和通信渠道。
 
-本文档提供了 `AIGNE` 类的详细指南，该类是 AIGNE 框架中的核心协调器。您将学习如何初始化、配置和使用 `AIGNE` 类来管理 Agent、处理消息传递以及执行复杂的 AI 工作流。
+本文档详细介绍了 `AIGNE` 类，它是 AIGNE 框架中的核心协调器。您将学习如何初始化、配置和使用 `AIGNE` 类来管理 Agent、处理消息传递以及执行复杂的 AI 工作流。
 
 ### 系统架构
 
-为了理解 `AIGNE` 类如何融入更广泛的生态系统，让我们来可视化其核心组件及其交互方式。`AIGNE` 类作为中心枢纽，管理 Agent、技能和通信渠道。
+为了理解 `AIGNE` 类如何融入更广泛的生态系统，让我们将其核心组件及其交互可视化。`AIGNE` 类作为中心枢纽，管理 Agent、技能和通信渠道。
 
 ```d2
 direction: down
@@ -51,9 +51,9 @@ AIGNE-Ecosystem.AIGNE-Class <-> AIGNE-Ecosystem.Communication-Channels: "处理"
 
 ```
 
-## 初始化与配置
+## 初始化和配置
 
-`AIGNE` 类可以直接实例化，也可以从配置文件加载。这为编程方式和声明式设置都提供了灵活性。
+`AIGNE` 类可以直接实例化，也可以从配置文件加载。这为编程和声明式设置提供了灵活性。
 
 ### 构造函数
 
@@ -68,13 +68,13 @@ AIGNE-Ecosystem.AIGNE-Class <-> AIGNE-Ecosystem.Communication-Channels: "处理"
 **`AIGNEOptions`**
 
 <x-field-group>
-  <x-field data-name="rootDir" data-type="string" data-required="false" data-desc="用于解析 Agent 和技能的相对路径的根目录。"></x-field>
+  <x-field data-name="rootDir" data-type="string" data-required="false" data-desc="用于解析 Agent 和技能相对路径的根目录。"></x-field>
   <x-field data-name="name" data-type="string" data-required="false" data-desc="AIGNE 实例的名称。"></x-field>
   <x-field data-name="description" data-type="string" data-required="false" data-desc="AIGNE 实例的描述。"></x-field>
-  <x-field data-name="model" data-type="ChatModel" data-required="false" data-desc="全局聊天模型，用于未指定模型的 Agent。"></x-field>
+  <x-field data-name="model" data-type="ChatModel" data-required="false" data-desc="全局聊天模型，适用于未指定模型的 Agent。"></x-field>
   <x-field data-name="imageModel" data-type="ImageModel" data-required="false" data-desc="用于图像处理任务的图像模型。"></x-field>
-  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="供 AIGNE 实例使用的技能列表。"></x-field>
-  <x-field data-name="agents" data-type="Agent[]" data-required="false" data-desc="供 AIGNE 实例使用的 Agent 列表。"></x-field>
+  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="AIGNE 实例要使用的技能列表。"></x-field>
+  <x-field data-name="agents" data-type="Agent[]" data-required="false" data-desc="AIGNE 实例要使用的 Agent 列表。"></x-field>
   <x-field data-name="limits" data-type="ContextLimits" data-required="false" data-desc="AIGNE 实例的使用限制，例如超时和令牌计数。"></x-field>
   <x-field data-name="observer" data-type="AIGNEObserver" data-required="false" data-desc="用于监控 AIGNE 实例的观察者。"></x-field>
 </x-field-group>
@@ -133,11 +133,11 @@ loadAIGNE();
 
 ## 核心组件
 
-`AIGNE` 类由几个关键组件组成，这些组件协同工作，共同创建一个强大的 AI 系统。
+`AIGNE` 类由几个关键组件组成，这些组件协同工作以创建一个强大的人工智能系统。
 
 ### `agents`
 
-`agents` 属性是由 `AIGNE` 实例管理的主要 Agent 的集合。它提供按 Agent 名称的索引访问。
+`agents` 属性是 `AIGNE` 实例管理的主要 Agent 的集合。它提供按 Agent 名称的索引访问。
 
 <x-field data-name="agents" data-type="AccessorArray<Agent>" data-desc="主要 Agent 的集合。"></x-field>
 
@@ -155,11 +155,11 @@ loadAIGNE();
 
 ## Agent 管理
 
-`AIGNE` 类提供了用于管理系统中 Agent 的方法。
+`AIGNE` 类提供了管理系统中 Agent 的方法。
 
 ### `addAgent()`
 
-`addAgent` 方法允许您向 `AIGNE` 实例中添加一个或多个 Agent。每个 Agent 都会附加到 `AIGNE` 实例上，从而可以访问其资源。
+`addAgent` 方法允许您向 `AIGNE` 实例添加一个或多个 Agent。每个 Agent 都会附加到 `AIGNE` 实例上，从而可以访问其资源。
 
 **参数**
 
@@ -190,12 +190,12 @@ console.log('Agent added:', aigne.agents[0].name);
 
 ### `invoke(agent)`
 
-此重载会创建一个 `UserAgent`，它是对一个 Agent 的包装，用于重复调用。
+此重载会创建一个 `UserAgent`，它是对 Agent 的封装，用于重复调用。
 
 **参数**
 
 <x-field-group>
-  <x-field data-name="agent" data-type="Agent<I, O>" data-required="true" data-desc="要包装的目标 Agent。"></x-field>
+  <x-field data-name="agent" data-type="Agent<I, O>" data-required="true" data-desc="要封装的目标 Agent。"></x-field>
 </x-field-group>
 
 **返回值**
@@ -216,7 +216,7 @@ console.log('Agent added:', aigne.agents[0].name);
 
 **返回值**
 
-<x-field data-name="Promise<O>" data-type="Promise" data-desc="一个 Promise，它会解析为 Agent 的完整响应。"></x-field>
+<x-field data-name="Promise<O>" data-type="Promise" data-desc="一个 promise，它会解析为 Agent 的完整响应。"></x-field>
 
 **示例**
 
@@ -280,7 +280,7 @@ invokeStreamingAgent();
 
 ## 消息传递
 
-`AIGNE` 类为 Agent 间的通信提供了一个消息队列。
+`AIGNE` 类为 Agent 间通信提供了一个消息队列。
 
 ### `publish()`
 
@@ -289,14 +289,14 @@ invokeStreamingAgent();
 **参数**
 
 <x-field-group>
-  <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="要发布消息的一个或多个主题。"></x-field>
+  <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="要将消息发布到的一个或多个主题。"></x-field>
   <x-field data-name="payload" data-type="Omit<MessagePayload, 'context'> | Message" data-required="true" data-desc="消息负载。"></x-field>
   <x-field data-name="options" data-type="InvokeOptions<U>" data-required="false" data-desc="可选的配置参数。"></x-field>
 </x-field-group>
 
 ### `subscribe()`
 
-`subscribe` 方法允许您监听特定主题上的消息。它可以与监听器回调函数一起使用，也可以作为一个 Promise，该 Promise 会在下一条消息到达时解析。
+`subscribe` 方法允许您监听特定主题上的消息。它可以与监听器回调函数一起使用，也可以作为一个 promise 使用，该 promise 会解析为下一条消息。
 
 **参数**
 
@@ -307,7 +307,7 @@ invokeStreamingAgent();
 
 **返回值**
 
-<x-field data-name="Unsubscribe | Promise<MessagePayload>" data-type="Function | Promise" data-desc="如果提供了监听器，则返回一个取消订阅的函数；否则，返回一个在下一条消息到达时解析的 Promise。"></x-field>
+<x-field data-name="Unsubscribe | Promise<MessagePayload>" data-type="Function | Promise" data-desc="如果提供了监听器，则返回一个取消订阅的函数，否则返回一个解析为下一条消息的 promise。"></x-field>
 
 ### `unsubscribe()`
 
@@ -338,7 +338,7 @@ aigne.unsubscribe('news', listener);
 
 ## 生命周期管理
 
-`AIGNE` 类提供了一个 `shutdown` 方法，用于平滑地终止实例及其所有的 Agent 和技能。
+`AIGNE` 类提供了一个 `shutdown` 方法，用于平稳地终止实例及其所有的 Agent 和技能。
 
 ### `shutdown()`
 
@@ -346,7 +346,7 @@ aigne.unsubscribe('news', listener);
 
 **返回值**
 
-<x-field data-name="Promise<void>" data-type="Promise" data-desc="一个在关闭完成后解析的 Promise。"></x-field>
+<x-field data-name="Promise<void>" data-type="Promise" data-desc="一个 promise，在关闭完成后解析。"></x-field>
 
 **示例**
 
@@ -355,7 +355,7 @@ import { AIGNE } from '@aigne/core';
 
 async function shutdownAIGNE() {
   const aigne = new AIGNE();
-  // ... 您的 AIGNE 逻辑 ...
+  // ... 你的 AIGNE 逻辑 ...
   await aigne.shutdown();
   console.log('AIGNE instance shut down.');
 }

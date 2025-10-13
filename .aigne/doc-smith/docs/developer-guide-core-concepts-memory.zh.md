@@ -1,24 +1,24 @@
 # 内存管理
 
-内存模块提供了一个强大的框架，使 Agent 能够持久化和回忆信息，从而创建一个有状态且具备上下文感知能力的系统。这使得 Agent 能够维护交互历史、从过去的事件中学习，并做出更明智的决策。
+内存模块提供了一个强大的框架，使 Agent 能够持久化和回忆信息，从而创建一个有状态且具备上下文感知能力的系统。这使得 Agent 可以维护交互历史、从过去的事件中学习，并做出更明智的决策。
 
-内存系统的核心是 `MemoryAgent`，它充当所有内存相关操作的中央协调器。它将实际的内存写入和读取任务委托给两个专门的组件：`MemoryRecorder` 和 `MemoryRetriever`。这种关注点分离的设计使得内存解决方案能够灵活且可扩展。
+内存系统的核心是 `MemoryAgent`，它充当所有内存相关操作的中央协调器。它将写入和读取内存的实际任务委托给两个专门的组件：`MemoryRecorder` 和 `MemoryRetriever`。这种关注点分离的设计实现了灵活且可扩展的内存解决方案。
 
 - **MemoryAgent**：内存操作的主要入口点。它负责协调记录和检索过程。
-- **MemoryRecorder**：一种 Agent 技能，负责将内存写入或存储到持久化后端（例如数据库、文件系统或内存存储）。
+- **MemoryRecorder**：一种 Agent 技能，负责将内存写入或存储到持久化后端（例如，数据库、文件系统或内存存储）。
 - **MemoryRetriever**：一种 Agent 技能，负责从存储后端查询和获取内存。
 
 本指南将逐一介绍每个组件，解释它们的作用，并提供如何在您的 Agent 系统中实现和使用它们的实际示例。
 
 ## 架构概述
 
-下图说明了核心内存组件之间的关系。应用程序逻辑与 `MemoryAgent` 交互，而 `MemoryAgent` 又使用 `MemoryRecorder` 和 `MemoryRetriever` 技能与持久化存储后端进行交互。
+下图说明了核心内存组件之间的关系。应用程序逻辑与 `MemoryAgent` 交互，`MemoryAgent` 再使用 `MemoryRecorder` 和 `MemoryRetriever` 技能与持久化存储后端进行交互。
 
 ```d2
 direction: down
 
 Agent-System: {
-  label: "Agent 系统\n(应用程序)"
+  label: "Agent 系统\n（应用程序）"
   shape: rectangle
 }
 
@@ -32,20 +32,20 @@ Memory-Module: {
   }
 
   MemoryAgent: {
-    label: "MemoryAgent\n(协调器)"
+    label: "MemoryAgent\n（协调器）"
   }
 
   MemoryRecorder: {
-    label: "MemoryRecorder\n(Agent 技能)"
+    label: "MemoryRecorder\n（Agent 技能）"
   }
 
   MemoryRetriever: {
-    label: "MemoryRetriever\n(Agent 技能)"
+    label: "MemoryRetriever\n（Agent 技能）"
   }
 }
 
 Persistent-Backend: {
-  label: "持久化后端\n(数据库、文件系统等)"
+  label: "持久化后端\n（数据库、文件系统等）"
   shape: cylinder
 }
 
@@ -63,15 +63,15 @@ Persistent-Backend -> Memory-Module.MemoryRetriever: "4b. 返回内存"
 
 ### MemoryAgent
 
-`MemoryAgent` 是一个专门的 Agent，作为管理、存储和检索内存的主要接口。它并非设计为像其他 Agent 那样被直接调用以处理消息；相反，它提供了核心的 `record()` 和 `retrieve()` 方法来与系统的内存进行交互。
+`MemoryAgent` 是一种专门的 Agent，作为管理、存储和检索内存的主要接口。与其他 Agent 不同，它不用于直接调用以处理消息；相反，它提供核心的 `record()` 和 `retrieve()` 方法来与系统的内存进行交互。
 
 您可以通过为其提供一个 `recorder` 和一个 `retriever` 来配置 `MemoryAgent`。这些可以是预构建的实例，也可以是定义您特定存储逻辑的自定义函数。
 
 **主要特性：**
 
-- **集中管理**：作为内存操作的单点联系。
-- **委托**：将存储和检索逻辑分派给专用的 `MemoryRecorder` 和 `MemoryRetriever` Agent。
-- **自动记录**：可以配置 `autoUpdate` 来自动记录其观察到的所有消息，从而创建无缝的交互历史。
+- **集中管理**：作为内存操作的单点联系人。
+- **委托**：将存储和检索逻辑卸载到专用的 `MemoryRecorder` 和 `MemoryRetriever` Agent。
+- **自动记录**：可以通过 `autoUpdate` 配置，以自动记录其观察到的所有消息，从而创建无缝的交互历史记录。
 
 **示例：创建 MemoryAgent**
 
@@ -85,7 +85,7 @@ const myRecorder = new MemoryRecorder({
     // 将内存保存到数据库的自定义逻辑
     console.log("Recording memories:", input.content);
     // ... 实现 ...
-    return { memories: [] }; // 返回创建的内存
+    return { memories: [] }; // 返回已创建的内存
   },
 });
 
@@ -109,11 +109,11 @@ const memoryAgent = new MemoryAgent({
 
 ### MemoryRecorder
 
-`MemoryRecorder` 是一个负责存储内存的抽象 Agent 类。要使用它，您必须提供 `process` 方法的具体实现，其中包含如何以及在何处持久化内存数据的逻辑。这种设计允许您连接到任何存储后端，从简单的内存数组到复杂的向量数据库。
+`MemoryRecorder` 是一个负责存储内存的抽象 Agent 类。要使用它，您必须提供 `process` 方法的具体实现，该方法包含如何以及在何处持久化内存数据的逻辑。这种设计允许您连接到任何存储后端，从简单的内存数组到复杂的向量数据库。
 
 **输入 (`MemoryRecorderInput`)**
 
-`process` 函数接收一个包含 `content` 数组的输入对象。数组中的每一项代表要存储的一条信息，可以是一个 `input` 消息、一个 `output` 消息以及 `source` Agent 的 ID。
+`process` 函数接收一个包含 `content` 数组的输入对象。数组中的每个项目代表要存储的一条信息，可以是一个 `input` 消息、一个 `output` 消息以及 `source` Agent 的 ID。
 
 ```typescript
 interface MemoryRecorderInput extends Message {
@@ -127,7 +127,7 @@ interface MemoryRecorderInput extends Message {
 
 **输出 (`MemoryRecorderOutput`)**
 
-该函数应返回一个 Promise，其解析为一个包含已成功创建的 `memories` 数组的对象。
+该函数应返回一个 Promise，该 Promise 解析为一个对象，其中包含已成功创建的 `memories` 数组。
 
 ```typescript
 interface MemoryRecorderOutput extends Message {
@@ -178,7 +178,7 @@ const inMemoryRecorder = new MemoryRecorder({
 
 **输入 (`MemoryRetrieverInput`)**
 
-`process` 函数接收一个输入对象，该对象可以包含一个 `search` 查询和一个 `limit` 来控制结果的数量。具体实现决定了如何执行搜索（例如，关键字匹配、向量相似性）。
+`process` 函数接收一个输入对象，其中可以包含 `search` 查询和用于控制结果数量的 `limit`。具体实现决定了如何执行搜索（例如，关键字匹配、向量相似度）。
 
 ```typescript
 interface MemoryRetrieverInput extends Message {
@@ -189,7 +189,7 @@ interface MemoryRetrieverInput extends Message {
 
 **输出 (`MemoryRetrieverOutput`)**
 
-该函数应返回一个 Promise，其解析为一个包含与查询匹配的 `memories` 数组的对象。
+该函数应返回一个 Promise，该 Promise 解析为一个对象，其中包含与查询匹配的 `memories` 数组。
 
 ```typescript
 interface MemoryRetrieverOutput extends Message {
@@ -230,7 +230,7 @@ const inMemoryRetriever = new MemoryRetriever({
 
     // 应用限制
     if (input.limit) {
-      results = results.slice(-input.limit); // 获取最近的项目
+      results = results.slice(-input.limit); // 获取最新的项目
     }
 
     return { memories: results };
@@ -238,13 +238,13 @@ const inMemoryRetriever = new MemoryRetriever({
 });
 ```
 
-## 整合所有组件
+## 综合应用
 
 现在，让我们将这些组件结合起来，创建一个功能齐全的内存系统。我们将使用自定义的内存记录器和检索器来实例化 `MemoryAgent`，然后用它来记录和检索信息。
 
 ```typescript
 import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
-import { Aigne, type Context } from "@core/aigne";
+import { AIGNE, type Context } from "@core/aigne";
 
 // --- 假设 inMemoryRecorder 和 inMemoryRetriever 已如上文定义 ---
 
@@ -255,7 +255,7 @@ const memoryAgent = new MemoryAgent({
 });
 
 // 2. 创建一个上下文来运行 Agent
-const context = new Aigne().createContext();
+const context = new AIGNE().createContext();
 
 // 3. 记录一条新内存
 async function runMemoryExample(context: Context) {

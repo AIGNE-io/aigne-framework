@@ -4,7 +4,7 @@
   <picture>
     <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
     <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
-    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE 徽标" width="400" />
   </picture>
 </p>
 
@@ -14,23 +14,23 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/anthropic)](https://www.npmjs.com/package/@aigne/anthropic)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/anthropic)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-AIGNE Anthropic SDK，用于在 [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) 中集成 Claude AI 模型。
+AIGNE Anthropic SDK，用于在 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)内与 Claude AI 模型集成。
 
 ## 简介
 
-`@aigne/anthropic` 提供了 AIGNE Framework 与 Anthropic 的 Claude 语言模型之间的无缝集成。该软件包使开发人员能够在其 AIGNE 应用程序中轻松利用 Anthropic 的强大模型，在利用 Claude 先进的 AI 功能的同时，提供一致的接口。
+`@aigne/anthropic` 提供了 AIGNE 框架与 Anthropic 的 Claude 语言模型之间的无缝集成。该软件包使开发人员能够在其 AIGNE 应用程序中轻松利用 Anthropic 的强大模型，提供一致的接口，同时利用 Claude 先进的 AI 功能。
 
-此图说明了 `@aigne/anthropic` 包如何将您的 AIGNE 应用程序连接到 Anthropic API 及其底层的 Claude 模型。
+此图说明了 `@aigne/anthropic` 软件包如何将您的 AIGNE 应用程序连接到 Anthropic API 及其底层的 Claude 模型。
 
 ```d2
 direction: down
 
 AIGNE-Application: {
-  label: "AIGNE 应用程序"
+  label: "AIGNE 应用"
   shape: rectangle
 
   AIGNE-Framework: {
-    label: "AIGNE Framework"
+    label: "AIGNE 框架"
     icon: "https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg"
     shape: rectangle
 
@@ -60,20 +60,20 @@ AIGNE-Application.AIGNE-Framework.aigne-anthropic -> Anthropic-Service.Anthropic
 Anthropic-Service.Anthropic-API -> Anthropic-Service.Claude-Models: "访问"
 ```
 
-## 功能特性
+## 功能
 
 *   **Anthropic API 集成**：使用官方 SDK 直接连接到 Anthropic 的 API 服务。
-*   **聊天补全**：全面支持 Claude 的聊天补全 API，兼容所有可用模型。
+*   **聊天补全**：全面支持 Claude 的聊天补全 API，涵盖所有可用模型。
 *   **工具调用**：内置支持 Claude 强大的工具调用功能。
 *   **流式响应**：支持流式传输，以实现响应更迅速的实时应用。
 *   **类型安全**：为所有 API、模型和选项提供全面的 TypeScript 类型定义。
-*   **一致的接口**：遵循 AIGNE Framework 的统一模型接口，实现跨提供商兼容性。
+*   **一致的接口**：遵循 AIGNE 框架的统一模型接口，以实现跨提供商的兼容性。
 *   **强大的错误处理**：包含内置的错误处理和重试机制。
-*   **全面的配置**：提供丰富的选项，用于微调模型行为和客户端设置。
+*   **完整的配置**：提供丰富的选项，用于微调模型行为和客户端设置。
 
 ## 安装
 
-首先，使用您偏好的包管理器安装 `@aigne/anthropic` 和 `@aigne/core` 包。
+要开始使用，请使用您偏好的包管理器安装 `@aigne/anthropic` 和 `@aigne/core` 包。
 
 ### npm
 
@@ -135,7 +135,7 @@ const model = new AnthropicChatModel({
 
 ## 基本用法
 
-以下是一个调用模型以获取聊天补全的基本示例。
+这是一个如何调用模型以获得聊天补全的基本示例。
 
 ```typescript
 import { AnthropicChatModel } from "@aigne/anthropic";
@@ -154,14 +154,14 @@ async function getGreeting() {
 }
 
 getGreeting();
-/* 输出：
+/* Output:
 Hello there! It's a pleasure to meet you. How can I help you today?
 */
 ```
 
 ## 流式响应
 
-对于需要实时输出的应用程序，您可以以流式方式获取模型响应。当设置 `streaming: true` 时，`invoke` 方法会返回一个 `AsyncGenerator`。
+对于需要实时输出的应用，您可以流式传输模型的响应。当设置 `streaming: true` 时，`invoke` 方法会返回一个 `AsyncGenerator`。
 
 ```typescript
 import { AnthropicChatModel } from "@aigne/anthropic";
@@ -181,7 +181,7 @@ async function streamStory() {
   );
 
   let fullText = "";
-  process.stdout.write("故事: ");
+  process.stdout.write("故事：");
   for await (const chunk of stream) {
     if (isAgentResponseDelta(chunk)) {
       const text = chunk.delta.text?.text;
@@ -207,7 +207,7 @@ import { z } from "zod";
 
 const model = new AnthropicChatModel({
   apiKey: "your-api-key",
-  model: "claude-3-opus-20240229", // 推荐使用 Opus 模型处理复杂的工具调用
+  model: "claude-3-opus-20240229", // 推荐使用 Opus 进行复杂的工具调用
 });
 
 async function callWeatherTool() {
@@ -218,9 +218,9 @@ async function callWeatherTool() {
         type: "function",
         function: {
           name: "getCurrentWeather",
-          description: "获取特定地点的当前天气",
+          description: "Get the current weather for a specific location",
           parameters: z.object({
-            location: z.string().describe("城市和州，例如：San Francisco, CA"),
+            location: z.string().describe("The city and state, e.g., San Francisco, CA"),
           }),
         },
       },
@@ -240,7 +240,7 @@ async function callWeatherTool() {
 }
 
 callWeatherTool();
-/* 输出：
+/* Output:
 Tool call requested: getCurrentWeather
 Arguments: { location: 'San Francisco, CA' }
 */
@@ -248,4 +248,4 @@ Arguments: { location: 'San Francisco, CA' }
 
 ## 许可证
 
-本项目采用 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md) 授权。
+本项目根据 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)进行许可。

@@ -60,6 +60,8 @@ targetAudience: ""
 locale: en
 translateLanguages:
   - zh
+  - zh-TW
+  - ja
 docsDir: .aigne/doc-smith/docs  # Directory to save generated documentation
 sourcesPath:  # Source code paths to analyze
   - packages/core

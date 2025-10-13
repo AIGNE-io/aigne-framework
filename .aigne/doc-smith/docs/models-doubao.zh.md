@@ -1,12 +1,12 @@
-本文档提供了 `@aigne/doubao` SDK 的综合使用指南，该 SDK 将豆包 AI 模型集成到 AIGNE 框架中。您将学习如何安装、配置和使用该 SDK，以便在您的应用程序中利用豆包的聊天和图像生成功能。
+本文档提供了 `@aigne/doubao` SDK 的全面使用指南，该 SDK 将豆包 AI 模型集成到 AIGNE 框架中。您将学习如何安装、配置和使用此 SDK，以便在您的应用程序中利用豆包的聊天和图像生成功能。
 
-为了说明该 SDK 的作用，以下是其架构的高阶概览：
+为了说明该 SDK 的作用，以下是其架构的高层级概览：
 
 ```d2
 direction: down
 
 User-Application: {
-  label: "您的应用程序"
+  label: "你的应用程序"
   shape: rectangle
 }
 
@@ -42,22 +42,22 @@ AIGNE-Framework.aigne-doubao-SDK -> Doubao-AI-Service: "API 调用"
 
 ## 1. 简介
 
-`@aigne/doubao` 提供了 AIGNE 框架与豆包强大语言模型之间的无缝集成。该软件包使开发人员能够在其 AIGNE 应用程序中轻松利用豆包的 AI 功能，在利用豆包高级特性的同时，提供了一致的接口。
+`@aigne/doubao` 实现了 AIGNE 框架与豆包强大语言模型之间的无缝集成。该软件包使开发者能够在其 AIGNE 应用程序中轻松利用豆包的 AI 功能，在提供一致接口的同时，也能运用豆包的先进特性。
 
-### 功能
+### 功能特性
 
 *   **直接集成豆包 API**：直接连接到豆包的 API 服务。
 *   **聊天补全**：支持所有可用的豆包聊天模型。
-*   **函数调用**：内置函数调用支持。
-*   **流式响应**：支持流式传输，以实现响应更快的应用程序。
+*   **函数调用**：内置对函数调用的支持。
+*   **流式响应**：支持流式传输，以实现响应更及时的应用程序。
 *   **类型安全**：为所有 API 提供全面的 TypeScript 类型定义。
-*   **一致的接口**：与 AIGNE 框架的模型接口保持一致，以实现互操作性。
-*   **强大的错误处理**：具备内置的错误处理和重试机制。
-*   **全面的配置**：提供丰富的选项以微调模型行为。
+*   **一致的接口**：与 AIGNE 框架的模型接口对齐，以实现互操作性。
+*   **稳健的错误处理**：内置错误处理和重试机制。
+*   **完整的配置选项**：提供丰富的选项来微调模型行为。
 
 ## 2. 安装
 
-首先，请使用您偏好的包管理器安装 `@aigne/doubao` 和 `@aigne/core` 软件包。
+首先，请使用您偏好的包管理器安装 `@aigne/doubao` 和 `@aigne/core` 包。
 
 ### 使用 npm
 
@@ -96,7 +96,7 @@ const model = new DoubaoChatModel({
 
 ## 4. 聊天模型用法
 
-`DoubaoChatModel` 类提供了与豆包聊天补全模型交互的接口。
+`DoubaoChatModel` 类提供了与豆包聊天补全模型进行交互的接口。
 
 ### 基本用法
 
@@ -122,7 +122,7 @@ const result = await model.invoke({
 console.log(result);
 /* 输出:
   {
-    text: "Hello! I'm an AI assistant powered by Doubao's language model.",
+    text: "你好！我是一个由豆包语言模型驱动的 AI 助手。",
     model: "doubao-seed-1-6-250615",
     usage: {
       inputTokens: 7,
@@ -134,7 +134,7 @@ console.log(result);
 
 ### 流式响应
 
-对于实时应用程序，您可以从模型中流式传输响应。这使您能够在输出可用时立即处理它。
+对于实时应用程序，您可以从模型中流式传输响应。这使您能够在输出可用时立即进行处理。
 
 ```typescript
 import { isAgentResponseDelta } from "@aigne/core";
@@ -163,7 +163,7 @@ for await (const chunk of stream) {
   }
 }
 
-console.log(fullText); // 输出: "Hello! I'm an AI assistant powered by Doubao's language model."
+console.log(fullText); // 输出："你好！我是一个由豆包语言模型驱动的 AI 助手。"
 console.log(json); // { model: "doubao-seed-1-6-250615", usage: { inputTokens: 7, outputTokens: 12 } }
 ```
 
@@ -195,8 +195,8 @@ async function generateImage() {
 generateImage();
 ```
 
-`output.images` 数组将为每个生成的图像包含一个带有 `url` 或 `data` 属性（base64 编码）的对象。
+`output.images` 数组将为每个生成的图像包含带有 `url` 或 `data` 属性（base64 编码）的对象。
 
 ## 6. 许可证
 
-`@aigne/doubao` SDK 在 Elastic-2.0 许可下发布。
+`@aigne/doubao` SDK 在 Elastic-2.0 许可证下发布。

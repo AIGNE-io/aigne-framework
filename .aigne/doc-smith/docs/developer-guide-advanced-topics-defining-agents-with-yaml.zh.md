@@ -2,7 +2,7 @@
 
 ## 概述
 
-AIGNE 加载器系统旨在解释一组配置文件，从根 `aigne.yaml` 文件开始，以构建完整的运行时环境。此过程涉及解析项目级设置、发现所有指定的 Agent 和技能，并将其具象化为可执行对象。加载器支持使用 YAML（为了简洁）和 JavaScript/TypeScript（用于更复杂的编程逻辑）来定义 Agent。
+AIGNE 加载器系统旨在解释一组配置文件（从根 `aigne.yaml` 文件开始），以构建一个完整的运行时环境。此过程涉及解析项目级设置、发现所有指定的 Agent 和 Skill，并将其实例化为可执行对象。加载器支持使用 YAML（为求简洁）和 JavaScript/TypeScript（用于更复杂的编程逻辑）来定义 Agent。
 
 加载过程可视图化如下：
 
@@ -13,10 +13,10 @@ Config-Sources: {
   label: "配置源"
   shape: rectangle
 
-  aigne-yaml: "aigne.yaml\n(根入口点)"
+  aigne-yaml: "aigne.yaml\n（根入口点）"
 
   definitions: {
-    label: "Agent 与技能定义"
+    label: "Agent 和 Skill 定义"
     shape: rectangle
     grid-columns: 2
 
@@ -40,26 +40,26 @@ Runtime: {
     grid-columns: 2
 
     Agent-Instances: "Agent 实例"
-    Skill-Instances: "技能实例"
+    Skill-Instances: "Skill 实例"
   }
 }
 
 Config-Sources.aigne-yaml -> Loader: "1. 读取"
 Config-Sources.definitions -> Loader: "2. 发现"
-Loader -> Loader: "3. 解析与构建"
+Loader -> Loader: "3. 解析和构建"
 Loader -> Runtime.Objects: "4. 实例化"
 ```
 
 ## 核心功能
 
-加载器系统由几个关键函数协调，这些函数负责处理项目配置的发现、解析和实例化。
+加载器系统由几个关键函数协调，这些函数处理项目配置的发现、解析和实例化。
 
 ### `load` 函数
 
-这是加载器系统的主入口点。它接收项目目录的路径（或特定的 `aigne.yaml` 文件）和一个选项对象，然后返回一个完全解析好的、可供使用的 `AIGNEOptions` 对象。
+这是加载器系统的主入口点。它接收一个项目目录路径（或特定的 `aigne.yaml` 文件路径）和一个选项对象，然后返回一个完全解析、可供使用的 `AIGNEOptions` 对象。
 
 ```typescript
-// 来自：packages/core/src/loader/index.ts
+// 源自：packages/core/src/loader/index.ts
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
   // ... implementation
@@ -71,7 +71,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
 此函数负责从文件中加载单个 Agent。它会自动检测文件类型（YAML 或 JavaScript/TypeScript）并使用相应的解析器。
 
 ```typescript
-// 来自：packages/core/src/loader/index.ts
+// 源自：packages/core/src/loader/index.ts
 
 export async function loadAgent(
   path: string,
@@ -84,26 +84,26 @@ export async function loadAgent(
 
 ## 项目配置：`aigne.yaml`
 
-`aigne.yaml`（或 `aigne.yml`）文件是项目配置的根。加载器会在提供的路径中搜索此文件以开始加载过程。
+`aigne.yaml`（或 `aigne.yml`）文件是项目配置的根文件。加载器会在提供的路径中搜索此文件以开始加载过程。
 
-### `aigne.yaml` 模式
+### `aigne.yaml` Schema
 
 以下是您可以在 `aigne.yaml` 文件中定义的顶层属性：
 
 | Key | Type | Description |
 | :--- | :--- | :--- |
-| `name` | `string` | 项目名称。 |
+| `name` | `string` | 项目的名称。 |
 | `description` | `string` | 项目的简要描述。 |
 | `model` | `string` or `object` | 所有 Agent 的默认聊天模型配置。可被单个 Agent 覆盖。 |
 | `imageModel` | `string` or `object` | 所有 Agent 的默认图像模型配置。 |
 | `agents` | `string[]` | 要加载的 Agent 定义文件的路径列表。 |
-| `skills` | `string[]` | 全局可用的技能定义文件的路径列表。 |
-| `mcpServer` | `object` | MCP（多 Agent 通信协议）服务器的配置，包括要暴露的 Agent 列表。 |
+| `skills` | `string[]` | 全局可用的 Skill 定义文件的路径列表。 |
+| `mcpServer` | `object` | MCP (Multi-agent Communication Protocol) 服务器的配置，包括要公开的 Agent 列表。 |
 | `cli` | `object` | 命令行界面的配置，定义聊天 Agent 和 Agent 命令结构。 |
 
 ### `aigne.yaml` 示例
 
-此示例演示了一个典型的项目设置，定义了默认模型，并列出了要加载的各种 Agent 和技能。
+此示例演示了一个典型的项目设置，定义了默认模型，并列出了要加载的各种 Agent 和 Skill。
 
 ```yaml
 name: test_aigne_project
@@ -142,22 +142,22 @@ cli:
 
 ## Agent 配置 (YAML)
 
-Agent 是 AIGNE 平台的基本构建块。您可以在 YAML 文件中以声明式且易于阅读的格式定义它们。
+Agent 是 AIGNE 平台的基本构建块。您可以在 YAML 文件中定义它们，以获得一种声明式且易于阅读的格式。
 
 ### 通用 Agent 属性
 
-所有 Agent 类型共享一组通用属性：
+所有 Agent 类型都共享一组通用属性：
 
 | Key | Type | Description |
 | :--- | :--- | :--- |
 | `name` | `string` | Agent 的唯一名称。 |
-| `description` | `string` | 关于 Agent 用途和能力的描述。 |
-| `model` | `string` or `object` | 覆盖此特定 Agent 的默认聊天模型。 |
-| `inputSchema` | `string` or `object` | 指向 JSON 模式文件的路径或定义预期输入的内联模式。 |
-| `outputSchema` | `string` or `object` | 指向 JSON 模式文件的路径或定义预期输出的内联模式。 |
-| `skills` | `(string or object)[]` | 此 Agent 可用的技能（工具）列表。可以是技能文件的路径或嵌套的 Agent 定义。 |
-| `memory` | `boolean` or `object` | 为 Agent 启用记忆功能。可以是一个简单的 `true`，也可以是用于高级配置的对象。 |
-| `hooks` | `object` or `object[]` | 定义在生命周期的不同点（例如 `onStart`、`onSuccess`）触发其他 Agent 的钩子。 |
+| `description` | `string` | 关于 Agent 用途和功能的描述。 |
+| `model` | `string` or `object` | 为此特定 Agent 覆盖默认的聊天模型。 |
+| `inputSchema` | `string` or `object` | 指向 JSON schema 文件的路径或定义预期输入的内联 schema。 |
+| `outputSchema` | `string` or `object` | 指向 JSON schema 文件的路径或定义预期输出的内联 schema。 |
+| `skills` | `(string or object)[]` | 此 Agent 可用的 Skill (工具) 列表。可以是 Skill 文件的路径或嵌套的 Agent 定义。 |
+| `memory` | `boolean` or `object` | 为 Agent 启用内存。可以是一个简单的 `true`，也可以是用于高级配置的对象。 |
+| `hooks` | `object` or `object[]` | 定义在生命周期不同点（例如 `onStart`、`onSuccess`）触发其他 Agent 的钩子。 |
 
 ### Agent 类型
 
@@ -165,7 +165,7 @@ Agent 是 AIGNE 平台的基本构建块。您可以在 YAML 文件中以声明�
 
 #### 1. AI Agent (`type: "ai"`)
 
-最常见的类型，用于通用 AI 任务。它使用大型语言模型来处理指令并与技能交互。
+最常见的类型，用于通用 AI 任务。它使用大型语言模型来处理指令并与 Skill 交互。
 
 -   **`instructions`**: 定义 Agent 的提示。可以是一个字符串、一个包含 `role` 和 `content` 的对象，或使用 `url` 对文件的引用。
 -   **`inputKey`**: 输入对象中应被视为主用户消息的键。
@@ -188,16 +188,16 @@ skills:
 
 专门用于根据提示生成图像。
 
--   **`instructions`**: （必需）用于图像生成的提示。
+-   **`instructions`**: （必需）用于生成图像的提示。
 -   **`modelOptions`**: 特定于图像生成模型的选项字典。
 
 #### 3. Team Agent (`type: "team"`)
 
-协调一组 Agent（技能）共同完成一项任务。
+协调一组 Agent (Skill) 协同完成任务。
 
 -   **`mode`**: 处理模式，例如 `parallel` 或 `sequential`。
--   **`iterateOn`**: 在使用技能进行处理时，用来迭代的输入中的键。
--   **`reflection`**: 配置一个审查流程，其中 `reviewer` Agent 批准或请求更改输出。
+-   **`iterateOn`**: 使用 Skill 处理时要迭代的输入中的键。
+-   **`reflection`**: 配置一个审查流程，其中 `reviewer` Agent 会批准或请求更改输出。
 
 #### 4. Transform Agent (`type: "transform"`)
 
@@ -207,7 +207,7 @@ skills:
 
 #### 5. MCP Agent (`type: "mcp"`)
 
-作为外部 Agent 或服务的客户端。
+充当外部 Agent 或服务的客户端。
 
 -   **`url`**: 外部 Agent 的 URL。
 -   **`command`**: 要执行的 shell 命令。

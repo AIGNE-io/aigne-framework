@@ -1,10 +1,10 @@
-本文档提供了 `@aigne/openai` 包的全面使用指南，该 SDK 旨在将 OpenAI 的 GPT 模型无缝集成到 AIGNE 框架中。
+本文档为 `@aigne/openai` 包提供了一份全面的使用指南，该 SDK 旨在实现 AIGNE 框架与 OpenAI GPT 模型的无缝集成。
 
 <div align="center">
   <picture>
     <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
     <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
-    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE 徽标" width="400" />
   </picture>
 </div>
 
@@ -16,7 +16,7 @@
 
 ### 简介
 
-`@aigne/openai` 提供了 AIGNE 框架与 OpenAI 强大的语言模型之间的无缝集成。该包使开发者能够在其 AIGNE 应用程序中轻松利用 OpenAI 的 GPT 模型，在利用 OpenAI 先进的 AI 功能的同时，提供整个框架一致的接口。
+`@aigne/openai` 提供了 AIGNE 框架与 OpenAI 强大语言模型之间的无缝集成。该包使开发人员能够在其 AIGNE 应用程序中轻松利用 OpenAI 的 GPT 模型，在利用 OpenAI 先进 AI 能力的同时，在整个框架内提供一致的接口。
 
 ### 架构
 
@@ -58,13 +58,13 @@ AIGNE-Framework.aigne-openai -> OpenAI-API: "API 调用"
 ## 功能特性
 
 *   **OpenAI API 集成**：使用官方 SDK 直接连接到 OpenAI 的 API 服务。
-*   **聊天补全**：支持 OpenAI 的聊天补全 API，兼容所有可用模型。
+*   **聊天补全**：支持 OpenAI 的聊天补全 API，并兼容所有可用模型。
 *   **函数调用**：内置支持 OpenAI 的函数调用功能。
-*   **流式响应**：支持流式响应，以实现响应更快的应用程序。
+*   **流式响应**：支持流式响应，以实现更具响应性的应用程序。
 *   **类型安全**：为所有 API 和模型提供全面的 TypeScript 类型定义。
 *   **一致的接口**：与 AIGNE 框架的模型接口兼容。
 *   **错误处理**：强大的错误处理和重试机制。
-*   **完全可配置**：提供广泛的配置选项以微调行为。
+*   **全面配置**：提供广泛的配置选项以微调行为。
 
 ## 安装
 
@@ -94,7 +94,7 @@ pnpm add @aigne/openai @aigne/core
 
 ### OpenAIChatModel
 
-`OpenAIChatModel` 类提供了访问 OpenAI 聊天补全功能的能力，包括文本生成、工具使用、JSON 结构化输出和图像理解。
+`OpenAIChatModel` 类提供了对 OpenAI 聊天补全功能的访问，包括文本生成、工具使用、JSON 结构化输出和图像理解。
 
 #### 配置
 
@@ -102,13 +102,13 @@ pnpm add @aigne/openai @aigne/core
 
 <x-field-group>
   <x-field data-name="apiKey" data-type="string" data-required="false" data-desc="您的 OpenAI API 密钥。如果未提供，将回退使用 `OPENAI_API_KEY` 环境变量。"></x-field>
-  <x-field data-name="baseURL" data-type="string" data-required="false" data-desc="OpenAI API 的可选基础 URL，对使用代理很有用。"></x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false" data-desc="OpenAI API 的可选基础 URL，适用于代理。"></x-field>
   <x-field data-name="model" data-type="string" data-default="gpt-4o-mini" data-required="false" data-desc="用于聊天补全的 OpenAI 模型。"></x-field>
   <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="用于控制模型行为的附加选项。">
     <x-field data-name="temperature" data-type="number" data-required="false" data-desc="控制随机性。值越低，模型越确定。"></x-field>
     <x-field data-name="topP" data-type="number" data-required="false" data-desc="核心采样参数。"></x-field>
-    <x-field data-name="frequencyPenalty" data-type="number" data-required="false" data-desc="根据新词元在文本中的现有频率对其进行惩罚。"></x-field>
-    <x-field data-name="presencePenalty" data-type="number" data-required="false" data-desc="根据新词元是否已在文本中出现过对其进行惩罚。"></x-field>
+    <x-field data-name="frequencyPenalty" data-type="number" data-required="false" data-desc="根据新标记在文本中的现有频率对其进行惩罚。"></x-field>
+    <x-field data-name="presencePenalty" data-type="number" data-required="false" data-desc="根据新标记是否已在文本中出现过对其进行惩罚。"></x-field>
     <x-field data-name="parallelToolCalls" data-type="boolean" data-default="true" data-required="false" data-desc="是否启用并行函数调用。"></x-field>
   </x-field>
   <x-field data-name="clientOptions" data-type="Partial<ClientOptions>" data-required="false" data-desc="用于底层 OpenAI SDK 的附加客户端选项。"></x-field>
@@ -122,7 +122,7 @@ pnpm add @aigne/openai @aigne/core
 import { OpenAIChatModel } from "@aigne/openai";
 
 const model = new OpenAIChatModel({
-  // 直接提供 API 密钥，或使用环境变量 OPENAI_API_KEY
+  // 直接提供 API 密钥或使用环境变量 OPENAI_API_KEY
   apiKey: "your-api-key", // 如果已在环境变量中设置，则此项为可选
   model: "gpt-4o", // 如果未指定，则默认为 "gpt-4o-mini"
   modelOptions: {
@@ -135,9 +135,9 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* 输出：
+/* 输出:
   {
-    text: "你好！今天我能为你提供什么帮助？",
+    text: "Hello! How can I assist you today?",
     model: "gpt-4o",
     usage: {
       inputTokens: 10,
@@ -178,7 +178,7 @@ for await (const chunk of stream) {
   }
 }
 
-console.log(fullText); // 输出: "你好！今天我能为你提供什么帮助？"
+console.log(fullText); // 输出: "Hello! How can I assist you today?"
 console.log(json); // { model: "gpt-4o", usage: { inputTokens: 10, outputTokens: 9 } }
 ```
 
@@ -192,15 +192,15 @@ console.log(json); // { model: "gpt-4o", usage: { inputTokens: 10, outputTokens:
 
 <x-field-group>
   <x-field data-name="apiKey" data-type="string" data-required="false" data-desc="您的 OpenAI API 密钥。如果未提供，将回退使用 `OPENAI_API_KEY` 环境变量。"></x-field>
-  <x-field data-name="baseURL" data-type="string" data-required="false" data-desc="OpenAI API 的可选基础 URL，对使用代理很有用。"></x-field>
-  <x-field data-name="model" data-type="string" data-default="dall-e-2" data-required="false" data-desc="用于图像生成的 OpenAI 模型（例如 'dall-e-2', 'dall-e-3'）。"></x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false" data-desc="OpenAI API 的可选基础 URL，适用于代理。"></x-field>
+  <x-field data-name="model" data-type="string" data-default="dall-e-2" data-required="false" data-desc="用于图像生成的 OpenAI 模型（例如 'dall-e-2'、'dall-e-3'）。"></x-field>
   <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="用于控制图像生成行为的附加选项，例如尺寸、质量和风格。"></x-field>
   <x-field data-name="clientOptions" data-type="Partial<ClientOptions>" data-required="false" data-desc="用于底层 OpenAI SDK 的附加客户端选项。"></x-field>
 </x-field-group>
 
 #### 用法示例
 
-以下是如何生成图像的示例。
+以下是一个生成图像的示例。
 
 ```typescript
 import { OpenAIImageModel } from "@aigne/openai";
@@ -219,7 +219,7 @@ const result = await imageModel.process({
 });
 
 console.log(result.images);
-/* 输出：
+/* 输出:
 [
   {
     type: 'url',
@@ -232,4 +232,4 @@ console.log(result.images);
 
 ## 许可证
 
-本包根据 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md) 获得许可。
+该软件包根据 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md) 获得许可。

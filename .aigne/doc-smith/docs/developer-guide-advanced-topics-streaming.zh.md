@@ -4,10 +4,10 @@
 
 ## 概述
 
-流工具旨在提供一种强大而灵活的方式来处理各种流类型。其主要功能包括：
+流工具旨在提供一种强大而灵活的方式来处理各种流类型。主要功能包括：
 
 -   **转换**：在对象、数组、字符串和不同流格式之间无缝转换数据。
--   **操作**：合并多个流、处理数据块 (chunk) 以及处理流的生命周期事件。
+-   **操作**：合并多个流、处理数据块以及处理流生命周期事件。
 -   **事件解析**：解析服务器发送事件 (SSE) 并转换 Agent 响应流。
 -   **数据提取**：从文本流中提取结构化元数据。
 
@@ -15,7 +15,7 @@
 
 ## 核心流工具
 
-主要的流工具位于 `packages/core/src/utils/stream-utils.ts`。它们为创建、转换和管理流提供了基础。
+主要的流工具位于 `packages/core/src/utils/stream-utils.ts` 中。它们为创建、转换和管理流提供了基础。
 
 ### 流转换
 
@@ -23,7 +23,7 @@
 
 #### `objectToAgentResponseStream`
 
-将 JSON 对象转换为 `AgentResponseStream`。这对于将一个完整的对象作为符合 Agent 响应格式的单块 (single-chunk) 流返回非常有用。
+将一个 JSON 对象转换为 `AgentResponseStream`。这对于将一个完整的对象作为单数据块流返回，并符合 Agent 响应格式非常有用。
 
 **示例**
 
@@ -33,12 +33,12 @@ import { objectToAgentResponseStream } from '@aigene/core/utils';
 const userMessage = { id: 'user-123', text: 'Hello, agent!' };
 const stream = objectToAgentResponseStream(userMessage);
 
-// 该流将发出一个包含完整对象的块，然后关闭。
+// 该流将发出一个包含完整对象的数据块，然后关闭。
 ```
 
 #### `agentResponseStreamToObject`
 
-聚合来自 `AgentResponseStream` 或 `AgentProcessAsyncGenerator` 的所有数据块，并将它们合并成一个单一的对象。
+聚合来自 `AgentResponseStream` 或 `AgentProcessAsyncGenerator` 的所有数据块，并将它们合并成一个单一对象。
 
 **示例**
 
@@ -72,7 +72,7 @@ async function* myGenerator(): AgentProcessAsyncGenerator<{ text: string }> {
 }
 
 const stream = asyncGeneratorToReadableStream(myGenerator());
-// 现在，此流可以与其他兼容 ReadableStream 的 API 一起使用。
+// 此流现在可以与其他兼容 ReadableStream 的 API 一起使用。
 ```
 
 #### `readableStreamToArray`
@@ -110,7 +110,7 @@ streamToArrayExample();
 
 #### `mergeReadableStreams`
 
-将多个 `ReadableStream` 实例合并为单个流。生成的流会在输入流的数据块可用时立即转发它们。只有在所有输入流都关闭后，该流才会关闭。
+将多个 `ReadableStream` 实例合并成一个单一的流。生成的流会随着输入流中数据块的可用而转发它们。只有在所有输入流都关闭后，它才会关闭。
 
 **示例**
 
@@ -122,7 +122,7 @@ const stream2 = arrayToReadableStream([1, 2]);
 
 const mergedStream = mergeReadableStreams(stream1, stream2);
 
-// 来自 mergedStream 的数据块可能是 'A', 1, 'B', 2（顺序取决于时机）
+// 来自 mergedStream 的数据块可能是 'A', 1, 'B', 2（顺序取决于时间）
 ```
 
 #### `onAgentResponseStreamEnd`
@@ -163,11 +163,11 @@ monitorStream();
 
 ## 事件流处理
 
-这些类位于 `packages/core/src/utils/event-stream.ts`，专为处理服务器发送事件 (SSE) 和解析特定于 Agent 的事件流而设计。
+这些类位于 `packages/core/src/utils/event-stream.ts` 中，专为处理服务器发送事件 (SSE) 和解析 Agent 特定的事件流而设计。
 
 ### `AgentResponseStreamSSE`
 
-包装一个 `AgentResponseStream` 并将其输出转换为 SSE 格式字符串的 `ReadableStream`。这非常适合将 Agent 响应直接发送到 Web 客户端。
+包装一个 `AgentResponseStream`，并将其输出转换为 SSE 格式字符串的 `ReadableStream`。这非常适合将 Agent 响应直接发送到 Web 客户端。
 
 **示例**
 
@@ -185,7 +185,7 @@ const sseStream = new AgentResponseStreamSSE(agentStream);
 
 ### `AgentResponseStreamParser`
 
-一个 `TransformStream`，用于处理来自 `AgentResponseStream` 的数据块。它会智能地合并 `text` 和 `json` 字段的增量 (delta)，确保每个下游数据块都包含 JSON 对象的完整累积状态。
+一个处理来自 `AgentResponseStream` 数据块的 `TransformStream`。它智能地合并 `text` 和 `json` 字段的增量，确保每个下游数据块都包含 JSON 对象的完整累积状态。
 
 **示例**
 
@@ -201,7 +201,7 @@ const sourceStream = arrayToReadableStream([
 const parser = new AgentResponseStreamParser();
 const processedStream = sourceStream.pipeThrough(parser);
 
-// 输出的数据块在每一步都将包含完整的 JSON 对象：
+// 输出的数据块在每一步都会包含完整的 JSON 对象：
 // 1st chunk: { delta: { json: { id: '123' } } }
 // 2nd chunk: { delta: { json: { id: '123', status: 'pending' } } }
 // 3rd chunk: { delta: { json: { id: '123', status: 'pending' }, text: { message: '...' } } }
@@ -209,7 +209,7 @@ const processedStream = sourceStream.pipeThrough(parser);
 
 ### `AgentResponseProgressStream`
 
-通过监听给定 `Context` 实例上的生命周期事件（`agentStarted`、`agentSucceed`、`agentFailed`），创建一个 `AgentResponseProgress` 事件的 `ReadableStream`。这使您能够监控整个 Agent 执行流程的进度。
+通过监听给定 `Context` 实例上的生命周期事件（`agentStarted`、`agentSucceed`、`agentFailed`），创建一个 `AgentResponseProgress` 事件的 `ReadableStream`。这允许您监控整个 Agent 执行流程的进度。
 
 **示例**
 
@@ -232,9 +232,9 @@ progressStream.on('data', (progress) => {
 
 ### `ExtractMetadataTransform`
 
-这个 `TransformStream` 会扫描文本流以查找开始和结束标记，并尝试将它们之间的内容解析为结构化数据。提取的数据随后会作为一个与周围文本分离的 `json` 增量 (delta) 发出。
+这个 `TransformStream` 会扫描文本流以查找开始和结束标记，并尝试将它们之间的内容解析为结构化数据。提取的数据随后会作为一个与周围文本分离的 `json` 增量发出。
 
-**用例**：一个 Agent 可能会输出混合了结构化元数据的文本，例如：`Here is some text... <metadata>{"key": "value"}</metadata> ...and the text continues.`。这个转换流可以将文本与元数据分离开来。
+**用例**：一个 Agent 可能会输出混合了结构化元数据的文本，例如：`Here is some text... <metadata>{"key": "value"}</metadata> ...and the text continues.` 这个转换流可以将文本与元数据分离开来。
 
 **示例**
 

@@ -14,11 +14,11 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/gemini)](https://www.npmjs.com/package/@aigne/gemini)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/gemini)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-AIGNE Gemini SDK，用于在 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)内与 Google 的 Gemini AI 模型集成。
+AIGNE Gemini SDK，用于在 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)中与 Google 的 Gemini AI 模型集成。
 
 ## 简介
 
-`@aigne/gemini` 提供了 AIGNE 框架与 Google Gemini 语言模型及 API 之间的无缝集成。该包使开发人员能够在其 AIGNE 应用程序中轻松利用 Gemini 先进的 AI 功能，在整个框架中提供一致的接口，同时利用 Google 最先进的多模态模型。
+`@aigne/gemini` 提供了 AIGNE 框架与 Google Gemini 语言模型及 API 之间的无缝集成。该软件包使开发人员能够轻松地在其 AIGNE 应用程序中利用 Gemini 先进的 AI 功能，在整个框架中提供一致的接口，同时利用 Google 最先进的多模态模型。
 
 <picture>
   <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-gemini-dark.png" media="(prefers-color-scheme: dark)">
@@ -28,13 +28,13 @@ AIGNE Gemini SDK，用于在 [AIGNE 框架](https://github.com/AIGNE-io/aigne-fr
 
 ## 架构
 
-下图说明了 `@aigne/gemini` 包如何融入 AIGNE 框架并与 Google Gemini API 交互。
+下图说明了 `@aigne/gemini` 软件包如何融入 AIGNE 框架并与 Google Gemini API 交互。
 
 ```d2
 direction: down
 
 User-Application: {
-  label: "您的 AIGNE 应用程序"
+  label: "你的 AIGNE 应用"
   shape: rectangle
 }
 
@@ -82,17 +82,17 @@ Google-Cloud: {
     grid-columns: 2
     
     Gemini-Models: {
-      label: "Gemini 模型\n(例如 gemini-1.5-pro)"
+      label: "Gemini 模型\n(例如, gemini-1.5-pro)"
     }
     
     Imagen-Models: {
-      label: "Imagen 模型\n(例如 imagen-4.0)"
+      label: "Imagen 模型\n(例如, imagen-4.0)"
     }
   }
 }
 
-User-Application -> AIGNE-Framework.AIGNE-Core: "使用核心"
-User-Application -> AIGNE-Framework.AIGNE-Gemini: "导入和实例化"
+User-Application -> AIGNE-Framework.AIGNE-Core: "使用核心库"
+User-Application -> AIGNE-Framework.AIGNE-Gemini: "导入并实例化"
 
 AIGNE-Framework.AIGNE-Core.Model-Interface -> AIGNE-Framework.AIGNE-Gemini: {
   label: "实现"
@@ -144,7 +144,7 @@ pnpm add @aigne/gemini @aigne/core
 
 ### 环境变量
 
-在使用 SDK 之前，您需要设置您的 Gemini API 密钥。SDK 将自动从以下环境变量中检测该密钥：
+在使用 SDK 之前，您需要设置您的 Gemini API 密钥。SDK 将自动从以下环境变量中检测密钥：
 
 ```bash
 export GEMINI_API_KEY="your-gemini-api-key"
@@ -154,15 +154,15 @@ export GEMINI_API_KEY="your-gemini-api-key"
 
 ### 聊天模型用法
 
-`GeminiChatModel` 提供了一个与 Gemini 聊天补全模型交互的接口。
+`GeminiChatModel` 提供了与 Gemini 聊天补全模型交互的接口。
 
 ```typescript
 import { GeminiChatModel } from "@aigne/gemini";
 
 const model = new GeminiChatModel({
   // 直接提供 API 密钥或使用环境变量 GOOGLE_API_KEY
-  apiKey: "your-api-key", // 如果已在环境变量中设置，则为可选
-  // 指定 Gemini 模型版本（如果未指定，则默认为 'gemini-1.5-pro'）
+  apiKey: "your-api-key", // 如果在环境变量中已设置，则为可选
+  // 指定 Gemini 模型版本（如果未指定，默认为 'gemini-1.5-pro'）
   model: "gemini-1.5-flash",
   modelOptions: {
     temperature: 0.7,
@@ -174,7 +174,7 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* 输出:
+/* 输出：
   {
     text: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?",
     model: "gemini-1.5-flash"
@@ -190,7 +190,7 @@ console.log(result);
 import { GeminiImageModel } from "@aigne/gemini";
 
 const model = new GeminiImageModel({
-  apiKey: "your-api-key", // 如果已在环境变量中设置，则为可选
+  apiKey: "your-api-key", // 如果在环境变量中已设置，则为可选
   model: "imagen-4.0-generate-001", // 默认 Imagen 模型
 });
 
@@ -200,7 +200,7 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* 输出:
+/* 输出：
   {
     images: [
       {
@@ -220,7 +220,7 @@ console.log(result);
 
 ### 流式响应
 
-对于实时应用程序，您可以从聊天模型中流式传输响应。这使您能够在生成输出的同时处理它。
+对于实时应用程序，您可以从聊天模型中流式传输响应。这使您可以在输出生成时进行处理。
 
 ```typescript
 import { isAgentResponseDelta } from "@aigne/core";
@@ -255,43 +255,43 @@ console.log(json); // { model: "gemini-1.5-flash" }
 
 ### 图像生成参数
 
-`GeminiImageModel` 支持多种参数，这些参数根据底层模型系列（Imagen 或 Gemini）的不同而有所区别。
+`GeminiImageModel` 支持多种参数，这些参数根据底层模型系列（Imagen 或 Gemini）而有所不同。
 
-#### Imagen 模型（例如 `imagen-4.0-generate-001`）
+#### Imagen 模型 (例如, `imagen-4.0-generate-001`)
 
--   **`prompt`** (string): 您想要生成的图像的文本描述。
--   **`n`** (number): 要生成的图像数量（默认为 1）。
--   **`seed`** (number): 用于可复现生成的随机种子。
--   **`safetyFilterLevel`** (string): 用于内容审核的安全过滤器级别。
--   **`personGeneration`** (string): 人物生成设置。
--   **`outputMimeType`** (string): 输出图像格式（例如 "image/png", "image/jpeg"）。
--   **`outputGcsUri`** (string): 用于输出的 Google Cloud Storage URI。
--   **`outputCompressionQuality`** (number): JPEG 压缩质量（1-100）。
--   **`negativePrompt`** (string): 描述要从图像中排除的内容。
--   **`language`** (string): 提示的语言。
--   **`includeSafetyAttributes`** (boolean): 在响应中包含安全属性。
--   **`includeRaiReason`** (boolean): 在响应中包含 RAI 推理。
--   **`imageSize`** (string): 生成图像的尺寸。
--   **`guidanceScale`** (number): 生成的指导比例。
--   **`aspectRatio`** (string): 图像的宽高比。
--   **`addWatermark`** (boolean): 为生成的图像添加水印。
+-   **`prompt`** (string)：您想生成的图像的文本描述。
+-   **`n`** (number)：要生成的图像数量（默认为 1）。
+-   **`seed`** (number)：用于可复现生成的随机种子。
+-   **`safetyFilterLevel`** (string)：内容审核的安全过滤器级别。
+-   **`personGeneration`** (string)：人物生成设置。
+-   **`outputMimeType`** (string)：输出图像格式（例如, "image/png", "image/jpeg"）。
+-   **`outputGcsUri`** (string)：用于输出的 Google Cloud Storage URI。
+-   **`outputCompressionQuality`** (number)：JPEG 压缩质量（1-100）。
+-   **`negativePrompt`** (string)：描述要从图像中排除的内容。
+-   **`language`** (string)：提示的语言。
+-   **`includeSafetyAttributes`** (boolean)：在响应中包含安全属性。
+-   **`includeRaiReason`** (boolean)：在响应中包含 RAI 推理。
+-   **`imageSize`** (string)：生成图像的尺寸。
+-   **`guidanceScale`** (number)：生成的指导比例。
+-   **`aspectRatio`** (string)：图像的宽高比。
+-   **`addWatermark`** (boolean)：为生成的图像添加水印。
 
-#### Gemini 模型（例如 `gemini-1.5-pro`）
+#### Gemini 模型 (例如, `gemini-1.5-pro`)
 
--   **`prompt`** (string): 您想要生成的图像的文本描述。
--   **`n`** (number): 要生成的图像数量（默认为 1）。
--   **`temperature`** (number): 控制生成中的随机性（0.0 到 1.0）。
--   **`maxOutputTokens`** (number): 响应中的最大令牌数。
--   **`topP`** (number): Nucleus 采样参数。
--   **`topK`** (number): Top-k 采样参数。
--   **`safetySettings`** (array): 内容生成的安全设置。
--   **`seed`** (number): 用于可复现生成的随机种子。
--   **`stopSequences`** (array): 停止生成的序列。
--   **`systemInstruction`** (string): 系统级指令。
+-   **`prompt`** (string)：您想生成的图像的文本描述。
+-   **`n`** (number)：要生成的图像数量（默认为 1）。
+-   **`temperature`** (number)：控制生成中的随机性（0.0 到 1.0）。
+-   **`maxOutputTokens`** (number)：响应中的最大令牌数。
+-   **`topP`** (number)：核心采样参数。
+-   **`topK`** (number)：Top-k 采样参数。
+-   **`safetySettings`** (array)：内容生成的安全设置。
+-   **`seed`** (number)：用于可复现生成的随机种子。
+-   **`stopSequences`** (array)：停止生成的序列。
+-   **`systemInstruction`** (string)：系统级指令。
 
 #### 高级图像生成示例
 
-此示例演示了如何将多个高级参数与 Imagen 模型结合使用。
+此示例演示了如何将多个高级参数与 Imagen 模型一起使用。
 
 ```typescript
 const result = await model.invoke({
@@ -328,9 +328,9 @@ const model = new GeminiImageModel({
 
 有关所有可用参数和高级功能的完整详细列表，请参阅官方 Google GenAI 文档：
 
--   **Imagen 模型**: [Google GenAI Models.generateImages()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generateimages)
--   **Gemini 模型**: [Google GenAI Models.generateContent()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generatecontent)
+-   **Imagen 模型**：[Google GenAI Models.generateImages()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generateimages)
+-   **Gemini 模型**：[Google GenAI Models.generateContent()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generatecontent)
 
 ## 许可证
 
-本 SDK 根据 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md) 获得许可。
+此 SDK 根据 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)授权。

@@ -4,7 +4,7 @@
   <picture>
     <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
     <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
-    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE 标志" width="400" />
+    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
   </picture>
 </p>
 
@@ -14,11 +14,11 @@
 [![NPM Version](https://img.shields.io/npm/v/@aigne/deepseek)](https://www.npmjs.com/package/@aigne/deepseek)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/deepseek)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
-AIGNE Deepseek SDK，用于在 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)内集成 Deepseek AI 模型。
+AIGNE Deepseek SDK，用于在 [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) 中集成 Deepseek AI 模型。
 
 ## 简介
 
-`@aigne/deepseek` 提供了 AIGNE 框架与 Deepseek 强大的语言模型之间的无缝集成。该包使开发人员能够在其 AIGNE 应用程序中轻松利用 Deepseek 的 AI 模型，在利用 Deepseek 先进的 AI 功能的同时，提供整个框架一致的接口。
+`@aigne/deepseek` 提供了 AIGNE Framework 与 Deepseek 强大语言模型之间的无缝集成。该软件包使开发者能够在其 AIGNE 应用程序中轻松利用 Deepseek 的 AI 模型，在整个框架内提供一致的接口，同时发挥 Deepseek 先进的 AI 功能。
 
 ```d2
 direction: down
@@ -29,7 +29,7 @@ Your-Application: {
 }
 
 AIGNE-Framework: {
-  label: "AIGNE 框架"
+  label: "AIGNE Framework"
   shape: rectangle
   grid-columns: 2
   grid-gap: 100
@@ -68,17 +68,17 @@ AIGNE-Framework.aigne-deepseek.DeepSeekChatModel -> Deepseek-API: "进行 API �
 ## 功能
 
 *   **Deepseek API 集成**：直接连接到 Deepseek 的 API 服务。
-*   **聊天补全**：支持 Deepseek 的聊天补全 API 及其所有可用模型。
-*   **函数调用**：内置支持函数调用功能。
-*   **流式响应**：支持流式响应，以实现响应更快的应用程序。
+*   **聊天补全**：支持 Deepseek 的聊天补全 API，涵盖所有可用模型。
+*   **函数调用**：内置对函数调用功能的支持。
+*   **流式响应**：支持流式响应，以实现更具响应性的应用程序。
 *   **类型安全**：为所有 API 和模型提供全面的 TypeScript 类型定义。
-*   **一致的接口**：与 AIGNE 框架的模型接口兼容。
-*   **错误处理**：强大的错误处理和重试机制。
-*   **完整的配置**：丰富的配置选项，用于微调行为。
+*   **一致的接口**：与 AIGNE Framework 的模型接口兼容。
+*   **错误处理**：稳健的错误处理和重试机制。
+*   **全面的配置**：提供广泛的配置选项以进行微调。
 
 ## 安装
 
-使用你喜欢的包管理器安装此包：
+使用你喜欢的包管理器安装此软件包：
 
 ### npm
 
@@ -102,7 +102,7 @@ pnpm add @aigne/deepseek @aigne/core
 
 ### `DeepSeekChatModel`
 
-`DeepSeekChatModel` 类是与 Deepseek Chat API 交互的主要接口。它扩展了来自 `@aigne/openai` 的 `OpenAIChatModel`，提供了一个熟悉的、与 OpenAI 兼容的 API 格式。
+`DeepSeekChatModel` 类是与 Deepseek Chat API 交互的主要接口。它扩展了来自 `@aigne/openai` 的 `OpenAIChatModel`，提供了一种熟悉的、与 OpenAI 兼容的 API 格式。
 
 #### 构造函数
 
@@ -125,7 +125,7 @@ const model = new DeepSeekChatModel({
 <x-field-group>
     <x-field data-name="options" data-type="OpenAIChatModelOptions" data-required="false" data-desc="模型的配置选项。">
         <x-field data-name="apiKey" data-type="string" data-required="false" data-desc="你的 Deepseek API 密钥。如果未提供，将从 `DEEPSEEK_API_KEY` 环境变量中读取。"></x-field>
-        <x-field data-name="model" data-type="string" data-default="deepseek-chat" data-required="false" data-desc="用于聊天补全的模型（例如 'deepseek-chat', 'deepseek-coder'）。"></x-field>
+        <x-field data-name="model" data-type="string" data-default="deepseek-chat" data-required="false" data-desc="用于聊天补全的模型（例如，'deepseek-chat'、'deepseek-coder'）。"></x-field>
         <x-field data-name="baseURL" data-type="string" data-default="https://api.deepseek.com" data-required="false" data-desc="Deepseek API 的基础 URL。"></x-field>
         <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="传递给模型 API 的附加选项，例如 `temperature`、`top_p` 等。"></x-field>
     </x-field>
@@ -133,14 +133,14 @@ const model = new DeepSeekChatModel({
 
 ## 基本用法
 
-要向模型发送一个简单的请求，请使用 `invoke` 方法。
+要向模型发送简单请求，请使用 `invoke` 方法。
 
 ```typescript
 import { DeepSeekChatModel } from "@aigne/deepseek";
 
 const model = new DeepSeekChatModel({
   // 直接提供 API 密钥或使用环境变量 DEEPSEEK_API_KEY
-  apiKey: "your-api-key", // 如果已在环境变量中设置，则为可选
+  apiKey: "your-api-key", // 如果在环境变量中设置，则为可选
   // 指定模型版本（默认为 'deepseek-chat'）
   model: "deepseek-chat",
   modelOptions: {
@@ -155,7 +155,7 @@ const result = await model.invoke({
 console.log(result);
 /* 输出：
   {
-    text: "Hello! I'm an AI assistant powered by DeepSeek's language model.",
+    text: "你好！我是一个由 DeepSeek 语言模型驱动的 AI 助手。",
     model: "deepseek-chat",
     usage: {
       inputTokens: 7,
@@ -196,10 +196,10 @@ for await (const chunk of stream) {
   }
 }
 
-console.log(fullText); // 输出："Hello! I'm an AI assistant powered by DeepSeek's language model."
+console.log(fullText); // 输出: "你好！我是一个由 DeepSeek 语言模型驱动的 AI 助手。"
 console.log(json); // { model: "deepseek-chat", usage: { inputTokens: 7, outputTokens: 12 } }
 ```
 
 ## 许可证
 
-本软件包根据 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md) 获得许可。
+该软件包根据 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md) 获得许可。

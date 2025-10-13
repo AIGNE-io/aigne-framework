@@ -1,16 +1,16 @@
-本文档全面介绍了 `Agent` 类，它是 AIGNE 框架中的基本构建块。您将学习如何创建、配置和使用 Agent 来执行各种任务。
+本文档全面介绍了 `Agent` 类，它是 AIGNE 框架中的基本构建模块。您将学习如何创建、配置和使用 Agent 来执行各种任务。
 
 ## Agent 类
 
-`Agent` 是 AIGNE 系统中所有 Agent 的基类。它提供了一个强大的框架，用于定义处理逻辑、管理输入/输出 schema 以及与其他组件进行交互。通过扩展 `Agent` 类，您可以创建具有专门功能的自定义 Agent。
+`Agent` 是 AIGNE 系统中所有 Agent 的基类。它提供了一个强大的框架，用于定义处理逻辑、管理输入/输出模式以及与其他组件交互。通过扩展 `Agent` 类，您可以创建具有特定功能的自定义 Agent。
 
 ### 主要职责
 
 -   **处理数据**：Agent 接收结构化输入，执行操作，并生成结构化输出。
--   **数据验证**：它们使用 Zod schema 来确保输入和输出数据符合预期格式。
+-   **数据验证**：它们使用 Zod 模式来确保输入和输出数据符合预期格式。
 -   **通信**：Agent 通过消息传递上下文相互之间以及与系统进行交互。
 -   **状态管理**：它们可以维护过去交互的记忆，为未来的行为提供信息。
--   **可扩展性**：Agent 可以使用其他 Agent 作为“技能”来委托任务并构建复杂的工作流。
+-   **可扩展性**：Agent 可以将其他 Agent 用作“技能”来委托任务并构建复杂的工作流。
 
 ### 类图
 
@@ -56,16 +56,16 @@ Agent -> Memory: "使用...管理状态"
 
 ## 创建 Agent
 
-创建 Agent 主要有两种方式：扩展 `Agent` 类或使用 `FunctionAgent` 来创建更简单的、基于函数的 Agent。
+创建 Agent 主要有两种方式：扩展 `Agent` 类，或者对于更简单的、基于函数的 Agent，使用 `FunctionAgent`。
 
 ### 扩展 `Agent` 类
 
-对于具有特定逻辑的复杂 Agent，您可以扩展基类 `Agent` 并实现抽象的 `process` 方法。
+对于具有特定逻辑的复杂 Agent，您可以扩展 `Agent` 基类并实现抽象的 `process` 方法。
 
 **核心概念：**
 
--   **`constructor(options)`**：使用名称、描述、schema 和技能等配置来初始化 Agent。
--   **`process(input, options)`**：Agent 的核心逻辑。您在此处定义 Agent 实际*做什么*。它接收输入和调用选项（包括上下文），并且必须返回一个结果。
+-   **`constructor(options)`**：使用名称、描述、模式和技能等配置来初始化 Agent。
+-   **`process(input, options)`**：Agent 的核心逻辑。您在此处定义 Agent 的实际*功能*。它接收输入和调用选项（包括上下文），并且必须返回一个结果。
 
 **示例：一个简单的计算器 Agent**
 
@@ -92,7 +92,7 @@ class CalculatorAgent extends Agent<CalculatorInput, CalculatorOutput> {
       name: "Calculator",
       description: "Performs basic arithmetic operations.",
       
-      // 定义用于验证的 Zod schema
+      // 定义用于验证的 Zod 模式
       inputSchema: z.object({
         operation: z.enum(["add", "subtract"]),
         a: z.number(),
@@ -127,7 +127,7 @@ class CalculatorAgent extends Agent<CalculatorInput, CalculatorOutput> {
 
 **示例：一个 JavaScript 代码评估器**
 
-该 Agent 接收一个 JavaScript 代码字符串，在一个安全的沙箱中对其进行评估，并返回结果。
+此 Agent 接收一个 JavaScript 代码字符串，在一个安全的沙箱中对其进行评估，并返回结果。
 
 ```javascript
 import { FunctionAgent } from "@aigne/core";
@@ -141,19 +141,19 @@ async function evaluateJs({ code }) {
   return { result };
 }
 
-// 单独定义元数据和 schema
-evaluateJs.description = "This agent evaluates JavaScript code.";
+// 分别定义元数据和模式
+evaluateJs.description = "此 Agent 用于评估 JavaScript 代码。";
 evaluateJs.input_schema = {
   type: "object",
   properties: {
-    code: { type: "string", description: "JavaScript code to evaluate" },
+    code: { type: "string", description: "要评估的 JavaScript 代码" },
   },
   required: ["code"],
 };
 evaluateJs.output_schema = {
   type: "object",
   properties: {
-    result: { type: "any", description: "Result of the evaluated code" },
+    result: { type: "any", description: "评估代码的结果" },
   },
   required: ["result"],
 };
@@ -176,7 +176,7 @@ const sandboxAgent = new FunctionAgent({
 
 `invoke` 方法可以在两种模式下运行：
 
-1.  **常规（默认）**：该方法返回一个 `Promise`，一旦 Agent 完成处理，该 `Promise` 就会解析为最终的、完整的输出对象。
+1.  **常规（默认）**：该方法返回一个 `Promise`，一旦 Agent 完成处理，该 Promise 将解析为最终的、完整的输出对象。
 2.  **流式**：通过在选项中设置 `streaming: true`，该方法会返回一个 `ReadableStream`。您可以从该流中读取由 Agent 生成的数据块，从而实现实时更新。
 
 **示例：调用计算器 Agent**
@@ -192,7 +192,7 @@ async function runCalculation() {
     b: 5,
   });
   
-  console.log("Result:", output.result); // 输出：Result: 15
+  console.log("Result:", output.result); // 输出: Result: 15
 }
 
 runCalculation();
@@ -242,7 +242,7 @@ runStreaming();
 
 ## Agent 生命周期和钩子
 
-Agent 的执行遵循一个定义的生命周期，您可以使用`钩子`（hooks）来介入关键时刻。钩子允许您添加日志记录、监控或自定义逻辑，而无需修改 Agent 的核心实现。
+Agent 的执行遵循一个定义的生命周期，您可以使用 `hooks`（钩子）来介入关键时刻。钩子允许您添加日志记录、监控或自定义逻辑，而无需修改 Agent 的核心实现。
 
 ### 调用流程图
 
@@ -250,19 +250,19 @@ Agent 的执行遵循一个定义的生命周期，您可以使用`钩子`（hoo
 
 ```mermaid
 flowchart TD
-    A["已调用 invoke()"] --> B{"调用 onStart 钩子"};
-    B --> C{"验证输入 Schema"};
+    A["调用 invoke()"] --> B{调用 onStart 钩子};
+    B --> C{验证输入模式};
     C --> D["preprocess()"];
     D --> E["process()"];
     E --> F["postprocess()"];
-    F --> G{"验证输出 Schema"};
-    G --> H{"调用 onSuccess/onError 钩子"};
-    H --> I{"调用 onEnd 钩子"};
-    I --> J["返回最终输出"];
+    F --> G{验证输出模式};
+    G --> H{调用 onSuccess/onError 钩子};
+    H --> I{调用 onEnd 钩子};
+    I --> J[返回最终输出];
     
     subgraph 错误处理
         C -- 无效 --> H;
-        E -- 抛出 --> H;
+        E -- 抛出异常 --> H;
         G -- 无效 --> H;
     end
 ```
@@ -272,10 +272,10 @@ flowchart TD
 -   `onStart`：在任何处理开始之前调用。可以修改输入。
 -   `onSuccess`：在 Agent 成功生成输出后调用。
 -   `onError`：如果在处理过程中抛出错误则调用。
--   `onEnd`：总是在调用结束时调用，无论成功与否。
--   `onSkillStart` / `onSkillEnd`：在调用技能之前和之后调用。
+-   `onEnd`：总是在调用结束时调用，无论成功还是失败。
+-   `onSkillStart` / `onSkillEnd`：在技能被调用之前和之后调用。
 
-**示例：添加日志记录钩子**
+**示例：添加日志钩子**
 
 ```typescript
 const calculator = new CalculatorAgent({
@@ -284,16 +284,16 @@ const calculator = new CalculatorAgent({
       console.log(`[${agent.name}] 开始处理，输入为：`, input);
     },
     onSuccess: async ({ agent, output }) => {
-      console.log(`[${agent.name}] 处理成功，输出为：`, output);
+      console.log(`[${agent.name}] 成功，输出为：`, output);
     },
     onError: async ({ agent, error }) => {
-      console.error(`[${agent.name}] 处理失败，错误为：`, error);
+      console.error(`[${agent.name}] 失败，错误为：`, error);
     },
   }]
 });
 
 await calculator.invoke({ operation: "subtract", a: 10, b: 20 });
-// 日志输出：
+// 日志：
 // [Calculator] Starting with input: { operation: 'subtract', a: 10, b: 20 }
 // [Calculator] Succeeded with output: { result: -10 }
 ```
@@ -303,18 +303,18 @@ await calculator.invoke({ operation: "subtract", a: 10, b: 20 });
 这是 `Agent` 类最重要属性和方法的参考。
 
 | 成员 | 类型 | 描述 |
-| --------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| --- | --- | --- |
 | `name` | `string` | Agent 的标识符。默认为类名。 |
 | `description` | `string` | 对 Agent 用途的可读描述。 |
-| `inputSchema` | `ZodType` | 用于验证输入消息的 Zod schema。 |
-| `outputSchema` | `ZodType` | 用于验证输出消息的 Zod schema。 |
-| `skills` | `Agent[]` | 此 Agent 可调用以委托任务的其他 Agent 的列表。 |
-| `memory` | `MemoryAgent` | 一个可选的记忆 Agent，用于存储和检索过去交互的信息。 |
+| `inputSchema` | `ZodType` | 用于验证输入消息的 Zod 模式。 |
+| `outputSchema` | `ZodType` | 用于验证输出消息的 Zod 模式。 |
+| `skills` | `Agent[]` | 该 Agent 可调用以委托任务的其他 Agent 的列表。 |
+| `memory` | `MemoryAgent` | 一个可选的 Memory Agent，用于存储和检索过去交互的信息。 |
 | `hooks` | `AgentHooks[]` | 用于拦截 Agent 生命周期事件的钩子对象数组。 |
 | `retryOnError` | `boolean \| object` | 用于在失败时自动重试 Agent 的 `process` 方法的配置。 |
 | `guideRails` | `GuideRailAgent[]` | 一组特殊的 Agent，可以检查和验证 Agent 的输入和输出，以强制执行策略或规则。 |
-| `invoke()` | `function` | **(公共方法)** 使用给定输入执行 Agent。返回最终结果或流。 |
-| `process()` | `function` | **(抽象方法)** 需要由子类实现的核心逻辑。 |
-| `invokeSkill()` | `function` | **(受保护方法)** 用于调用已添加为技能的另一个 Agent 的辅助方法。 |
+| `invoke()` | `function` | **（公共方法）** 使用给定输入执行 Agent。返回最终结果或流。 |
+| `process()` | `function` | **（抽象方法）** 需要由子类实现的核心逻辑。 |
+| `invokeSkill()` | `function` | **（受保护方法）** 用于调用已添加为技能的另一个 Agent 的辅助方法。 |
 | `addSkill()` | `function` | 将一个或多个 Agent 添加到此 Agent 的技能列表中。 |
 | `shutdown()` | `function` | 清理资源，例如取消订阅主题。 |

@@ -508,8 +508,10 @@ export async function contentsFromInputMessages(
                           return { type: "image_url", image_url: { url: c.url } };
                         case "file":
                           return {
-                            type: "file",
-                            file: { file_data: c.data, filename: c.filename },
+                            type: "image_url",
+                            image_url: {
+                              url: `data:${c.mimeType || "image/png"};base64,${c.data}`,
+                            },
                           };
                         case "local": {
                           throw new Error(

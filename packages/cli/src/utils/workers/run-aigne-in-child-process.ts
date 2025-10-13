@@ -43,21 +43,32 @@ export async function runAIGNEInChildProcess<M extends keyof ChildProcessAIGNEMe
   ...args: Parameters<ChildProcessAIGNEMethods[M]>
 ): Promise<ReturnType<ChildProcessAIGNEMethods[M]>> {
   return await new Promise<ReturnType<ChildProcessAIGNEMethods[M]>>((resolve, reject) => {
+    let completed = false;
+
     const child = fork(
       join(dirname(fileURLToPath(import.meta.url)), "./run-aigne-in-child-process-worker.js"),
     );
 
     child.on(
       "message",
-      (event: { method: string; error?: { message: string }; result?: unknown }) => {
-        if (event.method !== method)
+      (event: { method: string; error?: { name: string; message: string }; result?: unknown }) => {
+        if (event.method !== method) {
           reject(new Error(`Unknown method: ${event.method} expected: ${method}`));
-        else if (event.error) reject(new Error(event.error.message));
-        else resolve(event.result as ReturnType<ChildProcessAIGNEMethods[M]>);
+        } else if (event.error) {
+          const e = new Error(event.error.message);
+          e.name = event.error.name;
+          reject(e);
+        } else {
+          resolve(event.result as ReturnType<ChildProcessAIGNEMethods[M]>);
+        }
+
+        completed = true;
       },
     );
 
     child.on("exit", (code) => {
+      if (!completed) process.exit(code);
+
       reject(new Error(`Child process exited with code ${code}`));
     });
 

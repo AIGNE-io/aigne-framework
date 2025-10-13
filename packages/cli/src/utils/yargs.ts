@@ -19,7 +19,7 @@ import {
   readAllString,
 } from "@aigne/core";
 import { getLevelFromEnv, LogLevel, logger } from "@aigne/core/utils/logger.js";
-import { pick, tryOrThrow } from "@aigne/core/utils/type-utils.js";
+import { flat, pick, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { parse } from "yaml";
 import type { Argv } from "yargs";
 import z, {
@@ -243,7 +243,7 @@ export async function parseAgentInput(i: Message & AgentRunCommonOptions, agent:
 
   if (agent instanceof AIAgent && agent.inputFileKey) {
     const files: FileUnionContent[] = [];
-    for (const file of i.inputFile ?? []) {
+    for (const file of flat(i.inputFile, i[agent.inputFileKey] as string[]) ?? []) {
       const raw = await readFile(file.replace(/^@/, ""), "base64");
       const filename = basename(file);
       const mimeType = (await ChatModel.getMimeType(filename)) || "application/octet-stream";

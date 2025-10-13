@@ -68,7 +68,7 @@ export default function Metric({
           <Box
             component="div"
             className={`metric__number ${animated ? "metric__number--animated" : ""}`}
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: it's safe here as value is controlled
             dangerouslySetInnerHTML={{ __html: value as string }}
           />
         )}

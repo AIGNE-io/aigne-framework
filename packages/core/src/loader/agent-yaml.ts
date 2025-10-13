@@ -1,8 +1,9 @@
+import type { AFSOptions } from "@aigne/afs";
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
+import type { AFSConfig, AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { type Role, roleSchema } from "../agents/chat-model.js";
 import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
@@ -32,6 +33,13 @@ export type NestAgentSchema =
   | { url: string; defaultInput?: Record<string, any>; hooks?: HooksSchema | HooksSchema[] }
   | AgentSchema;
 
+export type AFSModuleSchema =
+  | string
+  | {
+      module: string;
+      options?: Record<string, any>;
+    };
+
 export interface BaseAgentSchema {
   name?: string;
   description?: string;
@@ -51,6 +59,12 @@ export interface BaseAgentSchema {
         provider: string;
         subscribeTopic?: string[];
       };
+  afs?:
+    | boolean
+    | (Omit<AFSOptions, "modules"> & {
+        modules?: AFSModuleSchema[];
+      });
+  afsConfig?: AFSConfig;
 }
 
 export type Instructions = { role: Exclude<Role, "tool">; content: string; path: string }[];
@@ -59,8 +73,10 @@ export interface AIAgentSchema extends BaseAgentSchema {
   type: "ai";
   instructions?: Instructions;
   inputKey?: string;
+  inputFileKey?: string;
   outputKey?: string;
   toolChoice?: AIAgentToolChoice;
+  toolCallsConcurrency?: number;
   keepTextInToolUses?: boolean;
 }
 
@@ -163,6 +179,39 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
           ),
         ]),
       ),
+      afs: optionalize(
+        z.union([
+          z.boolean(),
+          camelizeSchema(
+            z.object({
+              storage: optionalize(
+                z.object({
+                  url: optionalize(z.string()),
+                }),
+              ),
+              modules: optionalize(
+                z.array(
+                  z.union([
+                    z.string(),
+                    z.object({
+                      module: z.string(),
+                      options: optionalize(z.record(z.any())),
+                    }),
+                  ]),
+                ),
+              ),
+            }),
+          ),
+        ]),
+      ),
+      afsConfig: optionalize(
+        camelizeSchema(
+          z.object({
+            injectHistory: optionalize(z.boolean()),
+            historyWindowSize: optionalize(z.number().int().min(1)),
+          }),
+        ),
+      ),
     });
 
     const instructionItemSchema = z.union([
@@ -217,7 +266,10 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
             instructions: optionalize(instructionsSchema),
             inputKey: optionalize(z.string()),
             outputKey: optionalize(z.string()),
+            inputFileKey: optionalize(z.string()),
+            outputFileKey: optionalize(z.string()),
             toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
+            toolCallsConcurrency: optionalize(z.number().int().min(0)),
             keepTextInToolUses: optionalize(z.boolean()),
             structuredStreamMode: optionalize(z.boolean()),
           })
@@ -252,6 +304,7 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
                   isApproved: z.string(),
                   maxIterations: optionalize(z.number().int().min(1)),
                   returnLastOnMaxIterations: optionalize(z.boolean()),
+                  customErrorMessage: optionalize(z.string()),
                 }),
               ),
             ),

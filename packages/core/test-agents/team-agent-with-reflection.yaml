@@ -8,3 +8,4 @@ reflection:
   is_approved: approved
   max_iterations: 5
   return_last_on_max_iterations: true
+  custom_error_message: Test custom error message for reflection

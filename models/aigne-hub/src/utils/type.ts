@@ -3,7 +3,7 @@ import type { OpenAIChatModelOptions } from "@aigne/openai";
 import { z } from "zod";
 
 export const aigneHubModelOptionsSchema = z.object({
-  url: z.string().optional(),
+  baseURL: z.string().optional(),
   apiKey: z.string().optional(),
   model: z.string().optional(),
   modelOptions: z

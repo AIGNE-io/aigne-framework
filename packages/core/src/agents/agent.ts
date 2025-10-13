@@ -1,3 +1,4 @@
+import { AFS, type AFSOptions } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type * as prompts from "@inquirer/prompts";
 import equal from "fast-deep-equal";
@@ -179,6 +180,10 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   memory?: MemoryAgent | MemoryAgent[];
 
+  afs?: true | AFSOptions | AFS | ((afs: AFS) => AFS);
+
+  afsConfig?: AFSConfig;
+
   asyncMemoryRecord?: boolean;
 
   /**
@@ -189,6 +194,11 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   hooks?: AgentHooks<I, O> | AgentHooks<I, O>[];
 
   retryOnError?: Agent<I, O>["retryOnError"] | boolean;
+}
+
+export interface AFSConfig {
+  injectHistory?: boolean;
+  historyWindowSize?: number;
 }
 
 const hooksSchema = z.object({
@@ -330,6 +340,16 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     } else if (options.memory) {
       this.memories.push(options.memory);
     }
+    this.afs = !options.afs
+      ? undefined
+      : options.afs === true
+        ? new AFS()
+        : typeof options.afs === "function"
+          ? options.afs(new AFS())
+          : options.afs instanceof AFS
+            ? options.afs
+            : new AFS(options.afs);
+    this.afsConfig = options.afsConfig;
     this.asyncMemoryRecord = options.asyncMemoryRecord;
 
     this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
@@ -346,8 +366,14 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
   /**
    * List of memories this agent can use
+   *
+   * @deprecated use afs instead
    */
   readonly memories: MemoryAgent[] = [];
+
+  afs?: AFS;
+
+  afsConfig?: AFSConfig;
 
   asyncMemoryRecord?: boolean;
 
@@ -906,6 +932,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
     const o = await this.callHooks(["onSuccess", "onEnd"], { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
+
+    this.afs?.emit("agentSucceed", { input, output: finalOutput });
 
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 

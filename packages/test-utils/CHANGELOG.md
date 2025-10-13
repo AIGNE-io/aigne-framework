@@ -1,5 +1,68 @@
 # Changelog
 
+## [0.5.55-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.55-beta.3...test-utils-v0.5.55-beta.4) (2025-10-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.4
+
+## [0.5.55-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.55-beta.2...test-utils-v0.5.55-beta.3) (2025-10-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.3
+
+## [0.5.55-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.55-beta.1...test-utils-v0.5.55-beta.2) (2025-10-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.2
+
+## [0.5.55-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.55-beta...test-utils-v0.5.55-beta.1) (2025-10-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.1
+
+## [0.5.55-beta](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.54...test-utils-v0.5.55-beta) (2025-10-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta
+
+## [0.5.54](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.54-beta.7...test-utils-v0.5.54) (2025-10-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.62.0
+
+## [0.5.54-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.54-beta.6...test-utils-v0.5.54-beta.7) (2025-10-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.62.0-beta.6
+
 ## [0.5.54-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.54-beta.5...test-utils-v0.5.54-beta.6) (2025-10-02)
 
 

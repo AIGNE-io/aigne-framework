@@ -1,5 +1,83 @@
 # Changelog
 
+## [1.63.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.3...core-v1.63.0-beta.4) (2025-10-12)
+
+
+### Features
+
+* **afs:** add configurable history injection to AFS system ([#611](https://github.com/AIGNE-io/aigne-framework/issues/611)) ([689b5d7](https://github.com/AIGNE-io/aigne-framework/commit/689b5d76d8cc82f548e8be74e63f18e7a6216c31))
+
+## [1.63.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.2...core-v1.63.0-beta.3) (2025-10-11)
+
+
+### Features
+
+* **afs:** add module system fs for afs ([#594](https://github.com/AIGNE-io/aigne-framework/issues/594)) ([83c7b65](https://github.com/AIGNE-io/aigne-framework/commit/83c7b6555d21c606a5005eb05f6686882fb8ffa3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.1.0-beta
+    * @aigne/observability-api bumped to 0.11.2-beta.1
+
+## [1.63.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.1...core-v1.63.0-beta.2) (2025-10-09)
+
+
+### Bug Fixes
+
+* input schema of AI agent should includes input key and input file key ([#600](https://github.com/AIGNE-io/aigne-framework/issues/600)) ([b4ca076](https://github.com/AIGNE-io/aigne-framework/commit/b4ca076d6b4a1a1ecb8d4ebb008abd0d7561aadd))
+
+## [1.63.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta...core-v1.63.0-beta.1) (2025-10-09)
+
+
+### Features
+
+* **core:** add `toolCallsConcurrency` support for AI agent ([#598](https://github.com/AIGNE-io/aigne-framework/issues/598)) ([84df406](https://github.com/AIGNE-io/aigne-framework/commit/84df406bfa9e3bdf159509f4b9cf2301ec80b155))
+
+
+### Bug Fixes
+
+* **core:** add input_file_key support for agent yaml ([#597](https://github.com/AIGNE-io/aigne-framework/issues/597)) ([63414a3](https://github.com/AIGNE-io/aigne-framework/commit/63414a3d46c74c686e7f033c224ca6175bea8c3f))
+
+## [1.63.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0...core-v1.63.0-beta) (2025-10-07)
+
+
+### Features
+
+* **afs:** add basic AFS(AIGNE File System) support ([#505](https://github.com/AIGNE-io/aigne-framework/issues/505)) ([ac2a18a](https://github.com/AIGNE-io/aigne-framework/commit/ac2a18a82470a2f31c466f329386525eb1cdab6d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.0.0
+    * @aigne/observability-api bumped to 0.11.2-beta
+
+## [1.62.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta.6...core-v1.62.0) (2025-10-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.1
+
+## [1.62.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta.5...core-v1.62.0-beta.6) (2025-10-03)
+
+
+### Features
+
+* support custom extra model options in agent yaml file ([#586](https://github.com/AIGNE-io/aigne-framework/issues/586)) ([6d82115](https://github.com/AIGNE-io/aigne-framework/commit/6d82115e0763385c7e44ea152867c0d4a9e0a301))
+* support custom reflection error message ([#589](https://github.com/AIGNE-io/aigne-framework/issues/589)) ([856348e](https://github.com/AIGNE-io/aigne-framework/commit/856348e889890051d7149b4093161f6ba8636273))
+
+
+### Bug Fixes
+
+* **core:** auto retry LLM request for tool not found error ([#590](https://github.com/AIGNE-io/aigne-framework/issues/590)) ([3283daa](https://github.com/AIGNE-io/aigne-framework/commit/3283daa7abb0a44545b27d51645e5868c59a442f))
+
 ## [1.62.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.62.0-beta.4...core-v1.62.0-beta.5) (2025-10-02)
 
 

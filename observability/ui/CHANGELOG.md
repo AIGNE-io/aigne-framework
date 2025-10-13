@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.0...observability-ui-v0.11.1-beta) (2025-10-11)
+
+
+### Bug Fixes
+
+* add ability to delete individual trace records ([f853cec](https://github.com/AIGNE-io/aigne-framework/commit/f853cec0557600788f2da1e5be4935360372dc99))
+* add ability to delete individual trace records ([#606](https://github.com/AIGNE-io/aigne-framework/issues/606)) ([f853cec](https://github.com/AIGNE-io/aigne-framework/commit/f853cec0557600788f2da1e5be4935360372dc99))
+* observability list query setting ([#605](https://github.com/AIGNE-io/aigne-framework/issues/605)) ([0952d39](https://github.com/AIGNE-io/aigne-framework/commit/0952d398955702276956da963710f8bfd85a86ce))
+* observability list query setting ([#605](https://github.com/AIGNE-io/aigne-framework/issues/605)) ([0952d39](https://github.com/AIGNE-io/aigne-framework/commit/0952d398955702276956da963710f8bfd85a86ce))
+* update observability deps ([#602](https://github.com/AIGNE-io/aigne-framework/issues/602)) ([fc70ecd](https://github.com/AIGNE-io/aigne-framework/commit/fc70ecd142825f0bcfc01bfa7df488d8f1d95ec3))
+* update observability deps ([#602](https://github.com/AIGNE-io/aigne-framework/issues/602)) ([fc70ecd](https://github.com/AIGNE-io/aigne-framework/commit/fc70ecd142825f0bcfc01bfa7df488d8f1d95ec3))
+
 ## [0.11.0](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.0-beta.1...observability-ui-v0.11.0) (2025-09-27)
 
 ## [0.11.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.0-beta...observability-ui-v0.11.0-beta.1) (2025-09-26)

@@ -1,12 +1,17 @@
-import { afterAll, afterEach, describe, expect, mock, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { AIGNE_ENV_FILE } from "@aigne/cli/utils/aigne-hub/constants.js";
 import { loadAIGNE } from "@aigne/cli/utils/load-aigne.js";
+import { pick } from "@aigne/core/utils/type-utils.js";
 import { withEnv } from "@aigne/test-utils/utils/with-env.js";
 import { joinURL } from "ufo";
 import { parse, stringify } from "yaml";
 import { createHonoServer } from "../_mocks_/server.js";
+
+beforeEach(() => {
+  delete process.env.AIGNE_HUB_API_KEY;
+});
 
 afterEach(() => {
   delete process.env.AIGNE_HUB_API_URL;
@@ -226,6 +231,31 @@ describe("load aigne", () => {
     });
     expect(aigne3.model?.name).toBe("AnthropicChatModel");
     expect(aigne3.imageModel?.name).toBe("DoubaoImageModel");
+  });
+
+  test("should load models with custom options", async () => {
+    const aigne1 = await loadAIGNE({
+      path: join(import.meta.dirname, "../../test-agents"),
+      modelOptions: {},
+      imageModelOptions: {},
+    });
+
+    expect(pick(aigne1.model?.options ?? {}, "model", "modelOptions")).toMatchInlineSnapshot(`
+      {
+        "model": "gpt-4o-mini",
+        "modelOptions": {
+          "customOption": 1,
+        },
+      }
+    `);
+    expect(pick(aigne1.imageModel?.options ?? {}, "model", "modelOptions")).toMatchInlineSnapshot(`
+      {
+        "model": "gpt-image-1",
+        "modelOptions": {
+          "quality": "standard",
+        },
+      }
+    `);
   });
 
   afterAll(async () => {

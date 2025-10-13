@@ -360,7 +360,10 @@ test("TeamAgent should process reflection mode correctly", async () => {
   expect(modelProcess.mock.calls.map((i) => i.at(0))).toMatchSnapshot();
 });
 
-test("TeamAgent should raise error if max iterations exceeded", async () => {
+test.each<[Partial<ReflectionMode>]>([
+  [{}],
+  [{ customErrorMessage: "Test custom error message for reflection" }],
+])("TeamAgent should raise error if max iterations exceeded with %p", async (reflectionOptions) => {
   const model = new OpenAIChatModel();
 
   const aigne = new AIGNE({ model });
@@ -399,9 +402,19 @@ test("TeamAgent should raise error if max iterations exceeded", async () => {
       },
     });
 
-  expect(aigne.invoke(teamAgentWithReflection(), { topic: "AIGNE in 2025" })).rejects.toThrow(
-    "Reflection mode exceeded max iterations 3. Please review the feedback and try again.",
-  );
+  const result = aigne.invoke(teamAgentWithReflection(reflectionOptions), {
+    topic: "AIGNE in 2025",
+  });
+
+  if (reflectionOptions.customErrorMessage) {
+    expect(result).rejects.toMatchInlineSnapshot(
+      `[Error: Test custom error message for reflection]`,
+    );
+  } else {
+    expect(result).rejects.toThrow(
+      "Reflection mode exceeded max iterations 3. Please review the feedback and try again.",
+    );
+  }
 });
 
 test("TeamAgent should use last output if max iterations exceeded", async () => {

@@ -1,7 +1,7 @@
 import dayjs from "@abtnode/util/lib/dayjs";
 import TableSearch from "@arcblock/ux/lib/Datatable/TableSearch";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import { ToastProvider } from "@arcblock/ux/lib/Toast";
+import Toast, { ToastProvider } from "@arcblock/ux/lib/Toast";
 import TuneIcon from "@mui/icons-material/Tune";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -40,6 +40,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [live, setLive] = useState(false);
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
   const [open, setOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
 
@@ -50,10 +51,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [search, setSearch] = useState<SearchState>({
     componentId: "",
     searchText: "",
-    dateRange: [
-      dayjs().subtract(1, "month").startOf("day").toDate(),
-      dayjs().endOf("day").toDate(),
-    ],
+    dateRange: [dayjs().subtract(1, "week").startOf("day").toDate(), dayjs().endOf("day").toDate()],
   });
 
   const [traces, setTraces] = useState<TraceData[]>([]);
@@ -65,6 +63,25 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     const res = await fetch(joinURL(origin, "/api/trace/tree/components"));
     return res.json() as Promise<{ data: string[] }>;
   });
+
+  const onDelete = async (items: string[]) => {
+    try {
+      await fetch(joinURL(origin, "/api/trace/tree"), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: items }),
+      });
+    } catch (error) {
+      Toast.error((error as Error)?.message);
+    } finally {
+      fetchTraces({
+        page: 0,
+        pageSize: page.pageSize,
+        searchText: search.searchText,
+        dateRange: search.dateRange,
+      });
+    }
+  };
 
   const fetchTraces = async ({
     page,
@@ -119,6 +136,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     documentVisibility,
     search.componentId,
   ]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
+  useEffect(() => {
+    setPage({ page: 1, pageSize: page.pageSize });
+  }, [search.searchText, search.dateRange, live, search.componentId]);
 
   useRafInterval(() => {
     if (!live) return;
@@ -197,7 +219,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       componentId: "",
       searchText: "",
       dateRange: [
-        dayjs().subtract(1, "month").startOf("day").toDate(),
+        dayjs().subtract(1, "week").startOf("day").toDate(),
         dayjs().endOf("day").toDate(),
       ],
     });
@@ -207,53 +229,55 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   return (
     <ToastProvider>
       <Box sx={{ ".striped-row": { backgroundColor: "action.hover" } }}>
-        <Box
-          sx={{
-            my: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: !isMobile ? "flex-end" : "space-between",
-            gap: 1,
+        {!selectedRows.length && (
+          <Box
+            sx={{
+              my: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: !isMobile ? "flex-end" : "space-between",
+              gap: 1,
 
-            ".search-always-open": isMobile
-              ? {
-                  flex: 1,
-                  ".toolbar-search-area.toolbar-btn-show": {
-                    width: "100%",
-                  },
-                }
-              : {},
-          }}
-        >
-          <TableSearch
-            options={{
-              searchPlaceholder: t("search"),
-              searchDebounceTime: 600,
-              searchAlwaysOpen: isMobile,
+              ".search-always-open": isMobile
+                ? {
+                    flex: 1,
+                    ".toolbar-search-area.toolbar-btn-show": {
+                      width: "100%",
+                    },
+                  }
+                : {},
             }}
-            search={search.searchText}
-            searchText={search.searchText}
-            searchTextUpdate={(text: string) => setSearch((x) => ({ ...x, searchText: text }))}
-            searchClose={() => setSearch((x) => ({ ...x, searchText: "" }))}
-          />
-
-          {isMobile ? (
-            <IconButton onClick={toggleDrawer(true)}>
-              <TuneIcon />
-            </IconButton>
-          ) : (
-            <DesktopSearch
-              components={components || { data: [] }}
-              search={search}
-              setSearch={setSearch}
-              onDateRangeChange={onDateRangeChange}
-              live={live}
-              setLive={setLive}
-              fetchTraces={fetchTraces}
-              page={page}
+          >
+            <TableSearch
+              options={{
+                searchPlaceholder: t("search"),
+                searchDebounceTime: 600,
+                searchAlwaysOpen: isMobile,
+              }}
+              search={search.searchText}
+              searchText={search.searchText}
+              searchTextUpdate={(text: string) => setSearch((x) => ({ ...x, searchText: text }))}
+              searchClose={() => setSearch((x) => ({ ...x, searchText: "" }))}
             />
-          )}
-        </Box>
+
+            {isMobile ? (
+              <IconButton onClick={toggleDrawer(true)}>
+                <TuneIcon />
+              </IconButton>
+            ) : (
+              <DesktopSearch
+                components={components || { data: [] }}
+                search={search}
+                setSearch={setSearch}
+                onDateRangeChange={onDateRangeChange}
+                live={live}
+                setLive={setLive}
+                fetchTraces={fetchTraces}
+                page={page}
+              />
+            )}
+          </Box>
+        )}
 
         <Table
           traces={traces}
@@ -261,6 +285,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           loading={loading}
           page={page}
           setPage={setPage}
+          isLive={live}
           onRowClick={(row) => {
             setSelectedTrace(row);
             setSearchParams((prev) => {
@@ -268,6 +293,9 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               return prev;
             });
           }}
+          onDelete={onDelete}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
         />
       </Box>
 

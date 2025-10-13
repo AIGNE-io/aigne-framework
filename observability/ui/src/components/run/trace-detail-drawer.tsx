@@ -17,40 +17,77 @@ interface RunDetailDrawerProps {
 
 export default function RunDetailDrawer({
   traceId,
+  trace,
   open,
   onClose: onCloseDrawer,
-  trace,
 }: RunDetailDrawerProps) {
   const [selectedTrace, setSelectedTrace] = useState(trace);
   const [traceInfo, setTraces] = useState(trace);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
 
-  const init = async () => {
-    setLoading(true);
+  const init = async (setSelectTrace: boolean = false, signal?: AbortSignal) => {
+    try {
+      const res = await fetch(joinURL(origin, `/api/trace/tree/${traceId}`), { signal });
+      const { data } = (await res.json()) as { data: TraceData };
+      const format = {
+        ...data,
+        startTime: Number(data.startTime),
+        endTime: Number(data.endTime),
+      };
 
-    fetch(joinURL(origin, `/api/trace/tree/${traceId}`))
-      .then((res) => res.json() as Promise<{ data: TraceData }>)
-      .then(({ data }) => {
-        const format = {
-          ...data,
-          startTime: Number(data.startTime),
-          endTime: Number(data.endTime),
-        };
-
-        setTraces(format);
+      setTraces(format);
+      if (setSelectTrace) {
         setSelectedTrace(format);
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      }
+    } catch {
+      setLoading(false);
+    }
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
-    if (traceId) init();
+    if (!traceId) return;
 
+    const controller = new AbortController();
+
+    setLoading(true);
+    init(true, controller.signal);
     setSelectedTrace(trace);
+
+    return () => {
+      controller.abort();
+    };
   }, [trace, traceId]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
+  useEffect(() => {
+    if (!traceId || !open) return;
+
+    let cancelled = false;
+    const controller = new AbortController();
+
+    const fetchLoop = async () => {
+      while (!cancelled) {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          if (cancelled) break;
+
+          await init(false, controller.signal);
+        } catch {
+          break;
+        }
+      }
+    };
+
+    fetchLoop();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [traceId, open, trace]);
 
   const onClose = () => {
     setTraces(null);
@@ -102,7 +139,7 @@ export default function RunDetailDrawer({
           overflow: "hidden",
         }}
       >
-        {renderContent()}
+        {!loading && renderContent()}
 
         {loading && (
           <Box

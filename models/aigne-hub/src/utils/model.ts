@@ -49,7 +49,7 @@ export interface LoadableModel {
     model?: string;
     modelOptions?: ChatModelInputOptions;
     apiKey?: string;
-    url?: string;
+    baseURL?: string;
   }) => ChatModel;
 }
 
@@ -127,7 +127,7 @@ export interface LoadableImageModel {
   apiKeyEnvName: string;
   create: (options: {
     apiKey?: string;
-    url?: string;
+    baseURL?: string;
     model?: string;
     modelOptions?: ImageModelInputOptions;
   }) => ImageModel;

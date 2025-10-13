@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.11.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta...observability-api-v0.11.2-beta.1) (2025-10-11)
+
+
+### Bug Fixes
+
+* add ability to delete individual trace records ([f853cec](https://github.com/AIGNE-io/aigne-framework/commit/f853cec0557600788f2da1e5be4935360372dc99))
+* add ability to delete individual trace records ([#606](https://github.com/AIGNE-io/aigne-framework/issues/606)) ([f853cec](https://github.com/AIGNE-io/aigne-framework/commit/f853cec0557600788f2da1e5be4935360372dc99))
+* observability list query setting ([#605](https://github.com/AIGNE-io/aigne-framework/issues/605)) ([0952d39](https://github.com/AIGNE-io/aigne-framework/commit/0952d398955702276956da963710f8bfd85a86ce))
+* observability list query setting ([#605](https://github.com/AIGNE-io/aigne-framework/issues/605)) ([0952d39](https://github.com/AIGNE-io/aigne-framework/commit/0952d398955702276956da963710f8bfd85a86ce))
+
+## [0.11.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.1...observability-api-v0.11.2-beta) (2025-10-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.3-beta
+
+## [0.11.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.1-beta.2...observability-api-v0.11.1) (2025-10-04)
+
 ## [0.11.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.1-beta.1...observability-api-v0.11.1-beta.2) (2025-10-01)
 
 

@@ -48,29 +48,44 @@ export async function loadAIGNE({
   modelOptions,
   imageModelOptions,
   printTips = true,
+  skipModelLoading = false,
 }: {
   path?: string;
   modelOptions?: ChatModelInputOptions & LoadCredentialOptions;
   imageModelOptions?: ImageModelInputOptions & LoadCredentialOptions;
   printTips?: boolean;
+  skipModelLoading?: boolean;
 }) {
   let aigne: AIGNE;
 
   if (path) {
     aigne = await AIGNE.load(path, {
       memories: availableMemories,
-      model: (options) =>
-        loadChatModel({
+      model: (options) => {
+        if (skipModelLoading) return undefined;
+        return loadChatModel({
           ...options,
           ...omitBy(modelOptions ?? {}, (v) => isNil(v)),
           model: modelOptions?.model || process.env.MODEL || options?.model,
-        }),
-      imageModel: (options) =>
-        loadImageModel({
+        });
+      },
+      imageModel: (options) => {
+        if (skipModelLoading) return undefined;
+        return loadImageModel({
           ...options,
           ...omitBy(imageModelOptions ?? {}, (v) => isNil(v)),
           model: imageModelOptions?.model || process.env.IMAGE_MODEL || options?.model,
-        }),
+        });
+      },
+      afs: {
+        availableModules: [
+          {
+            module: "system-fs",
+            create: (options) =>
+              import("@aigne/afs-system-fs").then((m) => new m.SystemFS(options as any)),
+          },
+        ],
+      },
     });
   } else {
     const chatModel = await loadChatModel({ ...modelOptions });

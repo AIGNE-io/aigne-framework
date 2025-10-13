@@ -1,151 +1,376 @@
-# Overview
+# AIGNE Class
 
-`@aigne/core` is the foundational component of the AIGNE Framework, providing the essential modules and tools needed to build AI-driven applications. This package implements the core functionalities of the framework, including agent systems, the AIGNE environment, model integrations, and support for various workflow patterns. It serves as the functional core for creating sophisticated agentic AI.
+The `AIGNE` class is the central orchestrator in the AIGNE Framework. It manages the lifecycle of agents, facilitates communication between them, and coordinates the execution of complex AI-driven workflows. It serves as the main execution engine, bringing together models, agents, and skills to build powerful applications.
 
-The framework is designed to be modular and extensible, allowing developers to build complex AI-powered workflows by combining different types of agents and models.
+## Core Concepts
+
+The AIGNE ecosystem revolves around a few key components that interact to execute tasks. Understanding these components is essential for using the framework effectively.
+
+# AIGNE Class
+
+The `AIGNE` class is the central orchestrator in the AIGNE Framework. It manages the lifecycle of agents, facilitates communication between them, and coordinates the execution of complex AI-driven workflows. It serves as the main execution engine, bringing together models, agents, and skills to build powerful applications.
+
+## Core Concepts
+
+The AIGNE ecosystem revolves around a few key components that interact to execute tasks. Understanding these components is essential for using the framework effectively.
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
-}
-
-AIGNE-Framework: {
-  label: "AIGNE Framework"
+AIGNE-Engine: {
+  label: "AIGNE Engine\n(Central Orchestrator)"
   shape: rectangle
-
-  AIGNE-Engine: {
-    label: "AIGNE Engine"
-    shape: rectangle
-  }
-
-  Context: {
-    label: "Context"
-    shape: rectangle
-    MessageQueue: {
-      shape: queue
-    }
-  }
-
-  Agents: {
-    label: "Agents"
-    shape: rectangle
-    grid-columns: 2
-
-    UserAgent: { label: "UserAgent" }
-    AIAgent: { label: "AIAgent" }
-    TeamAgent: { label: "TeamAgent" }
-    ImageAgent: { label: "ImageAgent" }
-    FunctionAgent: { label: "FunctionAgent" }
-    MCPAgent: { label: "MCPAgent" }
-  }
-
-  Models: {
-    label: "Models"
-    shape: rectangle
-    grid-columns: 2
-
-    ChatModel: { label: "ChatModel" }
-    ImageModel: { label: "ImageModel" }
-  }
-
-  Skills: {
-    shape: rectangle
-  }
-
-  PromptBuilder: {
-    shape: rectangle
-  }
+  style.fill: "#f0f8ff"
 }
 
-User -> AIGNE-Framework.Agents.UserAgent: "Interacts via"
-AIGNE-Framework.Agents.UserAgent -> AIGNE-Framework.AIGNE-Engine: "Invokes"
-AIGNE-Framework.AIGNE-Engine -> AIGNE-Framework.Agents: "Orchestrates"
-AIGNE-Framework.AIGNE-Engine -> AIGNE-Framework.Skills: "Manages"
-AIGNE-Framework.AIGNE-Engine -> AIGNE-Framework.Context: "Uses"
+Core-Components: {
+  label: "Core Components"
+  shape: rectangle
+  style.stroke-dash: 2
+  grid-columns: 3
 
-AIGNE-Framework.Agents <-> AIGNE-Framework.Context.MessageQueue: "Communicate via"
-AIGNE-Framework.Agents.AIAgent -> AIGNE-Framework.PromptBuilder: "Uses"
-AIGNE-Framework.Agents.AIAgent -> AIGNE-Framework.Models.ChatModel: "Interacts with"
-AIGNE-Framework.Agents.ImageAgent -> AIGNE-Framework.Models.ImageModel: "Interacts with"
-AIGNE-Framework.Agents.TeamAgent -> AIGNE-Framework.Agents: "Manages"
+  Models
+  Agents
+  Skills
+}
+
+AI-driven-Workflows: {
+  label: "AI-driven Workflows"
+  shape: rectangle
+}
+
+AIGNE-Engine -> Core-Components: "Brings Together"
+
+AIGNE-Engine -> AI-driven-Workflows: "Coordinates & Executes"
+
+AIGNE-Engine -> Core-Components.Agents: "Manages Lifecycle & \nFacilitates Communication" {
+  style.stroke-dash: 2
+}
+
+Core-Components.Agents -> Core-Components.Skills: "Use"
+Core-Components.Agents -> Core-Components.Models: "Leverage"
+
 ```
 
-## Key Features
+- **AIGNE Engine**: The central orchestrator responsible for managing agents and coordinating workflows.
+- **Agents**: The fundamental actors in the system that perform specific tasks.
+- **Models**: AI models that provide intelligence to agents.
+- **Skills**: Reusable capabilities that can be attached to agents to extend their functionality.
 
-The AIGNE Core framework is built with a comprehensive set of features to support robust AI application development.
+## Constructor
 
-*   **Multiple AI Model Support**: Provides built-in support for major AI models including OpenAI, Gemini, Claude, and Nova, with an extensible architecture to integrate additional models.
-*   **Powerful Agent System**: Offers powerful abstractions for different types of agents, such as AI agents, function agents, and team agents, enabling specialized task handling.
-*   **Flexible AIGNE Environment**: Manages communication between agents and orchestrates the execution of complex workflows with precision.
-*   **Advanced Workflow Patterns**: Supports a variety of workflow patterns like sequential, concurrent, routing, and handoff, allowing for the creation of sophisticated process automation.
-*   **MCP Protocol Integration**: Enables seamless integration with external systems through the Model Context Protocol (MCP).
-*   **Full TypeScript Support**: Includes comprehensive type definitions to ensure a superior development experience with type safety and autocompletion.
+The `AIGNE` class is initialized with a set of options that define its behavior and resources.
 
-## Getting Started
-
-To begin using `@aigne/core`, you first need to install the package into your project.
-
-### Installation
-
-You can install the package using your preferred package manager.
-
-```bash Using npm
-npm install @aigne/core
+```typescript
+constructor(options?: AIGNEOptions)
 ```
 
-```bash Using yarn
-yarn add @aigne/core
+**Parameters**
+
+<x-field-group>
+  <x-field data-name="options" data-type="AIGNEOptions" data-required="false" data-desc="Configuration options for the AIGNE instance."></x-field>
+</x-field-group>
+
+<x-field-group>
+    <x-field data-name="name" data-type="string" data-required="false" data-desc="The name of the AIGNE instance."></x-field>
+    <x-field data-name="description" data-type="string" data-required="false" data-desc="A description of the AIGNE instance's purpose."></x-field>
+    <x-field data-name="model" data-type="ChatModel" data-required="false" data-desc="The default model for agents that do not specify one."></x-field>
+    <x-field data-name="imageModel" data-type="ImageModel" data-required="false" data-desc="The model to use for image processing tasks."></x-field>
+    <x-field data-name="agents" data-type="Agent[]" data-required="false" data-desc="A list of agents to be managed by the AIGNE instance."></x-field>
+    <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="A list of skills available to the agents."></x-field>
+    <x-field data-name="limits" data-type="ContextLimits" data-required="false" data-desc="Usage limits for the AIGNE instance, such as timeouts and token counts."></x-field>
+    <x-field data-name="observer" data-type="AIGNEObserver" data-required="false" data-desc="An observer for monitoring and logging activities."></x-field>
+</x-field-group>
+
+**Example**
+
+```typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+
+const model = new OpenAIChatModel({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const agent = AIAgent.from({
+  name: "chat",
+  description: "A simple chat agent",
+});
+
+const aigne = new AIGNE({
+  model,
+  agents: [agent],
+  name: "MyAIGNE",
+  description: "An example AIGNE instance",
+});
 ```
 
-```bash Using pnpm
-pnpm add @aigne/core
+## Methods
+
+### invoke
+
+The `invoke` method is used to interact with an agent, either by sending it a message or by creating a `UserAgent` for sustained interaction.
+
+```typescript
+invoke<I extends Message, O extends Message>(agent: Agent<I, O>, message?: I, options?: InvokeOptions<U>): UserAgent<I, O> | Promise<AgentResponse<O>>
 ```
 
-### Basic Usage
+**Parameters**
 
-Here is a simple example of how to create and run a basic AI agent using the AIGNE framework.
+<x-field-group>
+    <x-field data-name="agent" data-type="Agent" data-required="true" data-desc="The agent to invoke."></x-field>
+    <x-field data-name="message" data-type="Message" data-required="false" data-desc="The input message to send to the agent."></x-field>
+    <x-field data-name="options" data-type="InvokeOptions" data-required="false" data-desc="Additional options for the invocation, such as enabling streaming."></x-field>
+</x-field-group>
 
-```typescript Basic Agent Example icon=logos:typescript
+**Returns**
+
+- If `message` is not provided, it returns a `UserAgent` instance for consistent interaction with the specified agent.
+- If `message` is provided, it returns a `Promise` that resolves with the agent's response. The response can be a single object or a stream if `streaming` is enabled in the options.
+
+**Example: Simple Invocation**
+
+```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
-// 1. Create an AI model instance
+// Create AI model instance
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
   model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
 });
 
-// 2. Create an AI agent with instructions
+// Create AI agent
 const agent = AIAgent.from({
   name: "Assistant",
   instructions: "You are a helpful assistant.",
 });
 
-// 3. Initialize the AIGNE engine with the model
+// AIGNE: Main execution engine of AIGNE Framework.
 const aigne = new AIGNE({ model });
 
-// 4. Use the engine to invoke the agent, creating a user-facing instance
+// Use the AIGNE to invoke the agent
 const userAgent = await aigne.invoke(agent);
 
-// 5. Send a message to the agent and receive a response
+// Send a message to the agent
 const response = await userAgent.invoke(
   "Hello, can you help me write a short article?",
 );
-
 console.log(response);
 ```
 
-## Next Steps
+**Example: Streaming Response**
 
-This documentation is structured to cater to different audiences. Please select the path that best fits your role and objectives.
+```typescript
+import { AIAgent, AIGNE, isAgentResponseDelta } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
-<x-cards data-columns="2">
-  <x-card data-title="User Guide" data-icon="lucide:user" data-href="/user-guide">
-    A conceptual guide for non-technical users. Learn the core ideas behind AIGNE, agents, and AI workflows in plain language.
-  </x-card>
-  <x-card data-title="Developer Guide" data-icon="lucide:code" data-href="/developer-guide">
-    The complete technical guide for developers. Find installation steps, tutorials, and everything needed to build with AIGNE Core.
-  </x-card>
-</x-cards>
+const model = new OpenAIChatModel();
+
+// AIGNE: Main execution engine of AIGNE Framework.
+const aigne = new AIGNE({
+  model,
+});
+
+const agent = AIAgent.from({
+  name: "chat",
+  description: "A chat agent",
+  inputKey: "message",
+});
+
+let text = "";
+
+const stream = await aigne.invoke(agent, { message: "hello" }, { streaming: true });
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk) && chunk.delta.text?.message) {
+    text += chunk.delta.text.message;
+  }
+}
+
+console.log(text); // Output: Hello, How can I assist you today?
+```
+
+### publish
+
+The `publish` method sends a message to a specified topic, allowing for event-driven communication between agents.
+
+```typescript
+publish(topic: string | string[], payload: Omit<MessagePayload, "context"> | Message, options?: InvokeOptions<U>)
+```
+
+**Parameters**
+
+<x-field-group>
+    <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="The topic(s) to publish the message to."></x-field>
+    <x-field data-name="payload" data-type="Message" data-required="true" data-desc="The message payload to send."></x-field>
+    <x-field data-name="options" data-type="InvokeOptions" data-required="false" data-desc="Additional options for publishing."></x-field>
+</x-field-group>
+
+**Example**
+
+```typescript
+import { AIAgent, AIGNE } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+
+const model = new OpenAIChatModel();
+
+const agent = AIAgent.from({
+  name: "chat",
+  description: "A chat agent",
+  subscribeTopic: "test_topic",
+  publishTopic: "result_topic",
+  inputKey: "message",
+});
+
+// AIGNE: Main execution engine of AIGNE Framework.
+const aigne = new AIGNE({
+  model,
+  // Add agent to AIGNE
+  agents: [agent],
+});
+
+const subscription = aigne.subscribe("result_topic");
+
+aigne.publish("test_topic", { message: "hello" });
+
+const { message } = await subscription;
+
+console.log(message); // { message: "Hello, How can I assist you today?" }
+```
+
+### subscribe
+
+The `subscribe` method allows you to listen for messages on a specific topic.
+
+```typescript
+subscribe(topic: string | string[], listener?: MessageQueueListener): Unsubscribe | Promise<MessagePayload>
+```
+
+**Parameters**
+
+<x-field-group>
+    <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="The topic(s) to subscribe to."></x-field>
+    <x-field data-name="listener" data-type="MessageQueueListener" data-required="false" data-desc="An optional callback function to handle incoming messages."></x-field>
+</x-field-group>
+
+**Returns**
+
+- If a `listener` is provided, it returns an `Unsubscribe` function to stop listening.
+- If no `listener` is provided, it returns a `Promise` that resolves with the next message payload on the topic.
+
+**Example**
+
+```typescript
+import { AIAgent, AIGNE } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+
+const model = new OpenAIChatModel();
+
+const agent = AIAgent.from({
+  name: "chat",
+  description: "A chat agent",
+  subscribeTopic: "test_topic",
+  publishTopic: "result_topic",
+  inputKey: "message",
+});
+
+// AIGNE: Main execution engine of AIGNE Framework.
+const aigne = new AIGNE({
+  model,
+  // Add agent to AIGNE
+  agents: [agent],
+});
+
+const unsubscribe = aigne.subscribe("result_topic", ({ message }) => {
+  console.log(message); // { message: "Hello, How can I assist you today?" }
+  unsubscribe();
+});
+
+aigne.publish("test_topic", { message: "hello" });
+```
+
+### shutdown
+
+The `shutdown` method gracefully terminates the `AIGNE` instance and all its associated agents and skills, ensuring proper resource cleanup.
+
+```typescript
+async shutdown(): Promise<void>
+```
+
+**Example**
+
+```typescript
+import { AIAgent, AIGNE } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+
+const model = new OpenAIChatModel();
+
+// AIGNE: Main execution engine of AIGNE Framework.
+const aigne = new AIGNE({
+  model,
+});
+
+const agent = AIAgent.from({
+  name: "chat",
+  description: "A chat agent",
+  inputKey: "message",
+});
+
+await aigne.invoke(agent, { message: "hello" });
+
+await aigne.shutdown();
+```
+
+### load
+
+The static `load` method initializes an `AIGNE` instance from a directory containing an `aigne.yaml` configuration file.
+
+```typescript
+static async load(path: string, options?: Omit<AIGNEOptions, keyof LoadOptions> & LoadOptions): Promise<AIGNE>
+```
+
+**Parameters**
+
+<x-field-group>
+    <x-field data-name="path" data-type="string" data-required="true" data-desc="The path to the directory containing the aigne.yaml file."></x-field>
+    <x-field data-name="options" data-type="LoadOptions" data-required="false" data-desc="Options to override the loaded configuration."></x-field>
+</x-field-group>
+
+### addAgent
+
+Adds one or more agents to the `AIGNE` instance, making them available for invocation.
+
+```typescript
+addAgent(...agents: Agent[]): void
+```
+
+**Parameters**
+
+<x-field-group>
+    <x-field data-name="agents" data-type="Agent[]" data-required="true" data-desc="One or more agent instances to add."></x-field>
+</x-field-group>
+
+### newContext
+
+Creates a new execution context, which is useful for isolating different conversations or workflows.
+
+```typescript
+newContext(options?: Partial<Pick<Context, "userContext" | "memories">>): AIGNEContext
+```
+
+**Parameters**
+
+<x-field-group>
+    <x-field data-name="options" data-type="object" data-required="false" data-desc="Optional user context and memories to initialize the new context with."></x-field>
+</x-field-group>
+
+## Properties
+
+- **name**: `string` - The name of the AIGNE instance.
+- **description**: `string` - A description of the instance.
+- **model**: `ChatModel` - The default chat model.
+- **imageModel**: `ImageModel` - The default image model.
+- **limits**: `ContextLimits` - Usage limits.
+- **skills**: `Agent[]` - A collection of available skills.
+- **agents**: `Agent[]` - A collection of managed agents.
+- **observer**: `AIGNEObserver` - The observability instance.

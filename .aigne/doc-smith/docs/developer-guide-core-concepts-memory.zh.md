@@ -1,135 +1,306 @@
-# 记忆
+# 内存管理
 
-在任何先进的 AI 系统中，记忆都是一个至关重要的组件，它允许 Agent 在多次交互中保留信息、从过去的经验中学习并维持上下文。在 AIGNE 框架中，记忆管理由 `MemoryAgent` 负责，这是一个专门的 Agent，使用 `Recorder` 和 `Retriever` 技能来存储和回忆信息。
+内存模块提供了一个强大的框架，使 Agent 能够持久化和回忆信息，从而创建一个有状态且具备上下文感知能力的系统。这使得 Agent 能够维护交互历史、从过去的事件中学习，并做出更明智的决策。
 
-本节将介绍 AIGNE 中记忆管理的核心概念，包括每个组件的角色以及它们如何协同工作，为你的 Agent 提供一个持久化的记忆层。
+内存系统的核心是 `MemoryAgent`，它充当所有内存相关操作的中央协调器。它将实际的内存写入和读取任务委托给两个专门的组件：`MemoryRecorder` 和 `MemoryRetriever`。这种关注点分离的设计使得内存解决方案能够灵活且可扩展。
 
-## 工作原理
+- **MemoryAgent**：内存操作的主要入口点。它负责协调记录和检索过程。
+- **MemoryRecorder**：一种 Agent 技能，负责将内存写入或存储到持久化后端（例如数据库、文件系统或内存存储）。
+- **MemoryRetriever**：一种 Agent 技能，负责从存储后端查询和获取内存。
 
-Agent 与记忆系统之间的交互遵循一个清晰、解耦的模式。Agent 可以显式调用 `MemoryAgent` 上的 `record()` 方法来存储信息。之后，它可以使用 `retrieve()` 方法来查询记忆存储。此外，`MemoryAgent` 也可以被配置为自动监听特定主题上的消息并进行记录，从而无缝地创建交互历史。
+本指南将逐一介绍每个组件，解释它们的作用，并提供如何在您的 Agent 系统中实现和使用它们的实际示例。
 
-下图展示了记录和检索记忆的流程。
+## 架构概述
+
+下图说明了核心内存组件之间的关系。应用程序逻辑与 `MemoryAgent` 交互，而 `MemoryAgent` 又使用 `MemoryRecorder` 和 `MemoryRetriever` 技能与持久化存储后端进行交互。
 
 ```d2
 direction: down
 
-AIAgent: {
-  label: "AIAgent\n（例如，你的应用的 Agent）"
+Agent-System: {
+  label: "Agent 系统\n(应用程序)"
   shape: rectangle
 }
 
-Memory-System: {
-  label: "AIGNE 记忆系统"
+Memory-Module: {
+  label: "内存模块"
+  shape: rectangle
   style: {
+    stroke: "#888"
+    stroke-width: 2
     stroke-dash: 4
   }
 
   MemoryAgent: {
-    label: "MemoryAgent\n（协调器）"
-    shape: rectangle
+    label: "MemoryAgent\n(协调器)"
+  }
 
-    MemoryRecorder: {
-      label: "MemoryRecorder 技能"
-      shape: rectangle
-    }
-    MemoryRetriever: {
-      label: "MemoryRetriever 技能"
-      shape: rectangle
-    }
+  MemoryRecorder: {
+    label: "MemoryRecorder\n(Agent 技能)"
+  }
+
+  MemoryRetriever: {
+    label: "MemoryRetriever\n(Agent 技能)"
   }
 }
 
-Persistent-Storage: {
-  label: "持久化存储\n（例如，向量数据库）"
+Persistent-Backend: {
+  label: "持久化后端\n(数据库、文件系统等)"
   shape: cylinder
 }
 
-# 记录流程
-AIAgent -> Memory-System.MemoryAgent: "1. 调用 record(data)"
-Memory-System.MemoryAgent -> Memory-System.MemoryAgent.MemoryRecorder: "2. 委托记录"
-Memory-System.MemoryAgent.MemoryRecorder -> Persistent-Storage: "3. 写入记忆"
+Agent-System -> Memory-Module.MemoryAgent: "1. record() / retrieve()"
 
-# 检索流程
-AIAgent -> Memory-System.MemoryAgent: "4. 调用 retrieve(query)"
-Memory-System.MemoryAgent -> Memory-System.MemoryAgent.MemoryRetriever: "5. 委托检索"
-Memory-System.MemoryAgent.MemoryRetriever -> Persistent-Storage: "6. 搜索记忆"
-Persistent-Storage -> Memory-System.MemoryAgent.MemoryRetriever: "7. 返回记忆"
-Memory-System.MemoryAgent.MemoryRetriever -> Memory-System.MemoryAgent: "8. 转发结果"
-Memory-System.MemoryAgent -> AIAgent: "9. 返回结果"
+Memory-Module.MemoryAgent -> Memory-Module.MemoryRecorder: "2a. 委托写入"
+Memory-Module.MemoryRecorder -> Persistent-Backend: "3a. 存储内存"
+
+Memory-Module.MemoryAgent -> Memory-Module.MemoryRetriever: "2b. 委托读取"
+Memory-Module.MemoryRetriever -> Persistent-Backend: "3b. 查询内存"
+Persistent-Backend -> Memory-Module.MemoryRetriever: "4b. 返回内存"
 ```
-
-## MemoryAgent
-
-`MemoryAgent` 充当所有与记忆相关操作的中心枢纽。它不直接存储信息，而是将写入和读取记忆的任务委托给专门的技能。这种设计将记忆管理的逻辑与底层存储实现分离开来，从而提供了极大的灵活性。例如，你可以轻松地将一个简单的内存存储机制替换为一个强大的向量数据库，而无需更改 Agent 的核心逻辑。
-
-`MemoryAgent` 的主要职责：
-- **协调**：管理进出记忆存储的信息流。
-- **委托**：使用 `Recorder` Agent 保存记忆，使用 `Retriever` Agent 获取记忆。
-- **自动化**：可以通过 `subscribeTopic` 进行配置，以自动记录对话和 Agent 交互。
-
-`MemoryAgent` 的设计目的不是像 `AIAgent` 那样被直接调用来处理任务。相反，其他 Agent 通过 `Context` 对象，利用其 `record()` 和 `retrieve()` 方法与之交互。
-
-### 配置选项
-
-在创建 `MemoryAgent` 时，你可以提供以下选项：
-
-<x-field-group>
-  <x-field data-name="recorder" data-type="MemoryRecorder | MemoryRecorderOptions['process'] | MemoryRecorderOptions" data-required="false" data-desc="记录器技能。可以是一个实例、一个处理函数或一个完整的选项对象。"></x-field>
-  <x-field data-name="retriever" data-type="MemoryRetriever | MemoryRetrieverOptions['process'] | MemoryRetrieverOptions" data-required="false" data-desc="检索器技能。可以是一个实例、一个处理函数或一个完整的选项对象。"></x-field>
-  <x-field data-name="autoUpdate" data-type="boolean" data-required="false" data-desc="如果为 true，则在 Agent 操作后自动记录信息。"></x-field>
-  <x-field data-name="subscribeTopic" data-type="string | string[]" data-required="false" data-desc="要订阅以实现自动消息记录的主题。"></x-field>
-  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="Agent 的附加技能列表。"></x-field>
-</x-field-group>
 
 ## 核心组件
 
-记忆系统建立在两种主要类型的专门 Agent 之上：`MemoryRecorder` 和 `MemoryRetriever`。
+### MemoryAgent
+
+`MemoryAgent` 是一个专门的 Agent，作为管理、存储和检索内存的主要接口。它并非设计为像其他 Agent 那样被直接调用以处理消息；相反，它提供了核心的 `record()` 和 `retrieve()` 方法来与系统的内存进行交互。
+
+您可以通过为其提供一个 `recorder` 和一个 `retriever` 来配置 `MemoryAgent`。这些可以是预构建的实例，也可以是定义您特定存储逻辑的自定义函数。
+
+**主要特性：**
+
+- **集中管理**：作为内存操作的单点联系。
+- **委托**：将存储和检索逻辑分派给专用的 `MemoryRecorder` 和 `MemoryRetriever` Agent。
+- **自动记录**：可以配置 `autoUpdate` 来自动记录其观察到的所有消息，从而创建无缝的交互历史。
+
+**示例：创建 MemoryAgent**
+
+```typescript
+import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
+import { Agent, type AgentInvokeOptions, type Message } from "@core/agents";
+
+// 定义用于记录和检索内存的自定义逻辑
+const myRecorder = new MemoryRecorder({
+  process: async (input, options) => {
+    // 将内存保存到数据库的自定义逻辑
+    console.log("Recording memories:", input.content);
+    // ... 实现 ...
+    return { memories: [] }; // 返回创建的内存
+  },
+});
+
+const myRetriever = new MemoryRetriever({
+  process: async (input, options) => {
+    // 从数据库获取内存的自定义逻辑
+    console.log("Retrieving memories with search:", input.search);
+    // ... 实现 ...
+    return { memories: [] }; // 返回找到的内存
+  },
+});
+
+// 创建 MemoryAgent
+const memoryAgent = new MemoryAgent({
+  recorder: myRecorder,
+  retriever: myRetriever,
+  autoUpdate: true, // 自动记录来自订阅主题的消息
+  subscribeTopic: "user-input",
+});
+```
 
 ### MemoryRecorder
 
-`MemoryRecorder` 是一个负责将信息写入持久化存储层的 Agent。其唯一的工作是接收输入内容，将其格式化为标准的 `Memory` 对象，并进行保存。你可以实现一个自定义的 `MemoryRecorder` 来连接任何存储后端，例如本地文件系统、SQL 数据库或基于云的向量存储。
+`MemoryRecorder` 是一个负责存储内存的抽象 Agent 类。要使用它，您必须提供 `process` 方法的具体实现，其中包含如何以及在何处持久化内存数据的逻辑。这种设计允许您连接到任何存储后端，从简单的内存数组到复杂的向量数据库。
 
-**输入**
+**输入 (`MemoryRecorderInput`)**
 
-<x-field data-name="content" data-type="object[]" data-required="true">
-  <x-field-desc markdown>一个待记录的对象数组。每个对象可以包含 `input`、`output` 和 `source`。</x-field-desc>
-  <x-field data-name="input" data-type="Message" data-required="false" data-desc="输入消息或数据。"></x-field>
-  <x-field data-name="output" data-type="Message" data-required="false" data-desc="输出消息或数据。"></x-field>
-  <x-field data-name="source" data-type="string" data-required="false" data-desc="记忆的来源（例如，Agent 的名称）。"></x-field>
-</x-field>
+`process` 函数接收一个包含 `content` 数组的输入对象。数组中的每一项代表要存储的一条信息，可以是一个 `input` 消息、一个 `output` 消息以及 `source` Agent 的 ID。
 
-**输出**
+```typescript
+interface MemoryRecorderInput extends Message {
+  content: {
+    input?: Message;
+    output?: Message;
+    source?: string;
+  }[];
+}
+```
 
-<x-field data-name="memories" data-type="Memory[]" data-required="true" data-desc="新创建的记忆对象数组，包含唯一的 ID 和时间戳。"></x-field>
+**输出 (`MemoryRecorderOutput`)**
+
+该函数应返回一个 Promise，其解析为一个包含已成功创建的 `memories` 数组的对象。
+
+```typescript
+interface MemoryRecorderOutput extends Message {
+  memories: Memory[];
+}
+```
+
+**示例：实现一个简单的内存记录器**
+
+以下是如何创建一个将内存存储在本地数组中的简单记录器。
+
+```typescript
+import {
+  MemoryRecorder,
+  type MemoryRecorderInput,
+  type MemoryRecorderOutput,
+  type Memory,
+  newMemoryId,
+} from "@core/memory";
+import { type AgentInvokeOptions, type AgentProcessResult } from "@core/agents";
+
+// 使用一个简单的内存数组作为我们的数据库
+const memoryDB: Memory[] = [];
+
+const inMemoryRecorder = new MemoryRecorder({
+  process: async (
+    input: MemoryRecorderInput,
+    options: AgentInvokeOptions
+  ): Promise<AgentProcessResult<MemoryRecorderOutput>> => {
+    const newMemories: Memory[] = input.content.map((item) => ({
+      id: newMemoryId(),
+      content: item,
+      createdAt: new Date().toISOString(),
+    }));
+
+    // 将新内存添加到我们的“数据库”中
+    memoryDB.push(...newMemories);
+    console.log("Current memory count:", memoryDB.length);
+
+    return { memories: newMemories };
+  },
+});
+```
 
 ### MemoryRetriever
 
-`MemoryRetriever` 是记录器的对应部分。它负责根据特定标准从存储层搜索和获取记忆。一个 `MemoryRetriever` 实现可以执行简单的关键字匹配，也可以利用更复杂的技术，如语义搜索或向量相似度，来找到最相关的记忆。
+`MemoryRetriever` 是记录器的对应部分。它是一个负责从存储中获取内存的抽象 Agent 类。与记录器一样，它需要 `process` 方法的自定义实现来定义检索逻辑。
 
-**输入**
+**输入 (`MemoryRetrieverInput`)**
 
-<x-field-group>
-  <x-field data-name="search" data-type="string | Message" data-required="false" data-desc="用于过滤记忆的搜索词或消息。"></x-field>
-  <x-field data-name="limit" data-type="number" data-required="false" data-desc="要检索的最大记忆数量。"></x-field>
-</x-field-group>
+`process` 函数接收一个输入对象，该对象可以包含一个 `search` 查询和一个 `limit` 来控制结果的数量。具体实现决定了如何执行搜索（例如，关键字匹配、向量相似性）。
 
-**输出**
+```typescript
+interface MemoryRetrieverInput extends Message {
+  limit?: number;
+  search?: string | Message;
+}
+```
 
-<x-field data-name="memories" data-type="Memory[]" data-required="true" data-desc="符合查询条件的记忆对象数组。"></x-field>
+**输出 (`MemoryRetrieverOutput`)**
 
-## 记忆对象
+该函数应返回一个 Promise，其解析为一个包含与查询匹配的 `memories` 数组的对象。
 
-`Memory` 对象是用于表示单个存储信息的标准数据结构。它包含内容本身，以及用于识别和提供上下文的元数据。
+```typescript
+interface MemoryRetrieverOutput extends Message {
+  memories: Memory[];
+}
+```
 
-<x-field-group>
-  <x-field data-name="id" data-type="string" data-required="true" data-desc="记忆条目的唯一标识符。"></x-field>
-  <x-field data-name="sessionId" data-type="string | null" data-required="false" data-desc="一个可选的标识符，用于对来自同一会话或对话的记忆进行分组。"></x-field>
-  <x-field data-name="content" data-type="unknown" data-required="true" data-desc="实际存储的内容。"></x-field>
-  <x-field data-name="createdAt" data-type="string" data-required="true" data-desc="记忆创建时的 ISO 8601 时间戳。"></x-field>
-</x-field-group>
+**示例：实现一个简单的内存检索器**
 
-## 总结
+此检索器与上面的 `inMemoryRecorder` 示例协同工作，在本地数组中搜索匹配的内容。
 
-`MemoryAgent` 及其 `Recorder` 和 `Retriever` 技能，为在你的 AI 应用程序中管理状态和历史提供了一个强大而灵活的系统。通过将记忆管理逻辑与存储实现解耦，你可以轻松地调整你的记忆系统以适应任何项目的需求，从简单的聊天机器人到复杂的多 Agent 工作流。
+```typescript
+import {
+  MemoryRetriever,
+  type MemoryRetrieverInput,
+  type MemoryRetrieverOutput,
+  type Memory,
+} from "@core/memory";
+import { type AgentInvokeOptions, type AgentProcessResult } from "@core/agents";
 
-在对记忆的工作原理有了扎实的理解之后，你现在可以探索如何为你的 Agent 构建动态且具备上下文感知能力的指令了。请继续阅读[提示词](./developer-guide-core-concepts-prompts.md)部分以了解更多信息。
+// 假设 memoryDB 与记录器使用的数组相同
+declare const memoryDB: Memory[];
+
+const inMemoryRetriever = new MemoryRetriever({
+  process: async (
+    input: MemoryRetrieverInput,
+    options: AgentInvokeOptions
+  ): Promise<AgentProcessResult<MemoryRetrieverOutput>> => {
+    let results: Memory[] = [...memoryDB];
+
+    // 根据搜索查询筛选结果
+    if (input.search && typeof input.search === "string") {
+      const searchTerm = input.search.toLowerCase();
+      results = results.filter((mem) =>
+        JSON.stringify(mem.content).toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // 应用限制
+    if (input.limit) {
+      results = results.slice(-input.limit); // 获取最近的项目
+    }
+
+    return { memories: results };
+  },
+});
+```
+
+## 整合所有组件
+
+现在，让我们将这些组件结合起来，创建一个功能齐全的内存系统。我们将使用自定义的内存记录器和检索器来实例化 `MemoryAgent`，然后用它来记录和检索信息。
+
+```typescript
+import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
+import { Aigne, type Context } from "@core/aigne";
+
+// --- 假设 inMemoryRecorder 和 inMemoryRetriever 已如上文定义 ---
+
+// 1. 初始化 MemoryAgent
+const memoryAgent = new MemoryAgent({
+  recorder: inMemoryRecorder,
+  retriever: inMemoryRetriever,
+});
+
+// 2. 创建一个上下文来运行 Agent
+const context = new Aigne().createContext();
+
+// 3. 记录一条新内存
+async function runMemoryExample(context: Context) {
+  console.log("Recording a new memory...");
+  await memoryAgent.record(
+    {
+      content: [
+        {
+          input: { text: "What is the capital of France?" },
+          output: { text: "The capital of France is Paris." },
+          source: "GeographyAgent",
+        },
+      ],
+    },
+    context
+  );
+
+  // 4. 检索内存
+  console.log("\nRetrieving memories about 'France'...");
+  const retrieved = await memoryAgent.retrieve({ search: "France" }, context);
+
+  console.log("Found memories:", retrieved.memories);
+}
+
+runMemoryExample(context);
+
+/**
+ * 预期输出：
+ *
+ * Recording a new memory...
+ * Current memory count: 1
+ *
+ * Retrieving memories about 'France'...
+ * Found memories: [
+ *   {
+ *     id: '...',
+ *     content: {
+ *       input: { text: 'What is the capital of France?' },
+ *       output: { text: 'The capital of France is Paris.' },
+ *       source: 'GeographyAgent'
+ *     },
+ *     createdAt: '...'
+ *   }
+ * ]
+ */
+```
+
+这个完整的示例演示了端到端的流程：定义自定义存储逻辑，将其接入 `MemoryAgent`，并使用该 Agent 来管理系统的内存。

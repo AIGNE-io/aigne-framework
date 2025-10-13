@@ -1,233 +1,255 @@
-# Core Concepts
+This document provides a detailed overview of the `AIGNE` class, the central orchestrator for building complex AI applications.
 
-The AIGNE framework is designed with a modular and extensible architecture. Understanding its core components is key to building robust and scalable AI-driven applications. This section provides an overview of the fundamental building blocks and architectural principles that govern the framework.
+## AIGNE Class
 
-The primary components you will interact with are the AIGNE Engine, Agents, Models, and Memory. Each plays a distinct role in the lifecycle of an AI workflow.
+The `AIGNE` class is the core of the framework, designed to manage and coordinate multiple agents to perform complex tasks. It acts as the central hub for agent interactions, message passing, and the overall execution flow. By orchestrating various specialized agents, `AIGNE` enables the construction of sophisticated, multi-agent AI systems.
 
-<x-cards data-columns="2">
-  <x-card data-title="The AIGNE Engine" data-icon="lucide:server" data-href="/developer-guide/core-concepts/aigne-engine">
-    The central orchestrator that manages agents, state, and communication.
-  </x-card>
-  <x-card data-title="Agents Explained" data-icon="lucide:bot" data-href="/developer-guide/core-concepts/agents-explained">
-    The fundamental building blocks that encapsulate logic and perform tasks.
-  </x-card>
-  <x-card data-title="Models" data-icon="lucide:brain-circuit" data-href="/developer-guide/core-concepts/models">
-    Abstractions for interacting with various underlying AI models.
-  </x-card>
-  <x-card data-title="Memory" data-icon="lucide:database" data-href="/developer-guide/core-concepts/memory">
-    Enables agents to store and recall information from past interactions.
-  </x-card>
-    <x-card data-title="Prompts" data-icon="lucide:file-text" data-href="/developer-guide/core-concepts/prompts">
-    A powerful template engine for constructing dynamic and reusable prompts.
-  </x-card>
-</x-cards>
+### Architecture Overview
 
-## Architecture Overview
-
-The following diagram illustrates the relationships between the core classes in the AIGNE framework.
+The following diagram illustrates the high-level architecture of the AIGNE system, showing the relationships between the main classes like `AIGNE`, `Agent`, and `Context`.
 
 ```d2
 direction: down
 
-PromptBuilderBuildOptions: {
-  shape: class
-  "+Context context"
-  "+Agent agent"
-  "+object input"
-  "+ChatModel model"
-}
-
-Prompt: {
-  shape: class
-  "+List<object> messages"
-  "+List<Agent> skills"
-  "+object toolChoice"
-  "+object responseFormat"
-}
-
-PromptBuilder: {
-  shape: class
-  "+build(PromptBuilderBuildOptions options): Prompt"
-}
-
-ChatModel: {
-  shape: class
-}
-
-ImageModel: {
-  shape: class
-}
-
-Agent: {
-  shape: class
-  "+string name"
-  "+string description"
-  "+object inputSchema"
-  "+object outputSchema"
-  "+List<string> subscribeTopic"
-  "+List<string> publishTopic"
-  "+List<Agent> skills"
-  "+MemoryAgent memory"
-  "+invoke(object input, Context context): object"
-  "+shutdown(): void"
-  "+process(object input, Context context): object"
-  "-preprocess(): void"
-  "-postprocess(): void"
-}
-
-AIAgent: {
-  shape: class
-  "+ChatModel model"
-  "+PromptBuilder instructions"
-  "+string outputKey"
-  "+object toolChoice"
-  "+boolean catchToolsError"
-}
-
-TeamAgent: {
-  shape: class
-  "+ProcessMode mode"
-}
-
-ImageAgent: {
-  shape: class
-  "+ImageModel model"
-  "+PromptBuilder instructions"
-}
-
-FunctionAgent: {
-  shape: class
-  "+Function process"
-}
-
-RPCAgent: {
-  shape: class
-  "+string url"
-}
-
-MCPAgent: {
-  shape: class
-  "+MCPClient client"
-}
-
-MCPClient: {
-  shape: class
-}
-
-Message: {
-  shape: class
-  "+object output"
-}
-
-MessageQueue: {
-  shape: class
-  "+publish(string topic, Message message): void"
-  "+subscribe(string topic, Function callback): void"
-  "+unsubscribe(string topic, Function callback): void"
+AIGNE: {
+  label: "AIGNE Class\n(Orchestrator)"
+  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
 }
 
 Context: {
-  shape: class
-  "+ChatModel model"
-  "+ImageModel imageModel"
-  "+List<Agent> skills"
-  "+invoke(Agent agent, object input): object"
-  "+publish(string topic, Message message): void"
-  "+subscribe(string topic, Function callback): void"
-  "+unsubscribe(string topic, Function callback): void"
+  label: "Context"
+  shape: cylinder
 }
 
-UserAgent: {
-  shape: class
+Agents: {
+  label: "Pool of Agents"
+  shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
+
+  Agent-A: {
+    label: "Agent A"
+  }
+  Agent-B: {
+    label: "Agent B"
+  }
+  Agent-N: {
+    label: "..."
+  }
 }
 
-EventEmitter: {
-  shape: class
-  "+on(): void"
-  "+emit(): void"
-}
-
-AIGNE: {
-  shape: class
-  "+string name"
-  "+string description"
-  "+ChatModel model"
-  "+object limits"
-  "+List<Agent> agents"
-  "+List<Agent> skills"
-  "+load(string path): AIGNE"
-  "+addAgent(Agent agent): void"
-  "+invoke(Agent agent): UserAgent"
-  "+invoke(Agent agent, string input): object"
-  "+invoke(Agent agent, object input): object"
-  "+publish(string topic, Message message): void"
-  "+subscribe(string topic, Function callback): void"
-  "+unsubscribe(string topic, Function callback): void"
-  "+shutdown(): void"
-}
-
-# Relationships
-PromptBuilder -> PromptBuilderBuildOptions: { style.stroke-dash: 2 }
-PromptBuilder -> Prompt: { style.stroke-dash: 2 }
-
-ChatModel -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-ImageModel -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-AIAgent -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-TeamAgent -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-ImageAgent -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-FunctionAgent -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-RPCAgent -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-MCPAgent -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-UserAgent -> Agent: { target-arrowhead: { shape: unfilled triangle } }
-Context -> MessageQueue: { target-arrowhead: { shape: unfilled triangle } }
-AIGNE -> EventEmitter: { target-arrowhead: { shape: unfilled triangle } }
-
-AIAgent -> PromptBuilder: { source-arrowhead: { shape: diamond }, style.stroke-dash: 2 }
-ImageAgent -> PromptBuilder: { source-arrowhead: { shape: diamond }, style.stroke-dash: 2 }
-ImageAgent -> ImageModel: { source-arrowhead: { shape: diamond }, style.stroke-dash: 2 }
-MCPAgent -> MCPClient: { source-arrowhead: { shape: diamond }, style.stroke-dash: 2 }
-Context -> ChatModel: { source-arrowhead: { shape: diamond }, style.stroke-dash: 2 }
-Context -> ImageModel: { source-arrowhead: { shape: diamond }, style.stroke-dash: 2 }
-
-MessageQueue -> Message: { style.stroke-dash: 2 }
+AIGNE -> Context: "Manages"
+AIGNE <-> Agents: "Orchestrates & Routes Messages"
+Agents -> Context: "Accesses"
 ```
 
-At the center is the `AIGNE` engine, which manages a collection of `Agent` instances. The `Agent` class is the base for all specialized agents, such as `AIAgent`, `TeamAgent`, and `FunctionAgent`. When an agent is invoked, it operates within a `Context`, which provides access to shared resources like `ChatModel` or `ImageModel` and handles communication via a `MessageQueue`.
+### Core Concepts
 
-### AIGNE Engine
+-   **Agent Management**: `AIGNE` is responsible for adding, managing, and orchestrating the lifecycle of all agents within the system.
+-   **Context Creation**: It creates isolated execution contexts (`AIGNEContext`) for different tasks or conversations, ensuring that state and resource usage are properly managed.
+-   **Message Passing**: It facilitates communication between agents through a built-in message queue, allowing for both direct invocation and a publish-subscribe model.
+-   **Global Configuration**: `AIGNE` holds global configurations, such as the default `ChatModel`, `ImageModel`, and a collection of shared `skills` (specialized agents) that can be accessed by any agent in the system.
 
-The `AIGNE` class is the main execution engine of the framework. It is responsible for:
-- Loading and managing a collection of agents.
-- Providing a unified interface to invoke agents.
-- Orchestrating the overall workflow and communication between agents.
-- Handling system-level concerns like state management and resource limits.
+### Creating an AIGNE Instance
 
-For a detailed explanation, see [The AIGNE Engine](./developer-guide-core-concepts-aigne-engine.md).
+You can create an `AIGNE` instance in two primary ways: programmatically using the constructor or by loading a configuration from the file system.
 
-### Agents
+#### 1. Using the Constructor
 
-An `Agent` is the most fundamental concept in the AIGNE framework. It is an autonomous entity that can perform tasks, make decisions, and communicate with other agents. The base `Agent` class provides core functionalities, and developers can create specialized agents by extending it. Key responsibilities include:
-- Defining input and output schemas for data validation.
-- Implementing the core logic within the `process` method.
-- Subscribing to and publishing messages on topics for inter-agent communication.
-- Utilizing "skills," which are other agents, to delegate tasks.
+The constructor allows you to configure the instance programmatically.
 
-Learn more in [Agents Explained](./developer-guide-core-concepts-agents-explained.md).
+```typescript
+import { AIGNE, Agent, ChatModel } from "@aigne/core";
 
-### Models
+// Define a model and some agents (skills)
+const model = new ChatModel(/* ... */);
+const skillAgent = new Agent({ /* ... */ });
+const mainAgent = new Agent({ /* ... */ });
 
-Models are abstractions that connect agents to underlying large language models (LLMs) or image generation models. The framework provides `ChatModel` and `ImageModel` base classes, making it easy to integrate with various AI providers like OpenAI, Gemini, and Claude. This abstraction allows you to switch between different AI models without changing your agent's core logic.
+// Create an AIGNE instance
+const aigne = new AIGNE({
+  name: "MyAIGNEApp",
+  description: "An example AIGNE application.",
+  model: model,
+  skills: [skillAgent],
+  agents: [mainAgent],
+});
+```
 
-See the [Models](./developer-guide-core-concepts-models.md) documentation for more details.
+**Constructor Options (`AIGNEOptions`)**
 
-### Memory
+<x-field-group>
+  <x-field data-name="name" data-type="string" data-required="false" data-desc="The name of the AIGNE instance."></x-field>
+  <x-field data-name="description" data-type="string" data-required="false" data-desc="A description of the instance's purpose."></x-field>
+  <x-field data-name="model" data-type="ChatModel" data-required="false" data-desc="A global default ChatModel for all agents."></x-field>
+  <x-field data-name="imageModel" data-type="ImageModel" data-required="false" data-desc="A global default ImageModel for image-related tasks."></x-field>
+  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="A list of shared agents (skills) available to all other agents."></x-field>
+  <x-field data-name="agents" data-type="Agent[]" data-required="false" data-desc="A list of primary agents to add to the instance upon creation."></x-field>
+  <x-field data-name="limits" data-type="ContextLimits" data-required="false" data-desc="Usage limits for execution contexts (e.g., timeout, max tokens)."></x-field>
+  <x-field data-name="observer" data-type="AIGNEObserver" data-required="false" data-desc="An observer for monitoring and logging instance activities."></x-field>
+</x-field-group>
 
-To enable stateful conversations and complex problem-solving, agents need the ability to remember past interactions. The `MemoryAgent` provides this capability. It works alongside `Recorder` and `Retriever` skills to store and recall information, giving agents a persistent memory across multiple invocations.
+#### 2. Loading from Configuration
 
-For more information, visit the [Memory](./developer-guide-core-concepts-memory.md) section.
+The static `AIGNE.load()` method provides a convenient way to initialize an instance from a directory containing an `aigne.yaml` file and other agent definitions. This is ideal for separating configuration from code.
 
-### Prompts
+```typescript
+import { AIGNE } from "@aigne/core";
 
-Effective communication with AI models relies on well-crafted prompts. The `PromptBuilder` is a utility that facilitates the creation of dynamic and reusable prompts. It uses a powerful template engine, allowing you to insert variables, include partial templates, and construct complex prompt structures with ease.
+// Load the AIGNE instance from a directory path
+const aigne = await AIGNE.load("./path/to/config/dir");
 
-Dive deeper into the [Prompts](./developer-guide-core-concepts-prompts.md) documentation.
+// You can also override loaded options
+const aigneWithOverrides = await AIGNE.load("./path/to/config/dir", {
+  name: "MyOverriddenAppName",
+});
+```
+
+### Key Methods
+
+#### invoke()
+
+The `invoke()` method is the primary way to interact with an agent. It has several overloads to support different interaction patterns.
+
+**1. Simple Invocation**
+
+This is the most common use case, where you send an input message to an agent and receive a complete response.
+
+**Example**
+```typescript
+import { AIGNE } from '@aigne/core';
+import { GreeterAgent } from './agents/greeter.agent.js';
+
+const aigne = new AIGNE();
+const greeter = new GreeterAgent();
+aigne.addAgent(greeter);
+
+const { message } = await aigne.invoke(greeter, {
+  name: 'John',
+});
+
+// Expected output: "Hello, John"
+console.log(message);
+```
+
+**2. Streaming Invocation**
+
+For long-running tasks or interactive experiences (like a chatbot), you can stream the response as it's being generated.
+
+**Example**
+```typescript
+import { AIGNE } from '@aigne/core';
+import { StreamAgent } from './agents/stream.agent.js';
+
+const aigne = new AIGNE();
+const streamAgent = new StreamAgent();
+aigne.addAgent(streamAgent);
+
+const stream = await aigne.invoke(
+  streamAgent,
+  {
+    name: 'World',
+  },
+  { streaming: true }
+);
+
+let fullMessage = '';
+for await (const chunk of stream) {
+  if (chunk.delta.text?.message) {
+    fullMessage += chunk.delta.text.message;
+    // Process chunk in real-time
+    process.stdout.write(chunk.delta.text.message);
+  }
+}
+// Expected output: "Hello, World" (streamed character by character)
+```
+
+**3. Creating a UserAgent**
+
+If you need to interact with an agent repeatedly, you can create a `UserAgent`. This provides a consistent interface for the conversation.
+
+**Example**
+```typescript
+import { AIGNE } from '@aigne/core';
+import { CalculatorAgent } from './agents/calculator.agent.js';
+
+const aigne = new AIGNE();
+const calculator = new CalculatorAgent();
+aigne.addAgent(calculator);
+
+// Create a UserAgent for the calculator
+const user = aigne.invoke(calculator);
+
+// Invoke it multiple times
+const result1 = await user.invoke({ operation: 'add', a: 5, b: 3 });
+console.log(result1.result); // 8
+
+const result2 = await user.invoke({ operation: 'subtract', a: 10, b: 4 });
+console.log(result2.result); // 6
+```
+
+#### addAgent()
+
+Dynamically adds one or more agents to the `AIGNE` instance after it has been created. Once added, an agent is attached to the instance and can participate in the system.
+
+```typescript
+const aigne = new AIGNE();
+const agent1 = new MyAgent1();
+const agent2 = new MyAgent2();
+
+aigne.addAgent(agent1, agent2);
+```
+
+#### publish() / subscribe()
+
+`AIGNE` provides a message queue for decoupled, event-driven communication between agents using a publish-subscribe model.
+
+**Example**
+```typescript
+import { AIGNE } from '@aigne/core';
+
+const aigne = new AIGNE();
+
+// Subscriber: Listens for messages on a topic
+aigne.subscribe('user.updated', ({ message }) => {
+  console.log(`Received user update: ${message.userName}`);
+});
+
+// Another subscriber using async/await for a single message
+async function waitForUpdate() {
+  const { message } = await aigne.subscribe('user.updated');
+  console.log(`Async handler received: ${message.userName}`);
+}
+waitForUpdate();
+
+// Publisher: Broadcasts a message to a topic
+aigne.publish('user.updated', {
+  userName: 'JaneDoe',
+  status: 'active',
+});
+```
+
+#### shutdown()
+
+Gracefully shuts down the `AIGNE` instance, ensuring that all agents and skills clean up their resources properly. This is crucial for preventing resource leaks.
+
+**Example**
+```typescript
+const aigne = new AIGNE();
+// ... add agents and operate
+
+// Shutdown when done
+await aigne.shutdown();
+```
+
+The `AIGNE` class also supports the `Symbol.asyncDispose` method, allowing you to use it with the `using` statement for automatic cleanup.
+
+```typescript
+import { AIGNE } from '@aigne/core';
+
+async function myApp() {
+  await using aigne = new AIGNE();
+  // ... aigne will be shut down automatically at the end of this block
+}
+```

@@ -1,91 +1,162 @@
-# 模型
+本文档详细概述了 `ChatModel` 类，这是与大语言模型 (LLM) 交互的基础组件。它涵盖了该类的架构、其输入和输出格式，以及支持工具调用和结构化数据处理等强大功能的相关数据结构。
 
-在 AIGNE 框架中，`Model` 类是特殊的 Agent，作为与各种底层 AI 模型（例如来自 OpenAI、Anthropic 或 Google 的模型）交互的标准化接口。它们抽象了特定于提供商的复杂性，使你能够通过一致的 API 与不同的 AI 功能进行交互。
+```d2
+direction: down
 
-这种设计将你的 Agent 逻辑与具体的 AI 模型实现解耦。你只需更改模型 Agent 实例，就可以用最少的代码改动将 `gpt-4` 模型替换为 `claude-3` 模型。
+User-Application: {
+  label: "用户 / 应用程序"
+  shape: c4-person
+}
 
-模型的两个主要基类是：
+ChatModel-System: {
+  label: "ChatModel 系统"
+  shape: rectangle
 
-*   **`ChatModel`**：用于基于文本的对话式 AI（大型语言模型或 LLM）。
-*   **`ImageModel`**：用于文生图模型。
+  ChatModel: {
+    label: "ChatModel 实例"
+  }
+
+  LLM: {
+    label: "大语言模型"
+    shape: cylinder
+  }
+
+  Tools: {
+    label: "工具 / 函数"
+  }
+}
+
+User-Application -> ChatModel-System.ChatModel: "1. 调用(输入)"
+ChatModel-System.ChatModel -> ChatModel-System.LLM: "2. 发送格式化请求"
+ChatModel-System.LLM -> ChatModel-System.ChatModel: "3. 接收 LLM 响应"
+
+# 路径 A：简单文本响应
+ChatModel-System.ChatModel -> User-Application: "4a. 返回带文本的输出"
+
+# 路径 B：工具调用响应
+ChatModel-System.ChatModel -> ChatModel-System.Tools: "4b. 执行工具调用"
+ChatModel-System.Tools -> ChatModel-System.ChatModel: "5b. 返回工具结果"
+ChatModel-System.ChatModel -> ChatModel-System.LLM: "6b. 发送结果以获取最终答案"
+ChatModel-System.LLM -> ChatModel-System.ChatModel: "7b. 接收最终响应"
+ChatModel-System.ChatModel -> User-Application: "8b. 返回最终输出"
+```
 
 ## ChatModel
 
-`ChatModel` 是一个专为与 LLM 交互而设计的抽象基类。它标准化了发送消息、定义工具以及处理响应（包括文本、JSON 和工具调用）的过程。任何特定的模型集成，例如 OpenAI 的 GPT 系列，都将继承此类。
+`ChatModel` 类是一个专为与大语言模型 (LLM) 交互而设计的抽象基类。它扩展了 `Agent` 类，并为管理模型输入、输出和功能提供了一个标准化的接口。针对特定模型（例如 OpenAI、Anthropic）的具体实现应继承自该类。
 
-### ChatModel 输入
+### 核心概念
 
-`ChatModelInput` 接口定义了向模型提供信息的结构。
+- **可扩展性**：`ChatModel` 被设计为可扩展的，允许开发者通过实现抽象的 `process` 方法为各种 LLM 创建自定义连接器。
+- **统一接口**：它为流式和非流式响应提供了统一的 API，简化了与不同模型的交互。
+- **工具集成**：该类为工具调用提供了内置支持，使模型能够与外部函数和数据源进行交互。
+- **结构化输出**：`ChatModel` 可以在模型输出上强制执行 JSON schema 合规性，确保数据可靠且结构化。
+- **自动重试**：它包含一个默认的重试机制，用于处理网络错误和结构化输出生成问题。
+
+### 关键方法
+
+#### `constructor(options?: ChatModelOptions)`
+
+创建一个新的 `ChatModel` 实例。
 
 <x-field-group>
-  <x-field data-name="messages" data-type="ChatModelInputMessage[]" data-required="true">
-    <x-field-desc markdown>构成对话历史和当前提示的消息对象数组。每条消息都有一个 `role`（`system`、`user`、`agent` 或 `tool`）和 `content`。</x-field-desc>
-  </x-field>
-  <x-field data-name="responseFormat" data-type="object" data-required="false">
-    <x-field-desc markdown>指定期望的输出格式。可以是 `{ type: 'text' }`（纯文本），也可以是 `{ type: 'json_schema', jsonSchema: { ... } }` 以在响应中强制执行特定的 JSON 结构。</x-field-desc>
-  </x-field>
-  <x-field data-name="tools" data-type="ChatModelInputTool[]" data-required="false">
-    <x-field-desc markdown>模型可选择调用的函数工具列表。每个工具定义都包括其 `name`、`description` 以及定义为 JSON schema 的 `parameters`。</x-field-desc>
-  </x-field>
-  <x-field data-name="toolChoice" data-type="string | object" data-required="false">
-    <x-field-desc markdown>控制模型如何使用工具。可以是 `'auto'`（默认）、`'none'`、`'required'`，或一个指定要调用的特定函数的对象。</x-field-desc>
-  </x-field>
-  <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="用于控制模型行为的特定于提供商的选项。">
-    <x-field data-name="model" data-type="string" data-required="false" data-desc="特定的模型名称或版本（例如 'gpt-4o'）。"></x-field>
-    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="控制随机性。值越接近 0，输出就越确定。"></x-field>
-    <x-field data-name="topP" data-type="number" data-required="false" data-desc="控制核心采样。"></x-field>
-    <x-field data-name="parallelToolCalls" data-type="boolean" data-default="true" data-required="false" data-desc="是否允许模型并行调用多个工具。"></x-field>
+  <x-field data-name="options" data-type="ChatModelOptions" data-required="false" data-desc="Agent 的配置选项。">
+    <x-field data-name="model" data-type="string" data-required="false" data-desc="要使用的模型的名称或标识符。"></x-field>
+    <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false" data-desc="每次调用时传递给模型的默认选项。"></x-field>
+    <x-field data-name="retryOnError" data-type="boolean | object" data-required="false" data-desc="错误重试配置。默认为网络和结构化输出错误重试 3 次。"></x-field>
   </x-field>
 </x-field-group>
 
-### ChatModel 输出
+#### `process(input: ChatModelInput, options: AgentInvokeOptions)`
 
-`ChatModelOutput` 接口表示来自模型的结构化响应。
-
-<x-field-group>
-  <x-field data-name="text" data-type="string" data-required="false" data-desc="模型响应的文本内容。"></x-field>
-  <x-field data-name="json" data-type="object" data-required="false" data-desc="当 `responseFormat` 设置为 'json_schema' 时，模型返回的 JSON 对象。"></x-field>
-  <x-field data-name="toolCalls" data-type="ChatModelOutputToolCall[]" data-required="false">
-    <x-field-desc markdown>模型请求的工具调用数组。每个对象都包含一个唯一的 `id`、要调用的 `function.name` 和 `function.arguments` 对象。</x-field-desc>
-  </x-field>
-  <x-field data-name="usage" data-type="object" data-required="false" data-desc="交互的 Token 使用情况统计。">
-    <x-field data-name="inputTokens" data-type="number" data-required="true" data-desc="输入提示中的 Token 数量。"></x-field>
-    <x-field data-name="outputTokens" data-type="number" data-required="true" data-desc="生成的响应中的 Token 数量。"></x-field>
-  </x-field>
-  <x-field data-name="model" data-type="string" data-required="false" data-desc="处理该请求的模型名称。"></x-field>
-</x-field-group>
-
-## ImageModel
-
-`ImageModel` 是一个用于文生图模型的抽象基类。它为通过文本提示创建图像提供了一个简单且一致的接口。
-
-### ImageModel 输入
-
-`ImageModelInput` 接口定义了生成图像所需的数据。
+所有子类都必须实现的核心抽象方法。它处理与底层 LLM 的直接通信，包括发送请求和处理响应。
 
 <x-field-group>
-  <x-field data-name="prompt" data-type="string" data-required="true" data-desc="对要生成的图像的详细文本描述。"></x-field>
-  <x-field data-name="image" data-type="FileUnionContent[]" data-required="false" data-desc="一个可选的图像数组，可用于编辑或作为基础。"></x-field>
-  <x-field data-name="n" data-type="number" data-required="false" data-desc="要生成的图像数量。默认为 1。"></x-field>
-  <x-field data-name="outputFileType" data-type="string" data-required="false" data-desc="指定图像文件的期望输出格式，例如 'local'（保存到临时文件）或 'file'（base64 编码的字符串）。"></x-field>
-  <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="特定于提供商的选项，例如 `model` 名称、图像尺寸或质量设置。"></x-field>
+  <x-field data-name="input" data-type="ChatModelInput" data-required="true" data-desc="包含消息、工具和模型选项的标准化输入。"></x-field>
+  <x-field data-name="options" data-type="AgentInvokeOptions" data-required="true" data-desc="Agent 调用的选项，包括上下文和限制。"></x-field>
 </x-field-group>
 
-### ImageModel 输出
+#### `preprocess(input: ChatModelInput, options: AgentInvokeOptions)`
 
-`ImageModelOutput` 包含生成的图像和使用数据。
+在主 `process` 方法调用之前执行操作。这包括验证 token 限制和规范化工具名称以与 LLM 兼容。
+
+#### `postprocess(input: ChatModelInput, output: ChatModelOutput, options: AgentInvokeOptions)`
+
+在 `process` 方法完成后执行操作。其主要作用是更新调用上下文中的 token 使用统计信息。
+
+### 输入数据结构
+
+#### `ChatModelInput`
+
+`ChatModel` 的主输入接口。
 
 <x-field-group>
-  <x-field data-name="images" data-type="FileUnionContent[]" data-required="true" data-desc="生成的图像数组，其中每个项目的格式由 `outputFileType` 输入参数决定。"></x-field>
-  <x-field data-name="usage" data-type="object" data-required="false" data-desc="生成任务的 Token 使用情况统计。">
-      <x-field data-name="inputTokens" data-type="number" data-required="true" data-desc="输入提示中的 Token 数量。"></x-field>
-      <x-field data-name="outputTokens" data-type="number" data-required="true" data-desc="用于输出生成的 Token 估算数量。"></x-field>
-  </x-field>
-  <x-field data-name="model" data-type="string" data-required="false" data-desc="处理该请求的图像模型名称。"></x-field>
+  <x-field data-name="messages" data-type="ChatModelInputMessage[]" data-required="true" data-desc="要发送给模型的消息数组。"></x-field>
+  <x-field data-name="responseFormat" data-type="ChatModelInputResponseFormat" data-required="false" data-desc="指定所需的输出格式（例如，文本或 JSON）。"></x-field>
+  <x-field data-name="outputFileType" data-type="FileType" data-required="false" data-desc="文件输出所需的格式（'local' 或 'file'）。"></x-field>
+  <x-field data-name="tools" data-type="ChatModelInputTool[]" data-required="false" data-desc="模型可以使用的工具列表。"></x-field>
+  <x-field data-name="toolChoice" data-type="ChatModelInputToolChoice" data-required="false" data-desc="工具选择策略（例如，'auto'、'required'）。"></x-field>
+  <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false" data-desc="特定于模型的配置选项。"></x-field>
 </x-field-group>
 
-## 总结
+#### `ChatModelInputMessage`
 
-模型是连接你的 AIGNE Agent 与各提供商提供的强大 AI 功能之间的桥梁。通过使用 `ChatModel` 和 `ImageModel` 抽象，你可以构建不受单一技术栈限制的、健壮且灵活的 AI 应用程序。
+表示对话历史中的单条消息。
 
-要了解如何为这些模型动态构建输入，请继续阅读[提示](./developer-guide-core-concepts-prompts.md)部分。
+<x-field-group>
+    <x-field data-name="role" data-type="Role" data-required="true" data-desc="消息作者的角色（'system'、'user'、'agent' 或 'tool'）。"></x-field>
+    <x-field data-name="content" data-type="ChatModelInputMessageContent" data-required="false" data-desc="消息的内容，可以是字符串或富内容数组。"></x-field>
+    <x-field data-name="toolCalls" data-type="object[]" data-required="false" data-desc="对于 'agent' 角色，这是模型请求的工具调用列表。"></x-field>
+    <x-field data-name="toolCallId" data-type="string" data-required="false" data-desc="对于 'tool' 角色，这是此消息所响应的工具调用的 ID。"></x-field>
+</x-field-group>
+
+#### `ChatModelInputTool`
+
+定义模型可以调用的工具。
+
+<x-field-group>
+    <x-field data-name="type" data-type="'function'" data-required="true" data-desc="工具的类型。目前仅支持 'function'。"></x-field>
+    <x-field data-name="function" data-type="object" data-required="true" data-desc="函数定义。">
+        <x-field data-name="name" data-type="string" data-required="true" data-desc="函数名称。"></x-field>
+        <x-field data-name="description" data-type="string" data-required="false" data-desc="函数功能的描述。"></x-field>
+        <x-field data-name="parameters" data-type="object" data-required="true" data-desc="定义函数参数的 JSON schema 对象。"></x-field>
+    </x-field>
+</x-field-group>
+
+### 输出数据结构
+
+#### `ChatModelOutput`
+
+`ChatModel` 的主输出接口。
+
+<x-field-group>
+  <x-field data-name="text" data-type="string" data-required="false" data-desc="模型的文本响应。"></x-field>
+  <x-field data-name="json" data-type="object" data-required="false" data-desc="模型的 JSON 响应，如果请求了 JSON schema。"></x-field>
+  <x-field data-name="toolCalls" data-type="ChatModelOutputToolCall[]" data-required="false" data-desc="模型希望执行的工具调用列表。"></x-field>
+  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false" data-desc="调用的 token 使用情况统计。"></x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-desc="生成响应的模型的名称。"></x-field>
+  <x-field data-name="files" data-type="FileUnionContent[]" data-required="false" data-desc="模型生成的文件列表。"></x-field>
+</x-field-group>
+
+#### `ChatModelOutputToolCall`
+
+表示模型请求的单个工具调用。
+
+<x-field-group>
+    <x-field data-name="id" data-type="string" data-required="true" data-desc="此工具调用的唯一标识符。"></x-field>
+    <x-field data-name="type" data-type="'function'" data-required="true" data-desc="工具的类型。"></x-field>
+    <x-field data-name="function" data-type="object" data-required="true" data-desc="函数调用的详细信息。">
+        <x-field data-name="name" data-type="string" data-required="true" data-desc="要调用的函数名称。"></x-field>
+        <x-field data-name="arguments" data-type="Message" data-required="true" data-desc="传递给函数的参数，解析为 JSON 对象。"></x-field>
+    </x-field>
+</x-field-group>
+
+#### `ChatModelOutputUsage`
+
+提供有关 token 消耗的信息。
+
+<x-field-group>
+    <x-field data-name="inputTokens" data-type="number" data-required="true" data-desc="输入提示中使用的 token 数量。"></x-field>
+    <x-field data-name="outputTokens" data-type="number" data-required="true" data-desc="输出中生成的 token 数量。"></x-field>
+    <x-field data-name="aigneHubCredits" data-type="number" data-required="false" data-desc="如果使用 AIGNE Hub 服务，则消耗的积分。"></x-field>
+</x-field-group>

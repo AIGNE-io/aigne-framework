@@ -65,4 +65,8 @@ sourcesPath:  # Source code paths to analyze
   - packages/core
   - models/
   - ./README.md
-lastGitHead: 5005ae3ceb683139ff57c35d8ac5491efea95882
+lastGitHead: ebd080782a065caedebabb6bd54f62378dd50f3e
+appUrl: https://docsmith.aigne.io
+boardId: aigne-framework
+# Checkout ID for document deployment service
+checkoutId: ""

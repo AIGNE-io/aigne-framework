@@ -1,135 +1,306 @@
-# Memory
+# Memory Management
 
-In any advanced AI system, memory is a critical component that allows agents to retain information across interactions, learn from past experiences, and maintain context. In the AIGNE framework, memory management is orchestrated by the `MemoryAgent`, a specialized agent that uses `Recorder` and `Retriever` skills to store and recall information.
+The Memory module provides a robust framework for enabling agents to persist and recall information, creating a stateful and context-aware system. This allows agents to maintain a history of interactions, learn from past events, and make more informed decisions.
 
-This section will cover the core concepts of memory management in AIGNE, including the roles of each component and how they work together to provide a persistent memory layer for your agents.
+At the heart of the memory system is the `MemoryAgent`, which acts as a central coordinator for all memory-related operations. It delegates the actual tasks of writing and reading memories to two specialized components: the `MemoryRecorder` and the `MemoryRetriever`. This separation of concerns allows for flexible and scalable memory solutions.
 
-## How It Works
+- **MemoryAgent**: The main entry point for memory operations. It orchestrates the recording and retrieval processes.
+- **MemoryRecorder**: An agent skill responsible for writing or storing memories to a persistent backend (e.g., a database, file system, or in-memory store).
+- **MemoryRetriever**: An agent skill responsible for querying and fetching memories from the storage backend.
 
-The interaction between agents and the memory system follows a clear, decoupled pattern. An agent can explicitly call the `record()` method on the `MemoryAgent` to store information. Later, it can use the `retrieve()` method to query the memory store. Alternatively, the `MemoryAgent` can be configured to automatically listen for messages on specific topics and record them, creating a seamless history of interactions.
+This guide will walk you through each component, explaining their roles and providing practical examples of how to implement and use them in your agent system.
 
-The diagram below illustrates the flow for both recording and retrieving memories.
+## Architecture Overview
+
+The diagram below illustrates the relationship between the core memory components. The application logic interacts with the `MemoryAgent`, which in turn uses the `MemoryRecorder` and `MemoryRetriever` skills to interact with a persistent storage backend.
 
 ```d2
 direction: down
 
-AIAgent: {
-  label: "AIAgent\n(e.g., Your App's Agent)"
+Agent-System: {
+  label: "Agent System\n(Application)"
   shape: rectangle
 }
 
-Memory-System: {
-  label: "AIGNE Memory System"
+Memory-Module: {
+  label: "Memory Module"
+  shape: rectangle
   style: {
+    stroke: "#888"
+    stroke-width: 2
     stroke-dash: 4
   }
 
   MemoryAgent: {
-    label: "MemoryAgent\n(Orchestrator)"
-    shape: rectangle
+    label: "MemoryAgent\n(Coordinator)"
+  }
 
-    MemoryRecorder: {
-      label: "MemoryRecorder Skill"
-      shape: rectangle
-    }
-    MemoryRetriever: {
-      label: "MemoryRetriever Skill"
-      shape: rectangle
-    }
+  MemoryRecorder: {
+    label: "MemoryRecorder\n(Agent Skill)"
+  }
+
+  MemoryRetriever: {
+    label: "MemoryRetriever\n(Agent Skill)"
   }
 }
 
-Persistent-Storage: {
-  label: "Persistent Storage\n(e.g., Vector DB)"
+Persistent-Backend: {
+  label: "Persistent Backend\n(DB, Filesystem, etc.)"
   shape: cylinder
 }
 
-# Recording Flow
-AIAgent -> Memory-System.MemoryAgent: "1. Calls record(data)"
-Memory-System.MemoryAgent -> Memory-System.MemoryAgent.MemoryRecorder: "2. Delegates Record"
-Memory-System.MemoryAgent.MemoryRecorder -> Persistent-Storage: "3. Writes Memory"
+Agent-System -> Memory-Module.MemoryAgent: "1. record() / retrieve()"
 
-# Retrieval Flow
-AIAgent -> Memory-System.MemoryAgent: "4. Calls retrieve(query)"
-Memory-System.MemoryAgent -> Memory-System.MemoryAgent.MemoryRetriever: "5. Delegates Retrieve"
-Memory-System.MemoryAgent.MemoryRetriever -> Persistent-Storage: "6. Searches Memories"
-Persistent-Storage -> Memory-System.MemoryAgent.MemoryRetriever: "7. Returns Memories"
-Memory-System.MemoryAgent.MemoryRetriever -> Memory-System.MemoryAgent: "8. Forwards Results"
-Memory-System.MemoryAgent -> AIAgent: "9. Returns Results"
+Memory-Module.MemoryAgent -> Memory-Module.MemoryRecorder: "2a. Delegates Write"
+Memory-Module.MemoryRecorder -> Persistent-Backend: "3a. Stores memories"
+
+Memory-Module.MemoryAgent -> Memory-Module.MemoryRetriever: "2b. Delegates Read"
+Memory-Module.MemoryRetriever -> Persistent-Backend: "3b. Queries memories"
+Persistent-Backend -> Memory-Module.MemoryRetriever: "4b. Returns memories"
 ```
-
-## The MemoryAgent
-
-The `MemoryAgent` acts as the central hub for all memory-related operations. It doesn't store information directly but instead delegates the tasks of writing and reading memories to specialized skills. This design separates the logic of memory management from the underlying storage implementation, allowing for great flexibility. For example, you could easily swap a simple in-memory storage mechanism for a robust vector database without changing your agent's core logic.
-
-Key responsibilities of the `MemoryAgent`:
-- **Orchestration**: Manages the flow of information to and from the memory store.
-- **Delegation**: Uses a `Recorder` agent to save memories and a `Retriever` agent to fetch them.
-- **Automation**: Can be configured with `subscribeTopic` to automatically record conversations and agent interactions.
-
-The `MemoryAgent` is not designed to be called directly for processing tasks like an `AIAgent`. Instead, other agents interact with it through its `record()` and `retrieve()` methods via the `Context` object.
-
-### Configuration Options
-
-When creating a `MemoryAgent`, you can provide the following options:
-
-<x-field-group>
-  <x-field data-name="recorder" data-type="MemoryRecorder | MemoryRecorderOptions['process'] | MemoryRecorderOptions" data-required="false" data-desc="The recorder skill. Can be an instance, a process function, or a full options object."></x-field>
-  <x-field data-name="retriever" data-type="MemoryRetriever | MemoryRetrieverOptions['process'] | MemoryRetrieverOptions" data-required="false" data-desc="The retriever skill. Can be an instance, a process function, or a full options object."></x-field>
-  <x-field data-name="autoUpdate" data-type="boolean" data-required="false" data-desc="If true, automatically records information after agent operations."></x-field>
-  <x-field data-name="subscribeTopic" data-type="string | string[]" data-required="false" data-desc="Topic(s) to subscribe to for automatic message recording."></x-field>
-  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="A list of additional skills for the agent."></x-field>
-</x-field-group>
 
 ## Core Components
 
-The memory system is built on two primary types of specialized agents: `MemoryRecorder` and `MemoryRetriever`.
+### MemoryAgent
+
+The `MemoryAgent` is a specialized agent that serves as the primary interface for managing, storing, and retrieving memories. It is not designed to be called directly for message processing like other agents; instead, it provides the core `record()` and `retrieve()` methods to interact with the system's memory.
+
+You configure a `MemoryAgent` by providing it with a `recorder` and a `retriever`. These can be pre-built instances or custom functions that define your specific storage logic.
+
+**Key Features:**
+
+- **Centralized Management**: Acts as a single point of contact for memory operations.
+- **Delegation**: Offloads storage and retrieval logic to dedicated `MemoryRecorder` and `MemoryRetriever` agents.
+- **Automatic Recording**: Can be configured with `autoUpdate` to automatically record all messages it observes, creating a seamless history of interactions.
+
+**Example: Creating a MemoryAgent**
+
+```typescript
+import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
+import { Agent, type AgentInvokeOptions, type Message } from "@core/agents";
+
+// Define custom logic for recording and retrieving memories
+const myRecorder = new MemoryRecorder({
+  process: async (input, options) => {
+    // Custom logic to save memories to a database
+    console.log("Recording memories:", input.content);
+    // ... implementation ...
+    return { memories: [] }; // Return the created memories
+  },
+});
+
+const myRetriever = new MemoryRetriever({
+  process: async (input, options) => {
+    // Custom logic to fetch memories from a database
+    console.log("Retrieving memories with search:", input.search);
+    // ... implementation ...
+    return { memories: [] }; // Return the found memories
+  },
+});
+
+// Create the MemoryAgent
+const memoryAgent = new MemoryAgent({
+  recorder: myRecorder,
+  retriever: myRetriever,
+  autoUpdate: true, // Automatically record messages from subscribed topics
+  subscribeTopic: "user-input",
+});
+```
 
 ### MemoryRecorder
 
-The `MemoryRecorder` is an agent responsible for writing information to a persistent storage layer. Its sole job is to take input content, format it into a standardized `Memory` object, and save it. You can implement a custom `MemoryRecorder` to connect to any storage backend, such as a local file system, a SQL database, or a cloud-based vector store.
+The `MemoryRecorder` is an abstract agent class responsible for storing memories. To use it, you must provide a concrete implementation of the `process` method, which contains the logic for how and where to persist the memory data. This design allows you to connect to any storage backend, from a simple in-memory array to a sophisticated vector database.
 
-**Input**
+**Input (`MemoryRecorderInput`)**
 
-<x-field data-name="content" data-type="object[]" data-required="true">
-  <x-field-desc markdown>An array of objects to be recorded. Each object can contain an `input`, `output`, and `source`.</x-field-desc>
-  <x-field data-name="input" data-type="Message" data-required="false" data-desc="The input message or data."></x-field>
-  <x-field data-name="output" data-type="Message" data-required="false" data-desc="The output message or data."></x-field>
-  <x-field data-name="source" data-type="string" data-required="false" data-desc="The source of the memory (e.g., an agent's name)."></x-field>
-</x-field>
+The `process` function receives an input object containing a `content` array. Each item in the array represents a piece of information to be stored, which can be an `input` message, an `output` message, and the `source` agent's ID.
 
-**Output**
+```typescript
+interface MemoryRecorderInput extends Message {
+  content: {
+    input?: Message;
+    output?: Message;
+    source?: string;
+  }[];
+}
+```
 
-<x-field data-name="memories" data-type="Memory[]" data-required="true" data-desc="An array of the newly created memory objects, complete with unique IDs and timestamps."></x-field>
+**Output (`MemoryRecorderOutput`)**
+
+The function should return a promise that resolves to an object containing an array of the `memories` that were successfully created.
+
+```typescript
+interface MemoryRecorderOutput extends Message {
+  memories: Memory[];
+}
+```
+
+**Example: Implementing a Simple In-Memory Recorder**
+
+Here’s how you can create a simple recorder that stores memories in a local array.
+
+```typescript
+import {
+  MemoryRecorder,
+  type MemoryRecorderInput,
+  type MemoryRecorderOutput,
+  type Memory,
+  newMemoryId,
+} from "@core/memory";
+import { type AgentInvokeOptions, type AgentProcessResult } from "@core/agents";
+
+// Use a simple in-memory array as our database
+const memoryDB: Memory[] = [];
+
+const inMemoryRecorder = new MemoryRecorder({
+  process: async (
+    input: MemoryRecorderInput,
+    options: AgentInvokeOptions
+  ): Promise<AgentProcessResult<MemoryRecorderOutput>> => {
+    const newMemories: Memory[] = input.content.map((item) => ({
+      id: newMemoryId(),
+      content: item,
+      createdAt: new Date().toISOString(),
+    }));
+
+    // Add new memories to our "database"
+    memoryDB.push(...newMemories);
+    console.log("Current memory count:", memoryDB.length);
+
+    return { memories: newMemories };
+  },
+});
+```
 
 ### MemoryRetriever
 
-The `MemoryRetriever` is the counterpart to the recorder. It's responsible for searching and fetching memories from the storage layer based on specific criteria. A `MemoryRetriever` implementation could perform simple keyword matching, or it could leverage more sophisticated techniques like semantic search or vector similarity to find the most relevant memories.
+The `MemoryRetriever` is the counterpart to the recorder. It's an abstract agent class responsible for fetching memories from storage. Like the recorder, it requires a custom implementation of the `process` method to define the retrieval logic.
 
-**Input**
+**Input (`MemoryRetrieverInput`)**
 
-<x-field-group>
-  <x-field data-name="search" data-type="string | Message" data-required="false" data-desc="The search term or message to filter memories by."></x-field>
-  <x-field data-name="limit" data-type="number" data-required="false" data-desc="The maximum number of memories to retrieve."></x-field>
-</x-field-group>
+The `process` function receives an input object that can include a `search` query and a `limit` to control the number of results. The implementation determines how the search is performed (e.g., keyword matching, vector similarity).
 
-**Output**
+```typescript
+interface MemoryRetrieverInput extends Message {
+  limit?: number;
+  search?: string | Message;
+}
+```
 
-<x-field data-name="memories" data-type="Memory[]" data-required="true" data-desc="An array of memory objects that match the query criteria."></x-field>
+**Output (`MemoryRetrieverOutput`)**
 
-## The Memory Object
+The function should return a promise that resolves to an object containing an array of the `memories` that match the query.
 
-The `Memory` object is the standard data structure used to represent a single piece of stored information. It contains the content itself, along with metadata for identification and context.
+```typescript
+interface MemoryRetrieverOutput extends Message {
+  memories: Memory[];
+}
+```
 
-<x-field-group>
-  <x-field data-name="id" data-type="string" data-required="true" data-desc="A unique identifier for the memory entry."></x-field>
-  <x-field data-name="sessionId" data-type="string | null" data-required="false" data-desc="An optional identifier to group memories from the same session or conversation."></x-field>
-  <x-field data-name="content" data-type="unknown" data-required="true" data-desc="The actual content that is stored."></x-field>
-  <x-field data-name="createdAt" data-type="string" data-required="true" data-desc="The ISO 8601 timestamp of when the memory was created."></x-field>
-</x-field-group>
+**Example: Implementing a Simple In-Memory Retriever**
 
-## Summary
+This retriever works with the `inMemoryRecorder` example above, searching the local array for matching content.
 
-The `MemoryAgent`, along with its `Recorder` and `Retriever` skills, provides a powerful and flexible system for managing state and history in your AI applications. By decoupling the memory management logic from the storage implementation, you can easily adapt your memory system to fit the needs of any project, from simple chatbots to complex, multi-agent workflows.
+```typescript
+import {
+  MemoryRetriever,
+  type MemoryRetrieverInput,
+  type MemoryRetrieverOutput,
+  type Memory,
+} from "@core/memory";
+import { type AgentInvokeOptions, type AgentProcessResult } from "@core/agents";
 
-With a solid understanding of how memory works, you are now ready to explore how to construct dynamic and context-aware instructions for your agents. Continue to the [Prompts](./developer-guide-core-concepts-prompts.md) section to learn more.
+// Assume memoryDB is the same array used by the recorder
+declare const memoryDB: Memory[];
+
+const inMemoryRetriever = new MemoryRetriever({
+  process: async (
+    input: MemoryRetrieverInput,
+    options: AgentInvokeOptions
+  ): Promise<AgentProcessResult<MemoryRetrieverOutput>> => {
+    let results: Memory[] = [...memoryDB];
+
+    // Filter results based on the search query
+    if (input.search && typeof input.search === "string") {
+      const searchTerm = input.search.toLowerCase();
+      results = results.filter((mem) =>
+        JSON.stringify(mem.content).toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply the limit
+    if (input.limit) {
+      results = results.slice(-input.limit); // Get the most recent items
+    }
+
+    return { memories: results };
+  },
+});
+```
+
+## Putting It All Together
+
+Now, let's combine these components to create a fully functional memory system. We'll instantiate the `MemoryAgent` with our custom in-memory recorder and retriever, and then use it to record and retrieve information.
+
+```typescript
+import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
+import { Aigne, type Context } from "@core/aigne";
+
+// --- Assume inMemoryRecorder and inMemoryRetriever are defined as above ---
+
+// 1. Initialize the MemoryAgent
+const memoryAgent = new MemoryAgent({
+  recorder: inMemoryRecorder,
+  retriever: inMemoryRetriever,
+});
+
+// 2. Create a context to run the agent
+const context = new Aigne().createContext();
+
+// 3. Record a new memory
+async function runMemoryExample(context: Context) {
+  console.log("Recording a new memory...");
+  await memoryAgent.record(
+    {
+      content: [
+        {
+          input: { text: "What is the capital of France?" },
+          output: { text: "The capital of France is Paris." },
+          source: "GeographyAgent",
+        },
+      ],
+    },
+    context
+  );
+
+  // 4. Retrieve memories
+  console.log("\nRetrieving memories about 'France'...");
+  const retrieved = await memoryAgent.retrieve({ search: "France" }, context);
+
+  console.log("Found memories:", retrieved.memories);
+}
+
+runMemoryExample(context);
+
+/**
+ * Expected Output:
+ *
+ * Recording a new memory...
+ * Current memory count: 1
+ *
+ * Retrieving memories about 'France'...
+ * Found memories: [
+ *   {
+ *     id: '...',
+ *     content: {
+ *       input: { text: 'What is the capital of France?' },
+ *       output: { text: 'The capital of France is Paris.' },
+ *       source: 'GeographyAgent'
+ *     },
+ *     createdAt: '...'
+ *   }
+ * ]
+ */
+```
+
+This complete example demonstrates the end-to-end flow: defining custom storage logic, plugging it into the `MemoryAgent`, and using the agent to manage the system's memory.

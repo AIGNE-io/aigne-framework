@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.51.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0-beta.5...cli-v1.51.0-beta.6) (2025-10-13)
+
+
+### Bug Fixes
+
+* add copy and download  in observability detail and optimize the detail rendering ([#610](https://github.com/AIGNE-io/aigne-framework/issues/610)) ([b1885f2](https://github.com/AIGNE-io/aigne-framework/commit/b1885f2b969d7ca28a0cb1ac2b4707e7c785308b))
+* **cli:** suppress error message for CTRL+C ([#617](https://github.com/AIGNE-io/aigne-framework/issues/617)) ([01f0ea7](https://github.com/AIGNE-io/aigne-framework/commit/01f0ea74affa5653dd94048e68b62b7d7e649d4a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.1-beta.1
+    * @aigne/agent-library bumped to 1.21.48-beta.5
+    * @aigne/agentic-memory bumped to 1.0.48-beta.5
+    * @aigne/aigne-hub bumped to 0.10.2-beta.5
+    * @aigne/core bumped to 1.63.0-beta.5
+    * @aigne/default-memory bumped to 1.2.11-beta.5
+    * @aigne/openai bumped to 0.16.2-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.5
+
 ## [1.51.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0-beta.4...cli-v1.51.0-beta.5) (2025-10-12)
 
 

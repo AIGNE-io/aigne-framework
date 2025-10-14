@@ -1,5 +1,6 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { json } from "@codemirror/lang-json";
+import { EditorView } from "@codemirror/view";
 import CheckIcon from "@mui/icons-material/Check";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -10,8 +11,7 @@ import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import CodeMirror from "@uiw/react-codemirror";
 import { useState } from "react";
 
-const extensions = [json()];
-
+const extensions = [json(), EditorView.lineWrapping];
 function getLocalizedFilename(prefix = "data", locale = "en-US") {
   const now = new Date();
 
@@ -125,8 +125,6 @@ export default function JsonView({ value: data }: { value: object }) {
           width="100%"
           theme={vscodeDark}
           extensions={extensions}
-          editable={false}
-          readOnly
           basicSetup={{
             lineNumbers: true,
             highlightActiveLineGutter: true,

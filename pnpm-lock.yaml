@@ -1654,6 +1654,9 @@ importers:
       '@codemirror/lang-json':
         specifier: ^6.0.2
         version: 6.0.2
+      '@codemirror/view':
+        specifier: ^6.38.6
+        version: 6.38.6
       '@iconify/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.1.1)

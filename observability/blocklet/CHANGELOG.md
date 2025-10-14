@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.14.2-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.14.2-beta.1...blocklet-observability-v1.14.2-beta.2) (2025-10-13)
+
+
+### Bug Fixes
+
+* add copy and download  in observability detail and optimize the detail rendering ([#610](https://github.com/AIGNE-io/aigne-framework/issues/610)) ([b1885f2](https://github.com/AIGNE-io/aigne-framework/commit/b1885f2b969d7ca28a0cb1ac2b4707e7c785308b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-ui bumped to 0.11.1-beta.1
+
 ## [1.14.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.14.2-beta...blocklet-observability-v1.14.2-beta.1) (2025-10-11)
 
 

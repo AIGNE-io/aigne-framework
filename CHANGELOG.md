@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.81.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.6...aigne-framework-v1.81.0-beta.7) (2025-10-13)
+
+
+### Bug Fixes
+
+* add copy and download  in observability detail and optimize the detail rendering ([#610](https://github.com/AIGNE-io/aigne-framework/issues/610)) ([b1885f2](https://github.com/AIGNE-io/aigne-framework/commit/b1885f2b969d7ca28a0cb1ac2b4707e7c785308b))
+* **cli:** suppress error message for CTRL+C ([#617](https://github.com/AIGNE-io/aigne-framework/issues/617)) ([01f0ea7](https://github.com/AIGNE-io/aigne-framework/commit/01f0ea74affa5653dd94048e68b62b7d7e649d4a))
+* **core:** auto merge multiple system messages ([#619](https://github.com/AIGNE-io/aigne-framework/issues/619)) ([e9e62c0](https://github.com/AIGNE-io/aigne-framework/commit/e9e62c03c45f5a9b75d44a07588b2b179e262aad))
+
 ## [1.81.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.5...aigne-framework-v1.81.0-beta.6) (2025-10-12)
 
 

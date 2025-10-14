@@ -1,12 +1,16 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import Editor from "@monaco-editor/react";
+import { json } from "@codemirror/lang-json";
 import CheckIcon from "@mui/icons-material/Check";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import DownloadIcon from "@mui/icons-material/Download";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import CodeMirror from "@uiw/react-codemirror";
 import { useState } from "react";
+
+const extensions = [json()];
 
 function getLocalizedFilename(prefix = "data", locale = "en-US") {
   const now = new Date();
@@ -114,16 +118,39 @@ export default function JsonView({ value: data }: { value: object }) {
         </Tooltip>
       </Box>
 
-      <Editor
-        height="100%"
-        language="typescript"
-        theme="vs-dark"
-        value={jsonString}
-        options={{
-          readOnly: true,
-          minimap: { enabled: false },
-        }}
-      />
+      <Box sx={{ height: "100%", overflow: "auto" }}>
+        <CodeMirror
+          value={jsonString}
+          height="100%"
+          width="100%"
+          theme={vscodeDark}
+          extensions={extensions}
+          editable={false}
+          readOnly
+          basicSetup={{
+            lineNumbers: true,
+            highlightActiveLineGutter: true,
+            highlightSpecialChars: true,
+            foldGutter: true,
+            drawSelection: true,
+            dropCursor: true,
+            allowMultipleSelections: true,
+            indentOnInput: true,
+            bracketMatching: true,
+            closeBrackets: true,
+            autocompletion: true,
+            rectangularSelection: true,
+            crosshairCursor: true,
+            highlightActiveLine: true,
+            highlightSelectionMatches: true,
+            closeBracketsKeymap: true,
+            searchKeymap: true,
+            foldKeymap: true,
+            completionKeymap: true,
+            lintKeymap: true,
+          }}
+        />
+      </Box>
     </Box>
   );
 }

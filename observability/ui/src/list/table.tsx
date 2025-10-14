@@ -490,7 +490,7 @@ const Table = ({
       </Confirm>
 
       <Dialog open={remarkDialogOpen} onClose={handleRemarkClose} maxWidth="sm" fullWidth>
-        <DialogTitle>{t("editRemark")}</DialogTitle>
+        <DialogTitle sx={{ fontSize: 20 }}>{t("editRemark")}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus

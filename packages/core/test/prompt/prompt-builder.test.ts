@@ -40,20 +40,32 @@ test("PromptBuilder should build messages correctly", async () => {
     context,
   });
 
-  expect(prompt1.messages).toEqual([
-    {
-      role: "system",
-      content: "Test instructions",
-    },
-    {
-      role: "system",
-      content: expect.stringContaining("Hello, How can I help you?"),
-    },
-    {
-      role: "user",
-      content: [{ type: "text", text: "Hello" }],
-    },
-  ]);
+  expect(prompt1.messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": 
+    "Test instructions
+    <related-memories>
+    - input:
+        message: Hello, How can I help you?
+      source: TestAgent
+
+    </related-memories>
+    "
+    ,
+        "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+    ]
+  `);
 
   const prompt2 = await builder.build({
     input: { name: "foo" },
@@ -390,13 +402,9 @@ test("PromptBuilder should build with afs correctly", async () => {
   expect(result.messages).toMatchInlineSnapshot(`
     [
       {
-        "content": "Test instructions",
-        "name": undefined,
-        "role": "system",
-      },
-      SystemMessageTemplate {
         "content": 
-    "
+    "Test instructions
+
     <afs_usage>
     AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
 
@@ -415,8 +423,6 @@ test("PromptBuilder should build with afs correctly", async () => {
     </afs_usage>
     "
     ,
-        "name": undefined,
-        "options": undefined,
         "role": "system",
       },
     ]
@@ -467,13 +473,9 @@ test("PromptBuilder should build with afs correctly", async () => {
     {
       "messages": [
         {
-          "content": "Test instructions",
-          "name": undefined,
-          "role": "system",
-        },
-        SystemMessageTemplate {
           "content": 
-    "
+    "Test instructions
+
     <afs_usage>
     AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
 
@@ -492,8 +494,6 @@ test("PromptBuilder should build with afs correctly", async () => {
     </afs_usage>
     "
     ,
-          "name": undefined,
-          "options": undefined,
           "role": "system",
         },
         {

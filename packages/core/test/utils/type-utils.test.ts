@@ -14,6 +14,7 @@ import {
   omitBy,
   omitByDeep,
   omitDeep,
+  partition,
   pick,
   remove,
   tryOrThrow,
@@ -201,4 +202,10 @@ test("type-utils.tryOrThrow should throw an error if the function fails", async 
       (error) => new Error(`Error: ${error.message}`),
     );
   }).toThrow("Error: Test error");
+});
+
+test("type-utils.partition should partition the array based on the predicate", async () => {
+  const [even, odd] = partition([1, 2, 3, 4, 5], (n) => n % 2 === 0);
+  expect(even).toEqual([2, 4]);
+  expect(odd).toEqual([1, 3, 5]);
 });

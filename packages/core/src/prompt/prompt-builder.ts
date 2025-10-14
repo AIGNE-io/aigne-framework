@@ -20,7 +20,14 @@ import { fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
 import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { checkArguments, flat, isNonNullable, isRecord, unique } from "../utils/type-utils.js";
+import {
+  checkArguments,
+  flat,
+  isNonNullable,
+  isRecord,
+  partition,
+  unique,
+} from "../utils/type-utils.js";
 import { getAFSSystemPrompt } from "./prompts/afs-builtin-prompt.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
@@ -214,7 +221,31 @@ export class PromptBuilder {
       messages.push({ role: "user", content });
     }
 
-    return messages;
+    return this.mergeSystemMessages(messages);
+  }
+
+  private mergeSystemMessages(messages: ChatModelInputMessage[]): ChatModelInputMessage[] {
+    const [systemMessages, otherMessages] = partition(messages, (m) => m.role === "system");
+
+    const result: ChatModelInputMessage[] = [];
+
+    if (systemMessages.length) {
+      result.push({
+        role: "system",
+        content: systemMessages
+          .map((i) =>
+            typeof i.content === "string"
+              ? i.content
+              : i.content
+                  ?.map((c) => (c.type === "text" ? c.text : null))
+                  .filter(isNonNullable)
+                  .join("\n"),
+          )
+          .join("\n"),
+      });
+    }
+
+    return result.concat(otherMessages);
   }
 
   private async convertMemoriesToMessages(

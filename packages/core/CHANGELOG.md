@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.63.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.4...core-v1.63.0-beta.5) (2025-10-13)
+
+
+### Bug Fixes
+
+* **core:** auto merge multiple system messages ([#619](https://github.com/AIGNE-io/aigne-framework/issues/619)) ([e9e62c0](https://github.com/AIGNE-io/aigne-framework/commit/e9e62c03c45f5a9b75d44a07588b2b179e262aad))
+
 ## [1.63.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.3...core-v1.63.0-beta.4) (2025-10-12)
 
 

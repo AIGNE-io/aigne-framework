@@ -115,6 +115,7 @@ export default function JsonView({ value: data }: { value: object }) {
       </Box>
 
       <Editor
+        path={`${jsonString.slice(0, 5)}}.json`}
         height="100%"
         language="json"
         theme="vs-dark"

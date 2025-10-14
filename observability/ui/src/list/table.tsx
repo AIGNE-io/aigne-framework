@@ -52,7 +52,7 @@ const Table = ({
   onDelete: (item: string[]) => void;
   selectedRows: string[];
   setSelectedRows: (rows: string[]) => void;
-  onRemarkUpdate?: () => void;
+  onRemarkUpdate?: (id: string, remark: string) => void;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t, locale } = useLocaleContext();
@@ -371,7 +371,7 @@ const Table = ({
 
       Toast.success(t("remarkSaved"));
       setRemarkDialogOpen(false);
-      onRemarkUpdate?.();
+      onRemarkUpdate?.(currentRemark.id, currentRemark.remark);
     } catch (error) {
       Toast.error((error as Error)?.message || t("remarkSaveFailed"));
     } finally {
@@ -500,10 +500,8 @@ const Table = ({
             placeholder={t("remarkPlaceholder")}
             value={currentRemark.remark}
             onChange={(e) => {
-              const value = e.target.value;
-              if (value.length <= 50) {
-                setCurrentRemark({ ...currentRemark, remark: value });
-              }
+              const value = e.target.value.slice(0, 50);
+              setCurrentRemark({ ...currentRemark, remark: value });
             }}
             helperText={`${currentRemark.remark.length}/50`}
             sx={{ mt: 1 }}

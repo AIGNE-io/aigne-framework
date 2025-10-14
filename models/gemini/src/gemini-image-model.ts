@@ -191,6 +191,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
       "tools",
       "topK",
       "topP",
+      "imageConfig",
     ];
 
     const images = await Promise.all(

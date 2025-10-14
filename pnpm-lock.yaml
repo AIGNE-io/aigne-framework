@@ -181,7 +181,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.1.41
-        version: 3.1.47(@arcblock/ux@3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.52)(@blocklet/theme@3.1.47(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 3.1.47(24b981f1440e2a1ba36264a091aada12)
       '@arcblock/ux':
         specifier: ^3.1.41
         version: 3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -1174,8 +1174,8 @@ importers:
         specifier: ^13.0.1
         version: 13.0.1
       '@google/genai':
-        specifier: ^1.20.0
-        version: 1.20.0(@modelcontextprotocol/sdk@1.18.0)(encoding@0.1.13)
+        specifier: ^1.24.0
+        version: 1.24.0(@modelcontextprotocol/sdk@1.18.0)(encoding@0.1.13)
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -1535,7 +1535,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.1.47
-        version: 3.1.47(@arcblock/ux@3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.52)(@blocklet/theme@3.1.47(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 3.1.47(24b981f1440e2a1ba36264a091aada12)
       '@arcblock/ux':
         specifier: ^3.1.47
         version: 3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -3422,8 +3422,8 @@ packages:
   '@gerrit0/mini-shiki@3.12.2':
     resolution: {integrity: sha512-HKZPmO8OSSAAo20H2B3xgJdxZaLTwtlMwxg0967scnrDlPwe6j5+ULGHyIqwgTbFCn9yv/ff8CmfWZLE9YKBzA==}
 
-  '@google/genai@1.20.0':
-    resolution: {integrity: sha512-QdShxO9LX35jFogy3iKprQNqgKKveux4H2QjOnyIvyHRuGi6PHiz3fjNf8Y0VPY8o5V2fHqR2XqiSVoz7yZs0w==}
+  '@google/genai@1.24.0':
+    resolution: {integrity: sha512-e3jZF9Dx3dDaDCzygdMuYByHI2xJZ0PaD3r2fRgHZe2IOwBnmJ/Tu5Lt/nefTCxqr1ZnbcbQK9T13d8U/9UMWg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.11.4
@@ -12685,7 +12685,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@arcblock/did-connect-react@3.1.47(@arcblock/ux@3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.52)(@blocklet/theme@3.1.47(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@arcblock/did-connect-react@3.1.47(24b981f1440e2a1ba36264a091aada12)':
     dependencies:
       '@arcblock/bridge': 3.1.47
       '@arcblock/did': 1.25.6
@@ -14147,10 +14147,10 @@ snapshots:
       - supports-color
       - tedious
 
-  '@blocklet/did-space-react@1.1.33(7a6d128e1bfa8fd282c7131a7e2a4709)':
+  '@blocklet/did-space-react@1.1.33(83cf649b6d7017acacc80803f3c15535)':
     dependencies:
       '@arcblock/did': 1.25.6
-      '@arcblock/did-connect-react': 3.1.47(@arcblock/ux@3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.52)(@blocklet/theme@3.1.47(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@arcblock/did-connect-react': 3.1.47(24b981f1440e2a1ba36264a091aada12)
       '@arcblock/ux': 3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@blocklet/js-sdk': 1.16.52
       '@blocklet/sdk': 1.16.52(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -14341,13 +14341,13 @@ snapshots:
       '@abtnode/constant': 1.16.52
       '@abtnode/util': 1.16.52
       '@arcblock/bridge': 3.1.47
-      '@arcblock/did-connect-react': 3.1.47(@arcblock/ux@3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.16.52)(@blocklet/theme@3.1.47(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@arcblock/did-connect-react': 3.1.47(24b981f1440e2a1ba36264a091aada12)
       '@arcblock/icons': 3.1.47(react@19.1.1)
       '@arcblock/react-hooks': 3.1.47
       '@arcblock/ux': 3.1.47(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@arcblock/ws': 1.25.6
       '@blocklet/constant': 1.16.52
-      '@blocklet/did-space-react': 1.1.33(7a6d128e1bfa8fd282c7131a7e2a4709)
+      '@blocklet/did-space-react': 1.1.33(83cf649b6d7017acacc80803f3c15535)
       '@blocklet/js-sdk': 1.16.52
       '@emotion/react': 11.14.0(@types/react@19.1.13)(react@19.1.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1)
@@ -14796,7 +14796,7 @@ snapshots:
       '@shikijs/types': 3.12.2
       '@shikijs/vscode-textmate': 10.0.2
 
-  '@google/genai@1.20.0(@modelcontextprotocol/sdk@1.18.0)(encoding@0.1.13)':
+  '@google/genai@1.24.0(@modelcontextprotocol/sdk@1.18.0)(encoding@0.1.13)':
     dependencies:
       google-auth-library: 9.15.1(encoding@0.1.13)
       ws: 8.18.2

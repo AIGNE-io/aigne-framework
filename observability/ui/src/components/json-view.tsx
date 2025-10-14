@@ -76,7 +76,7 @@ export default function JsonView({ value: data }: { value: object }) {
         sx={{
           position: "absolute",
           top: 16,
-          right: 32,
+          right: 36,
           zIndex: 10001,
           display: "flex",
           gap: 0.5,
@@ -121,7 +121,6 @@ export default function JsonView({ value: data }: { value: object }) {
         value={jsonString}
         options={{
           readOnly: true,
-          automaticLayout: true,
           minimap: { enabled: false },
         }}
       />

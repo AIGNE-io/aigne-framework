@@ -90,4 +90,13 @@ export default flatten({
   delConfirmDescription: "确定要删除 ID 为 {id} 的 Traces 吗？",
   copyJson: "复制 JSON",
   downloadJson: "下载 JSON",
+  remark: "备注",
+  noRemark: "无备注",
+  editRemark: "编辑备注",
+  remarkPlaceholder: "输入备注内容（最多50个字符）...",
+  remarkSaved: "备注已保存",
+  remarkSaveFailed: "备注保存失败",
+  save: "保存",
+  saving: "保存中...",
+  cancel: "取消",
 });

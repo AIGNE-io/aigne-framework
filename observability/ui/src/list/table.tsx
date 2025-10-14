@@ -3,20 +3,30 @@ import Confirm from "@arcblock/ux/lib/Dialog/confirm";
 import Empty from "@arcblock/ux/lib/Empty";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
+import Toast from "@arcblock/ux/lib/Toast";
 import UserCard from "@arcblock/ux/lib/UserCard";
 import { CardType, InfoType } from "@arcblock/ux/lib/UserCard/types";
 import TrashIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
 import { compact } from "lodash";
 import prettyMs from "pretty-ms";
 import { useState } from "react";
+import { joinURL } from "ufo";
 import { BlockletComponent } from "../components/blocklet-comp.tsx";
 import type { TraceData } from "../components/run/types.ts";
 import Status from "../components/status.tsx";
 import formatNumber from "../utils/format-number.ts";
+import { origin } from "../utils/index.ts";
 import { parseDuration } from "../utils/latency.ts";
 
 const Table = ({
@@ -30,6 +40,7 @@ const Table = ({
   onDelete,
   selectedRows,
   setSelectedRows,
+  onRemarkUpdate,
 }: {
   traces: TraceData[];
   total: number;
@@ -41,11 +52,18 @@ const Table = ({
   onDelete: (item: string[]) => void;
   selectedRows: string[];
   setSelectedRows: (rows: string[]) => void;
+  onRemarkUpdate?: () => void;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t, locale } = useLocaleContext();
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
   const [open, setOpen] = useState<boolean>(false);
+  const [remarkDialogOpen, setRemarkDialogOpen] = useState<boolean>(false);
+  const [currentRemark, setCurrentRemark] = useState<{ id: string; remark: string }>({
+    id: "",
+    remark: "",
+  });
+  const [saving, setSaving] = useState<boolean>(false);
 
   const columns = compact([
     {
@@ -269,6 +287,42 @@ const Table = ({
         },
       },
     },
+    {
+      label: t("remark"),
+      name: "remark",
+      align: "right" as const,
+      width: 200,
+      options: {
+        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
+          const item = traces[rowIndex];
+          return (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, maxWidth: 200 }}>
+              <Box
+                sx={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  color: item.remark ? "text.primary" : "text.disabled",
+                  flex: 1,
+                }}
+              >
+                {item.remark || t("noRemark")}
+              </Box>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentRemark({ id: item.id, remark: item.remark || "" });
+                  setRemarkDialogOpen(true);
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          );
+        },
+      },
+    },
   ]);
 
   if (isBlocklet) {
@@ -300,6 +354,34 @@ const Table = ({
   const onClose = () => {
     setOpen(false);
     setSelectedRows([]);
+  };
+
+  const handleRemarkSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(joinURL(origin, "/api/trace/remark"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: currentRemark.id, remark: currentRemark.remark }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save remark");
+      }
+
+      Toast.success(t("remarkSaved"));
+      setRemarkDialogOpen(false);
+      onRemarkUpdate?.();
+    } catch (error) {
+      Toast.error((error as Error)?.message || t("remarkSaveFailed"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRemarkClose = () => {
+    setRemarkDialogOpen(false);
+    setCurrentRemark({ id: "", remark: "" });
   };
 
   const customToolbarSelect = (_selectedRows: { data: { index: number; dataIndex: number }[] }) => {
@@ -406,6 +488,36 @@ const Table = ({
           {t("delConfirmDescription", { id: selectedRows.join(",") })}
         </Box>
       </Confirm>
+
+      <Dialog open={remarkDialogOpen} onClose={handleRemarkClose} maxWidth="sm" fullWidth>
+        <DialogTitle>{t("editRemark")}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            multiline
+            rows={4}
+            fullWidth
+            placeholder={t("remarkPlaceholder")}
+            value={currentRemark.remark}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value.length <= 50) {
+                setCurrentRemark({ ...currentRemark, remark: value });
+              }
+            }}
+            helperText={`${currentRemark.remark.length}/50`}
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRemarkClose} variant="outlined">
+            {t("cancel")}
+          </Button>
+          <Button onClick={handleRemarkSave} variant="contained" disabled={saving}>
+            {saving ? t("saving") : t("save")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

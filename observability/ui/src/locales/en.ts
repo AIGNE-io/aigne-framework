@@ -91,4 +91,13 @@ export default flatten({
   delConfirmDescription: "Are you sure you want to delete the traces of {id}?",
   copyJson: "Copy JSON",
   downloadJson: "Download JSON",
+  remark: "Remark",
+  noRemark: "No Remark",
+  editRemark: "Edit Remark",
+  remarkPlaceholder: "Enter remark content (max 50 characters)...",
+  remarkSaved: "Remark saved successfully",
+  remarkSaveFailed: "Failed to save remark",
+  save: "Save",
+  saving: "Saving...",
+  cancel: "Cancel",
 });

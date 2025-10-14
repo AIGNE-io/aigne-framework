@@ -28,7 +28,7 @@ const migrations = [
         userId TEXT,
         sessionId TEXT
       );
-      
+
       CREATE INDEX IF NOT EXISTS idx_trace_rootId ON Trace (rootId);
       CREATE INDEX IF NOT EXISTS idx_trace_parentId ON Trace (parentId);
     `,
@@ -66,6 +66,16 @@ const migrations = [
 
       if (!hasCostColumn) {
         await db.run(sql`ALTER TABLE Trace ADD COLUMN cost REAL DEFAULT 0;`);
+      }
+    },
+  },
+  {
+    hash: "20251014_add_remark_column",
+    async sql(db: DB) {
+      const hasRemarkColumn = await columnExists(db, "Trace", "remark");
+
+      if (!hasRemarkColumn) {
+        await db.run(sql`ALTER TABLE Trace ADD COLUMN remark TEXT;`);
       }
     },
   },

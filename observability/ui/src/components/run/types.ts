@@ -27,6 +27,7 @@ export interface TraceData {
   userId?: string;
   token?: number;
   cost?: number;
+  remark?: string;
 }
 
 export interface RunDetailDrawerProps {

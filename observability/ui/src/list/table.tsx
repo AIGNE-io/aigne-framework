@@ -77,9 +77,61 @@ const Table = ({
     {
       label: t("agentName"),
       name: "name",
-      minWidth: 150,
+      width: 200,
       options: {
-        customBodyRender: (value: string) => <Box>{value}</Box>,
+        customBodyRender: (value: string, { rowIndex }: { rowIndex: number }) => {
+          const item = traces[rowIndex];
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 0.5,
+                py: 0.5,
+                position: "relative",
+                "&:hover .edit-remark-btn": { opacity: 1 },
+              }}
+            >
+              <Box sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {value}
+              </Box>
+              {item.remark && (
+                <Box
+                  sx={{
+                    fontSize: "0.75rem",
+                    color: "text.secondary",
+                    opacity: 0.7,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    width: 150,
+                  }}
+                >
+                  {item.remark}
+                </Box>
+              )}
+              <IconButton
+                className="edit-remark-btn"
+                size="small"
+                sx={{
+                  position: "absolute",
+                  right: -8,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  opacity: 0,
+                  transition: "opacity 0.2s",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentRemark({ id: item.id, remark: item.remark || "" });
+                  setRemarkDialogOpen(true);
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          );
+        },
       },
     },
     {
@@ -283,42 +335,6 @@ const Table = ({
             <RelativeTime value={item.endTime} type="absolute" format="YYYY-MM-DD HH:mm:ss" />
           ) : (
             "-"
-          );
-        },
-      },
-    },
-    {
-      label: t("remark"),
-      name: "remark",
-      align: "right" as const,
-      width: 200,
-      options: {
-        customBodyRender: (_: unknown, { rowIndex }: { rowIndex: number }) => {
-          const item = traces[rowIndex];
-          return (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, maxWidth: 200 }}>
-              <Box
-                sx={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  color: item.remark ? "text.primary" : "text.disabled",
-                  flex: 1,
-                }}
-              >
-                {item.remark || t("noRemark")}
-              </Box>
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentRemark({ id: item.id, remark: item.remark || "" });
-                  setRemarkDialogOpen(true);
-                }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Box>
           );
         },
       },

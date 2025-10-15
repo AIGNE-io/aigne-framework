@@ -100,4 +100,6 @@ export default flatten({
   saving: "保存中...",
   cancel: "取消",
   traceTimeline: "Trace 时间线",
+  expandAll: "展开全部",
+  collapseAll: "收起全部",
 });
